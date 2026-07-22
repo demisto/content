@@ -1,0 +1,56 @@
+commonfields:
+  id: CPTaskStatus
+  version: -1
+name: CPTaskStatus
+script: >
+  res = []
+
+  taskIds = demisto.get(demisto.args(), 'taskIDs')
+
+  if type(taskIds) in [str, unicode]:
+      taskIds = taskIds.split(',') if ',' in taskIds else [taskIds]
+  dArgs = {'command':'show-task'}
+
+
+  rows = []
+
+  for tid in taskIds:
+      dArgs["task-id"] = tid
+      resCmd = demisto.executeCommand('checkpoint', dArgs)
+      try:
+          for entry in resCmd:
+              if isError(entry):
+                  res = resCmd
+                  break
+              else:
+                  tasks = demisto.get(entry, 'Contents.tasks')
+                  if tasks:
+                      rows += tasks
+                  else:
+                      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                  "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": rows})
+
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- checkpoint
+comment: Deprecated. Shows status of a checkpoint task by task uuid.
+system: true
+deprecated: true
+args:
+- name: taskIDs
+  required: true
+  default: true
+  description: Task UUIDs
+scripttarget: 0
+dependson:
+  must:
+  - checkpoint
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

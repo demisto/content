@@ -1,0 +1,21 @@
+[file:README.md]
+ignore=RM104,RM106,BA125
+
+[file:HelloWorldScript.yml]
+ignore=BA110
+
+[file:classifier-mapper-incoming-HelloWorld.json]
+ignore=BA101
+
+[file:HelloWorld.yml]
+ignore=BA111
+
+[file:classifier-HelloWorld.json]
+ignore=BA101
+
+# GR103 is temporary, see CIAC-11656
+[file:playbook-HelloWorld-Test.yml]
+ignore=GR103
+
+[file:HelloWorldV2.yml]
+ignore=BA129,IN126

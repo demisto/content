@@ -1,0 +1,8 @@
+[file:playbook-VMRay-Detonate-File.yml]
+ignore=BA101
+
+[file:VMRay_image.png]
+ignore=IM111
+
+[known_words]
+shareable

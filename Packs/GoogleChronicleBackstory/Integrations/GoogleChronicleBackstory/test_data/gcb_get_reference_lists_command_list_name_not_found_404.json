@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 404,
+        "message": "generic::not_found: list with name dummy not found",
+        "status": "NOT_FOUND"
+    }
+}

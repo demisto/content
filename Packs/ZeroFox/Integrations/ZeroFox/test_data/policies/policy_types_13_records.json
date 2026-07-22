@@ -1,0 +1,108 @@
+{
+    "policies": [
+        {
+            "id": "63982",
+            "name": "Recommended",
+            "is_default": true,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": true
+        },
+        {
+            "id": "63983",
+            "name": "Brand Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": true
+        },
+        {
+            "id": "63984",
+            "name": "Web Domain Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": true
+        },
+        {
+            "id": "63985",
+            "name": "Executive/VIP Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": true
+        },
+        {
+            "id": "63986",
+            "name": "Location Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": true
+        },
+        {
+            "id": "63987",
+            "name": "Product Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": true
+        },
+        {
+            "id": "63988",
+            "name": "Email Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": true
+        },
+        {
+            "id": "70188",
+            "name": "Remote Workforce Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": false
+        },
+        {
+            "id": "93164",
+            "name": "Physical Security Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": false
+        },
+        {
+            "id": "101987",
+            "name": "Mobile App Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": false
+        },
+        {
+            "id": "104037",
+            "name": "Third Party Vendor Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": false
+        },
+        {
+            "id": "106085",
+            "name": "BIN/Credit Card Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": false
+        },
+        {
+            "id": "112258",
+            "name": "IPs & Hostnames Recommended",
+            "is_default": false,
+            "is_editable": true,
+            "is_recommended": true,
+            "is_active": false
+        }
+    ]
+}

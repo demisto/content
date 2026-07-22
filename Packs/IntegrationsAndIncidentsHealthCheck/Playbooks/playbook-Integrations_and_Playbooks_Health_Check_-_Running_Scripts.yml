@@ -1,0 +1,911 @@
+id: Integrations and Playbooks Health Check - Running Scripts
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Integrations and Incidents Health Check - Running Scripts
+description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
+  playbook and is responsible for running failed integrations and failed incidents
+  scripts. The playbook may run separately from the main playbook to run health tests
+  on enabled integrations and open incidents.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 814f2f15-e8a9-4162-8b7a-75842231adde
+    type: start
+    task:
+      id: 814f2f15-e8a9-4162-8b7a-75842231adde
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": -80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6b5ad945-d3e5-4bad-8157-ab13ac785c28
+    type: regular
+    task:
+      id: 6b5ad945-d3e5-4bad-8157-ab13ac785c28
+      version: -1
+      name: Search for currently failing integrations
+      description: Executes a test for all integration instances available and returns
+        detailed information about succeeded and failed integration instances.
+      scriptName: FailedInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "3"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Integrations Failed Categories
+      output:
+        simple: ${FailedInstances.category}
+    - incidentfield: Integrations Categories
+      output:
+        simple: ${FailedInstances.category}
+    - incidentfield: Integrations Categories
+      output:
+        simple: ${SuccessInstances.category}
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7a426f07-5f3b-418d-813d-27bb69b17967
+    type: regular
+    task:
+      id: 7a426f07-5f3b-418d-813d-27bb69b17967
+      version: -1
+      name: Creates failed Integrations grid
+      description: Creates a Grid table for failed instance information.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      columns:
+        simple: Brand,Category,Information,Instance
+      context_path:
+        simple: FailedInstances
+      grid_id:
+        simple: integrationstestgrid
+      keys:
+        simple: brand,category,information,instance
+      overwrite:
+        simple: "true"
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 13b2a514-f431-41a4-8545-c25216f1b308
+    type: regular
+    task:
+      id: 13b2a514-f431-41a4-8545-c25216f1b308
+      version: -1
+      name: Set scripts result
+      description: Adds the scripts result from previous tasks to the incident data.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      accountgroups: {}
+      accountid: {}
+      accountinformationbreached: {}
+      accountname: {}
+      activedirectoryaccountstatus: {}
+      activedirectorydisplayname: {}
+      activedirectorypasswordstatus: {}
+      addLabels: {}
+      addcctoemail: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedendpoints: {}
+      affectedindividualscontactinformation: {}
+      agentid: {}
+      app: {}
+      appendMultiSelect: {}
+      appendTags: {}
+      approximatenumberofaffecteddatasubjects: {}
+      approximatenumberofencryptedendpoints: {}
+      assetid: {}
+      assigneduser: {}
+      assignmentgroup: {}
+      associatedmaliciousdomains: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      attackerhostisolated: {}
+      attackeripblocked: {}
+      attackerusername: {}
+      attorneygeneralnotification: {}
+      baseeventdetails: {}
+      blockedaction: {}
+      bpareport: {}
+      breachconfirmation: {}
+      btcwalletaddress: {}
+      bugtraq: {}
+      caller: {}
+      city: {}
+      clarotyalertresolved: {}
+      clarotyalerttype: {}
+      clarotycategory: {}
+      clarotynetworkid: {}
+      clarotyrelatedassets: {}
+      clarotyresourceid: {}
+      clarotysiteid: {}
+      closeNotes: {}
+      closeReason: {}
+      cloudservice: {}
+      code42alertdescription: {}
+      code42alertid: {}
+      code42alertname: {}
+      code42alertstate: {}
+      code42alerttimestamp: {}
+      code42alerttype: {}
+      code42fileevents: {}
+      code42severity: {}
+      code42username: {}
+      commandline: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      companypropertystatus: {}
+      consumerreportingagenciesnotification: {}
+      contactaddress: {}
+      contactemailaddress: {}
+      contactname: {}
+      contacttelephonenumber: {}
+      coordinates: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      createddatefailedincidents: {}
+      criticalassets: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      cymulateimmediatethreatsattackid: {}
+      cymulateimmediatethreatsfiletype: {}
+      cymulateimmediatethreatsid: {}
+      cymulateimmediatethreatsmitigations: {}
+      cymulateimmediatethreatsmodule: {}
+      cymulateimmediatethreatspayloadname: {}
+      cymulateimmediatethreatsstatus: {}
+      cymulateimmediatethreatsvector: {}
+      dataencryption: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      dbotMirrorDirection: {}
+      dbotMirrorId: {}
+      dbotMirrorInstance: {}
+      dbotMirrorTags: {}
+      dbotprediction: {}
+      dbotpredictionprobability: {}
+      dbottextsuggestionhighlighted: {}
+      deleteEmptyField: {}
+      dest: {}
+      desthostname: {}
+      destinationhostname: {}
+      destinationip: {}
+      destinationnetwork: {}
+      destinationport: {}
+      destinationports: {}
+      destntdomain: {}
+      destos: {}
+      details: {}
+      detectedexternalhosts: {}
+      detectedexternalips: {}
+      detectedinternalhosts: {}
+      detectedinternalips: {}
+      detectedusers: {}
+      detectionendtime: {}
+      detectionid: {}
+      detectionticketed: {}
+      detectionupdatetime: {}
+      detectionurl: {}
+      deviceexternalip: {}
+      devicegsuiteaccountstatus: {}
+      devicehash: {}
+      devicelocalip: {}
+      devicemodel: {}
+      devicename: {}
+      deviceserialnumber: {}
+      digitalguardianactivity: {}
+      digitalguardianalarmname: {}
+      digitalguardianarcuid: {}
+      digitalguardianattachmentfilename: {}
+      digitalguardianclassification: {}
+      digitalguardiancommandline: {}
+      digitalguardiancomputername: {}
+      digitalguardiandestinationaddress: {}
+      digitalguardiandestinationdnsdomain: {}
+      digitalguardianemailrecipient: {}
+      digitalguardianemailsender: {}
+      digitalguardianemailsubject: {}
+      digitalguardianfilename: {}
+      digitalguardianparentprocessname: {}
+      digitalguardianpolicy: {}
+      digitalguardianprocessname: {}
+      digitalguardianremoteport: {}
+      digitalguardiansensitivity: {}
+      digitalguardiansourceaddress: {}
+      digitalguardiansourceip: {}
+      digitalguardianthreattype: {}
+      digitalguardianusername: {}
+      dnsrequests: {}
+      dpoemailaddress: {}
+      dponotification: {}
+      duoaccountstatus: {}
+      duration: {}
+      email: {}
+      emailaddress: {}
+      emailauthenticitycheck: {}
+      emailautoreply: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclassification: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailheaders: {}
+      emailheaders2: {}
+      emailhtml: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      employeedisplayname: {}
+      employeeemail: {}
+      employeemanageremail: {}
+      encryptedfileowner: {}
+      escalation: {}
+      eventid: {}
+      eventtype: {}
+      exactlywhathappenedandatwhattimes: {}
+      exfiltrateddata: {}
+      exfiltratedfiles: {}
+      exfiltrationmethod: {}
+      expansebehaviorrule: {}
+      expansebusinessunit: {}
+      expanseexposuretype: {}
+      expanserawjsonevent: {}
+      expanseseverity: {}
+      externaladdresses: {}
+      extrahopapplianceid: {}
+      extrahophostname: {}
+      failedincidentscreateddate: {}
+      filehash: {}
+      filehashblocked: {}
+      filename: {}
+      filepath: {}
+      filesize: {}
+      financialinformationbreached: {}
+      firstname: {}
+      firstseen: {}
+      globaldirectoryvisibility: {}
+      googleaccountstatus: {}
+      googleadminrolesstatus: {}
+      googledisplayname: {}
+      googledrivestatus: {}
+      googlemailstatus: {}
+      googlepasswordstatus: {}
+      grid: {}
+      healthinsurancebreached: {}
+      helloworldid: {}
+      helloworldstatus: {}
+      helloworldtype: {}
+      hostname: {}
+      howcouldinformationsharingwithotherorganizationshavebeenimproved: {}
+      howwastheincidentcontainedanderadicated: {}
+      howwelldidstaffandmanagementperformindealingwiththeincidentwerethedocumentedproceduresfollowedweretheyadequate: {}
+      id: {}
+      illusionblackattackerid: {}
+      illusionblackattacktype: {}
+      illusionblackdecoyid: {}
+      illusionblackevents: {}
+      illusionblackthreatparse: {}
+      illusivenetworksdeceptionfamilies: {}
+      illusivenetworkseventsnumber: {}
+      illusivenetworkshasforensics: {}
+      illusivenetworkshostname: {}
+      illusivenetworksid: {}
+      illusivenetworkslastseenuser: {}
+      illusivenetworkssourceoperatingsystem: {}
+      illusivenetworksstepstocrownjewel: {}
+      illusivenetworksstepstodomainadmin: {}
+      incomingmirrorerror: {}
+      indenideviceid: {}
+      indeniissueid: {}
+      individualsnotification: {}
+      infectedhostnames: {}
+      infectedhosts: {}
+      infinipointhostname: {}
+      infinipointpolicyid: {}
+      infinipointpolicyname: {}
+      instancesbrandlist: {}
+      integrationscategories: {}
+      integrationsfailedcategories: {}
+      integrationstestgrid: {}
+      integrationstestmarkdown: {}
+      internaladdresses: {}
+      investigationstage: {}
+      isolated: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      lastmodifiedby: {}
+      lastmodifiedon: {}
+      lastname: {}
+      lastseen: {}
+      likelyimpact: {}
+      loginattemptcount: {}
+      logsource: {}
+      logzioalerteventid: {}
+      logzioalertid: {}
+      logzioalertsummary: {}
+      logziotags: {}
+      macaddress: {}
+      mailboxdelegation: {}
+      maliciousbehavior: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      maliciousdomainsblocked: {}
+      malwarefamily: {}
+      malwarename: {}
+      managementnotification: {}
+      manageremail: {}
+      markdowntest: {}
+      md5: {}
+      measurestomitigate: {}
+      medianotification: {}
+      medicalinformationbreached: {}
+      mobiledevicemodel: {}
+      moshe: {}
+      name: {}
+      niststage: {}
+      note: {}
+      numberofentriesiderrors:
+        complex:
+          root: GetFailedTasks
+          accessor: Error Entry ID
+          transformers:
+          - operator: count
+      numberoffailedincidents:
+        complex:
+          root: GetFailedTasks
+          accessor: Incident ID
+          transformers:
+          - operator: uniq
+          - operator: count
+      numberofports: {}
+      numberofuniqueports: {}
+      occurred: {}
+      offboardingdate: {}
+      offboardingstage: {}
+      oktaaccountstatus: {}
+      os: {}
+      osversion: {}
+      otherpiidatabreached: {}
+      outgoingmirrorerror: {}
+      owner: {}
+      parentprocessid: {}
+      participants: {}
+      passwordexpirationstatus: {}
+      pcap: {}
+      pcapencryptionkey: {}
+      pcapendtime: {}
+      pcapfile: {}
+      pcapfilename: {}
+      pcapfilesize: {}
+      pcapflows: {}
+      pcapnumberofpackets: {}
+      pcapnumberofstreams: {}
+      pcapstarttime: {}
+      penteraoperationdetails: {}
+      phase: {}
+      phishingsubtype: {}
+      phonenumber: {}
+      pid: {}
+      piidatatype: {}
+      playbooknameswithfailedtasks: {}
+      playbooksfailedcommands: {}
+      playbookswithfailedtasks: {}
+      playbooktaskserrors: {}
+      policydeleted: {}
+      policydescription: {}
+      policydetails: {}
+      policyid: {}
+      policyrecommendation: {}
+      policyremediable: {}
+      policyseverity: {}
+      policytype: {}
+      portsblocked: {}
+      portscantimestamp: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      previouscoordinates: {}
+      previouscountry: {}
+      previoussignindatetime: {}
+      previoussourceip: {}
+      prismacloudcomputeactivitytype: {}
+      prismacloudcomputeappid: {}
+      prismacloudcomputecategory: {}
+      prismacloudcomputecollections: {}
+      prismacloudcomputecommand: {}
+      prismacloudcomputecontainer: {}
+      prismacloudcomputecredentialid: {}
+      prismacloudcomputedistribution: {}
+      prismacloudcomputeerror: {}
+      prismacloudcomputeforensic: {}
+      prismacloudcomputefqdn: {}
+      prismacloudcomputefunction: {}
+      prismacloudcomputehost: {}
+      prismacloudcomputeimage: {}
+      prismacloudcomputeinteractive: {}
+      prismacloudcomputekubernetesresource: {}
+      prismacloudcomputelabels: {}
+      prismacloudcomputeline: {}
+      prismacloudcomputelogfile: {}
+      prismacloudcomputemarkdown: {}
+      prismacloudcomputemessage: {}
+      prismacloudcomputeproject: {}
+      prismacloudcomputeprotected: {}
+      prismacloudcomputeprovider: {}
+      prismacloudcomputerawalertjson: {}
+      prismacloudcomputeregion: {}
+      prismacloudcomputeregistry: {}
+      prismacloudcomputerule: {}
+      prismacloudcomputeruntime: {}
+      prismacloudcomputeservice: {}
+      prismacloudcomputeservicetype: {}
+      prismacloudcomputetotal: {}
+      prismacloudcomputetype: {}
+      prismacloudcomputeuser: {}
+      prismacloudid: {}
+      prismacloudreason: {}
+      prismacloudrules: {}
+      prismacloudstatus: {}
+      prismacloudtime: {}
+      productid: {}
+      protocol: {}
+      protocols: {}
+      quarantined: {}
+      ransomwaredataencryptionstatus: {}
+      ransomwarenote: {}
+      ransomwarerecoverytool: {}
+      ransomwarestrain: {}
+      rating: {}
+      rawparticipants: {}
+      recommendations: {}
+      region: {}
+      regionid: {}
+      replacePlaybook: {}
+      reporteremailaddress: {}
+      residentnotificationoption: {}
+      residentsemailaddress: {}
+      resourceapiname: {}
+      resourcecloudtype: {}
+      resourceid: {}
+      resourcename: {}
+      resourcetype: {}
+      riskrating: {}
+      riskscore: {}
+      roles: {}
+      rrn: {}
+      samaccountname: {}
+      sansstage: {}
+      scansourcetype: {}
+      secretarynotification: {}
+      sectorofaffectedparty: {}
+      servicenowassignedto: {}
+      servicenowassignmentgroup: {}
+      servicenowcaller: {}
+      servicenowcallerid: {}
+      servicenowcategory: {}
+      servicenowclosedby: {}
+      servicenowcloseddate: {}
+      servicenowdescription: {}
+      servicenowduedate: {}
+      servicenowescalation: {}
+      servicenowimpact: {}
+      servicenownotify: {}
+      servicenowopeneddate: {}
+      servicenowpriority: {}
+      servicenowresolutioncode: {}
+      servicenowresolutionnotes: {}
+      servicenowresolvedtime: {}
+      servicenowseverity: {}
+      servicenowstate: {}
+      servicenowticketnumber: {}
+      servicenowurgency: {}
+      servicetest: {}
+      severity: {}
+      sha256: {}
+      signature: {}
+      signindatetime: {}
+      similarincident: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      skuname: {}
+      skutier: {}
+      sla: {}
+      slaField: {}
+      sourcehostname: {}
+      sourceip: {}
+      sourcenetwork: {}
+      sourceport: {}
+      sourceusername: {}
+      src: {}
+      srchostname: {}
+      srcntdomain: {}
+      srcos: {}
+      srcuser: {}
+      state: {}
+      statecisonotification: {}
+      statewherethebreachtookplace: {}
+      subcategory: {}
+      subscriptionassignedby: {}
+      subscriptioncreatedby: {}
+      subscriptioncreatedon: {}
+      subscriptiondescription: {}
+      subscriptionid: {}
+      subscriptionname: {}
+      subscriptiontype: {}
+      subscriptionupdatedby: {}
+      subscriptionupdatedon: {}
+      subtype: {}
+      successfullogin: {}
+      suggestionsanddiscussionofhowtoimprovetheteam: {}
+      systemdefault: {}
+      systems: {}
+      targetfirewallversion: {}
+      telephoneno: {}
+      tenantname: {}
+      terminatedaction: {}
+      test2: {}
+      threatactor: {}
+      ticketcloseddate: {}
+      ticketnumber: {}
+      ticketopeneddate: {}
+      totalfailedinstances:
+        complex:
+          root: InstancesCount
+          accessor: FailedCount
+      totalgoodinstances:
+        complex:
+          root: InstancesCount
+          accessor: SuccessCount
+      totalinstances:
+        complex:
+          root: InstancesCount
+          accessor: TotalCount
+      trapsid: {}
+      travelmaplink: {}
+      triggeredsecurityprofile: {}
+      type: {}
+      unassignedincidents:
+        complex:
+          root: GetFailedTasks
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: GetFailedTasks.Incident Owner
+                iscontext: true
+          accessor: Incident ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      uniquebiometricdatabreached: {}
+      uniqueidentificationnumberbreached: {}
+      uniqueports: {}
+      urlsslverification: {}
+      user: {}
+      useraccountcontrol: {}
+      userdisabledstatus: {}
+      username: {}
+      vendorid: {}
+      vendorproduct: {}
+      vpcid: {}
+      vulnerabilitycategory: {}
+      wereanystepsoractionstakenthatmighthaveinhibitedtherecovery: {}
+      whatadditionaltoolsorresourcesareneededtodetectanalyzeandmitigatefutureincidents: {}
+      whataretheareasthatneedimprovement: {}
+      whatcorrectiveactionscanpreventsimilarincidentsinthefuture: {}
+      whatinformationwasneededsooner: {}
+      whatprecursorsorindicatorsshouldbewatchedforinthefuturetodetectsimilarincidents: {}
+      whatwasthescopeoftheincident: {}
+      whatwastheworkperformedduringrecovery: {}
+      whatweretheareaswherethecirtteamswereeffective: {}
+      whatwouldthestaffandmanagementdodifferentlythenexttimeasimilarincidentoccurs: {}
+      whenwastheproblemfirstdetectedandbywhom: {}
+      whereisdatahosted: {}
+      xdralertcount: {}
+      xdralerts: {}
+      xdrassigneduseremail: {}
+      xdrassigneduserprettyname: {}
+      xdrdescription: {}
+      xdrdetectiontime: {}
+      xdrfileartifacts: {}
+      xdrhighseverityalertcount: {}
+      xdrhostcount: {}
+      xdrincidentid: {}
+      xdrlowseverityalertcount: {}
+      xdrmediumseverityalertcount: {}
+      xdrnetworkartifacts: {}
+      xdrnotes: {}
+      xdrresolvecomment: {}
+      xdrstatus: {}
+      xdrstatusv2: {}
+      xdrurl: {}
+      xdrusercount: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 83bb5b2d-495d-4bf2-83df-0a92153102c8
+    type: regular
+    task:
+      id: 83bb5b2d-495d-4bf2-83df-0a92153102c8
+      version: -1
+      name: Search for incidents with errors
+      description: Uses a query to get failed task details for incidents.
+      scriptName: GetFailedTasks
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+    scriptarguments:
+      query:
+        simple: -status:closed and runStatus:error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Playbook Names With Failed Tasks
+      output:
+        complex:
+          root: GetFailedTasks
+          accessor: Playbook Name
+    - incidentfield: Playbooks Failed Commands
+      output:
+        complex:
+          root: GetFailedTasks
+          accessor: Command Name
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 72d1d45b-65d4-431a-8e2b-73dd00d4f661
+    type: regular
+    task:
+      id: 72d1d45b-65d4-431a-8e2b-73dd00d4f661
+      version: -1
+      name: Create failed playbook tasks grid
+      description: Creates a Grid table for failed incident information.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      columns:
+        simple: Command Name,Creation Date,Incident ID,Number of Errors,Owner,Task
+          Name,Task ID,Playbook Name
+      context_path:
+        simple: GetFailedTasks
+      grid_id:
+        simple: playbooktaskserrors
+      keys:
+        simple: Command Name,Incident Created Date,Incident ID,Number of Errors,Incident
+          Owner,Task Name,Task ID,Playbook Name
+      overwrite:
+        simple: "true"
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b58016a6-9341-4abb-807d-1e78fa07ec68
+    type: title
+    task:
+      id: b58016a6-9341-4abb-807d-1e78fa07ec68
+      version: -1
+      name: Run Health Check Scripts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 678d7224-fd38-4e5c-8e0f-3ba7b0f4fcff
+    type: title
+    task:
+      id: 678d7224-fd38-4e5c-8e0f-3ba7b0f4fcff
+      version: -1
+      name: Create Grid for Health Check
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 6d219137-020a-4fcd-8df7-13a80e08b13e
+    type: title
+    task:
+      id: 6d219137-020a-4fcd-8df7-13a80e08b13e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1005,
+        "width": 1240,
+        "x": -280,
+        "y": -80
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests
+fromversion: 6.0.0

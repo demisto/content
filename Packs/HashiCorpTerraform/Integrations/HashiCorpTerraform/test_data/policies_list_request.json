@@ -1,0 +1,174 @@
+{
+    "mock_response": {
+        "data": [
+            {
+                "id": "pol-Abcabcabcabcabc4",
+                "type": "policies",
+                "attributes": {
+                    "name": "nat-policies",
+                    "description": null,
+                    "enforce": [
+                        {
+                            "path": "nat-policies.sentinel",
+                            "mode": "hard-mandatory"
+                        }
+                    ],
+                    "policy-set-count": 1,
+                    "updated-at": "2023-11-14T18:12:36.702Z",
+                    "kind": "sentinel",
+                    "enforcement-level": "hard-mandatory"
+                },
+                "relationships": {
+                    "organization": {
+                        "data": {
+                            "id": "example-org-123Abc",
+                            "type": "organizations"
+                        }
+                    },
+                    "policy-sets": {
+                        "data": [
+                            {
+                                "id": "polset-Abcabcabcabcabc5",
+                                "type": "policy-sets"
+                            }
+                        ]
+                    }
+                },
+                "links": {
+                    "self": "/api/v2/policies/pol-Abcabcabcabcabc4",
+                    "upload": "/api/v2/policies/pol-Abcabcabcabcabc4/upload",
+                    "download": "/api/v2/policies/pol-Abcabcabcabcabc4/download"
+                }
+            }
+        ],
+        "links": {
+            "self": "https://app.terraform.io/api/v2/organizations/example-org-123Abc/policies?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+            "first": "https://app.terraform.io/api/v2/organizations/example-org-123Abc/policies?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+            "prev": null,
+            "next": null,
+            "last": "https://app.terraform.io/api/v2/organizations/example-org-123Abc/policies?page%5Bnumber%5D=1&page%5Bsize%5D=20"
+        },
+        "meta": {
+            "pagination": {
+                "current-page": 1,
+                "page-size": 20,
+                "prev-page": null,
+                "next-page": null,
+                "total-pages": 1,
+                "total-count": 1
+            }
+        }
+    },
+    "expected_results": {
+        "Type": 1,
+        "ContentsFormat": "json",
+        "Contents": {
+            "data": [
+                {
+                    "id": "pol-Abcabcabcabcabc4",
+                    "type": "policies",
+                    "attributes": {
+                        "name": "nat-policies",
+                        "description": null,
+                        "enforce": [
+                            {
+                                "path": "nat-policies.sentinel",
+                                "mode": "hard-mandatory"
+                            }
+                        ],
+                        "policy-set-count": 1,
+                        "updated-at": "2023-11-14T18:12:36.702Z",
+                        "kind": "sentinel",
+                        "enforcement-level": "hard-mandatory"
+                    },
+                    "relationships": {
+                        "organization": {
+                            "data": {
+                                "id": "example-org-123Abc",
+                                "type": "organizations"
+                            }
+                        },
+                        "policy-sets": {
+                            "data": [
+                                {
+                                    "id": "polset-Abcabcabcabcabc5",
+                                    "type": "policy-sets"
+                                }
+                            ]
+                        }
+                    },
+                    "links": {
+                        "self": "/api/v2/policies/pol-Abcabcabcabcabc4",
+                        "upload": "/api/v2/policies/pol-Abcabcabcabcabc4/upload",
+                        "download": "/api/v2/policies/pol-Abcabcabcabcabc4/download"
+                    }
+                }
+            ],
+            "links": {
+                "self": "https://app.terraform.io/api/v2/organizations/example-org-123Abc/policies?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+                "first": "https://app.terraform.io/api/v2/organizations/example-org-123Abc/policies?page%5Bnumber%5D=1&page%5Bsize%5D=20",
+                "prev": null,
+                "next": null,
+                "last": "https://app.terraform.io/api/v2/organizations/example-org-123Abc/policies?page%5Bnumber%5D=1&page%5Bsize%5D=20"
+            },
+            "meta": {
+                "pagination": {
+                    "current-page": 1,
+                    "page-size": 20,
+                    "prev-page": null,
+                    "next-page": null,
+                    "total-pages": 1,
+                    "total-count": 1
+                }
+            }
+        },
+        "HumanReadable": "### Terraform Policies\n|Kind|Organization id|Policy Set ids|Policy description|Policy id|Policy name|\n|---|---|---|---|---|---|\n| attributes.kind | relationships.organization.data.id | relationships.policy-sets.data.id | attributes.description | id | attributes.name |\n",
+        "EntryContext": {
+            "Terraform.Policy(val.id && val.id == obj.id)": [
+                {
+                    "id": "pol-Abcabcabcabcabc4",
+                    "type": "policies",
+                    "attributes": {
+                        "name": "nat-policies",
+                        "description": null,
+                        "enforce": [
+                            {
+                                "path": "nat-policies.sentinel",
+                                "mode": "hard-mandatory"
+                            }
+                        ],
+                        "policy-set-count": 1,
+                        "updated-at": "2023-11-14T18:12:36.702Z",
+                        "kind": "sentinel",
+                        "enforcement-level": "hard-mandatory"
+                    },
+                    "relationships": {
+                        "organization": {
+                            "data": {
+                                "id": "example-org-123Abc",
+                                "type": "organizations"
+                            }
+                        },
+                        "policy-sets": {
+                            "data": [
+                                {
+                                    "id": "polset-Abcabcabcabcabc5",
+                                    "type": "policy-sets"
+                                }
+                            ]
+                        }
+                    },
+                    "links": {
+                        "self": "/api/v2/policies/pol-Abcabcabcabcabc4",
+                        "upload": "/api/v2/policies/pol-Abcabcabcabcabc4/upload",
+                        "download": "/api/v2/policies/pol-Abcabcabcabcabc4/download"
+                    }
+                }
+            ]
+        },
+        "IndicatorTimeline": [],
+        "IgnoreAutoExtract": false,
+        "Note": false,
+        "Relationships": []
+    }
+}

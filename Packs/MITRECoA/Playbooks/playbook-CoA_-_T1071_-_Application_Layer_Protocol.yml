@@ -1,0 +1,450 @@
+description: "This playbook Remediates the Application Layer Protocol technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1071: Application Layer Protocol\n\nKill Chain phases:\n- Command And Control\n\nMITRE ATT&CK Description:\n\nAdversaries may communicate using application layer protocols to avoid detection/network filtering by blending in with existing traffic. Commands to the remote system, and often the results of those commands, will be embedded within the protocol traffic between the client and server.\n\nAdversaries may utilize many different protocols, including those used for web browsing, transferring files, electronic mail, or DNS. For connections that occur internally within an enclave (such as those between a proxy or pivot node and other nodes), commonly used protocols are SMB, SSH, or RDP.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+id: MITRE ATT&CK CoA - T1071 - Application Layer Protocol
+inputs:
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1071 - Application Layer Protocol
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c788e86d-60aa-42a4-84e5-c06a0cdb6977
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: c788e86d-60aa-42a4-84e5-c06a0cdb6977
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 380
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fdaa1d67-fe95-4d59-8fa0-5a5864501df2
+      iscommand: false
+      name: Block all unknown and unauthorized applications
+      type: title
+      version: -1
+      description: ''
+    taskid: fdaa1d67-fe95-4d59-8fa0-5a5864501df2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 540
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6e20144-f91a-4c6b-8e72-20e3d8985e57
+      iscommand: false
+      name: Deploy Anti-Spyware profiles with block action
+      type: title
+      version: -1
+      description: ''
+    taskid: a6e20144-f91a-4c6b-8e72-20e3d8985e57
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 860
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a0e116a4-ff3b-4369-8d0e-31225308482f
+      iscommand: false
+      name: Cortex XDR monitors for behavioral events indicative of command and control activity
+      type: title
+      version: -1
+      description: ''
+    taskid: a0e116a4-ff3b-4369-8d0e-31225308482f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1200
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Cortex XDR monitors for behavioral events indicative of command and control activity.
+      id: 1c067824-3f81-444b-8f89-3067a9fe92e1
+      iscommand: false
+      name: Cortex XDR monitors for behavioral events indicative of command and control activity
+      type: regular
+      version: -1
+    taskid: 1c067824-3f81-444b-8f89-3067a9fe92e1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1690
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 26214c1b-2ee3-4df3-85c2-235c3f766d1f
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 26214c1b-2ee3-4df3-85c2-235c3f766d1f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 2260
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70deae3d-84aa-4c1f-82c8-4529e27027c8
+      iscommand: false
+      name: PAN-OS - Block all unknown and unauthorized applications
+      playbookId: PAN-OS - Block all unknown and unauthorized applications
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 70deae3d-84aa-4c1f-82c8-4529e27027c8
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 680
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1071
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 3b48d71a-2c80-452b-8842-a7498e4ddae6
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 3b48d71a-2c80-452b-8842-a7498e4ddae6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1880
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This playbook enforces the Anti-Spyware Best Practices Profile as defined by Palo Alto Networks BPA.
+        The playbook performs the following tasks:
+        - Check for DNS Security license (If license is not activated, the playbook refers users to their Palo Alto Networks account manager for further instructions).
+        - Get the existing profile information.
+        - Get the best practices profile information.
+        - Check if the best practices profile set by Cortex XSOAR is enforced. (If not, the playbook allows the user to compare the existing profile with the best practices and decide on the action to take).
+        - Create best practices profile.
+        - Apply profile to policy rules on PAN-OS firewall or Panorama.
+      id: bfe9086f-6e21-4643-8e4e-dcedd4b9dbf0
+      iscommand: false
+      name: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+      playbookId: PAN-OS - Enforce Anti-Spyware Best Practices Profile
+      type: playbook
+      version: -1
+    taskid: bfe9086f-6e21-4643-8e4e-dcedd4b9dbf0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1010
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 845d0729-65bf-402c-872f-546c22b6f45c
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 845d0729-65bf-402c-872f-546c22b6f45c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1350
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: dfac40ae-0f8f-4366-8d26-db445f9977a6
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: dfac40ae-0f8f-4366-8d26-db445f9977a6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1310,
+          "y": 1520
+        }
+      }
+  "30":
+    continueonerror: true
+    id: "30"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: cc7c5dc8-f7fc-4713-8255-4aa29b619e3c
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: cc7c5dc8-f7fc-4713-8255-4aa29b619e3c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 2070
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1945,
+        "width": 700,
+        "x": 990,
+        "y": 380
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

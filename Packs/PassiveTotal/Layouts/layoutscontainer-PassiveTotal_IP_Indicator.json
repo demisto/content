@@ -1,0 +1,266 @@
+{
+    "description": "PassiveTotal IP Indicator Layout",
+    "group": "indicator",
+    "id": "PassiveTotal IP Indicator Layout",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 6,
+                        "i": "default-main-comments",
+                        "name": "Comments",
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "default-main-relatedIncidents",
+                        "name": "Related Incidents",
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "indicator-modified",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "expiration",
+                                "height": 22,
+                                "id": "indicator-expiration",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "indicator-timestamp",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Basic Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-indicatorTimeline",
+                        "name": "Timeline",
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-reputationStatus",
+                        "name": "Reputation Status",
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-expirationStatus",
+                        "name": "Expiration Status",
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-reputationSources",
+                        "name": "Reputation",
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 1,
+                        "y": 1
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-sources",
+                        "name": "Sources Data",
+                        "type": "sources",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "i": "default-main-e2c8c970-a09d-11e9-8956-390f602b039b",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "indicator-first-seen",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastseen",
+                                "height": 22,
+                                "id": "indicator-last-seen",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Related Incidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "4odgtrwvif",
+                "name": "PassiveTotal Enrichments",
+                "sections": [
+                    {
+                        "h": 3,
+                        "i": "4odgtrwvif-146df310-f2af-11ea-9015-fb9c52c37a11",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Components",
+                        "query": "RiskIQPassiveTotalComponentsWidgetScript",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "4odgtrwvif-5a802e90-f2af-11ea-9015-fb9c52c37a11",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Host Pairs - Parents",
+                        "query": "RiskIQPassiveTotalHostPairsParentsWidgetScript",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "h": 3,
+                        "i": "4odgtrwvif-647a80d0-f2af-11ea-9015-fb9c52c37a11",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Passive DNS",
+                        "query": "RiskIQPassiveTotalPDNSWidgetScript",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 3,
+                        "i": "4odgtrwvif-7533d070-f2af-11ea-9015-fb9c52c37a11",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Web Trackers",
+                        "query": "RiskIQPassiveTotalTrackersWidgetScript",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 3,
+                        "i": "4odgtrwvif-cc362300-f2af-11ea-9015-fb9c52c37a11",
+                        "items": [
+
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Host Pairs - Children",
+                        "query": "RiskIQPassiveTotalHostPairsChildrenWidgetScript",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamicIndicator",
+                        "w": 3,
+                        "x": 0,
+                        "y": 12
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "PassiveTotal IP Indicator Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

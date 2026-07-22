@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "QSS SOC Monitoring"
+    ],
+    "caseInsensitive": true,
+    "cliName": "qsscasetags",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_qsscasetags",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "QSS Case Tags",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "SOAR",
+        "Splunk SIEM"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "tagsSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

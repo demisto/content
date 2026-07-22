@@ -1,0 +1,23 @@
+{
+    "id": "FAKE1234-4321-FAKE-1234-FAKE4321FAKE",
+    "uri": "fake:fake:fake:localca:FAKE1234-4321-FAKE-1234-FAKE4321FAKE",
+    "account": "fake:fake:admin:accounts:fake",
+    "createdAt": "2024-05-30T08:18:18.088043Z",
+    "updatedAt": "2024-05-30T08:18:29.337972956Z",
+    "name": "local_ca_to_self_sign",
+    "state": "active",
+    "csr": "",
+    "cert": "-----BEGIN CERTIFICATE-----\nMIIFFFCCAvugAwIBAgIRAFKFAKE1LKF1FAKE1FKKAFKEKAWDQYJKoZIhvcNAQEL\nBQAwFAKELMAKGA1UEBhMCFKECzAJBgNVBAgTAKEKEDAWDgYDVQQHEwdKFakecamp\nFQ8wDQYDVQQKEwZFakeKxDDAKBgNVBAsTA1FakeGaMBgGA1UECxMRFakeK GrouF\nInKEKEQAPBgNVBAMTCkFakeylo.comMB4XDTI4KEFAK0908KE189VoXDTI9KEFAK\n0908KE189owFAKELMAKGA1UEBhMCFKECzAJBgNVBAgTAKEKEDAWDgYDVQQHEwdK\nFakecampFQ8wDQYDVQQKEwZFakeKxDDAKBgNVBAsTA1FakeGaMBgGA1UECxMRFakeK\nGroup InKEKEQAPBgNVBAMTCkFakeylo.comMIIFFIANBgkqhkiG9w0BAQEFAAOCFakeKE\nAAueyUWnFakeBFfhd+MJu9O5JYWEqW1CiM6KjFakeX+VCFV1C2FakeF04tkqb8hC\n9ps3Mc1acFakeXZTtcexBxsKne9ws6Mz+5FakeOuFakeR+/RFakeF45427kBxEWy\nCAY6FakeKEFakeKEaaOuFakeodlux/CmqFakeyWBAx70FakeurFakeWuuFakeS6X\nKFakeM5hBxfiFakeHR+FakFakeMjFipFakeyn5FakeMKEP1HfWEmgFakeJXFake\nrkHBw+5JNFakeFakeJmq9gnFakeymsH9ImGHFakeMnJZzAQ5NFakeLQ2/A3aFake\n7b4jVerFakeKEFakei/SFakeFptaUbZcgAFakeFakeFakeMkFakeJpjF4FakeFake\nIDFakeUIMe0AQIDAQFakeTIGQMA4GA1UdFakeBwQFakeFakeFakePBGFakeH/MB0G\nA1UdFakeWBBQFakeFakeFakeFakehFakeOTFakeFakeHREERFakeFakeFakeAFake\noFakeFakeKEFakeKEKEFakeKEKoFakeBAAFakeKEQBAP\n-----END CERTIFICATE-----\n",
+    "serialNumber": "FAKE198372648237462837469823746",
+    "subject": "/C=FK/ST=FK/L=Fakecamp/O=FakeK/OU=FakeD/OU=FakeK Group Inc./CN=fake.com",
+    "issuer": "/C=FK/ST=FK/L=Fakecamp/O=FakeK/OU=FakeD/OU=FakeK Group Inc./CN=fake.com",
+    "notBefore": "2024-05-29T08:18:29Z",
+    "notAfter": "2025-05-30T08:18:29Z",
+    "sha1Fingerprint": "FAKE1987FA24FA11KE98F690F6976FAD14AFAKE",
+    "sha256Fingerprint": "FAKE89BA7DF9724AEA0BA9AF1ECB35E3E9B99FAKE88FAKE624BFAKE843FF1FAKE",
+    "sha512Fingerprint": "FAKECA9D937A9162C00DB6FA2A22E02F4EC527FAKE58A7915A6E60",
+    "purpose": {
+        "client_authentication": "Enabled",
+        "user_authentication": "Enabled"
+    }
+}

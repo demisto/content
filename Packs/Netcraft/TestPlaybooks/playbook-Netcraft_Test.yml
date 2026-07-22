@@ -1,0 +1,315 @@
+id: Netcraft test
+version: -1
+name: Netcraft test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 14a38052-5da5-4f4a-8721-8395192b7e81
+    type: start
+    task:
+      id: 14a38052-5da5-4f4a-8721-8395192b7e81
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6239754b-682e-41fe-8a0e-1b6d2077734d
+    type: regular
+    task:
+      id: 6239754b-682e-41fe-8a0e-1b6d2077734d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: eb43210d-a955-4c53-8d93-740d4960357d
+    type: regular
+    task:
+      id: eb43210d-a955-4c53-8d93-740d4960357d
+      version: -1
+      name: Get takedown info
+      description: Get information on existing takedowns.
+      script: '|||netcraft-get-takedown-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      date_from: {}
+      id:
+        simple: "2071408"
+      ip: {}
+      region: {}
+      updated_since: {}
+      url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: dfd5dad7-b8d6-4a3d-88dc-7592d5efd36d
+    type: condition
+    task:
+      id: dfd5dad7-b8d6-4a3d-88dc-7592d5efd36d
+      version: -1
+      name: Verify takedown info was received
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Netcraft.Takedown.ID
+            iscontext: true
+          right:
+            value:
+              simple: "2071408"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 6bf8eea8-5ee0-47ec-841e-7d9d5a208e66
+    type: regular
+    task:
+      id: 6bf8eea8-5ee0-47ec-841e-7d9d5a208e66
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
+    type: regular
+    task:
+      id: 4b4b952e-cebe-40ec-86b5-80a8604d53dc
+      version: -1
+      name: Get takedown notes
+      description: Get notes for takedowns
+      script: '|||netcraft-get-takedown-notes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      author: {}
+      date_from: {}
+      date_to: {}
+      group_id: {}
+      takedown_id:
+        simple: "493542"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 940093e7-647b-44ea-8e15-40d6c51b3439
+    type: condition
+    task:
+      id: 940093e7-647b-44ea-8e15-40d6c51b3439
+      version: -1
+      name: Verify takedown notes were received
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: Netcraft.Takedown.Note.NoteID
+            iscontext: true
+          right:
+            value:
+              simple: "6011601"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: bdde794e-ca38-41ef-873e-a84851b13621
+    type: regular
+    task:
+      id: bdde794e-ca38-41ef-873e-a84851b13621
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 752dce56-5dab-40a1-8e74-c2b4f8390334
+    type: title
+    task:
+      id: 752dce56-5dab-40a1-8e74-c2b4f8390334
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)
+description: Deprecated. No available replacement.

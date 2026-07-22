@@ -1,0 +1,57 @@
+{
+  "watchlist_domains": [
+    {
+      "state": "watched",
+      "domain": "dummy.com",
+      "status": "active",
+      "discovered_date": "2023-01-08T09:30:17.152000+00:00",
+      "changed_date": "2023-01-08T09:32:08.000000+00:00",
+      "risk_score": 99,
+      "risk_score_status": "provisional",
+      "risk_score_components": {
+        "proximity": 7,
+        "threat_profile": {
+          "phishing": 99
+        }
+      },
+      "mx_exists": false,
+      "tld": "com",
+      "id": "8WDDvblGxW",
+      "escalations": [
+        {
+          "escalation_type": "blocked",
+          "id": "kzbwa0DEy2",
+          "created": "2023-01-08T09:59:46.450041+00:00",
+          "created_by": "user@example.com"
+        }
+      ],
+      "monitor_ids": [
+        "rA7bn46jQ3"
+      ],
+      "assigned_by": "user@example.com",
+      "assigned_date": "2023-01-08T09:59:46.000000+00:00",
+      "registrant_contact_email": [
+        "select contact domain holder link at https://www.dummy.com/whois/results.aspx?domain=dummy.com"
+      ],
+      "name_server": [
+        {
+          "host": "ns70.dummy.com"
+        },
+        {
+          "host": "ns69.dummy.com"
+        }
+      ],
+      "registrar": "dummy.com, LLC",
+      "create_date": 20230107,
+      "ip": [
+        {
+          "country_code": "hk",
+          "ip": "1.1.1.1",
+          "isp": "7f Block B Billion Centre"
+        }
+      ]
+    }
+  ],
+  "total_count": 1,
+  "count": 1
+}

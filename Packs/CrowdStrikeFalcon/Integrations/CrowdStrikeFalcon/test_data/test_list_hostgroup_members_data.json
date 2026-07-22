@@ -1,0 +1,568 @@
+{
+    "meta": {
+        "query_time": 1.95e-7,
+        "pagination": {
+            "offset": 5,
+            "limit": 100,
+            "total": 5
+        },
+        "trace_id": "1aeb689a-fdd0-462c-a28b-1e9235542265"
+    },
+    "errors": [],
+    "resources": [
+        {
+            "device_id": "75b2dba7ba8d450da481ed6830cc9d9d",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "agent_load_flags": "1",
+            "agent_local_time": "2021-08-13T03:58:16.323Z",
+            "agent_version": "6.26.14003.0",
+            "bios_manufacturer": "Google",
+            "bios_version": "Google",
+            "build_number": "17763",
+            "config_id_base": "65994753",
+            "config_id_build": "14003",
+            "config_id_platform": "3",
+            "cpu_signature": "198384",
+            "external_ip": "35.224.136.145",
+            "mac_address": "42-01-0a-80-00-15",
+            "instance_id": "3293846594733507761",
+            "service_provider": "GCP",
+            "service_provider_account_id": "564609343865",
+            "hostname": "FALCON-CROWDSTR",
+            "first_seen": "2021-08-12T16:13:26Z",
+            "last_seen": "2021-08-23T04:59:48Z",
+            "local_ip": "10.128.0.21",
+            "major_version": "10",
+            "minor_version": "0",
+            "os_version": "Windows Server 2019",
+            "platform_id": "0",
+            "platform_name": "Windows",
+            "policies": [
+                {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-08-12T16:14:43.184607522Z",
+                    "applied_date": "2021-08-12T16:14:52.303842766Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                }
+            ],
+            "reduced_functionality_mode": "no",
+            "device_policies": {
+                "prevention": {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-08-12T16:14:43.184607522Z",
+                    "applied_date": "2021-08-12T16:14:52.303842766Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                },
+                "sensor_update": {
+                    "policy_type": "sensor-update",
+                    "policy_id": "d3af78bb65be44abb97484a4a6dde15d",
+                    "applied": true,
+                    "settings_hash": "tagged|1;101",
+                    "assigned_date": "2021-08-12T16:20:35.080426796Z",
+                    "applied_date": "2021-08-12T16:22:14.695391866Z",
+                    "uninstall_protection": "ENABLED"
+                },
+                "device_control": {
+                    "policy_type": "device-control",
+                    "policy_id": "2eb87e60c3604b769c4fbfac20321011",
+                    "applied": true,
+                    "assigned_date": "2021-08-12T16:14:43.184591112Z",
+                    "applied_date": "2021-08-12T16:14:52.77093029Z"
+                },
+                "global_config": {
+                    "policy_type": "globalconfig",
+                    "policy_id": "e37c8333d2a24a02b787eba7d6015880",
+                    "applied": true,
+                    "settings_hash": "219a232d",
+                    "assigned_date": "2021-08-13T04:01:55.772597513Z",
+                    "applied_date": "2021-08-13T04:03:34.828121272Z"
+                },
+                "remote_response": {
+                    "policy_type": "remote-response",
+                    "policy_id": "f825fe39c38444d6aaef4a506a6b30ad",
+                    "applied": true,
+                    "settings_hash": "5aa2f5b",
+                    "assigned_date": "2021-08-12T16:14:43.18461434Z",
+                    "applied_date": "2021-08-12T16:14:51.89583608Z"
+                },
+                "firewall": {
+                    "policy_type": "firewall",
+                    "policy_id": "ce93c24ff59143259c55ba090680091d",
+                    "applied": true,
+                    "assigned_date": "2021-08-12T16:14:43.184630588Z",
+                    "applied_date": "2021-08-12T16:14:52.115637247Z",
+                    "rule_set_id": "ce93c24ff59143259c55ba090680091d"
+                }
+            },
+            "groups": [
+                "1fc2e6e1e9c24c5d8d9ce52a9fa8e507",
+                "d99b77530ef34a6a8718a60817d72a8f"
+            ],
+            "group_hash": "44bc233980a9e500d7ea8eb61064d60fe68bc46699f206d6f5ad6df44c461486",
+            "product_type": "3",
+            "product_type_desc": "Server",
+            "provision_status": "Provisioned",
+            "serial_number": "GoogleCloud-4BFE83AC0B49D497BC94B053718181C9",
+            "service_pack_major": "0",
+            "service_pack_minor": "0",
+            "pointer_size": "8",
+            "status": "normal",
+            "system_manufacturer": "Google",
+            "system_product_name": "Google Compute Engine",
+            "tags": [],
+            "modified_timestamp": "2021-08-23T04:59:49Z",
+            "slow_changing_modified_timestamp": "2021-08-23T04:59:49Z",
+            "meta": {
+                "version": "828"
+            },
+            "zone_group": "projects/564609343865/zones/us-central1-a"
+        },
+        {
+            "device_id": "15dbb9d8f06b45fe9f61eb46e829d986",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "agent_load_flags": "0",
+            "agent_local_time": "2021-08-11T22:32:57.642Z",
+            "agent_version": "6.26.14003.0",
+            "bios_manufacturer": "Google",
+            "bios_version": "Google",
+            "build_number": "17763",
+            "config_id_base": "65994753",
+            "config_id_build": "14003",
+            "config_id_platform": "3",
+            "cpu_signature": "198384",
+            "external_ip": "35.224.136.145",
+            "mac_address": "42-01-0a-80-00-07",
+            "instance_id": "5278723767695872635",
+            "service_provider": "GCP",
+            "service_provider_account_id": "564609343865",
+            "hostname": "FALCON-CROWDSTR",
+            "first_seen": "2020-02-10T12:40:18Z",
+            "last_seen": "2021-08-23T11:32:27Z",
+            "local_ip": "10.128.0.7",
+            "major_version": "10",
+            "minor_version": "0",
+            "os_version": "Windows Server 2019",
+            "platform_id": "0",
+            "platform_name": "Windows",
+            "policies": [
+                {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-01-18T15:53:42.071042118Z",
+                    "applied_date": "2021-01-18T15:58:42.399432715Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                }
+            ],
+            "reduced_functionality_mode": "no",
+            "device_policies": {
+                "prevention": {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-01-18T15:53:42.071042118Z",
+                    "applied_date": "2021-01-18T15:58:42.399432715Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                },
+                "sensor_update": {
+                    "policy_type": "sensor-update",
+                    "policy_id": "d3af78bb65be44abb97484a4a6dde15d",
+                    "applied": true,
+                    "settings_hash": "tagged|1;101",
+                    "assigned_date": "2021-08-11T22:28:18.83940543Z",
+                    "applied_date": "2021-08-11T22:35:55.091473402Z",
+                    "uninstall_protection": "ENABLED"
+                },
+                "device_control": {
+                    "policy_type": "device-control",
+                    "policy_id": "2eb87e60c3604b769c4fbfac20321011",
+                    "applied": true,
+                    "assigned_date": "2021-02-12T20:57:52.928820495Z",
+                    "applied_date": "2021-02-12T21:03:08.554730017Z"
+                },
+                "global_config": {
+                    "policy_type": "globalconfig",
+                    "policy_id": "e37c8333d2a24a02b787eba7d6015880",
+                    "applied": true,
+                    "settings_hash": "219a232d",
+                    "assigned_date": "2021-08-11T22:39:44.144986671Z",
+                    "applied_date": "2021-08-11T22:44:01.027213412Z"
+                },
+                "remote_response": {
+                    "policy_type": "remote-response",
+                    "policy_id": "f825fe39c38444d6aaef4a506a6b30ad",
+                    "applied": true,
+                    "settings_hash": "5aa2f5b",
+                    "assigned_date": "2020-11-14T20:38:27.150769027Z",
+                    "applied_date": "2020-11-14T20:39:37.923730468Z"
+                },
+                "firewall": {
+                    "policy_type": "firewall",
+                    "policy_id": "ce93c24ff59143259c55ba090680091d",
+                    "applied": true,
+                    "assigned_date": "2021-03-09T15:32:08.370445318Z",
+                    "applied_date": "2021-03-09T15:37:32.98065256Z",
+                    "rule_set_id": "ce93c24ff59143259c55ba090680091d"
+                }
+            },
+            "groups": [
+                "1fc2e6e1e9c24c5d8d9ce52a9fa8e507",
+                "d99b77530ef34a6a8718a60817d72a8f"
+            ],
+            "group_hash": "44bc233980a9e500d7ea8eb61064d60fe68bc46699f206d6f5ad6df44c461486",
+            "product_type": "3",
+            "product_type_desc": "Server",
+            "provision_status": "Provisioned",
+            "serial_number": "GoogleCloud-2B07BF97E8ED43183F868AFBA20C6C3D",
+            "service_pack_major": "0",
+            "service_pack_minor": "0",
+            "pointer_size": "8",
+            "status": "contained",
+            "system_manufacturer": "Google",
+            "system_product_name": "Google Compute Engine",
+            "tags": [],
+            "modified_timestamp": "2021-08-23T11:33:08Z",
+            "slow_changing_modified_timestamp": "2021-08-23T10:35:20Z",
+            "meta": {
+                "version": "34499"
+            },
+            "zone_group": "projects/564609343865/zones/us-central1-a"
+        },
+        {
+            "device_id": "046761c46ec84f40b27b6f79ce7cd32c",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "agent_load_flags": "1",
+            "agent_local_time": "2021-08-23T05:04:28.938Z",
+            "agent_version": "6.26.14003.0",
+            "bios_manufacturer": "Google",
+            "bios_version": "Google",
+            "build_number": "17763",
+            "config_id_base": "65994753",
+            "config_id_build": "14003",
+            "config_id_platform": "3",
+            "cpu_signature": "198384",
+            "external_ip": "35.224.136.145",
+            "mac_address": "42-01-0a-80-00-14",
+            "instance_id": "8415755636796452136",
+            "service_provider": "GCP",
+            "service_provider_account_id": "564609343865",
+            "hostname": "INSTANCE-1",
+            "first_seen": "2021-08-23T05:04:41Z",
+            "last_seen": "2021-08-23T11:16:44Z",
+            "local_ip": "10.128.0.20",
+            "major_version": "10",
+            "minor_version": "0",
+            "os_version": "Windows Server 2019",
+            "platform_id": "0",
+            "platform_name": "Windows",
+            "policies": [
+                {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-08-23T05:06:25.129722104Z",
+                    "applied_date": "2021-08-23T05:07:33.124138927Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                }
+            ],
+            "reduced_functionality_mode": "no",
+            "device_policies": {
+                "prevention": {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-08-23T05:06:25.129722104Z",
+                    "applied_date": "2021-08-23T05:07:33.124138927Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                },
+                "sensor_update": {
+                    "policy_type": "sensor-update",
+                    "policy_id": "d3af78bb65be44abb97484a4a6dde15d",
+                    "applied": true,
+                    "settings_hash": "tagged|1;101",
+                    "assigned_date": "2021-08-23T05:06:25.129701756Z",
+                    "applied_date": "2021-08-23T05:07:33.146402665Z",
+                    "uninstall_protection": "ENABLED"
+                },
+                "device_control": {
+                    "policy_type": "device-control",
+                    "policy_id": "2eb87e60c3604b769c4fbfac20321011",
+                    "applied": true,
+                    "assigned_date": "2021-08-23T05:06:25.129710899Z",
+                    "applied_date": "2021-08-23T05:07:33.170314944Z"
+                },
+                "global_config": {
+                    "policy_type": "globalconfig",
+                    "policy_id": "e37c8333d2a24a02b787eba7d6015880",
+                    "applied": true,
+                    "settings_hash": "219a232d",
+                    "assigned_date": "2021-08-23T05:06:25.129706746Z",
+                    "applied_date": "2021-08-23T05:07:33.194740562Z"
+                },
+                "remote_response": {
+                    "policy_type": "remote-response",
+                    "policy_id": "f825fe39c38444d6aaef4a506a6b30ad",
+                    "applied": true,
+                    "settings_hash": "5aa2f5b",
+                    "assigned_date": "2021-08-23T05:06:25.129715982Z",
+                    "applied_date": "2021-08-23T05:07:33.225464657Z"
+                },
+                "firewall": {
+                    "policy_type": "firewall",
+                    "policy_id": "ce93c24ff59143259c55ba090680091d",
+                    "applied": true,
+                    "assigned_date": "2021-08-23T05:12:18.115770613Z",
+                    "applied_date": "2021-08-23T05:14:22.543995665Z",
+                    "rule_set_id": "ce93c24ff59143259c55ba090680091d"
+                }
+            },
+            "groups": [],
+            "group_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "product_type": "3",
+            "product_type_desc": "Server",
+            "provision_status": "Provisioned",
+            "serial_number": "GoogleCloud-B207E56B4AE91D3C50828DFBE750825D",
+            "service_pack_major": "0",
+            "service_pack_minor": "0",
+            "pointer_size": "8",
+            "status": "normal",
+            "system_manufacturer": "Google",
+            "system_product_name": "Google Compute Engine",
+            "tags": [],
+            "modified_timestamp": "2021-08-23T11:17:40Z",
+            "slow_changing_modified_timestamp": "2021-08-23T11:04:46Z",
+            "meta": {
+                "version": "29"
+            },
+            "zone_group": "projects/564609343865/zones/us-central1-a"
+        },
+        {
+            "device_id": "07007dd3f95c4d628fb097072bf7f7f3",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "agent_load_flags": "1",
+            "agent_local_time": "2021-08-12T19:23:19.338Z",
+            "agent_version": "6.26.14003.0",
+            "bios_manufacturer": "Google",
+            "bios_version": "Google",
+            "build_number": "17763",
+            "config_id_base": "65994753",
+            "config_id_build": "14003",
+            "config_id_platform": "3",
+            "cpu_signature": "198384",
+            "external_ip": "35.224.136.145",
+            "mac_address": "42-01-0a-80-00-14",
+            "instance_id": "8415755636796452136",
+            "service_provider": "GCP",
+            "service_provider_account_id": "564609343865",
+            "hostname": "INSTANCE-1",
+            "first_seen": "2021-08-11T13:57:29Z",
+            "last_seen": "2021-08-23T04:45:37Z",
+            "local_ip": "10.128.0.20",
+            "major_version": "10",
+            "minor_version": "0",
+            "os_version": "Windows Server 2019",
+            "platform_id": "0",
+            "platform_name": "Windows",
+            "policies": [
+                {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-08-11T13:58:38.025840385Z",
+                    "applied_date": "2021-08-11T13:59:17.075917556Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                }
+            ],
+            "reduced_functionality_mode": "no",
+            "device_policies": {
+                "prevention": {
+                    "policy_type": "prevention",
+                    "policy_id": "599b3a36b08c4dd4ba2668ccf15f4ed9",
+                    "applied": true,
+                    "settings_hash": "eb3f349c",
+                    "assigned_date": "2021-08-11T13:58:38.025840385Z",
+                    "applied_date": "2021-08-11T13:59:17.075917556Z",
+                    "rule_groups": [
+                        "834ec379b09248cb857a13fd5d647cf0"
+                    ]
+                },
+                "sensor_update": {
+                    "policy_type": "sensor-update",
+                    "policy_id": "d3af78bb65be44abb97484a4a6dde15d",
+                    "applied": true,
+                    "settings_hash": "tagged|1;101",
+                    "assigned_date": "2021-08-11T22:27:03.576170277Z",
+                    "applied_date": "2021-08-11T22:31:58.94139593Z",
+                    "uninstall_protection": "ENABLED"
+                },
+                "device_control": {
+                    "policy_type": "device-control",
+                    "policy_id": "2eb87e60c3604b769c4fbfac20321011",
+                    "applied": true,
+                    "assigned_date": "2021-08-11T13:58:38.025852467Z",
+                    "applied_date": "2021-08-11T13:59:17.297078504Z"
+                },
+                "global_config": {
+                    "policy_type": "globalconfig",
+                    "policy_id": "e37c8333d2a24a02b787eba7d6015880",
+                    "applied": true,
+                    "settings_hash": "219a232d",
+                    "assigned_date": "2021-08-12T19:26:57.868322866Z",
+                    "applied_date": "2021-08-12T19:28:41.189760681Z"
+                },
+                "remote_response": {
+                    "policy_type": "remote-response",
+                    "policy_id": "f825fe39c38444d6aaef4a506a6b30ad",
+                    "applied": true,
+                    "settings_hash": "5aa2f5b",
+                    "assigned_date": "2021-08-11T13:58:38.025833245Z",
+                    "applied_date": "2021-08-11T13:59:17.8723749Z"
+                },
+                "firewall": {
+                    "policy_type": "firewall",
+                    "policy_id": "ce93c24ff59143259c55ba090680091d",
+                    "applied": true,
+                    "assigned_date": "2021-08-11T13:58:38.025845223Z",
+                    "applied_date": "2021-08-11T13:59:16.896699093Z",
+                    "rule_set_id": "ce93c24ff59143259c55ba090680091d"
+                }
+            },
+            "groups": [],
+            "group_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "product_type": "3",
+            "product_type_desc": "Server",
+            "provision_status": "Provisioned",
+            "serial_number": "GoogleCloud-02EC25D26444FEF5AFE5F7D3B016AC47",
+            "service_pack_major": "0",
+            "service_pack_minor": "0",
+            "pointer_size": "8",
+            "status": "normal",
+            "system_manufacturer": "Google",
+            "system_product_name": "Google Compute Engine",
+            "tags": [],
+            "modified_timestamp": "2021-08-23T04:45:40Z",
+            "slow_changing_modified_timestamp": "2021-08-23T04:24:33Z",
+            "meta": {
+                "version": "956"
+            },
+            "zone_group": "projects/564609343865/zones/us-central1-a"
+        },
+        {
+            "device_id": "0bde2c4645294245aca522971ccc44c4",
+            "cid": "20879a8064904ecfbb62c118a6a19411",
+            "agent_load_flags": "0",
+            "agent_local_time": "2021-08-08T11:35:05.989Z",
+            "agent_version": "6.25.12207.0",
+            "bios_manufacturer": "Google",
+            "bios_version": "Google",
+            "config_id_base": "65994753",
+            "config_id_build": "12207",
+            "config_id_platform": "8",
+            "cpu_signature": "198384",
+            "external_ip": "35.224.136.145",
+            "mac_address": "42-01-0a-80-00-13",
+            "instance_id": "7439962612154109441",
+            "service_provider": "GCP",
+            "service_provider_account_id": "564609343865",
+            "hostname": "falcon-crowdstrike-sensor-centos7",
+            "first_seen": "2021-08-08T11:33:21Z",
+            "last_seen": "2021-08-23T11:14:36Z",
+            "local_ip": "10.128.0.19",
+            "major_version": "3",
+            "minor_version": "10",
+            "os_version": "CentOS 7.9",
+            "platform_id": "3",
+            "platform_name": "Linux",
+            "policies": [
+                {
+                    "policy_type": "prevention",
+                    "policy_id": "2a47e83404424e4fa4204160efcaab5e",
+                    "applied": true,
+                    "settings_hash": "d4cbb29",
+                    "assigned_date": "2021-08-08T11:34:32.474354135Z",
+                    "applied_date": "2021-08-08T11:34:53.617741661Z",
+                    "rule_groups": []
+                }
+            ],
+            "reduced_functionality_mode": "no",
+            "device_policies": {
+                "prevention": {
+                    "policy_type": "prevention",
+                    "policy_id": "2a47e83404424e4fa4204160efcaab5e",
+                    "applied": true,
+                    "settings_hash": "d4cbb29",
+                    "assigned_date": "2021-08-08T11:34:32.474354135Z",
+                    "applied_date": "2021-08-08T11:34:53.617741661Z",
+                    "rule_groups": []
+                },
+                "sensor_update": {
+                    "policy_type": "sensor-update",
+                    "policy_id": "c87b0bd84441408e967c7190d083b34e",
+                    "applied": true,
+                    "settings_hash": "tagged|5;",
+                    "assigned_date": "2021-08-08T11:34:32.474362525Z",
+                    "applied_date": "2021-08-08T11:36:48.61203446Z",
+                    "uninstall_protection": "UNKNOWN"
+                },
+                "global_config": {
+                    "policy_type": "globalconfig",
+                    "policy_id": "b0ed04f7097f48c8875df57c58c4c5b6",
+                    "applied": true,
+                    "settings_hash": "77690c0d",
+                    "assigned_date": "2021-08-08T11:35:06.584871631Z",
+                    "applied_date": "2021-08-08T11:36:48.460140604Z"
+                },
+                "remote_response": {
+                    "policy_type": "remote-response",
+                    "policy_id": "255d4887829941268c9f2e5e6877657e",
+                    "applied": true,
+                    "settings_hash": "17550b92",
+                    "assigned_date": "2021-08-08T11:34:32.474343173Z",
+                    "applied_date": "2021-08-08T11:34:53.507401792Z"
+                }
+            },
+            "groups": [
+                "4902d5686bed41ba88a37439f38913ba"
+            ],
+            "group_hash": "f52d90fab48ceb18186cc9e804152a682102f1878579faaee298d6900faaf4d8",
+            "product_type_desc": "Server",
+            "provision_status": "NotProvisioned",
+            "serial_number": "GoogleCloud-A08065CD718B9821F8CDA1989A8D65AE",
+            "status": "normal",
+            "system_manufacturer": "Google",
+            "system_product_name": "Google Compute Engine",
+            "tags": [],
+            "modified_timestamp": "2021-08-23T11:15:08Z",
+            "slow_changing_modified_timestamp": "2021-08-23T10:36:38Z",
+            "meta": {
+                "version": "1195"
+            },
+            "zone_group": "projects/564609343865/zones/us-central1-a"
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "id": "incident_hackeronereportdisclosedat",
+    "version": -1,
+    "modified": "2021-08-25T19:34:24.226504087+05:30",
+    "name": "HackerOne Report Disclosed At",
+    "ownerOnly": false,
+    "description": "The date and time the report was disclosed. Formatted according to ISO 8601.",
+    "cliName": "hackeronereportdisclosedat",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "HackerOne Report"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: azure_events_hub_modeling_rule
+name: Azure Events Hub Modeling Rule
+rules: ''
+schema: ''
+supportedModules:
+- xsiam
+tags: Azure Events Hub

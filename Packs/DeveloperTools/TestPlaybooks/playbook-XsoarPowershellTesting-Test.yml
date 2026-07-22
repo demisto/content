@@ -1,0 +1,601 @@
+id: XsoarPowershellTesting-Test
+version: -1
+name: XsoarPowershellTesting-Test
+description: This playbook test basic powershell XSOAR server functionallity.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0b2eed7c-7659-41d7-8166-c36a6450fe56
+    type: start
+    task:
+      id: 0b2eed7c-7659-41d7-8166-c36a6450fe56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d0f2274f-76f9-4a1e-89f2-a90497b7913b
+    type: regular
+    task:
+      id: d0f2274f-76f9-4a1e-89f2-a90497b7913b
+      version: -1
+      name: Set integration context
+      description: Set integration context.
+      script: '|||pwsh-test-set-integration-context'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3cde8e74-f9e6-4a82-81fb-4ddd4ca6684a
+    type: regular
+    task:
+      id: 3cde8e74-f9e6-4a82-81fb-4ddd4ca6684a
+      version: -1
+      name: Get integration context
+      description: Get integration context.
+      script: '|||pwsh-test-get-integration-context'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 37f1783c-7eba-414e-8ea5-4fc7f5250a6f
+    type: condition
+    task:
+      id: 37f1783c-7eba-414e-8ea5-4fc7f5250a6f
+      version: -1
+      name: Check integration context set/get value
+      description: Check integration context setup succesfully and retrieve succesfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: XSOAR.IntegrationContext.Value
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f2ce1836-a560-4817-8257-c053ae599812
+    type: title
+    task:
+      id: f2ce1836-a560-4817-8257-c053ae599812
+      version: -1
+      name: Finished succefully
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f5e8b81d-e1f6-4804-8078-d1b81983da8d
+    type: regular
+    task:
+      id: f5e8b81d-e1f6-4804-8078-d1b81983da8d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 52eb9e4a-3460-42a1-8a15-562d515889ac
+    type: regular
+    task:
+      id: 52eb9e4a-3460-42a1-8a15-562d515889ac
+      version: -1
+      name: Get integration versioned context
+      description: Get integration versioned context.
+      script: '|||pwsh-test-get-integration-versioned-context'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d839d6ff-7f9e-44f3-82c4-f6bec523577a
+    type: regular
+    task:
+      id: d839d6ff-7f9e-44f3-82c4-f6bec523577a
+      version: -1
+      name: Set integration vesioned context
+      description: Set integration context with version.
+      script: '|||pwsh-test-set-integration-versioned-context'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      value:
+        simple: Second Value
+      version:
+        complex:
+          root: PrevVersion
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 90f3c2e7-2d92-43b6-8eb4-3893a4f44b1c
+    type: condition
+    task:
+      id: 90f3c2e7-2d92-43b6-8eb4-3893a4f44b1c
+      version: -1
+      name: Check integration context was updated
+      description: Check integration context setup succesfully and retrieve succesfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: XSOAR.IntegrationContext.Value
+            iscontext: true
+          right:
+            value:
+              simple: Second Value
+      - - operator: greaterThan
+          left:
+            value:
+              simple: XSOAR.Version
+            iscontext: true
+          right:
+            value:
+              simple: PrevVersion
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: aae53ed9-764d-4ee0-8b63-c54f93bbaacd
+    type: regular
+    task:
+      id: aae53ed9-764d-4ee0-8b63-c54f93bbaacd
+      version: -1
+      name: Get integration versioned context
+      description: Get integration versioned context.
+      script: '|||pwsh-test-get-integration-versioned-context'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 65232a92-8703-426a-8196-7d9036f9f05e
+    type: condition
+    task:
+      id: 65232a92-8703-426a-8196-7d9036f9f05e
+      version: -1
+      name: Verify Results
+      description: Check integration context setup succesfully and retrieve succesfully.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOAR.IntegrationContext.Value
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR.IntegrationContext.Value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 80dc25aa-b2fd-45ed-898c-a76cd9602765
+    type: regular
+    task:
+      id: 80dc25aa-b2fd-45ed-898c-a76cd9602765
+      version: -1
+      name: Set
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: PrevVersion
+      value:
+        simple: ${XSOAR.Version}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3cd84a1a-1a8d-404e-87fe-b42ab60c9a94
+    type: regular
+    task:
+      id: 3cd84a1a-1a8d-404e-87fe-b42ab60c9a94
+      version: -1
+      name: Get demisto server
+      description: Return the Demisto server version.
+      scriptName: DemistoVersion
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c243daec-02d7-44c8-821d-b3770e476ce4
+    type: condition
+    task:
+      id: c243daec-02d7-44c8-821d-b3770e476ce4
+      version: -1
+      name: Verify versioned context is available
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: DemistoVersion.version
+            iscontext: true
+          right:
+            value:
+              simple: "6."
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3ae4c12d-88d0-450f-8efe-f3aa26990828
+    type: regular
+    task:
+      id: 3ae4c12d-88d0-450f-8efe-f3aa26990828
+      version: -1
+      name: Set integration outdated vesioned context
+      description: Set integration context with version.
+      script: '|||pwsh-test-set-integration-versioned-context'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      value:
+        simple: Second Value
+      version:
+        complex:
+          root: PrevVersion
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b719ada1-be5a-4480-8594-8239b6d416cc
+    type: condition
+    task:
+      id: b719ada1-be5a-4480-8594-8239b6d416cc
+      version: -1
+      name: Verify error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2660,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: value
+  value:
+    simple: test
+  required: true
+  description: Value to set in integration context
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.5.0
+marketplaces:
+  - xsoar

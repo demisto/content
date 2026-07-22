@@ -1,0 +1,171 @@
+id: CBFindIP - Test
+version: -1
+name: CBFindIP - Test
+starttaskid: "0"
+description: ""
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: 11ee419a-12a9-4c9a-8064-661025b9413c
+    type: start
+    task:
+      description: ""
+      id: 11ee419a-12a9-4c9a-8064-661025b9413c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: f9c6da92-d6e1-4a7f-8de2-0474ae4fc01f
+    type: regular
+    task:
+      id: f9c6da92-d6e1-4a7f-8de2-0474ae4fc01f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 86ab5275-9919-4f4d-8290-324fe01bb228
+    type: regular
+    task:
+      id: 86ab5275-9919-4f4d-8290-324fe01bb228
+      version: -1
+      name: Find IP
+      description: Search Carbon Black for connection to specified IP address(es).
+      scriptName: CBFindIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: fd769a21-e039-49d1-8f17-2fa528084b89
+    type: condition
+    task:
+      description: ""
+      id: fd769a21-e039-49d1-8f17-2fa528084b89
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Process
+                accessor: PID
+                transformers:
+                - operator: GetFirstObject
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a85785c4-6612-447c-873f-142d418f61f0
+    type: title
+    task:
+      description: ""
+      id: a85785c4-6612-447c-873f-142d418f61f0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

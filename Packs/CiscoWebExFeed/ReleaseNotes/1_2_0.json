@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": " The 'indicator_type' argument of the 'webex-get-indicators' command used to include the following options: 'Both', 'IPs','URLs'. For accuracy reasons, in the new version these were replaced by:  'Both', 'CIDR', 'DOMAIN'. In addition, the playbook 'Check Webex Feed' will become deprecated."
+}

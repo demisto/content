@@ -1,0 +1,331 @@
+id: ACTI Indicator Enrichment
+version: -1
+name: ACTI Indicator Enrichment
+description: Deprecated. No available replacement.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: eb9c9546-178d-4c18-8f0f-870e82981c7a
+    type: start
+    task:
+      id: eb9c9546-178d-4c18-8f0f-870e82981c7a
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+      - '6'
+      - '7'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 5069f263-0f81-45c7-877a-1b3c2a889a33
+    type: regular
+    task:
+      id: 5069f263-0f81-45c7-877a-1b3c2a889a33
+      version: -1
+      name: ACTI IP Enrichment
+      description: Checks the reputation of the given IP address.
+      script: ACTI Indicator Query|||ip
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      ip:
+        simple: ${inputs.IP_Pre_Enrich}
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 9f3afc15-29f3-4b78-86c9-c77251735d1f
+    type: regular
+    task:
+      id: 9f3afc15-29f3-4b78-86c9-c77251735d1f
+      version: -1
+      name: ACTI Domain Enrichment
+      description: Checks the reputation of the given domain.
+      script: ACTI Indicator Query|||domain
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      domain:
+        simple: ${inputs.Domain_Pre_Enrich}
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 36a9f602-9202-4ed9-86a4-9289030134ca
+    type: regular
+    task:
+      id: 36a9f602-9202-4ed9-86a4-9289030134ca
+      version: -1
+      name: ACTI URL Enrichment
+      description: Checks the reputation of the given URL.
+      script: ACTI Indicator Query|||url
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      url:
+        simple: ${inputs.URL_Pre_Enrich}
+    reputationcalc: 3
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: af197b76-f9d9-4cd0-8f04-76d356721ac1
+    type: title
+    task:
+      id: af197b76-f9d9-4cd0-8f04-76d356721ac1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: a801c2a3-4161-40f4-8a75-0a67812c5a8c
+    type: condition
+    task:
+      id: a801c2a3-4161-40f4-8a75-0a67812c5a8c
+      version: -1
+      name: IP Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '4'
+      yes:
+      - '1'
+    scriptarguments:
+      value:
+        simple: ${inputs.IP_Pre_Enrich}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 9d0d5b89-a5b1-41ba-8934-baee187ad3ec
+    type: condition
+    task:
+      id: 9d0d5b89-a5b1-41ba-8934-baee187ad3ec
+      version: -1
+      name: URL Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '4'
+      yes:
+      - '3'
+    scriptarguments:
+      value:
+        simple: ${inputs.URL_Pre_Enrich}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: bd629917-ce9f-45f0-8cfc-39c8f1640f4b
+    type: condition
+    task:
+      id: bd629917-ce9f-45f0-8cfc-39c8f1640f4b
+      version: -1
+      name: Domain Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '4'
+      yes:
+      - '2'
+    scriptarguments:
+      value:
+        simple: ${inputs.Domain_Pre_Enrich}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 625,
+        "width": 1240,
+        "x": 50,
+        "y": -190
+      }
+    }
+  }
+inputs:
+- key: IP_Pre_Enrich
+  value:
+    simple: ${IP.Address}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Domain_Pre_Enrich
+  value:
+    simple: ${Domain.Name}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: URL_Pre_Enrich
+  value:
+    simple: ${URL.Data}
+  required: false
+  description: ''
+  playbookInputQuery:
+outputs:
+- contextPath: IP
+  type: unknown
+  description: ''
+- contextPath: DBotScore
+  type: unknown
+  description: ''
+- contextPath: Domain
+  type: unknown
+  description: ''
+- contextPath: URL
+  type: unknown
+  description: ''
+- contextPath: intelligence_alerts
+  type: unknown
+  description: ''
+- contextPath: intelligence_reports
+  type: unknown
+  description: ''
+tests:
+- No tests (deprecated)
+fromversion: 6.0.0
+deprecated: true

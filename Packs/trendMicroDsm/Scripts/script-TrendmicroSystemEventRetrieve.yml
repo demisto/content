@@ -1,0 +1,83 @@
+commonfields:
+  id: TrendmicroSystemEventRetrieve
+  version: -1
+name: TrendmicroSystemEventRetrieve
+script: >2
+
+  resp = demisto.executeCommand("trendmicro-system-event-retrieve", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.systemEventRetrieveReturn.systemEvents.item")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- Trend Micro
+deprecated: true
+comment: Deprecated. No available replacement.
+system: true
+args:
+- name: rangeFrom
+  description: Time interval start
+- name: rangeTo
+  description: Time interval end
+- name: specificTime
+  description: Specific time
+- name: timeFilterType
+  auto: PREDEFINED
+  predefined:
+  - LAST_HOUR
+  - LAST_24_HOURS
+  - LAST_7_DAYS
+  - CUSTOM_RANGE
+  - SPECIFIC_TIME
+  description: Define time filter mode. mandatory if filtering by time.
+- name: hostGroupID
+  description: Filter by host group ID
+- name: hostID
+  description: Filter by host ID
+- name: securityProfileID
+  description: Filter by host security profile ID
+- name: hostFilterType
+  auto: PREDEFINED
+  predefined:
+  - ALL_HOSTS
+  - HOSTS_IN_GROUP
+  - HOSTS_USING_SECURITY_PROFILE
+  - HOSTS_IN_GROUP_AND_ALL_SUBGROUPS
+  - SPECIFIC_HOST
+  - MY_HOSTS
+  description: Define host filter mode. mandatory if filtering by host/s.
+- name: eventID
+  description: filter by event ID
+- name: eventFilterOperator
+  auto: PREDEFINED
+  predefined:
+  - GREATER_THAN
+  - LESS_THAN
+  - EQUAL
+  description: event ID operator
+- name: includeNonHostEvents
+  description: Include non host event
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - "false"
+  - "true"
+scripttarget: 0
+dependson:
+  must:
+  - trendmicro-system-event-retrieve
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.24398
+tests:
+- No tests (auto formatted)

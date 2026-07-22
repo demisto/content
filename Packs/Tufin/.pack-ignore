@@ -1,0 +1,9 @@
+[file:README.md]
+ignore=RM102,RM104
+
+[file:Tufin.yml]
+ignore=IN136,BA124
+
+[file:Tufin_image.png]
+ignore=IM111
+

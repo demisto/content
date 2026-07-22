@@ -1,0 +1,24 @@
+{
+    "name": "RandomElementFromList (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Aneesha More",
+    "url": "",
+    "email": "",
+    "created": "2022-03-31T21:05:15Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "aneeshamore"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

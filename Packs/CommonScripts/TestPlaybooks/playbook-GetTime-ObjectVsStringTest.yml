@@ -1,0 +1,263 @@
+id: GetTime-ObjectVsStringTest
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: GetTime-ObjectVsStringTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4db4b6ad-d9bd-47bb-8f34-207af8618710
+    type: start
+    task:
+      id: 4db4b6ad-d9bd-47bb-8f34-207af8618710
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: f4738999-6022-4f49-8de5-8d946166a032
+    type: regular
+    task:
+      id: f4738999-6022-4f49-8de5-8d946166a032
+      version: -1
+      name: GetTime - Object
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      contextKey: {}
+      date:
+        complex:
+          root: incident
+          accessor: occurred
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 1d4a734d-3180-47cc-862a-f6ebdcd97f8f
+    type: regular
+    task:
+      id: 1d4a734d-3180-47cc-862a-f6ebdcd97f8f
+      version: -1
+      name: GetTime - Time
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      contextKey: {}
+      date:
+        complex:
+          root: time_str
+      dateFormat: {}
+      hoursAgo: {}
+      minutesAgo: {}
+      monthsAgo: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 2fa8b7cb-5a26-448b-805f-1658fc5ea3ce
+    type: condition
+    task:
+      id: 2fa8b7cb-5a26-448b-805f-1658fc5ea3ce
+      version: -1
+      name: Verify Get Time - Object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: TimeNow
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: time_str
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: 14cd909a-e961-4ed1-853d-e90ca58f869d
+    type: title
+    task:
+      id: 14cd909a-e961-4ed1-853d-e90ca58f869d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: 317589e3-4237-4bf6-831a-f18d35d4fb98
+    type: regular
+    task:
+      id: 317589e3-4237-4bf6-831a-f18d35d4fb98
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "8":
+    id: "8"
+    taskid: 1a43f9fe-421c-47c0-8834-9ab6b10f39b9
+    type: regular
+    task:
+      id: 1a43f9fe-421c-47c0-8834-9ab6b10f39b9
+      version: -1
+      name: Set Time As Str
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: time_str
+      value:
+        complex:
+          root: TimeNow
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

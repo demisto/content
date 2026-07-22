@@ -1,0 +1,7 @@
+fromversion: 6.10.0
+id: armis_security_ParsingRule
+name: Armis Security Parsing Rule
+rules: ''
+tags: []
+supportedModules:
+- xsiam

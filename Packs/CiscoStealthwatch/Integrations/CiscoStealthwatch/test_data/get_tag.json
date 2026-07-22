@@ -1,0 +1,46 @@
+{
+    "data": {
+        "display": {
+            "domainId": 102,
+            "editable": false,
+            "id": 6,
+            "idPath": [
+                1,
+                23,
+                6
+            ],
+            "location": "INSIDE",
+            "name": "Other",
+            "path": [
+                "Inside Hosts",
+                "By Function"
+            ]
+        },
+        "domainId": 102,
+        "hostBaselines": true,
+        "hostTrap": false,
+        "id": 6,
+        "inverseSuppression": false,
+        "location": "INSIDE",
+        "name": "Other",
+        "parentDisplay": {
+            "domainId": 102,
+            "editable": false,
+            "id": 23,
+            "idPath": [
+                1,
+                23
+            ],
+            "location": "INSIDE",
+            "name": "By Function",
+            "path": [
+                "Inside Hosts"
+            ]
+        },
+        "parentId": 23,
+        "ranges": [],
+        "sendToCognitiveFilter": "CROSS_PERIMETER",
+        "sendToCta": false,
+        "suppressExcludedServices": true
+    }
+}

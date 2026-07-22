@@ -1,0 +1,37 @@
+{
+ "id": "incident_googlecloudsccfindingsourcepropertiesseverity",
+ "version": -1,
+ "modified": "2021-01-22T00:45:54.762722396+05:30",
+ "name": "GoogleCloudSCC Finding SourceProperties Severity",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccfindingsourcepropertiesseverity",
+ "type": "singleSelect",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [
+  "Critical",
+  "High",
+  "Medium",
+  "Low",
+  "SEVERITY_UNSPECIFIED"
+ ],
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

@@ -1,0 +1,8 @@
+[file:GetMessageIdAndRecipients.yml]
+ignore=BA124
+
+[file:ConvertDictOfListToListOfDict.yml]
+ignore=BA124
+
+[known_words]
+Cofense

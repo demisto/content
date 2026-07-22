@@ -1,0 +1,426 @@
+id: Rapid Breach Response - Set Incident Info
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Rapid Breach Response - Set Incident Info
+description: This playbook is responsible for setting up the Rapid Breach Response
+  Incident Info tab in the layout.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c9e76703-e5cc-4817-8906-c4224cfddbd4
+    type: start
+    task:
+      id: c9e76703-e5cc-4817-8906-c4224cfddbd4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "20"
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 54aa3291-e5da-4cdf-8eef-aacc0aac801a
+    type: regular
+    task:
+      id: 54aa3291-e5da-4cdf-8eef-aacc0aac801a
+      version: -1
+      name: Set Description
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      playbookdescription:
+        complex:
+          root: inputs.playbookDescription
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 17a055ce-d872-468e-8bc6-6faac5dfd7bb
+    type: regular
+    task:
+      id: 17a055ce-d872-468e-8bc6-6faac5dfd7bb
+      version: -1
+      name: 'Set grid for Source Of Indicators '
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      columns:
+        simple: Source URL
+      context_path:
+        simple: sourceofindicators
+      grid_id:
+        simple: sourceofindicators
+      overwrite:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0f82d5fb-fe68-4303-81f1-2dfbdd7403ed
+    type: regular
+    task:
+      id: 0f82d5fb-fe68-4303-81f1-2dfbdd7403ed
+      version: -1
+      name: Set Source of Indicators
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: sourceofindicators
+      value:
+        complex:
+          root: inputs.SourceOfIndicators
+          transformers:
+          - operator: StringToArray
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 97bcaffe-94f5-41a5-841f-d3b28ed0fc37
+    type: title
+    task:
+      id: 97bcaffe-94f5-41a5-841f-d3b28ed0fc37
+      version: -1
+      name: Handle Source of Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3c32ab3d-d511-4932-8208-6ce82ea18776
+    type: title
+    task:
+      id: 3c32ab3d-d511-4932-8208-6ce82ea18776
+      version: -1
+      name: Set Layout Description
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 78e8433e-3c5d-4059-81c2-413434eb5090
+    type: condition
+    task:
+      id: 78e8433e-3c5d-4059-81c2-413434eb5090
+      version: -1
+      name: Was the source of indicators provided?
+      description: Checks for Source Of Indicators input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SourceOfIndicators
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6e43198c-1a5d-4151-87d2-d5fb51343069
+    type: condition
+    task:
+      id: 6e43198c-1a5d-4151-87d2-d5fb51343069
+      version: -1
+      name: Was the playbook description provided?
+      description: Checks for Playbook Description input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.playbookDescription
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: aa7db352-1c75-4572-8a19-5b03d9b7a58d
+    type: title
+    task:
+      id: aa7db352-1c75-4572-8a19-5b03d9b7a58d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 2b3329b1-0184-4acb-86bb-38a62712c00d
+    type: title
+    task:
+      id: 2b3329b1-0184-4acb-86bb-38a62712c00d
+      version: -1
+      name: Set Total Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 89f99e0d-f88b-43d8-8541-205edbc1d69a
+    type: regular
+    task:
+      id: 89f99e0d-f88b-43d8-8541-205edbc1d69a
+      version: -1
+      name: Count Total Indicators
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      totalindicatorcount:
+        complex:
+          root: inputs.countTotalIndicators
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "24_11_yes": 0.51,
+      "24_29_#default#": 0.17,
+      "28_1_yes": 0.51,
+      "28_29_#default#": 0.12
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 1250,
+        "x": -190,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: SourceOfIndicators
+  value: {}
+  required: false
+  description: The source links for the indicators.
+  playbookInputQuery:
+- key: playbookDescription
+  value: {}
+  required: false
+  description: The playbook description
+  playbookInputQuery:
+- key: countTotalIndicators
+  value: {}
+  required: false
+  description: The total number of the indicators extracted.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

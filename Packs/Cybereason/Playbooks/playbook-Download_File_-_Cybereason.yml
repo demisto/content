@@ -1,0 +1,194 @@
+id: Cybereason - Download File
+version: -1
+name: Cybereason - Download File
+description: This playbook downloads a file from Cybereason platform, based on the Malop ID and username provided.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 268efc89-42f3-4e3e-8da8-8038f27272a4
+    type: start
+    task:
+      id: 268efc89-42f3-4e3e-8da8-8038f27272a4
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1fdcef50-49af-48d6-809e-af597d56b8d9
+    type: regular
+    task:
+      id: 1fdcef50-49af-48d6-809e-af597d56b8d9
+      version: -1
+      name: cybereason-start-fetchfile
+      description: Start fetching the file to download
+      script: Cybereason|||cybereason-start-fetchfile
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      malopGUID:
+        simple: ${inputs.malopGUID}
+      userName:
+        simple: ${inputs.Username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5201ecb2-144c-41df-8c26-152d1726345e
+    type: regular
+    task:
+      id: 5201ecb2-144c-41df-8c26-152d1726345e
+      version: -1
+      name: download-progress
+      description: Return a batch id for files waiting for download
+      script: Cybereason|||cybereason-fetchfile-progress
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      malopGuid:
+        simple: ${inputs.malopGUID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 16892fc7-73b9-452d-85a8-d93607d092fa
+    type: regular
+    task:
+      id: 16892fc7-73b9-452d-85a8-d93607d092fa
+      version: -1
+      name: download-files
+      description: Downloads the actual file to the machine
+      script: Cybereason|||cybereason-download-file
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      batchID:
+        simple: ${Cybereason.Download.Progress.batchID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: eeada645-264c-404e-8d7d-cd6ee0381737
+    type: title
+    task:
+      id: eeada645-264c-404e-8d7d-cd6ee0381737
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 805,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: malopGUID
+  value: {}
+  required: false
+  description: The unique ID assigned by the Cybereason platform for the Malop.
+  playbookInputQuery: null
+- key: Username
+  value: {}
+  required: false
+  description: The complete Cybereason user name string for the user performing the
+    request.
+  playbookInputQuery: null
+outputs: []
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

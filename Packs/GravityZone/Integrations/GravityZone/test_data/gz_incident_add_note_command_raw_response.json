@@ -1,0 +1,7 @@
+[
+    {
+        "incident_id": "INCIDENT_ID_1",
+        "note": "This is a test note from unit test.",
+        "command_status": "Success"
+    }
+]

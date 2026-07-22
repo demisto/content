@@ -1,0 +1,30 @@
+[
+    {
+        "ID": 1,
+        "Name": "Hello XSOAR!",
+        "Type": "string",
+        "Description": "The Quick Brown Fox Jumped Over The Lazy Dog",
+        "Version": 1,
+        "Enabled": false,
+        "Default": false,
+        "Category": "false_positive",
+        "Attributes": [
+            "attrib1",
+            "attrib2"
+        ]
+    },
+    {
+        "ID": 2,
+        "Name": "Warninglist2",
+        "Type": "string",
+        "Description": "Description2",
+        "Version": 42,
+        "Enabled": true,
+        "Default": true,
+        "Category": "false_positive",
+        "Attributes": [
+            "attrib1",
+            "attrib2"
+        ]
+    }
+]

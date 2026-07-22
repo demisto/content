@@ -1,0 +1,125 @@
+commonfields:
+  id: ExchangeSearch
+  version: -1
+name: ExchangeSearch
+script: >-
+  # defaults
+
+  mailboxs=[]
+
+  sender=''
+
+  attachmentname=''
+
+  subject=''
+
+  query =''
+
+  resultText = ''
+
+  found = {}
+
+  parts = []
+
+
+  if demisto.args().has_key('mailbox'):
+      mailboxes = argToList(demisto.args()['mailbox'])
+
+      if demisto.args().has_key('body'):
+          subject = demisto.args()['body']
+          qsubject = 'body:' + subject.strip() if subject else ''
+          parts.append(qsubject)
+
+      if demisto.args().has_key('subject'):
+          subject = demisto.args()['subject']
+          qsubject = 'subject:"' + subject.strip() +'"' if subject else ''
+          parts.append(qsubject)
+
+      if demisto.get(demisto.args(), 'attachmentName'):
+          attachmentname = demisto.args()['attachmentName']
+          qattach = 'attachment:'+attachmentname if attachmentname else ''
+          parts.append(qattach)
+
+      if demisto.args().has_key('sender'):
+          sender = demisto.args()['sender']
+          qsender = 'from:"'+sender+'"' if sender else ''
+          parts.append(qsender)
+
+      if not (subject or attachmentname or sender):
+          demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'At least once search parameter should be provided.' } )
+      else:
+          folder = 'inbox'
+          query = ' AND '.join([x for x in parts if not x==''])
+          resultText +='Searching for emails using query:' + query + '\n\n'
+          resErrors = []
+          FoundIDs = []
+
+          for mailbox in mailboxes:
+              respSearch = demisto.executeCommand('ews-search-mailbox', {'target-mailbox': mailbox, 'folders-ids': folder, 'query': query })
+              if isError(respSearch[0]) or not respSearch[0]['ContentsFormat'] == formats['json']:
+                  resErrors += [{ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unexpected response from ews-search-mailbox.'+str(respSearch[0]['Contents']) }]
+              else:
+                  resultText +='**{0} result**:\n'.format(mailbox)
+                  resSearch = respSearch[0]['Contents']
+                  fault = demisto.get(resSearch, 'Envelope.Body.Fault')
+                  if fault:
+                      if 'ErrorNonExistentMailbox' == demisto.gets(fault, 'detail.ResponseCode.#text'):
+                          resultText += 'No mails found.\n'
+                          finished=True
+                      else:
+                          msgXmlName = demisto.gets(fault, 'detail.MessageXml.Value.-Name')
+                          msgXmlText = demisto.gets(fault, 'detail.MessageXml.Value.#text')
+                          mdErr =  '### Received error from Exchange Web Services :\n'
+                          mdErr += 'faultcode|faultstring|Message|ResponseCode' + ('|' + msgXmlName if type(msgXmlName)==str else '') + '\n'
+                          mdErr += '-|-|-|-|-\n'
+                          mdErr += '|'.join( [str(demisto.gets(fault, loc)) for loc in 'faultcode.#text', 'faultstring.#text', 'detail.Message.#text', 'detail.ResponseCode.#text' ] + ([msgXmlText] if msgXmlText else [])) + '\n'
+                          resErrors += [{'Type' : entryTypes['error'], 'ContentsFormat' : formats['markdown'], 'Contents' : mdErr}]
+                  else:
+                      resp = demisto.get(resSearch, 'Envelope.Body.FindItemResponse.ResponseMessages.FindItemResponseMessage')
+                      if resp and demisto.get(resp, '-ResponseClass') == 'Success':
+                          itemcount = int(resp['RootFolder']['-TotalItemsInView']) # todo handle parsing error for ints
+                          if itemcount == 0:
+                              resultText += 'No mails found.\n'
+                          elif itemcount > 0:
+                              items = resp['RootFolder']['Items']['Message']
+                              items = [items] if itemcount == 1 else items
+                              itemsList = []
+                              for item in items:
+                                  resultText += str(item['ItemId']['-Id'])+'\n'
+                                  itemsList += [item['ItemId']['-Id']]
+                              found[mailbox] = itemsList
+
+          demisto.setContext('ExchangeItemIDs', json.dumps(found))
+          demisto.results( { 'Type' : entryTypes['note'], 'ContentsFormat' : formats['markdown'], 'Contents': resultText } )
+  else:
+      demisto.results({ 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'No mailbox specified. Cannot continue.' } )
+type: python
+subtype: python2
+comment: Deprecated. Search mails in Exchange Web Server
+tags:
+- ews
+- exchange
+- server
+- email
+system: true
+args:
+- name: mailbox
+  required: true
+  default: true
+  description: Mailbox to be searched, e.g. dave@acme.com
+- name: subject
+  description: Only match mails containing this Subject
+- name: attachmentName
+  description: Only match mails containing an attachment with this name
+- name: sender
+  description: Only match mails from this sender (Email address)
+- name: body
+  description: Only match mails containing the this is their body
+scripttarget: 0
+dependson:
+  must:
+  - ews-search-mailbox
+timeout: 86.4µs
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

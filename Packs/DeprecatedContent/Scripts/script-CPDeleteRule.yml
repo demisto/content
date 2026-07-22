@@ -1,0 +1,38 @@
+commonfields:
+  id: CPDeleteRule
+  version: -1
+name: CPDeleteRule
+script: >-
+  dArgs = demisto.args()
+
+  dArgs['command'] = 'delete-access-rule'
+
+  if 'uid' in dArgs or 'name' in dArgs:
+      resp = demisto.executeCommand('checkpoint', dArgs)
+      resp += demisto.executeCommand('checkpoint', {'command': 'publish'})
+      demisto.results(resp)
+  else:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "You must provide name or uid." } )
+type: python
+subtype: python2
+tags:
+- checkpoint
+comment: Deprecated. Delete access rule objects configured in Checkpoint FW.
+system: true
+deprecated: true
+args:
+- name: uid
+  default: true
+  description: uid of the rule
+- name: name
+  description: name of the rule
+- name: layer
+  required: true
+  description: e.g. Network
+scripttarget: 0
+dependson:
+  must:
+  - checkpoint
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,25 @@
+{
+  "value": [
+    {
+      "name": "ActionGroup",
+      "id": "ActionGroup",
+      "serviceTagChangeNumber": "86",
+      "properties": {
+        "changeNumber": "9",
+        "region": "",
+        "state": "GA",
+        "networkFeatures": [
+          "API",
+          "NSG",
+          "UDR",
+          "FW"
+        ],
+        "systemService": "ActionGroup",
+        "addressPrefixes": [
+          "189.160.40.11/30"
+        ]
+      }
+    }
+  ],
+  "nextLink": ""
+}

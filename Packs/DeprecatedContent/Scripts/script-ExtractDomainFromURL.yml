@@ -1,0 +1,43 @@
+commonfields:
+  id: ExtractDomainFromURL
+  version: -1
+name: ExtractDomainFromURL
+script: >+
+  from urlparse import urlparse
+
+
+  url = demisto.get(demisto.args(),'url')
+
+  if not url:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "URL must be provided" } )
+      sys.exit()
+
+  try:
+      url_obj = urlparse(url)
+      hostname = url_obj.hostname
+
+      ec = {"Domain(val.Name == obj.Name)": {"Name": hostname}}
+      md = "Domain: {}".format(hostname)
+      demisto.results( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : md, "HumanReadable": md, "EntryContext": ec } )
+  except:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "Error while trying to parse URL" } )
+
+type: python
+subtype: python2
+tags:
+- url
+- domain
+comment: Deprecated. Extract Domain from a URL. Domain will include sub-domain as well
+system: true
+deprecated: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to extract domain from
+scripttarget: 0
+outputs:
+- contextPath: Domain.Name
+  description: Domain name
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

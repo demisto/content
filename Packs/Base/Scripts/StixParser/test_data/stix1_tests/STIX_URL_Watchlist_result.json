@@ -1,0 +1,35 @@
+[
+    {
+        "value": "http://example.com/foo/malicious1.html",
+        "indicator_type": "URL",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "http://example.com/foo/malicious1.html",
+            "type": "URL",
+            "indicator_ref": "example:Observable-Pattern-cc5c00ce-98a6-4cbe-8474-59eaecdb018f",
+            "value": "http://example.com/foo/malicious1.html"
+        }
+    },
+    {
+        "value": "http://example.com/foo/malicious2.html",
+        "indicator_type": "URL",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "http://example.com/foo/malicious2.html",
+            "type": "URL",
+            "indicator_ref": "example:Observable-Pattern-cc5c00ce-98a6-4cbe-8474-59eaecdb018f",
+            "value": "http://example.com/foo/malicious2.html"
+        }
+    },
+    {
+        "value": "http://example.com/foo/malicious3.html",
+        "indicator_type": "URL",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "http://example.com/foo/malicious3.html",
+            "type": "URL",
+            "indicator_ref": "example:Observable-Pattern-cc5c00ce-98a6-4cbe-8474-59eaecdb018f",
+            "value": "http://example.com/foo/malicious3.html"
+        }
+    }
+]

@@ -1,0 +1,8 @@
+[file:SophosXGFirewall.yml]
+ignore=BA109
+
+[file:README.md]
+ignore=RM104
+
+[file:SophosXGFirewall_image.png]
+ignore=IM111

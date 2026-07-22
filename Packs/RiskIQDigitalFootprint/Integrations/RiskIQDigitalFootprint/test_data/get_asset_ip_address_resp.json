@@ -1,0 +1,2584 @@
+{
+  "name": "52.112.64.75",
+  "type": "IP_ADDRESS",
+  "firstSeen": 1469430000000,
+  "lastSeen": 1591634028388,
+  "uuid": "72ca2677-2276-90cc-048a-546ebed63e2f",
+  "label": "52.112.64.75",
+  "description": "52.112.64.75",
+  "asset": {
+    "ipAddress": "52.112.64.75",
+    "reputations": [
+      {
+        "listName": "dummy_anonymous",
+        "threatType": "Aggregate/Ignore",
+        "trusted": false,
+        "cidr": "52.112.64.75",
+        "firstSeen": 1573299142000,
+        "lastSeen": 1591525321000,
+        "listUpdatedAt": 1486072465000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "listName": "dummy_proxies",
+        "threatType": "Aggregate/Ignore",
+        "trusted": false,
+        "cidr": "52.112.64.75",
+        "firstSeen": 1573299315000,
+        "lastSeen": 1591525321000,
+        "listUpdatedAt": 1486072465000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "webComponents": [
+      {
+        "ruleid": [],
+        "firstSeen": 1472000400000,
+        "lastSeen": 1591599294046,
+        "count": 788,
+        "recent": true,
+        "ports": [
+          {
+            "port": 443,
+            "firstSeen": 1586277986000,
+            "lastSeen": 1591599294046,
+            "count": 8848
+          }
+        ],
+        "webComponentName": "RTC",
+        "webComponentCategory": "Server",
+        "webComponentVersion": "7.0",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1573473467647,
+        "lastSeen": 1590504705102,
+        "recent": true,
+        "ports": [
+          {
+            "port": 80,
+            "firstSeen": 1586578336961,
+            "lastSeen": 1590504705102,
+            "count": 8
+          }
+        ],
+        "webComponentName": "Squid",
+        "webComponentCategory": "Server",
+        "webComponentVersion": "3.1.10",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1588325988539,
+        "lastSeen": 1588821046769,
+        "recent": true,
+        "ports": [
+          {
+            "port": 80,
+            "firstSeen": 1588325988539,
+            "lastSeen": 1588821046769,
+            "count": 2
+          }
+        ],
+        "webComponentName": "",
+        "webComponentCategory": "Advertising",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1588325988539,
+        "lastSeen": 1588821046769,
+        "recent": true,
+        "ports": [
+          {
+            "port": 80,
+            "firstSeen": 1588325988539,
+            "lastSeen": 1588821046769,
+            "count": 2
+          }
+        ],
+        "webComponentName": "",
+        "webComponentCategory": "DSP",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1537476541893,
+        "lastSeen": 1578599741828,
+        "count": 239,
+        "ports": [],
+        "webComponentName": "Microsoft Azure",
+        "webComponentCategory": "Hosting Provider",
+        "cves": []
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1541707084207,
+        "lastSeen": 1541707084207,
+        "ports": [],
+        "webComponentName": "Apache",
+        "webComponentCategory": "Server",
+        "webComponentVersion": "2.4.33",
+        "cves": [
+          {
+            "name": "CVE-2018-8011",
+            "cvssScore": 5.0,
+            "cweID": "CWE-476"
+          }
+        ]
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1541707084207,
+        "lastSeen": 1541707084207,
+        "ports": [],
+        "webComponentName": "Ubuntu",
+        "webComponentCategory": "Operating System",
+        "webComponentVersion": "",
+        "cves": []
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1512673702000,
+        "lastSeen": 1513577828000,
+        "ports": [],
+        "webComponentName": "XMB",
+        "webComponentCategory": "Online Forum",
+        "webComponentVersion": "",
+        "cves": []
+      }
+    ],
+    "netRanges": [
+      {
+        "value": "52.96.0.0 - 52.115.255.255",
+        "firstSeen": 1539034799618,
+        "lastSeen": 1581176878200,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "headers": [
+      {
+        "headerName": "Content-Language",
+        "headerValue": "en",
+        "firstSeen": 1477071171000,
+        "lastSeen": 1591599406957,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Mime-Version",
+        "headerValue": "1.0",
+        "firstSeen": 1472011284007,
+        "lastSeen": 1591599406957,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Vary",
+        "headerValue": "Accept-Language",
+        "firstSeen": 1558249546544,
+        "lastSeen": 1591599406957,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-Squid-Error",
+        "headerValue": "ERR_CONNECT_FAIL 101",
+        "firstSeen": 1472011284007,
+        "lastSeen": 1591599406957,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-Squid-Error",
+        "headerValue": "ERR_CONNECT_FAIL 111",
+        "firstSeen": 1474662142739,
+        "lastSeen": 1591599403142,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Server",
+        "headerValue": "RTC/7.0",
+        "firstSeen": 1558254018114,
+        "lastSeen": 1591599294046,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Strict-Transport-Security",
+        "headerValue": "max-age=31536000; includeSubDomains",
+        "firstSeen": 1558254018114,
+        "lastSeen": 1591599294046,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG03.infra.lync.com",
+        "firstSeen": 1521738000000,
+        "lastSeen": 1591599294046,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG04.infra.lync.com",
+        "firstSeen": 1473638400000,
+        "lastSeen": 1591599110997,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG03.infra.lync.com",
+        "firstSeen": 1505584800000,
+        "lastSeen": 1591599074620,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM12A00EDG16.infra.lync.com",
+        "firstSeen": 1540110756038,
+        "lastSeen": 1591598983490,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG04.infra.lync.com",
+        "firstSeen": 1521982800000,
+        "lastSeen": 1591598468423,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG06.infra.lync.com",
+        "firstSeen": 1504947600000,
+        "lastSeen": 1591598450624,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG04.infra.lync.com",
+        "firstSeen": 1505181600000,
+        "lastSeen": 1591598205746,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG02.infra.lync.com",
+        "firstSeen": 1474812000000,
+        "lastSeen": 1591597965688,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG20.infra.lync.com",
+        "firstSeen": 1566298831939,
+        "lastSeen": 1591597907132,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG10.infra.lync.com",
+        "firstSeen": 1559972791523,
+        "lastSeen": 1591597745707,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG06.infra.lync.com",
+        "firstSeen": 1477292400000,
+        "lastSeen": 1591597243648,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG10.infra.lync.com",
+        "firstSeen": 1478102400000,
+        "lastSeen": 1591596968240,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-Cache-Lookup",
+        "headerValue": "MISS from localhost:65432",
+        "firstSeen": 1546937061797,
+        "lastSeen": 1591596916977,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG18.infra.lync.com",
+        "firstSeen": 1522566000000,
+        "lastSeen": 1591596057211,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG10.infra.lync.com",
+        "firstSeen": 1479891600000,
+        "lastSeen": 1591595658447,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG19.infra.lync.com",
+        "firstSeen": 1550155464689,
+        "lastSeen": 1591595541862,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG14.infra.lync.com",
+        "firstSeen": 1522198800000,
+        "lastSeen": 1591595097030,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "TY1JP100EDG15.infra.lync.com",
+        "firstSeen": 1591594689338,
+        "lastSeen": 1591594689338,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG20.infra.lync.com",
+        "firstSeen": 1477782000000,
+        "lastSeen": 1591594046138,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YTOCA100EDG04.infra.lync.com",
+        "firstSeen": 1477987200000,
+        "lastSeen": 1591594043692,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG14.infra.lync.com",
+        "firstSeen": 1539983954141,
+        "lastSeen": 1591593998822,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG14.infra.lync.com",
+        "firstSeen": 1501610400000,
+        "lastSeen": 1591593866579,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG08.infra.lync.com",
+        "firstSeen": 1550553225536,
+        "lastSeen": 1591593043196,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG06.infra.lync.com",
+        "firstSeen": 1522292400000,
+        "lastSeen": 1591593000961,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG08.infra.lync.com",
+        "firstSeen": 1473829200000,
+        "lastSeen": 1591592946808,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG19.infra.lync.com",
+        "firstSeen": 1554088261244,
+        "lastSeen": 1591592562499,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG14.INFRA.LYNC.COM",
+        "firstSeen": 1472378400000,
+        "lastSeen": 1591591800775,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG02.infra.lync.com",
+        "firstSeen": 1472511600000,
+        "lastSeen": 1591591555660,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG11.INFRA.LYNC.COM",
+        "firstSeen": 1472445577000,
+        "lastSeen": 1591591304134,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG16.infra.lync.com",
+        "firstSeen": 1538758089921,
+        "lastSeen": 1591591291563,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG09.infra.lync.com",
+        "firstSeen": 1560995896512,
+        "lastSeen": 1591591286772,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG11.infra.lync.com",
+        "firstSeen": 1478134800000,
+        "lastSeen": 1591590528179,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG12.infra.lync.com",
+        "firstSeen": 1501747200000,
+        "lastSeen": 1591589832627,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG01.infra.lync.com",
+        "firstSeen": 1479596400000,
+        "lastSeen": 1591588343067,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG04.infra.lync.com",
+        "firstSeen": 1479963600000,
+        "lastSeen": 1591587673009,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG02.infra.lync.com",
+        "firstSeen": 1521860400000,
+        "lastSeen": 1591587652715,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG01.infra.lync.com",
+        "firstSeen": 1472461200000,
+        "lastSeen": 1591585958112,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG06.infra.lync.com",
+        "firstSeen": 1477342800000,
+        "lastSeen": 1591584929496,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG17.infra.lync.com",
+        "firstSeen": 1472022000000,
+        "lastSeen": 1591584704317,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG13.INFRA.LYNC.COM",
+        "firstSeen": 1472160903578,
+        "lastSeen": 1591584135696,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG07.infra.lync.com",
+        "firstSeen": 1473318000000,
+        "lastSeen": 1591582952535,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM12A00EDG15.infra.lync.com",
+        "firstSeen": 1539816140932,
+        "lastSeen": 1591580885132,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG07.infra.lync.com",
+        "firstSeen": 1477566000000,
+        "lastSeen": 1591579145728,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG07.infra.lync.com",
+        "firstSeen": 1551403411957,
+        "lastSeen": 1591579047880,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YTOCA100EDG08.infra.lync.com",
+        "firstSeen": 1478520000000,
+        "lastSeen": 1591578619990,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM12A00EDG09.infra.lync.com",
+        "firstSeen": 1486933200000,
+        "lastSeen": 1591577787936,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG03.infra.lync.com",
+        "firstSeen": 1478062800000,
+        "lastSeen": 1591575738968,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG12.infra.lync.com",
+        "firstSeen": 1560114536056,
+        "lastSeen": 1591573781211,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Content-Language",
+        "headerValue": "en-us",
+        "firstSeen": 1472011284007,
+        "lastSeen": 1591573135409,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Server",
+        "headerValue": "squid",
+        "firstSeen": 1558249546544,
+        "lastSeen": 1591573135409,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG04.infra.lync.com",
+        "firstSeen": 1472648400000,
+        "lastSeen": 1591571793276,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG02.infra.lync.com",
+        "firstSeen": 1472313600000,
+        "lastSeen": 1591571106527,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG09.infra.lync.com",
+        "firstSeen": 1478746800000,
+        "lastSeen": 1591569337337,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG12.infra.lync.com",
+        "firstSeen": 1484264253017,
+        "lastSeen": 1591566525997,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG15.infra.lync.com",
+        "firstSeen": 1556589480044,
+        "lastSeen": 1591565685608,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG12.INFRA.LYNC.COM",
+        "firstSeen": 1472704950290,
+        "lastSeen": 1591565189710,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG09.INFRA.LYNC.COM",
+        "firstSeen": 1472029777506,
+        "lastSeen": 1591564806714,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG05.infra.lync.com",
+        "firstSeen": 1478239200000,
+        "lastSeen": 1591564804838,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG10.infra.lync.com",
+        "firstSeen": 1483747200000,
+        "lastSeen": 1591562416709,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG09.infra.lync.com",
+        "firstSeen": 1487332800000,
+        "lastSeen": 1591560963293,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG18.infra.lync.com",
+        "firstSeen": 1504731600000,
+        "lastSeen": 1591560419926,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG01.infra.lync.com",
+        "firstSeen": 1472036400000,
+        "lastSeen": 1591559695289,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG05.infra.lync.com",
+        "firstSeen": 1556957181932,
+        "lastSeen": 1591556565372,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG15.infra.lync.com",
+        "firstSeen": 1522350000000,
+        "lastSeen": 1591556554121,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG01.infra.lync.com",
+        "firstSeen": 1473220800000,
+        "lastSeen": 1591555148215,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG03.infra.lync.com",
+        "firstSeen": 1479736800000,
+        "lastSeen": 1591554441410,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG09.infra.lync.com",
+        "firstSeen": 1478793600000,
+        "lastSeen": 1591553511842,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG07.infra.lync.com",
+        "firstSeen": 1479625200000,
+        "lastSeen": 1591553321296,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG07.infra.lync.com",
+        "firstSeen": 1472407200000,
+        "lastSeen": 1591550347500,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG17.infra.lync.com",
+        "firstSeen": 1550373124926,
+        "lastSeen": 1591548235984,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG13.infra.lync.com",
+        "firstSeen": 1505430000000,
+        "lastSeen": 1591546995315,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG13.infra.lync.com",
+        "firstSeen": 1538553243099,
+        "lastSeen": 1591546900905,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG05.infra.lync.com",
+        "firstSeen": 1477710000000,
+        "lastSeen": 1591546873005,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG08.infra.lync.com",
+        "firstSeen": 1473192000000,
+        "lastSeen": 1591542875730,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG12.infra.lync.com",
+        "firstSeen": 1523408400000,
+        "lastSeen": 1591540613372,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG07.infra.lync.com",
+        "firstSeen": 1478138400000,
+        "lastSeen": 1591539933738,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YTOCA100EDG02.infra.lync.com",
+        "firstSeen": 1477850400000,
+        "lastSeen": 1591539522761,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG05.infra.lync.com",
+        "firstSeen": 1504728000000,
+        "lastSeen": 1591539497684,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG09.infra.lync.com",
+        "firstSeen": 1474974000000,
+        "lastSeen": 1591539474177,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG19.infra.lync.com",
+        "firstSeen": 1561553336033,
+        "lastSeen": 1591538871326,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG18.infra.lync.com",
+        "firstSeen": 1472011200000,
+        "lastSeen": 1591538478066,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG10.infra.lync.com",
+        "firstSeen": 1548769983017,
+        "lastSeen": 1591538459188,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG01.infra.lync.com",
+        "firstSeen": 1478019600000,
+        "lastSeen": 1591538376459,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG02.infra.lync.com",
+        "firstSeen": 1478246400000,
+        "lastSeen": 1591538180834,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG12.infra.lync.com",
+        "firstSeen": 1480593600000,
+        "lastSeen": 1591538154931,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG20.infra.lync.com",
+        "firstSeen": 1560238854077,
+        "lastSeen": 1591537510674,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG19.infra.lync.com",
+        "firstSeen": 1502312400000,
+        "lastSeen": 1591536986813,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG05.infra.lync.com",
+        "firstSeen": 1522764000000,
+        "lastSeen": 1591536642851,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG06.infra.lync.com",
+        "firstSeen": 1472356800000,
+        "lastSeen": 1591536102947,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG18.infra.lync.com",
+        "firstSeen": 1550557175631,
+        "lastSeen": 1591534338956,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG08.infra.lync.com",
+        "firstSeen": 1480536000000,
+        "lastSeen": 1591534170113,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG17.infra.lync.com",
+        "firstSeen": 1501761600000,
+        "lastSeen": 1591531124327,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YTOCA100EDG03.infra.lync.com",
+        "firstSeen": 1477573200000,
+        "lastSeen": 1591530929626,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YTOCA100EDG05.infra.lync.com",
+        "firstSeen": 1478937600000,
+        "lastSeen": 1591530551196,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG13.infra.lync.com",
+        "firstSeen": 1522144800000,
+        "lastSeen": 1591530194701,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG03.infra.lync.com",
+        "firstSeen": 1473555600000,
+        "lastSeen": 1591528110397,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG10.infra.lync.com",
+        "firstSeen": 1472648400000,
+        "lastSeen": 1591527380835,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG06.infra.lync.com",
+        "firstSeen": 1557224382444,
+        "lastSeen": 1591527053656,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG02.infra.lync.com",
+        "firstSeen": 1472058000000,
+        "lastSeen": 1591526966401,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG11.infra.lync.com",
+        "firstSeen": 1485468000000,
+        "lastSeen": 1591525653411,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG05.infra.lync.com",
+        "firstSeen": 1549946568798,
+        "lastSeen": 1591525097812,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG01.infra.lync.com",
+        "firstSeen": 1504994400000,
+        "lastSeen": 1591525093703,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG11.infra.lync.com",
+        "firstSeen": 1562253011770,
+        "lastSeen": 1591523494454,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG07.infra.lync.com",
+        "firstSeen": 1477969200000,
+        "lastSeen": 1591522591124,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG10.infra.lync.com",
+        "firstSeen": 1507255200000,
+        "lastSeen": 1591521202274,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG16.INFRA.LYNC.COM",
+        "firstSeen": 1472295600000,
+        "lastSeen": 1591520639144,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG11.infra.lync.com",
+        "firstSeen": 1477432800000,
+        "lastSeen": 1591520403966,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM12A00EDG04.infra.lync.com",
+        "firstSeen": 1472065200000,
+        "lastSeen": 1591519950354,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG01.infra.lync.com",
+        "firstSeen": 1478822400000,
+        "lastSeen": 1591519927378,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG05.infra.lync.com",
+        "firstSeen": 1477317600000,
+        "lastSeen": 1591518420138,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG06.infra.lync.com",
+        "firstSeen": 1550210966682,
+        "lastSeen": 1591517892609,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG12.infra.lync.com",
+        "firstSeen": 1473418800000,
+        "lastSeen": 1591517773532,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG11.infra.lync.com",
+        "firstSeen": 1522018800000,
+        "lastSeen": 1591516638642,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG05.infra.lync.com",
+        "firstSeen": 1477713600000,
+        "lastSeen": 1591515975558,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG09.infra.lync.com",
+        "firstSeen": 1560817364242,
+        "lastSeen": 1591515913089,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YTOCA100EDG07.infra.lync.com",
+        "firstSeen": 1477803600000,
+        "lastSeen": 1591515900726,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG02.infra.lync.com",
+        "firstSeen": 1477414800000,
+        "lastSeen": 1591515859949,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG07.infra.lync.com",
+        "firstSeen": 1472961600000,
+        "lastSeen": 1591515075715,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG18.infra.lync.com",
+        "firstSeen": 1561927237117,
+        "lastSeen": 1591515058226,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG18.infra.lync.com",
+        "firstSeen": 1538761297195,
+        "lastSeen": 1591514065671,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG01.infra.lync.com",
+        "firstSeen": 1522047600000,
+        "lastSeen": 1591513429234,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG12.infra.lync.com",
+        "firstSeen": 1560317867143,
+        "lastSeen": 1591513093581,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG13.infra.lync.com",
+        "firstSeen": 1561768054643,
+        "lastSeen": 1591512584553,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG05.infra.lync.com",
+        "firstSeen": 1473289200000,
+        "lastSeen": 1591512295576,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG16.infra.lync.com",
+        "firstSeen": 1552229641151,
+        "lastSeen": 1591511996007,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG20.infra.lync.com",
+        "firstSeen": 1551670568960,
+        "lastSeen": 1591511913079,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG04.infra.lync.com",
+        "firstSeen": 1501790400000,
+        "lastSeen": 1591510106743,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG03.infra.lync.com",
+        "firstSeen": 1475460000000,
+        "lastSeen": 1591509400325,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG14.infra.lync.com",
+        "firstSeen": 1560916423912,
+        "lastSeen": 1591508578898,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG08.infra.lync.com",
+        "firstSeen": 1472022000000,
+        "lastSeen": 1591508576232,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG07.infra.lync.com",
+        "firstSeen": 1550549038986,
+        "lastSeen": 1591508524018,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG04.infra.lync.com",
+        "firstSeen": 1477321200000,
+        "lastSeen": 1591508176425,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG08.infra.lync.com",
+        "firstSeen": 1506412800000,
+        "lastSeen": 1591505316084,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG06.infra.lync.com",
+        "firstSeen": 1475611200000,
+        "lastSeen": 1591505301545,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG19.infra.lync.com",
+        "firstSeen": 1477756800000,
+        "lastSeen": 1591504944836,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM12A00EDG07.infra.lync.com",
+        "firstSeen": 1474711200000,
+        "lastSeen": 1591504007122,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG01.infra.lync.com",
+        "firstSeen": 1475240400000,
+        "lastSeen": 1591503644377,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG16.infra.lync.com",
+        "firstSeen": 1504839600000,
+        "lastSeen": 1591501684984,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG08.infra.lync.com",
+        "firstSeen": 1478095200000,
+        "lastSeen": 1591501664323,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG06.infra.lync.com",
+        "firstSeen": 1478059200000,
+        "lastSeen": 1591501131105,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG15.infra.lync.com",
+        "firstSeen": 1559690996464,
+        "lastSeen": 1591500888262,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG01.infra.lync.com",
+        "firstSeen": 1504857600000,
+        "lastSeen": 1591499851420,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG15.infra.lync.com",
+        "firstSeen": 1540197144474,
+        "lastSeen": 1591499821790,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU2A00EDG03.infra.lync.com",
+        "firstSeen": 1479711600000,
+        "lastSeen": 1591499000418,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG12.infra.lync.com",
+        "firstSeen": 1479826800000,
+        "lastSeen": 1591498401260,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG08.infra.lync.com",
+        "firstSeen": 1500035163381,
+        "lastSeen": 1591498305940,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG20.infra.lync.com",
+        "firstSeen": 1472203230545,
+        "lastSeen": 1591497044661,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG08.infra.lync.com",
+        "firstSeen": 1522400400000,
+        "lastSeen": 1591495668531,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG08.infra.lync.com",
+        "firstSeen": 1477209600000,
+        "lastSeen": 1591495412697,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG08.infra.lync.com",
+        "firstSeen": 1479654000000,
+        "lastSeen": 1591495394083,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM12A00EDG17.infra.lync.com",
+        "firstSeen": 1538572825117,
+        "lastSeen": 1591493320024,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG10.infra.lync.com",
+        "firstSeen": 1480028400000,
+        "lastSeen": 1591493023849,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG06.INFRA.LYNC.COM",
+        "firstSeen": 1472169600000,
+        "lastSeen": 1591491942067,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU3A00EDG09.infra.lync.com",
+        "firstSeen": 1477756800000,
+        "lastSeen": 1591491240683,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YQBCA100EDG07.infra.lync.com",
+        "firstSeen": 1479513600000,
+        "lastSeen": 1591490756995,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG15.infra.lync.com",
+        "firstSeen": 1560015056102,
+        "lastSeen": 1591489895651,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG11.infra.lync.com",
+        "firstSeen": 1479135600000,
+        "lastSeen": 1591489420712,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG13.infra.lync.com",
+        "firstSeen": 1563929145237,
+        "lastSeen": 1591489113558,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG19.infra.lync.com",
+        "firstSeen": 1560794304047,
+        "lastSeen": 1591487378206,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "server",
+        "headerValue": "RTC/7.0",
+        "firstSeen": 1581172090000,
+        "lastSeen": 1591485897000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "strict-transport-security",
+        "headerValue": "max-age=31536000; includeSubDomains",
+        "firstSeen": 1528920780186,
+        "lastSeen": 1591485897000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "x-ms-server-fqdn",
+        "headerValue": "DM10A00EDG19.infra.lync.com",
+        "firstSeen": 1529185952113,
+        "lastSeen": 1591485897000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG11.infra.lync.com",
+        "firstSeen": 1477267200000,
+        "lastSeen": 1591481648507,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN23A00EDG09.infra.lync.com",
+        "firstSeen": 1472648400000,
+        "lastSeen": 1591479019232,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG16.infra.lync.com",
+        "firstSeen": 1522209600000,
+        "lastSeen": 1591476270005,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "YTOCA100EDG01.infra.lync.com",
+        "firstSeen": 1478682000000,
+        "lastSeen": 1591475042991,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG06.infra.lync.com",
+        "firstSeen": 1472938408996,
+        "lastSeen": 1591470561175,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG15.infra.lync.com",
+        "firstSeen": 1477328400000,
+        "lastSeen": 1591468097633,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG16.infra.lync.com",
+        "firstSeen": 1551165142125,
+        "lastSeen": 1591468059383,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG18.infra.lync.com",
+        "firstSeen": 1501642800000,
+        "lastSeen": 1591467774870,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG08.infra.lync.com",
+        "firstSeen": 1554165699622,
+        "lastSeen": 1591464220890,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10A00EDG19.infra.lync.com",
+        "firstSeen": 1472470046226,
+        "lastSeen": 1591463632931,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG20.infra.lync.com",
+        "firstSeen": 1521597600000,
+        "lastSeen": 1591463120902,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG12.infra.lync.com",
+        "firstSeen": 1480168800000,
+        "lastSeen": 1591462031601,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SG20F00EDG47.infra.lync.com",
+        "firstSeen": 1523044800000,
+        "lastSeen": 1591460183102,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG09.infra.lync.com",
+        "firstSeen": 1501635600000,
+        "lastSeen": 1591458484121,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG15.infra.lync.com",
+        "firstSeen": 1551486965938,
+        "lastSeen": 1591458210607,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG13.infra.lync.com",
+        "firstSeen": 1502334000000,
+        "lastSeen": 1591457540644,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU0B00EDG13.infra.lync.com",
+        "firstSeen": 1552842382908,
+        "lastSeen": 1591457273439,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG09.infra.lync.com",
+        "firstSeen": 1522436400000,
+        "lastSeen": 1591453290930,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG16.infra.lync.com",
+        "firstSeen": 1506477600000,
+        "lastSeen": 1591450561104,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BL20A00EDG13.infra.lync.com",
+        "firstSeen": 1478475572437,
+        "lastSeen": 1591448553229,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG17.infra.lync.com",
+        "firstSeen": 1560477464700,
+        "lastSeen": 1591446616394,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG19.infra.lync.com",
+        "firstSeen": 1505786400000,
+        "lastSeen": 1591446451800,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG06.infra.lync.com",
+        "firstSeen": 1501704000000,
+        "lastSeen": 1591446436193,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "CO24A00EDG17.infra.lync.com",
+        "firstSeen": 1522152000000,
+        "lastSeen": 1591446416552,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BLU1A00EDG02.infra.lync.com",
+        "firstSeen": 1501671600000,
+        "lastSeen": 1591446085883,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM12A00EDG05.infra.lync.com",
+        "firstSeen": 1473260400000,
+        "lastSeen": 1591441219735,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "MAAIN100EDG01.infra.lync.com",
+        "firstSeen": 1583184030647,
+        "lastSeen": 1591438447006,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "SN11A00EDG05.infra.lync.com",
+        "firstSeen": 1501848000000,
+        "lastSeen": 1591436926192,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM21B01EDG10.infra.lync.com",
+        "firstSeen": 1559895121736,
+        "lastSeen": 1591436243002,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "BN11B01EDG10.infra.lync.com",
+        "firstSeen": 1561128778882,
+        "lastSeen": 1591436217576,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "X-MS-Server-Fqdn",
+        "headerValue": "DM10B00EDG08.infra.lync.com",
+        "firstSeen": 1472346000000,
+        "lastSeen": 1591434550421,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "cookies": [],
+    "sslCerts": [
+      {
+        "sha1": "1e42a5ee87fe8dfa0348b67f86fea0b8f957408f",
+        "serialNumber": "200006994c32ae23cdac906e4c00000006994c",
+        "subjectAlternativeNames": [
+          "sipfed.online.lync.com",
+          "*.online.lync.com",
+          "*.infra.lync.com",
+          "*.lync.com"
+        ],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1561679092426,
+        "lastSeen": 1591599294046,
+        "keySize": 2048,
+        "version": 3,
+        "certificateAuthority": false,
+        "selfSigned": false,
+        "recent": true,
+        "signatureAlgorithm": "SHA256withRSA",
+        "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+        "notBefore": 1560882766000,
+        "notAfter": 1624041166000,
+        "publicKeyAlgorithm": "RSA",
+        "id": "1e42a5ee87fe8dfa0348b67f86fea0b8f957408f",
+        "issuer": {
+          "country": "US",
+          "unit": "Microsoft IT",
+          "organization": "Microsoft Corporation",
+          "common name": "Microsoft IT TLS CA 2",
+          "state": "Washington",
+          "locale": "Redmond"
+        },
+        "subject": {
+          "common name": "sipfed.online.lync.com"
+        },
+        "current": true
+      },
+      {
+        "sha1": "54d9d20239080c32316ed9ff980a48988f4adf2d",
+        "serialNumber": "f2c10c95b06c0937fb8d449f83e8569",
+        "subjectAlternativeNames": [],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1518040800000,
+        "lastSeen": 1591485897000,
+        "keySize": 4096,
+        "version": 3,
+        "certificateAuthority": true,
+        "selfSigned": false,
+        "signatureAlgorithm": "SHA256withRSA",
+        "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+        "notBefore": 1463748717000,
+        "notAfter": 1716209517000,
+        "publicKeyAlgorithm": "RSA",
+        "id": "54d9d20239080c32316ed9ff980a48988f4adf2d",
+        "issuer": {
+          "country": "IE",
+          "unit": "CyberTrust",
+          "organization": "Baltimore",
+          "common name": "Baltimore CyberTrust Root"
+        },
+        "subject": {
+          "country": "US",
+          "unit": "Microsoft IT",
+          "organization": "Microsoft Corporation",
+          "common name": "Microsoft IT TLS CA 2",
+          "state": "Washington",
+          "locale": "Redmond"
+        }
+      },
+      {
+        "sha1": "dc1ef74ed37fed6d0b8fd3df83beabedb44d7cf9",
+        "serialNumber": "200001f8e075e54384b8574b8400000001f8e0",
+        "subjectAlternativeNames": [
+          "sipfed.online.lync.com",
+          "*.online.lync.com",
+          "*.infra.lync.com",
+          "*.lync.com"
+        ],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1518040800000,
+        "lastSeen": 1561679657204,
+        "signatureAlgorithm": "SHA256withRSA",
+        "notAfter": 1564700095000,
+        "id": "dc1ef74ed37fed6d0b8fd3df83beabedb44d7cf9",
+        "issuer": {
+          "common name": "Microsoft IT TLS CA 2"
+        },
+        "subject": {
+          "common name": "sipfed.online.lync.com"
+        }
+      },
+      {
+        "sha1": "f16fa1ead783d21d3461050d13b21ccc00ca93dc",
+        "serialNumber": "bd9cf11d2a1d73f0",
+        "subjectAlternativeNames": [],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1541707084207,
+        "lastSeen": 1557350734774,
+        "signatureAlgorithm": "SHA256withRSA",
+        "notAfter": 1813340276000,
+        "id": "f16fa1ead783d21d3461050d13b21ccc00ca93dc",
+        "issuer": {
+          "common name": "ip-172-24-116-149.ec2.internal"
+        },
+        "subject": {
+          "common name": "ip-172-24-116-149.ec2.internal"
+        }
+      },
+      {
+        "sha1": "0334f43c27ddff0246b548560b27fafc3174ccb1",
+        "serialNumber": "f428b47c6efe7058806f9b52ddc1eb7d",
+        "subjectAlternativeNames": [
+          "ssl384574.cloudflaressl.com",
+          "*.hydroflask.com",
+          "hydroflask.com"
+        ],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1555787516089,
+        "lastSeen": 1555787516089,
+        "signatureAlgorithm": "SHA256withECDSA",
+        "notAfter": 1561852799000,
+        "id": "0334f43c27ddff0246b548560b27fafc3174ccb1",
+        "issuer": {
+          "unit": "Domain Control Validated",
+          "common name": "COMODO ECC Domain Validation Secure Server CA 2"
+        },
+        "subject": {
+          "common name": "ssl384574.cloudflaressl.com"
+        }
+      },
+      {
+        "sha1": "556e828ad4dcb4dfab552c9548c55d2cd6dd73dc",
+        "serialNumber": "5a00062a267e44b0e24fdea2bf000100062a26",
+        "subjectAlternativeNames": [
+          "*.infra.lync.com",
+          "*.lync.com",
+          "*.online.lync.com",
+          "sipfed.online.lync.com"
+        ],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1487577600000,
+        "lastSeen": 1516126276000,
+        "signatureAlgorithm": "SHA256withRSA",
+        "notAfter": 1521483583000,
+        "id": "556e828ad4dcb4dfab552c9548c55d2cd6dd73dc",
+        "issuer": {
+          "common name": "Microsoft IT SSL SHA2"
+        },
+        "subject": {
+          "common name": "sipfed.online.lync.com"
+        }
+      },
+      {
+        "sha1": "97eff3028677894bdd4f9ac53f789bee5df4ad86",
+        "serialNumber": "727aa47",
+        "subjectAlternativeNames": [],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1469430000000,
+        "lastSeen": 1516126276000,
+        "signatureAlgorithm": "SHA256withRSA",
+        "notAfter": 1525712610000,
+        "id": "97eff3028677894bdd4f9ac53f789bee5df4ad86",
+        "issuer": {
+          "unit": "Microsoft IT",
+          "organization": "Microsoft Corporation",
+          "common name": "Baltimore CyberTrust Root"
+        },
+        "subject": {
+          "common name": "Microsoft IT SSL SHA2"
+        }
+      },
+      {
+        "sha1": "30a91dd7bba85e31627c65eaeeb19779ab3b6d1e",
+        "serialNumber": "5a0000c80371fba57fda284c6c00010000c803",
+        "subjectAlternativeNames": [
+          "sipfed.online.lync.com",
+          "*.online.lync.com",
+          "*.infra.lync.com",
+          "*.lync.com"
+        ],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1469430000000,
+        "lastSeen": 1486972800000,
+        "signatureAlgorithm": "SHA256withRSA",
+        "notAfter": 1489364024000,
+        "id": "30a91dd7bba85e31627c65eaeeb19779ab3b6d1e",
+        "issuer": {
+          "common name": "Microsoft IT SSL SHA2"
+        },
+        "subject": {
+          "common name": "sipfed.online.lync.com"
+        }
+      },
+      {
+        "sha1": "2460a130d5a032e2b261d007719a156e921bbb9d",
+        "serialNumber": "6500000025ee2a066eeecce3a0000000000025",
+        "subjectAlternativeNames": [],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1469430000000,
+        "lastSeen": 1470639600000,
+        "signatureAlgorithm": "SHA256withRSA",
+        "notAfter": 1553621187000,
+        "id": "2460a130d5a032e2b261d007719a156e921bbb9d",
+        "issuer": {
+          "organization": "Baltimore",
+          "common name": "Microsoft Internal Corporate Root"
+        },
+        "subject": {
+          "common name": "Baltimore CyberTrust Root"
+        }
+      }
+    ],
+    "services": [
+      {
+        "scheme": "unknown",
+        "port": 443,
+        "webComponents": [],
+        "sslCerts": [],
+        "exceptions": [],
+        "firstSeen": 1476145337000,
+        "lastSeen": 1591485897000,
+        "recent": true,
+        "banners": [
+          {
+            "port": 443,
+            "banner": "Status: 404 Not Found\r\nServer: RTC/7.0\r\nFQDN: DM10A00EDG19.infra.lync.com\r\n",
+            "firstSeen": 1545221405000,
+            "lastSeen": 1591485897000,
+            "count": 277,
+            "scanType": "http",
+            "bannerMetadata": "gas",
+            "recent": true
+          },
+          {
+            "port": 443,
+            "banner": "Status: 404 Not Found\r\nServer: RTC/7.0\r\nFQDN: DM10A00EDG13.INFRA.LYNC.COM\r\n",
+            "firstSeen": 1583253783000,
+            "lastSeen": 1591123608000,
+            "count": 19,
+            "scanType": "http",
+            "bannerMetadata": "--i",
+            "recent": true
+          },
+          {
+            "port": 443,
+            "banner": "Status: 404 Not Found\r\nServer: RTC/7.0\r\nFQDN: DM10A00EDG07.infra.lync.com\r\n",
+            "firstSeen": 1586795920000,
+            "lastSeen": 1586797625000,
+            "count": 4,
+            "scanType": "http",
+            "bannerMetadata": "gai"
+          },
+          {
+            "port": 443,
+            "banner": "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",
+            "firstSeen": 1558438508000,
+            "lastSeen": 1567659026000,
+            "count": 2,
+            "scanType": "tls",
+            "bannerMetadata": "gis"
+          },
+          {
+            "port": 443,
+            "banner": "Status: 404 Not Found\r\nServer: RTC/7.0\r\nFQDN: DM10A00EDG12.INFRA.LYNC.COM\r\n",
+            "firstSeen": 1544962629000,
+            "lastSeen": 1544962629000,
+            "count": 1,
+            "scanType": "http"
+          }
+        ],
+        "scanMetadata": [
+          {
+            "port": 443,
+            "bannerMetadata": "--i",
+            "startScan": 1591122935000,
+            "endScan": 1591124226000
+          },
+          {
+            "port": 443,
+            "bannerMetadata": "gai",
+            "startScan": 1591041224000,
+            "endScan": 1591044810000
+          },
+          {
+            "port": 443,
+            "bannerMetadata": "gas",
+            "startScan": 1591485494000,
+            "endScan": 1591486828000
+          },
+          {
+            "port": 443,
+            "bannerMetadata": "gis",
+            "startScan": 1567658295000,
+            "endScan": 1567659362000
+          }
+        ],
+        "current": true
+      },
+      {
+        "scheme": "unknown",
+        "port": 5061,
+        "webComponents": [],
+        "sslCerts": [],
+        "exceptions": [],
+        "firstSeen": 1566836399000,
+        "lastSeen": 1591236557000,
+        "recent": true,
+        "banners": [
+          {
+            "port": 5061,
+            "banner": "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",
+            "firstSeen": 1566836399000,
+            "lastSeen": 1591227949000,
+            "count": 192,
+            "scanType": "tls",
+            "bannerMetadata": "gis",
+            "recent": true
+          }
+        ],
+        "scanMetadata": [
+          {
+            "port": 5061,
+            "bannerMetadata": "--i",
+            "startScan": 1591236248000,
+            "endScan": 1591236578000
+          },
+          {
+            "port": 5061,
+            "bannerMetadata": "gis",
+            "startScan": 1591227650000,
+            "endScan": 1591227964000
+          }
+        ],
+        "current": true
+      },
+      {
+        "scheme": "unknown",
+        "port": 80,
+        "webComponents": [],
+        "sslCerts": [],
+        "exceptions": [],
+        "firstSeen": 1558436862000,
+        "lastSeen": 1591152964000,
+        "recent": true,
+        "banners": [],
+        "scanMetadata": [
+          {
+            "port": 80,
+            "bannerMetadata": "gai",
+            "startScan": 1591152654000,
+            "endScan": 1591153686000
+          },
+          {
+            "port": 80,
+            "bannerMetadata": "gis",
+            "startScan": 1558436560000,
+            "endScan": 1558437551000
+          }
+        ],
+        "current": true
+      }
+    ],
+    "ipBlocks": [
+      {
+        "ipBlock": "52.112.0.0/14",
+        "firstSeen": 1539034799618,
+        "lastSeen": 1591611882500,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "firstSeen": 1469430000000,
+    "lastSeen": 1591599406957,
+    "count": 190299,
+    "nsRecord": [
+      {
+        "value": false,
+        "firstSeen": 1476145337000,
+        "lastSeen": 1591599406957,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "mxRecord": [
+      {
+        "value": false,
+        "firstSeen": 1476145337000,
+        "lastSeen": 1591599406957,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "location": [
+      {
+        "value": {
+          "countrycode": "US",
+          "countryname": "United States",
+          "region": "IA",
+          "regionname": "Des Moines",
+          "postalcode": "50307",
+          "latitude": 41.60060119628906,
+          "longitude": -93.61119842529297,
+          "metrocodeid": 679
+        },
+        "firstSeen": 1590661321000,
+        "lastSeen": 1591599406957
+      }
+    ],
+    "hosts": [
+      {
+        "value": "sipfed0a.online.lync.com",
+        "firstSeen": 1591379186000,
+        "lastSeen": 1591570457000
+      },
+      {
+        "value": "sipdir.online.lync.com",
+        "firstSeen": 1591292494000,
+        "lastSeen": 1591569403000
+      },
+      {
+        "value": "sipfed.online.lync.com",
+        "firstSeen": 1591384966000,
+        "lastSeen": 1591558321000
+      },
+      {
+        "value": "vttgetaway.com",
+        "firstSeen": 1591386038000,
+        "lastSeen": 1591386038000
+      },
+      {
+        "value": "sip.onmsft.com",
+        "firstSeen": 1591298207000,
+        "lastSeen": 1591298207000
+      }
+    ],
+    "nxdomain": [],
+    "asnNumbers": [
+      {
+        "value": 8075,
+        "firstSeen": 1539034799618,
+        "lastSeen": 1591611882500,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "asns": [
+      {
+        "asnID": 8075,
+        "description": "MICROSOFT-CORP-MSN-AS-BLOCK - Microsoft Corporation, US",
+        "registry": "ARIN",
+        "countryCode": "US",
+        "name": "AS8075",
+        "id": 8075,
+        "fullName": "AS8075 - US - MICROSOFT-CORP-MSN-AS-BLOCK - Microsoft Corporation, US"
+      }
+    ],
+    "attributes": [
+      {
+        "attributeType": "address",
+        "attributeValue": "162.6.217.33",
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "current": true
+      },
+      {
+        "attributeType": "address",
+        "attributeValue": "unknown",
+        "firstSeen": 1586044395500,
+        "lastSeen": 1591191958789,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "nameServers": [
+      {
+        "value": "dummy.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.nameserver.com",
+        "firstSeen": 1475863092000,
+        "lastSeen": 1591568678000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "whois": {
+      "createdAt": 1591402147858,
+      "updatedAt": 1591402147858,
+      "status": "ACTIVE",
+      "whoisID": 6674824394369493291,
+      "domain": "dummydomain.com",
+      "domainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+      "domainUnicode": "dummydomain.com",
+      "tld": "com",
+      "nameservers": [
+        "dummy.nameserver.com",
+        "dummy1.nameserver.com",
+        "dummy2.nameserver.com",
+        "dummy3.nameserver.com"
+      ],
+      "whoisServer": "dummy.com",
+      "registrarIanaID": 146,
+      "registrarName": "Dummy, LLC",
+      "registrarEmail": "abuse@dummydomain.com",
+      "registrarCreatedAt": 1137076406000,
+      "registrarUpdatedAt": 1483618972000,
+      "registrarExpiresAt": 1768228406000,
+      "registrant": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "state": "cyprus",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "admin": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "technical": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "billing": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "domainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+      "auditCreatedAt": 1591402147834,
+      "auditUpdatedAt": 1591402147834,
+      "registrarParseCode": 36643,
+      "noRecord": false,
+      "domainAvailable": false,
+      "contactEmails": [
+        "dummy@dummy.com"
+      ],
+      "expired": false,
+      "contacts": [
+        {
+          "whoisContactID": 0,
+          "organization": "Dummy Organization",
+          "state": "california",
+          "country": "united states",
+          "address": "california\nunited states\n",
+          "id": 0
+        }
+      ],
+      "contactNames": [
+        "Dummy"
+      ],
+      "contactOrganizations": [
+        "Dummy Organization"
+      ],
+      "contactCountries": [
+        "united states"
+      ],
+      "compositeParseCode": 36643,
+      "id": 6674824394369493291,
+      "raw": "Registrar: \n  Handle: 314061295_DOMAIN_COM-VRSN\n  LDH Name: dummydomain.com\n  Nameserver: \n    LDH Name: NS-1502.AWSDNS-59.ORG\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.743Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-295.AWSDNS-36.COM\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.84Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-625.AWSDNS-14.NET\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.107Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-1837.AWSDNS-37.CO.UK\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.163Z\n      Status: active\n  SecureDNS: \n    Delegation Signed: false\n  Event: \n    Action: last update of RDAP database\n    Date: 2020-06-06T00:09:07.492949419Z\n  Event: \n    Action: expiration\n    Date: 2026-01-12T14:33:26Z\n  Event: \n    Action: registration\n    Date: 2006-01-12T14:33:26Z\n  Event: \n    Action: last update\n    Date: 2017-01-05T12:22:52Z\n  Status: \n    delete prohibited\n    transfer prohibited\n    renew prohibited\n    update prohibited\n  Entity: \n    Handle: 1\n    Role: \n      REGISTRANT\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 2\n    Role: \n      ADMINISTRATIVE\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 3\n    Role: \n      TECHNICAL\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 4\n    Role: \n      BILLING\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 146\n    Role: \n      REGISTRAR\n    VCard: \n      Formatted Name: Dummy, LLC\n      Address: \n          Street: 14455 N Hayden Suite 226\n          Locale: Scottsdale\n          Region: AZ\n          Postal Code: 85260\n          Country: US\n      Email: abuse@dummydomain.com\n          TYPE: work\n    Entity: \n      Handle: \n      Role: \n        ABUSE\n      VCard: \n            TYPE: voice\n        Email: abuse@dummydomain.com\n            TYPE: work\n    RDAP Conformance: \n      rdap_level_0\n      icann_rdap_response_profile_0\n      icann_rdap_technical_implementation_guide_0\n  Link: \n    Rel: self\n    Value: https://rdap.dummy.com/v1/domain/dummydomain.com\n    Type: application/rdap+json\n    Href: https://rdap.dummy.com/v1/domain/dummydomain.com\n  Notice: \n    Title: Epp Status Codes\n      Description: For more information on domain status codes, please visit https://icann.org/epp.\n      Link: \n        Rel: related\n        Value: https://icann.org/epp\n        Type: text/html\n        Href: https://icann.org/epp\n  Notice: \n    Title: Whois Inaccuracy Complaint Form\n      Description: URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf.\n      Link: \n        Rel: related\n        Value: https://www.icann.org/wicf\n        Type: text/html\n        Href: https://www.icann.org/wicf\n  Notice: \n    Title: Terms of Use\n    Description: \n      By submitting an inquiry, you agree to these Universal Terms of Service\n      and limitations of warranty. In particular, you agree not to use this\n      data to allow, enable, or otherwise make possible, dissemination or\n      collection of this data, in part or in its entirety, for any purpose,\n      such as the transmission of unsolicited advertising and solicitations of\n      any kind, including spam. You further agree not to use this data to enable\n      high volume, automated or robotic electronic processes designed to collect\n      or compile this data for any purpose, including mining this data for your\n      own personal or commercial purposes, or use this data in any way that violates\n      applicable laws and regulations.\n      Link: \n        Rel: related\n        Value: https://www.dummy.com/agreements/showdoc?pageid=5403\n        Type: text/html\n        Href: https://www.dummy.com/agreements/showdoc?pageid=5403\n  RDAP Conformance: \n    rdap_level_0\n    icann_rdap_response_profile_0\n    icann_rdap_technical_implementation_guide_0\n\n\n  Registry: \n    Handle: 314061295_DOMAIN_COM-VRSN\n    LDH Name: dummydomain.com\n    Nameserver: \n      LDH Name: NS-1502.AWSDNS-59.ORG\n    Nameserver: \n      LDH Name: NS-1837.AWSDNS-37.CO.UK\n    Nameserver: \n      LDH Name: NS-295.AWSDNS-36.COM\n    Nameserver: \n      LDH Name: NS-625.AWSDNS-14.NET\n    SecureDNS: \n      Delegation Signed: false\n    Event: \n      Action: registration\n      Date: 2006-01-12T19:33:26Z\n    Event: \n      Action: expiration\n      Date: 2026-01-12T19:33:26Z\n    Event: \n      Action: last update of RDAP database\n      Date: 2020-06-05T17:49:42Z\n    Status: \n      client delete prohibited\n      client renew prohibited\n      client transfer prohibited\n      client update prohibited\n    Entity: \n      Handle: 146\n      Role: \n        REGISTRAR\n      VCard: \n        Formatted Name: Dummy, LLC\n      Entity: \n        Role: \n          ABUSE\n        VCard: \n          Formatted Name: \n              TYPE: voice\n          Email: abuse@dummydomain.com\n    Link: \n      Rel: self\n      Value: https://rdap.verisign.com/com/v1/domain/dummydomain.com\n      Type: application/rdap+json\n      Href: https://rdap.verisign.com/com/v1/domain/dummydomain.com\n    Link: \n      Rel: related\n      Value: https://rdap.dummy.com/v1/domain/dummydomain.com\n      Type: application/rdap+json\n      Href: https://rdap.dummy.com/v1/domain/dummydomain.com\n    Notice: \n      Title: Terms of Use\n        Description: Service subject to Terms of Use.\n        Link: \n          Type: text/html\n          Href: https://www.verisign.com/domain-names/registration-data-access-protocol/terms-service/index.xhtml\n    Notice: \n      Title: Status Codes\n        Description: For more information on domain status codes, please visit https://icann.org/epp\n        Link: \n          Type: text/html\n          Href: https://icann.org/epp\n    Notice: \n      Title: RDDS Inaccuracy Complaint Form\n        Description: URL of the ICANN RDDS Inaccuracy Complaint Form: https://icann.org/wicf\n        Link: \n          Type: text/html\n          Href: https://icann.org/wicf\n    RDAP Conformance: \n      rdap_level_0\n      icann_rdap_technical_implementation_guide_0\n      icann_rdap_response_profile_0\n"
+    }
+  },
+  "data": {
+    "hostPairs": {
+      "content": [],
+      "totalElements": 0,
+      "totalPages": 0,
+      "last": true,
+      "numberOfElements": 0,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "attributes": {
+      "content": [
+        {
+          "firstSeen": 1529275832979,
+          "lastSeen": 1557350734774,
+          "count": 6,
+          "id": "52.112.64.75$GoogleAnalyticsTrackingId$ua-84860034-8",
+          "address": "52.112.64.75",
+          "asn": 8075,
+          "bgpPrefix": "52.112.0.0/14",
+          "attributeType": "GoogleAnalyticsTrackingId",
+          "attributeValue": "ua-84860034-8"
+        },
+        {
+          "firstSeen": 1529275832979,
+          "lastSeen": 1557350734774,
+          "count": 6,
+          "id": "52.112.64.75$GoogleAnalyticsAccountNumber$ua-84860034",
+          "address": "52.112.64.75",
+          "asn": 8075,
+          "bgpPrefix": "52.112.0.0/14",
+          "attributeType": "GoogleAnalyticsAccountNumber",
+          "attributeValue": "ua-84860034"
+        }
+      ],
+      "totalElements": 2,
+      "totalPages": 1,
+      "last": true,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "webComponents": {
+      "content": [
+        {
+          "firstSeen": 1472000400000,
+          "lastSeen": 1591685524062,
+          "count": 113574,
+          "id": "52.112.64.75$RTC$Server$7.0",
+          "address": "52.112.64.75",
+          "asn": 8075,
+          "bgpPrefix": "52.112.0.0/14",
+          "webComponentVersion": "7.0",
+          "webComponentName": "RTC",
+          "webComponentCategory": "Server",
+          "cves": [],
+          "ports": [
+            {
+              "firstSeen": 1530436999629,
+              "lastSeen": 1591685524062,
+              "count": 86677,
+              "portNumber": 443
+            }
+          ]
+        },
+        {
+          "firstSeen": 1573473467647,
+          "lastSeen": 1590504705102,
+          "count": 34,
+          "id": "52.112.64.75$Squid$Server$3.1.10",
+          "address": "52.112.64.75",
+          "asn": 8075,
+          "bgpPrefix": "52.112.0.0/14",
+          "webComponentVersion": "3.1.10",
+          "webComponentName": "Squid",
+          "webComponentCategory": "Server",
+          "cves": [],
+          "ports": [
+            {
+              "firstSeen": 1573473467647,
+              "lastSeen": 1590504705102,
+              "count": 34,
+              "portNumber": 80
+            }
+          ]
+        }
+      ],
+      "totalElements": 9,
+      "totalPages": 5,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "sslCerts": {
+      "content": [
+        {
+          "firstSeen": 1561658733886,
+          "lastSeen": 1591685949326,
+          "count": 805673,
+          "id": "1e42a5ee87fe8dfa0348b67f86fea0b8f957408f",
+          "sha1": "1e42a5ee87fe8dfa0348b67f86fea0b8f957408f",
+          "version": 3,
+          "serialNumber": "200006994c32ae23cdac906e4c00000006994c",
+          "signatureAlgorithm": "SHA256withRSA",
+          "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+          "issuer": {
+            "country": "US",
+            "unit": "Microsoft IT",
+            "organization": "Microsoft Corporation",
+            "common name": "Microsoft IT TLS CA 2",
+            "state": "Washington",
+            "locale": "Redmond"
+          },
+          "issuerAlternativeNames": [],
+          "notBefore": 1560882766000,
+          "notAfter": 1624041166000,
+          "subject": {
+            "common name": "sipfed.online.lync.com"
+          },
+          "subjectAlternativeNames": [
+            "sipfed.online.lync.com",
+            "*.online.lync.com",
+            "*.infra.lync.com",
+            "*.lync.com"
+          ],
+          "publicKeyAlgorithm": "RSA",
+          "certificateAuthority": false,
+          "selfSigned": false
+        },
+        {
+          "firstSeen": 1484553600000,
+          "lastSeen": 1591686804431,
+          "count": 503070663,
+          "id": "54d9d20239080c32316ed9ff980a48988f4adf2d",
+          "sha1": "54d9d20239080c32316ed9ff980a48988f4adf2d",
+          "version": 3,
+          "serialNumber": "f2c10c95b06c0937fb8d449f83e8569",
+          "signatureAlgorithm": "SHA256withRSA",
+          "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+          "issuer": {
+            "country": "IE",
+            "unit": "CyberTrust",
+            "organization": "Baltimore",
+            "common name": "Baltimore CyberTrust Root"
+          },
+          "issuerAlternativeNames": [],
+          "notBefore": 1463748717000,
+          "notAfter": 1716209517000,
+          "subject": {
+            "country": "US",
+            "unit": "Microsoft IT",
+            "organization": "Microsoft Corporation",
+            "common name": "Microsoft IT TLS CA 2",
+            "state": "Washington",
+            "locale": "Redmond"
+          },
+          "subjectAlternativeNames": [],
+          "publicKeyAlgorithm": "RSA",
+          "certificateAuthority": true,
+          "selfSigned": false
+        }
+      ],
+      "totalElements": 11,
+      "totalPages": 6,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "cookies": {
+      "content": [
+        {
+          "firstSeen": 1555787516089,
+          "lastSeen": 1555787516089,
+          "count": 1,
+          "id": "52.112.64.75$.hydroflask.com$9f13ed63618f434b8389cd737292c591",
+          "address": "52.112.64.75",
+          "asn": 8075,
+          "bgpPrefix": "52.112.0.0/14",
+          "cookieDomain": ".hydroflask.com",
+          "cookieName": "__cfduid"
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "last": true,
+      "numberOfElements": 1,
+      "first": true,
+      "size": 2,
+      "number": 0
+    }
+  }
+}

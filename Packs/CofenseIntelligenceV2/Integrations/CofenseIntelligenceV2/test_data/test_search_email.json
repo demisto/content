@@ -1,0 +1,217 @@
+{
+  "email_search_response": {
+    "success": true,
+    "data": {
+      "threats": [
+        {
+          "id": 6435,
+          "relatedSearchTags": [],
+          "feeds": [
+            {
+              "id": 23,
+              "permissions": {
+                "WRITE": false,
+                "OWNER": false,
+                "READ": true
+              },
+              "displayName": "Cofense"
+            }
+          ],
+          "blockSet": [
+            {
+              "malwareFamily": {
+                "familyName": "Keylogger",
+                "description": "Malware capable of collecting victim keystrokes for exfiltration"
+              },
+              "impact": "Major",
+              "confidence": 0,
+              "blockType": "Email",
+              "roleDescription": "Command and control location used by malware",
+              "role": "C2",
+              "infrastructureTypeSubclass": {
+                "description": "Command and control host to which victim information is shared by the malware"
+              },
+              "data": "email@email.com",
+              "data_1": "email@email.com"
+            }
+          ],
+          "campaignBrandSet": [
+            {
+              "totalCount": 1,
+              "brand": {
+                "id": 2051,
+                "text": "None"
+              }
+            }
+          ],
+          "extractedStringSet": [],
+          "domainSet": [
+            {
+              "totalCount": 1,
+              "domain": "gmail.com"
+            }
+          ],
+          "senderEmailSet": [
+            {
+              "totalCount": 1,
+              "senderEmail": "email@email.com"
+            }
+          ],
+          "executableSet": [
+            {
+              "malwareFamily": {
+                "familyName": "Keylogger",
+                "description": "Malware capable of collecting victim keystrokes for exfiltration"
+              },
+              "vendorDetections": [
+                {
+                  "detected": true,
+                  "threatVendorName": "AhnLab-V3"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Antiy-AVL"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "BitDefender"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Ikarus"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "Zoner"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Malwarebytes"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "NANO-Antivirus"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Baidu"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Fortinet"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "SUPERAntiSpyware"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "GData"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "CMC"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Arcabit"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Avast"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "Comodo"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "Cyren"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "McAfee"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "TotalDefense"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "Symantec"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Panda"
+                },
+                {
+                  "detected": false,
+                  "threatVendorName": "MicroWorld-eScan"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "AVware"
+                },
+                {
+                  "detected": true,
+                  "threatVendorName": "Emsisoft"
+                }
+              ],
+              "fileName": "email1013888898.zip",
+              "type": "Attachment",
+              "dateEntered": 1468519149893,
+              "severityLevel": "Major",
+              "fileNameExtension": "zip",
+              "md5Hex": "md5",
+              "sha384Hex": "384",
+              "sha512Hex": "512",
+              "sha1Hex": "1",
+              "sha224Hex": "224",
+              "sha256Hex": "256"
+            }
+          ],
+          "senderIpSet": [
+            {
+              "totalCount": 1,
+              "ip": "203.151.217"
+            }
+          ],
+          "senderNameSet": [
+            {
+              "totalCount": 1,
+              "name": "MRS.MARY CLARK"
+            }
+          ],
+          "spamUrlSet": [],
+          "subjectSet": [
+            {
+              "totalCount": 1,
+              "subject": "PURCHASE ORDER"
+            }
+          ],
+          "campaignLanguageSet": [],
+          "lastPublished": 1536338294235,
+          "firstPublished": 1468519926670,
+          "label": "Purchase Order - Keylogger",
+          "executiveSummary": "email executive summary",
+          "hasReport": true,
+          "reportURL": "https://www.threathq.com/api/l/activethreatreport/6435/html",
+          "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/6435/html",
+          "threatDetailURL": "https://www.threathq.com/p42/search/default?m=6435",
+          "malwareFamilySet": [
+            {
+              "familyName": "Keylogger",
+              "description": "Malware capable of collecting victim keystrokes for exfiltration"
+            }
+          ],
+          "threatType": "MALWARE",
+          "deliveryMechanisms": [],
+          "naicsCodes": []
+        }
+      ]
+    }
+  },
+  "mock_output": "{'Data': 'email@email.com', 'Threats': [{'id': 6435, 'relatedSearchTags': [], 'feeds': [{'id': 23, 'permissions': {'WRITE': False, 'OWNER': False, 'READ': True}, 'displayName': 'Cofense'}], 'blockSet': [{'malwareFamily': {'familyName': 'Keylogger', 'description': 'Malware capable of collecting victim keystrokes for exfiltration'}, 'impact': 'Major', 'confidence': 0, 'blockType': 'Email', 'roleDescription': 'Command and control location used by malware', 'role': 'C2', 'infrastructureTypeSubclass': {'description': 'Command and control host to which victim information is shared by the malware'}, 'data': 'email@email.com', 'data_1': 'email@email.com'}], 'campaignBrandSet': [{'totalCount': 1, 'brand': {'id': 2051, 'text': 'None'}}], 'extractedStringSet': [], 'domainSet': [{'totalCount': 1, 'domain': 'gmail.com'}], 'senderEmailSet': [{'totalCount': 1, 'senderEmail': 'email@email.com'}], 'executableSet': [{'malwareFamily': {'familyName': 'Keylogger', 'description': 'Malware capable of collecting victim keystrokes for exfiltration'}, 'vendorDetections': [{'detected': True, 'threatVendorName': 'AhnLab-V3'}, {'detected': True, 'threatVendorName': 'Antiy-AVL'}, {'detected': True, 'threatVendorName': 'BitDefender'}, {'detected': True, 'threatVendorName': 'Ikarus'}, {'detected': True, 'threatVendorName': 'Malwarebytes'}, {'detected': True, 'threatVendorName': 'NANO-Antivirus'}, {'detected': True, 'threatVendorName': 'Baidu'}, {'detected': True, 'threatVendorName': 'Fortinet'}, {'detected': True, 'threatVendorName': 'GData'}, {'detected': True, 'threatVendorName': 'Arcabit'}, {'detected': True, 'threatVendorName': 'Avast'}, {'detected': True, 'threatVendorName': 'McAfee'}, {'detected': True, 'threatVendorName': 'Panda'}, {'detected': True, 'threatVendorName': 'AVware'}, {'detected': True, 'threatVendorName': 'Emsisoft'}], 'fileName': 'email1013888898.zip', 'type': 'Attachment', 'dateEntered': 1468519149893, 'severityLevel': 'Major', 'fileNameExtension': 'zip', 'md5Hex': 'md5', 'sha384Hex': '384', 'sha512Hex': '512', 'sha1Hex': '1', 'sha224Hex': '224', 'sha256Hex': '256'}], 'senderIpSet': [{'totalCount': 1, 'ip': '203.151.217'}], 'senderNameSet': [{'totalCount': 1, 'name': 'MRS.MARY CLARK'}], 'spamUrlSet': [], 'subjectSet': [{'totalCount': 1, 'subject': 'PURCHASE ORDER'}], 'campaignLanguageSet': [], 'lastPublished': 1536338294235, 'firstPublished': 1468519926670, 'label': 'Purchase Order - Keylogger', 'executiveSummary': 'email executive summary', 'hasReport': True, 'reportURL': 'https://www.threathq.com/api/l/activethreatreport/6435/html', 'apiReportURL': 'https://www.threathq.com/apiv1/t3/malware/6435/html', 'threatDetailURL': 'https://www.threathq.com/p42/search/default?m=6435', 'malwareFamilySet': [{'familyName': 'Keylogger', 'description': 'Malware capable of collecting victim keystrokes for exfiltration'}], 'threatType': 'MALWARE', 'deliveryMechanisms': [], 'naicsCodes': []}]}",
+  "mock_readable": "### Cofense email Reputation for email email@email.com\n|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|\n|---|---|---|---|---|---|---|---|\n| 6435 | MALWARE | Malicious | email executive summary | Purchase Order - Keylogger | Malware capable of collecting victim keystrokes for exfiltration | 2018-09-07 16:38:14 | [https://www.threathq.com/api/l/activethreatreport/6435/html](https://www.threathq.com/api/l/activethreatreport/6435/html) |\n"
+}
+

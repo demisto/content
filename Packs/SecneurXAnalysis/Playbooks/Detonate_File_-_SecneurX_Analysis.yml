@@ -1,0 +1,566 @@
+id: Detonate File - SecneurX Analysis
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Detonate File - SecneurX Analysis
+description: Detonates a file using the SecneurX Analysis Integration. Returns relevant reports to the War Room and file reputations to the context data.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2f89e904-8132-4836-8d98-eb539e04e848
+    type: start
+    task:
+      id: 2f89e904-8132-4836-8d98-eb539e04e848
+      version: -1
+      name: ""
+      description: Playbook Start Point
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 26dce40d-42a5-4ad7-8647-670fabfeb362
+    type: condition
+    task:
+      id: 26dce40d-42a5-4ad7-8647-670fabfeb362
+      version: -1
+      name: Is SecneurX Analysis enabled?
+      description: Check if SecneurX Analysis sandbox is configured?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Secneurx Analysis
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Secneurx Analysis
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 384942b9-390b-4b94-8788-9dbaf3b837e4
+    type: condition
+    task:
+      id: 384942b9-390b-4b94-8788-9dbaf3b837e4
+      version: -1
+      name: Is there a File to detonate?
+      description: Check if a File is provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0f6e4669-81c1-403d-8ced-ff41d3c1857e
+    type: regular
+    task:
+      id: 0f6e4669-81c1-403d-8ced-ff41d3c1857e
+      version: -1
+      name: SecneurX Analysis File Upload
+      description: Submit the file to SecneurX Analysis.
+      script: Secneurx Analysis|||snx-analysis-submit-file
+      type: regular
+      iscommand: true
+      brand: Secneurx Analysis
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Duration:
+        complex:
+          root: inputs.Duration
+      EntryID:
+        complex:
+          root: inputs.File
+          accessor: EntryID
+      Extension:
+        complex:
+          root: inputs.Extension
+      File Password:
+        complex:
+          root: inputs.FilePassword
+      Platform:
+        complex:
+          root: inputs.Platform
+      Priority:
+        complex:
+          root: inputs.Priority
+      Reboot:
+        complex:
+          root: inputs.Reboot
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ade96c00-7e46-4d0f-8b1d-39bb58e8f23a
+    type: condition
+    task:
+      id: ade96c00-7e46-4d0f-8b1d-39bb58e8f23a
+      version: -1
+      name: Filter UUIDs?
+      description: Receive the Task UUID (unique ID) returned by the upload command.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SecneurXAnalysis.SubmitFile
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: SecneurXAnalysis.SubmitFile.task_uuid
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 4a653582-ad58-43c4-83d5-97974eb23b1c
+    type: title
+    task:
+      id: 4a653582-ad58-43c4-83d5-97974eb23b1c
+      version: -1
+      name: Done
+      description: Playbook End Point
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 0acb9f1f-35bf-4337-8ad5-b2652ac643f4
+    type: regular
+    task:
+      id: 0acb9f1f-35bf-4337-8ad5-b2652ac643f4
+      version: -1
+      name: SecneurX Analysis Get Report
+      description: Get the detailed report of the analyzed sample.
+      script: Secneurx Analysis|||snx-analysis-get-report
+      type: regular
+      iscommand: true
+      brand: Secneurx Analysis
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      report_format:
+        complex:
+          root: inputs.ReportFormat
+      task_uuid:
+        complex:
+          root: SecneurXAnalysis.SubmitFile
+          accessor: task_uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 1255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9efea409-b7b8-41c5-80fa-50a56c476fb0
+    type: playbook
+    task:
+      id: 9efea409-b7b8-41c5-80fa-50a56c476fb0
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Ids:
+        complex:
+          root: SecneurXAnalysis.SubmitFile
+          accessor: task_uuid
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: task_uuid
+      PollingCommandName:
+        simple: snx-analysis-get-verdict
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: SecneurXAnalysis.Verdict(val.status !== 'Completed' && val.status !== 'Failed').task_uuid
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ac123c7d-0cab-48bc-81ad-123bac6a53d5
+    type: condition
+    task:
+      id: ac123c7d-0cab-48bc-81ad-123bac6a53d5
+      version: -1
+      name: 'Is the file type supported? '
+      description: 'Extension of the submitted file. Supported values are: ["sh", "js", "7z", "py", "doc", "rtf", "xls", "ppt", "pps", "ps1", "bat", "eml", "exe", "iso", "jar", "txt", "odt", "odp", "ods", "swf", "msg", "msi", "url", "pdf", "rar", "vbs", "zip", "cab", "lnk", "xml", "dll", "tar", "hta", "elf", "docx", "docm", "link", "xlsx", "xlsm", "xlsb", "pptx", "ppam", "html"].'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              simple: inputs.File.Type
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:SH|JS|7Z|PY|DOC|RTF|XLS|PPT|PPS|PS1|BAT|EML|EXE|ISO|JAR|TXT|ODT|ODP|ODS|SWF|MSG|MSI|URL|PDF|RAR|VBS|ZIP|CAB|INK|XML|DLL|TAR|HTA|ELF|DOCX|DOCM|LINK|XLSX|XLSM|XLSB|PPTX|PPAM|HTML|WORD)\b
+          ignorecase: true
+        - operator: match
+          left:
+            value:
+              simple: inputs.File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:SH|JS|7Z|PY|DOC|RTF|XLS|PPT|PPS|PS1|BAT|EML|EXE|ISO|JAR|TXT|ODT|ODP|ODS|SWF|MSG|MSI|URL|PDF|RAR|VBS|ZIP|CAB|INK|XML|DLL|TAR|HTA|ELF|DOCX|DOCM|LINK|XLSX|XLSM|XLSB|PPTX|PPAM|HTML)\b
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_yes": 0.51,
+      "1_6_#default#": 0.1,
+      "2_6_#default#": 0.27,
+      "4_13_yes": 0.59,
+      "4_6_#default#": 0.39
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1545,
+        "width": 1230,
+        "x": 1450,
+        "y": -20
+      }
+    }
+  }
+fromversion: 6.2.0
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate. The File is taken from the context.
+  playbookInputQuery: null
+- key: Platform
+  value:
+    simple: Windows7
+  required: false
+  description: 'Operating system platform to run the analysis on. Supported values are: ["Windows7", "Windows10", "Android", "Ubuntu"].'
+  playbookInputQuery: null
+- key: Duration
+  value:
+    simple: "120"
+  required: false
+  description: Analysis duration in seconds.
+  playbookInputQuery: null
+- key: Priority
+  value:
+    simple: Normal
+  required: false
+  description: Analysis priority. Possible values are "High" or "Normal".
+  playbookInputQuery: null
+- key: Extension
+  value: {}
+  required: false
+  description: 'Extension of the submitted file. Supported values are: ["sh", "js", "7z", "py", "doc", "rtf", "xls", "ppt", "pps", "ps1", "bat", "eml", "exe", "iso", "jar", "txt", "odt", "odp", "ods", "swf", "msg", "msi", "url", "pdf", "rar", "vbs", "zip", "cab", "lnk", "xml", "dll", "tar", "hta", "elf", "docx", "docm", "link", "xlsx", "xlsm", "xlsb", "pptx", "ppam", "html"].'
+  playbookInputQuery: null
+- key: Reboot
+  value:
+    simple: "False"
+  required: false
+  description: Reboot the system during analysis. The value should be "True" or "False".
+  playbookInputQuery: null
+- key: FilePassword
+  value: {}
+  required: false
+  description: Password of the submitted file.
+  playbookInputQuery: null
+- key: ReportFormat
+  value:
+    simple: json
+  required: false
+  description: 'The resource type to download. Supported values are: ["json", "html"].'
+  playbookInputQuery: null
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Duration for executing the pooling (in minutes).
+  playbookInputQuery: null
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: The duration after which to stop pooling and to resume the playbook (in minutes).
+  playbookInputQuery: null
+outputs:
+- contextPath: SecneurXAnalysis.Report.SHA256
+  description: SHA256 value of the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.Platform
+  description: Platform of the analyzed sample.
+  type: String
+- contextPath: SecneurXAnalysis.Report.Verdict
+  description: Summary result of the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.Tags
+  description: More details of the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.DnsRequests
+  description: List of DNS data observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.HttpRequests
+  description: List of HTTP data observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.JA3Digests
+  description: List of JA3 data observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.ProcessCreated
+  description: Process behaviour data observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.RegistrySet
+  description: List of Registry creations observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.RegistryDeleted
+  description: List of Registry deletions observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileCreated
+  description: List of File creations observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileDropped
+  description: List of File drops observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileDeleted
+  description: List of File deletions observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.FileModified
+  description: List of File changes observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.IOC
+  description: List of IOC's observed in the analyzed sample.
+  type: string
+- contextPath: SecneurXAnalysis.Report.Status
+  description: Analysis queued sample state.
+  type: String
+- contextPath: SecneurXAnalysis.SubmitFile.error_msg
+  description: Error message when the file type i not supported.
+  type: string
+tests:
+- Detonate File - SecneurX Analysis - Test

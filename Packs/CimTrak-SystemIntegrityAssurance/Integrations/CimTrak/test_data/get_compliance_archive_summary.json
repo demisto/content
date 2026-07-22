@@ -1,0 +1,82 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "agentname": "ip-108-111-99-97.ekrgmd.spcsdns.net",
+                        "agentuuid": "dd858202-667a-451e-b62d-f37e77cab048",
+                        "alternatesystemid": "test",
+                        "badd": true,
+                        "bedit": true,
+                        "benchmark": "CIS Microsoft Office 2016 Benchmark",
+                        "block": true,
+                        "blogon": true,
+                        "breports": true,
+                        "bunlock": true,
+                        "bview": true,
+                        "datatype": "summary",
+                        "ipaddress": "127.0.0.1",
+                        "isadmin": false,
+                        "lobjectid": 10,
+                        "objectid": 10,
+                        "objectpath": "DSK050->Discovered Nodes->ip-108-111-99-97.ekrgmd.spcsdns.net->Compliance Policy",
+                        "osversion": "",
+                        "pass": true,
+                        "personality": "",
+                        "profile": "Level 1",
+                        "scanid": 4,
+                        "testdate": "2022-01-28 06:00:03",
+                        "totalfailcount": 0,
+                        "totalpasscount": 0,
+                        "totaltestsran": 0,
+                        "totaltestsskipped": 53,
+                        "totalwaivecount": 0,
+                        "userId": 2
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getComplianceArchiveSummary"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "agentname": "ip-108-111-99-97.ekrgmd.spcsdns.net",
+                "agentuuid": "dd858202-667a-451e-b62d-f37e77cab048",
+                "alternatesystemid": "test",
+                "badd": true,
+                "bedit": true,
+                "benchmark": "CIS Microsoft Office 2016 Benchmark",
+                "block": true,
+                "blogon": true,
+                "breports": true,
+                "bunlock": true,
+                "bview": true,
+                "datatype": "summary",
+                "ipaddress": "127.0.0.1",
+                "lobjectid": 10,
+                "objectid": 10,
+                "objectpath": "DSK050->Discovered Nodes->ip-108-111-99-97.ekrgmd.spcsdns.net->Compliance Policy",
+                "osversion": "",
+                "pass": true,
+                "personality": "",
+                "profile": "Level 1",
+                "scanid": 4,
+                "testdate": "2022-01-28 06:00:03",
+                "totalfailcount": 0,
+                "totalpasscount": 0,
+                "totaltestsran": 0,
+                "totaltestsskipped": 53,
+                "totalwaivecount": 0,
+                "userId": 2
+            }
+        ],
+        "status": "success"
+    }
+}

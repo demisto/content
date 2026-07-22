@@ -1,0 +1,182 @@
+id: Generate Use Case Builder Lists
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Generate Use Case Builder Lists
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eb0bfc94-2f2e-4d76-8e24-424084012120
+    type: start
+    task:
+      id: eb0bfc94-2f2e-4d76-8e24-424084012120
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7cef4805-3b05-4a4c-8b38-b52fbe4bb29d
+    type: title
+    task:
+      id: 7cef4805-3b05-4a4c-8b38-b52fbe4bb29d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a9640f69-b0cb-4f18-8811-8de632ea1f64
+    type: playbook
+    task:
+      id: a9640f69-b0cb-4f18-8811-8de632ea1f64
+      version: -1
+      name: Create Use Case Steps List
+      playbookName: Create Use Case Steps List
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6eb2dce4-37e6-4969-838a-195ad7e7ebed
+    type: playbook
+    task:
+      id: 6eb2dce4-37e6-4969-838a-195ad7e7ebed
+      version: -1
+      name: Create Use Case Template List
+      playbookName: Create Use Case Template List
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a63a6d3c-7ec0-4966-872a-ce34e37f85c8
+    type: playbook
+    task:
+      id: a63a6d3c-7ec0-4966-872a-ce34e37f85c8
+      version: -1
+      name: Create XSOAR Incident Flow List
+      playbookName: Create XSOAR Incident Flow List
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+tests:
+- Run all tests
+description: 'This playbook generates and saves the list types'

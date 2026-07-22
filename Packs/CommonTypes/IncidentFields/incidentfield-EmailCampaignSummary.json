@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Phishing",
+        "Phishing Campaign"
+    ],
+    "caseInsensitive": true,
+    "cliName": "emailcampaignsummary",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailcampaignsummary",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "EmailCampaignSummary",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

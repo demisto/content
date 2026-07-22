@@ -1,0 +1,20 @@
+!asm-add-note-to-asset asset_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx entity_type=asset note_to_add="Test adding note to asset."
+!asm-get-asset-internet-exposure asm_id=3c176460-8735-333c-b618-8262e2fb660c
+!asm-get-attack-surface-rule enabled_status=On limit=1
+!asm-get-external-ip-address-range range_id=4da29b7f-3086-3b52-981b-aa8ee5da1e60
+!asm-get-external-service service_id=94232f8a-f001-3292-aa65-63fa9d981427
+!asm-get-incident incident_id=71
+!asm-list-alerts limit=2 severity=high sort_by_creation_time=asc status=reopened
+!asm-list-asset-internet-exposure name="acme.com" type=certificate has_active_external_services=no
+!asm-list-external-ip-address-range
+!asm-list-external-service domain=acme.com is_active=yes discovery_type=directly_discovery
+!asm-list-external-websites authentication="Form" limit=5 
+!asm-list-incidents limit=1 status=new`
+!asm-tag-asset-assign tags="Test" asm_id_list="76fb0c06-52cf-33b5-8166-3a130bb25eb6"
+!asm-tag-asset-remove tags="Test" asm_id_list="76fb0c06-52cf-33b5-8166-3a130bb25eb6"
+!asm-tag-range-assign range_id_list="ba8d8f59-6445-37c0-a145-2233f9e5a9bd" tags="Test"
+!asm-tag-range-remove range_id_list="ba8d8f59-6445-37c0-a145-2233f9e5a9bd" tags="Test"`
+!asm-update-alerts alert_id_list=602 status=new
+!asm-update-incident incident_id="3674" alert_id="4372" comment="this is an xsoar test"
+!domain domain="*.acme.com, www.example.com, www.fakedomain.com"
+!ip ip="1.1.1.1, 1.1.1.2, 8.8.8.8"

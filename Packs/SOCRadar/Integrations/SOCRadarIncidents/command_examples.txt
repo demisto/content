@@ -1,0 +1,2 @@
+!socradar-mark-incident-fp socradar_incident_id=29051453 comments="This incident is FP."
+!socradar-mark-incident-resolved socradar_incident_id=29051453 comments="Incident has been resolved."

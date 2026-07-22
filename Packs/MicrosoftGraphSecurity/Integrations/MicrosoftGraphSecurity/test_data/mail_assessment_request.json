@@ -1,0 +1,27 @@
+{
+
+    "id": "mail_test_id",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "mail",
+    "expectedAssessment": "unblock",
+    "category": "spam",
+    "status": "completed",
+    "requestSource": "administrator",
+    "recipientEmail": "test_email",
+    "destinationRoutingReason": "notJunk",
+    "messageUri": "",
+    "createdBy": {
+      "user": {
+        "id": "id_test",
+        "displayName": "Test Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "test_id_two",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "No policy was hit."
+        }
+    ]
+}

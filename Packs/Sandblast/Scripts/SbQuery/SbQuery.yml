@@ -1,0 +1,56 @@
+commonfields:
+  id: SbQuery
+  version: -1
+name: SbQuery
+script: ''
+type: python
+subtype: python2
+tags:
+- sandblast
+comment: Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on cloud.
+system: true
+args:
+- name: md5
+  description: The md5 to query
+- name: sha1
+  description: The sha1 to query
+- name: sha256
+  description: The sha256 to query
+- name: file_type
+  description: File extension (although the service identifies the type)
+- name: features
+  auto: PREDEFINED
+  predefined:
+  - te
+  - av
+  - extraction
+  - all
+  description: Available features - default is te and av
+- name: images
+  description: Array of objects with id and revision of available OS images
+- name: reports
+  description: Array of supported report formats of - pdf | xml | tar
+- name: benign_reports
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: By default, reports are returned only for malicious files - you can mark this as true and get benign reports
+- name: quota
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: If true, response delivers the quota data (for cloud services only)
+- name: file_name
+  description: File name - service calculates the file name from the part name
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - sandblast-query
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (deprecated)
+deprecated: true

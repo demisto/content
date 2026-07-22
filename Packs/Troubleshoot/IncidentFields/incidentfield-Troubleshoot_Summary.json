@@ -1,0 +1,29 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Integration Troubleshooting"
+ ],
+ "caseInsensitive": true,
+ "cliName": "troubleshootsummary",
+ "closeForm": false,
+ "content": true,
+ "description": "The aggregated results of the troubleshooting playbook.",
+ "editForm": false,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_troubleshootsummary",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Troubleshoot Summary",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "type": "markdown",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

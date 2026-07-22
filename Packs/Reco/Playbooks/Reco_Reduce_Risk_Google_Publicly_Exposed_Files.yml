@@ -1,0 +1,487 @@
+id: Reco - Reduce Risk - Google Publicly Exposed Files
+version: -1
+name: Reco - Reduce Risk - Google Publicly Exposed Files
+description: The "Reco - Reduce Risk - Google Publicly Exposed Files" playbook aims to identify and mitigate the risk associated with publicly exposed sensitive files on Google Drive. It follows a sequence of tasks to detect such files, analyze their locations, and remove the "anyone with link" permission to enhance data security.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c17ad849-da25-4a34-8114-bdc1d1d2230b
+    type: start
+    task:
+      id: c17ad849-da25-4a34-8114-bdc1d1d2230b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b783179a-792a-48ed-8961-97425bbea658
+    type: regular
+    task:
+      id: b783179a-792a-48ed-8961-97425bbea658
+      version: -1
+      name: Reco Get Assets With Public Link
+      description: Reco Get Assets With Public Link - Retrieves all sensitive assets with public links from Reco.
+      script: '|||reco-get-sensitive-assets-with-public-link'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 60401348-fd9c-4f68-8faf-c4a225fe797f
+    type: condition
+    task:
+      id: 60401348-fd9c-4f68-8faf-c4a225fe797f
+      version: -1
+      name: Location is User Drive
+      description: Location is User Drive - Checks if the location of the assets is a user drive or a shared drive.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Reco.Assets
+                accessor: location
+            iscontext: true
+          right:
+            value:
+              simple: '@'
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b8ccb6dc-4aca-4646-85ea-902f01e91e98
+    type: regular
+    task:
+      id: b8ccb6dc-4aca-4646-85ea-902f01e91e98
+      version: -1
+      name: Get Drive List
+      description: Get Drive List - Lists the user's shared drives.
+      script: '|||google-drive-drives-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "10"
+      '#none#':
+      - "4"
+    scriptarguments:
+      use_domain_admin_access:
+        simple: "true"
+      user_id:
+        simple: ${inputs.admin_email_address}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ef5b7deb-83f8-4876-8f93-b0d8c46a3683
+    type: regular
+    task:
+      id: ef5b7deb-83f8-4876-8f93-b0d8c46a3683
+      version: -1
+      name: Google Drive List Permissions Drive
+      description: Lists a file's or shared drive's permissions.
+      script: '|||google-drive-file-permissions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "11"
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_id:
+        complex:
+          root: GoogleDrive.Drive.Drive
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: GoogleDrive.Drive.Drive
+                iscontext: true
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: GoogleDrive.Drive.Drive.name
+                iscontext: true
+              right:
+                value:
+                  simple: ${Reco.Assets.location}
+          accessor: id
+      supports_all_drives:
+        simple: "true"
+      user_id:
+        simple: ${inputs.admin_email_address}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 429b438f-713d-4066-8399-89aabe8f7f5d
+    type: regular
+    task:
+      id: 429b438f-713d-4066-8399-89aabe8f7f5d
+      version: -1
+      name: Get Organizer Owner
+      description: Get Organizer Owner - Sets the organizer's email address as a value in the context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: Drive.owner
+      value:
+        complex:
+          root: GoogleDrive.FilePermission.FilePermission
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: GoogleDrive.FilePermission.FilePermission.role
+                iscontext: true
+              right:
+                value:
+                  simple: organizer
+          accessor: emailAddress
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 18e024ac-d04c-49dc-8554-c1a7f3d20049
+    type: regular
+    task:
+      id: 18e024ac-d04c-49dc-8554-c1a7f3d20049
+      version: -1
+      name: Google Drive Delete Anyone with Link Permission
+      description: Google Drive Delete Anyone with Link Permission - Deletes the anyone with link permission for a file.
+      script: '|||google-drive-file-permission-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "8"
+      '#none#':
+      - "9"
+    scriptarguments:
+      file_id:
+        simple: ${Reco.Assets.asset_id}
+      permission_id:
+        simple: anyoneWithLink
+      user_id:
+        simple: ${Reco.Assets.location}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e9acb131-199d-4743-819d-650bf4851b83
+    type: regular
+    task:
+      id: e9acb131-199d-4743-819d-650bf4851b83
+      version: -1
+      name: Delete Anyone With Link Permission
+      description: Delete Anyone With Link Permission - Deletes the anyone with link permission for a file using the owner's email address.
+      script: '|||google-drive-file-permission-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "8"
+      '#none#':
+      - "9"
+    scriptarguments:
+      file_id:
+        simple: ${Reco.Assets.asset_id}
+      permission_id:
+        simple: anyoneWithLink
+      supports_all_drives:
+        simple: "true"
+      user_id:
+        simple: ${Drive.owner}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d84303c9-e585-4fa8-8761-15e3e3d67b31
+    type: title
+    task:
+      id: d84303c9-e585-4fa8-8761-15e3e3d67b31
+      version: -1
+      name: Error Delete Permission
+      description: Error Delete Permission - Represents an error state when deleting a permission.
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bc19b805-6f71-49d3-8509-9d3ed57862d6
+    type: regular
+    task:
+      id: bc19b805-6f71-49d3-8509-9d3ed57862d6
+      version: -1
+      name: Collect Deleted Permissions
+      description: Append item(s) to the end of the list if they are not empty.
+      scriptName: AppendIfNotEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      item:
+        simple: ${Reco.Assets.asset}
+      value:
+        simple: revoked_files
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: adf5f94c-51be-486a-8168-1629f737344a
+    type: title
+    task:
+      id: adf5f94c-51be-486a-8168-1629f737344a
+      version: -1
+      name: Error in Get Drive List
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0e320aaf-d019-4d49-8da3-0800262b55cc
+    type: title
+    task:
+      id: 0e320aaf-d019-4d49-8da3-0800262b55cc
+      version: -1
+      name: Error in Get Drive List Permissions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1655,
+        "width": 1430,
+        "x": 120,
+        "y": 70
+      }
+    }
+  }
+inputs:
+- key: admin_email_address
+  value: {}
+  required: true
+  description: Admin email address to impersonate in case of shared drive
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

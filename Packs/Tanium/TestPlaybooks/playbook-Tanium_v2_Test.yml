@@ -1,0 +1,913 @@
+id: Tanium v2 - Test
+version: -1
+name: Tanium v2 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7174996b-ad8b-44e4-870f-a71846cfdc5b
+    type: start
+    task:
+      id: 7174996b-ad8b-44e4-870f-a71846cfdc5b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 23c058ae-ee08-4f2a-8c0a-98e353e6b584
+    type: regular
+    task:
+      id: 23c058ae-ee08-4f2a-8c0a-98e353e6b584
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "31"
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a29b052b-eb35-4667-8e28-b2091a143ff2
+    type: regular
+    task:
+      id: a29b052b-eb35-4667-8e28-b2091a143ff2
+      version: -1
+      name: Get system status
+      script: '|||tn-get-system-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: e24efd02-955c-4b64-82d4-b51d99b278f5
+    type: regular
+    task:
+      id: e24efd02-955c-4b64-82d4-b51d99b278f5
+      version: -1
+      name: Get packages list
+      script: '|||tn-list-packages'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 43de96fe-4688-4318-8a99-5df8c208a5f3
+    type: regular
+    task:
+      id: 43de96fe-4688-4318-8a99-5df8c208a5f3
+      version: -1
+      name: Get sensors list
+      script: '|||tn-list-sensors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: e43793ea-11c8-476e-87eb-78a415202b6f
+    type: regular
+    task:
+      id: e43793ea-11c8-476e-87eb-78a415202b6f
+      version: -1
+      name: Get saved questions list
+      script: '|||tn-list-saved-questions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 7e17dca1-4c5b-4c96-8ec9-11539fab9230
+    type: regular
+    task:
+      id: 7e17dca1-4c5b-4c96-8ec9-11539fab9230
+      version: -1
+      name: Get actions list
+      script: '|||tn-list-saved-actions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 4335ab92-c942-46a3-81e2-6d237c1182f3
+    type: regular
+    task:
+      id: 4335ab92-c942-46a3-81e2-6d237c1182f3
+      version: -1
+      name: Get saved actions list
+      script: '|||tn-list-saved-actions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: db84241c-d63c-4c16-82d5-e664ffb9266a
+    type: regular
+    task:
+      id: db84241c-d63c-4c16-82d5-e664ffb9266a
+      version: -1
+      name: Get saved actions pending list
+      script: '|||tn-list-saved-actions-pending-approval'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 9a4c2279-10b4-4e23-8f24-7489243556b7
+    type: regular
+    task:
+      id: 9a4c2279-10b4-4e23-8f24-7489243556b7
+      version: -1
+      name: Get package by id
+      script: '|||tn-get-package'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      id:
+        simple: "225"
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 8cf0da35-b13d-4ba2-85df-f4296a91977c
+    type: regular
+    task:
+      id: 8cf0da35-b13d-4ba2-85df-f4296a91977c
+      version: -1
+      name: Get package by name
+      script: '|||tn-get-package'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id: {}
+      name:
+        simple: Distribute Tanium Standard Utilities (Linux)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 43910b60-0a4d-4da2-873a-78bbe43a35b8
+    type: regular
+    task:
+      id: 43910b60-0a4d-4da2-873a-78bbe43a35b8
+      version: -1
+      name: Get sensor by id
+      script: '|||tn-get-sensor'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id:
+        simple: "204"
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: f9d303d6-40e9-4f40-8d8d-1559417ebe49
+    type: regular
+    task:
+      id: f9d303d6-40e9-4f40-8d8d-1559417ebe49
+      version: -1
+      name: Get sensor by name
+      script: '|||tn-get-sensor'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      id: {}
+      name:
+        simple: Local Administrators
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 0cbc676f-2ddf-4109-80bf-fbb11eb08f54
+    type: regular
+    task:
+      id: 0cbc676f-2ddf-4109-80bf-fbb11eb08f54
+      version: -1
+      name: Get action by id
+      script: '|||tn-get-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: cada4028-52a5-4369-8c7f-db649caec5ed
+    type: title
+    task:
+      id: cada4028-52a5-4369-8c7f-db649caec5ed
+      version: -1
+      name: Query lists commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 22c25622-e92a-46ff-84d6-575ead278537
+    type: regular
+    task:
+      id: 22c25622-e92a-46ff-84d6-575ead278537
+      version: -1
+      name: Get question metadata
+      script: '|||tn-get-question-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      question-id:
+        complex:
+          root: Tanium
+          accessor: Question.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: be37cfb7-b38f-4eb0-8583-b1d1481a158f
+    type: regular
+    task:
+      id: be37cfb7-b38f-4eb0-8583-b1d1481a158f
+      version: -1
+      name: Get saved action by id
+      script: '|||tn-get-saved-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      id:
+        simple: "255"
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: b89a5781-49b8-4a72-8e4a-631e52f20a98
+    type: regular
+    task:
+      id: b89a5781-49b8-4a72-8e4a-631e52f20a98
+      version: -1
+      name: Get saved action by name
+      script: '|||tn-get-saved-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      id: {}
+      name:
+        simple: Distribute Python - Tools [Windows]
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 07737c74-475c-4989-854a-d8d91b8684dd
+    type: regular
+    task:
+      id: 07737c74-475c-4989-854a-d8d91b8684dd
+      version: -1
+      name: Get saved question metadata by id
+      script: '|||tn-get-saved-question-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      question-id:
+        simple: "135"
+      question-name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 7ab31fd5-e1a6-4888-8b69-a81df7309f5b
+    type: regular
+    task:
+      id: 7ab31fd5-e1a6-4888-8b69-a81df7309f5b
+      version: -1
+      name: Get saved question metadata by name
+      script: '|||tn-get-saved-question-metadata'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      question-id: {}
+      question-name:
+        simple: Computer Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 0c936334-0ac6-4fa2-873b-9f6e930c62e0
+    type: title
+    task:
+      id: 0c936334-0ac6-4fa2-873b-9f6e930c62e0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 6192de06-90ec-4685-8cf7-37b5ce7e2057
+    type: condition
+    task:
+      id: 6192de06-90ec-4685-8cf7-37b5ce7e2057
+      version: -1
+      name: Validate output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Tanium.SavedQuestionResult.Results
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Tanium.SavedQuestionResult.SavedQuestionID
+            iscontext: true
+          right:
+            value:
+              simple: "313"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: bf1680a0-85ca-4f05-84f9-4c2f49f69494
+    type: playbook
+    task:
+      id: bf1680a0-85ca-4f05-84f9-4c2f49f69494
+      version: -1
+      name: Tanium - Get Saved Question Result
+      playbookName: Tanium - Get Saved Question Result
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      saved-question-id:
+        simple: "313"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 0dfc1355-93e6-4ef9-849e-5582b85a3323
+    type: regular
+    task:
+      id: 0dfc1355-93e6-4ef9-849e-5582b85a3323
+      version: -1
+      name: Get groups list
+      script: '|||tn-list-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      count: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: 5638f2ab-6715-4872-803e-e52a1cd9f4b6
+    type: regular
+    task:
+      id: 5638f2ab-6715-4872-803e-e52a1cd9f4b6
+      version: -1
+      name: Get group by id
+      description: Get a group object based on ID or name.
+      script: '|||tn-get-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      id:
+        simple: "315"
+      name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 53f2175d-5fa3-4129-81e6-9fcb79da38d2
+    type: regular
+    task:
+      id: 53f2175d-5fa3-4129-81e6-9fcb79da38d2
+      version: -1
+      name: Get group by name
+      description: Get a group object based on ID or name.
+      script: '|||tn-get-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      id: {}
+      name:
+        simple: Default
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: b3e6e015-077d-401b-8cb8-62f6e897b660
+    type: title
+    task:
+      id: b3e6e015-077d-401b-8cb8-62f6e897b660
+      version: -1
+      name: Get object commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: fedddd83-acda-47e4-8c7e-3e3ca472e58b
+    type: title
+    task:
+      id: fedddd83-acda-47e4-8c7e-3e3ca472e58b
+      version: -1
+      name: Get saved question result playbook
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 02f50b76-ba21-4d95-83a7-cb4bfcdde65c
+    type: title
+    task:
+      id: 02f50b76-ba21-4d95-83a7-cb4bfcdde65c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "34":
+    id: "34"
+    taskid: c4610f6b-e6ce-4e3e-85c8-128bc5bbecaa
+    type: title
+    task:
+      id: c4610f6b-e6ce-4e3e-85c8-128bc5bbecaa
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "36":
+    id: "36"
+    taskid: 48d1476e-22f5-44cf-8b6d-de1b3619429f
+    type: playbook
+    task:
+      id: 48d1476e-22f5-44cf-8b6d-de1b3619429f
+      version: -1
+      name: Tanium - Ask Question
+      playbookName: Tanium - Ask Question
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      parameters: {}
+      question-text:
+        simple: Get IP Address from all machines
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3010,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

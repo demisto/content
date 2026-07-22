@@ -1,0 +1,30 @@
+[
+  {
+    "href": "/orgs/1/sec_policy/active/ip_lists/27",
+    "created_at": "2021-04-27T05:16:09.686Z",
+    "updated_at": "2021-05-12T05:31:52.973Z",
+    "deleted_at": null,
+    "created_by": {
+      "href": "/users/16"
+    },
+    "updated_by": {
+      "href": "/users/16"
+    },
+    "deleted_by": null,
+    "name": "Acc. test name",
+    "description": "Acc. test description",
+    "ip_ranges": [
+      {
+        "description": "test ip_ranges description",
+        "from_ip": "1.1.0.0/24",
+        "exclusion": false
+      }
+    ],
+    "fqdns": [
+      {
+        "fqdn": "app.example.com",
+        "description": "Acc. test fqdn description"
+      }
+    ]
+  }
+]

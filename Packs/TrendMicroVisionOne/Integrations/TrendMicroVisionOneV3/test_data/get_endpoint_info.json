@@ -1,0 +1,26 @@
+[
+    {
+        "ip": {
+            "value": ["192.168.1.31"],
+            "updated_date_time": "2023-06-10T06:15:43.942Z"
+        },
+        "os_name": "Windows",
+        "agent_guid": "035f7d86-9872-4fw4-8c78-b67d2e32p462",
+        "os_version": "6.1 (Build 7601)",
+        "mac_address": {
+            "value": ["00:50:56:a9:9f:e8"],
+            "updated_date_time": "2023-06-10T06:15:43.942Z"
+        },
+        "product_code": "xes",
+        "endpoint_name": {
+            "value": "CLIENT32",
+            "updated_date_time": "2023-07-11T15:38:51Z"
+        },
+        "login_account": {
+            "value": ["MDGSECURITYAdministrator"],
+            "updated_date_time": "2023-08-15T20:11:39Z"
+        },
+        "os_description": "Windows 7 6.1 (Build 7601)",
+        "installed_product_codes": ["sao", "xes"]
+    }
+]

@@ -1,0 +1,33 @@
+!securonix-list-workflows
+!securonix-get-default-assignee-for-workflow workflow=SOCTeamReview
+!securonix-list-possible-threat-actions
+!securonix-list-policies
+!securonix-list-resource-groups
+!securonix-list-users
+!securonix-list-activity-data from="07/19/2019 18:59:59" to="07/20/2019 10:15:59" query="resourcegroupname =WindowsSnare"
+!securonix-list-violation-data from="07/19/2019 05:55:59" to="07/19/2019 06:15:59"
+!securonix-list-incidents from="5 days" incident_types=opened
+!securonix-get-incident incident_id=30107
+!securonix-create-incident action_name="Mark as concern and create incident" entity_name=MH1014 entity_type=Users resource_group="BLUECOAT" resource_name="BLUECOAT" violation_name="Uploads to personal Websites" workflow=SOCTeamReview  comment=bgdfs criticality=Critical
+!securonix-get-incident-status incident_id=30107
+!securonix-get-incident-workflow incident_id=30107
+!securonix-get-incident-available-actions incident_id=30107
+!securonix-perform-action-on-incident incident_id= action="ASSIGN TO SECOPS"
+!securonix-add-comment-to-incident incident_id=30107 comment="Just a comment"
+!securonix-list-watchlists
+!securonix-get-watchlist watchlist_name=Test_watchlist
+!securonix-create-watchlist watchlist_name=Test_watchlist45
+!securonix-check-entity-in-watchlist entity_name=1002 watchlist_name=Test_watchlist
+!securonix-add-entity-in-watchlist entity_name=1002 watchlist_name=Test_watchlist
+!securonix-incident-activity-history-get incident_id=3235505380
+!securonix-threats-list date_from="1 day"
+!securonix-xsoar-state-mapping-get
+!securonix-whitelist-entry-list whitelist_entry="test_whitelist"
+!securonix-lookup-table-config-and-data-delete name=Something3
+!securonix-incident-attachment-get incident_id=12345678 from=2023-01-27T07:25:00Z to=2023-01-27T08:25:00Z
+!securonix-lookup-table-create name=test_lookup_table field_names="samplefield,samplefield2" key="samplefield" tenant_name=test_tenant scope=Global
+!securonix-whitelist-entry-add whitelist_name=whitelistdemo_Activityip whitelist_type=Global tenant_name=test_tenant entity_type=Activityip entity_id=0.0.0.1 expiry_date=04/02/2023
+!securonix-lookup-tables-list max=2 offset=0
+!securonix-lookup-table-entries-list name="TEST_M" max=2 sort="ip" order=desc
+!securonix-lookup-table-entries-delete name=TEST_M keys=2^~TEST_M|158267F0BC6E7484E3C0F5964ABE9D2B,2^~TEST_M|175A9FFD55480ED376C992AC86ABE3D7
+!securonix-lookup-table-entry-add name="TEST_DEMO_28_FEB" json_data="[{\"id\": \"1\",\"ip\": \"127.0.0.1\",\"reputation\": \"bad\"},{\"id\": \"2\",\"ip\": \"127.0.0.2\",\"reputation\": \"good\"}]"

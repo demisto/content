@@ -1,0 +1,668 @@
+id: Prisma Cloud Compute - Compliance Alert Host Enrichment Loop
+version: -1
+name: Prisma Cloud Compute - Compliance Alert Host Enrichment Loop
+description: |-
+  This is a sub-playbook of the "Prisma Cloud Compute - Compliance Alert v2" playbook.
+  It will loop through all of the given compliance issue IDs and will retrieve the following information for each affected host based on the compliance issue ID:
+  - Hostname
+  - Compliance Issues
+  - Compliance Distribution
+  - Cloud MetaData
+
+  The enriched information will be displayed in the layout in a dedicated table under the "Host Compliance Information" tab.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a32eb95f-96d5-4559-8574-f3b909791cc8
+    type: start
+    task:
+      id: a32eb95f-96d5-4559-8574-f3b909791cc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d35e357d-6e7f-400a-8893-4c8db81ece4f
+    type: regular
+    task:
+      id: d35e357d-6e7f-400a-8893-4c8db81ece4f
+      version: -1
+      name: Get hosts information based on compliance ID
+      description: This task will retrieve the "compact" information for all of the affected resources. In order to avoid performance issues, which can happen with large environments, the task won't retrieve the full information for each resource which includes all vulnerabilities, compliance issues, binaries etc.
+      script: '|||prisma-cloud-compute-hosts-scan-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      compact:
+        simple: "true"
+      compliance_ids:
+        complex:
+          root: inputs.ComplianceIssueID
+      fields:
+        simple: cloudMetadata,hostname,complianceDistribution
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b9ae6450-8904-4997-8c46-213e9e6544dd
+    type: title
+    task:
+      id: b9ae6450-8904-4997-8c46-213e9e6544dd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7631a22d-8b9d-476d-8764-45fc6408fa78
+    type: regular
+    task:
+      id: 7631a22d-8b9d-476d-8764-45fc6408fa78
+      version: -1
+      name: Get full data from one host
+      description: In order to get more details about the compliance issue, you can retrieve the full details of 1 resource, which includes more details about each compliance issue like title, severity etc.
+      script: '|||prisma-cloud-compute-hosts-scan-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      compact:
+        simple: "false"
+      hostname:
+        complex:
+          root: PrismaCloudCompute.ReportHostScan
+          accessor: hostname
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 95bfb8aa-82a0-476e-88da-4be714644f0a
+    type: regular
+    task:
+      id: 95bfb8aa-82a0-476e-88da-4be714644f0a
+      version: -1
+      name: Set EnrichedComplianceIssue
+      description: The key "EnrichedComplianceIssue" will hold all of the enriched compliance issue information. This will be used in the next task in order to create the compliance issues table, which will then be displayed in the incident's layout.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: EnrichedComplianceIssue
+      value:
+        complex:
+          root: PrismaCloudCompute.ReportHostScan.complianceIssues
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PrismaCloudCompute.ReportHostScan.complianceIssues.id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.ComplianceIssueID
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5c8104d1-8e3b-4605-88df-bde79f4e3b4b
+    type: regular
+    task:
+      id: 5c8104d1-8e3b-4605-88df-bde79f4e3b4b
+      version: -1
+      name: Prepare Compliance Table (Layout)
+      description: This task runs an automation which set the "prismacloudcomputehostcomplianceissues" incident field with the enriched data. When filled, it will be visible in the layout.
+      scriptName: PrismaCloudComputeComplianceTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "20"
+    scriptarguments:
+      gridID:
+        simple: prismacloudcomputehostcomplianceissues
+      resourceType:
+        simple: Host
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: dec5dad5-2a76-4096-8454-e7d5981ac01f
+    type: condition
+    task:
+      id: dec5dad5-2a76-4096-8454-e7d5981ac01f
+      description: ""
+      version: -1
+      name: Any hosts were retrieved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloudCompute.ReportHostScan
+                accessor: _id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1fb28559-f306-4791-8cf0-76b68287af33
+    type: regular
+    task:
+      id: 1fb28559-f306-4791-8cf0-76b68287af33
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 2330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 1779ef0e-c576-48c0-8562-f43121852e7e
+    type: regular
+    task:
+      id: 1779ef0e-c576-48c0-8562-f43121852e7e
+      version: -1
+      name: Show compliance table in layout
+      description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task sets a value in the "prismacloudcomputeshowcompliancetab" incident field, which will cause the "Host Compliance Information" tab to be visible.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      prismacloudcomputeshowcompliancetab:
+        simple: host
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a68a6e0d-b4a1-4195-8811-71fa97bdc3ca
+    type: playbook
+    task:
+      id: a68a6e0d-b4a1-4195-8811-71fa97bdc3ca
+      version: -1
+      name: Prisma Cloud Compute - Jira Compliance Issue
+      description: |
+        This playbook is a sub-playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
+        It creates or updates existing Jira issue for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
+      playbookName: Prisma Cloud Compute - Jira Compliance Issue
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      ComplianceIssueDescription:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: description
+      ComplianceIssueID:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: id
+      ComplianceIssueSeverity:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: severity
+      JiraIssueTypeName:
+        complex:
+          root: inputs.JiraIssueTypeName
+      JiraProjectName:
+        complex:
+          root: inputs.JiraProjectName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1650,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0ca59466-4d6d-4230-8af7-9695f283ad7c
+    type: condition
+    task:
+      id: 0ca59466-4d6d-4230-8af7-9695f283ad7c
+      version: -1
+      name: Check if compliance tab is already visible
+      description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task checks if the "Host Compliance Information" tab should be visible or not, based on previous tasks results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: prismacloudcomputeshowcompliancetab
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4aa6d0e1-4691-414f-8ed7-ce40de16f6dd
+    type: condition
+    task:
+      id: 4aa6d0e1-4691-414f-8ed7-ce40de16f6dd
+      description: ""
+      version: -1
+      name: Which external ticketing system should be used?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      Jira:
+      - "16"
+      ServiceNow:
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: Jira
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.TicketingSystem
+            iscontext: true
+          right:
+            value:
+              simple: Jira
+          ignorecase: true
+    - label: ServiceNow
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.TicketingSystem
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 9bc0e952-0442-44b1-884c-67d62c813082
+    type: playbook
+    task:
+      id: 9bc0e952-0442-44b1-884c-67d62c813082
+      version: -1
+      name: Prisma Cloud Compute - ServiceNow Compliance Ticket
+      playbookName: Prisma Cloud Compute - ServiceNow Compliance Ticket
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      AttachFileByDefault:
+        simple: "False"
+      ComplianceIssueDescription:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: description
+      ComplianceIssueID:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: id
+      ComplianceIssueSeverity:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: severity
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 2120,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: f86d19be-45f9-4c93-88b3-f22606f32278
+    type: title
+    task:
+      id: f86d19be-45f9-4c93-88b3-f22606f32278
+      version: -1
+      name: Create external ticket
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "17_12_yes": 0.21,
+      "17_15_#default#": 0.55,
+      "18_12_#default#": 0.44,
+      "18_19_ServiceNow": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1915,
+        "width": 1560,
+        "x": 940,
+        "y": 700
+      }
+    }
+  }
+inputs:
+- key: ComplianceIssueID
+  value: {}
+  required: false
+  description: A compliance issue ID. This ID is used to filter relevant hostnames for enrichment.
+  playbookInputQuery:
+- key: TicketingSystem
+  value: {}
+  required: false
+  description: |
+    Which ticketing system should be used to create an external ticket.
+    Available options:
+    - Jira
+    - ServiceNow
+
+    If neither of the above are selected, no external ticket will be created.
+    For Jira, also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.
+  playbookInputQuery:
+- key: JiraIssueTypeName
+  value: {}
+  required: false
+  description: 'Issue type name. For example: "Task".'
+  playbookInputQuery:
+- key: JiraProjectName
+  value: {}
+  required: false
+  description: The project name with which to associate the issue.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+toversion: 7.99.99
+marketplaces:
+- xsoar

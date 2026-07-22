@@ -1,0 +1,36 @@
+args:
+- description: The indicators query.
+  name: query
+- description: A comma-separated list of fields in the object to ignore.
+  name: dontPopulateFields
+- defaultValue: '10000'
+  description: The maximum number of indicators to fetch.
+  name: limit
+- defaultValue: '0'
+  description: The results offset page. Only change when the number of the results exceed the limit.
+  name: offset
+- description: Salt for the hash function.
+  name: addRandomSalt
+  secret: true
+- description: A comma-separated list of fields to hash. Supports wildcard "*".
+  name: fieldsToHash
+- defaultValue: id,value,score,investigationsCount,indicator_type
+  description: A comma-separated list of fields in the object to populate. Defaults are id,value,score,investigationsCount (RelatedIncCount),indicator_type. Set to "ALL" to receive all fields.
+  name: populateFields
+comment: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
+commonfields:
+  id: GetIndicatorsByQuery
+  version: -1
+enabled: true
+name: GetIndicatorsByQuery
+script: '-'
+subtype: python3
+tags:
+- ml
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.13.8428455
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- GetIndicatorsByQuery - Test

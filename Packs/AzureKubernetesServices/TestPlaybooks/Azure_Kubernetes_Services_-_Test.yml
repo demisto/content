@@ -1,0 +1,375 @@
+id: Azure Kubernetes Services - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Azure Kubernetes Services - Test
+description: Testing Azure Kubernetes Services
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e5e29788-88c8-4bbd-8b8b-831aa7926960
+    type: start
+    task:
+      id: e5e29788-88c8-4bbd-8b8b-831aa7926960
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 137ffd39-564d-40b0-82c6-9d142ef9a2d2
+    type: regular
+    task:
+      id: 137ffd39-564d-40b0-82c6-9d142ef9a2d2
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2519855e-3485-4a77-89de-6090aaa5a37c
+    type: regular
+    task:
+      id: 2519855e-3485-4a77-89de-6090aaa5a37c
+      version: -1
+      name: List Clusters
+      description: Gets a list of managed clusters in the specified subscription.
+      script: '|||azure-ks-clusters-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5c8d77e1-b703-49ba-8de6-a8e4c601d3ba
+    type: regular
+    task:
+      id: 5c8d77e1-b703-49ba-8de6-a8e4c601d3ba
+      version: -1
+      name: Cluster Addon Update
+      description: Updates a managed cluster with the specified configuration.
+      script: '|||azure-ks-cluster-addon-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      http_application_routing_enabled:
+        simple: "true"
+      location:
+        simple: ${AzureKS.ManagedCluster.location}
+      resource_name:
+        simple: ${AzureKS.ManagedCluster.name}
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fb9e1d47-78c6-42cc-8c27-3ff2fa861610
+    type: condition
+    task:
+      id: fb9e1d47-78c6-42cc-8c27-3ff2fa861610
+      version: -1
+      name: Verify List Clusters Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKS.ManagedCluster.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureKS.ManagedCluster.location
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 408df8e4-6241-4fe7-8d1e-07800b099a37
+    type: regular
+    task:
+      id: 408df8e4-6241-4fe7-8d1e-07800b099a37
+      version: -1
+      name: azure-ks-subscriptions-list
+      description: Gets all subscriptions for a tenant.
+      script: '|||azure-ks-subscriptions-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9f242e13-291b-4e1c-8e65-51e6130c3034
+    type: condition
+    task:
+      id: 9f242e13-291b-4e1c-8e65-51e6130c3034
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureKS.Subscription
+                accessor: displayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d90bcc45-6fb7-4f20-87c3-f01fea60ab36
+    type: regular
+    task:
+      id: d90bcc45-6fb7-4f20-87c3-f01fea60ab36
+      version: -1
+      name: azure-ks-resource-group-list
+      description: Gets all resource groups for a subscription.
+      script: '|||azure-ks-resource-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 259b71d2-01bf-459e-820b-7294d14996de
+    type: title
+    task:
+      id: 259b71d2-01bf-459e-820b-7294d14996de
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 533a7fb7-175a-4481-88e1-81b5a8a53ff4
+    type: condition
+    task:
+      id: 533a7fb7-175a-4481-88e1-81b5a8a53ff4
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureKS.Subscription
+                accessor: displayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

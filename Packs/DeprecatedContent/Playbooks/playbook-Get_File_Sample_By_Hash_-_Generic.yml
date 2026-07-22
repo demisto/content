@@ -1,0 +1,149 @@
+id: get_file_sample_by_hash_-_generic
+version: -1
+name: Get File Sample By Hash - Generic
+fromversion: 5.0.0
+description: Deprecated. Use "Get File Sample By Hash - Generic v2" playbook instead. Returns to the war-room a file sample correlating from a hash using one or more products
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+    type: start
+    task:
+      id: 0131a1f1-22f0-489d-8c41-ec4a0e89369d
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 366fe696-1d20-4473-87b6-d0c2ce334996
+    type: playbook
+    task:
+      id: 366fe696-1d20-4473-87b6-d0c2ce334996
+      version: -1
+      name: Get File Sample By Hash - Cylance Protect
+      description: ""
+      playbookName: Get File Sample By Hash - Cylance Protect
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 88fbf584-4a72-4097-86e6-3d22957bdd3e
+    type: playbook
+    task:
+      id: 88fbf584-4a72-4097-86e6-3d22957bdd3e
+      version: -1
+      name: Get File Sample By Hash - Carbon Black Enterprise Response
+      description: ""
+      playbookName: Get File Sample By Hash - Carbon Black Enterprise Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 905fca17-4fc2-4efb-8db3-322ff915dee8
+    type: title
+    task:
+      id: 905fca17-4fc2-4efb-8db3-322ff915dee8
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: Get file sample from MD5 input
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: Get file sample from SHA256 input
+outputs:
+- contextPath: File
+  description: File sample object
+  type: unknown
+tests:
+- No tests
+deprecated: true

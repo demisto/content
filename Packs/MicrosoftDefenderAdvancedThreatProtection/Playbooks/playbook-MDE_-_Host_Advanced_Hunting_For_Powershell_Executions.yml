@@ -1,0 +1,853 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.
+id: MDE - Host Advanced Hunting For Powershell Executions
+inputs:
+- description: A comma-separated list of host names to hunt.
+  key: DeviceName
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: hostnames
+      root: incident
+      transformers:
+      - operator: uniq
+- description: A comma-separated list of file names to hunt.
+  key: FileName
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: filenames
+      root: incident
+      transformers:
+      - operator: uniq
+- description: A comma-separated list of device IDs to hunt.
+  key: DeviceID
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: agentsid
+      root: incident
+      transformers:
+      - operator: uniq
+- description: A comma-separated list of file MD5 hashes to hunt.
+  key: FileMd5
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: filemd5
+      root: incident
+      transformers:
+      - operator: uniq
+- description: A comma-separated list of file SHA256 hashes to hunt.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: filesha256
+      root: incident
+      transformers:
+      - operator: uniq
+- description: A comma-separated list of file SHA1 hashes to hunt.
+  key: FileSha1
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: filesha1
+      root: incident
+      transformers:
+      - operator: uniq
+name: MDE - Host Advanced Hunting For Powershell Executions
+outputs:
+- contextPath: MicrosoftATP.HuntProcessDetails.Result
+  description: The query results for Process Details.
+  type: unknown
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
+  description: The query results for parent_process query_purposeThe query results.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.grandparent_process
+  description: The query results for grandparent_process query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.process_details
+  description: The query results for process_details query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.beaconing_evidence
+  description: The query results for beaconing_evidence query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files
+  description: The query results for powershell_execution_unsigned_files query_purpose.
+- contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+  description: The query results for process_excecution_powershell query_purpose.
+- contextPath: MicrosoftATP.FileMachine.Machines
+  description: The Query results for getting a collection of machines with a given file SHA1 hash.
+  type: unknown
+- contextPath: MicrosoftATP.FileMachine.Machines.ID
+  description: The machine ID.
+- contextPath: MicrosoftATP.FileMachine.Machines.ComputerDNSName
+  description: The machine DNS name.
+- contextPath: MicrosoftATP.FileMachine.Machines.FirstSeen
+  description: The first date and time the machine was observed by Microsoft Defender ATP.
+- contextPath: MicrosoftATP.FileMachine.Machines.LastSeen
+  description: The last date and time the machine was observed by Microsoft Defender ATP.
+- contextPath: MicrosoftATP.FileMachine.Machines.OSPlatform
+  description: The operating system platform.
+- contextPath: MicrosoftATP.FileMachine.Machines.OSVersion
+  description: The operating system version.
+- contextPath: MicrosoftATP.FileMachine.Machines.OSBuild
+  description: Operating system build number.
+- contextPath: MicrosoftATP.FileMachine.Machines.LastIPAddress
+  description: The last IP on the machine.
+- contextPath: MicrosoftATP.FileMachine.Machines.LastExternalIPAddress
+  description: The last machine IP to access the internet.
+- contextPath: MicrosoftATP.FileMachine.Machines.HelathStatus
+  description: The machine health status.
+- contextPath: MicrosoftATP.FileMachine.Machines.RBACGroupID
+  description: The machine RBAC group ID.
+- contextPath: MicrosoftATP.FileMachine.Machines.RBACGroupName
+  description: The machine RBAC group name.
+- contextPath: MicrosoftATP.FileMachine.Machines.RiskScore
+  description: The machine risk score.
+- contextPath: MicrosoftATP.FileMachine.Machines.ExposureLevel
+  description: The machine exposure score.
+- contextPath: MicrosoftATP.FileMachine.Machines.IsAADJoined
+  description: True if machine is AAD joined, False otherwise.
+- contextPath: MicrosoftATP.FileMachine.Machines.AADDeviceID
+  description: The AAD Device ID.
+- contextPath: MicrosoftATP.FileMachine.Machines.MachineTags
+  description: Set of machine tags.
+- contextPath: MicrosoftATP.Machine
+  description: Results for device information.
+  type: unknown
+- contextPath: MicrosoftATP.Machine.OSProcessor
+  description: The operating system processor.
+- contextPath: MicrosoftATP.FileMachine
+  description: Results for File information on a device.
+  type: unknown
+- contextPath: MicrosoftATP.FileMachine.File
+  description: The machine related file hash.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result
+  description: The query results for Hunt Network Connections.
+  type: unknown
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+  description: The query results for external_addresses query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+  description: The query results for dns_query query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
+  description: The query results for encoded_commands query_purpose.
+- contextPath: MatchRegex
+  description: The regex found in the command line
+  type: unknown
+- contextPath: Indicators
+  description: Indicators extracted from the command line
+  type: unknown
+- contextPath: commandline
+  description: The command line
+  type: unknown
+- contextPath: CommandlineVerdict
+  description: The command line verdict
+  type: unknown
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 648e2b21-92a4-4d4b-8bbc-7d7ff22f8b9c
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 648e2b21-92a4-4d4b-8bbc-7d7ff22f8b9c
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 60
+        }
+      }
+    continueonerrortype: ""
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 562148e8-b2c4-4ee4-8020-0b03dcfa808c
+      iscommand: false
+      name: Process Analysis
+      type: title
+      version: -1
+      description: ''
+    taskid: 562148e8-b2c4-4ee4-8020-0b03dcfa808c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 375
+        }
+      }
+    continueonerrortype: ""
+  '4':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Process Details query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Process Details
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_name:
+        simple: ${inputs.FileName}
+      md5:
+        simple: ${inputs.FileMd5}
+      query_purpose:
+        simple: process_details
+      sha1:
+        simple: ${inputs.FileSha1}
+      sha256:
+        simple: ${inputs.FileSha256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+      id: febdef0b-ad0e-4a96-8bd8-b17bc4c7fae0
+      iscommand: true
+      name: Get process details by hash or filename
+      script: '|||microsoft-atp-advanced-hunting-process-details'
+      type: regular
+      version: -1
+    taskid: febdef0b-ad0e-4a96-8bd8-b17bc4c7fae0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 510
+        }
+      }
+    continueonerrortype: ""
+  '5':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntProcessDetails.Result.process_details
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '16'
+      yes:
+      - '6'
+      - '7'
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any events of execution or association to process?
+      id: 7325dc6a-9cb6-4733-8d33-8e034885cbab
+      iscommand: false
+      name: Any events of execution or association to process?
+      type: condition
+      version: -1
+    taskid: 7325dc6a-9cb6-4733-8d33-8e034885cbab
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 670
+        }
+      }
+    continueonerrortype: ""
+  '6':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on searching additional devices associated with this File Sha1 - Microsoft Defender For Endpoint
+      tags:
+        simple: Multi Affected Devices
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_hash:
+        simple: ${inputs.FileSha1}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets a collection of machines related to a given file SHA1 hash.
+      id: 18b15d86-3087-44c3-8b15-8b8a606fc4d7
+      iscommand: true
+      name: List All Related Endpoints for this file
+      script: '|||microsoft-atp-get-file-related-machines'
+      type: regular
+      version: -1
+    taskid: 18b15d86-3087-44c3-8b15-8b8a606fc4d7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 860
+        }
+      }
+    continueonerrortype: ""
+  '7':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Unsigned Powershell query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: cmd###powershell
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        complex:
+          root: inputs.DeviceID
+          transformers:
+          - operator: uniq
+      device_name:
+        complex:
+          root: inputs.DeviceName
+          transformers:
+          - operator: uniq
+      query_purpose:
+        simple: powershell_execution_unsigned_files
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Are there Powershell unsigned executions? By selecting a “query_purpose” argument, a designated query template will be used.
+      id: 0a74529c-7aa3-4021-8cfe-a2b7e9a7d070
+      iscommand: true
+      name: Check for any unsigned executions by Powershell?
+      script: '|||microsoft-atp-advanced-hunting-process-details'
+      type: regular
+      version: -1
+    taskid: 0a74529c-7aa3-4021-8cfe-a2b7e9a7d070
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 860
+        }
+      }
+    continueonerrortype: ""
+  '8':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Powershell Execution query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: powershell###cmd
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        complex:
+          root: inputs.DeviceID
+          transformers:
+          - operator: uniq
+      md5:
+        simple: ${inputs.FileMd5}
+      query_purpose:
+        simple: process_excecution_powershell
+      sha1:
+        complex:
+          root: inputs.FileSha1
+      sha256:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Are there Powershell executions? By selecting a “query_purpose” argument, a designated query template will be used.
+      id: 78fa6e53-39a8-4d0e-889b-6296c84a22a5
+      iscommand: true
+      name: Check for any Powershell Execution
+      script: '|||microsoft-atp-advanced-hunting-process-details'
+      type: regular
+      version: -1
+    taskid: 78fa6e53-39a8-4d0e-889b-6296c84a22a5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 860
+        }
+      }
+    continueonerrortype: ""
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '14'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      query_purpose:
+        simple: encoded_commands
+      sha256:
+        simple: ${inputs.FileSha256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Detects network connections. By selecting a “query_purpose” argument, a designated query template will be used.
+      id: f67435e5-3de5-447d-815e-3b9e909690d3
+      iscommand: true
+      name: Was there PowerShell with Encoded command?
+      script: '|||microsoft-atp-advanced-hunting-network-connections'
+      type: regular
+      version: -1
+    taskid: f67435e5-3de5-447d-815e-3b9e909690d3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1210
+        }
+      }
+    continueonerrortype: ""
+  '14':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntProcessDetails.Result.powershell_execution_unsigned_files
+          operator: isNotEmpty
+        - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+          operator: isNotEmpty
+      label: yes
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '16'
+      yes:
+      - '23'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: 728dd51d-1e4c-4c23-8b74-9f9302ad8a88
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 728dd51d-1e4c-4c23-8b74-9f9302ad8a88
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 1380
+        }
+      }
+    continueonerrortype: ""
+  '15':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.FileSha256
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.FileSha1
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.FileMd5
+          operator: isNotEmpty
+      label: yes
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '16'
+      yes:
+      - '3'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is a file exist?
+      id: 93a9e716-b58b-4506-8b3d-2b17cfaf5fd3
+      iscommand: false
+      name: Is a file exist?
+      type: condition
+      version: -1
+    taskid: 93a9e716-b58b-4506-8b3d-2b17cfaf5fd3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 205
+        }
+      }
+    continueonerrortype: ""
+  '16':
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1af5254e-94d5-4d08-8788-4d15c735765a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1af5254e-94d5-4d08-8788-4d15c735765a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 1920
+        }
+      }
+    continueonerrortype: ""
+  '17':
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        complex:
+          root: CommandlineVerdict
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: fbb8c07a-0efb-4c52-8ef2-f12e58c9ffdd
+      iscommand: true
+      name: Update the commandline verdict tag
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: fbb8c07a-0efb-4c52-8ef2-f12e58c9ffdd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1730
+        }
+      }
+    continueonerrortype: ""
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.FileMachine.Machines.ID
+          operator: notContainsGeneral
+          right:
+            iscontext: true
+            value:
+              simple: inputs.DeviceID
+      label: yes
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '16'
+      yes:
+      - '19'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Are there any more affected devices?
+      id: 1caa22d0-4d89-458d-81c3-632a1d6b4a8c
+      iscommand: false
+      name: Are there any more affected devices?
+      type: condition
+      version: -1
+    taskid: 1caa22d0-4d89-458d-81c3-632a1d6b4a8c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 1030
+        }
+      }
+    continueonerrortype: ""
+  '19':
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        simple: Multi affected Devices
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 74db96f3-8ba4-484f-848b-a801bbce731c
+      iscommand: true
+      name: Update the "Multi affected Devices" tag
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 74db96f3-8ba4-484f-848b-a801bbce731c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1060,
+          "y": 1220
+        }
+      }
+    continueonerrortype: ""
+  '20':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '14'
+      yes:
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any PowerShell executions?
+      id: 0d997203-e321-4dd0-8a7a-092b496f8de4
+      iscommand: false
+      name: Any PowerShell executions?
+      type: condition
+      version: -1
+    taskid: 0d997203-e321-4dd0-8a7a-092b496f8de4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1020
+        }
+      }
+    continueonerrortype: ""
+  '23':
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '17'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Commandline:
+        complex:
+          accessor: ProcessCommandLine
+          root: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: "This playbook takes the command line from the alert and performs the following actions:\n - Checks for a base64 string and decodes if it exists.\n - Extracts and enriches indicators from the command line.\n - Checks specific arguments for malicious usage. \n\n At the end of the playbook, it sets a possible verdict for the command line based on the finding:\n 1. Indicators found in the command line\n 2. Found AMSI techniques\n 3. Found suspicious parameters\n 4. Usage of malicious tools\n 5. Indication of network activity"
+      id: 72f197cb-9a5a-4ed5-8b11-4e9885a3d3c2
+      iscommand: false
+      name: Command-Line Analysis
+      type: playbook
+      version: -1
+      playbookName: Command-Line Analysis
+    taskid: 72f197cb-9a5a-4ed5-8b11-4e9885a3d3c2
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1550
+        }
+      }
+    continueonerrortype: ""
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_16_#default#": 0.11,
+      "15_16_#default#": 0.12,
+      "15_3_yes": 0.31,
+      "18_16_#default#": 0.2,
+      "20_14_#default#": 0.26,
+      "5_16_#default#": 0.14,
+      "5_7_yes": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1925,
+        "width": 1700,
+        "x": -1290,
+        "y": 60
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

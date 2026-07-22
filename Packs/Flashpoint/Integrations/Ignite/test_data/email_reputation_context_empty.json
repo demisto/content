@@ -1,0 +1,19 @@
+{
+    "Account(val.Email.Address && val.Email.Address == obj.Email.Address)": [
+        {
+            "Email": {
+                "Address": "dummy2@dummy.com"
+            },
+            "Description": "Reputation of this Indicator is Unknown"
+        }
+    ],
+    "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+        {
+            "Indicator": "dummy2@dummy.com",
+            "Type": "email",
+            "Vendor": "Ignite",
+            "Score": 0,
+            "Reliability": "B - Usually reliable"
+        }
+    ]
+}

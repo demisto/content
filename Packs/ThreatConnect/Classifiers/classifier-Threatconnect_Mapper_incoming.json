@@ -1,0 +1,115 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Threatconnect Mapper (incoming)",
+    "mapping": {
+        "ThreatConnect": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Item Owner": {
+                    "simple": "ownerName"
+                },
+                "Last Update Time": {
+                    "simple": "lastModified"
+                },
+                "Source Create time": {
+                    "simple": "dateAdded"
+                },
+                "Tags": {
+                    "simple": "tags.data.name"
+                },
+                "ThreatConnect Event Date": {
+                    "simple": "eventDate"
+                },
+                "ThreatConnect Group Type": {
+                    "simple": "type"
+                },
+                "ThreatConnect Id": {
+                    "simple": "id"
+                },
+                "ThreatConnect Associated Indicators": {
+                    "complex": {
+                        "accessor": "data",
+                        "filters": [],
+                        "root": "associatedIndicators",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "ThreatConnect AssociatedGroups": {
+                    "complex": {
+                        "accessor": "data",
+                        "filters": [],
+                        "root": "associatedGroups",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "ThreatConnect Attributes": {
+                    "complex": {
+                        "accessor": "data",
+                        "filters": [],
+                        "root": "attributes",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "ThreatConnect Created By": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdBy",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "ThreatConnect Security Labels": {
+                    "complex": {
+                        "accessor": "data",
+                        "filters": [],
+                        "root": "securityLabels",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "ThreatConnect Victim Assets": {
+                    "complex": {
+                        "accessor": "data",
+                        "filters": [],
+                        "root": "associatedVictimAssets",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Title": {
+                    "simple": "name"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Threatconnect Mapper (incoming)",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

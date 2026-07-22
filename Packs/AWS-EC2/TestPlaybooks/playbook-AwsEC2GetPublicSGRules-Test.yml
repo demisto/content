@@ -1,0 +1,368 @@
+id: TestAwsEC2GetPublicSGRules-Test
+version: -1
+name: AwsEC2GetPublicSGRules-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ff1ca85b-aeb0-42a5-8c0e-561f52ac2ff4
+    type: start
+    task:
+      id: ff1ca85b-aeb0-42a5-8c0e-561f52ac2ff4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8d3c4f9c-0f5a-4fb2-835a-9926af5a51c6
+    type: regular
+    task:
+      id: 8d3c4f9c-0f5a-4fb2-835a-9926af5a51c6
+      version: -1
+      name: Set
+      description: Sets a value in Context with the given Context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      append: {}
+      key:
+        simple: ipPermissions
+      value:
+        simple: |-
+          [{"IpProtocol": "-1", "IpRanges": [], "Ipv6Ranges": [{"CidrIpv6": "::/0"}], "PrefixListIds": [],
+                     "UserIdGroupPairs": []}, {"FromPort": 10, "IpProtocol": "tcp", "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                                               "Ipv6Ranges": [{"CidrIpv6": "::/0"}], "PrefixListIds": [], "ToPort": 22,
+                                               "UserIdGroupPairs": []},
+                    {"FromPort": 22, "IpProtocol": "tcp", "IpRanges": [{"CidrIp": "0.0.0.0/0"}],
+                     "Ipv6Ranges": [{"CidrIpv6": "::/0"}], "PrefixListIds": [], "ToPort": 23, "UserIdGroupPairs": []},
+                    {"FromPort": 55, "IpProtocol": "tcp", "IpRanges": [], "Ipv6Ranges": [{"CidrIpv6": "::/0"}],
+                     "PrefixListIds": [], "ToPort": 55, "UserIdGroupPairs": []}]
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8be9f13f-6791-4bec-8700-5b8686674c40
+    type: regular
+    task:
+      id: 8be9f13f-6791-4bec-8700-5b8686674c40
+      version: -1
+      name: AwsEC2GetPublicSGRules
+      description: Find Security Group rules which allow ::/0 (IPv4) or 0.0.0.0/0.
+      scriptName: AwsEC2GetPublicSGRules
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fromPort:
+        simple: "22"
+      groupId:
+        simple: sg-12345
+      includeIPv6: {}
+      ipPermissions:
+        simple: ${ipPermissions}
+      protocol:
+        simple: tcp
+      region:
+        simple: us-west-2
+      toPort:
+        simple: "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: f6308096-df58-45d5-853f-54793bc7248f
+    type: regular
+    task:
+      id: f6308096-df58-45d5-853f-54793bc7248f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a9bb9d31-dbd4-416e-802f-b587d9264de9
+    type: condition
+    task:
+      id: a9bb9d31-dbd4-416e-802f-b587d9264de9
+      version: -1
+      name: Check Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroup.PublicRules
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroup.PublicRules.fromPort
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroup.PublicRules.fromPort
+            iscontext: true
+          right:
+            value:
+              simple: "22"
+      - - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: AWS
+                accessor: EC2.SecurityGroup.PublicRules.fromPort
+            iscontext: true
+          right:
+            value:
+              simple: "55"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1f425a5e-20f1-4c00-80c8-b8619204cf7c
+    type: title
+    task:
+      id: 1f425a5e-20f1-4c00-80c8-b8619204cf7c
+      version: -1
+      name: Test Completed
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 0fe0e0fa-a895-4a68-84bb-d7afd4944736
+    type: regular
+    task:
+      id: 0fe0e0fa-a895-4a68-84bb-d7afd4944736
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: AWS
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 9005e094-4c9d-4299-8e55-4a70ae5c6a65
+    type: regular
+    task:
+      id: 9005e094-4c9d-4299-8e55-4a70ae5c6a65
+      version: -1
+      name: AwsEC2GetPublicSGRules
+      description: Find Security Group rules which allow ::/0 (IPv4) or 0.0.0.0/0.
+      scriptName: AwsEC2GetPublicSGRules
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      fromPort:
+        simple: "55"
+      groupId:
+        simple: sg-12345
+      includeIPv6:
+        simple: "yes"
+      ipPermissions:
+        simple: ${ipPermissions}
+      protocol:
+        simple: udp
+      region: {}
+      toPort:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 134d7ac9-9a89-4324-88b1-7c3105fed802
+    type: condition
+    task:
+      id: 134d7ac9-9a89-4324-88b1-7c3105fed802
+      version: -1
+      name: Check Result
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroup.PublicRules
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroup.PublicRules.ipProtocol
+            iscontext: true
+          right:
+            value:
+              simple: "-1"
+      - - operator: isNotExists
+          left:
+            value:
+              simple: AWS.EC2.SecurityGroup.PublicRules.fromPort
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

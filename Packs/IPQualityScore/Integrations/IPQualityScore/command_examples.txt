@@ -1,0 +1,9 @@
+!ipqs-ip-reputation ip="192.0.2.1"
+!ipqs-email-reputation email="user@example.com"
+!ipqs-url-reputation url="https://www.example.com"
+!ipqs-phone-reputation phone="+15555555555"
+!ipqs-username-leaked username="user@example.com"
+!ipqs-password-leaked password="P@ssw0rd123"
+!ipqs-email-leaked email="user@example.com"
+!ipqs-url-file-scan url="https://www.example.com"
+!ipqs-file-scan entry_id=4953@f2420533-4d0b-4d36-8faf-b8b798f0e451

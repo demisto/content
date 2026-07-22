@@ -1,0 +1,76 @@
+commonfields:
+  id: NessusGetReport
+  version: -1
+name: NessusGetReport
+script: >
+  from time import ctime
+
+  res = []
+
+  DEFAULT_TIMEOUT = 60 * 5
+
+  dArgs = demisto.args()
+
+  if 'format' not in dArgs:
+      dArgs['format'] = 'nessus'
+  resCmd = demisto.executeCommand("scan-export", dArgs)
+
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              fileID = demisto.get(entry, 'Contents')
+
+              timeout = float(demisto.get(dArgs, 'timeout'))
+              if not timeout:
+                  timeout = DEFAULT_TIMEOUT
+              timeLeft = timeout
+              while timeLeft > 0:
+                  resStatus = demisto.executeCommand("scan-export-status", {'scanId': dArgs['scanId'], 'fileId': fileID})
+                  if isError(resStatus[0]):
+                      res.append(resStatus[0])
+                  else:
+                      if resStatus[0]['Contents'] == 'ready':
+                          res += demisto.executeCommand("scan-report-download", {'scanId': dArgs['scanId'], 'fileId': fileID})
+                          break
+                  sleep(timeout / 10.0)
+                  timeLeft -= (timeout / 10.0)
+              else:
+                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Timeout reached while waiting for Nessus export to complete."})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- nessus
+comment: Deprecated. Get report for a scan. Triggers an export in the requested file format, waits 5 minutes for it to complete (or whatever timeout given as an argument) , and downloads the report.
+system: true
+args:
+- name: scanId
+  required: true
+  default: true
+  description: The Scan ID (use command list-scans to get possible scan ID's)
+- name: historyId
+  description: The history_id of the historical data that should be returned.
+- name: format
+  description: scan report file format (nessus, csv, html, db, pdf). Default is 'nessus'.
+- name: password
+  description: The password used to encrypt database exports (*Required when exporting as DB).
+- name: chapters
+  description: 'The chapters to include in the export (expecting a semi-colon delimited string comprised of some combination of the following options: vuln_hosts_summary, vuln_by_host, compliance_exec, remediations, vuln_by_plugin, compliance)'
+- name: timeout
+  description: How long (in seconds) to wait for the result before giving up(Default is 5min)
+scripttarget: 0
+dependson:
+  must:
+  - Nessus|||scan-export
+  - Nessus|||scan-export-status
+  - Nessus|||scan-report-download
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,1568 @@
+import json
+from datetime import datetime, timedelta, UTC
+
+import dateparser
+import demistomock as demisto
+import requests
+import urllib3
+from CommonServerPython import *
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+ALL_EVENTS = "All"
+ISSUES_EVENTS = "Issues"
+BLOCKED_CLICKS = "Blocked Clicks"
+PERMITTED_CLICKS = "Permitted Clicks"
+BLOCKED_MESSAGES = "Blocked Messages"
+DELIVERED_MESSAGES = "Delivered Messages"
+
+DEFAULT_LIMIT = 50
+DEFAULT_LOOK_BACK_MINUTES = 30
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MAX_SEEN_IDS = 10_000
+
+
+def get_now():
+    """A wrapper function for datetime.now(timezone.utc)
+    helps handle tests
+    Returns:
+        datetime: time right now in the UTC timezone (naive, for backward compatibility).
+    """
+    return datetime.now(UTC).replace(tzinfo=None)
+
+
+def prune_seen_ids(seen_ids: dict[str, str], look_back_minutes: int) -> dict[str, str]:
+    """Remove event IDs outside the lookback window. Apply hard cap if needed.
+
+    Args:
+        seen_ids: Mapping of event_id → interval_end_str (the end of the fetch interval
+                  in which the event was first seen) for deduplication.
+        look_back_minutes: The lookback window in minutes. A 30-minute safety margin is
+                           added on top to tolerate clock skew and API indexing delay.
+
+    Returns:
+        Pruned dict with only IDs whose interval_end is within the lookback window + 30min margin.
+    """
+    if not seen_ids:
+        return seen_ids
+
+    cutoff = (get_now() - timedelta(minutes=look_back_minutes + 30)).strftime(DATE_FORMAT)
+    pruned = {event_id: interval_end for event_id, interval_end in seen_ids.items() if interval_end >= cutoff}
+
+    if len(pruned) > MAX_SEEN_IDS:
+        demisto.info(f"seen_ids exceeded {MAX_SEEN_IDS}, pruning oldest 25%")
+        sorted_ids = sorted(pruned.items(), key=lambda x: x[1])
+        pruned = dict(sorted_ids[len(sorted_ids) // 4 :])
+
+    demisto.debug(f"Pruned seen_ids: {len(seen_ids)=}, {len(pruned)=}")
+    return pruned
+
+
+def get_fetch_times(last_fetch, look_back_minutes: int = 0):
+    """Generate time intervals for fetching events from Proofpoint TAP API.
+
+    When `look_back_minutes` > 0, the effective fetch window between the start time
+    (derived from `last_fetch`) and `now` is guaranteed to be at least
+    `look_back_minutes` long. Equivalently:
+    ``effective_start = now - max(now - last_fetch, look_back_minutes)``.
+
+    - If ``now - last_fetch >= look_back_minutes``: leave the start unchanged
+      (do NOT add `look_back_minutes` on top of an already-large gap).
+    - If ``now - last_fetch <  look_back_minutes``: shift the start back so that
+      ``now - effective_start == look_back_minutes``, ensuring late-indexed events
+      from the last `look_back_minutes` are re-scanned.
+
+    Deduplication (handled by the caller) prevents duplicates produced by the
+    overlapping region.
+
+    Args:
+        last_fetch (datetime or str): Starting time for fetch. May be shifted back so
+                                      that the window length is at least `look_back_minutes`.
+        look_back_minutes (int): Minimum length (in minutes) of the fetch window, used to
+                                 re-scan for late-indexed events. Default is 0 (no look-back).
+
+    Returns:
+        List[tuple[str, str]]: List of (start_time, end_time) tuples in DATE_FORMAT.
+                               Each interval is ≤59 minutes and ≥30 seconds.
+                               Returns empty list if no valid intervals can be created.
+    """
+    now = get_now()
+    time_format = DATE_FORMAT
+
+    if isinstance(last_fetch, str):
+        last_fetch = datetime.strptime(last_fetch, time_format)
+
+    # Ensure the window [effective_start, now] is at least `look_back_minutes` long.
+    # Equivalent to: effective_start = now - max(now - last_fetch, look_back_minutes).
+    # Only shift back when the existing gap is smaller than `look_back_minutes`; do not
+    # subtract `look_back_minutes` on top of an already-sufficient gap.
+    effective_start = last_fetch
+    if look_back_minutes > 0:
+        look_back_delta = timedelta(minutes=look_back_minutes)
+        if (now - last_fetch) < look_back_delta:
+            effective_start = now - look_back_delta
+
+    # Guard against invalid intervals
+    if effective_start >= now:
+        demisto.debug(f"Skipping fetch. {effective_start=} >= {now=}")
+        return []
+
+    intervals = []
+    current_start = effective_start
+
+    # Create 59-minute intervals
+    while now - current_start > timedelta(minutes=59):
+        current_end = current_start + timedelta(minutes=59)
+        intervals.append((current_start.strftime(time_format), current_end.strftime(time_format)))
+        current_start = current_end
+
+    # Add final interval (minimum 30 seconds)
+    seconds_remaining = (now - current_start).total_seconds()
+    if seconds_remaining >= 30:
+        intervals.append((current_start.strftime(time_format), now.strftime(time_format)))
+        demisto.debug(f"Final interval: {seconds_remaining:.0f} seconds")
+    else:
+        demisto.debug(f"Skipping final interval: only {seconds_remaining:.0f} seconds remaining (< 30s minimum)")
+
+    demisto.debug(
+        f"Generated {len(intervals)} intervals from {effective_start.strftime(time_format)} to {now.strftime(time_format)}"
+    )
+    return intervals
+
+
+class Client:
+    def __init__(self, proofpoint_url, api_version, verify, service_principal, secret, proxies):
+        self.base_url = proofpoint_url
+        self.api_version = api_version
+        self.verify = verify
+        self.service_principal = service_principal
+        self.secret = secret
+        self.proxies = proxies
+
+    def http_request(self, method, url_suffix, params=None, data=None, forensics_api=False):
+        if forensics_api:
+            full_url = urljoin(self.base_url, "/v2/forensics")
+        else:
+            full_url = urljoin(urljoin(self.base_url, self.api_version), url_suffix)
+
+        res = requests.request(
+            method,
+            full_url,
+            verify=self.verify,
+            params=params,
+            json=data,
+            auth=(self.service_principal, self.secret),
+            proxies=self.proxies,
+        )
+
+        if res.status_code not in [200, 204]:
+            raise ValueError(f"Error in API call to Proofpoint TAP {res.status_code}. Reason: {res.text}")
+
+        try:
+            return res.json()
+        except Exception:
+            raise ValueError(f"Failed to parse http response to JSON format. Original response body: \n{res.text}")
+
+    def get_events(
+        self, interval=None, since_time=None, since_seconds=None, threat_type=None, threat_status=None, event_type_filter="All"
+    ):
+        if not interval and not since_time and not since_seconds:
+            raise ValueError("Required to pass interval or sinceTime or sinceSeconds.")
+
+        query_params = {"format": "json"}
+        query_params.update(
+            assign_params(
+                interval=interval,
+                sinceTime=since_time,
+                sinceSeconds=since_seconds,
+                threatStatus=threat_status,
+                threatType=threat_type,
+            )
+        )
+
+        url_route = {
+            "All": "/all",
+            "Issues": "/issues",
+            "Blocked Clicks": "/clicks/blocked",
+            "Permitted Clicks": "/clicks/permitted",
+            "Blocked Messages": "/messages/blocked",
+            "Delivered Messages": "/messages/delivered",
+        }[event_type_filter]
+
+        events = self.http_request("GET", urljoin("siem", url_route), params=query_params)
+
+        return events
+
+    def get_forensics(self, threat_id=None, campaign_id=None, include_campaign_forensics=None):
+        if threat_id and campaign_id:
+            raise DemistoException("threadId and campaignID supplied, supply only one of them")
+        if include_campaign_forensics and campaign_id:
+            raise DemistoException("includeCampaignForensics can be true only with threadId")
+        if campaign_id:
+            params = assign_params(campaignId=campaign_id)
+        else:
+            params = assign_params(threatId=threat_id, includeCampaignForensics=include_campaign_forensics)
+        return self.http_request("GET", None, params=params, forensics_api=True)
+
+    def get_clicks(self, clicks_type: str, interval: str, threat_status: str = None) -> dict:
+        """
+        Retrieves clicks on malicious URLs in the specified time period. Clicks can either be blocked or permitted.
+
+        Args:
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
+            threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+            clicks_type (str): The type of the click. Can be either "blocked" or "permitted".
+
+        Returns:
+            dict: API response from ProofpointTAP.
+
+        """
+        params = remove_empty_elements({"interval": interval, "threatStatus": threat_status, "format": "json"})
+        return self.http_request("GET", f"/siem/clicks/{clicks_type}", params=params)
+
+    def get_messages(self, messages_type: str, interval: str, threat_status: str = None, threat_type: str = None) -> dict:
+        """
+        Retrieves events for messages in the specified time period. Messages can either be blocked or delivered.
+
+        Args:
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
+            threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+            threat_type (str): The type of the threat. Can be: url, attachment or message.
+            messages_type (str): The type of the messages. Can be either "blocked" or "delivered"
+
+        Returns:
+            dict: API response from ProofpointTAP.
+
+        """
+        params = remove_empty_elements(
+            {"interval": interval, "threatStatus": threat_status, "threatType": threat_type, "format": "json"}
+        )
+        return self.http_request("GET", f"/siem/messages/{messages_type}", params=params)
+
+    def list_campaigns(self, interval: str, page: str = None, limit: str = None) -> dict:
+        """
+        Retrieves a list of IDs of campaigns active in a time window.
+        Args:
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one day.
+            limit (str): The maximum number of campaign IDs to produce in the response.
+            page (str): The page of results to return, in multiples of the specified size.
+
+        Returns:
+            dict: API response from ProofpointTAP.
+
+        """
+        params = remove_empty_elements({"interval": interval, "page": page, "size": limit, "format": "json"})
+        return self.http_request("GET", "/campaign/ids", params=params)
+
+    def get_campaign(self, campaign_id: str) -> dict:
+        """
+        Retrieves information for a given campaign.
+        Args:
+            campaign_id (str): The ID of the required campaign.
+        Returns:
+            dict: API response from ProofpointTAP.
+        """
+        return self.http_request("GET", f"/campaign/{campaign_id}")
+
+    def list_most_attacked_users(self, window: str, limit: str = None, page: str = None) -> dict:
+        """
+        Retrieves a list of the most attacked users in the organization for a given period.
+        Args:
+            window (str): The number of days for which the information will be retrieved.
+            limit (str): The maximum number of VAPs to produce.
+            page (str): The page of results to return, in multiples of the specified size.
+        Returns:
+            dict: API response from ProofpointTAP.
+        """
+        params = remove_empty_elements({"window": window, "size": limit, "page": page})
+        return self.http_request("GET", "/people/vap", params=params)
+
+    def get_top_clickers(self, window: str, limit: str = None, page: str = None) -> dict:
+        """
+        Retrieves a list of the top clickers in the organization for a given period.
+        Args:
+            window (str): The number of days for which the information will be retrieved.
+            limit (str): The maximum number of top clickers to produce.
+            page (str): The page of results to return, in multiples of the specified size.
+        Returns:
+            dict: API response from ProofpointTAP.
+        """
+        params = remove_empty_elements({"window": window, "size": limit, "page": page})
+        return self.http_request("GET", "/people/top-clickers", params=params)
+
+    def url_decode(self, url_list: list) -> dict:
+        """
+        Decode URLs that have been rewritten by TAP to their original, target URL.
+        Args:
+            url_list (list): List of encoded URLs.
+        Returns:
+            dict: API response from ProofpointTAP.
+        """
+        data = {"urls": url_list}
+        return self.http_request("POST", "/url/decode", data=data)
+
+    def list_issues(self, interval: str, threat_status: str = None, threat_type: str = None) -> dict:
+        """
+        Retrieves events for permitted clicks on malicious URLs and delivered messages in the specified time period.
+        Args:
+            interval (str): ISO8601-formatted interval date. The minimum interval is 30 seconds. The maximum interval is one hour.
+            threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+            threat_type (str): The type of the threat. Can be: url, attachment or messageText.
+        Returns:
+            dict: API response from ProofpointTAP.
+        """
+        params = remove_empty_elements(
+            {"interval": interval, "threatStatus": threat_status, "threatType": threat_type, "format": "json"}
+        )
+        return self.http_request("GET", "/siem/issues", params=params)
+
+    def get_all_siem(self, format: str, since: int):
+        return self.http_request("GET", "/siem/all", params={"format": format, "sinceSeconds": since})
+
+
+def test_module(client: Client) -> str:
+    """
+    Tests API connectivity and authentication.
+    Args:
+        client (Client): ProofpointTAP API client.
+    Returns:
+        str : 'ok' if test passed, anything else will fail the test.
+    """
+
+    try:
+        client.get_all_siem(format="JSON", since=60)
+    except Exception as exception:
+        if "Unauthorized" in str(exception) or "authentication" in str(exception):
+            return "Authorization Error: make sure API Credentials are correctly set"
+
+        if "connection" in str(exception):
+            return "Connection Error: make sure Server URL is correctly set"
+        raise exception
+
+    return "ok"
+
+
+def build_context_attachment(what: dict) -> dict:
+    return assign_params(
+        SHA256=what.get("sha256"),
+        MD5=what.get("md5"),
+        Blacklisted=what.get("blacklisted"),
+        Offset=what.get("offset"),
+        Size=what.get("size"),
+    )
+
+
+def build_context_cookie(what: dict) -> dict:
+    return assign_params(
+        Action=what.get("action"),
+        Domain=what.get("domain"),
+        Key=what.get("key"),
+        Value=what.get("value"),
+    )
+
+
+def build_context_dns(what: dict) -> dict:
+    return assign_params(
+        Host=what.get("host"),
+        CNames=what.get("cnames"),
+        IP=what.get("ips"),
+        NameServers=what.get("nameservers"),
+        NameServersList=what.get("nameserversList"),
+    )
+
+
+def build_context_mutex(what: dict) -> dict:
+    return assign_params(Name=what.get("name"), Path=what.get("path"))
+
+
+def build_context_ids(what: dict) -> dict:
+    return assign_params(Name=what.get("name"), SignatureID=what.get("signatureId"))
+
+
+def build_context_network(what: dict) -> dict:
+    return assign_params(Action=what.get("action"), IP=what.get("ip"), Port=what.get("port"), Protocol=what.get("type"))
+
+
+def build_context_process(what: dict) -> dict:
+    return assign_params(
+        Action=what.get("action"),
+        Path=what.get("path"),
+    )
+
+
+def build_context_dropper(what: dict) -> dict:
+    return assign_params(
+        Path=what.get("path"),
+        URL=what.get("url"),
+        Rule=what.get("rule"),
+    )
+
+
+def build_context_registry(what: dict) -> dict:
+    return assign_params(
+        Name=what.get("name"),
+        Action=what.get("action"),
+        Key=what.get("key"),
+        Value=what.get("value"),
+    )
+
+
+def build_context_file(what: dict) -> dict:
+    return assign_params(
+        Path=what.get("path"),
+        Action=what.get("action"),
+        SHA256=what.get("sha256"),
+        MD5=what.get("md5"),
+        Size=what.get("size"),
+    )
+
+
+def build_context_url(what: dict) -> dict:
+    return assign_params(
+        URL=what.get("url"),
+        Blacklisted=what.get("blacklisted"),
+        SHA256=what.get("sha256"),
+        MD5=what.get("md5"),
+        Size=what.get("size"),
+        HTTPStatus=what.get("httpStatus"),
+        IP=what.get("ip"),
+    )
+
+
+def build_context_behavior(forensics_data: dict) -> dict:
+    """
+    Build forensics behavior evidence type objects in order to update the command report context.
+    Args:
+        forensics_data (dict): Forensics data. A map of values associated with the specific evidence type.
+
+    Returns:
+        dict: Dictionary from given kwargs without empty values.
+
+    """
+    return assign_params(
+        Path=forensics_data.get("path"),
+        URL=forensics_data.get("url"),
+    )
+
+
+def build_context_screenshot(forensics_data: dict) -> dict:
+    """
+    Build forensics screenshot evidence type objects in order to update the command report context.
+    Args:
+        forensics_data (dict): Forensics data. A map of values associated with the specific evidence type.
+
+    Returns:
+        dict: Dictionary from given kwargs without empty values.
+
+    """
+    return assign_params(
+        URL=forensics_data.get("url"),
+    )
+
+
+def get_forensic_command(client: Client, args: dict) -> tuple[str, dict, dict]:
+    """
+    Args:
+        client:
+        args: demisto.args()
+    Returns:
+        Outputs
+    """
+    forensic_types = {
+        "attachment": "Attachment",
+        "cookie": "Cookie",
+        "dns": "DNS",
+        "dropper": "Dropper",
+        "file": "File",
+        "ids": "IDS",
+        "mutex": "Mutex",
+        "network": "Network",
+        "process": "Process",
+        "registry": "Registry",
+        "url": "URL",
+        "behavior": "Behavior",
+        "screenshot": "Screenshot",
+    }
+    threat_id = args.get("threatId")
+    campaign_id = args.get("campaignId")
+    include_campaign_forensics = args.get("includeCampaignForensics") == "true"
+    limit = args.get("limit", DEFAULT_LIMIT)
+    raw_response = client.get_forensics(
+        threat_id=threat_id, campaign_id=campaign_id, include_campaign_forensics=include_campaign_forensics
+    )
+    reports = raw_response.get("reports", [])
+    if len(reports) > limit:
+        reports = reports[:limit]
+    reports_context = []
+    for report in reports:
+        report_context = assign_params(Scope=report.get("scope"), Type=report.get("type"), ID=report.get("id"))
+        for evidence in report.get("forensics", []):
+            evidence_type = evidence.get("type")
+            evidence_type = forensic_types.get(evidence_type)
+            if evidence_type:
+                # Create list in report
+                if evidence_type not in report_context:
+                    report_context[evidence_type] = []
+                what = evidence.get("what", {})
+                basic_report = assign_params(
+                    Time=evidence.get("time"),
+                    Display=evidence.get("display"),
+                    Malicious=evidence.get("malicious"),
+                )
+                basic_report["Platform"] = [
+                    {"Name": platform.get("name"), "OS": platform.get("os"), "Version": platform.get("version")}
+                    for platform in evidence.get("platforms", [])
+                ]
+
+                if evidence_type == "Attachment":
+                    basic_report.update(build_context_attachment(what))
+                    report_context[evidence_type].append(basic_report)
+                elif evidence_type == "Cookie":
+                    basic_report.update(build_context_cookie(what))
+                    report_context[evidence_type].append(basic_report)
+                elif evidence_type == "DNS":
+                    basic_report.update(build_context_dns(what))
+                    report_context["DNS"].append(basic_report)
+                elif evidence_type == "Dropper":
+                    basic_report.update(build_context_dropper(what))
+                    report_context["Dropper"].append(basic_report)
+                elif evidence_type == "File":
+                    basic_report.update(build_context_file(what))
+                    report_context["File"].append(basic_report)
+                elif evidence_type == "IDS":
+                    basic_report.update(build_context_ids(what))
+                    report_context["IDS"].append(basic_report)
+                elif evidence_type == "Mutex":
+                    basic_report.update(build_context_mutex(what))
+                    report_context["Mutex"].append(basic_report)
+                elif evidence_type == "Network":
+                    basic_report.update(build_context_network(what))
+                    report_context["Network"].append(basic_report)
+                elif evidence_type == "Process":
+                    basic_report.update(build_context_process(what))
+                    report_context["Process"].append(basic_report)
+                elif evidence_type == "Registry":
+                    basic_report.update(build_context_registry(what))
+                    report_context["Registry"].append(basic_report)
+                elif evidence_type == "URL":
+                    basic_report.update(build_context_url(what))
+                    report_context["URL"].append(basic_report)
+                elif evidence_type == "Behavior":
+                    basic_report.update(build_context_behavior(what))
+                    report_context["Behavior"].append(basic_report)
+                elif evidence_type == "Screenshot":
+                    basic_report.update(build_context_screenshot(what))
+                    report_context["Screenshot"].append(basic_report)
+        reports_context.append(report_context)
+    outputs = {"Proofpoint.Report(var.ID === obj.ID)": reports_context}
+    readable_outputs = tableToMarkdown(
+        f"Forensic results from ProofPoint for ID: {threat_id or campaign_id}", reports_context, headers=["ID", "Scope", "Type"]
+    )
+    return readable_outputs, outputs, raw_response
+
+
+@logger
+def get_events_command(client, args):
+    interval = args.get("interval")
+    threat_type = argToList(args.get("threatType"))
+    threat_status = args.get("threatStatus")
+    since_time = args.get("sinceTime")
+    since_seconds = int(args.get("sinceSeconds")) if args.get("sinceSeconds") else None
+    event_type_filter = args.get("eventTypes")
+
+    raw_events = client.get_events(interval, since_time, since_seconds, threat_type, threat_status, event_type_filter)
+
+    return (
+        tableToMarkdown("Proofpoint Events", raw_events),
+        {
+            "Proofpoint.MessagesDelivered(val.GUID == obj.GUID)": raw_events.get("messagesDelivered"),
+            "Proofpoint.MessagesBlocked(val.GUID == obj.GUID)": raw_events.get("messagesBlocked"),
+            "Proofpoint.ClicksBlocked(val.GUID == obj.GUID)": raw_events.get("clicksBlocked"),
+            "Proofpoint.ClicksPermitted(val.GUID == obj.GUID)": raw_events.get("clicksPermitted"),
+        },
+        raw_events,
+    )
+
+
+def _build_incident(raw_event: dict, event_type: str, occurred: str, raw_json_encoding: str | None = None) -> dict:
+    """Build an incident dict from a raw event.
+
+    Args:
+        raw_event: The raw event data from Proofpoint API.
+        event_type: Human-readable event type (e.g., "messages delivered").
+        occurred: The event timestamp string.
+        raw_json_encoding: Optional encoding for the raw JSON.
+
+    Returns:
+        dict: Incident dict with name, rawJSON, and occurred fields.
+    """
+    raw_event["type"] = event_type
+    event_id = raw_event.get("id") or raw_event.get("GUID", "")
+
+    if raw_json_encoding:
+        raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+    else:
+        raw_json = json.dumps(raw_event)
+
+    type_label = event_type.replace("_", " ").title()
+    return {
+        "name": f"Proofpoint - {type_label} - {event_id}",
+        "rawJSON": raw_json,
+        "occurred": occurred,
+    }
+
+
+# Event type configuration: (response_key, event_type_label, dedup_field, time_field_or_None)
+# When time_field is None, use max(threatTime, clickTime)
+EVENT_TYPE_CONFIGS = [
+    ("messagesDelivered", "messages delivered", "GUID", "messageTime"),
+    ("messagesBlocked", "messages blocked", "GUID", "messageTime"),
+    ("clicksPermitted", "clicks permitted", "id", None),
+    ("clicksBlocked", "clicks blocked", "id", None),
+]
+
+
+def validate_first_fetch_time(first_fetch_time: str):
+    """
+    validate that the start time is less than 7 days ago
+    Args:
+        first_fetch_time(str) - the start date time that needs to be validated.
+    Returns:
+        A valid datetime for the start_query_time
+    """
+    dt_start_query_time = arg_to_datetime(first_fetch_time) or get_now() - timedelta(hours=1)
+    seven_days_ago = get_now() - timedelta(days=7)
+    if dt_start_query_time <= seven_days_ago:
+        raise DemistoException(
+            "The First fetch time range is more than 7 days ago. Please update this parameter since "
+            "Proofpoint supports a maximum 1 week fetch back."
+        )
+    else:
+        demisto.debug(f"The {first_fetch_time=} is less than 7 days ago.")
+
+
+def fetch_incidents(
+    client: Client,
+    last_run,
+    first_fetch_time,
+    event_type_filter,
+    threat_type,
+    threat_status,
+    limit=DEFAULT_LIMIT,
+    integration_context=None,
+    raw_json_encoding: str | None = None,
+    look_back_minutes: int = 0,
+) -> tuple[dict, list, list]:
+    incidents = []
+    end_query_time = ""
+
+    # Check if there are incidents saved in context (overflow from previous fetch)
+    if integration_context:
+        remained_incidents = integration_context.get("incidents")
+        demisto.debug(f"remained_incidents: {len(remained_incidents) if remained_incidents else 0}")
+        if remained_incidents:
+            return last_run, remained_incidents[:limit], remained_incidents[limit:]
+
+    # Load dedup state
+    seen_ids: dict[str, str] = last_run.get("seen_ids", {})
+    demisto.debug(f"Loaded {len(seen_ids)} seen_ids from last_run")
+
+    # Get the last fetch time, if exists
+    start_query_time = last_run.get("last_fetch")
+    is_first_fetch = not start_query_time
+    # Handle first time fetch, fetch incidents retroactively
+    if is_first_fetch:
+        start_query_time, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
+
+    # Look-back ramp-up for legacy / freshly-upgraded instances.
+    # Relevant for v1.3.0 and above (introduced with the look-back feature in v1.3.0).
+    # Purpose: gradually ramp up the look-back window for legacy / freshly-upgraded
+    # instances so events are not re-fetched as duplicates.
+    # NOTE: This block can (and should) be removed in the future once all existing
+    # instances have completed the gradual ramp-up and it is no longer relevant.
+    # ------------------------------------------------------------------
+    # Applying the full `look_back_minutes` immediately on an instance that has
+    # no (or recently-initialized) `seen_ids` state would cause events from the
+    # look-back window to be re-fetched as duplicates, because there is nothing
+    # in `seen_ids` to dedupe against.
+    #
+    # First-time fetches do not need ramp-up (no prior state to duplicate).
+    now = get_now()
+    look_back_enabled_from_str = last_run.get("look_back_enabled_from")
+    effective_look_back_minutes = look_back_minutes
+    carry_enabled_from: str | None = None
+
+    if look_back_minutes > 0 and not is_first_fetch:
+        if "seen_ids" not in last_run and look_back_enabled_from_str is None:
+            # Legacy instance: first fetch under the look-back feature.
+            carry_enabled_from = now.strftime(DATE_FORMAT)
+            effective_look_back_minutes = 0
+            demisto.debug(
+                f"Legacy instance detected (last_fetch present but no seen_ids in last_run); "
+                f"initializing look_back ramp-up from {carry_enabled_from} and skipping look_back "
+                f"of {look_back_minutes} minutes for this fetch to avoid duplicates."
+            )
+        elif look_back_enabled_from_str is not None:
+            # Ramp-up in progress: grow effective look-back with elapsed wall-clock time.
+            enabled_from_dt = datetime.strptime(look_back_enabled_from_str, DATE_FORMAT)
+            elapsed_minutes = int((now - enabled_from_dt).total_seconds() // 60)
+            ramp_minutes = max(0, min(look_back_minutes, elapsed_minutes))
+            effective_look_back_minutes = ramp_minutes
+            if ramp_minutes < look_back_minutes:
+                # Still ramping up — carry the stamp forward.
+                carry_enabled_from = look_back_enabled_from_str
+                demisto.debug(
+                    f"Look-back ramp-up active: enabled_from={look_back_enabled_from_str}, "
+                    f"elapsed={elapsed_minutes} min, effective look_back={ramp_minutes} "
+                    f"(target {look_back_minutes})."
+                )
+            else:
+                # Ramp-up complete — drop the stamp; steady-state full look-back from now on.
+                demisto.debug(
+                    f"Look-back ramp-up complete (elapsed={elapsed_minutes} min "
+                    f">= {look_back_minutes} min target); using full look_back and clearing stamp."
+                )
+
+    fetch_intervals = get_fetch_times(start_query_time, effective_look_back_minutes)
+
+    # If no valid intervals, skip this fetch cycle
+    if not fetch_intervals:
+        demisto.debug("No fetch intervals generated - skipping this fetch cycle")
+        return last_run, [], []
+
+    dedup_count = 0
+
+    for interval_start, interval_end in fetch_intervals:
+        demisto.debug(f"Fetching interval: {interval_start} / {interval_end}")
+        raw_events = client.get_events(
+            interval=interval_start + "/" + interval_end,
+            event_type_filter=event_type_filter,
+            threat_status=threat_status,
+            threat_type=threat_type,
+        )
+
+        for response_key, event_type_label, dedup_field, time_field in EVENT_TYPE_CONFIGS:
+            events = raw_events.get(response_key, [])
+            if events:
+                demisto.debug(f"Fetched {len(events)} {response_key} events")
+
+            for raw_event in events:
+                # Get the dedup key
+                dedup_key = raw_event.get(dedup_field, "")
+
+                # Skip if already seen (dedup)
+                if dedup_key and dedup_key in seen_ids:
+                    demisto.debug(
+                        f"Dedup: skipping event {dedup_key} ({response_key}) — "
+                        f"already seen in interval ended by {seen_ids[dedup_key]}"
+                    )
+                    dedup_count += 1
+                    continue
+
+                # Determine occurred time
+                if time_field:
+                    occurred = raw_event.get(time_field, "")
+                else:
+                    # Safely pick the latest of threatTime / clickTime, ignoring missing values
+                    candidate_times = [t for t in (raw_event.get("threatTime"), raw_event.get("clickTime")) if t]
+                    occurred = max(candidate_times) if candidate_times else ""
+                if not occurred:
+                    demisto.debug(f"Event {dedup_key} ({response_key}) is missing an occurred time; using empty value")
+
+                # Build incident
+                incident = _build_incident(raw_event, event_type_label, occurred, raw_json_encoding)
+                incidents.append(incident)
+
+                # Track this event for dedup — store the end of the fetch interval
+                if dedup_key:
+                    seen_ids[dedup_key] = interval_end
+
+    if dedup_count > 0:
+        demisto.debug(f"Deduplicated {dedup_count} events")
+
+    # Prune old IDs outside the lookback window (always, to avoid unbounded growth of last_run)
+    seen_ids = prune_seen_ids(seen_ids, look_back_minutes)
+
+    # Advance last_fetch to end of last interval (real now, not shifted)
+    end_query_time = fetch_intervals[-1][1]
+
+    next_run: dict = {
+        "last_fetch": end_query_time,
+        "seen_ids": seen_ids,
+    }
+    # Carry the look-back ramp-up stamp forward while ramp-up is still in progress.
+    if carry_enabled_from is not None:
+        next_run["look_back_enabled_from"] = carry_enabled_from
+
+    demisto.debug(
+        f"Fetch summary: {len(fetch_intervals)} intervals, "
+        f"{len(incidents)} total incidents, "
+        f"returning {min(len(incidents), limit)}, "
+        f"remaining {max(0, len(incidents) - limit)}, "
+        f"seen_ids={len(seen_ids)}, "
+        f"next last_fetch={end_query_time}"
+    )
+
+    return next_run, incidents[:limit], incidents[limit:]
+
+
+def handle_interval(time_range: datetime, is_hours_interval: bool = True, is_days_interval: bool = False):
+    """
+    Create a list of interval objects from the current time over time range.
+    Most of ProofpointTAP requests required interval string in order to retrieve information from the API requests.
+    interval objects will be in the following format: '2021-04-27T09:00:00Z/2021-04-27T10:00:00Z'
+    Args:
+        time_range (datetime): Last interval time.
+        is_days_interval (bool): If True, create hours interval objects.
+        is_hours_interval (bool): If True, create days interval objects.
+    Returns:
+        list: List of hour interval items.
+    """
+
+    current_time = datetime.utcnow()
+    intervals = []
+    if current_time - time_range > timedelta(
+        days=7
+    ):  # The maximum time range of Proofpoint TAP API requests is 7 days minus one minute.
+        time_range += timedelta(minutes=1)
+
+    if is_days_interval:
+        while current_time - time_range > timedelta(days=1):
+            start = time_range.strftime(DATE_FORMAT)
+            time_range += timedelta(days=1)
+            intervals.append(f"{start}/{time_range.strftime(DATE_FORMAT)}")
+
+    if is_hours_interval:
+        while current_time - time_range > timedelta(hours=1):
+            start = time_range.strftime(DATE_FORMAT)
+            time_range += timedelta(hours=1)
+            intervals.append(f"{start}/{time_range.strftime(DATE_FORMAT)}")
+
+    return intervals
+
+
+def get_clicks_command(
+    client: Client, is_blocked: bool, interval: str = None, threat_status: str = None, time_range: str = None
+) -> CommandResults:
+    """
+    Retrieves clicks on malicious URLs in the specified time period. Clicks can either be blocked or permitted.
+    Args:
+        client (Client): ProofpointTAP API client.
+        is_blocked (bool): Indicates the clicks type.
+        interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+        threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+        time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+    clicks_type = "blocked" if is_blocked else "permitted"
+    if not (interval or time_range):
+        raise Exception("Must provide interval or time_range.")
+    if interval and time_range:
+        raise Exception("Must provide only one of the arguments interval or time_range.")
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+        raise Exception("The maximum time range is 7 days")
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+        raise Exception("The minimum time range is thirty seconds.")
+
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+        end = datetime.utcnow().strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+        intervals = [f"{start}/{end}"]
+    else:
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
+
+    outputs = []
+    raw_responses = []
+    for interval_string in intervals:
+        raw_response = client.get_clicks(clicks_type, interval_string, threat_status)
+
+        clicks_path = ["clicksBlocked"] if clicks_type == "blocked" else ["clicksPermitted"]
+        if dict_safe_get(raw_response, clicks_path):
+            outputs.extend(dict_safe_get(raw_response, clicks_path))
+            raw_responses.append(raw_response)
+
+    readable_output = tableToMarkdown(
+        f"{clicks_type.title()} Clicks",
+        outputs,
+        headers=[
+            "id",
+            "senderIP",
+            "recipient",
+            "classification",
+            "threatID",
+            "threatURL",
+            "threatStatus",
+            "threatTime",
+            "clickTime",
+            "campaignId",
+            "userAgent",
+        ],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"Proofpoint.Clicks{clicks_type.capitalize()}",
+        outputs=outputs,
+        outputs_key_field=["GUID", "id"],
+        raw_response=raw_responses,
+    )
+
+
+def create_messages_output(messages_list: list) -> list:
+    """
+    Creates and filters the required fields of messages output.
+    Args:
+        messages_list (list): List of retrieved messages.
+    Returns:
+        list:  List of messages with the required fields.
+    """
+    outputs = []
+    message_keys = [
+        "spamScore",
+        "phishScore",
+        "threatsInfoMap",
+        "messageTime",
+        "impostorScore",
+        "malwareScore",
+        "cluster",
+        "subject",
+        "quarantineFolder",
+        "quarantineRule",
+        "policyRoutes",
+        "modulesRun",
+        "messageSize",
+        "messageParts",
+        "completelyRewritten",
+        "id",
+        "sender",
+        "recipient",
+        "senderIP",
+        "messageID",
+        "GUID",
+    ]
+
+    header_fields = [
+        "headerFrom",
+        "headerReplyTo",
+        "fromAddress",
+        "fromAddress",
+        "ccAddresses",
+        "replyToAddress",
+        "toAddresses",
+        "xmailer",
+    ]
+
+    for message in messages_list:
+        message_header = {}
+        for field in header_fields:
+            message_header[field] = message[field]
+
+        message_output = {key: value for key, value in message.items() if key in message_keys}
+        message_output["Header"] = message_header
+        outputs.append(message_output)
+
+    return outputs
+
+
+def create_threats_objects(messages: list) -> list:
+    """
+    Creates list of threats items of messages.
+
+    Args:
+        messages (list): List of messages items.
+
+    Returns:
+        list: List of threats items.
+
+    """
+    threats_info_map = []
+    message_keys = ["sender", "recipient", "subject"]
+    for message in messages:
+        for threat in message.get("threatsInfoMap"):
+            threat_object = {key: value for key, value in message.items() if key in message_keys}
+            threat_object.update(threat)
+            threats_info_map.append(threat_object)
+
+    return threats_info_map
+
+
+def get_messages_command(
+    client: Client,
+    is_blocked: bool,
+    interval: str = None,
+    threat_status: str = None,
+    threat_type: str = None,
+    time_range: str = None,
+) -> CommandResults:
+    """
+    Retrieves events for messages in the specified time period. Messages can either be blocked or delivered.
+    Args:
+        client (Client): ProofpointTAP API client.
+        is_blocked (bool): Indicates the messages type.
+        interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+        threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+        threat_type (str): The type of the threat. Can be: url, attachment or message.
+        time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+    messages_type = "blocked" if is_blocked else "delivered"
+
+    if not (interval or time_range):
+        raise Exception("Must provide interval or time_range.")
+    if interval and time_range:
+        raise Exception("Must provide only one of the arguments interval or time_range.")
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+        raise Exception("The maximum time range is 7 days")
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+        raise Exception("The minimum time range is thirty seconds.")
+
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+        end = datetime.utcnow().strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+        intervals = [f"{start}/{end}"]
+    else:
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
+    outputs = []
+    raw_responses = []
+    for interval_string in intervals:
+        raw_response = client.get_messages(messages_type, interval_string, threat_status, threat_type)
+
+        messages_path = ["messagesBlocked"] if messages_type == "blocked" else ["messagesDelivered"]
+        if dict_safe_get(raw_response, messages_path):
+            outputs.extend(create_messages_output(dict_safe_get(raw_response, messages_path)))
+            raw_responses.append(raw_response)
+
+    threats_info_map = create_threats_objects(outputs)
+
+    messages_readable_output = tableToMarkdown(
+        f"{messages_type.title()} Messages",
+        outputs,
+        headers=[
+            "senderIP",
+            "sender",
+            "recipient",
+            "subject",
+            "messageSize",
+            "messageTime",
+            "malwareScore",
+            "phishScore",
+            "spamScore",
+        ],
+        headerTransform=pascalToSpace,
+    )
+
+    threats_info_readable_output = tableToMarkdown(
+        f"{messages_type.title()} Messages Threats Information",
+        threats_info_map,
+        headers=[
+            "sender",
+            "recipient",
+            "subject",
+            "classification",
+            "threat",
+            "threatStatus",
+            "threatUrl",
+            "threatID",
+            "threatTime",
+            "campaignID",
+        ],
+        headerTransform=pascalToSpace,
+    )
+
+    readable_output = messages_readable_output + "\n" + threats_info_readable_output
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"Proofpoint.Messages{messages_type.capitalize()}",
+        outputs=outputs,
+        outputs_key_field=["GUID", "id"],
+        raw_response=raw_responses,
+    )
+
+
+def list_campaigns_command(
+    client: Client, interval: str = None, limit: str = None, page: str = None, time_range: str = None
+) -> CommandResults:
+    """
+    Retrieves a list of IDs of campaigns active in a time window.
+    Args:
+        client (Client): ProofpointTAP API client.
+        interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one day.
+        limit (str): The maximum number of campaign IDs to produce in the response.
+        page (str): The page of results to return, in multiples of the specified size.
+        time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+
+    if not (interval or time_range):
+        raise Exception("Must provide interval or time_range.")
+    if interval and time_range:
+        raise Exception("Must provide only one of the arguments interval or time_range.")
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+        raise Exception("The maximum time range is 7 days")
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+        raise Exception("The minimum time range is thirty seconds.")
+
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+        end = datetime.utcnow().strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+        intervals = [f"{start}/{end}"]
+    else:
+        intervals = (
+            handle_interval(
+                dateparser.parse(time_range),  # type: ignore
+                is_days_interval=True,
+            )
+            if time_range
+            else [  # type: ignore
+                interval  # type: ignore
+            ]
+        )
+
+    outputs = []
+    raw_responses = []
+    request_error = []
+    for interval_string in intervals:
+        try:
+            raw_response = client.list_campaigns(interval_string, page, limit)
+        except ValueError:  # In case there are no campaigns for the interval,  the request returns status code 404
+            # which causes an error in http_request function
+            request_error.append({"interval": interval_string, "message": f"Not found campaigns data from {interval_string}"})
+            continue
+
+        if dict_safe_get(raw_response, ["campaigns"]):
+            outputs.extend(dict_safe_get(raw_response, ["campaigns"]))
+            raw_responses.append(raw_response)
+
+    readable_output = tableToMarkdown("Campaigns List", outputs, headers=["id", "lastUpdatedAt"], headerTransform=pascalToSpace)
+
+    if request_error:
+        readable_output += "\n" + tableToMarkdown(
+            "Errors", request_error, headers=["interval", "message"], headerTransform=pascalToSpace
+        )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Proofpoint.Campaign",
+        outputs=outputs,
+        outputs_key_field="id",
+        raw_response=raw_responses,
+    )
+
+
+def get_campaign_command(client: Client, campaign_id: str) -> CommandResults | str:
+    """
+    Retrieves information for a given campaign.
+    Args:
+        client (Client): ProofpointTAP API client.
+        campaign_id (str): The ID of the required campaign.
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+    try:
+        raw_response = client.get_campaign(campaign_id)
+    except ValueError:
+        return "Campaign Id not found"
+
+    campaign_general_fields = ["id", "name", "description", "startDate", "notable"]
+    campaign_fields = ["families", "techniques", "actors", "brands", "malware"]
+
+    outputs = {}
+    outputs["campaignMembers"] = dict_safe_get(raw_response, ["campaignMembers"])
+    outputs["info"] = {key: value for key, value in raw_response.items() if key in campaign_general_fields}
+    outputs.update({key: value for key, value in raw_response.items() if key in campaign_fields})
+    fields_readable_output = ""
+    for field in campaign_fields:
+        fields_readable_output += "\n" + tableToMarkdown(
+            field.capitalize(), dict_safe_get(outputs, [field]), headers=["id", "name"], headerTransform=pascalToSpace
+        )
+
+    campaign_info_output = tableToMarkdown(
+        "Campaign Information",
+        outputs["info"],
+        headers=["id", "name", "description", "startDate", "notable"],
+        headerTransform=pascalToSpace,
+    )
+    campaign_members_output = tableToMarkdown(
+        "Campaign Members", outputs["campaignMembers"], headers=["id", "threat", "type"], headerTransform=pascalToSpace
+    )
+
+    readable_output = campaign_info_output + "\n" + campaign_members_output + fields_readable_output
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Proofpoint.Campaign",
+        outputs=outputs,
+        outputs_key_field="id",
+        raw_response=raw_response,
+    )
+
+
+def create_families_objects(users: list, statistics_key: str) -> list:
+    """
+    Creates list of threat families items of users.
+
+    Args:
+        statistics_key (str): Dictionary key of users statistics.
+        users (list): List of users items.
+
+    Returns:
+        list: List of threats items
+
+    """
+    threat_families = []
+    for user in users:
+        emails = dict_safe_get(user, ["identity", "emails"])
+        for family in dict_safe_get(user, [statistics_key, "families"]):
+            families_object = {"Mailbox": emails, "Threat Family Name": family.get("name"), "Threat Score": family.get("score")}
+            threat_families.append(families_object)
+
+    return sorted(threat_families, key=lambda x: (x.get("Threat Score", 0), x.get("Mailbox")), reverse=True)
+
+
+def list_most_attacked_users_command(client: Client, window: str, limit: str = None, page: str = None) -> CommandResults:
+    """
+    Retrieves a list of the most attacked users in the organization for a given period.
+    Args:
+        client (Client): ProofpointTAP API client.
+        window (str): The number of days for which the information will be retrieved.
+        limit (str): The maximum number of VAPs to produce.
+        page (str): The page of results to return, in multiples of the specified size.
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+
+    raw_response = client.list_most_attacked_users(window, limit, page)
+    outputs = raw_response
+    threat_families = create_families_objects(dict_safe_get(outputs, ["users"]), "threatStatistics")
+
+    most_attacked_users_output = tableToMarkdown(
+        "Most Attacked Users Information",
+        outputs,
+        headers=["totalVapUsers", "interval", "averageAttackIndex", "vapAttackIndexThreshold"],
+        headerTransform=pascalToSpace,
+    )
+
+    threat_families_output = tableToMarkdown(
+        "Threat Families",
+        threat_families,
+        headers=["Mailbox", "Threat Family Name", "Threat Score"],
+        headerTransform=pascalToSpace,
+    )
+
+    readable_output = most_attacked_users_output + "\n" + threat_families_output
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Proofpoint.Vap",
+        outputs=outputs,
+        raw_response=raw_response,
+        outputs_key_field="interval",
+    )
+
+
+def get_top_clickers_command(client: Client, window: str, limit: str = None, page: str = None) -> CommandResults:
+    """
+    Retrieves a list of the top clickers in the organization for a given period.
+    Args:
+        client (Client): ProofpointTAP API client.
+        window (str): The number of days for which the information will be retrieved.
+        limit (str): The maximum number of top clickers to produce.
+        page (str): The page of results to return, in multiples of the specified size.
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+    raw_response = client.get_top_clickers(window, limit, page)
+
+    outputs = raw_response
+    threat_families = create_families_objects(dict_safe_get(outputs, ["users"]), "clickStatistics")
+
+    top_clickers_output = tableToMarkdown(
+        "Top Clickers Users Information", outputs, headers=["totalTopClickers", "interval"], headerTransform=pascalToSpace
+    )
+
+    threat_families_output = tableToMarkdown(
+        "Threat Families",
+        threat_families,
+        headers=["Mailbox", "Threat Family Name", "Threat Score"],
+        headerTransform=pascalToSpace,
+    )
+
+    readable_output = top_clickers_output + threat_families_output
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Proofpoint.Topclickers",
+        outputs=outputs,
+        raw_response=raw_response,
+        outputs_key_field="interval",
+    )
+
+
+def url_decode_command(client: Client, urls: str) -> CommandResults:
+    """
+    Decode URLs that have been rewritten by TAP to their original, target URL.
+    Args:
+        client (Client): ProofpointTAP API client.
+        urls (str): Encoded URLs.
+    Returns:
+        CommandResults: raw response, outputs, and readable outputs.
+    """
+    raw_response = client.url_decode(argToList(urls))
+    outputs = dict_safe_get(raw_response, ["urls"])
+
+    readable_output = tableToMarkdown(
+        "URLs decoded information", outputs, headers=["encodedUrl", "decodedUrl"], headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Proofpoint.URL",
+        outputs_key_field="encodedUrl",
+        outputs=outputs,
+        raw_response=raw_response,
+    )
+
+
+def list_issues_command(
+    client: Client, interval: str = None, threat_status: str = None, threat_type: str = None, time_range: str = None
+) -> list:
+    """
+    Retrieves events for permitted clicks on malicious URLs and delivered messages in the specified time period.
+    Args:
+        client (Client): ProofpointTAP API client.
+        interval (str): ISO8601-formatted interval date. The minimum interval is thirty seconds. The maximum interval is one hour.
+        threat_status (str): The status of the threat. Can be: active, cleared or falsePositive.
+        threat_type (str): The type of the threat. Can be: url, attachment or messageText.
+        time_range (str): Time range, for example: 1 week, 2 days, 3 hours etc.
+    Returns:
+        list: List of CommandResults objects.
+    """
+
+    if not (interval or time_range):
+        raise Exception("Must provide interval or time_range.")
+    if interval and time_range:
+        raise Exception("Must provide only one of the arguments interval or time_range.")
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
+        raise Exception("The maximum time range is 7 days")
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
+        raise Exception("The minimum time range is thirty seconds.")
+
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
+        end = datetime.utcnow().strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
+        intervals = [f"{start}/{end}"]
+    else:
+        intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
+
+    messages_outputs = []
+    messages_raw_responses = []
+    clicks_outputs = []
+    clicks_raw_responses = []
+    command_results_list = []
+
+    for interval_string in intervals:
+        raw_response = client.list_issues(interval_string, threat_status, threat_type)
+
+        messages = dict_safe_get(raw_response, ["messagesDelivered"])
+
+        if messages:
+            messages_outputs.extend(create_messages_output(messages))
+            messages_raw_responses.append(raw_response)
+
+        clicks = dict_safe_get(raw_response, ["clicksPermitted"])
+
+        if clicks:
+            clicks_outputs.extend(clicks)
+            clicks_raw_responses.append(raw_response)
+
+    threats_info_map = create_threats_objects(messages_outputs)
+
+    delivered_messages_output = tableToMarkdown(
+        "Delivered Messages",
+        messages_outputs,
+        headers=[
+            "senderIP",
+            "sender",
+            "recipient",
+            "subject",
+            "messageSize",
+            "messageTime",
+            "malwareScore",
+            "phishScore",
+            "spamScore",
+        ],
+        headerTransform=pascalToSpace,
+    )
+
+    threats_info_output = tableToMarkdown(
+        "Delivered Messages Threats Info Map:",
+        threats_info_map,
+        headers=[
+            "sender",
+            "recipient",
+            "subject",
+            "classification",
+            "threat",
+            "threatStatus",
+            "threatUrl",
+            "threatID",
+            "threatTime",
+            "campaignID",
+        ],
+        headerTransform=pascalToSpace,
+    )
+
+    messages_readable_output = delivered_messages_output + "\n" + threats_info_output
+
+    command_results_list.append(
+        CommandResults(
+            readable_output=messages_readable_output,
+            outputs_prefix="Proofpoint.MessagesDelivered",
+            outputs=messages_outputs,
+            outputs_key_field=["GUID", "id"],
+            raw_response=messages_raw_responses,
+        )
+    )
+
+    clicks_readable_output = tableToMarkdown(
+        "Permitted click from list-issues command result:",
+        clicks_outputs,
+        headers=[
+            "id",
+            "senderIP",
+            "recipient",
+            "classification",
+            "threatID",
+            "threatURL",
+            "threatStatus",
+            "threatTime",
+            "clickTime",
+            "campaignId",
+            "userAgent",
+        ],
+        headerTransform=pascalToSpace,
+    )
+
+    command_results_list.append(
+        CommandResults(
+            readable_output=clicks_readable_output,
+            outputs_prefix="Proofpoint.ClicksPermitted",
+            outputs=clicks_outputs,
+            outputs_key_field=["GUID", "id"],
+            raw_response=clicks_raw_responses,
+        )
+    )
+
+    return command_results_list
+
+
+def main():
+    """
+    PARSE AND VALIDATE INTEGRATION PARAMS
+    """
+    params = demisto.params()
+    service_principal = params.get("credentials", {}).get("identifier")
+    secret = params.get("credentials", {}).get("password")
+
+    # Remove trailing slash to prevent wrong URL path to service
+    server_url = params["url"][:-1] if (params["url"] and params["url"].endswith("/")) else params["url"]
+    api_version = params.get("api_version")
+
+    verify_certificate = not params.get("insecure", False)
+    # How many time before the first fetch to retrieve incidents
+    fetch_time = params.get("fetch_time", "60 minutes")
+
+    threat_status = argToList(params.get("threat_status"))
+
+    threat_type = argToList(params.get("threat_type"))
+
+    event_type_filter = params.get("events_type")
+
+    raw_json_encoding = params.get("raw_json_encoding")
+
+    fetch_limit = min(int(params.get("limit", DEFAULT_LIMIT)), DEFAULT_LIMIT)
+
+    # Get look-back buffer parameter (default 0 for backward compatibility)
+    look_back_minutes = arg_to_number(params.get("look_back_minutes", DEFAULT_LOOK_BACK_MINUTES)) or DEFAULT_LOOK_BACK_MINUTES
+
+    # Remove proxy if not set to true in params
+    proxies = handle_proxy()
+
+    command = demisto.command()
+    args = demisto.args()
+    demisto.info(f"Command being called is {command}")
+    demisto.debug(f"{fetch_time=}, {look_back_minutes=}")
+    try:
+        client = Client(server_url, api_version, verify_certificate, service_principal, secret, proxies)
+        commands = {"proofpoint-get-events": get_events_command, "proofpoint-get-forensics": get_forensic_command}
+        if command == "test-module":
+            validate_first_fetch_time(fetch_time)
+            return_outputs(test_module(client))
+
+        elif demisto.command() == "fetch-incidents":
+            integration_context = demisto.getIntegrationContext()
+            next_run, incidents, remained_incidents = fetch_incidents(
+                client=client,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=fetch_time,
+                event_type_filter=event_type_filter,
+                threat_status=threat_status,
+                threat_type=threat_type,
+                limit=fetch_limit,
+                integration_context=integration_context,
+                raw_json_encoding=raw_json_encoding,
+                look_back_minutes=look_back_minutes,
+            )
+            # Save last_run, incidents, remained incidents into integration
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+            # preserve context dict
+            demisto.setIntegrationContext({"incidents": remained_incidents})
+
+        elif command in commands:
+            return_outputs(*commands[command](client, args))
+
+        elif command == "proofpoint-get-events-clicks-blocked":
+            return_results(get_clicks_command(client, is_blocked=True, **args))
+
+        elif command == "proofpoint-get-events-clicks-permitted":
+            return_results(get_clicks_command(client, is_blocked=False, **args))
+
+        elif command == "proofpoint-get-events-messages-blocked":
+            return_results(get_messages_command(client, is_blocked=True, **args))
+
+        elif command == "proofpoint-get-events-messages-delivered":
+            return_results(get_messages_command(client, is_blocked=False, **args))
+
+        elif command == "proofpoint-list-campaigns":
+            return_results(list_campaigns_command(client, **args))
+
+        elif command == "proofpoint-get-campaign":
+            return_results(get_campaign_command(client, **args))
+
+        elif command == "proofpoint-list-most-attacked-users":
+            return_results(list_most_attacked_users_command(client, **args))
+
+        elif command == "proofpoint-get-top-clickers":
+            return_results(get_top_clickers_command(client, **args))
+
+        elif command == "proofpoint-url-decode":
+            return_results(url_decode_command(client, **args))
+
+        elif command == "proofpoint-list-issues":
+            return_results(list_issues_command(client, **args))
+
+    except Exception as exception:
+        if command == "test-module":
+            return_error(str(exception))
+        return_error(f"Failed to execute {command} command. Error: {exception!s}")
+
+
+if __name__ in ["__main__", "builtin", "builtins"]:
+    main()

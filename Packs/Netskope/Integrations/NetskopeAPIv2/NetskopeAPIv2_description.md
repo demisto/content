@@ -1,0 +1,2 @@
+Note: Netskope has deprecated the legacy single-step API token generation process. All new and migrated tenants must use **RBACv3** to create API tokens through **Service Accounts**.
+[For instructions, see the Integration Documentation.](https://xsoar.pan.dev/docs/reference/integrations/netskope-api-v2)

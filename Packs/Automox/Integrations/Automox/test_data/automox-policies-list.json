@@ -1,0 +1,58 @@
+[
+    {
+        "id": 0,
+        "organization_id": 1,
+        "name": "string",
+        "policy_type_name": "patch",
+        "configuration": {
+            "auto_patch": true,
+            "auto_reboot": true,
+            "notify_user": true,
+            "missed_patch_window": true,
+            "patch_rule": "all",
+            "device_filters_enabled": true,
+            "device_filters": [
+                {
+                    "field": "tag",
+                    "op": "in",
+                    "value": [
+                        "Windows",
+                        "Win10"
+                    ]
+                }
+            ],
+            "include_optional": true,
+            "notify_reboot_user": true,
+            "notify_deferred_reboot_user": true,
+            "custom_notification_patch_message": "Necessary Windows updates are about to be installed!",
+            "custom_notification_patch_message_mac": "Necessary Mac updates are about to be installed!",
+            "custom_notification_reboot_message": "Necessary Windows updates are about to be installed! Reboot Needed!",
+            "custom_notification_reboot_message_mac": "Necessary Mac updates are about to be installed! Reboot Needed!",
+            "custom_notification_max_delays": 0,
+            "custom_notification_deferment_periods": [
+                1,
+                4,
+                8
+            ],
+            "custom_pending_reboot_notification_message": "Your computer needs to restart to finish installing updates!",
+            "custom_pending_reboot_notification_message_mac": "Your Mac needs to restart to finish installing updates!",
+            "custom_pending_reboot_notification_max_delays": 0,
+            "custom_pending_reboot_notification_deferment_periods": [
+                2,
+                4,
+                6
+            ],
+            "notify_user_message_timeout": 15,
+            "notify_deferred_reboot_user_timeout": 15,
+            "notify_user_auto_deferral_enabled": false,
+            "notify_deferred_reboot_user_auto_deferral_enabled": false
+        },
+        "schedule_days": 0,
+        "schedule_weeks_of_month": 0,
+        "schedule_months": 0,
+        "schedule_time": "string",
+        "server_groups": [
+            0
+        ]
+    }
+]

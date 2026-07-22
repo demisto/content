@@ -1,0 +1,18 @@
+comment: Generates a random UUID (UUID 4).
+commonfields:
+  id: GenerateRandomUUID
+  version: -1
+enabled: true
+name: GenerateRandomUUID
+outputs:
+- contextPath: GeneratedUUID
+  description: The generated UUID.
+  type: string
+script: ''
+subtype: python3
+tags: []
+type: python
+dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

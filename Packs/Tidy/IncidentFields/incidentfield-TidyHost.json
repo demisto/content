@@ -1,0 +1,33 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Tidy install"
+ ],
+ "caseInsensitive": false,
+ "cliName": "tidyhost",
+ "closeForm": false,
+ "content": true,
+ "description": "Host for install",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_tidyhost",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "TidyHost",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": true,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "marketplaces": [
+  "xsoar"
+ ]
+}

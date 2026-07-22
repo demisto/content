@@ -1,0 +1,34 @@
+commonfields:
+  id: VectraSensors
+  version: -1
+name: VectraSensors
+script: >2
+
+  resp = demisto.executeCommand("vec-sensors", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- Vectra
+comment: Deprecated. The sensors branch can retrieve a listing of sensors that collect and feed data to the X-series
+system: true
+args: []
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - vec-sensors
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

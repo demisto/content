@@ -1,0 +1,27 @@
+{
+  "Type": 1,
+  "Contents":
+    {
+      "configuredName": "Phishing-Suspected",
+      "customCategory": true,
+      "dbCategorizedUrls": [],
+      "editable": true,
+      "id": "CUSTOM_1",
+      "keywordsRetainingParentCategory": [],
+      "type": "URL_CATEGORY",
+      "urls": [],
+      "val": 144
+    }
+  ,
+  "ContentsFormat": "json",
+  "ReadableContentsFormat": "markdown",
+  "HumanReadable": "Removed the following URL addresses to category CUSTOM_1:\n- demisto.com\n- dbot.com\n- www.demisto22.com\n",
+  "EntryContext": {
+    "Zscaler.Category(val.ID && val.ID === obj.ID)": {
+      "ID": "CUSTOM_1",
+      "CustomCategory": true,
+      "URL": []
+    }
+  }
+}
+

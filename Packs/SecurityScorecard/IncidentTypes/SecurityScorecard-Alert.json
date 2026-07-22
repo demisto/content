@@ -1,0 +1,45 @@
+{
+    "id": "SecurityScorecard Alert",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "SecurityScorecard Alert",
+    "prevName": "SecurityScorecard Alert",
+    "color": "#52989e",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 2,
+    "onChangeRepAlg": 0,
+    "layout": "SecurityScorecard Alert Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "alertid": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "alertname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "ticketnumber": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,79 @@
+id: playbook-feodotrackeripblock_test_currently__active
+version: -1
+name: playbook-feodotrackeripblock_test_currently__active
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9a3ea902-4e9a-4af4-8a12-82abef1c75c1
+    type: start
+    task:
+      id: 9a3ea902-4e9a-4af4-8a12-82abef1c75c1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: cbebed76-7b54-4abc-9f7c-59b2eae9e3ed
+    type: regular
+    task:
+      id: cbebed76-7b54-4abc-9f7c-59b2eae9e3ed
+      version: -1
+      name: set playbook to playbook-feodotrackeripblock_test
+      description: set playbook for current incident to playbook-feodotrackeripblock_test
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name:
+        simple: playbook-feodotrackeripblock_test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

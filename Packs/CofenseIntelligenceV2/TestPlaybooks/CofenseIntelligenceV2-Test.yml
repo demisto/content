@@ -1,0 +1,687 @@
+id: Cofense Intelligence v2-Test
+version: -1
+name: Cofense Intelligence v2-Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 747f7276-51c1-4ad0-8c57-2443312942e5
+    type: start
+    task:
+      id: 747f7276-51c1-4ad0-8c57-2443312942e5
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 5140b8b3-e5d0-4175-8e61-d7b32d4c9305
+    type: regular
+    task:
+      id: 5140b8b3-e5d0-4175-8e61-d7b32d4c9305
+      version: -1
+      name: email
+      description: Checks the reputation of an email address.
+      script: CofenseIntelligenceV2|||email
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      email:
+        simple: ${inputs.email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: b03bd928-c575-4557-8e3a-994db9993d72
+    type: condition
+    task:
+      id: b03bd928-c575-4557-8e3a-994db9993d72
+      version: -1
+      name: Verify Data
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CofenseIntelligence.Email.Data
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 69ec1e7a-baa3-4f15-8867-a7ace3ab9257
+    type: regular
+    task:
+      id: 69ec1e7a-baa3-4f15-8867-a7ace3ab9257
+      version: -1
+      name: file
+      description: Checks the reputation of a file hash.
+      script: CofenseIntelligenceV2|||file
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      file:
+        simple: 021b08963d6be1bc000605350b18a6f4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 2e010b0c-0c44-4765-8d2a-1cd956c16fd3
+    type: condition
+    task:
+      id: 2e010b0c-0c44-4765-8d2a-1cd956c16fd3
+      version: -1
+      name: Verify Dbot Score
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 5e31c160-ab72-4598-83e4-0df4fbd4a095
+    type: regular
+    task:
+      id: 5e31c160-ab72-4598-83e4-0df4fbd4a095
+      version: -1
+      name: ip
+      description: Checks the reputation of an IP address.
+      script: CofenseIntelligenceV2|||ip
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 55862516-127c-4c82-8c50-d7de6b8738bd
+    type: regular
+    task:
+      id: 55862516-127c-4c82-8c50-d7de6b8738bd
+      version: -1
+      name: url
+      description: Checks the reputation of a URL.
+      script: CofenseIntelligenceV2|||url
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      url:
+        simple: url.url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 6c80b489-0da2-4475-8fe1-11e85647cd87
+    type: condition
+    task:
+      id: 6c80b489-0da2-4475-8fe1-11e85647cd87
+      version: -1
+      name: Verify Indicator
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: a45c8950-26bd-4bed-85cc-133d1dbc47f3
+    type: condition
+    task:
+      id: a45c8950-26bd-4bed-85cc-133d1dbc47f3
+      version: -1
+      name: Verify DBot score indicator is correct
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: url.url
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: a1b750d6-361d-4553-856e-6338f4623f6a
+    type: regular
+    task:
+      id: a1b750d6-361d-4553-856e-6338f4623f6a
+      version: -1
+      name: cofense-search
+      description: Searches for extracted strings identified within malware campaigns.
+      script: CofenseIntelligenceV2|||cofense-search
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 9201382f-1606-47dd-8fca-1fe6c783a5f9
+    type: title
+    task:
+      id: 9201382f-1606-47dd-8fca-1fe6c783a5f9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: f4c3505b-84b3-45d7-81b9-471a267e0014
+    type: condition
+    task:
+      id: f4c3505b-84b3-45d7-81b9-471a267e0014
+      version: -1
+      name: Verify Indicator
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '18'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: fcc0a042-d39f-4080-8180-8dfe50a41584
+    type: regular
+    task:
+      id: fcc0a042-d39f-4080-8180-8dfe50a41584
+      version: -1
+      name: domain
+      description: Checks the reputation of the domain.
+      script: CofenseIntelligenceV2|||domain
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      domain:
+        simple: www.dummy.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: dd74bd20-7738-4e75-8d10-cb469f3f206f
+    type: regular
+    task:
+      id: dd74bd20-7738-4e75-8d10-cb469f3f206f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 423d07f9-f952-4a99-8f49-0a9efa296c49
+    type: regular
+    task:
+      id: 423d07f9-f952-4a99-8f49-0a9efa296c49
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 76d83db1-86c8-4223-8b12-a9929642c833
+    type: regular
+    task:
+      id: 76d83db1-86c8-4223-8b12-a9929642c833
+      version: -1
+      name: cofense-threat-report-get
+      description: Downloads threat report provided by cofense intelligence of an indicator for the given unique report id.
+      script: CofenseIntelligenceV2|||cofense-threat-report-get
+      type: regular
+      iscommand: true
+      brand: CofenseIntelligenceV2
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      report_id:
+        simple: '290367'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 4dc70b6d-8e9a-45d9-838f-68e59bf18dd2
+    type: condition
+    task:
+      id: 4dc70b6d-8e9a-45d9-838f-68e59bf18dd2
+      version: -1
+      name: Verify cofense-threat-report-get
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Size
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SSDeep
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: EntryID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Info
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA512
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2835,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: email
+  value:
+    simple: mail@mail.com
+  required: false
+  description: ''
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0
+description: ''

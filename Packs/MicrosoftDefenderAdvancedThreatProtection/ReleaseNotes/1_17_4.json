@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The following playbooks will be removed from XSIAM Marketplace: MDE SIEM ingestion - Get Incident Data,MDE - True Positive Incident Handling,MDE - False Positive Incident Handling,MDE Malware - Incident Enrichment"
+}

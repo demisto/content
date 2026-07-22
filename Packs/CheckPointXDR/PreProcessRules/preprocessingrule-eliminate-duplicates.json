@@ -1,0 +1,101 @@
+{
+    "id": "686bab0b-e6e2-4dbb-8c50-4895d21eca57",
+    "version": -1,
+    "packID": "",
+    "itemVersion": "",
+    "toServerVersion": "",
+    "name": "Drop-Duplicates",
+    "newEventFilters": [
+        [
+            {
+                "operator": "isEqualString",
+                "left": {
+                    "value": {
+                        "simple": "sourceBrand"
+                    },
+                    "isContext": true
+                },
+                "right": {
+                    "value": {
+                        "simple": "CheckPointXDR"
+                    },
+                    "isContext": false
+                },
+                "type": "sourceBrand"
+            }
+        ]
+    ],
+    "readyNewEventFilters": [
+        [
+            {
+                "operator": "isEqualString",
+                "left": {
+                    "value": {
+                        "simple": "sourceBrand"
+                    },
+                    "isContext": true
+                },
+                "right": {
+                    "value": {
+                        "simple": "CheckPointXDR"
+                    },
+                    "isContext": false
+                },
+                "type": "sourceBrand"
+            }
+        ]
+    ],
+    "existingEventsFilters": [
+        [
+            {
+                "operator": "isIdenticalIncident",
+                "left": {
+                    "value": {
+                        "simple": "dbotMirrorId"
+                    },
+                    "isContext": true
+                },
+                "right": {
+                    "value": {
+                        "simple": "${incident.dbotMirrorId}"
+                    },
+                    "isContext": true
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "readyExistingEventsFilters": [
+        [
+            {
+                "operator": "isIdenticalIncident",
+                "left": {
+                    "value": {
+                        "simple": "dbotMirrorId"
+                    },
+                    "isContext": true
+                },
+                "right": {
+                    "value": {
+                        "simple": "${incident.dbotMirrorId}"
+                    },
+                    "isContext": true
+                },
+                "type": "shortText"
+            }
+        ]
+    ],
+    "searchClosed": false,
+    "period": {
+        "by": "days",
+        "fromValue": 30
+    },
+    "action": "dropAndUpdate",
+    "linkTo": "oldest",
+    "scriptName": "",
+    "enabled": true,
+    "index": 1,
+    "locked": false,
+    "system": false,
+    "fromVersion": "6.10.0"
+}

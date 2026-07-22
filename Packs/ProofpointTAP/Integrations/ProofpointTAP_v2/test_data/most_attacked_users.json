@@ -1,0 +1,62 @@
+{
+  "users": [
+    {
+      "identity": {
+        "guid": "88e36bf359-99e8-7e53-f58a-6df8b430be6d",
+        "customerUserId": null,
+        "emails": [
+          "xxxx@xxx.com"
+        ],
+        "name": null,
+        "department": null,
+        "location": null,
+        "title": null,
+        "vip": false
+      },
+      "threatStatistics": {
+        "attackIndex": 1805,
+        "families": [
+          {
+            "name": "credential phishing",
+            "score": 700
+          }
+        ]
+      }
+    },
+    {
+      "identity": {
+        "guid": "4ab2235bd4-6d7e-5746-45e4-71e8635d7958",
+        "customerUserId": null,
+        "emails": [
+          "xxxx@xxx.com"
+        ],
+        "name": null,
+        "department": null,
+        "location": null,
+        "title": null,
+        "vip": false
+      },
+      "threatStatistics": {
+        "attackIndex": 1805,
+        "families": [
+          {
+            "name": "malspam",
+            "score": 1
+          },
+          {
+            "name": "malware",
+            "score": 155
+          },
+          {
+            "name": "credential phishing",
+            "score": 700
+          }
+        ]
+      }
+    }
+  ],
+  "totalVapUsers": 2,
+  "interval": "2021-04-06T21:48:25Z/2021-04-20T21:48:25Z",
+  "averageAttackIndex": 604.6563,
+  "vapAttackIndexThreshold": 1032.7329
+}

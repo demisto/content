@@ -1,0 +1,518 @@
+{
+  "alert": [
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 61555
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8509",
+      "action": "notified",
+      "occurred": "2020-08-20 16:41:47 +0000",
+      "attackTime": "2020-08-20 16:41:47 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8509,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "46b8ecec-7502-41f2-b501-7bc23a05f3d3",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.188"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 54078
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8510",
+      "action": "notified",
+      "occurred": "2020-08-20 17:11:48 +0000",
+      "attackTime": "2020-08-20 17:11:48 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8510,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "548d3d36-4a2c-4a86-b447-05b0a623b729",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.188"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 55475
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8511",
+      "action": "notified",
+      "occurred": "2020-08-20 17:41:48 +0000",
+      "attackTime": "2020-08-20 17:41:48 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8511,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "88991311-41cb-465b-9e79-06539c835293",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.190"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 56261
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8512",
+      "action": "notified",
+      "occurred": "2020-08-20 18:11:48 +0000",
+      "attackTime": "2020-08-20 18:11:48 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8512,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "aaf29e84-ceab-494b-a02a-a6805391c72a",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.190"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 58797
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8513",
+      "action": "notified",
+      "occurred": "2020-08-20 18:41:49 +0000",
+      "attackTime": "2020-08-20 18:41:49 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8513,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "fe9ff7ce-95d0-4aac-a30d-6d676ac59537",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.192"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 57868
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8514",
+      "action": "notified",
+      "occurred": "2020-08-20 19:11:49 +0000",
+      "attackTime": "2020-08-20 19:11:49 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8514,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "86fff50f-1ed4-4bba-8917-f92bb8a0ab92",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.192"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 55854
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8515",
+      "action": "notified",
+      "occurred": "2020-08-20 19:41:49 +0000",
+      "attackTime": "2020-08-20 19:41:49 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8515,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "11b836ad-1ec8-4459-a473-c7a01d406e71",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.194"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 54816
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8516",
+      "action": "notified",
+      "occurred": "2020-08-20 20:11:50 +0000",
+      "attackTime": "2020-08-20 20:11:50 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8516,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "f591b61f-975c-4915-8596-dc9568125593",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.194"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 59103
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8517",
+      "action": "notified",
+      "occurred": "2020-08-20 20:41:50 +0000",
+      "attackTime": "2020-08-20 20:41:50 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8517,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "c2bdfeb9-a6d7-4b7f-9165-ffdbde6afa6c",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.196"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 60613
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8518",
+      "action": "notified",
+      "occurred": "2020-08-20 21:11:51 +0000",
+      "attackTime": "2020-08-20 21:11:51 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8518,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "3870e6df-4b6e-4e51-8fad-aa53923f222f",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.196"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 52387
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8519",
+      "action": "notified",
+      "occurred": "2020-08-20 21:41:51 +0000",
+      "attackTime": "2020-08-20 21:41:51 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8519,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "d034efa7-9330-4a25-b21e-53263df25ab0",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.196"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 57038
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8520",
+      "action": "notified",
+      "occurred": "2020-08-20 22:11:51 +0000",
+      "attackTime": "2020-08-20 22:11:51 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8520,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "51d3bc94-9773-4162-bd4a-b1ccb14c4302",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1047.198"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 60860
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8521",
+      "action": "notified",
+      "occurred": "2020-08-20 22:41:52 +0000",
+      "attackTime": "2020-08-20 22:41:52 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8521,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "2394e1c1-1c66-43ad-a95b-451fdc1d58bf",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1048.102"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 57199
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8522",
+      "action": "notified",
+      "occurred": "2020-08-20 23:11:52 +0000",
+      "attackTime": "2020-08-20 23:11:52 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8522,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "81abdd87-99bf-407e-8133-d72ed30f903d",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1048.102"
+    },
+    {
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "FEDNSTestEvent.DNS"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "src": {
+        "ip": "192.168.1.95",
+        "host": "",
+        "port": 55084
+      },
+      "alertUrl": "https://fireeye-941918/event_stream/events_for_bot?ev_id=8523",
+      "action": "notified",
+      "occurred": "2020-08-20 23:41:52 +0000",
+      "attackTime": "2020-08-20 23:41:52 +0000",
+      "dst": {
+        "mac": "00:0c:00:f0:00:d0"
+      },
+      "applianceId": "866ED7558A08",
+      "id": 8523,
+      "name": "DOMAIN_MATCH",
+      "severity": "MINR",
+      "uuid": "59536c63-4478-4257-a1df-d2e4417d21d8",
+      "ack": "no",
+      "product": "WEB_MPS",
+      "vlan": 0,
+      "malicious": "yes",
+      "scVersion": "1048.104"
+    }
+  ],
+  "appliance": "wMPS",
+  "version": "wMPS (wMPS) 9.0.0.916432",
+  "msg": "concise",
+  "alertsCount": 15
+}

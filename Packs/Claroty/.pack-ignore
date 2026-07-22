@@ -1,0 +1,23 @@
+[file:Claroty.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM104
+
+# GR103 is temporary, see CIAC-11656
+[file:classifier-mapper-incoming-Claroty.json]
+ignore=BA101,GR103
+
+[file:incidentfield-Claroty_Site_ID.json]
+ignore=GR103
+
+[file:Claroty_image.png]
+ignore=IM111
+
+[file:classifier-Claroty.json]
+ignore=BA101
+
+[known_words]
+Claroty
+CTD
+CEF

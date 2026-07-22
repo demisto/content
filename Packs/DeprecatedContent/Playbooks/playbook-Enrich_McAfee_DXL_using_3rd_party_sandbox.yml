@@ -1,0 +1,183 @@
+id: Enrich McAfee DXL using 3rd party sandbox
+version: -1
+name: Enrich McAfee DXL using 3rd party sandbox
+fromversion: "5.0.0"
+description: |-
+  Deprecated. Use "Enrich McAfee DXL using 3rd party sandbox v2" playbook instead. Example of bridging DXL to a third party sandbox.
+  Detonate a file in Wildfire and if malicious - push its MD5, SHA1 and SHA256 hashes to McAfee DXL.
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: f0825cf1-1ad4-4e7d-8153-da160deff742
+    type: start
+    task:
+      id: f0825cf1-1ad4-4e7d-8153-da160deff742
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": -19
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a57644c8-775a-42ad-8800-3ac1a1d138cd
+    type: condition
+    task:
+      id: a57644c8-775a-42ad-8800-3ac1a1d138cd
+      version: -1
+      name: Any malicious files detected?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        simple: ${File.Malicious}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 302
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b27ad1bb-4eff-482e-82e1-ba2d4f5c2443
+    type: regular
+    task:
+      id: b27ad1bb-4eff-482e-82e1-ba2d4f5c2443
+      version: -1
+      name: Close incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 241,
+          "y": 689
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 37bc441a-8053-49ea-8abf-2ffae14fe359
+    type: regular
+    task:
+      id: 37bc441a-8053-49ea-8abf-2ffae14fe359
+      version: -1
+      name: DXL - Push file hashes as malicious
+      description: Deliver the specified event to the DXL fabric
+      script: McAfee DXL|||dxl-send-event
+      type: regular
+      iscommand: true
+      brand: McAfee DXL
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      payload:
+        simple: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
+      topic:
+        simple: MALICIOUS_FILE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 486
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bfffbaa1-a550-47bd-8e84-e6c941cde205
+    type: playbook
+    task:
+      id: bfffbaa1-a550-47bd-8e84-e6c941cde205
+      version: -1
+      name: ""
+      playbookName: WildFire - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 122
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 803,
+        "width": 670,
+        "x": 241,
+        "y": -19
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- no test
+deprecated: true

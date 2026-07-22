@@ -1,0 +1,12 @@
+{
+    "sys_id": "test_outbound_http_1",
+    "sys_created_on": "2024-01-28 13:21:43",
+    "sys_updated_on": "2024-01-28 13:21:43",
+    "endpoint": "https://api.example.com/webhook",
+    "http_status": "200",
+    "response_time": "1234",
+    "method": "POST",
+    "request_body": "{\"test\": \"data\"}",
+    "response_body": "{\"status\": \"success\"}",
+    "retry_count": "0"
+}

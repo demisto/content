@@ -1,0 +1,20 @@
+{
+    "inbound": true,
+    "id": "id",
+    "name": "name",
+    "description": "description",
+    "protocolType": "protocolType",
+    "port": "port",
+    "openForAll": false,
+    "scope": [
+        {
+            "type": "type",
+            "data": {
+                "id": "id",
+                "name": "name"
+            }
+        }
+    ],
+    "icmpType": null,
+    "icmpv6Type": null
+}

@@ -1,0 +1,11 @@
+[file:Zimperium.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-Zimperium.json]
+ignore=BA101
+
+[file:classifier-Zimperium.json]
+ignore=BA101

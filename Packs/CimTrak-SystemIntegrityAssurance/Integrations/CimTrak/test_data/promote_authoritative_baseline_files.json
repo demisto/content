@@ -1,0 +1,20 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "resultDetails": [],
+                "results": [],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.promoteAuthoritativeBaselineFiles"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "status": "success"
+    }
+}

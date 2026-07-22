@@ -1,0 +1,8 @@
+fromversion: 8.4.0
+id: Prisma_SAAS_Security_ModelingRule
+name: Prisma SAAS Security Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

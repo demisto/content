@@ -1,0 +1,1 @@
+##### List of tags: **note**, **tag_from_xsoar**, **tag_from_vectra**

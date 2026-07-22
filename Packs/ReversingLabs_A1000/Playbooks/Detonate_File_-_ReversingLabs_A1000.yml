@@ -1,0 +1,316 @@
+id: Detonate File - ReversingLabs A1000
+version: -1
+name: Detonate File - ReversingLabs A1000
+description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve full & classification reports. Calculate final classification.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 60abf0ab-9aa6-46aa-8ed0-58240e5dc3d9
+    type: start
+    task:
+      id: 60abf0ab-9aa6-46aa-8ed0-58240e5dc3d9
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: af5879c4-cc27-4566-8c0d-77983c335110
+    type: condition
+    task:
+      id: af5879c4-cc27-4566-8c0d-77983c335110
+      version: -1
+      name: Is ReversingLabs A1000 v2 enabled?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ReversingLabs A1000 v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 3f9f0052-6637-48d4-8b50-020626bac857
+    type: title
+    task:
+      id: 3f9f0052-6637-48d4-8b50-020626bac857
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 0522b01a-7123-4d41-8be1-85ba8fa2626d
+    type: condition
+    task:
+      id: 0522b01a-7123-4d41-8be1-85ba8fa2626d
+      version: -1
+      name: Is there a file  to detonate?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '3'
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 67d9a923-4d43-4c68-86d1-703f84a34d11
+    type: regular
+    task:
+      id: 67d9a923-4d43-4c68-86d1-703f84a34d11
+      version: -1
+      name: reversinglabs-a1000-upload-sample-and-get-results
+      description: Upload sample to A1000 and retrieve analysis results
+      script: ReversingLabs A1000 v2|||reversinglabs-a1000-upload-sample-and-get-results
+      type: regular
+      iscommand: true
+      brand: ReversingLabs A1000 v2
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      entryId:
+        simple: ${inputs.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 8f9178a3-70f3-4d90-84c0-e5dcb93bd81e
+    type: regular
+    task:
+      id: 8f9178a3-70f3-4d90-84c0-e5dcb93bd81e
+      version: -1
+      name: reversinglabs-a1000-get-classification
+      description: Retrieve classification report for a sample
+      script: ReversingLabs A1000 v2|||reversinglabs-a1000-get-classification
+      type: regular
+      iscommand: true
+      brand: ReversingLabs A1000 v2
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      hash:
+        simple: ${File.SHA1}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: d155a788-800a-4a35-8878-a50e69b95e95
+    type: regular
+    task:
+      id: d155a788-800a-4a35-8878-a50e69b95e95
+      version: -1
+      name: A1000FinalClassification
+      description: Calculates A1000 final classification based on A1000 classification and A1000 full reports.
+      scriptName: A1000FinalClassification
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      a1000_classification_report:
+        simple: ${ReversingLabs.a1000_classification_report}
+      a1000_full_report:
+        simple: ${ReversingLabs.a1000_report}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1455,
+        "width": 800,
+        "x": 30,
+        "y": 100
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: The Entry ID.
+  playbookInputQuery:
+outputs:
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+- contextPath: File.Name
+  description: The name of the file.
+- contextPath: File.EntryID
+  description: The Entry ID.
+- contextPath: File.Info
+  description: Information about the file.
+- contextPath: File.Type
+  description: The type of the file.
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: ReversingLabs.a1000_report
+  description: A1000 report
+tests:
+- No tests
+fromversion: 6.0.0

@@ -1,0 +1,37 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Zimperium v2 - Incoming Mapper",
+    "mapping": {
+        "Zimperium Event": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "App": {
+                    "simple": "zappInstance.name"
+                },
+                "Device Id": {
+                    "simple": "deviceId"
+                },
+                "Device Username": {
+                    "simple": "deviceOwner"
+                },
+                "Mobile Device Model": {
+                    "simple": "device.model"
+                },
+                "OS": {
+                    "simple": "device.os.name"
+                },
+                "OS Version": {
+                    "simple": "device.os.version"
+                },
+                "Zimperium Bundle ID": {
+                    "simple": "zappInstance.bundleId"
+                }
+            }
+        }
+    },
+    "name": "Zimperium v2 - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

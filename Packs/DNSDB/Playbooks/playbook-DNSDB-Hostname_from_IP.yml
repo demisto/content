@@ -1,0 +1,302 @@
+id: DNSDB - Hostname from IP
+version: -1
+name: DNSDB - Hostname from IP
+description: A playbook that uses DNSDB to retrieve all hostnames seen for a given
+  IP around the time of observation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3249d618-d862-4965-82e3-03347a9e8a01
+    type: start
+    task:
+      id: 3249d618-d862-4965-82e3-03347a9e8a01
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6cef2247-bc1e-4c8a-8097-aebe65c90541
+    type: regular
+    task:
+      id: 6cef2247-bc1e-4c8a-8097-aebe65c90541
+      version: -1
+      name: DNSDB Lookup RData/IP
+      description: Lookup RData records
+      script: DNSDB_v2|||dnsdb-rdata
+      type: regular
+      iscommand: true
+      brand: DNSDB_v2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      aggr: {}
+      extend-context:
+        simple: resolvedHostnames=RRName
+      limit: {}
+      offset: {}
+      rrtype: {}
+      time_first_after: {}
+      time_first_before:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: addition
+            args:
+              by:
+                value:
+                  simple: "86400"
+      time_last_after:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: toUnix
+          - operator: subtraction
+            args:
+              by:
+                value:
+                  simple: "15552000"
+      time_last_before: {}
+      type:
+        simple: ip
+      value:
+        simple: ${inputs.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6e07c588-4d8f-448d-8df4-a5b3c4503e45
+    type: title
+    task:
+      id: 6e07c588-4d8f-448d-8df4-a5b3c4503e45
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f2b24f1f-1c4d-486c-84dc-7a6259c314b9
+    type: condition
+    task:
+      id: f2b24f1f-1c4d-486c-84dc-7a6259c314b9
+      version: -1
+      name: Is DNSDB v2 Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "Yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: DNSDB_v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 27d4a3b3-bd5f-43e4-8f65-4bf0e13c53ce
+    type: condition
+    task:
+      id: 27d4a3b3-bd5f-43e4-8f65-4bf0e13c53ce
+      version: -1
+      name: Are there any IPs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8b80ad55-792a-462e-83c6-ec9f607ac42b
+    type: regular
+    task:
+      id: 8b80ad55-792a-462e-83c6-ec9f607ac42b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: resolvedHostnames
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+  required: true
+  description: The IP Address to enhance with domain names from Farsight DNSDB.
+  playbookInputQuery:
+outputs:
+- contextPath: resolvedHostnames
+  description: An array of hostnames that have resolved to the input IPs.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

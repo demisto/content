@@ -1,0 +1,21 @@
+{
+    "_links": {
+        "self": {
+            "href": "https://example:57345/api/session?calculate_count=false&offset=0&limit=25&sort=%2Bid&filter=%7B%7D"
+        },
+        "first": {
+            "href": "https://example:57345/api/session?calculate_count=false&offset=0&limit=25&sort=%2Bid&filter=%7B%7D"
+        }
+    },
+    "_embedded": {
+        "items": [
+            {
+                "id": 1,
+                "framedipaddress": "1.2.3.4",
+                "mac_address": "001234567891",
+                "state": "active",
+                "visitor_phone": "+972512345678"
+            }
+        ]
+    }
+}

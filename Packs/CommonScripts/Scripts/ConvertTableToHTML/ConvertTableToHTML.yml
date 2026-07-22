@@ -1,0 +1,31 @@
+commonfields:
+  id: ConvertTableToHTML
+  version: -1
+name: ConvertTableToHTML
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Converts a given array to an HTML table
+system: true
+enabled: true
+args:
+- name: table
+  default: true
+  description: The table to convert to HTML
+  isArray: true
+- name: context_key
+  defaultValue: HTMLTable
+  description: "The context key for the converted HTML table (default is: HTMLTable)."
+- name: title
+  description: The optional title for the table
+- name: headers
+  description: The headers for the HTML table.
+  isArray: true
+outputs:
+- contextPath: HTMLTable
+  description: The HTML table we created from the array
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- ConvertTableToHTML - TEST

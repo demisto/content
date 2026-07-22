@@ -1,0 +1,43 @@
+commonfields:
+  id: NessusScanStatus
+  version: -1
+name: NessusScanStatus
+script: >
+  from time import ctime
+
+  res = []
+
+  dArgs = demisto.args()
+
+  resCmd = demisto.executeCommand("scan-details", dArgs)
+
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              status = demisto.get(entry, 'Contents.info.status')
+              res.append({'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': status if status else 'ErrorFetchingScanStatus'})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- nessus
+comment: Deprecated. Retrieve current status for the specified scan.
+system: true
+args:
+- name: scanId
+  default: true
+  description: The Scan ID as it appears in Scan List (e.g. 6)
+scripttarget: 0
+dependson:
+  must:
+  - Nessus|||scan-details
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

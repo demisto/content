@@ -1,0 +1,4 @@
+|ID|Detection Type|Category|Threat Score|Certainty Score|State|Tags|Summary|
+|---|---|---|---|---|---|---|---|
+| [1](https://dummyurl.com/detections/1?pivot=Vectra_AI-XSOAR-2.0.0) | Type 1 | Category 1 | 47 | 65 | fixed | Tag1,<br>Tag2 | **dst_ports**:<br>	***values***: 1, 2, 3<br>**protocols**:<br>	***values***: tcp<br>***num_attempts***: 600<br>***num_successes***: 0 |
+| [2](https://dummyurl.com/detections/2?pivot=Vectra_AI-XSOAR-2.0.0) | Type 2 | Category 2 | 74 | 50 | active | Tag1,<br>Tag2 | **src_accounts**:<br>	**-**	***name***: account_name<br>		***privilege_category***: Low<br>		***privilege_level***: 1<br>		***id***: 23<br>**src_hosts**:<br>	**-**	***name***: IP-0.0.0.1<br>		***id***: 2<br>**services_accessed**:<br>	**-**	***name***: http/dummy_url.com<br>	**-**	***name***: http/test_url.com |

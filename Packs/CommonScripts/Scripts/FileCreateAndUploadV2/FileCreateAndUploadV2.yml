@@ -1,0 +1,68 @@
+commonfields:
+  id: FileCreateAndUploadV2
+  version: -1
+name: FileCreateAndUploadV2
+script: ''
+type: python
+tags:
+- Utility
+comment: |
+  Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+enabled: true
+args:
+- name: filename
+  required: true
+  default: true
+  description: The name of the file to be created.
+- name: data
+  description: Input data to write to the file.
+- name: entryId
+  description: Entry ID contents to write in the file.
+- name: data_encoding
+  auto: PREDEFINED
+  predefined:
+  - raw
+  - base64
+  description: Encoding type of the input data or contents.
+  defaultValue: raw
+outputs:
+- contextPath: File.Size
+  description: The size of the file.
+  type: Number
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+  type: String
+- contextPath: File.Name
+  description: The name of the file.
+  type: String
+- contextPath: File.SSDeep
+  description: The SSDeep hash of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The entry ID of the file.
+  type: String
+- contextPath: File.Info
+  description: File information.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: String
+- contextPath: File.Extension
+  description: The file extension.
+  type: String
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10404775
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- FileCreateAndUploadV2-Test

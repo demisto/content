@@ -1,0 +1,33 @@
+{
+    "name": "Accenture CTI Feed",
+    "description": "Accenture Cyber Threat Intelligence Feed",
+    "support": "partner",
+    "currentVersion": "1.1.47",
+    "author": "Accenture",
+    "url": "https://www.accenture.com/us-en/services/security/cyber-defense",
+    "email": "CTI.AcctManagement@accenture.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence Management"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Accenture",
+        "CTI"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "devEmail": [
+        "CTI.Engineering.Integration@accenture.com"
+    ],
+    "githubUser": [],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

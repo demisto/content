@@ -1,0 +1,16 @@
+!zimperium-users-search user_id="01b0c779-6f3d-413c-a8a6-a971e74ef484" team_id="339b5226-2888-443a-8077-14ad3ba2832d"
+!zimperium-devices-search device_id="581ae938-d889-4613-a6fa-29a9c12546d7"
+!zimperium-report-get app_version_id="61ec9648-5c2c-5daf-a825-3a790a8712ac"
+!zimperium-threat-search after="3 month" team_id="339b5226-2888-443a-8077-14ad3ba2832d" limit=1
+!zimperium-app-version-list bundle_id="com.blizzard.arc"
+!zimperium-get-devices-by-cve cve_id="CVE-2021-1886" limit=1
+!zimperium-devices-os-version os_version="9" limit=1
+!zimperium-get-cves-by-device device_id="2ab2d1f3-965b-4001-b265-c864cb5b04e2"
+!zimperium-policy-group-list
+!zimperium-policy-privacy-get policy_id="a2dea711-af44-448a-b1f4-be999c240ce2"
+!zimperium-policy-threat-get policy_id="e25fb868-70f2-4eca-9cf5-9d9ebdb24c18"
+!zimperium-policy-phishing-get policy_id="2502c3c5-c4e7-4f91-9657-ac988e22cd0d"
+!zimperium-policy-app-settings-get app_settings_policy_id="9ebab926-6f11-4348-9591-15a695ed0119"
+!zimperium-policy-device-inactivity-list team_id="339b5226-2888-443a-8077-14ad3ba2832d"
+!zimperium-policy-device-inactivity-get policy_id="ff3f8aeb-ccca-4a15-9359-d29a49bef488"
+!zimperium-vulnerability-get limit=1

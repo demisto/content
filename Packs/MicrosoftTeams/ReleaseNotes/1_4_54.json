@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed the *Tenant ID* parameter, since it's not used at all."
+}

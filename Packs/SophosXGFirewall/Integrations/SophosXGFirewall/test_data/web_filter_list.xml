@@ -1,0 +1,1190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <WebFilterPolicy transactionid="">
+    <Name>xy1</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>15</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>ghgjhgjghjghjgh</Description>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>No Web Mail or Chat</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny access to web mail and online chat sites</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Web E-Mail</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Online Chat</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>No Web Mail</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny access to web mail sites</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Web E-Mail</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>No Online Chat</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny access to online chat sites</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Online Chat</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>No web uploads</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Restrict users from uploading content to any site</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>HTTPUpload</ID>
+    <type>DynamicCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>Default Workplace Policy</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny access to categories most commonly unwanted in professional environments</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Weapons</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Extreme</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Phishing &amp; Fraud</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Militancy &amp; Extremist</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Gambling</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Criminal Activity</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Pro-Suicide &amp; Self-Harm</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Intellectual Piracy</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Marijuana</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Controlled substances</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Legal highs</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Hunting &amp; Fishing</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Anonymizers</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Sexually Explicit</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Nudity</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>No Explicit Content</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny access to sexually explicit sites</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Sexually Explicit</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>No Ads or Explicit Content</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny access to advertisements and sexually explicit sites</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Sexually Explicit</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Advertisements</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>No Games Ads or Explicit Content</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny access to games, advertisements, and sexually explicit sites</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Sexually Explicit</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Games</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Advertisements</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>Allow All</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Unrestricted web access</Description>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>Deny All</Name>
+    <DefaultAction>Deny</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>All user web activity will be blocked</Description>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>CIPA Compliance</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>1</YoutubeFilterEnabled>
+    <EnforceSafeSearch>1</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>Deny categories necessary for compliance with the Children's Internet Protection Act</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Extreme</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Weapons</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Anonymizers</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Swimwear &amp; Lingerie</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Sexually Explicit</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Phishing &amp; Fraud</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Nudity</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Militancy &amp; Extremist</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Gambling</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Controlled substances</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Marijuana</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Intellectual Piracy</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Hunting &amp; Fishing</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Legal highs</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Personals &amp; Dating</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Social Networking</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Pro-Suicide &amp; Self-Harm</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Criminal Activity</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Alcohol &amp; Tobacco</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Sexually Explicit</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Intolerance &amp; Hate</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Extreme</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Image Search</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Spam URLs</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Video hosting</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Plagiarism</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Live audio</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>Live video</ID>
+    <type>WebCategory</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Deny</HTTPAction>
+        <HTTPSAction>Deny</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All The Time</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>kjdhfjdkfh</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>300</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>1</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList>gmail.com</GoogAppDomainList>
+    <GoogAppDomainListEnabled>1</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>1</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>1</YoutubeFilterEnabled>
+    <EnforceSafeSearch>1</EnforceSafeSearch>
+    <EnforceImageLicensing>1</EnforceImageLicensing>
+    <Description>flgjkljh</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>2</ID>
+    <type>URLGroup</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Allow</HTTPAction>
+        <HTTPSAction>Allow</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All Time on Sunday</Schedule>
+        <PolicyRuleEnabled>1</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>erfg</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>0</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>0</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description>dfdfgdf</Description>
+  </WebFilterPolicy>
+  <WebFilterPolicy transactionid="">
+    <Name>policy1</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>300</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>1</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList>gmail.com</GoogAppDomainList>
+    <GoogAppDomainListEnabled>1</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>1</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>1</YoutubeFilterEnabled>
+    <EnforceSafeSearch>1</EnforceSafeSearch>
+    <EnforceImageLicensing>1</EnforceImageLicensing>
+    <Description>flgjkljh</Description>
+    <RuleList>
+      <Rule>
+        <CategoryList>
+  <Category>
+    <ID>1</ID>
+    <type>URLGroup</type>
+  </Category>
+</CategoryList>
+        <HTTPAction>Allow</HTTPAction>
+        <HTTPSAction>Allow</HTTPSAction>
+        <FollowHTTPAction>1</FollowHTTPAction>
+        <ExceptionList>
+          <FileTypeCategory/>
+        </ExceptionList>
+        <Schedule>All Time on Sunday</Schedule>
+        <PolicyRuleEnabled>0</PolicyRuleEnabled>
+        <CCLRuleEnabled>0</CCLRuleEnabled>
+      </Rule>
+    </RuleList>
+  </WebFilterPolicy>
+</Response>

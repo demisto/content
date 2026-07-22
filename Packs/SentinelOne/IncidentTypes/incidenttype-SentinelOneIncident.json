@@ -1,0 +1,82 @@
+{
+    "id": "SentinelOne Incident",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "SentinelOne Incident",
+    "prevName": "SentinelOne Incident",
+    "color": "#295AFF",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "preProcessingScript": "",
+    "closureScript": "",
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "SentinelOne Incident Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "deviceexternalip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "deviceinternalips": {
+                "extractAsIsIndicatorTypeId": "IPv6",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicelocalip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicemacaddress": {
+                "extractAsIsIndicatorTypeId": "hostRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "devicename": {
+                "extractAsIsIndicatorTypeId": "hostRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "domainname": {
+                "extractAsIsIndicatorTypeId": "domainRepUnified",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filemd5": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filepath": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filesha1": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "filesha256": {
+                "extractAsIsIndicatorTypeId": "unifiedFileRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "5.0.0"
+}

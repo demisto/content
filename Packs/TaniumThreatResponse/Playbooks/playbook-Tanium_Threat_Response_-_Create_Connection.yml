@@ -1,0 +1,176 @@
+id: Tanium Threat Response - Create Connection
+version: -1
+fromversion: "5.0.0"
+contentitemfields:
+  propagationLabels:
+  - all
+name: Tanium Threat Response - Create Connection
+description: Creates a connection to a remote destination from Tanium Threat Response.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5b1da30d-5d25-4a77-8f50-17b0af15ec81
+    type: start
+    task:
+      id: 5b1da30d-5d25-4a77-8f50-17b0af15ec81
+      version: -1
+      name: ""
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: a3579962-bec9-4e8e-847e-6d1015e66e37
+    type: regular
+    task:
+      id: a3579962-bec9-4e8e-847e-6d1015e66e37
+      version: -1
+      name: Create Connection
+      description: Creates a local or remote connection.
+      script: Tanium Threat Response|||tanium-tr-create-connection
+      type: regular
+      iscommand: true
+      brand: Tanium Threat Response
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      connection-timeout:
+        simple: ${inputs.connection-timeout}
+      destination:
+        simple: ${inputs.connection-id}
+      destination-type:
+        simple: ${inputs.destination-type}
+      remote:
+        simple: ${inputs.remote}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: 2ec7675d-baf2-49df-840b-edea78b32206
+    type: playbook
+    task:
+      id: 2ec7675d-baf2-49df-840b-edea78b32206
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${inputs.connection-id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: connection-name
+      PollingCommandName:
+        simple: tanium-tr-get-connection-by-name
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Tanium.Connection(val.State != 'active').Name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 04183da4-fefd-4739-8fb2-e28034f9907f
+    type: title
+    task:
+      id: 04183da4-fefd-4739-8fb2-e28034f9907f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      description: ""
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: connection-id
+  value: {}
+  required: true
+  description: ""
+- key: destination-type
+  value: {}
+  required: true
+  description: ""
+- key: remote
+  value: {}
+  required: true
+  description: ""
+- key: connection-timeout
+  value: {}
+  required: false
+  description: ""
+outputs: []
+tests:
+- No test

@@ -1,0 +1,10 @@
+{
+    "result": [
+        {
+            "_ref": "network/ZG5zLm5ldHdvcmskMTkyLjE2OC4xLjAvMjQvMA:192.168.1.0/24/default",
+            "extattrs": {},
+            "network": "192.168.1.0/24",
+            "network_view": "default"
+        }
+    ]
+}

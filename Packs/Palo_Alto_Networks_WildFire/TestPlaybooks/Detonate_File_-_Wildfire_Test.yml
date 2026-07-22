@@ -1,0 +1,238 @@
+id: Detonate File - WildFire - Test
+version: -1
+name: Detonate File - WildFire - Test
+fromversion: 5.0.0
+description: |-
+  test pb of:
+  WildFire - Detonate file
+  with multiple files
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5a8a5d68-7366-4752-83b7-6240bf9355a7
+    type: start
+    task:
+      id: 5a8a5d68-7366-4752-83b7-6240bf9355a7
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "1":
+    id: "1"
+    taskid: 9500fff7-7a2f-4009-89b6-cd98cd3ec371
+    type: regular
+    task:
+      id: 9500fff7-7a2f-4009-89b6-cd98cd3ec371
+      version: -1
+      name: FileCreateAndUpload file 1
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      data:
+        simple: var a = 'c'
+      entryId: {}
+      filename:
+        simple: test1.js
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "6":
+    id: "6"
+    taskid: d9abde9a-0ebd-4247-8ce8-c84dcc5b738f
+    type: title
+    task:
+      id: d9abde9a-0ebd-4247-8ce8-c84dcc5b738f
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "7":
+    id: "7"
+    taskid: f31f1f47-e943-4e8d-8da3-366922e1d1db
+    type: regular
+    task:
+      id: f31f1f47-e943-4e8d-8da3-366922e1d1db
+      version: -1
+      name: FileCreateAndUpload file 2
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      data:
+        simple: var c = 'd';
+      entryId: {}
+      filename:
+        simple: test2.js
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "8":
+    id: "8"
+    taskid: 0a5fb9e3-12c9-4a02-8513-f9488a3de1f1
+    type: playbook
+    task:
+      id: 0a5fb9e3-12c9-4a02-8513-f9488a3de1f1
+      version: -1
+      name: WildFire - Detonate file
+      description: |-
+        Detonate one or more files using the Wildfire integration. This playbook
+        returns relevant reports to the War Room and file reputations to the context data.
+        The detonation supports the following file types -
+        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z
+        APK, JAR, DOC, DOCX, RTF, XLS, XLSX, PPT, PPTX, OOXML, PE32, PE, PDF, DMG, PKG, RAR, 7Z
+      playbookName: WildFire - Detonate file
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      ReportFileType: {}
+      Timeout:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+  "9":
+    id: "9"
+    taskid: ccba5fb5-b644-498d-8485-68b32c934cc6
+    type: regular
+    task:
+      id: ccba5fb5-b644-498d-8485-68b32c934cc6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

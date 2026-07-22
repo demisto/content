@@ -1,0 +1,30 @@
+{
+    "id": "incident_chokepoints",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2020-10-26T16:38:08.248882555Z",
+    "name": "Choke points",
+    "ownerOnly": false,
+    "cliName": "chokepoints",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "XM Cyber Technique"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

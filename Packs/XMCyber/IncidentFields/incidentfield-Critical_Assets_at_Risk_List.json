@@ -1,0 +1,75 @@
+{
+    "id": "incident_criticalassetsatrisklist",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "modified": "2020-10-20T22:31:23.584951248Z",
+    "name": "Critical Assets at Risk List",
+    "ownerOnly": false,
+    "description": "The average and minimum complexities of attacks to assets from this entity",
+    "cliName": "criticalassetsatrisklist",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "XM Cyber Critical Asset",
+        "XM Cyber Choke Point"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Critical asset",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 350,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "average",
+            "displayName": "Average",
+            "type": "number",
+            "required": false,
+            "script": "",
+            "width": 100,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "minimum",
+            "displayName": "Minimum",
+            "type": "number",
+            "required": false,
+            "script": "",
+            "width": 100,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

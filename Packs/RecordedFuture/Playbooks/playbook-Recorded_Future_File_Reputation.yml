@@ -1,0 +1,521 @@
+id: Recorded Future File Reputation
+version: -1
+name: Recorded Future File Reputation
+description: File reputation using Recorded Future SOAR enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 74181337-dde0-4a67-8cb3-947f1e5b475c
+    type: start
+    task:
+      id: 74181337-dde0-4a67-8cb3-947f1e5b475c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 736504e0-6cc2-4ea8-8ba5-c12192af0bc2
+    type: title
+    task:
+      id: 736504e0-6cc2-4ea8-8ba5-c12192af0bc2
+      version: -1
+      name: Get reputation using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 35a895eb-d8ec-4fd6-8b25-eb7f23b7da9e
+    type: regular
+    task:
+      id: 35a895eb-d8ec-4fd6-8b25-eb7f23b7da9e
+      version: -1
+      name: Get MD5 reputation
+      description: Get a quick indication of the risk associated with a file.
+      script: Recorded Future v2|||file
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.MD5
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0cb4b168-d43a-426e-85f4-63341287ee88
+    type: title
+    task:
+      id: 0cb4b168-d43a-426e-85f4-63341287ee88
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1370,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 58bb05e5-2b1d-4971-83e5-90ac5d7518de
+    type: condition
+    task:
+      id: 58bb05e5-2b1d-4971-83e5-90ac5d7518de
+      version: -1
+      name: Is there an MD5 hash?
+      description: Check if there is an MD5 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b870b692-b1a9-47f2-8852-c68c345aff51
+    type: condition
+    task:
+      id: b870b692-b1a9-47f2-8852-c68c345aff51
+      version: -1
+      name: Is there a SHA-256 hash?
+      description: Check if there is a SHA-256 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "16"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: fad9cc52-fc61-4eb3-80c4-70a4af1ac54c
+    type: regular
+    task:
+      id: fad9cc52-fc61-4eb3-80c4-70a4af1ac54c
+      version: -1
+      name: Get SHA-256 reputation
+      description: Get a quick indication of the risk associated with a file.
+      script: Recorded Future v2|||file
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA256
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: b4368d5a-c045-407b-8cfb-aab08cebdfac
+    type: condition
+    task:
+      id: b4368d5a-c045-407b-8cfb-aab08cebdfac
+      version: -1
+      name: Is there a SHA-1 hash?
+      description: Check if there is a SHA-1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "18"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: eb590faf-6a42-4447-8f10-f09b45b979a7
+    type: regular
+    task:
+      id: eb590faf-6a42-4447-8f10-f09b45b979a7
+      version: -1
+      name: Get SHA-1 reputation
+      description: Get a quick indication of the risk associated with a file.
+      script: Recorded Future v2|||file
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.SHA1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 962.5,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 4783ab5f-c69d-4c75-8188-72fb800630a1
+    type: condition
+    task:
+      id: 4783ab5f-c69d-4c75-8188-72fb800630a1
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Checks if there is an active instance of the Recorded Future API
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 97caa79f-8b3d-4565-86ae-2b0027ae5e8f
+    type: regular
+    task:
+      id: 97caa79f-8b3d-4565-86ae-2b0027ae5e8f
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      recordedfutureriskrules:
+        simple: ${RecordedFuture.File.rules}
+      value:
+        simple: ${RecordedFuture.File.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_7_#default#": 0.52,
+      "15_7_#default#": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1315,
+        "width": 1700,
+        "x": 50,
+        "y": -200
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: MD5 hash for which to get the reputation.
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: SHA-256 hash for which to get the reputation.
+  playbookInputQuery:
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: SHA-1 hash for which to get reputation.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: File.SHA256
+  description: File SHA-256
+  type: string
+- contextPath: File.SHA512
+  description: File SHA-512
+  type: string
+- contextPath: File.SHA1
+  description: File SHA-1
+  type: string
+- contextPath: File.MD5
+  description: File MD5
+  type: string
+- contextPath: File.CRC32
+  description: File CRC32
+  type: string
+- contextPath: File.CTPH
+  description: File CTPH
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason that the vendor made the decision
+  type: string
+- contextPath: RecordedFuture.File.riskScore
+  description: Recorded Future Hash Risk Score
+  type: number
+- contextPath: RecordedFuture.File.riskLevel
+  description: Recorded Future Hash Risk Level
+  type: string
+- contextPath: RecordedFuture.File.Evidence.rule
+  description: Recorded Future Risk Rule Name
+  type: string
+- contextPath: RecordedFuture.File.Evidence.mitigation
+  description: Recorded Future Risk Rule Mitigation
+  type: string
+- contextPath: RecordedFuture.File.Evidence.description
+  description: Recorded Future Risk Rule description
+  type: string
+- contextPath: RecordedFuture.File.Evidence.timestamp
+  description: Recorded Future Risk Rule timestamp
+  type: date
+- contextPath: RecordedFuture.File.Evidence.level
+  description: Recorded Future Risk Rule Level
+  type: number
+- contextPath: RecordedFuture.File.Evidence.ruleid
+  description: Recorded Future Risk Rule ID
+  type: string
+- contextPath: RecordedFuture.File.name
+  description: Hash
+  type: string
+- contextPath: RecordedFuture.File.maxRules
+  description: Maximum count of Recorded Future Hash Risk Rules
+  type: number
+- contextPath: RecordedFuture.File.ruleCount
+  description: Number of triggered Recorded Future Hash Risk Rules
+  type: number
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

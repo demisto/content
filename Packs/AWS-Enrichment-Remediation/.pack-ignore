@@ -1,0 +1,5 @@
+[known_words]
+RDP
+
+[file:AWS_-_Enrichment.yml]
+ignore=PB114

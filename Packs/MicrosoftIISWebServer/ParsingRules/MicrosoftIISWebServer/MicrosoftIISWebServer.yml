@@ -1,0 +1,8 @@
+name: Microsoft IIS Web Server Parsing Rule
+id: Microsoft_IIS_Web_Server_ParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

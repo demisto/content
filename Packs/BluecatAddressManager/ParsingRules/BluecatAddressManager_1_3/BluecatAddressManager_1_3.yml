@@ -1,0 +1,8 @@
+name: Bluecat Address Manager Parsing Rule
+id: Bluecat_AddressManager_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

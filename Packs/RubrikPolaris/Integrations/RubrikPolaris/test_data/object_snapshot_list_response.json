@@ -1,0 +1,79 @@
+{
+  "raw_response": {
+    "data": {
+      "snapshotsListConnection": {
+        "edges": [
+          {
+            "node": {
+              "id": "a7adc499-b896-5ad6-bfc2-0aae0ed99459",
+              "date": "2021-10-28T19:35:52.000Z",
+              "expirationDate": null,
+              "isOnDemandSnapshot": false,
+              "cdmVersion": "",
+              "isDownloadedSnapshot": false,
+              "cluster": {
+                "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+                "name": "sand2-rbk01",
+                "version": "6.0.0-p1-12566",
+                "status": "Disconnected"
+              },
+              "pendingSnapshotDeletion": null,
+              "slaDomain": {
+                "name": "12hr-30d-AWS",
+                "fid": "363781d2-d0c5-5cbb-909a-ec98fda10f1c",
+                "cluster": {
+                  "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+                  "name": "sand2-rbk01"
+                }
+              },
+              "pendingSla": null,
+              "snapshotRetentionInfo": null,
+              "sapHanaAppMetadata": null,
+              "legalHoldInfo": null
+            }
+          }
+        ],
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yOmludDow",
+          "hasNextPage": true
+        }
+      }
+    }
+  },
+  "empty_response": {
+    "data": {}
+  },
+  "outputs": {
+    "id": "06515737-388a-57aa-9c8e-54b3f1ee5d8b",
+    "Snapshot": [
+      {
+        "id": "a7adc499-b896-5ad6-bfc2-0aae0ed99459",
+        "date": "2021-10-28T19:35:52.000Z",
+        "isOnDemandSnapshot": false,
+        "cdmVersion": "",
+        "isDownloadedSnapshot": false,
+        "cluster": {
+          "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+          "name": "sand2-rbk01",
+          "version": "6.0.0-p1-12566",
+          "status": "Disconnected"
+        },
+        "slaDomain": {
+          "name": "12hr-30d-AWS",
+          "fid": "363781d2-d0c5-5cbb-909a-ec98fda10f1c",
+          "cluster": {
+            "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+            "name": "sand2-rbk01"
+          }
+        }
+      }
+    ]
+  },
+  "page_token": {
+    "Snapshot": {
+      "has_next_page": true,
+      "name": "rubrik-polaris-object-snapshot-list",
+      "next_page_token": "Y3Vyc29yOmludDow"
+    }
+  }
+}

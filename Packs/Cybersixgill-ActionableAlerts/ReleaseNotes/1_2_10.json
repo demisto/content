@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Field mapping moved from code to incoming mapper (classifier-mapper-incoming-Cybersixgill-Actionable-Alerts). Please select the mentioned mapper on integration instance configuration to ensure smooth transition."
+}

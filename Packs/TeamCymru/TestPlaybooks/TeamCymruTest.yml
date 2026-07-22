@@ -1,0 +1,335 @@
+id: TeamCymruTest
+version: -1
+name: TeamCymruTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b0811b2c-4d66-492b-88a9-8e286dbf063c
+    type: start
+    task:
+      id: b0811b2c-4d66-492b-88a9-8e286dbf063c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e4b012d2-c6ba-4fdb-8d0d-b7234c0d618a
+    type: regular
+    task:
+      id: e4b012d2-c6ba-4fdb-8d0d-b7234c0d618a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 09e2b9c5-232c-4484-89a2-8077a1fbd111
+    type: regular
+    task:
+      id: 09e2b9c5-232c-4484-89a2-8077a1fbd111
+      version: -1
+      name: ip
+      description: Checks the reputation of an IP address.
+      script: TeamCymru|||ip
+      type: regular
+      iscommand: true
+      brand: TeamCymru
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e8a28ede-6d07-414b-8225-597a864a041b
+    type: title
+    task:
+      id: e8a28ede-6d07-414b-8225-597a864a041b
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 140,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8d100173-2df2-424c-82c2-c2c5ceb343bd
+    type: regular
+    task:
+      id: 8d100173-2df2-424c-82c2-c2c5ceb343bd
+      version: -1
+      name: 'cymru-bulk-whois '
+      script: TeamCymru|||cymru-bulk-whois
+      type: regular
+      iscommand: true
+      brand: TeamCymru
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      bulk-list:
+        simple: '"1.1.1.1, 8.8.4.4"'
+      entry_id:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 12315cda-657e-4e5c-8d4b-2372dd3aa2cb
+    type: condition
+    task:
+      id: 12315cda-657e-4e5c-8d4b-2372dd3aa2cb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: IP
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: TeamCymru
+                accessor: IP
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e683fc9a-f886-4792-8512-028b9313bf52
+    type: regular
+    task:
+      id: e683fc9a-f886-4792-8512-028b9313bf52
+      version: -1
+      name: Upload file entry_id
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      data:
+        simple: |-
+          1.1.1.1
+          8.8.8.8
+      entryId:
+        simple: ${File.EntryID}
+      filename:
+        simple: ips
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 0abdcce0-c47e-428c-8383-b0c492be03c8
+    type: condition
+    task:
+      id: 0abdcce0-c47e-428c-8383-b0c492be03c8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: IP
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: TeamCymru
+                accessor: IP
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1205,
+        "width": 1020,
+        "x": -160,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

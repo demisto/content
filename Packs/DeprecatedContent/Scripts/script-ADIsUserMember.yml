@@ -1,0 +1,74 @@
+commonfields:
+  id: ADIsUserMember
+  version: -1
+name: ADIsUserMember
+script: >-
+  FOUND_GROUPS_LABAL = 'FoundGroups'
+
+  res = []
+
+
+  resp = demisto.executeCommand('ADGetUserGroups', demisto.args())
+
+  try:
+      if not isError(resp[0]):
+          group_names = argToList(demisto.args()['groupname'])
+
+          for name in group_names:
+              group_resp = demisto.executeCommand('AdSearch', {'filter':'(&(objectClass=group)(name={0}))'.format(name)})
+              if isError(group_resp[0]):
+                  res.append(  { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ad-search:\n' + resp[0]['Contents'] } )
+              elif (isinstance(group_resp[0]['Contents'],str) or isinstance(group_resp[0]['Contents'],unicode)) and group_resp[0]['Contents'] == 'No results':
+                  res.append( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Group {0} not found:\n'.format(name) } )
+
+          user_groups = [row['name'] for row in resp[0]['Contents']]
+          groups = list(set(group_names).intersection(user_groups))
+          if groups:
+              markdownString = '### The user belongs to groups:\n'
+              markdownString += "".join(['* ' + s + '\n' for s in groups])
+              res.append ({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdownString})
+
+              group_names = ','.join([str(s) for s in groups])
+              demisto.setContext(FOUND_GROUPS_LABAL, group_names)
+
+              answer = 'yes'
+          else:
+              demisto.log("\nThe user is not part of any of the groups\n")
+              answer = 'no'
+
+          res.append( { "Type" : entryTypes["note"], "ContentsFormat" : formats["text"], "Contents" : answer } )
+
+          demisto.results(res)
+
+      else:
+          demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned from ADGetUserGroups:\n' + resp[0]['Contents'] } )
+  except Exception, ex:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ADGetUserGroups. Exception info:\n' + str(ex) + '\n\nInvalid output:\n' + str( resp ) } )
+type: python
+subtype: python2
+tags:
+- active directory
+- Condition
+comment: Deprecated. Use Active Directory to check if the specified user is a member of the specified group. Returns simply yes/no. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+system: true
+args:
+- name: dn
+  description: Active Directory Distinguished Name of the desired user
+- name: name
+  description: Name of the desired user
+- name: email
+  description: Email address of the desired user
+- name: groupname
+  required: true
+  default: true
+  description: Name of the AD group to check
+- name: nestedSearch
+  description: Enter any value to allow nested groups check as well
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - ad-search
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

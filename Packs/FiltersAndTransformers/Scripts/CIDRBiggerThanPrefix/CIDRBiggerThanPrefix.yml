@@ -1,0 +1,26 @@
+commonfields:
+  id: CIDRBiggerThanPrefix
+  version: -1
+name: CIDRBiggerThanPrefix
+script: ''
+type: python
+tags:
+- filter
+enabled: true
+args:
+- name: right
+  required: true
+  description: The prefix to set as maximum.
+- name: left
+  required: true
+  isArray: true
+  description: A comma-separated list of CIDR to validate (IPv4 or IPv6).
+comment: Checks whether a given CIDR prefix is bigger than the defined maximum prefix.
+scripttarget: 0
+isllm: false
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10404775
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- CIDRBiggerThanPrefix_Test

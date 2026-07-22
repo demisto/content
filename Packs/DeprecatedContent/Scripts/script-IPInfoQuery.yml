@@ -1,0 +1,40 @@
+commonfields:
+  id: IPInfoQuery
+  version: -1
+name: IPInfoQuery
+script: >+
+  field = demisto.get(demisto.args(), 'field')
+
+  if field:
+      demisto.results(demisto.executeCommand("ipinfo_field", demisto.args()))
+  else:
+      dArgs = demisto.args()
+      dArgs['using-brand'] = 'ipinfo'
+      resp = demisto.executeCommand("ip", dArgs)
+      if isError(resp[0]):
+          demisto.results(resp)
+      else:
+          demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': flattenRow(resp[0]['Contents']) } )
+
+
+type: python
+subtype: python2
+tags:
+- ipinfo
+comment: Deprecated. Query ipinfo.io regarding an IP address. Returns a table, or if a specific field is selected, just the value for that field as a string.
+system: true
+args:
+- name: field
+  description: (Optional) only retrieve a specific field
+- name: ip
+  required: true
+  default: true
+  description: IP address to query. E.g. !ip 1.1.1.1
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - ipinfo_field
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,291 @@
+id: search_endpoints_by_hash_-_carbon_black_response
+fromversion: 5.0.0
+system: true
+version: -1
+name: Search Endpoints By Hash - Carbon Black Response
+description: Deprecated. Use the Search Search Endpoints By Hash - Carbon Black Response V2 playbook instead. Hunt for malicious indicators using Carbon Black.
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: edc8b672-13e8-48fa-87c9-594118876ac4
+    type: start
+    task:
+      id: edc8b672-13e8-48fa-87c9-594118876ac4
+      version: -1
+      name: ""
+      description: Playbook start point
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: ad7dff09-2373-43ba-8a87-645fa98ca5cb
+    type: regular
+    task:
+      id: ad7dff09-2373-43ba-8a87-645fa98ca5cb
+      version: -1
+      name: Hunt MD5 Hash
+      description: Search Carbon Black for the specified MD5 hash(es)
+      scriptName: CBFindHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      md5:
+        complex:
+          root: inputs
+          accessor: Hash
+    results:
+    - found_file_locations
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 362,
+          "y": 632
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 31e80780-a121-4f17-8c64-2880e9ea0a20
+    type: condition
+    task:
+      id: 31e80780-a121-4f17-8c64-2880e9ea0a20
+      version: -1
+      name: Is Carbon Black enabled?
+      description: Is Carbon Black enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: carbonblack
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 108ba97d-b9da-4162-808d-025b5f6b7986
+    type: title
+    task:
+      id: 108ba97d-b9da-4162-808d-025b5f6b7986
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
+    type: condition
+    task:
+      id: 4dc64cf1-acb2-47b5-87c8-88e0e90e6c11
+      version: -1
+      name: Do we have files to hunt?
+      description: Do we have files to hunt?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs
+          accessor: Hash
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs
+                accessor: Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 356,
+          "y": 371
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 09e186f8-7d8d-4f32-84f8-5960a2e943af
+    type: regular
+    task:
+      id: 09e186f8-7d8d-4f32-84f8-5960a2e943af
+      version: -1
+      name: Set hostname
+      description: Set hostname
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Endpoint.Hostname
+      value:
+        complex:
+          root: found_file_locations
+          transformers:
+          - operator: string.replaceMatch
+            args:
+              regex:
+                value:
+                  simple: '{".*": \[".*", "(.*)"]}'
+              replaceWith:
+                value:
+                  simple: $1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 362,
+          "y": 1045
+        }
+      }
+  "6":
+    id: "6"
+    taskid: a9c71d9b-8bec-42db-8c65-a4d047770eac
+    type: condition
+    task:
+      id: a9c71d9b-8bec-42db-8c65-a4d047770eac
+      version: -1
+      name: Verify found file locations
+      description: Verify found file locations
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      left: {}
+      right: {}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: found_file_locations
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 362,
+          "y": 790
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.15,
+      "2_4_yes": 0.5,
+      "4_1_yes": 0.69,
+      "4_3_#default#": 0.32,
+      "6_3_#default#": 0.6,
+      "6_5_yes": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 692,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hash
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: MD5 Hash
+outputs:
+- contextPath: Endpoint.Hostname
+  description: The device hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
+tests:
+- no test
+deprecated: true

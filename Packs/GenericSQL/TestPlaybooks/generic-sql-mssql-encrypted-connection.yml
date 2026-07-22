@@ -1,0 +1,210 @@
+id: generic-sql-mssql-encrypted-connection
+version: -1
+name: generic-sql-mssql-encrypted-connection
+starttaskid: "0"
+description: The initial state of the table is that in each database there are 4 records. While the playbook run, another record is added and later removed from the table.
+tasks:
+  "0":
+    id: "0"
+    taskid: cc64368b-5230-4b0b-8f64-722e0049e29c
+    type: start
+    task:
+      id: cc64368b-5230-4b0b-8f64-722e0049e29c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: fbfc8b66-0fdb-47a4-83a2-6d22c658e2b1
+    type: regular
+    task:
+      id: fbfc8b66-0fdb-47a4-83a2-6d22c658e2b1
+      version: -1
+      name: show tables
+      description: Running a sql query
+      script: Generic SQL|||sql-command
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      bind_variables_names: {}
+      bind_variables_values: {}
+      limit:
+        simple: "10"
+      query:
+        simple: SELECT * FROM information_schema.tables
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: abb178ef-7209-466d-85a5-9534bd0c1cc9
+    type: condition
+    task:
+      id: abb178ef-7209-466d-85a5-9534bd0c1cc9
+      version: -1
+      name: Checking that there are tables in the output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.Result}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 1d407167-4416-487b-8d37-e01a755f681f
+    type: title
+    task:
+      id: 1d407167-4416-487b-8d37-e01a755f681f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ed51316d-c655-418d-89a2-d15e84967efe
+    type: regular
+    task:
+      id: ed51316d-c655-418d-89a2-d15e84967efe
+      version: -1
+      name: Print Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: No tables in db, please check the connection.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 936ca05c-e593-49d5-8c53-d2b6b8b16f2e
+    type: regular
+    task:
+      id: 936ca05c-e593-49d5-8c53-d2b6b8b16f2e
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 800,
+        "x": 30,
+        "y": -60
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

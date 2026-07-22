@@ -1,0 +1,3 @@
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Gigamon_ThreatINSIGHT_Detection.json]
+ignore=GR103

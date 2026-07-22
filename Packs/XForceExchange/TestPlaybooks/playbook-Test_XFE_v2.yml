@@ -1,0 +1,2024 @@
+id: Test_XFE_v2
+version: -1
+name: Test_XFE_v2
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8436bb9a-ac14-42cf-8cd1-b8023f0b4d94
+    type: start
+    task:
+      id: 8436bb9a-ac14-42cf-8cd1-b8023f0b4d94
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: da014ec7-a8d2-4724-8a9c-7ef812307a37
+    type: regular
+    task:
+      id: da014ec7-a8d2-4724-8a9c-7ef812307a37
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6700dfa7-6819-4bb9-87f3-e98abae5adf5
+    type: regular
+    task:
+      id: 6700dfa7-6819-4bb9-87f3-e98abae5adf5
+      version: -1
+      name: ip
+      description: IP to check
+      script: XFE_v2|||ip
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      extend-context:
+        simple: error=.
+      ip:
+        simple: 8.8.8.8
+      retries:
+        simple: "5"
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 99a6a291-3d52-4d71-8b4b-626d0e37d494
+    type: condition
+    task:
+      id: 99a6a291-3d52-4d71-8b4b-626d0e37d494
+      version: -1
+      name: Verify Outputs for IP
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: XFE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.IP.Reason
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.IP.Reasondescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.IP.Subnets
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b13c1758-cd24-4fc7-83b5-608189ce62a3
+    type: regular
+    task:
+      id: b13c1758-cd24-4fc7-83b5-608189ce62a3
+      version: -1
+      name: url
+      description: Check the given URL reputation
+      script: XFE_v2|||url
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      extend-context:
+        simple: error=.
+      retries:
+        simple: "5"
+      url:
+        simple: https://google.com
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 32b58844-bd07-493a-807c-3c4bec258895
+    type: condition
+    task:
+      id: 32b58844-bd07-493a-807c-3c4bec258895
+      version: -1
+      name: Verify Outputs for URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: https://google.com
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: https://google.com
+                accessor: Type
+            iscontext: true
+          right:
+            value:
+              simple: url
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 97685dbf-8981-4332-8a3f-64a7685b638d
+    type: regular
+    task:
+      id: 97685dbf-8981-4332-8a3f-64a7685b638d
+      version: -1
+      name: file
+      description: Check file reputation
+      script: XFE_v2|||file
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      extend-context:
+        simple: error=.
+      file:
+        simple: 474B9CCF5AB9D72CA8A333889BBB34F0,474B9CCF5AB9D72CA8A333889BBB34F1
+      retries:
+        simple: "5"
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5c3da08c-6f8a-455c-8601-2f30412a2925
+    type: condition
+    task:
+      id: 5c3da08c-6f8a-455c-8601-2f30412a2925
+      version: -1
+      name: Verify Outputs for File
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 474B9CCF5AB9D72CA8A333889BBB34F0
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              simple: 474B9CCF5AB9D72CA8A333889BBB34F0
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 474B9CCF5AB9D72CA8A333889BBB34F0
+                accessor: Type
+            iscontext: true
+          right:
+            value:
+              simple: file
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8cc3030c-581d-428f-89b7-38eae938a929
+    type: regular
+    task:
+      id: 8cc3030c-581d-428f-89b7-38eae938a929
+      version: -1
+      name: domain
+      description: Check domain reputation
+      script: XFE_v2|||domain
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      domain:
+        simple: ibm.com
+      extend-context:
+        simple: error=.
+      retries:
+        simple: "5"
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 40a08e26-aae7-47ef-8c71-c73c183504b0
+    type: regular
+    task:
+      id: 40a08e26-aae7-47ef-8c71-c73c183504b0
+      version: -1
+      name: cve-search
+      description: Search for details about the given CVE
+      script: XFE_v2|||cve-search
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      cve_id:
+        simple: CVE-2013-3893
+      extend-context:
+        simple: error=.
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2aebac06-5e8e-419f-8717-6bc806e2ff76
+    type: condition
+    task:
+      id: 2aebac06-5e8e-419f-8717-6bc806e2ff76
+      version: -1
+      name: Verify Outputs for CVE
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+          right:
+            value:
+              simple: CVE-2013-3893
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.CVSS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Xfdbid
+            iscontext: true
+      - - operator: InRange
+          left:
+            value:
+              simple: XFE.CVE.RiskLevel
+            iscontext: true
+          right:
+            value:
+              simple: 1,10
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Stdcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.PlatformsAffected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Exploitability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 79bd63a4-d5b5-4455-87d9-94bd7f651346
+    type: regular
+    task:
+      id: 79bd63a4-d5b5-4455-87d9-94bd7f651346
+      version: -1
+      name: cve-latest
+      description: Return the latest vulnerabilities found
+      script: XFE_v2|||cve-latest
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      extend-context:
+        simple: error=.
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 97ae25a8-d2b1-488f-8332-5ac36451bd7f
+    type: condition
+    task:
+      id: 97ae25a8-d2b1-488f-8332-5ac36451bd7f
+      version: -1
+      name: Verify Outputs for Recent CVEs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CVE.[1].ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.[1].CVSS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.[1].Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.[1].Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Xfdbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.RiskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Reported
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Stdcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.PlatformsAffected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Exploitability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 47adc298-46c9-4f4e-8be9-cc4e38182f9e
+    type: regular
+    task:
+      id: 47adc298-46c9-4f4e-8be9-cc4e38182f9e
+      version: -1
+      name: xfe-whois
+      description: Gets information about the given host address
+      script: XFE_v2|||xfe-whois
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      extend-context:
+        simple: error=.
+      host:
+        simple: demisto.com
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: fa7fb040-7a83-4667-8018-c5bb101e2002
+    type: condition
+    task:
+      id: fa7fb040-7a83-4667-8018-c5bb101e2002
+      version: -1
+      name: Verify Outputs for Whois
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: XFE.Whois.Host
+            iscontext: true
+          right:
+            value:
+              simple: demisto.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.RegistrarName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Updated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Expires
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.Whois.Contact
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d2726846-524c-406f-8830-38e325118f96
+    type: regular
+    task:
+      id: d2726846-524c-406f-8830-38e325118f96
+      version: -1
+      name: xfe-search-cves
+      description: Gets list of all vulnerabilities associated with the search term.
+      script: XFE_v2|||xfe-search-cves
+      type: regular
+      iscommand: true
+      brand: XFE_v2
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      extend-context:
+        simple: error=.
+      q:
+        simple: Windows
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a5cb5ecc-cb5f-44e1-84ce-c0308f712950
+    type: condition
+    task:
+      id: a5cb5ecc-cb5f-44e1-84ce-c0308f712950
+      version: -1
+      name: Verify Outputs for Search CVEs by Query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.CVSS
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Published
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Xfdbid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.RiskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Reported
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Cvss
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Stdcode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.PlatformsAffected
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVE.Exploitability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVESearch.TotalRows
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: XFE.CVESearch.Bookmark
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b16cef86-e603-4ac1-886f-7c65e84b5eef
+    type: title
+    task:
+      id: b16cef86-e603-4ac1-886f-7c65e84b5eef
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 48a69a31-4f34-4b46-8263-f0e58f7d19a0
+    type: condition
+    task:
+      id: 48a69a31-4f34-4b46-8263-f0e58f7d19a0
+      version: -1
+      name: Verify Outputs for Domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: ibm.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value:
+              simple: XFE
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: ibm.com
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e5f2a6fa-ac5c-4e7c-8bb4-937b835812ac
+    type: regular
+    task:
+      id: e5f2a6fa-ac5c-4e7c-8bb4-937b835812ac
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 43f34912-c770-4244-8a00-a03dbc2ffaa6
+    type: condition
+    task:
+      id: 43f34912-c770-4244-8a00-a03dbc2ffaa6
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "22"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 12e4c082-1a62-43fc-81fb-d9b7b3e532d2
+    type: condition
+    task:
+      id: 12e4c082-1a62-43fc-81fb-d9b7b3e532d2
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a905fb9d-e89c-4662-86c0-734661b1e6ff
+    type: condition
+    task:
+      id: a905fb9d-e89c-4662-86c0-734661b1e6ff
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 192cb3d8-e44d-4e7d-881a-fb60750d5b26
+    type: condition
+    task:
+      id: 192cb3d8-e44d-4e7d-881a-fb60750d5b26
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "23"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 15d51ee7-d0db-4657-8372-d1dd7598f7c7
+    type: regular
+    task:
+      id: 15d51ee7-d0db-4657-8372-d1dd7598f7c7
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: e91f6e62-514b-42f2-8f33-272c667f5189
+    type: regular
+    task:
+      id: e91f6e62-514b-42f2-8f33-272c667f5189
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3179125d-9681-4dd7-8742-6d9a2f5e0b9f
+    type: condition
+    task:
+      id: 3179125d-9681-4dd7-8742-6d9a2f5e0b9f
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "29"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 31eea719-0af6-4358-83d1-84f2173d990f
+    type: condition
+    task:
+      id: 31eea719-0af6-4358-83d1-84f2173d990f
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: fa7f468d-84df-456f-8f69-76fffe2acb98
+    type: condition
+    task:
+      id: fa7f468d-84df-456f-8f69-76fffe2acb98
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "19"
+      "yes":
+      - "32"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 95598a8c-c7eb-42ff-869f-e63d1a115c2b
+    type: condition
+    task:
+      id: 95598a8c-c7eb-42ff-869f-e63d1a115c2b
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "11"
+      "yes":
+      - "37"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: c2f0b545-6826-425b-8ece-307491190e49
+    type: condition
+    task:
+      id: c2f0b545-6826-425b-8ece-307491190e49
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: b96c394e-c079-4a56-8f8c-facb48f93589
+    type: condition
+    task:
+      id: b96c394e-c079-4a56-8f8c-facb48f93589
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 318d00ad-9fe0-4ad6-84e8-75254df760a1
+    type: regular
+    task:
+      id: 318d00ad-9fe0-4ad6-84e8-75254df760a1
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 79c0d65d-5485-4746-8991-74714e60b0e5
+    type: regular
+    task:
+      id: 79c0d65d-5485-4746-8991-74714e60b0e5
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 16789e89-7817-4b99-8d8f-206270aed91e
+    type: condition
+    task:
+      id: 16789e89-7817-4b99-8d8f-206270aed91e
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "33"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 0d0745bd-0cff-4464-8fec-adb8fd119026
+    type: condition
+    task:
+      id: 0d0745bd-0cff-4464-8fec-adb8fd119026
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 2c9ecfd5-7df9-40f1-8739-1b1b1b9a1667
+    type: regular
+    task:
+      id: 2c9ecfd5-7df9-40f1-8739-1b1b1b9a1667
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 9aa93a3f-4e11-4f73-8638-314416831504
+    type: condition
+    task:
+      id: 9aa93a3f-4e11-4f73-8638-314416831504
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "15"
+      "yes":
+      - "40"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 360c6d99-035b-4625-8070-12e9ae688739
+    type: condition
+    task:
+      id: 360c6d99-035b-4625-8070-12e9ae688739
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: b2a655e6-2d8d-4adf-8ee0-55963996b0cc
+    type: regular
+    task:
+      id: b2a655e6-2d8d-4adf-8ee0-55963996b0cc
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: error
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: c3402ac5-b0a2-49a5-8890-ce2480b07c51
+    type: condition
+    task:
+      id: c3402ac5-b0a2-49a5-8890-ce2480b07c51
+      version: -1
+      name: Is Payment Error?
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ${error}
+            iscontext: true
+          right:
+            value:
+              simple: Your free API usage quota has been exceeded. Please refer to this link
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - {}
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 404369de-6520-4eff-8a52-1ed561e82203
+    type: condition
+    task:
+      id: 404369de-6520-4eff-8a52-1ed561e82203
+      version: -1
+      name: Is Error
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "17"
+      "yes":
+      - "42"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5810,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: InstanceName
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+description: ''

@@ -1,0 +1,30 @@
+{
+    "id": "incident_cybersixgillattributes",
+    "version": -1,
+    "modified": "2022-04-05T10:29:33.703917371Z",
+    "name": "Cybersixgill Attributes",
+    "ownerOnly": false,
+    "cliName": "cybersixgillattributes",
+    "type": "longText",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cybersixgill Actionable Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

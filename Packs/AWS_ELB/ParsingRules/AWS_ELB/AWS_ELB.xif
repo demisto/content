@@ -1,0 +1,8 @@
+[INGEST:vendor="aws", product="elb", target_dataset="aws_elb_raw", no_hit=keep]
+// This parsing rule is referring to the timestamp in format ISO 8610 format in UTC 00:00 timezone 2024-01-01T00:00:0.000000Z
+filter _raw_log ~= "^\w+\s\d{4}\-\d{2}\-\d{2}\w\d{2}\:\d{2}\:\d{2}\.\d+\w"
+| alter 
+    tmp_timestamp = arrayindex(regextract(_raw_log,"^\w+\s(\d{4}\-\d{2}\-\d{2}\w\d{2}\:\d{2}\:\d{2}\.\d+\w)"),0)
+| alter 
+    _time = parse_timestamp("%FT%H:%M:%E*SZ", tmp_timestamp)
+| fields -tmp_timestamp;

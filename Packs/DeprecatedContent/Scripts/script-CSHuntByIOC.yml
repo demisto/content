@@ -1,0 +1,48 @@
+commonfields:
+  id: CSHuntByIOC
+  version: -1
+name: CSHuntByIOC
+script: >-
+  res = []
+
+  t = []
+
+  for v in argToList(demisto.args()['value']):
+      e = demisto.executeCommand("cs-device-ran-on", {"type": demisto.args()['type'], "value": v})[0]
+      if isError(e):
+          if not '404 (Not Found)' in e['Contents']: # Skip 404 errors - it just means the IOC wasn't found
+              res += [e]
+      else:
+          myData = demisto.get(e, 'Contents.resources')
+          if myData:
+              t += [{'Result found': demisto.args()['type'] + ':' + v, 'Device ID': h} for h in myData]
+  if t:
+      demisto.setContext('CSFoundDevices', ','.join([detection['Device ID'] for detection in t]))
+      res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': t} )
+  else:
+      res.append('No results.')
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- crowdstrike
+comment: Deprecated. List devices that match a specific IOC - an IOC ran on them - limited to sha256, sha1, md5 and domain types
+system: true
+deprecated: true
+args:
+- name: type
+  required: true
+  default: true
+  description: One of sha256, sha1, md5, domain
+- name: value
+  required: true
+  description: The IOC to find
+scripttarget: 0
+dependson:
+  must:
+  - cs-device-ran-on
+timeout: 0s
+tests:
+- No Test
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

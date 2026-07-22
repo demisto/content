@@ -1,0 +1,261 @@
+id: Humio QueryJob Poll
+version: -1
+name: Humio QueryJob Poll
+description: Run and poll a Humio Query Job
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32c3b84c-67ab-4836-82f6-eee0e7463332
+    type: start
+    task:
+      id: 32c3b84c-67ab-4836-82f6-eee0e7463332
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bea70532-e9e1-4b78-87f8-04bfeb90cc9f
+    type: regular
+    task:
+      id: bea70532-e9e1-4b78-87f8-04bfeb90cc9f
+      version: -1
+      name: Start Humio Query job
+      description: Issue a query job to Humio
+      script: '|||humio-query-job'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      arguments: {}
+      end:
+        simple: ${inputs.End}
+      isLive:
+        simple: "False"
+      queryString:
+        simple: ${inputs.Query}
+      repository:
+        simple: ${inputs.Repository}
+      start:
+        simple: ${inputs.Start}
+      timeZoneOffsetMinutes:
+        simple: ${inputs.timeZoneOffsetMinutes}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ddb90fa7-29e1-498a-8b31-94349d43df98
+    type: playbook
+    task:
+      id: ddb90fa7-29e1-498a-8b31-94349d43df98
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: repository
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.Repository}
+      Ids:
+        simple: ${Humio.Job.id}
+      Interval:
+        simple: ${inputs.Interval}
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: humio-poll
+      Timeout:
+        simple: ${inputs.Timeout}
+      dt:
+        simple: Humio.Result(val.done == false && val.cancelled == false).job_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0fe32813-48bf-4aed-8a76-61575d915305
+    type: regular
+    task:
+      id: 0fe32813-48bf-4aed-8a76-61575d915305
+      version: -1
+      name: Fetch the final results
+      description: Issue poll command to Humio
+      script: '|||humio-poll'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      id:
+        simple: ${Humio.Job.id}
+      repository:
+        simple: ${inputs.Repository}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 9dac2eec-5b08-4bc2-8b7c-9a68058adcf2
+    type: title
+    task:
+      id: 9dac2eec-5b08-4bc2-8b7c-9a68058adcf2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Query
+  value: {}
+  required: true
+  description: The Humio Query to run
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: true
+  description: The interval in minutes to poll the query job
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "10"
+  required: true
+  description: The number of minutes before timing out
+  playbookInputQuery:
+- key: Repository
+  value: {}
+  required: true
+  description: The repository to query
+  playbookInputQuery:
+- key: Start
+  value:
+    simple: 24h
+  required: false
+  description: The beginning of the interval to query
+  playbookInputQuery:
+- key: End
+  value:
+    simple: now
+  required: false
+  description: The end of the interval to query
+  playbookInputQuery:
+- key: timeZoneOffsetMinutes
+  value:
+    simple: "0"
+  required: false
+  description: The timezone offset in minutes between the XSOAR and Humio server (usually
+    0)
+  playbookInputQuery:
+outputs:
+- contextPath: Humio.Result.cancelled
+  description: If it was cancelled
+- contextPath: Humio.Result.events
+  description: Events in the poll
+- contextPath: Humio.Result.done
+  description: If its done
+- contextPath: Humio.Result.metaData
+  description: MetaData from the poll
+- contextPath: Humio.Result.job_id
+  description: Humio Job id the results came from
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

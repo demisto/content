@@ -1,0 +1,15 @@
+[
+    {
+        "Adaptive Policy ID": "111",
+        "Source Group ID": "222",
+        "Source Group Name": "IoT Devices",
+        "Destination Group ID": "333",
+        "Destination Group Name": "IoT Servers",
+        "ACL IDS": [
+            "444"
+        ],
+        "ACL Names": [
+            "Block web"
+        ]
+    }
+]

@@ -1,0 +1,53 @@
+{
+    "meta": {
+        "version": "5.5",
+        "timestamp": "2021-08-10T11:37:35.476947",
+        "branch_coverage": false,
+        "show_contexts": false
+    },
+    "files": {
+        "Packs/MyPack1/Integrations/MyIntegration/integration.py": {
+            "executed_lines": [
+                1,
+                330
+            ],
+            "summary": {
+                "covered_lines": 113,
+                "num_statements": 150,
+                "percent_covered": 75.3333,
+                "missing_lines": 37,
+                "excluded_lines": 0
+            },
+            "missing_lines": [
+                47,
+                331
+            ],
+            "excluded_lines": []
+        },
+        "Packs/MyPack2/Integrations/MyIntegration/integration.py": {
+            "executed_lines": [
+                1,
+                392
+            ],
+            "summary": {
+                "covered_lines": 69,
+                "num_statements": 94,
+                "percent_covered": 73.40425,
+                "missing_lines": 25,
+                "excluded_lines": 0
+            },
+            "missing_lines": [
+                113,
+                393
+            ],
+            "excluded_lines": []
+        }
+    },
+    "totals": {
+        "covered_lines": 895,
+        "num_statements": 1509,
+        "percent_covered": 59.310801855,
+        "missing_lines": 614,
+        "excluded_lines": 0
+    }
+}

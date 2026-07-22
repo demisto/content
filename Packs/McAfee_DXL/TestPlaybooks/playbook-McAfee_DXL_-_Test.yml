@@ -1,0 +1,225 @@
+id: McAfee DXL - Test
+version: -1
+contentitemfields:
+  propagationLabels: []
+name: McAfee DXL - test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 779793c2-558a-495f-87a5-fb527a7724e5
+    type: start
+    task:
+      id: 779793c2-558a-495f-87a5-fb527a7724e5
+      version: -1
+      name: ""
+      iscommand: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 39dfd1b2-0375-43cc-8cbf-2b89faa7eeb0
+    type: regular
+    task:
+      id: 39dfd1b2-0375-43cc-8cbf-2b89faa7eeb0
+      version: -1
+      name: send ip message
+      description: Push given IP  to the DXL fabric
+      script: '|||dxl-push-ip'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      trust_level:
+        simple: KNOWN_TRUSTED
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 8ba48f89-9d7f-4e04-85f2-fe060928b0f1
+    type: title
+    task:
+      id: 8ba48f89-9d7f-4e04-85f2-fe060928b0f1
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 35d0683e-e6f8-450e-8d8a-1d3d5b073af0
+    type: regular
+    task:
+      id: 35d0683e-e6f8-450e-8d8a-1d3d5b073af0
+      version: -1
+      name: send hash message
+      description: Push given hash  to the DXL fabric
+      script: '|||dxl-push-hash'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      hash:
+        simple: 0123456789
+      trust_level:
+        simple: NOT_SET
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 2148da77-5c61-4b89-82f6-31a5fb463ad7
+    type: regular
+    task:
+      id: 2148da77-5c61-4b89-82f6-31a5fb463ad7
+      version: -1
+      name: dxl-push-domain
+      description: Push given domain  to the DXL fabric
+      script: '|||dxl-push-domain'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      domain:
+        simple: malicious.com
+      trust_level:
+        simple: KNOWN_MALICIOUS
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 87026516-2a46-43ff-8ff5-7cd79dc04057
+    type: regular
+    task:
+      id: 87026516-2a46-43ff-8ff5-7cd79dc04057
+      version: -1
+      name: dxl-push-url
+      description: Push given url  to the DXL fabric
+      script: '|||dxl-push-url'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      trust_level:
+        simple: KNOWN_TRUSTED
+      url:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 798e3bc9-e79b-492f-872c-9430be443e8e
+    type: regular
+    task:
+      id: 798e3bc9-e79b-492f-872c-9430be443e8e
+      version: -1
+      name: dxl-send-event
+      description: Deliver the specified event to the DXL fabric
+      script: '|||dxl-send-event'
+      type: regular
+      iscommand: true
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      payload:
+        simple: test
+      topic:
+        simple: TEST_TOPIC
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 365,
+        "width": 2080,
+        "x": -400,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

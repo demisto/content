@@ -1,0 +1,183 @@
+id: Enrich DXL with ATD verdict
+version: -1
+name: Enrich DXL with ATD verdict
+fromversion: "5.0.0"
+description: |-
+  Deprecated. Use "Enrich DXL with ATD verdict v2" playbook instead. Example of using McAfee ATD and pushing any malicious verdicts over DXL.
+  Detonates a file in ATD and if malicious - push its MD5, SHA1 and SHA256 hashes to McAfee DXL.
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 8bf06fd9-9465-4a79-82cc-f44ea90e58af
+    type: start
+    task:
+      id: 8bf06fd9-9465-4a79-82cc-f44ea90e58af
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": -19
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: da777ade-9576-497d-864a-11802267cf01
+    type: condition
+    task:
+      id: da777ade-9576-497d-864a-11802267cf01
+      version: -1
+      name: Any malicious files detected?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        simple: ${File.Malicious}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 302
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6e8c6fbc-ebf0-45a8-841f-29e6e259ce73
+    type: regular
+    task:
+      id: 6e8c6fbc-ebf0-45a8-841f-29e6e259ce73
+      version: -1
+      name: Close incident
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+      description: ""
+    scriptarguments:
+      notes: {}
+      reason: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 241,
+          "y": 689
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c50351fa-76f1-43ce-852a-de0c66d9535b
+    type: playbook
+    task:
+      id: c50351fa-76f1-43ce-852a-de0c66d9535b
+      version: -1
+      name: ""
+      playbookName: ATD - Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 118
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 9d489c78-8d21-4906-8121-e42a2bcfa69f
+    type: regular
+    task:
+      id: 9d489c78-8d21-4906-8121-e42a2bcfa69f
+      version: -1
+      name: DXL - Push file hashes as malicious
+      description: Deliver the specified event to the DXL fabric
+      script: McAfee DXL|||dxl-send-event
+      type: regular
+      iscommand: true
+      brand: McAfee DXL
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      payload:
+        simple: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
+      topic:
+        simple: MALICIOUS_FILE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 486
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 803,
+        "width": 670,
+        "x": 241,
+        "y": -19
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No test
+deprecated: true

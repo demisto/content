@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: Microsoft_Azure_Events_Hub_ParsingRule
+name: Microsoft Azure Events Hub Parsing Rule
+rules: ''
+samples: ''
+supportedModules:
+- xsiam
+tags: []

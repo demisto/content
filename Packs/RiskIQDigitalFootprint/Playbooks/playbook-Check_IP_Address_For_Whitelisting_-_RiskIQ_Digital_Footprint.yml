@@ -1,0 +1,328 @@
+id: Check IP Address For Whitelisting - RiskIQ Digital Footprint
+version: -1
+name: Check IP Address For Whitelisting - RiskIQ Digital Footprint
+description: Checks if the provided IP Address should be added to allow list and excluded or not.
+  Use this playbook as a sub-playbook to loop over multiple IP Addresses to
+  check if they should be added to allow list and excluded.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3caac406-1aa1-4772-84f2-182d47d39f06
+    type: start
+    task:
+      id: 3caac406-1aa1-4772-84f2-182d47d39f06
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0bc7c793-44ed-48f6-89b6-685ac3119370
+    type: regular
+    task:
+      id: 0bc7c793-44ed-48f6-89b6-685ac3119370
+      version: -1
+      name: Check the reputation of the IP Address
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4109eeab-8984-4dea-8d7d-557662d3acfe
+    type: regular
+    task:
+      id: 4109eeab-8984-4dea-8d7d-557662d3acfe
+      version: -1
+      name: Check if the IP Address is in the internal range
+      description: Checks if the IP Address is in the provided internal range.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.IP
+      ipRanges:
+        complex:
+          root: inputs.InternalRange
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: a9d37f93-22bd-4bc4-81a2-42afa82afe16
+    type: condition
+    task:
+      id: a9d37f93-22bd-4bc4-81a2-42afa82afe16
+      version: -1
+      name: Is the IP Address internal and its reputation good?
+      description: Checks if the IP Address is in the internal range and if it has
+        a good reputation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.IP
+                      iscontext: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.IP
+                      iscontext: true
+                accessor: InRange
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 25d53805-244b-4bcc-8e39-285cc2676532
+    type: regular
+    task:
+      id: 25d53805-244b-4bcc-8e39-285cc2676532
+      version: -1
+      name: Add IP Address to the whitelist
+      description: Adds the IP Address to the "IPWhitelist" key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IPWhitelist
+      stringify: {}
+      value:
+        simple: '{"IP Address": "${inputs.IP}", "Should the IP Address be whitelisted?
+          Yes or No": "Yes"}'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2e291af5-8a49-4c12-86bc-58b72bcbf1af
+    type: title
+    task:
+      id: 2e291af5-8a49-4c12-86bc-58b72bcbf1af
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 35713e28-dfa2-4ae4-8f30-2117a7443fb5
+    type: regular
+    task:
+      id: 35713e28-dfa2-4ae4-8f30-2117a7443fb5
+      version: -1
+      name: Add IP Address to the exclusions list
+      description: Adds the IP Address to the "IPExclusionList" key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: IPExclusionList
+      stringify: {}
+      value:
+        simple: '{"IP Address": "${inputs.IP}", "Should the IP Address be excluded?
+          Yes or No": "Yes"}'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_5_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 880,
+        "x": 200,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value: {}
+  required: true
+  description: 'IP Address for checking if it should be whitelisted. Use this playbook
+    as a sub-playbook to loop over multiple IP Addresses to check if they should be
+    whitelisted. '
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of IP ranges to check the IP in. The list should be provided
+    in CIDR notation, separated by commas. An example of a list of ranges would be:
+    "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided,
+    will use default list provided in the IsIPInRanges script (the known IPv4 private
+    address ranges).'
+  playbookInputQuery:
+outputs:
+- contextPath: IPWhitelist
+  description: The list of IP Address(es) to be whitelisted.
+  type: unknown
+- contextPath: IPExclusionList
+  description: The list of IP Address(es) to be excluded.
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

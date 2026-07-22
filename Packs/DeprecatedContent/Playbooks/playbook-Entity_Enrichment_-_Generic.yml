@@ -1,0 +1,453 @@
+id: entity_enrichment_generic
+version: -1
+name: Entity Enrichment - Generic
+fromversion: 5.0.0
+description: Deprecated. Use "Entity Enrichment - Generic v3" playbook instead. Enrich entities using one or more integrations
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+    type: start
+    task:
+      id: cdd6228a-7feb-4386-8ab1-7dfdf77d99c2
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+      - "9"
+      - "10"
+      - "12"
+      - "11"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 67
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 92a63802-d111-4add-8e92-03f485d20bab
+    type: playbook
+    task:
+      id: 92a63802-d111-4add-8e92-03f485d20bab
+      version: -1
+      name: IP Enrichment - Generic
+      description: Enrich IP using one or more integrations
+      playbookName: IP Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      IP:
+        simple: ${inputs.IP}
+      InternalRange: {}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 225
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 427040f6-9903-4122-8537-bd72d6fcdab2
+    type: playbook
+    task:
+      id: 427040f6-9903-4122-8537-bd72d6fcdab2
+      version: -1
+      name: URL Enrichment - Generic
+      description: Enrich URL using one or more integrations
+      playbookName: URL Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      url:
+        simple: ${inputs.url}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 386
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 7ea079dc-c904-4088-878d-908e7b5b1ab3
+    type: playbook
+    task:
+      id: 7ea079dc-c904-4088-878d-908e7b5b1ab3
+      version: -1
+      name: Email Address Enrichment - Generic
+      description: Get email address reputation using one or more integrations
+      playbookName: Email Address Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Domain: {}
+      Email:
+        simple: ${inputs.Email}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 386
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 06158760-6f5f-466e-8e57-d37f7ec29066
+    type: playbook
+    task:
+      id: 06158760-6f5f-466e-8e57-d37f7ec29066
+      version: -1
+      name: Endpoint Enrichment - Generic
+      description: Enrich an Endpoint Hostname using one or more integrations
+      playbookName: Endpoint Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Hostname:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+  "11":
+    id: "11"
+    taskid: 5799a021-f77c-457b-85bc-e362b7ff4b43
+    type: playbook
+    task:
+      id: 5799a021-f77c-457b-85bc-e362b7ff4b43
+      version: -1
+      name: Domain Enrichment - Generic
+      description: Enrich Domain using one or more integrations
+      playbookName: Domain Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Domain:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 709
+        }
+      }
+  "12":
+    id: "12"
+    taskid: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
+    type: playbook
+    task:
+      id: f9ef04ef-5311-4cd3-8c5e-eff47f95b3d3
+      version: -1
+      name: Account Enrichment - Generic
+      description: Enrich Accounts using one or more integrations
+      playbookName: Account Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Username:
+        simple: ${inputs.Username}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
+    type: playbook
+    task:
+      id: 07d8b6e7-df26-4c17-80f0-e8bd093720e0
+      version: -1
+      name: File Enrichment - Generic
+      description: Get file reputation using one or more integrations
+      playbookName: File Enrichment - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      MD5:
+        simple: ${inputs.MD5}
+      SHA1:
+        simple: ${inputs.SHA1}
+      SHA256:
+        simple: ${inputs.SHA256}
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 38007764-1687-47b1-8490-0f3cded9dc95
+    type: title
+    task:
+      id: 38007764-1687-47b1-8490-0f3cded9dc95
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 881
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 879,
+        "width": 810,
+        "x": 50,
+        "y": 67
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    simple: ${IP.Address}
+  required: false
+  description: The IP addresses to enrich
+- key: InternalRange
+  value: {}
+  required: false
+  description: The internal range to check against the IPs
+- key: MD5
+  value:
+    simple: ${File.MD5}
+  required: false
+  description: File MD5 to enrich
+- key: SHA256
+  value:
+    simple: ${File.SHA256}
+  required: false
+  description: File SHA256 to enrich
+- key: SHA1
+  value:
+    simple: ${File.SHA1}
+  required: false
+  description: File SHA1 to enrich
+- key: url
+  value:
+    simple: ${URL.Data}
+  required: false
+  description: url to enrich
+- key: Email
+  value:
+    simple: ${Account.Email.Address}
+  required: false
+  description: The email addresses to enrich
+- key: Hostname
+  value:
+    simple: ${Endpoint.Hostname}
+  required: false
+  description: The hostname to enrich
+- key: Username
+  value:
+    simple: ${Account.Username}
+  required: false
+  description: The Username to enrich
+- key: Domain
+  value:
+    simple: ${Domain.Name}
+  required: false
+  description: The domain name to enrich
+outputs:
+- contextPath: Account
+  description: The Account's object
+  type: unknown
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Domain
+  description: The domain objects
+  type: unknown
+- contextPath: URL
+  description: The URL's object
+  type: unknown
+- contextPath: URL.Malicious
+  description: whether url was detected as malicious
+  type: unknown
+- contextPath: URL.Vendor
+  description: name of vendor who labeled as malicious
+  type: string
+- contextPath: URL.Description
+  description: additional info on the url
+  type: string
+- contextPath: URL.Address
+  description: The enriched URL
+  type: string
+- contextPath: Account.Email.Address
+  description: The Email account full address
+  type: string
+- contextPath: IP
+  description: The IP objects
+  type: unknown
+- contextPath: Account.Email.Domain
+  description: The Email account domain
+  type: string
+- contextPath: Account.Email.NetworkType
+  description: The Email account NetworkType (could be Internal/External)
+  type: string
+- contextPath: Account.Email.Username
+  description: The Email account username
+  type: string
+- contextPath: Account.Email.Distance.Domain
+  description: The compared domain
+  type: unknown
+- contextPath: Account.Email.Distance.Value
+  description: 'The distance between the email domain and the compared domain '
+  type: string
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+  type: unknown
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: File
+  description: The File's object
+  type: unknown
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: Endpoint
+  description: The Endpoint's object
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostname to enrich
+  type: string
+- contextPath: Endpoint.OS
+  description: Endpoint OS
+  type: string
+- contextPath: Endpoint.IP
+  description: List of endpoint IP addresses
+- contextPath: Endpoint.MAC
+  description: List of endpoint MAC addresses
+- contextPath: Endpoint.Domain
+  description: Endpoint domain name
+  type: string
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The Indicator
+  type: string
+- contextPath: DBotScore.Type
+  description: The Indicator Type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The DBot score vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The DBot score
+  type: number
+tests:
+- no test - each enrichment sub-playbook has or will have its own test
+deprecated: true

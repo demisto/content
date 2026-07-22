@@ -1,0 +1,28 @@
+[{
+    "meta": {"pagination": {"pageSize": 2, "totalCount": 81, "next": "eNo00000"}, "status": 200},
+    "data": [
+        {
+            "viewer": "example@test.com",
+            "source": "Message Tracking",
+            "viewed": "2022-09-01T08:13:39+0000",
+            "from": "example@test.com",
+            "to": "example@test.com",
+            "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
+            "messageDate": "2022-07-18T13:25:21+0000",
+            "contentViewed": false,
+            "discoveryCase": false
+        },
+        {
+            "viewer": "example@test.com",
+            "source": "Message Tracking",
+            "viewed": "2022-08-31T14:29:48+0000",
+            "from": "example@test.coma",
+            "to": "example@test.com",
+            "subject": "Demand Ken Lay Donate Proceeds from Enron Stock Sales",
+            "messageDate": "2022-07-18T13:25:21+0000",
+            "contentViewed": false,
+            "discoveryCase": false
+        }
+    ],
+    "fail": []
+}]

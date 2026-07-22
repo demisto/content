@@ -1,0 +1,251 @@
+id: dedup_incidents_-_ml
+version: -1
+name: DeDup incidents - ML
+fromversion: "5.0.0"
+description: Deprecated. Check for duplicate incidents for the current incident, and close it if any duplicate has been found by machine-learning  find duplicates automation.
+hidden: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d49b7743-f43f-4677-8766-c9f16d3fc0ab
+    type: start
+    task:
+      id: d49b7743-f43f-4677-8766-c9f16d3fc0ab
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 51
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 19915cbc-3042-425d-8254-c3be9c291076
+    type: regular
+    task:
+      id: 19915cbc-3042-425d-8254-c3be9c291076
+      version: -1
+      name: Find duplicate incidents
+      description: Find duplicate incidents using machine-learning.
+      scriptName: GetDuplicatesMlv2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      UseLocalEnvDuplicatesInLastDays: {}
+      compareEmailLabels: {}
+      compareIncidentTimeDiff: {}
+      compareIndicators: {}
+      compareOtherLabels: {}
+      ignoreClosedIncidents: {}
+      ipComparisonSubnetMask: {}
+      maxCandidates: {}
+      maxNumberOfIncidents: {}
+      threshold: {}
+      timeFrameDays: {}
+    results:
+    - foundDuplicates
+    - duplicateCandidateList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 196
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 2ffa4239-003c-490a-849e-f910383a5ae0
+    type: condition
+    task:
+      id: 2ffa4239-003c-490a-849e-f910383a5ae0
+      version: -1
+      description: ""
+      name: Is duplicate candidate found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        simple: ${foundDuplicates}
+      right:
+        simple: "true"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: foundDuplicates
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 4a8be468-2af6-4427-8ee8-a71d450260ee
+    type: regular
+    task:
+      id: 4a8be468-2af6-4427-8ee8-a71d450260ee
+      version: -1
+      description: ""
+      name: Print candidate
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Found ${duplicateCandidate.rawId} as duplicate candidate, but didn't closed automatically (below threshold)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 91676756-8dd8-41fc-801e-b19c98a5b048
+    type: regular
+    task:
+      id: 91676756-8dd8-41fc-801e-b19c98a5b048
+      version: -1
+      description: ""
+      name: No duplicates found
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: No duplicates incidents found
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: fd106344-04d3-429b-8fb4-dced0a7a085f
+    type: regular
+    task:
+      id: fd106344-04d3-429b-8fb4-dced0a7a085f
+      version: -1
+      description: ""
+      name: Close investigation as duplicate
+      scriptName: CloseInvestigationAsDuplicate
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      duplicate_id:
+        simple: ${duplicateCandidate.Id}
+      duplicateId:
+        simple: ${duplicateCandidate.rawId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 7cc3505f-3571-414c-88bd-a60c8a0e3919
+    type: condition
+    task:
+      id: 7cc3505f-3571-414c-88bd-a60c8a0e3919
+      version: -1
+      name: Is duplicate score above threshold?
+      description: Check if the candidate for duplicate incident score is above the threshold.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    scriptarguments:
+      first:
+        simple: ${duplicateCandidate.duplicateProbability}
+      second:
+        simple: ${inputs.closeThreshold}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: number.greaterThanOrEqual
+          left:
+            value:
+              simple: duplicateCandidate.duplicateProbability
+            iscontext: true
+          right:
+            value:
+              simple: inputs.closeThreshold
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 764,
+        "width": 1025,
+        "x": 50,
+        "y": 51
+      }
+    }
+  }
+inputs:
+- key: closeThreshold
+  value:
+    simple: "0.75"
+  required: true
+  description: Candidate with score above this threshold will close the investigation automatically, and mark as duplicate to the current incident.
+outputs:
+- contextPath: foundDuplicates
+  description: found any duplicate incident?
+  type: boolean
+- contextPath: duplicateCandidate
+  description: the duplicate top candidate
+  type: unknown
+tests:
+- No Test
+deprecated: true

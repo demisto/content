@@ -1,0 +1,58 @@
+commonfields:
+  id: CBFindHash
+  version: -1
+name: CBFindHash
+deprecated: true
+script: >-
+  import json
+
+  res = []
+
+  t = []
+
+  found = []
+
+  fileData = {}
+
+  md5s = argToList(demisto.args()['md5'])
+
+  for md5 in md5s:
+      for e in demisto.executeCommand('cb-binary',{'query': 'md5:' + md5}):
+          if isError(e):
+              res.append(e)
+          else:
+              myData = demisto.get(e, 'Contents')
+              if myData:
+                  found.append(md5)
+                  myData = json.loads(myData)
+                  fileData[md5] = (myData[0]['observed_filename'][0], myData[0]['endpoint'][0].split('|')[0])
+                  t += [{k: formatCell(row[k]) for k in row} for row in myData]
+  if t:
+      appendContext("found_hashes", ','.join(found), dedup=True)
+      demisto.setContext("found_file_locations", json.dumps(fileData))
+      demisto.results( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': t} )
+  else:
+      demisto.results( {'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': 'No results.'} )
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- carbon-black
+- endpoint
+- enhancement
+comment: Deprecated. Search Carbon Black for connection to specified md5 hash(es).
+system: true
+args:
+- name: md5
+  required: true
+  default: true
+  description: md5 hash(es) to find (comma-separated)
+scripttarget: 0
+dependson:
+  must:
+  - cb-binary
+timeout: 0s
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,20 @@
+{
+    "latest_version": true,
+    "upgradeable": true,
+    "name": "string",
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ],
+    "id": "1111",
+    "failure_reason": "TERMINATION_FAILED",
+    "auto_upgrade": true,
+    "engine_group": {
+      "id": "1111"
+    },
+    "status": "INITIALIZING"
+  }

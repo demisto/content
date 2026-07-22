@@ -1,0 +1,21 @@
+{
+    "name": "ServerLogs (Deprecated)",
+    "description": "Deprecated. ServerLogs and ServerLogs_docker scripts moved to CommonScripts pack.",
+    "support": "community",
+    "currentVersion": "1.0.3",
+    "author": "Matt Houston",
+    "url": "",
+    "email": "",
+    "hidden": true,
+    "created": "2020-08-17T15:29:20Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

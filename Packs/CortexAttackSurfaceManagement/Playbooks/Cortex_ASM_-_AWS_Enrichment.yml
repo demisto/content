@@ -1,0 +1,2358 @@
+id: Cortex ASM - AWS Enrichment
+version: -1
+name: Cortex ASM - AWS Enrichment
+description: Given the IP address this playbook enriches AWS information relevant to ASM alerts.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f2a59ef0-cb1e-4798-8bd4-32f87bdcb801
+    type: start
+    task:
+      id: f2a59ef0-cb1e-4798-8bd4-32f87bdcb801
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8eca27f9-7709-4c5c-85ea-9723f1ba9817
+    type: title
+    task:
+      id: 8eca27f9-7709-4c5c-85ea-9723f1ba9817
+      version: -1
+      name: Set Field
+      description: commands.local.cmd.set.incident
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+      - "9"
+      - "22"
+      - "29"
+      - "64"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7f2a1f3a-a3f2-4914-8757-5e8750a9954e
+    type: regular
+    task:
+      id: 7f2a1f3a-a3f2-4914-8757-5e8750a9954e
+      version: -1
+      name: Set private IP grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      gridfield:
+        simple: asmprivateip
+      keys:
+        simple: ip,source
+      val1:
+        complex:
+          root: AWS.EC2.Instances.NetworkInterfaces
+          accessor: PrivateIpAddress
+      val2:
+        simple: AWS
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 14d35979-d26d-4475-811b-ca37e4fea28c
+    type: condition
+    task:
+      id: 14d35979-d26d-4475-811b-ca37e4fea28c
+      version: -1
+      name: Is there EC2 information?
+      description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "15"
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.EC2.Instances.NetworkInterfaces
+                accessor: PrivateIpAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b2537a81-ff0e-4dec-8e3c-d27d839bd677
+    type: title
+    task:
+      id: b2537a81-ff0e-4dec-8e3c-d27d839bd677
+      version: -1
+      name: Private IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7c312963-025c-4236-8a8a-490376d80924
+    type: title
+    task:
+      id: 7c312963-025c-4236-8a8a-490376d80924
+      version: -1
+      name: System IDs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a0c545b4-7ca6-4d1e-8ec4-9e7d5f906410
+    type: condition
+    task:
+      id: a0c545b4-7ca6-4d1e-8ec4-9e7d5f906410
+      version: -1
+      name: Is there EC2 and security group information?
+      description: Determines if there is EC2 and security group information to set in the system IDs field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.EC2
+                accessor: Instances
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.EC2.SecurityGroups
+                accessor: GroupId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d5e9eeba-26f8-403e-82d4-d81ddb1b2862
+    type: regular
+    task:
+      id: d5e9eeba-26f8-403e-82d4-d81ddb1b2862
+      version: -1
+      name: Set system IDs grid field (VPC)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-VIRTUAL-NET
+      val2:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          accessor: VpcId
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: af4fcae6-fa3a-4036-86f2-a044c2e2b150
+    type: regular
+    task:
+      id: af4fcae6-fa3a-4036-86f2-a044c2e2b150
+      version: -1
+      name: Set system IDs grid field (SG)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-SG
+      val2:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          accessor: GroupId
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: fa4088df-9a3a-4480-8e61-7672d7a4ea69
+    type: regular
+    task:
+      id: fa4088df-9a3a-4480-8e61-7672d7a4ea69
+      version: -1
+      name: Set system IDs grid field (subnet ID)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-SUBNET-ID
+      val2:
+        complex:
+          root: AWS.EC2.Instances
+          accessor: SubnetId
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: aee30d2e-a57d-406f-8973-da95d14221b2
+    type: regular
+    task:
+      id: aee30d2e-a57d-406f-8973-da95d14221b2
+      version: -1
+      name: Set system IDs grid field (NIC)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-NIC
+      val2:
+        complex:
+          root: AWS.EC2.Instances.NetworkInterfaces
+          accessor: NetworkInterfaceId
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ff76595f-a547-4bff-8d63-e3a322dadc06
+    type: regular
+    task:
+      id: ff76595f-a547-4bff-8d63-e3a322dadc06
+      version: -1
+      name: Set system IDs grid field (EC2 ID)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-ID
+      val2:
+        complex:
+          root: AWS.EC2.Instances
+          accessor: InstanceId
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4bcc6bc5-345b-4561-8386-36c1f7622f90
+    type: title
+    task:
+      id: 4bcc6bc5-345b-4561-8386-36c1f7622f90
+      version: -1
+      name: Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b5715924-3d84-472a-8c05-65d6902a7ce0
+    type: regular
+    task:
+      id: b5715924-3d84-472a-8c05-65d6902a7ce0
+      version: -1
+      name: Set cloud grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      gridfield:
+        simple: asmcloud
+      keys:
+        simple: provider,organization,project,region,other
+      val1:
+        simple: AWS
+      val2:
+        simple: ${org-id}
+      val3:
+        complex:
+          root: AWS.EC2.SecurityGroups
+          accessor: OwnerId
+      val4:
+        complex:
+          root: AWS.EC2.Instances
+          accessor: Region
+      val5:
+        complex:
+          root: AWS.EC2.Instances.Placement
+          accessor: AvailabilityZone
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 16fe96c8-1930-477e-8ab7-8b5fcce4efed
+    type: title
+    task:
+      id: 16fe96c8-1930-477e-8ab7-8b5fcce4efed
+      version: -1
+      name: Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: d5122bf5-b3f5-42b7-8df4-a13c3be6f51e
+    type: regular
+    task:
+      id: d5122bf5-b3f5-42b7-8df4-a13c3be6f51e
+      version: -1
+      name: Set tags grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: key,value,source
+      val1:
+        complex:
+          root: AWS.EC2.Instances.Tags
+          accessor: Key
+      val2:
+        complex:
+          root: AWS.EC2.Instances.Tags
+          accessor: Value
+      val3:
+        simple: AWS
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: fdf7bd3a-cb0d-4de5-8b17-5bfa14d2cfe3
+    type: playbook
+    task:
+      id: fdf7bd3a-cb0d-4de5-8b17-5bfa14d2cfe3
+      version: -1
+      name: AWS - Enrichment
+      description: Given the IP address this playbook enriches EC2 and IAM information.
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbookId: AWS - Enrichment
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      AwsIP:
+        complex:
+          root: inputs.RemoteIP
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 99e7c32f-4435-48a8-8f27-05f7f3de346f
+    type: title
+    task:
+      id: 99e7c32f-4435-48a8-8f27-05f7f3de346f
+      version: -1
+      name: Closing Steps
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "51"
+  "22":
+    id: "22"
+    taskid: c43230f7-e626-4657-86c0-ca663895f99c
+    type: condition
+    task:
+      id: c43230f7-e626-4657-86c0-ca663895f99c
+      version: -1
+      name: Are there EC2 tags?
+      description: Determines if there is EC2 tag information to set the tags fields.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.EC2.Instances.Tags
+                accessor: Key
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8b5f68d9-28ff-4f5e-8330-93fd0c76919d
+    type: playbook
+    task:
+      id: 8b5f68d9-28ff-4f5e-8330-93fd0c76919d
+      version: -1
+      name: AWS - Unclaimed S3 Bucket Validation
+      description: The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information.
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbookId: AWS - Unclaimed S3 Bucket Validation
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: ea9e07e7-7ce3-41bc-86a5-17e0195a004b
+    type: condition
+    task:
+      id: ea9e07e7-7ce3-41bc-86a5-17e0195a004b
+      version: -1
+      name: Was an S3 bucket passed back?
+      description: Determines if an S3 bucket was passed back or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: S3BucketName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6e45383f-a0d9-4c67-8ead-a718cb785920
+    type: regular
+    task:
+      id: 6e45383f-a0d9-4c67-8ead-a718cb785920
+      version: -1
+      name: Set system IDs grid field (BucketName)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-ID
+      val2:
+        complex:
+          root: S3BucketName
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 2e89202d-f805-4a8d-8d34-dd3c0075d17f
+    type: condition
+    task:
+      id: 2e89202d-f805-4a8d-8d34-dd3c0075d17f
+      version: -1
+      name: What is the sub-alert type?
+      description: Determines the ASM sub-alert type for different scans.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      Unclaimed S3 Bucket:
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: Unclaimed S3 Bucket
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: inputs.ASMRuleID
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '[\"]'
+            iscontext: true
+          right:
+            value:
+              simple: UnclaimedS3Bucket
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1390,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 083b4657-6d36-4ee6-8f3a-5aae7feafdec
+    type: regular
+    task:
+      id: 083b4657-6d36-4ee6-8f3a-5aae7feafdec
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 79d0de58-5b4f-428e-8d6e-ec8ce48f3288
+    type: regular
+    task:
+      id: 79d0de58-5b4f-428e-8d6e-ec8ce48f3288
+      version: -1
+      name: Set false flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: be750499-2442-4db5-8d97-ba7b7e68b011
+    type: regular
+    task:
+      id: be750499-2442-4db5-8d97-ba7b7e68b011
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: bbbaa31e-c07e-4788-8e3a-a591a6bb57d2
+    type: regular
+    task:
+      id: bbbaa31e-c07e-4788-8e3a-a591a6bb57d2
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2080,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: bcfc39b2-9ec1-47d9-8c59-372270fcc548
+    type: regular
+    task:
+      id: bcfc39b2-9ec1-47d9-8c59-372270fcc548
+      version: -1
+      name: Set false flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: d5bf97bc-5f7e-4e2e-8d74-57be7f721dc0
+    type: regular
+    task:
+      id: d5bf97bc-5f7e-4e2e-8d74-57be7f721dc0
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws_ssm
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 6d6f9409-62c3-4c9d-8f84-e497b6497872
+    type: regular
+    task:
+      id: 6d6f9409-62c3-4c9d-8f84-e497b6497872
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws_s3
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 1865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: ee76e6eb-a96d-437d-8ef2-f5db8eadb783
+    type: regular
+    task:
+      id: ee76e6eb-a96d-437d-8ef2-f5db8eadb783
+      version: -1
+      name: Set false flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws_s3
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 1635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 27a03fef-3842-46bb-81ba-0c3b556ff3c2
+    type: regular
+    task:
+      id: 27a03fef-3842-46bb-81ba-0c3b556ff3c2
+      version: -1
+      name: Set ASM enrichment status to true (s3)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: AWS S3
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 4afafe5c-7a00-4f78-8f0f-2ed2f09fe76c
+    type: regular
+    task:
+      id: 4afafe5c-7a00-4f78-8f0f-2ed2f09fe76c
+      version: -1
+      name: Set ASM enrichment status to true (AWS)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: AWS
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 94b9ccf0-0c2c-422c-80f0-ac07e330085d
+    type: condition
+    task:
+      id: 94b9ccf0-0c2c-422c-80f0-ac07e330085d
+      version: -1
+      name: Was enrichment performed?
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      AWS (EC2):
+      - "44"
+      Both:
+      - "52"
+      S3:
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: Both
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws_s3
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: S3
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws_s3
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    - label: AWS (EC2)
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: asm_enrichment_flag_aws
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 1381ba16-f89d-40b5-86e2-54143a790af2
+    type: title
+    task:
+      id: 1381ba16-f89d-40b5-86e2-54143a790af2
+      version: -1
+      name: Both
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 32d50c6b-2f9a-4302-829b-8c5aee0ca3c2
+    type: regular
+    task:
+      id: 32d50c6b-2f9a-4302-829b-8c5aee0ca3c2
+      version: -1
+      name: Set ASM enrichment status to false (AWS)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: AWS
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: f946c5cc-65b6-4e5d-86ee-f730fe0ea9ad
+    type: regular
+    task:
+      id: f946c5cc-65b6-4e5d-86ee-f730fe0ea9ad
+      version: -1
+      name: Set ASM enrichment status to false (s3)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: AWS S3
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 37aea528-4d0b-4237-82e9-9f15d40007c0
+    type: title
+    task:
+      id: 37aea528-4d0b-4237-82e9-9f15d40007c0
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: aefccfa5-4c36-4a60-8aec-0df67d820a0c
+    type: regular
+    task:
+      id: aefccfa5-4c36-4a60-8aec-0df67d820a0c
+      version: -1
+      name: Set system IDs grid field (type)
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-TYPE
+      val2:
+        simple: AWS EC2
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -890,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 7df56655-292b-4db0-8d27-a2724d72203b
+    type: regular
+    task:
+      id: 7df56655-292b-4db0-8d27-a2724d72203b
+      version: -1
+      name: Set system IDs grid field (type)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-TYPE
+      val2:
+        simple: AWS S3
+      val3:
+        simple: n/a
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1510,
+          "y": 1235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    continueonerrortype: ""
+    id: "58"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: org-id
+      value:
+        complex:
+          accessor: arn
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: AWSHierarchy.level
+              operator: isEqualString
+              right:
+                value:
+                  simple: account
+          root: AWSHierarchy
+          transformers:
+          - args:
+              from:
+                value:
+                  simple: account/
+              to:
+                value:
+                  simple: /
+            operator: ExtractInbetween
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8196e4aa-6d02-4315-848f-ff9487841f41
+      iscommand: false
+      name: Set org
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8196e4aa-6d02-4315-848f-ff9487841f41
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1130
+        }
+      }
+  "59":
+    continueonerrortype: ""
+    id: "59"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: org-id
+      value:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9d212a96-b43b-46a7-8417-0e836cd68a79
+      iscommand: false
+      name: Set org to n/a
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9d212a96-b43b-46a7-8417-0e836cd68a79
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1590,
+          "y": 1130
+        }
+      }
+  "60":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: AWSHierarchy.level
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: account
+                root: AWSHierarchy
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "60"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "58"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is AWS organization information to set in the cloud field.
+      id: d47da135-9824-4f1a-8f35-9f955ae78114
+      iscommand: false
+      name: Is there an organization id?
+      type: condition
+      version: -1
+    taskid: d47da135-9824-4f1a-8f35-9f955ae78114
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 950
+        }
+      }
+  "62":
+    continueonerrortype: ""
+    id: "62"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "33"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asmassethierarchy:
+        complex:
+          accessor: name
+          root: AWSHierarchy
+          transformers:
+          - operator: ReverseList
+          - args:
+              separator:
+                value:
+                  simple: /
+            operator: join
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 67f0fcb4-0526-4c92-80be-4f89df7ec211
+      iscommand: true
+      name: Set hierarchy field
+      script: Builtin|||setAlert
+      type: regular
+      version: -1
+    taskid: 67f0fcb4-0526-4c92-80be-4f89df7ec211
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1470
+        }
+      }
+  "64":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: AWS.SSM.InventoryEntry.Entries.[0].InstanceStatus
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active
+                root: AWS.SSM
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "72"
+      "yes":
+      - "65"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if there is SSM information to set in the system IDs field.
+      id: 31a242a0-5a16-433c-8034-e9712abe8f9a
+      iscommand: false
+      name: Is there AWS SSM information?
+      type: condition
+      version: -1
+    taskid: 31a242a0-5a16-433c-8034-e9712abe8f9a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 515
+        }
+      }
+  "65":
+    continueonerrortype: ""
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "66"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-TYPE
+      val2:
+        simple: AWS-SSM
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
+      id: 627c9db8-e0bf-4d1e-87c2-de7a9b566d8a
+      iscommand: false
+      name: Set system IDs grid field (type)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 627c9db8-e0bf-4d1e-87c2-de7a9b566d8a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 720
+        }
+      }
+  "66":
+    continueonerrortype: ""
+    id: "66"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "67"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-SSM-AGENT-STATUS
+      val2:
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: InstanceStatus
+            operator: getField
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: b685526c-05d1-49a6-8976-54cec87051fd
+      iscommand: false
+      name: Set system IDs grid field (SSMAgentStatus)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: b685526c-05d1-49a6-8976-54cec87051fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 880
+        }
+      }
+  "67":
+    continueonerrortype: ""
+    id: "67"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "68"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-SSM-ID
+      val2:
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: InstanceId
+            operator: getField
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 6b837a41-225c-4a41-880d-e04829a897db
+      iscommand: false
+      name: Set system IDs grid field (SSMInstanceID)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 6b837a41-225c-4a41-880d-e04829a897db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1055
+        }
+      }
+  "68":
+    continueonerrortype: ""
+    id: "68"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "69"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-SSM-PLATFORM-NAME
+      val2:
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: PlatformName
+            operator: getField
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 0385d4a3-a23d-4cbc-8bdb-bb49f09687bd
+      iscommand: false
+      name: Set system IDs grid field (SSMPlatformName)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 0385d4a3-a23d-4cbc-8bdb-bb49f09687bd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1235
+        }
+      }
+  "69":
+    continueonerrortype: ""
+    id: "69"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "70"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-SSM-PLATFORM-TYPE
+      val2:
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: PlatformType
+            operator: getField
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: d261ca8f-cb4e-4a63-8879-fc8b88e79b57
+      iscommand: false
+      name: Set system IDs grid field (SSMPlatformType)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: d261ca8f-cb4e-4a63-8879-fc8b88e79b57
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1395
+        }
+      }
+  "70":
+    continueonerrortype: ""
+    id: "70"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "71"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: ASSET-SSM-PLATFORM-VERSION
+      val2:
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: PlatformVersion
+            operator: getField
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: a84f696e-8f71-45a0-8878-b1235db97942
+      iscommand: false
+      name: Set system IDs grid field (SSMPlatformVersion)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: a84f696e-8f71-45a0-8878-b1235db97942
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1565
+        }
+      }
+  "71":
+    continueonerrortype: ""
+    id: "71"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws_ssm
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: a8d26022-1fc4-4030-87e4-be61c8133b4e
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: a8d26022-1fc4-4030-87e4-be61c8133b4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1730
+        }
+      }
+  "72":
+    continueonerrortype: ""
+    id: "72"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_aws_ssm
+      value:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ca8eb5bb-d6c2-4cbc-8633-d2d62d1e2466
+      iscommand: false
+      name: Set false flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: ca8eb5bb-d6c2-4cbc-8633-d2d62d1e2466
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1340
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_32_#default#": 0.32,
+      "24_41_#default#": 0.23,
+      "29_23_Unclaimed S3 Bucket": 0.71,
+      "29_41_#default#": 0.54,
+      "51_52_Both": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3285,
+        "width": 3980,
+        "x": -1510,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: RemoteIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: false
+  description: IP address of service
+  playbookInputQuery:
+- key: ASMRuleID
+  value:
+    complex:
+      root: alert
+      accessor: asmattacksurfaceruleid
+  required: true
+  description: Attack Surface Management Rule ID.
+  playbookInputQuery:
+- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+  key: AWSAssumeRoleName
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

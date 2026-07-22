@@ -1,0 +1,21 @@
+{
+    "name": "MapPattern (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
+    "support": "community",
+    "currentVersion": "1.0.8",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-04-02T10:24:30Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

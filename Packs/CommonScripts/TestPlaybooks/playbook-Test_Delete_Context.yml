@@ -1,0 +1,1732 @@
+id: test_delete_context
+version: -1
+name: Test Delete Context
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a1ee09fd-205c-49c8-84b7-97d1cd9de6e9
+    type: start
+    task:
+      id: a1ee09fd-205c-49c8-84b7-97d1cd9de6e9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c68fa8d4-5964-4bd3-8395-1d59ea2c167b
+    type: regular
+    task:
+      id: c68fa8d4-5964-4bd3-8395-1d59ea2c167b
+      version: -1
+      name: Set A
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: A
+      value:
+        simple: a1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0b1e6b4e-7664-403e-8fbe-537aac8170bc
+    type: regular
+    task:
+      id: 0b1e6b4e-7664-403e-8fbe-537aac8170bc
+      version: -1
+      name: Delete A
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: A
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a2bd7f08-4831-48a4-8162-ae9e77a9b11f
+    type: condition
+    task:
+      id: a2bd7f08-4831-48a4-8162-ae9e77a9b11f
+      version: -1
+      name: Ensure A doesn't exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: A
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 946eb31d-3f62-424c-82af-25743714f8f4
+    type: regular
+    task:
+      id: 946eb31d-3f62-424c-82af-25743714f8f4
+      version: -1
+      name: Fail
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: ${A}
+      error:
+        simple: A should not exists
+      expected:
+        simple: NONE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 004e6a23-0c5a-42d7-8209-321dce55e8db
+    type: regular
+    task:
+      id: 004e6a23-0c5a-42d7-8209-321dce55e8db
+      version: -1
+      name: Set B
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: B
+      value:
+        simple: b1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7e8947d6-d76b-49b5-8436-d0c89831b72e
+    type: regular
+    task:
+      id: 7e8947d6-d76b-49b5-8436-d0c89831b72e
+      version: -1
+      name: Set C
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: C
+      value:
+        simple: c1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 69bd90ae-baff-4259-8274-43b5c3faa1e1
+    type: regular
+    task:
+      id: 69bd90ae-baff-4259-8274-43b5c3faa1e1
+      version: -1
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d73d80ee-3b21-412f-81cb-b6b420546025
+    type: condition
+    task:
+      id: d73d80ee-3b21-412f-81cb-b6b420546025
+      version: -1
+      name: Ensure context is empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: .
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 591a2d4b-1c0b-48f9-86ab-a3a19853a382
+    type: regular
+    task:
+      id: 591a2d4b-1c0b-48f9-86ab-a3a19853a382
+      version: -1
+      name: Fail
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: ${.}
+      error:
+        simple: Context should be empty
+      expected:
+        simple: NONE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6378af18-655e-405b-83b2-e78e891edbd1
+    type: regular
+    task:
+      id: 6378af18-655e-405b-83b2-e78e891edbd1
+      version: -1
+      name: Set B
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: B
+      value:
+        simple: b1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 8c757065-c464-48a3-8746-26d476fed104
+    type: regular
+    task:
+      id: 8c757065-c464-48a3-8746-26d476fed104
+      version: -1
+      name: Set C
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: C
+      value:
+        simple: c1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 8b1f4b3f-f76a-4dfe-88ce-5bc61266d8c2
+    type: regular
+    task:
+      id: 8b1f4b3f-f76a-4dfe-88ce-5bc61266d8c2
+      version: -1
+      name: Delete All Context expect B
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: B
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ea1fb36a-3a3c-49e6-8b8c-e7de63a9a493
+    type: condition
+    task:
+      id: ea1fb36a-3a3c-49e6-8b8c-e7de63a9a493
+      version: -1
+      name: Ensure context is empty expect B
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: C
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: B
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 213c9478-5676-4caa-82f6-bca57ae8a6c3
+    type: regular
+    task:
+      id: 213c9478-5676-4caa-82f6-bca57ae8a6c3
+      version: -1
+      name: Fail
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      error:
+        simple: Context should be empty expect B
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7a945723-a110-46e1-8240-6c481c684098
+    type: regular
+    task:
+      id: 7a945723-a110-46e1-8240-6c481c684098
+      version: -1
+      name: Set A 1
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: A
+      value:
+        simple: a1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b54331d3-9dce-4abe-86c7-3612f759d5c1
+    type: regular
+    task:
+      id: b54331d3-9dce-4abe-86c7-3612f759d5c1
+      version: -1
+      name: Set A 2
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: A
+      value:
+        simple: a2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 23f2f278-e27d-479d-8232-08ff35f885ad
+    type: regular
+    task:
+      id: 23f2f278-e27d-479d-8232-08ff35f885ad
+      version: -1
+      name: Delete A at index 1
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "no"
+      index:
+        simple: "1"
+      key:
+        simple: A
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: be273251-b40a-4745-8a1a-2a80010bc313
+    type: condition
+    task:
+      id: be273251-b40a-4745-8a1a-2a80010bc313
+      version: -1
+      name: Ensure A has been updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: A
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: A
+            iscontext: true
+          right:
+            value:
+              simple: a1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7fe4ab39-2d5d-41f8-84b2-d50288d6dbcd
+    type: regular
+    task:
+      id: 7fe4ab39-2d5d-41f8-84b2-d50288d6dbcd
+      version: -1
+      name: Fail
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      error:
+        simple: Context should be empty expect B
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c160e842-386e-4c2d-8658-de43d016f448
+    type: regular
+    task:
+      id: c160e842-386e-4c2d-8658-de43d016f448
+      version: -1
+      name: Delete A at index 1 - should give error
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      index:
+        simple: "1"
+      key:
+        simple: A
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3ca97c15-3a18-4ae9-81a9-87e800030af8
+    type: condition
+    task:
+      id: 3ca97c15-3a18-4ae9-81a9-87e800030af8
+      version: -1
+      name: Ensure error occurred
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "24"
+      "yes":
+      - "25"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 1d9e2155-62c4-449a-877a-6e081624c187
+    type: regular
+    task:
+      id: 1d9e2155-62c4-449a-877a-6e081624c187
+      version: -1
+      name: Fail
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      error:
+        simple: Context should be empty expect B
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c0fbaeac-2f81-4a8d-8127-bf8286e0801e
+    type: regular
+    task:
+      id: c0fbaeac-2f81-4a8d-8127-bf8286e0801e
+      version: -1
+      name: Delete A at index 0
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      index:
+        simple: "0"
+      key:
+        simple: A
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: fc4038c9-825c-46c8-87c2-bb7fb6948e50
+    type: condition
+    task:
+      id: fc4038c9-825c-46c8-87c2-bb7fb6948e50
+      version: -1
+      name: Ensure A doesn't exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: A
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 6aa920f3-d6f5-4e93-8162-9c61d965ac5a
+    type: regular
+    task:
+      id: 6aa920f3-d6f5-4e93-8162-9c61d965ac5a
+      version: -1
+      name: Fail
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: B - ${B}, C - ${C}
+      error:
+        simple: Context should be empty expect B
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: cf53b613-5bdc-4c4c-8eee-eba8af4471e7
+    type: title
+    task:
+      id: cf53b613-5bdc-4c4c-8eee-eba8af4471e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 246f6bcd-a8f2-4a5b-802a-f7033cde6a82
+    type: regular
+    task:
+      id: 246f6bcd-a8f2-4a5b-802a-f7033cde6a82
+      version: -1
+      name: Set D.E
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: D.E
+      value:
+        simple: '{"d1":"e1","d2":"e2"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 9fa368d7-a679-472c-88ec-a12df4d5936e
+    type: regular
+    task:
+      id: 9fa368d7-a679-472c-88ec-a12df4d5936e
+      version: -1
+      name: Delete All Context expect D.E.d1 (tests trim as well)
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: ' D.E.d1'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 242f695d-c61c-46c3-89df-330ced30654e
+    type: condition
+    task:
+      id: 242f695d-c61c-46c3-89df-330ced30654e
+      version: -1
+      name: Ensure D.E.d2 doesn't exists and D.E.d1 equals e1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: D.E.d2
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${D.E.d1}
+            iscontext: true
+          right:
+            value:
+              simple: e1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 65765b1f-d1cb-42b8-8685-ab16ad3e6dfa
+    type: regular
+    task:
+      id: 65765b1f-d1cb-42b8-8685-ab16ad3e6dfa
+      version: -1
+      name: Fail
+      script: RaiseError
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      actual:
+        simple: D.E.d1 - ${D.E.d1}, D.E.d2 - ${D.E.d2}
+      error:
+        simple: Context should be empty expect D.E.d1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: f5c4d5a7-bfd3-4972-8784-68bba59b1b9f
+    type: regular
+    task:
+      id: f5c4d5a7-bfd3-4972-8784-68bba59b1b9f
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: e3640360-89fe-4917-8f5b-e46f84249e61
+    type: playbook
+    task:
+      id: e3640360-89fe-4917-8f5b-e46f84249e61
+      version: -1
+      name: Delete Context Subplaybook Test
+      playbookName: Delete Context Subplaybook Test
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 88c69a71-97ea-41b4-882c-9bd08a7cab67
+    type: regular
+    task:
+      id: 88c69a71-97ea-41b4-882c-9bd08a7cab67
+      version: -1
+      name: Set some values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      key:
+        simple: Bug
+      value:
+        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john
+          b"}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: f3b0fac7-5ce5-4602-8c45-783f884a2c5f
+    type: regular
+    task:
+      id: f3b0fac7-5ce5-4602-8c45-783f884a2c5f
+      version: -1
+      name: Delete all but specific values from an array
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Test.Case1.events.[1].name,Bug.[0].hello
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 9798ce63-89c3-4830-8056-a4261a672681
+    type: title
+    task:
+      id: 9798ce63-89c3-4830-8056-a4261a672681
+      version: -1
+      name: 'Use case: delete all context except specific array elements'
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 4410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 87d005cc-c264-416a-8754-2d1663b7ee14
+    type: regular
+    task:
+      id: 87d005cc-c264-416a-8754-2d1663b7ee14
+      version: -1
+      name: Set some values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      key:
+        simple: Test.Case1.events
+      value:
+        simple: '[{"name": "walker"}, {"name": "john"}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 03b37568-7f0b-46a0-837b-aa8049803610
+    type: condition
+    task:
+      id: 03b37568-7f0b-46a0-837b-aa8049803610
+      version: -1
+      name: Validate results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "45"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Test.Case1.events.name
+            iscontext: true
+          right:
+            value:
+              simple: john
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Bug.hello
+            iscontext: true
+          right:
+            value:
+              simple: world
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: cd7c43a2-8d22-477c-878f-b0a109a8bb67
+    type: regular
+    task:
+      id: cd7c43a2-8d22-477c-878f-b0a109a8bb67
+      version: -1
+      name: Fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          Bug.hello: expected "world", received "${Bug.hello}"
+          Test.Case1.events.name: expected "john" received "${Test.Case1.events.name}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: bb8275d7-5663-400f-831d-05a827c5c8d5
+    type: title
+    task:
+      id: bb8275d7-5663-400f-831d-05a827c5c8d5
+      version: -1
+      name: End Use Case
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 5255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: d2d351cd-e3c9-45c2-856c-e5957e2edb95
+    type: title
+    task:
+      id: d2d351cd-e3c9-45c2-856c-e5957e2edb95
+      version: -1
+      name: Case 1 - keys in array element
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 234e09ff-2f10-41c2-8222-fe7fb26104e0
+    type: title
+    task:
+      id: 234e09ff-2f10-41c2-8222-fe7fb26104e0
+      version: -1
+      name: Case 2 - array element
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: c591ddaa-9259-4b9f-8e66-218f6dccd588
+    type: regular
+    task:
+      id: c591ddaa-9259-4b9f-8e66-218f6dccd588
+      version: -1
+      name: Set some values
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      key:
+        simple: Case2
+      value:
+        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john
+          b"}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: b66c804d-b662-40cf-8d7a-e7518b2206a8
+    type: regular
+    task:
+      id: b66c804d-b662-40cf-8d7a-e7518b2206a8
+      version: -1
+      name: Delete all but specific values from an array
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Case2.[0]
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 6fedae90-e1cd-444d-8602-6fccf72fa957
+    type: condition
+    task:
+      id: 6fedae90-e1cd-444d-8602-6fccf72fa957
+      version: -1
+      name: Validate results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "52"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Case2.hello
+            iscontext: true
+          right:
+            value:
+              simple: world
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 0135fbd8-9540-400a-8f6f-df56315b0fd3
+    type: regular
+    task:
+      id: 0135fbd8-9540-400a-8f6f-df56315b0fd3
+      version: -1
+      name: Fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: 'Bug.hello: expected "world", received "${Case2.hello}"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 6acf25fe-6cb1-4933-8996-2c2442c71fea
+    type: title
+    task:
+      id: 6acf25fe-6cb1-4933-8996-2c2442c71fea
+      version: -1
+      name: End Use Case
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 6100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6275,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+dirtyInputs: true

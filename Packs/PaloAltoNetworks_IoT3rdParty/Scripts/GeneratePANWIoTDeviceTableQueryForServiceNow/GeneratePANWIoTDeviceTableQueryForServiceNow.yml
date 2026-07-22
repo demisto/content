@@ -1,0 +1,27 @@
+args:
+- description: A comma-separated list of devices.
+  isArray: true
+  name: devices
+  required: true
+comment: Generates a single query or query list with which to query in ServiceNow.
+commonfields:
+  id: GeneratePANWIoTDeviceTableQueryForServiceNow
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: GeneratePANWIoTDeviceTableQueryForServiceNow
+outputs:
+- contextPath: PanwIot3rdParty.Query
+  description: list of query
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- PANW IoT 3rd Party Integration
+- servicenow v2
+timeout: 600ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

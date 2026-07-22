@@ -1,0 +1,119 @@
+category: Data Enrichment & Threat Intelligence
+provider: Palo Alto Networks
+commonfields:
+  id: AutoFocus Daily Feed
+  version: -1
+configuration:
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+- additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+  display: API Key
+  name: api_key
+  type: 4
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  type: 18
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+- defaultvalue: indicatorType
+  name: feedExpirationPolicy
+  display: ""
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  type: 17
+  required: false
+- defaultvalue: '20160'
+  display: ""
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: true
+  type: 8
+  hidden: true
+  required: false
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  type: 19
+  required: false
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+description: Deprecated. No available replacement.
+display: AutoFocus Daily Feed (Deprecated)
+name: AutoFocus Daily Feed
+script:
+  commands:
+  - arguments:
+    - defaultValue: '10'
+      description: The maximum number of indicators to return. Default is 10.
+      name: limit
+    - defaultValue: '0'
+      description: The index of the first indicator to fetch.
+      name: offset
+    description: Gets indicators from AutoFocus.
+    name: autofocus-daily-get-indicators
+  dockerimage: demisto/python3:3.10.1.25933
+  feed: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 5.5.0
+deprecated: true
+tests:
+- No tests

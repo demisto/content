@@ -1,0 +1,33 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "12345",
+      "name": "SMB Pass The Hash"
+    },
+    {
+      "_id": "a1234",
+      "name": "Kerberoasting and Cracking on DCOM and WMI"
+    },
+    {
+      "_id": "b1234",
+      "name": "LLMNR Poisoning on SMB"
+    },
+    {
+      "_id": "c1234",
+      "name": "SMB And Credentials Harvesting"
+    },
+    {
+      "_id": "d1234",
+      "name": "test1"
+    },
+    {
+      "_id": "e1234",
+      "name": "Prueba completa"
+    },
+    {
+      "_id": "f1234",
+      "name": "lab1"
+    }
+  ]
+}

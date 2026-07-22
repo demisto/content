@@ -1,0 +1,18 @@
+{
+    "NextMarker": "test_marker",
+    "LayerVersions": [
+        {
+            "LayerVersionArn": "testLayer",
+            "Version": 1,
+            "Description": "test",
+            "CreatedDate": "2018-11-27T15:10:45.123+0000",
+            "CompatibleRuntimes": [
+                "nodejs"
+            ],
+            "LicenseInfo": "test",
+            "CompatibleArchitectures": [
+                "x86_64"
+            ]
+        }
+    ]
+}

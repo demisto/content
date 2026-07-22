@@ -1,0 +1,42 @@
+args:
+- default: true
+  description: The file name.
+  name: fileName
+- description: Password to protect the ZIP file.
+  name: password
+  secret: true
+- description: Password to protect the ZIP file, inserted as a non sensative argument.
+  name: nonsensitive_password
+- description: The entry ID of the attached ZIPp file in the War Room.
+  name: entryID
+- description: Enter 'yes' (or any other value) if the ZIP file is last ZIP file in the War Room.
+  name: lastZipFileInWarroom
+- auto: PREDEFINED
+  defaultValue: 7z
+  description: Tool to extract zip.
+  name: zipTool
+  predefined:
+  - 7z
+  - zipfile
+comment: Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
+commonfields:
+  id: UnzipFile
+  version: -1
+enabled: true
+name: UnzipFile
+outputs:
+- contextPath: ExtractedFiles
+  description: A list of file names that were extracted from the ZIP file.
+  type: Unknown
+script: '-'
+subtype: python3
+tags:
+- Utility
+- file
+timeout: '0'
+type: python
+dockerimage: demisto/unzip:1.0.0.9067966
+tests:
+- ZipFile-Test
+- UnzipFile-Test
+fromversion: 5.0.0

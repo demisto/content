@@ -1,0 +1,13 @@
+!dspm-get-asset-details asset_id="arn:aws:s3:::appcomposer-ci0jq3kgvjnccdfp-us-east-1"
+!dspm-get-asset-files-by-id asset_id="arn:aws:s3:::appcomposer-ci0jq3kgvjnccdfp-us-east-1"
+!dspm-get-data-types
+!dspm-get-integration-config
+!dspm-get-list-of-asset-fields-by-id assetId="arn:aws:s3:::appcomposer-ci0jq3kgvjnccdfp-us-east-1"
+!dspm-get-risk-finding-by-id finding_id="a0492d8d-7447-4f99-9e22-616843b6b19e"
+!dspm-list-alerts asset_name_equals="dummy-asset" category_type_equals=ATTACK cloud_environment_equals=PRODUCTION cloud_provider_equals=AWS destination_project_vendor_name_equals="" destination_project_vendor_name_in="" detection_time_equals="" detection_time_greater_than="" detection_time_greater_than_or_equal="" detection_time_less_than="" limit=50 policy_name_equals="" policy_name_in="" policy_severity_in="" policy_severity_equals="" sort="" status_equals=HANDLED status_in=CLOSED
+!dspm-list-assets cloud_provider_equal=AWS lifecycle_equal=DELETED limit=50 region_equal="" region_in="" service_type_equal="" service_type_in="" sort=""
+!dspm-list-data-types-findings cloud_provider_equal=AWS lifecycle_equal="" lifecycle_in="" limit=50 projectId_equal="" projectId_in="" region_equal="" region_equal="" region_in="" service_type_equal="" service_type_in="" sort=""
+!dspm-list-labels
+!dspm-list-risk-findings affects_equal=COMPLIANCE affects_in=SECURITY cloud_provider_equal=AWS cloud_provider_in=AWS dspm_tag_key_equal="" dspm_tag_key_in="" dspm_tag_value_equal="" dspm_tag_value_in="" limit=50 projectId_equal="" projectId_in="" rule_name_equal="" rule_name_in="" sort="" status_equal="" status_in=""
+!dspm-update-alert-status alert_id="b0592d8d-7447-4f99-9e22-645843d6b19r" status=INVESTIGATING
+!dspm-update-risk-finding-status risk_finding_id="a0492d8d-7447-4f99-9e22-616843b6b19e" status=INVESTIGATING

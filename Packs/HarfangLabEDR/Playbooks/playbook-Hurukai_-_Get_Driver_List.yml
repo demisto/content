@@ -1,0 +1,301 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Hurukai - Get Driver List
+inputs:
+- description: ''
+  key: agentid
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Hurukai - Get Driver List
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 84278a75-6661-441d-8a91-198f78265d6a
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 84278a75-6661-441d-8a91-198f78265d6a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -1020
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${Harfanglab.Job.ID}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: harfanglab-job-info
+      Timeout:
+        simple: '60'
+      dt:
+        simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 3490e32a-f4bb-41db-8bd1-de2833d80b6b
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 3490e32a-f4bb-41db-8bd1-de2833d80b6b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -260
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 7cf350c3-ad0d-4cdc-83b6-dbe61f77545c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 7cf350c3-ad0d-4cdc-83b6-dbe61f77545c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 100
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Start a job to get the list of drivers from a host (Windows)
+      id: affa5a06-fd4e-4d61-8423-b495f8088e4e
+      iscommand: true
+      name: harfanglab-job-driverlist
+      script: Hurukai|||harfanglab-job-driverlist
+      type: regular
+      version: -1
+    taskid: affa5a06-fd4e-4d61-8423-b495f8088e4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -450
+        }
+      }
+  '7':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: 'Driver list '
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Harfanglab.Job.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get a hostname's loaded drivers from job results
+      id: 7976f27f-c746-4bf9-8594-495ac0343b0e
+      iscommand: true
+      name: harfanglab-result-driverlist
+      script: Hurukai|||harfanglab-result-driverlist
+      type: regular
+      version: -1
+    taskid: 7976f27f-c746-4bf9-8594-495ac0343b0e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -90
+        }
+      }
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: ostype
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: windows
+      label: windows
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      windows:
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 51d80a35-cf53-4f4f-8eb6-6c8a718b54bf
+      iscommand: false
+      name: Which platform is the agent running on ?
+      type: condition
+      version: -1
+      description: ''
+    taskid: 51d80a35-cf53-4f4f-8eb6-6c8a718b54bf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -670
+        }
+      }
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get endpoint information from agent_id
+      id: 86da3568-45f6-42e8-8a44-4f453889ca59
+      iscommand: true
+      name: harfanglab-get-endpoint-info
+      script: Hurukai|||harfanglab-get-endpoint-info
+      type: regular
+      version: -1
+    taskid: 86da3568-45f6-42e8-8a44-4f453889ca59
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -870
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 530,
+        "x": 550,
+        "y": -1020
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: Get the list of loaded drivers

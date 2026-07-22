@@ -1,0 +1,12 @@
+[file:playbook-File_Enrichment_-_Virus_Total_Private_API.yml]
+ignore=BA101
+
+[file:VirusTotal-Private_API.yml]
+ignore=IN135,BA108,BA109
+
+[file:README.md]
+ignore=RM104
+
+[file:VirusTotal-Private_API_image.png]
+ignore=IM111
+

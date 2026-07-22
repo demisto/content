@@ -1,0 +1,6 @@
+[file:GoogleVisionAPI.yml]
+ignore=BA124
+
+[file:GoogleVisionAPI_image.png]
+ignore=IM111
+

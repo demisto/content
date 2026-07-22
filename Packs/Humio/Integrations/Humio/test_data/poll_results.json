@@ -1,0 +1,43 @@
+{
+    "cancelled": false,
+    "done": true,
+    "events": [
+        {
+            "#type": "kv",
+            "@session": "50d965e9-5cd1-4c27-b38b-47fbf6e4e38c",
+            "#repo": "sandbox_Szpj6CNb6h7eWK1ZI09D9HFk",
+            "@timezone": "Z",
+            "@rawstring": "test=true",
+            "@id": "hgXrSjcMWB08aJW40hfNUONL_0_0_1588591306",
+            "test": "true",
+            "@timestamp": 1588591306253
+        }
+    ],
+    "metaData": {
+        "eventCount": 1,
+        "extraData": {
+            "hasMoreEvents": "true"
+        },
+        "filterQuery": {
+            "queryString": "*",
+            "isInteractive": false,
+            "includeDeletedEvents": false,
+            "end": 1588591316788,
+            "showQueryEventDistribution": false,
+            "isLive": false,
+            "start": 1588504916788,
+            "noResultUntilDone": false
+        },
+        "isAggregate": false,
+        "pollAfter": 1000,
+        "processedBytes": 80,
+        "processedEvents": 1,
+        "queryEnd": 1588591316788,
+        "queryStart": 1588504916788,
+        "resultBufferSize": 1,
+        "timeMillis": 2,
+        "totalWork": 1,
+        "warnings": [],
+        "workDone": 1
+    }
+}

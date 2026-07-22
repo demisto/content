@@ -1,0 +1,98 @@
+[
+  {
+    "Vectra.Group(val.group_id && val.group_id == obj.group_id)": {
+      "id": 1,
+      "type": "domain",
+      "name": "xsoar-group-accout-test",
+      "description": "xsoar-group-accout-test",
+      "cognito_managed": false,
+      "members": [
+        "*.domain1.net",
+        "*.domain2.com",
+        "*.domain3.com"
+      ],
+      "last_modified": "2023-09-04T06:30:01Z",
+      "last_modified_by": "TEST Client",
+      "group_id": 1
+    }
+  },
+  {
+    "Vectra.Group(val.group_id && val.group_id == obj.group_id)": {
+      "id": 2,
+      "type": "host",
+      "name": "TEST RENAME",
+      "description": "TEST RENAME",
+      "members": [
+        {
+          "id": 3,
+          "name": "IP-0.0.0.3",
+          "is_key_asset": false,
+          "url": "http://vectra.test/api/v2.5/hosts/3"
+        },
+        {
+          "id": 4,
+          "name": "IP-0.0.0.4",
+          "is_key_asset": false,
+          "url": "http://vectra.test/api/v2.5/hosts/4"
+        },
+        {
+          "id": 1,
+          "name": "IP-0.0.0.1",
+          "is_key_asset": false,
+          "url": "http://vectra.test/api/v2.5/hosts/1"
+        },
+        {
+          "id": 2,
+          "name": "IP-0.0.0.2",
+          "is_key_asset": false,
+          "url": "http://vectra.test/api/v2.5/hosts/2"
+        }
+      ],
+      "last_modified": "2023-09-04T06:27:57Z",
+      "last_modified_by": "TEST Client",
+      "group_id": 2
+    }
+  },
+  {
+    "Vectra.Group(val.group_id && val.group_id == obj.group_id)": {
+      "id": 3,
+      "name": "xsoar-account-group-2",
+      "description": "xsoar-account-group-2",
+      "last_modified": "2023-09-04T09:22:46Z",
+      "last_modified_by": "TEST Client",
+      "type": "account",
+      "members": [
+        {
+          "uid": "account_1"
+        },
+        {
+          "uid": "account_2"
+        },
+        {
+          "uid": "account_3"
+        },
+        {
+          "uid": "account_4"
+        }
+      ],
+      "importance": "medium",
+      "group_id": 3
+    }
+  },
+  {
+    "Vectra.Group(val.group_id && val.group_id == obj.group_id)": {
+      "id": 4,
+      "group_id": 4,
+      "name": "xsoar-ip-group-2",
+      "description": "xsoar-ip-group-2",
+      "last_modified": "2024-05-23T19:37:40Z",
+      "last_modified_by": "TEST Client",
+      "type": "ip",
+      "members": [
+        "0.0.0.1/8",
+        "0.0.0.2/8"
+      ],
+      "cognito_managed": false
+    }
+  }
+]

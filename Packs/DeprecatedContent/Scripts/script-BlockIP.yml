@@ -1,0 +1,76 @@
+commonfields:
+  id: BlockIP
+  version: -1
+name: BlockIP
+script: >-
+  var blockPanorama = !!executeCommand('IsIntegrationAvailable',{'brandname': 'panorama'})[0].Contents;
+
+  var blockCP = !!executeCommand('IsIntegrationAvailable',{'brandname': 'check point'})[0].Contents;
+
+
+  if (args['using-brand']) {
+      switch (args['using-brand'].toLowerCase()) {
+          case 'panorama':
+              blockCP = false;
+              break;
+          case 'check point':
+              blockPanorama = false;
+              break;
+      }
+  }
+
+
+  if (!args.rulename) {
+      args.rulename = 'ip' + args.ip + ' blocked in direction ' + args.direction;
+  }
+
+
+  var entries = [];
+
+  if (blockPanorama) {
+      entries.push(executeCommand('PanoramaBlockIP', args));
+  }
+
+
+  if (blockCP) {
+      if (!args.ipname) {
+          args.ipname = + args.ip + ' . ' + args.direction;
+      }
+      entries.push(executeCommand('CPBlockIP', args));
+  }
+
+
+  return entries;
+type: javascript
+tags:
+- firewall
+- checkpoint
+- panorama
+comment: Deprecated. Blocks IP in configured firewall
+enabled: true
+deprecated: true
+args:
+- name: ip
+  required: true
+  default: true
+  description: IP to block
+- name: rulename
+  description: Rule name
+- name: direction
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - to
+  - from
+  - both
+  description: Direction to block (to, from or both - default)
+- name: ipname
+  description: Base name for added ip/hosts inside checkpoint db
+scripttarget: 0
+dependson:
+  should:
+  - panorama
+  - checkpoint
+tests:
+- No tests
+fromversion: 5.0.0

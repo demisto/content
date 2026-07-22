@@ -1,0 +1,42 @@
+{
+  "ContentsFormat": "json",
+  "HumanReadable": "### simple_non_utf.csv\n|count|name|sourceIP|\n|---|---|---|\n| 0 | blob it\u00c1yi\uf8ffi jochman | 1.1.1.1 |\n| 1 | y\u00b8a\u02dbrd E\u00b8N | 2.2.2.2 |\n| 2 | S\u02c6helly\\n          g | 3.3.3.3 |\n",
+  "EntryContext": {
+    "ParseCSV.ParsedCSV": [
+      {
+        "count": "0",
+        "sourceIP": "1.1.1.1",
+        "name": "blob it\u00c1yi\uf8ffi jochman"
+      },
+      {
+        "count": "1",
+        "sourceIP": "2.2.2.2",
+        "name": "y\u00b8a\u02dbrd E\u00b8N"
+      },
+      {
+        "count": "2",
+        "sourceIP": "3.3.3.3",
+        "name": "S\u02c6helly\\n          g"
+      }
+    ]
+  },
+  "ReadableContentsFormat": "markdown",
+  "Type": 1,
+  "Contents": [
+    {
+      "count": "0",
+      "sourceIP": "1.1.1.1",
+      "name": "blob it\u00c1yi\uf8ffi jochman"
+    },
+    {
+      "count": "1",
+      "sourceIP": "2.2.2.2",
+      "name": "y\u00b8a\u02dbrd E\u00b8N"
+    },
+    {
+      "count": "2",
+      "sourceIP": "3.3.3.3",
+      "name": "S\u02c6helly\\n          g"
+    }
+  ]
+}

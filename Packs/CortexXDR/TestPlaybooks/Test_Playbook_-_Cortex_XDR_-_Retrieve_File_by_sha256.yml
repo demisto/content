@@ -1,0 +1,2215 @@
+id: Test Playbook - Cortex XDR - Retrieve File by sha256
+version: -1
+name: Test Playbook - Cortex XDR - Retrieve File by sha256
+description: "This playbook tests the ‘Cortex XDR - Retrieve File by sha256’ playbook which is part of the ‘Malware Investigation and Response’ pack.\nFollowing are the tests conducted in the playbook:\n1- Ensure that an error message is printed if the 'Cortex XDR - Get File Path from Alerts by Hash' sub-playbook fails to retrieve a file path. \n2- Ensure all context data was extracted properly.\n3- Review and validate the playbook's outputs.\n4- Ensure the 'xdr-file-retrieve' command was successfully executed. \n5 - Ensure that the retrieved files were unzipped using the 'UnzipFile' command "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 020f0bf8-c79c-4ea3-820c-06de6cae0845
+    type: start
+    task:
+      id: 020f0bf8-c79c-4ea3-820c-06de6cae0845
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -2485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 9b2e82aa-0559-4552-81ec-ae62920cdfe3
+    type: regular
+    task:
+      id: 9b2e82aa-0559-4552-81ec-ae62920cdfe3
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "154"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -2355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 55855a22-ef28-4f22-8103-e2989573b8fe
+    type: regular
+    task:
+      id: 55855a22-ef28-4f22-8103-e2989573b8fe
+      version: -1
+      name: Wait for incident to be created
+      description: 'This task delays the playbook flow progress for 15 seconds to ensure that the incident has been created before moving on. '
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "186"
+    scriptarguments:
+      seconds:
+        simple: "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: eb61a4e6-23d2-4e52-826f-d54c8ac8d221
+    type: title
+    task:
+      id: eb61a4e6-23d2-4e52-826f-d54c8ac8d221
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "210"
+      - "249"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: c77b400a-7925-4574-85a6-d099fdf7c607
+    type: regular
+    task:
+      id: c77b400a-7925-4574-85a6-d099fdf7c607
+      version: -1
+      name: Set playbook for new incident
+      description: Assign the 'Cortex XDR - Retrieve File by sha256' playbook to the newly created test incident.
+      script: Builtin|||setPlaybook
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "255"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+      name:
+        simple: Cortex XDR - Retrieve File by sha256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "154":
+    id: "154"
+    taskid: 7a2b7916-813e-41cb-8762-b2ba32f3a54a
+    type: regular
+    task:
+      id: 7a2b7916-813e-41cb-8762-b2ba32f3a54a
+      version: -1
+      name: Create New Incident For Testing
+      description: 'As part of this task, an incident will be created for testing purposes, which includes all the incident fields that are essential to the testing process. '
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      deviceid:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      name:
+        simple: Test Incident for Cortex XDR - Retrieve File by sha256
+      type:
+        simple: Malware Investigation and Response
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: bb0f6643-331d-40d5-881d-0d08a6892b31
+    type: regular
+    task:
+      id: bb0f6643-331d-40d5-881d-0d08a6892b31
+      version: -1
+      name: Set 'fileRetrieval.path' To Context
+      description: For testing purposes, the task establishes the context data key and value for 'fileRetrieval.path'.
+      scriptName: SetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      id:
+        complex:
+          root: CreatedIncidentID
+      key:
+        simple: fileRetrieval.path
+      value:
+        simple: C:\Windows\System32\cmd.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "202":
+    id: "202"
+    taskid: 41ac3299-52da-4a4e-8282-a59d639ff7bb
+    type: title
+    task:
+      id: 41ac3299-52da-4a4e-8282-a59d639ff7bb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "203":
+    id: "203"
+    taskid: 7cd40262-ef0e-4168-8c15-b8f3c6702a0c
+    type: regular
+    task:
+      id: 7cd40262-ef0e-4168-8c15-b8f3c6702a0c
+      version: -1
+      name: Wait for playbook to end running
+      description: Wait until the final task (Done) has been completed before starting tests.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "208"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "10"
+      max_timeout:
+        simple: "300"
+      task_name:
+        simple: UnZip File
+      task_states:
+        simple: Completed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "208":
+    id: "208"
+    taskid: b8f8cac7-6a8b-4b83-8fe9-064cb76e6fd3
+    type: regular
+    task:
+      id: b8f8cac7-6a8b-4b83-8fe9-064cb76e6fd3
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      closeNotes:
+        simple: Done testing mocked incident for 'Test Playbook - Cortex XDR - Retrieve File by sha256' playbook.
+      id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "209":
+    id: "209"
+    taskid: 45244763-8b4d-48b0-8ff9-4c7cff1c809f
+    type: regular
+    task:
+      id: 45244763-8b4d-48b0-8ff9-4c7cff1c809f
+      version: -1
+      name: Get the final 'PaloAltoNetworksXDR.RetrievedFiles' context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "211"
+    scriptarguments:
+      get_key:
+        simple: PaloAltoNetworksXDR.RetrievedFiles
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "210":
+    id: "210"
+    taskid: e399a617-44ca-4fee-87c6-d87915ce9bdb
+    type: title
+    task:
+      id: e399a617-44ca-4fee-87c6-d87915ce9bdb
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "209"
+      - "222"
+      - "226"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "211":
+    id: "211"
+    taskid: 2b1accfb-b65d-4303-8eed-4c52d66db33f
+    type: title
+    task:
+      id: 2b1accfb-b65d-4303-8eed-4c52d66db33f
+      version: -1
+      name: '''PaloAltoNetworksXDR.RetrievedFiles'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "213"
+      - "216"
+      - "217"
+      - "220"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "212":
+    id: "212"
+    taskid: 6ac5c5de-b8b8-449f-8af5-8d72ce3f7c11
+    type: title
+    task:
+      id: 6ac5c5de-b8b8-449f-8af5-8d72ce3f7c11
+      version: -1
+      name: '''ExtractedFiles'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "223"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "213":
+    id: "213"
+    taskid: bf187743-ebb2-49c6-81d6-216973d50e0d
+    type: condition
+    task:
+      id: bf187743-ebb2-49c6-81d6-216973d50e0d
+      version: -1
+      name: Verify Action ID
+      description: Verify that the 'PaloAltoNetworksXDR.RetrievedFiles.action_id’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "214"
+      Verified:
+      - "215"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RetrievedFiles
+                accessor: action_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2540,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "214":
+    id: "214"
+    taskid: 52569f77-bb44-4fcb-81b7-c23347b4ea95
+    type: regular
+    task:
+      id: 52569f77-bb44-4fcb-81b7-c23347b4ea95
+      version: -1
+      name: Verify Context Error - Action ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'PaloAltoNetworksXDR.RetrievedFiles.action_id’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The 'xdr-file-retrieve' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.RetrievedFiles.action_id' context key.
+          2- Either the 'endpoint_ids' or the 'generic_file_path' input configurations were changed for the 'xdr-file-retrieve' automation of the 'Cortex XDR - Retrieve File' task.
+          3- The automation failed to execute as the host cannot be reached since the endpoint is offline or isolated.
+          4- An API error prevented the API call from being made.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2540,
+          "y": -255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "215":
+    id: "215"
+    taskid: f6d9e38b-146e-45e9-847f-25335f07c24b
+    type: title
+    task:
+      id: f6d9e38b-146e-45e9-847f-25335f07c24b
+      version: -1
+      name: Done verifying 'PaloAltoNetworksXDR.RetrievedFiles'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "216":
+    id: "216"
+    taskid: 94f6111a-31fb-4aba-8dcb-6dfa5ac93e3f
+    type: condition
+    task:
+      id: 94f6111a-31fb-4aba-8dcb-6dfa5ac93e3f
+      version: -1
+      name: Verify Endpoint ID
+      description: Verify that the 'PaloAltoNetworksXDR.RetrievedFiles.endpoint_id’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "215"
+      '#default#':
+      - "218"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RetrievedFiles
+                accessor: endpoint_id
+            iscontext: true
+          right:
+            value:
+              simple: aeec6a2cc92e46fab3b6f621722e9916
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "217":
+    id: "217"
+    taskid: 4faf0e79-4450-4662-82ab-2b7f9e5bb971
+    type: condition
+    task:
+      id: 4faf0e79-4450-4662-82ab-2b7f9e5bb971
+      version: -1
+      name: Verify File Link
+      description: Verify that the 'PaloAltoNetworksXDR.RetrievedFiles.file_link’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "219"
+      Verified:
+      - "215"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RetrievedFiles
+                accessor: file_link
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "218":
+    id: "218"
+    taskid: 64e64690-47cd-44f9-8fbc-fac6fb87a416
+    type: regular
+    task:
+      id: 64e64690-47cd-44f9-8fbc-fac6fb87a416
+      version: -1
+      name: Verify Context Error - Endpoint ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'PaloAltoNetworksXDR.RetrievedFiles.endpoint_id’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (Endpoint ID is added only when the operation succeeds).
+          2- The 'xdr-file-retrieve' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.RetrievedFiles.endpoint_id' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": -255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "219":
+    id: "219"
+    taskid: 92cb8f41-63db-4f64-8b5d-132c196b4a51
+    type: regular
+    task:
+      id: 92cb8f41-63db-4f64-8b5d-132c196b4a51
+      version: -1
+      name: Verify Context Error - File Link
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'PaloAltoNetworksXDR.RetrievedFiles.file_link’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (File link is added only when the operation succeeds).
+          2- The 'xdr-file-retrieve' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.RetrievedFiles.file_link' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": -255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "220":
+    id: "220"
+    taskid: 930e2525-3ee6-41ef-8935-4c2d8d4ee671
+    type: condition
+    task:
+      id: 930e2525-3ee6-41ef-8935-4c2d8d4ee671
+      version: -1
+      name: Verify Status
+      description: Verify that the 'PaloAltoNetworksXDR.RetrievedFiles.status’ context key was populated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "221"
+      Verified:
+      - "215"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.RetrievedFiles
+                accessor: status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "221":
+    id: "221"
+    taskid: 7f59fc43-f701-4325-868a-06ab184a2108
+    type: regular
+    task:
+      id: 7f59fc43-f701-4325-868a-06ab184a2108
+      version: -1
+      name: Verify Context Error - Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'PaloAltoNetworksXDR.RetrievedFiles.status’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (Status is added only when the operation is unsuccessful).
+          2- The 'xdr-file-retrieve' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.RetrievedFiles.status' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "222":
+    id: "222"
+    taskid: 46360281-1db4-4a05-833b-c043e16b97ea
+    type: regular
+    task:
+      id: 46360281-1db4-4a05-833b-c043e16b97ea
+      version: -1
+      name: Get the final 'ExtractedFiles' context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "212"
+    scriptarguments:
+      get_key:
+        simple: ExtractedFiles
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "223":
+    id: "223"
+    taskid: 3adfdec4-6c2b-4efb-8116-601e38ca6d82
+    type: condition
+    task:
+      id: 3adfdec4-6c2b-4efb-8116-601e38ca6d82
+      version: -1
+      name: Verify Extracted Files
+      description: 'Verify that the ''ExtractedFiles'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' files. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "224"
+      Verified:
+      - "225"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedFiles
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "224":
+    id: "224"
+    taskid: c92af586-0569-4454-8715-a01d497b80cf
+    type: regular
+    task:
+      id: c92af586-0569-4454-8715-a01d497b80cf
+      version: -1
+      name: Verify Context Error - Extracted Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'ExtractedFiles’ context key was not populated. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          2-The file retrieval operation fails and either the 'Were any errors?' or the 'Did the file retrieval fail?' tasks were modified, causing the playbook flow to proceed to the 'Unzip File' task, which should not have happened.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "225":
+    id: "225"
+    taskid: e3fb4dc5-57fe-446b-8a91-4c83a31d229b
+    type: title
+    task:
+      id: e3fb4dc5-57fe-446b-8a91-4c83a31d229b
+      version: -1
+      name: Done verifying 'ExtractedFiles'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "226":
+    id: "226"
+    taskid: d1b7a79b-380f-4a0d-8a8a-32d3ff87bdc2
+    type: regular
+    task:
+      id: d1b7a79b-380f-4a0d-8a8a-32d3ff87bdc2
+      version: -1
+      name: Get the final 'File' context
+      description: Gets a value from the specified incident's context.
+      scriptName: GetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "227"
+    scriptarguments:
+      get_key:
+        simple: File
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "227":
+    id: "227"
+    taskid: 30d25830-dfd0-4b6a-8072-e631bb2b2f1d
+    type: title
+    task:
+      id: 30d25830-dfd0-4b6a-8072-e631bb2b2f1d
+      version: -1
+      name: '''File'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "228"
+      - "231"
+      - "233"
+      - "235"
+      - "237"
+      - "239"
+      - "241"
+      - "243"
+      - "245"
+      - "247"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "228":
+    id: "228"
+    taskid: 78fcc8f0-8e62-4695-80d3-cd6ddbb51d82
+    type: condition
+    task:
+      id: 78fcc8f0-8e62-4695-80d3-cd6ddbb51d82
+      version: -1
+      name: Verify Name
+      description: Verify that the 'File.Name' context key has been extracted correctly and contains both ZIP and Unzipped file names.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "229"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Name
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4580,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "229":
+    id: "229"
+    taskid: d87c4ed8-11fc-452f-8afa-421cd1e2ef31
+    type: regular
+    task:
+      id: d87c4ed8-11fc-452f-8afa-421cd1e2ef31
+      version: -1
+      name: Verify Context Error - Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Name’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both the 'manifest.json' and 'GoogleUpdate.exe' file names.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4580,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "230":
+    id: "230"
+    taskid: 9bef53f1-5217-4ec4-887d-2ecb633f9b7a
+    type: title
+    task:
+      id: 9bef53f1-5217-4ec4-887d-2ecb633f9b7a
+      version: -1
+      name: Done verifying 'File'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "231":
+    id: "231"
+    taskid: 0aae456b-24b9-49c1-8430-da495527d61e
+    type: condition
+    task:
+      id: 0aae456b-24b9-49c1-8430-da495527d61e
+      version: -1
+      name: Verify Entry ID
+      description: Verify that the 'File.EntryID' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "232"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: EntryID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4180,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "232":
+    id: "232"
+    taskid: 963c5ffa-f550-45de-88c0-2614fe3f6220
+    type: regular
+    task:
+      id: 963c5ffa-f550-45de-88c0-2614fe3f6220
+      version: -1
+      name: Verify Context Error - Entry ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.EntryID’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4180,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "233":
+    id: "233"
+    taskid: 184ac37d-2d3f-4ba0-81fe-c4cd9cf4fcfa
+    type: condition
+    task:
+      id: 184ac37d-2d3f-4ba0-81fe-c4cd9cf4fcfa
+      version: -1
+      name: Verify Size
+      description: Verify that the 'File.SHA512' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "234"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Size
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3770,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "234":
+    id: "234"
+    taskid: 8bda98d3-1360-4996-8e25-b349004d2f1e
+    type: regular
+    task:
+      id: 8bda98d3-1360-4996-8e25-b349004d2f1e
+      version: -1
+      name: Verify Context Error - Size
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Size’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both ZIP and Unzipped file names.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3770,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "235":
+    id: "235"
+    taskid: 050b250c-2075-456f-8b50-fc8f826fe93e
+    type: condition
+    task:
+      id: 050b250c-2075-456f-8b50-fc8f826fe93e
+      version: -1
+      name: Verify MD5
+      description: Verify that the 'File.MD5' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "236"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: MD5
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "236":
+    id: "236"
+    taskid: c03492b2-3761-46fc-8968-604da9446e53
+    type: regular
+    task:
+      id: c03492b2-3761-46fc-8968-604da9446e53
+      version: -1
+      name: Verify Context Error - MD5
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.MD5’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both the 'manifest.json' and 'GoogleUpdate.exe' MD5 hashes.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "237":
+    id: "237"
+    taskid: 2f737c65-9418-4bf8-81e4-48ec47b81891
+    type: condition
+    task:
+      id: 2f737c65-9418-4bf8-81e4-48ec47b81891
+      version: -1
+      name: Verify SHA1
+      description: Verify that the 'File.SHA1' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "238"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA1
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2960,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "238":
+    id: "238"
+    taskid: d155d341-5db5-4eaa-88fd-ce81a2c7d920
+    type: regular
+    task:
+      id: d155d341-5db5-4eaa-88fd-ce81a2c7d920
+      version: -1
+      name: Verify Context Error - SHA1
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA1’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both the 'manifest.json' and 'GoogleUpdate.exe' SHA1 hashes.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2960,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "239":
+    id: "239"
+    taskid: 7d46c1a3-c10e-4cbf-87f4-f8befb8fcf0a
+    type: condition
+    task:
+      id: 7d46c1a3-c10e-4cbf-87f4-f8befb8fcf0a
+      version: -1
+      name: Verify SHA256
+      description: 'Verify that the ''File.SHA256'' context key has been extracted correctly.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "240"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA256
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2560,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "240":
+    id: "240"
+    taskid: 1c0b320a-ab2a-445c-81f4-5e453016cb42
+    type: regular
+    task:
+      id: 1c0b320a-ab2a-445c-81f4-5e453016cb42
+      version: -1
+      name: Verify Context Error - SHA256
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA256’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both the 'manifest.json' and 'GoogleUpdate.exe' SHA256 hashes.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2560,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "241":
+    id: "241"
+    taskid: b31b23f7-ed41-4501-8224-b3ad12f5bd75
+    type: condition
+    task:
+      id: b31b23f7-ed41-4501-8224-b3ad12f5bd75
+      version: -1
+      name: Verify SHA512
+      description: 'Verify that the ''File.SHA512'' context key has been extracted correctly.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "242"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: SHA512
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2160,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "242":
+    id: "242"
+    taskid: b9a61ffb-4c09-4a51-88d0-f6a22388733e
+    type: regular
+    task:
+      id: b9a61ffb-4c09-4a51-88d0-f6a22388733e
+      version: -1
+      name: Verify Context Error - SHA512
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.SHA512’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both the 'manifest.json' and 'GoogleUpdate.exe' SHA512 hashes.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2160,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "243":
+    id: "243"
+    taskid: 3ff8befb-c82a-4995-88ed-58b2d57dead7
+    type: condition
+    task:
+      id: 3ff8befb-c82a-4995-88ed-58b2d57dead7
+      version: -1
+      name: Verify Extension
+      description: Verify that the 'File.Extension' context key has been extracted correctly and contains both ZIP and Unzipped file extensions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "244"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Extension
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "244":
+    id: "244"
+    taskid: 30a20efa-e938-4727-84d1-c37eedaf941c
+    type: regular
+    task:
+      id: 30a20efa-e938-4727-84d1-c37eedaf941c
+      version: -1
+      name: Verify Context Error - Extension
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Extension’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both ZIP and Unzipped file extensions.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "245":
+    id: "245"
+    taskid: 31ac2ecd-05f1-436e-8f05-4d29be7a9708
+    type: condition
+    task:
+      id: 31ac2ecd-05f1-436e-8f05-4d29be7a9708
+      version: -1
+      name: Verify Type
+      description: Verify that the 'File.Type' context key has been extracted correctly and contains both ZIP and Unzipped file types.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "246"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Type
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1360,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "246":
+    id: "246"
+    taskid: b11c9ff5-32f2-44d6-8a69-6edfa78d1324
+    type: regular
+    task:
+      id: b11c9ff5-32f2-44d6-8a69-6edfa78d1324
+      version: -1
+      name: Verify Context Error - Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Type’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+          3- The 'ExtractedFiles' context key does not contain both ZIP and Unzipped file types.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1360,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "247":
+    id: "247"
+    taskid: 20dd1a40-8ce4-4ef5-8638-dbf13d98adc9
+    type: condition
+    task:
+      id: 20dd1a40-8ce4-4ef5-8638-dbf13d98adc9
+      version: -1
+      name: Verify Unzipped
+      description: Verify that the 'File.Unzipped' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "248"
+      Verified:
+      - "230"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: File.Unzipped
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: File.Unzipped
+                      iscontext: true
+            iscontext: true
+          ignorecase: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "248":
+    id: "248"
+    taskid: 194eca0d-db95-4a49-8df3-1af3db8b28b1
+    type: regular
+    task:
+      id: 194eca0d-db95-4a49-8df3-1af3db8b28b1
+      version: -1
+      name: Verify Context Error - Unzipped
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'File.Unzipped’ context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The file retrieval operation failed (the 'ExtractedFiles' context key is empty).
+          2- The 'lastZipFileInWarroom' input configuration was changed for the 'UnzipFile' automation used in the 'UnZip File' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -960,
+          "y": -235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "249":
+    id: "249"
+    taskid: 5c991b59-35fe-47c3-89e5-ffe545a977e4
+    type: title
+    task:
+      id: 5c991b59-35fe-47c3-89e5-ffe545a977e4
+      version: -1
+      name: Test 'Print Error'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "262"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3430,
+          "y": -920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "253":
+    id: "253"
+    taskid: f1078863-f1a8-433b-8c63-0cd4935c8cc8
+    type: title
+    task:
+      id: f1078863-f1a8-433b-8c63-0cd4935c8cc8
+      version: -1
+      name: Done Verifying 'Print Error'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "202"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3050,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "254":
+    id: "254"
+    taskid: 1beacfc3-0810-4f44-8ca1-634becfdb194
+    type: regular
+    task:
+      id: 1beacfc3-0810-4f44-8ca1-634becfdb194
+      version: -1
+      name: Verify Print Error Message Was Failed
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The error entry message associated with the 'Print Error - No path was found' task does not equal the phrase "No Path was provided for ${inputs.Sha256}. Cannot retrieve the file without a proper path". This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Retrieve File by sha256' playbook:
+          1- The 'value' input configuration was changed for the 'Print' automation used in the 'Print Error - No path was found' task.
+          2 - The 'Is there a path for the provided sha256?' conditional task returned 'Yes', causing the playbook flow to proceed to 'Cortex XDR - Retrieve File' instead.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3430,
+          "y": -215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "255":
+    id: "255"
+    taskid: eca4f1a2-8c82-45a4-8b85-135acb6a4666
+    type: regular
+    task:
+      id: eca4f1a2-8c82-45a4-8b85-135acb6a4666
+      version: -1
+      name: Wait for the files to be retrieved from XDR
+      description: Ensure that 'Cortex XDR - Retrieve File' is complete before closing the incident and starting tests.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "203"
+    scriptarguments:
+      complete_task:
+        simple: "false"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "10"
+      max_timeout:
+        simple: "600"
+      task_name:
+        simple: Cortex XDR - Retrieve File
+      task_states:
+        simple: Completed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": -1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "260":
+    id: "260"
+    taskid: 4f04fd07-54e6-4c4d-834a-c88b568ebc5b
+    type: regular
+    task:
+      id: 4f04fd07-54e6-4c4d-834a-c88b568ebc5b
+      version: -1
+      name: Get Error Entries
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "261"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3430,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "261":
+    id: "261"
+    taskid: 2f68a3e2-2b70-49e5-8a4d-21fbea92d283
+    type: condition
+    task:
+      id: 2f68a3e2-2b70-49e5-8a4d-21fbea92d283
+      version: -1
+      name: Verify Error Message
+      description: Ensure that an error message was printed for the 'Print Error - No path was found' task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "254"
+      Verified:
+      - "253"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ErrorEntries
+            iscontext: true
+          right:
+            value:
+              simple: No Path was provided for 07dc0e82e198278b8b7179b01dd69f6203fb128b20484edbcdbaa19ec2ee09f0. Cannot retrieve the file without a proper path.
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3430,
+          "y": -455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "262":
+    id: "262"
+    taskid: 0f0d48ee-cfa5-4dc5-8a7f-d3e69b9b183a
+    type: playbook
+    task:
+      id: 0f0d48ee-cfa5-4dc5-8a7f-d3e69b9b183a
+      version: -1
+      name: Cortex XDR - Retrieve File by sha256
+      description: |-
+        This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        The playbook facilitates the process of retrieving files from the investigated devices, unzipping the retrieved files, and loading them into the War Room.
+
+        This playbook consists of the following steps:
+        Initially, the sub-playbook 'Cortex XDR - Get File Path from alerts by hash' examines the SHA256 file hashes and retrieves the file paths associated with each hash.
+        As soon as the SHA256 hashes, file paths, and endpoint IDs are obtained, the playbook attempts to retrieve the files from all the investigated devices.
+        Once the file retrieval automation has been completed successfully, the playbook will unzip the files and load them into the War Room.
+
+        Note: When retrieving multiple files, ensure that the SHA256 input is set to run in a loop.
+      playbookName: Cortex XDR - Retrieve File by sha256
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "260"
+    scriptarguments:
+      Sha256:
+        simple: 07dc0e82e198278b8b7179b01dd69f6203fb128b20484edbcdbaa19ec2ee09f0
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 3430,
+          "y": -790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "213_215_Verified": 0.12,
+      "216_215_ Verified": 0.15,
+      "217_215_Verified": 0.25,
+      "228_230_Verified": 0.1,
+      "231_230_Verified": 0.1,
+      "233_230_Verified": 0.1,
+      "235_230_Verified": 0.1,
+      "237_230_Verified": 0.1,
+      "239_230_Verified": 0.1,
+      "241_230_Verified": 0.13,
+      "243_230_Verified": 0.3,
+      "245_230_Verified": 0.36,
+      "247_230_Verified": 0.3
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2480,
+        "width": 8390,
+        "x": -4580,
+        "y": -2485
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

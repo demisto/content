@@ -1,0 +1,5 @@
+[file:classifier-mapper-incoming-Crowdstrike-Streaming.json]
+ignore=BA101
+
+[file:classifier-Crowdstrike-Streaming.json]
+ignore=BA101

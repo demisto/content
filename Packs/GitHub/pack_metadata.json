@@ -1,0 +1,36 @@
+{
+    "name": "GitHub",
+    "description": "Manage GitHub issues and pull requests directly from Cortex XSOAR",
+    "support": "xsoar",
+    "currentVersion": "2.3.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Code Repositories"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "IAM-SCIM": {
+            "mandatory": true,
+            "display_name": "IAM SCIM"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "defaultDataSource": "Github Event Collector",
+    "supportedModules": [
+        "agentix",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr",
+        "cloud"
+    ]
+}

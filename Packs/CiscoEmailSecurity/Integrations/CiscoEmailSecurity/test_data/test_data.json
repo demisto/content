@@ -1,0 +1,840 @@
+{
+  "headers_for_login": {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+  },
+  "data_for_login": {
+      "data":
+          {
+              "userName": "username",
+              "passphrase": "passphrase"
+          }
+  },
+
+  "args_for_list_report": {
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
+    "device_type": "email",
+    "offset": "1",
+    "limit": "1",
+    "filter_key": "name",
+    "filter_operator": "is",
+    "filter_value": "name",
+    "device_group": "cisco",
+    "device_group_name": "Hosted_Cluster"
+  },
+
+  "url_params_for_list_reports": "/reporting_system?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&device_type=esa&device_group_name=Hosted_Cluster",
+
+  "args_for_list_messages": {
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
+    "offset": "1",
+    "limit": "1",
+    "attachment_name_value": "name",
+    "attachment_name_operator": "is",
+    "recipient_filter_value": "name",
+    "sender_filter_value": "name",
+    "sender_filter_operator": "is",
+    "spam_positive": "True",
+    "file_hash": "1234abcd"
+  },
+
+  "url_params_for_list_messages": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&searchOption=messages&ciscoHost=All_Hosts&offset=1&limit=1&attachmentNameOperator=is&attachmentNameValue=name&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&envelopeSenderfilterOperator=is&envelopeSenderfilterValue=name&spamPositive=True&fileSha256=1234abcd",
+
+  "args_for_get_details": {
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
+    "message_id": "1234",
+    "cisco_id": "1234",
+    "appliance_serial_number": "1234"
+  },
+
+  "url_params_for_get_details": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&mid=1234&icid=1234&serialNumber=1234",
+
+  "args_for_spam_quarantine": {
+    "start_date": "2017-02-14 09:51:46",
+    "end_date": "2017-02-14 09:51:46",
+    "order_by": "name",
+    "order_dir": "asc",
+    "recipient_value": "name",
+    "recipient_operator": "is",
+    "filter_value": "name"
+  },
+
+  "url_params_for_spam_quarantine": "?startDate=2017-02-14T09:51:46.000Z&endDate=2017-02-14T09:51:46.000Z&quarantineType=spam&offset=0&limit=20&orderBy=name&orderDir=asc&envelopeRecipientfilterOperator=is&envelopeRecipientfilterValue=name&filterOperator=is&filterValue=name",
+
+  "search_messages_response_data": {
+                                      "meta": {
+                                      "num_bad_records": 7,
+                                      "totalCount": 13
+                                      },
+                                      "data": [
+                                        {
+                                          "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 110,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr.qa",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:33:19 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          110
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "N/A",
+                                          "recipient": [
+                                          "confikr@cisco.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 103,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          104
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 105,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          103
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                          "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 107,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          102
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 106,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          101
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 100,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          100
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 104,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          99
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 98,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": [
+                                          98
+                                          ],
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        }
+                                      ]
+                                      },
+  "search_messages_context": [
+    {
+                                          "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 110,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr.qa",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:33:19 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 110,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "N/A",
+                                          "recipient": [
+                                          "confikr@cisco.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 103,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 104,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 105,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 103,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                          "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 107,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 102,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 106,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 101,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 100,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 100,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 104,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 99,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        },
+                                        {
+                                        "attributes": {
+                                          "direction": "incoming",
+                                          "icid": 98,
+                                          "senderGroup": "UNKNOWNLIST",
+                                          "sender": "confikr@example.com",
+                                          "replyTo": "N/A",
+                                          "timestamp": "15 Oct 2018 08:24:39 (GMT)",
+                                          "hostName": "esa01",
+                                          "subject": "message is good",
+                                          "mid": 98,
+                                          "isCompleteData": true,
+                                          "messageStatus": "Delivered",
+                                          "mailPolicy": [
+                                          "DEFAULT"
+                                          ],
+                                          "senderIp": "8.8.8.8",
+                                          "verdictChart": "0",
+                                          "senderDomain": "example.com",
+                                          "recipient": [
+                                          "user.com"
+                                          ],
+                                          "sbrs": "None",
+                                          "serialNumber": "4229CAEC09527FD2570C-F028BAE54A11"
+                                          }
+                                        }
+  ],
+
+  "messages_human_readable": "### CiscoEmailSecurity Messages\n|timestamp|message_id|cisco_id|sender|sender_ip|subject|serial_number|\n|---|---|---|---|---|---|---|\n| 15 Oct 2018 08:33:19 (GMT) | 110 | 110 | confikr.qa | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n| 15 Oct 2018 08:24:39 (GMT) | 104 | 103 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n| 15 Oct 2018 08:24:39 (GMT) | 103 | 105 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n| 15 Oct 2018 08:24:39 (GMT) | 102 | 107 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n| 15 Oct 2018 08:24:39 (GMT) | 101 | 106 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n| 15 Oct 2018 08:24:39 (GMT) | 100 | 100 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n| 15 Oct 2018 08:24:39 (GMT) | 99 | 104 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n| 15 Oct 2018 08:24:39 (GMT) | 98 | 98 | confikr@example.com | 8.8.8.8 | message is good | 4229CAEC09527FD2570C-F028BAE54A11 |\n",
+
+  "get_message_details_response_data": {
+                                          "data": {
+                                                    "messages": {
+                                                                  "direction": "outgoing",
+                                                                  "smtpAuthId": "",
+                                                                  "sender": "user.com",
+                                                                  "midHeader": "<user.com>",
+                                                                  "timestamp": "16 Nov 2018 11:19:48 (GMT)",
+                                                                  "showAMP": true,
+                                                                  "hostName": "c680q07.ibqa (2.2.2.2)",
+                                                                  "mid": [
+                                                                  22125
+                                                                  ],
+                                                                  "sendingHostSummary": {
+                                                                  "reverseDnsHostname": "vm30bsd0199.ibqa (verified)",
+                                                                  "ipAddress": "1.1.1.1",
+                                                                  "sbrsScore": "not enabled"
+                                                                  },
+                                                                  "summary": [
+                                                                  {
+                                                                  "timestamp": "16 Nov 2018 11:19:48 (GMT)",
+                                                                  "description": "ICID 19214 sender_group: RELAYLIST sender_ip: 1.1.1.1, sbrs: not enabled",
+                                                                  "lastEvent": false
+                                                                  },
+                                                                  {
+                                                                  "timestamp": "16 Nov 2018 11:19:48 (GMT)",
+                                                                  "description": "Protocol SMTP interface Management (IP 2.2.2.2) on incoming connection (ICID 19214) from sender IP 1.1.1.1. Reverse DNS host vm30bsd0199.ibqa verified yes.",
+                                                                  "lastEvent": false
+                                                                  },
+                                                                  {
+                                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                                  "description": "Message 22125 scanned by Advanced Malware Protection engine. Final verdict: UNKNOWN", "lastEvent": false
+                                                                  },
+                                                                  {
+                                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                                  "description": "Message 22125 contains attachment'driver_license_germany.txt' (SHA256 7e3dee4dac8f4af561d1108c4b237e5e139bd8d3ddc8518455d3b5fb7e7a70c3).",
+                                                                  "lastEvent": false
+                                                                  },
+                                                                  {
+                                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                                  "description": "Message 22125 attachment 'driver_license_germany.txt' scanned by Advanced Malware Protection engine. File Disposition: Unknown",
+                                                                  "lastEvent": false
+                                                                  },
+                                                                  {
+                                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                                  "description": "Message 22125 Delivery Status: DROPPED",
+                                                                  "lastEvent": false
+                                                                  },
+                                                                  {
+                                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                                  "description": "Message 22125 Verdict chart: 01131212",
+                                                                  "lastEvent": true
+                                                                  }
+                                                                  ],
+                                                                  "attachments": [
+                                                                  "driver_license_germany.txt"
+                                                                  ],
+                                                                  "messageSize": "765 (Bytes)",
+                                                                  "isCompleteData": true,
+                                                                  "showDLP": true,
+                                                                  "messageStatus": "Dropped by DLP",
+                                                                  "showURL": false,
+                                                                  "mailPolicy": [
+                                                                  "DEFAULT"
+                                                                  ],
+                                                                  "senderGroup": "RELAYLIST",
+                                                                  "recipient": [
+                                                                  "user.com"
+                                                                  ],
+                                                                  "showSummaryTimeBox": true,
+                                                                  "subject": "Testing"
+                                                                  }
+                                                    }
+  },
+
+  "get_message_details_context": {
+                                                  "direction": "outgoing",
+                                                  "smtpAuthId": "",
+                                                  "sender": "user.com",
+                                                  "midHeader": "<user.com>",
+                                                  "timestamp": "16 Nov 2018 11:19:48 (GMT)",
+                                                  "showAMP": true,
+                                                  "hostName": "c680q07.ibqa (2.2.2.2)",
+                                                  "mid": 22125,
+                                                  "sendingHostSummary": {
+                                                  "reverseDnsHostname": "vm30bsd0199.ibqa (verified)",
+                                                  "ipAddress": "1.1.1.1",
+                                                  "sbrsScore": "not enabled"
+                                                  },
+                                                  "summary": [
+                                                  {
+                                                  "timestamp": "16 Nov 2018 11:19:48 (GMT)",
+                                                  "description": "ICID 19214 sender_group: RELAYLIST sender_ip: 1.1.1.1, sbrs: not enabled",
+                                                  "lastEvent": false
+                                                  },
+                                                  {
+                                                  "timestamp": "16 Nov 2018 11:19:48 (GMT)",
+                                                  "description": "Protocol SMTP interface Management (IP 2.2.2.2) on incoming connection (ICID 19214) from sender IP 1.1.1.1. Reverse DNS host vm30bsd0199.ibqa verified yes.",
+                                                  "lastEvent": false
+                                                  },
+                                                  {
+                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                  "description": "Message 22125 scanned by Advanced Malware Protection engine. Final verdict: UNKNOWN", "lastEvent": false
+                                                  },
+                                                  {
+                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                  "description": "Message 22125 contains attachment'driver_license_germany.txt' (SHA256 7e3dee4dac8f4af561d1108c4b237e5e139bd8d3ddc8518455d3b5fb7e7a70c3).",
+                                                  "lastEvent": false
+                                                  },
+                                                  {
+                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                  "description": "Message 22125 attachment 'driver_license_germany.txt' scanned by Advanced Malware Protection engine. File Disposition: Unknown",
+                                                  "lastEvent": false
+                                                  },
+                                                  {
+                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                  "description": "Message 22125 Delivery Status: DROPPED",
+                                                  "lastEvent": false
+                                                  },
+                                                  {
+                                                  "timestamp": "16 Nov 2018 11:20:12 (GMT)",
+                                                  "description": "Message 22125 Verdict chart: 01131212",
+                                                  "lastEvent": true
+                                                  }
+                                                  ],
+                                                  "attachments": [
+                                                  "driver_license_germany.txt"
+                                                  ],
+                                                  "messageSize": "765 (Bytes)",
+                                                  "isCompleteData": true,
+                                                  "showDLP": true,
+                                                  "messageStatus": "Dropped by DLP",
+                                                  "showURL": false,
+                                                  "mailPolicy": [
+                                                  "DEFAULT"
+                                                  ],
+                                                  "senderGroup": "RELAYLIST",
+                                                  "recipient": [
+                                                  "user.com"
+                                                  ],
+                                                  "showSummaryTimeBox": true,
+                                                  "subject": "Testing"
+
+  },
+
+  "message_human_readable": "### CiscoEmailSecurity Messages\n|message_id|direction|sender|recipient|subject|timestamp|\n|---|---|---|---|---|---|\n| 22125 | outgoing | user.com | user.com | Testing | 16 Nov 2018 11:19:48 (GMT) |\n",
+
+  "search_spam_quarantine_response_data": {
+                                            "data": [
+                                                      {
+                                                      "attributes": {
+                                                                      "envelopeRecipient": [
+                                                                      "test@test.com"
+                                                                      ],
+                                                                      "toAddress": [
+                                                                      "user.com"
+                                                                      ],
+                                                                      "subject": "[SPAM] Spam",
+                                                                      "date": "21 Nov 2018 14:31 (GMT)",
+                                                                      "fromAddress": [
+                                                                      "danel"
+                                                                      ],
+                                                                      "size": "1.60K"
+                                                                      },
+                                                        "mid": 170
+                                                      }
+                                        ]
+  },
+
+  "search_spam_quarantine_context": [{
+                                      "attributes": {
+                                                      "envelopeRecipient": [
+                                                      "test@test.com"
+                                                      ],
+                                                      "toAddress": [
+                                                      "user.com"
+                                                      ],
+                                                      "subject": "[SPAM] Spam",
+                                                      "date": "21 Nov 2018 14:31 (GMT)",
+                                                      "fromAddress": [
+                                                      "danel"
+                                                      ],
+                                                      "size": "1.60K"
+                                                      },
+                                      "mid": 170
+  }],
+
+  "spam_quarantine_human_readable": "### CiscoEmailSecurity The Quarantine Messages\n|message_id|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|---|\n| 170 | test@test.com | user.com | danel | [SPAM] Spam | 21 Nov 2018 14:31 (GMT) |\n",
+
+  "quarantine_message_details_response_data": {
+                                                "data": {
+                                                          "attributes": {
+                                                                          "envelopeRecipient": [
+                                                                          "av_deliver@vm30bsd0004.ibqa"
+                                                                          ],
+                                                                          "toAddress": [
+                                                                          "Surya Allena <sallena@cisco.com>"
+                                                                          ],
+                                                                          "attachments": [],
+                                                                          "messageBody": "Received: from c680q07.ibqa ([2.2.2.2])\r\n by esa.cisco.com with ESMTP; 16 Nov 2018 13:58:55 +0000<br />\nIronPort-SDR: DjDeJA8ZkD90oA9x+n3eGd9Qa/nliZ1dL MyxB7dsrdq8oTnn8YSi5amR2qihbeq2eJwvVjskf1\r\n KE7TdyCXSokg==<br />\nX-IronPort-AV: E=Sophos;i=\"5.56,240,1539648000\"; \r\n d=\"scan'\";a=\"22180\"<br/>\nIronPort-SDR: PPj7KDz4Ur8W2ne2fWP/wSOUBwnY3x1XaBz/ryR/98vI6NPraAsA5q7vzUzyaYFpRCWGgfyJaZ\r\n 4UIJbt91/ WFccoWcqqO86zz6rYcRASCSM=<br />\nIronPort-PHdr: =?us-ascii?q?9a23=3Az7tnkBDwN1EwuviG0RODUyQJP3N1i/DPJgcQr6?=\r\n=?us-ascii?q?AfoPdwSPT7pMbcNUDSrc9gkEXOFd2Cra4c26yO6+jJYi8p2d65",
+                                                                          "date": "16 Nov 2018 13:58 (GMT)",
+                                                                          "fromAddress": [
+                                                                          "testuser <testuser@cisco.com>"
+                                                                          ],
+                                                                          "subject": "[SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF"
+                                                                          },
+                                                          "mid": 1755
+                                                }
+        },
+  "quarantine_message_details_context": {
+                                          "attributes": {
+                                                          "envelopeRecipient": [
+                                                          "av_deliver@vm30bsd0004.ibqa"
+                                                          ],
+                                                          "toAddress": [
+                                                          "Surya Allena <sallena@cisco.com>"
+                                                          ],
+                                                          "attachments": [],
+                                                          "messageBody": "Received: from c680q07.ibqa ([2.2.2.2])\r\n by esa.cisco.com with ESMTP; 16 Nov 2018 13:58:55 +0000<br />\nIronPort-SDR: DjDeJA8ZkD90oA9x+n3eGd9Qa/nliZ1dL MyxB7dsrdq8oTnn8YSi5amR2qihbeq2eJwvVjskf1\r\n KE7TdyCXSokg==<br />\nX-IronPort-AV: E=Sophos;i=\"5.56,240,1539648000\"; \r\n d=\"scan'\";a=\"22180\"<br/>\nIronPort-SDR: PPj7KDz4Ur8W2ne2fWP/wSOUBwnY3x1XaBz/ryR/98vI6NPraAsA5q7vzUzyaYFpRCWGgfyJaZ\r\n 4UIJbt91/ WFccoWcqqO86zz6rYcRASCSM=<br />\nIronPort-PHdr: =?us-ascii?q?9a23=3Az7tnkBDwN1EwuviG0RODUyQJP3N1i/DPJgcQr6?=\r\n=?us-ascii?q?AfoPdwSPT7pMbcNUDSrc9gkEXOFd2Cra4c26yO6+jJYi8p2d65",
+                                                          "date": "16 Nov 2018 13:58 (GMT)",
+                                                          "fromAddress": [
+                                                          "testuser <testuser@cisco.com>"
+                                                          ],
+                                                          "subject": "[SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF"
+                                                          },
+                                          "mid": 1755
+                                },
+
+  "quarantine_message_context_to_human_readable": {
+                                                          "envelopeRecipient": [
+                                                          "av_deliver@vm30bsd0004.ibqa"
+                                                          ],
+                                                          "toAddress": [
+                                                          "Surya Allena <sallena@cisco.com>"
+                                                          ],
+                                                          "attachments": [],
+                                                          "messageBody": "Received: from c680q07.ibqa ([2.2.2.2])\r\n by esa.cisco.com with ESMTP; 16 Nov 2018 13:58:55 +0000<br />\nIronPort-SDR: DjDeJA8ZkD90oA9x+n3eGd9Qa/nliZ1dL MyxB7dsrdq8oTnn8YSi5amR2qihbeq2eJwvVjskf1\r\n KE7TdyCXSokg==<br />\nX-IronPort-AV: E=Sophos;i=\"5.56,240,1539648000\"; \r\n d=\"scan'\";a=\"22180\"<br/>\nIronPort-SDR: PPj7KDz4Ur8W2ne2fWP/wSOUBwnY3x1XaBz/ryR/98vI6NPraAsA5q7vzUzyaYFpRCWGgfyJaZ\r\n 4UIJbt91/ WFccoWcqqO86zz6rYcRASCSM=<br />\nIronPort-PHdr: =?us-ascii?q?9a23=3Az7tnkBDwN1EwuviG0RODUyQJP3N1i/DPJgcQr6?=\r\n=?us-ascii?q?AfoPdwSPT7pMbcNUDSrc9gkEXOFd2Cra4c26yO6+jJYi8p2d65",
+                                                          "date": "16 Nov 2018 13:58 (GMT)",
+                                                          "fromAddress": [
+                                                          "testuser <testuser@cisco.com>"
+                                                          ],
+                                                          "subject": "[SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF"
+                                },
+
+  "quarantine_message_details_human_readable": "### CiscoEmailSecurity QuarantineMessageDetails\n|recipient|to_address|from_address|subject|date|\n|---|---|---|---|---|\n| av_deliver@vm30bsd0004.ibqa | Surya Allena <sallena@cisco.com> | testuser <testuser@cisco.com> | [SUSPICIOUS MESSAGE] [SUSPECTED SPAM] Testing VOF | 16 Nov 2018 13:58 (GMT) |\n",
+
+  "quarantine_delete_message_response_data": "None messages successfully deleted from quarantine list",
+
+  "quarantine_release_message_response_data": "None messages successfully released from quarantine list",
+
+  "get_list_entries_response": {
+    "meta": {
+      "totalCount": 1
+    },
+    "data": [
+      {
+        "senderList": [
+          "space.com",
+          "xyz.com",
+          "abc.com"
+    ],
+         "recipientAddress": "user.com"
+       }
+      ]
+    },
+
+  "get_list_entries_context": [
+  {
+    "senderList": [
+      "space.com",
+      "xyz.com",
+      "abc.com"
+    ],
+    "recipientAddress": "user.com"
+    }
+  ],
+
+  "add_list_entries_response": {
+    "meta": {
+      "totalCount": 1
+    },
+    "data": [
+      {
+        "action": "add",
+        "recipientAddresses": [
+          "user.com",
+          "user.com"
+        ],
+        "senderList": [
+          "acme.com"
+        ]
+       }
+      ]
+    },
+
+  "add_list_entries_context": [
+  {
+    "action": "add",
+    "recipientAddresses": [
+        "user.com",
+        "user.com"
+    ],
+    "senderList": [
+        "acme.com"
+      ]
+    }
+  ],
+
+  "delete_list_entries_response": {
+    "data": {
+      "action": "delete",
+      "recipientList": [
+        "user.com",
+        "user.com"
+      ],
+      "totalCount": 2
+    }
+  },
+
+  "delete_list_entries_context": {
+    "action": "delete",
+      "recipientList": [
+        "user.com",
+        "user.com"
+      ],
+      "totalCount": 2
+  }
+
+}

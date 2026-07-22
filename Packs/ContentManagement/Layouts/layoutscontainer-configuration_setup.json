@@ -1,0 +1,253 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-189566c0-60ba-11eb-a14d-437032829a63",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "listscreated",
+                                "height": 22,
+                                "id": "c3568ec0-60bc-11eb-a14d-437032829a63",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Lists Created",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-2899be40-60ba-11eb-a14d-437032829a63",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "jobscreated",
+                                "height": 22,
+                                "id": "c1bc8dd0-60bc-11eb-a14d-437032829a63",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Jobs Created",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-ba630050-60cb-11eb-b908-93753d9ab0d1",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "marketplacepacksinstalled",
+                                "height": 106,
+                                "id": "c13ed480-60cb-11eb-b908-93753d9ab0d1",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Marketplace Packs Installed",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-cdc41761-60cb-11eb-b908-93753d9ab0d1",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "custompacksinstalled",
+                                "height": 106,
+                                "id": "da915fc0-60cb-11eb-b908-93753d9ab0d1",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Custom Packs Installed",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_configurationfilesource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_custompackssource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_configfilepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_branchname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cicds3bucketname",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Configurations",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "configuration setup",
+    "name": "configuration setup",
+    "system": true,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "marketplaces": ["xsoar"]
+}

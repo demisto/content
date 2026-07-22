@@ -1,0 +1,106 @@
+{
+  "data": [
+    {
+      "classification": "high",
+      "description": "When using the Apache JServ Protocol (AJP), care must be taken when trusting incoming connections to Apache Tomcat. Tomcat treats AJP connections as having higher trust than, for example, a similar HTTP connection. If such connections are available to an attacker, they can be exploited in ways that may be surprising. In Apache Tomcat 9.0.0.M1 to 9.0.0.30, 8.5.0 to 8.5.50 and 7.0.0 to 7.0.99, Tomcat shipped with an AJP Connector enabled by default that listened on all configured IP addresses. It was expected (and recommended in the security guide) that this Connector would be disabled if not required. This vulnerability report identified a mechanism that allowed - returning arbitrary files from anywhere in the web application - processing any file in the web application as a JSP Further, if the web application allowed file upload and stored those files within the web application (or the attacker was able to control the content of the web application by some other means) then this, along with the ability to process a file as a JSP, made remote code execution possible. It is important to note that mitigation is only required if an AJP port is accessible to untrusted users. Users wishing to take a defence-in-depth approach and block the vector that permits returning arbitrary files and execution as JSP may upgrade to Apache Tomcat 9.0.31, 8.5.51 or 7.0.100 or later. A number of changes were made to the default AJP Connector configuration in 9.0.31 to harden the default configuration. It is likely that users upgrading to 9.0.31, 8.5.51 or 7.0.100 or later will need to make small changes to their configurations.",
+      "example_entities": {
+        "domains": [
+          {
+            "example": "stage.example.com",
+            "sort_value": 99,
+            "target": "stage.example.com:8009"
+          }
+        ],
+        "ips": [
+          {
+            "example": "1.2.3.4",
+            "sort_value": 99,
+            "target": "1.2.3.4:8009"
+          }
+        ]
+      },
+      "id": "CVE-2020-1938",
+      "name": "Ghostcat - Apache Tomcat AJP File Read/Inclusion Vulnerability (CVE-2020-1938)",
+      "rule_metadata": {
+        "entity_counts": {
+          "domains": 1,
+          "ips": 1
+        },
+        "references": [
+          "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2020-1938",
+          "https://nvd.nist.gov/vuln/detail/CVE-2020-1938",
+          "https://lists.apache.org/thread.html/r7c6f492fbd39af34a68681dbbba0468490ff1a97a1bd79c6a53610ef%40%3Cannounce.tomcat.apache.org%3E",
+          "https://lists.apache.org/thread.html/r75113652e46c4dee687236510649acfb70d2c63e074152049c3f399d@%3Cnotifications.ofbiz.apache.org%3E",
+          "https://www.tenable.com/blog/cve-2020-1938-ghostcat-apache-tomcat-ajp-file-readinclusion-vulnerability-cnvd-2020-10487"
+        ]
+      }
+    },
+    {
+      "classification": "moderate",
+      "description": "WordPress Core < 4.7.1 is susceptible to user enumeration because it does not properly restrict listings of post authors via wp-includes/rest-api/endpoints/class-wp-rest-users-controller.php in the REST API, which allows remote attackers to obtain sensitive information via a wp-json/wp/v2/users request.",
+      "example_entities": {
+        "domains": [
+          {
+            "example": "example2.com",
+            "sort_value": 65,
+            "target": "http://example2.com/wp-json/wp/v2/users/"
+          }
+        ]
+      },
+      "id": "CVE-2017-5487",
+      "name": "WordPress Core < 4.7.1 - Username Enumeration (CVE-2017-5487)",
+      "rule_metadata": {
+        "entity_counts": {
+          "domains": 1,
+          "ips": 0
+        },
+        "references": [
+          "https://app.recordedfuture.com/live/sc/entity/?name=CVE-2017-5487",
+          "https://nvd.nist.gov/vuln/detail/CVE-2017-5487",
+          "https://www.exploit-db.com/exploits/41497",
+          "https://wordpress.org/news/2017/01/wordpress-4-7-1-security-and-maintenance-release/",
+          "https://www.wordfence.com/blog/2016/12/wordfence-blocks-username-harvesting-via-new-rest-api-wp-4-7/"
+        ]
+      }
+    },
+    {
+      "classification": "informational",
+      "description": "Using 5 versions of jQuery UI linked to 5 informational risk vulnerabilities:",
+      "example_entities": {
+        "cve_products": [
+          {
+            "example": "CVE-2021-41184 (jQuery UI 1.12.1)",
+            "sort_value": 28
+          }
+        ],
+        "domains": [
+          {
+            "additional": "jQuery UI 1.10.3",
+            "example": "example3.com",
+            "sort_value": 28
+          }
+        ]
+      },
+      "id": "cve-jQuery UI",
+      "name": "Vulnerable Versions of jQuery UI",
+      "rule_metadata": {
+        "entity_counts": {
+          "domains": 1,
+          "ips": 0
+        },
+        "examples": "CVE-2021-41184 (jQuery UI 1.12.1), CVE-2021-41183 (jQuery UI 1.12.1), CVE-2021-41182 (jQuery UI 1.12.1)",
+        "references": []
+      }
+    }
+  ],
+  "meta": {
+    "counts": {
+      "high": 1,
+      "informational": 1,
+      "moderate": 1
+    },
+    "project_id": "<projectid>",
+    "project_title": "<projecttitle>",
+    "snapshot": "2022-07-07 06:08:33"
+  }
+}

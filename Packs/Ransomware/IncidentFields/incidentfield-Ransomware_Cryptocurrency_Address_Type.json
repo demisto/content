@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Post Intrusion Ransomware"
+    ],
+    "caseInsensitive": true,
+    "cliName": "ransomwarecryptocurrencyaddresstype",
+    "closeForm": false,
+    "content": true,
+    "description": "Type of the Cryptocurrency",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ransomwarecryptocurrencyaddresstype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Ransomware Cryptocurrency Address Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "openEnded": true
+}

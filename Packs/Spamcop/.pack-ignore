@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM102
+
+[file:Spamcop_image.png]
+ignore=IM111

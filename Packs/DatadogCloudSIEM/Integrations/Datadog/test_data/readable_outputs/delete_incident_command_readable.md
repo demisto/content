@@ -1,0 +1,1 @@
+### Incident deleted successfully!

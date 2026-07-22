@@ -1,0 +1,9 @@
+{
+  "id": "MicrosoftDNSdebug",
+  "name": "MicrosoftDNSdebug",
+  "os_type": "AGENT_OS_WINDOWS",
+  "profile_type": "STANDARD",
+  "content_global_id": "MicrosoftDNSdebug",
+  "from_xdr_version": "3.5.0",
+  "yaml_template": ""
+}

@@ -1,0 +1,8 @@
+!demisto-api-post uri=/lists/save body={\"name\":\"list_name\",\"data\":\"list_data\"}
+!demisto-api-get uri=/user
+!demisto-api-delete uri=/dashboards/9a6cc590-72bb-4ed5-84e9-4577c6d8cbb9
+!demisto-api-download uri=/log/bundle
+!demisto-api-multipart uri=/incident/upload/204 entryID=evnKTiujxaZEkeKRxiBMig@bed9ccda-02ab-49ef-8fc1-c43a36ff38f5 body=test_bark
+!demisto-delete-incidents ids=152 fields=id,occurred
+!demisto-api-install-packs packs_to_install=`[{"AutoFocus": "2.0.8"},{"HelloWorld":"1.0.0"}]`
+!demisto-api-install-packs file_url=https://storage.cloud.google.com/marketplace-dist/content/packs/AutoFocus/2.0.8/AutoFocus.zip

@@ -1,0 +1,24 @@
+{
+    "result": [
+        {
+            "atp_incident_id": 100010,
+            "priority_level": 3,
+            "state": 4,
+            "first_event_seen": "2022-12-01T21:44:15.000Z",
+            "last_event_seen": "2022-12-01T21:44:21.000Z",
+            "device_time": "2022-12-01T09:14:53.072Z",
+            "time": "2022-12-01T09:14:53.072Z",
+            "updated": "2022-12-21T12:56:37.283Z",
+            "atp_rule_id": "AdvancedAttackTechniqueIncident",
+            "rule_name": "Advanced Attack Technique",
+            "detection_type": "Advanced Attack Techniques",
+            "uuid": "9d6f2100-7158-11ed-da26-000000000001",
+            "log_name": "epmp_incident-2022-12-01",
+            "recommended_action": "Remove or blacklist developer utilities that aren't needed on target systems.\nEnsure Symantec Endpoint Protection's SONAR behavioral protection and Network Intrusion Prevention are enabled and blocking.\nRemove, blacklist, or use Symantec Endpoint Protection's Application Control to lock down host applications that aren't needed in your environment.",
+            "summary": "win-tfb8l7bi77h: Trusted Developer Utilities Proxy Execution, Deobfuscate/Decode Files or Information, Signed Binary Proxy Execution",
+            "resolution": 1
+        }
+    ],
+    "next": "MSwyMDIyLTEyLTI1VDIzOjE3OjQ3Ljg1OFo=",
+    "total": 2
+}

@@ -1,0 +1,19 @@
+{
+    "description": "Classifies Asimily Incident Type that are fetched via built in XSOAR fetch mechanism.",
+    "fromVersion": "6.10.0",
+    "id": "Asimily_Insight - Classifier",
+    "keyTypeMap": {
+        "Asimily Anomaly": "Asimily Anomaly",
+        "Asimily CVE": "Asimily CVE"
+    },
+    "name": "Asimily_Insight - Classifier",
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "type",
+            "transformers": []
+        }
+    },
+    "type": "classification",
+    "version": -1
+}

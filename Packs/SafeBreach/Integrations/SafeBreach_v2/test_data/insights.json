@@ -1,0 +1,218 @@
+[
+  {
+    "category": "Endpoint",
+    "name": "Malware drop to disk",
+    "priority": 5,
+    "relativeImportance": "Major",
+    "importancePoints": 91,
+    "ruleId": 9,
+    "actionTemplate": "Update endpoint protection signatures with {{hashCount}} malware samples",
+    "actionBasedTitle": "Prevent malware to be written to disk",
+    "nonBlockedSimulations": 228,
+    "blockedSimulations": 315,
+    "nonBlockedSimulationsPercentage": 41.988950276243095,
+    "maxExecutionTime": "2020-04-06T12:02:09.109Z",
+    "minExecutionTime": "2020-04-06T11:17:04.253Z",
+    "context": {
+      "simulationsCount": 228,
+      "hashCount": 210
+    },
+    "prevalence": 3,
+    "attackTypes": [
+      {
+        "attackType": "Malware Drop",
+        "simulationsCount": 228
+      }
+    ],
+    "siemStatuses": [
+      {
+        "siemStatus": "missed",
+        "simulationsCount": 228
+      }
+    ],
+    "threatActors": [
+      "APT28",
+      "Lazarus Group",
+      "APT32",
+      "APT34",
+      "APT37",
+      "BRONZE BUTLER",
+      "Dark Caracal",
+      "FIN7",
+      "Leviathan",
+      "N/A",
+      "Naikon",
+      "OilRig",
+      "PittyTiger",
+      "Scarlet Mimic",
+      "Turla",
+      "Winnti Group",
+      "menuPass"
+    ],
+    "attackPhases": [
+      5
+    ],
+    "attacks": [
+      1613,
+      2122,
+      2152,
+      1393,
+      2383,
+      2200,
+      1415,
+      2374,
+      1298,
+      1578,
+      1579,
+      2143,
+      1581,
+      1292,
+      1408,
+      1559,
+      2131,
+      1565,
+      1611,
+      1612,
+      2734,
+      1303,
+      1476,
+      1498,
+      1572,
+      1615,
+      1679,
+      2104,
+      2182,
+      2223,
+      2358,
+      2990,
+      3685,
+      3690,
+      919,
+      921,
+      923,
+      928,
+      935,
+      938,
+      940,
+      957,
+      962,
+      965,
+      966,
+      968,
+      974,
+      983,
+      994,
+      997,
+      1005,
+      1201,
+      1302,
+      1334,
+      1385,
+      1388,
+      1402,
+      1430,
+      1583,
+      1666,
+      1685,
+      1689,
+      2443,
+      2448,
+      2453,
+      2473,
+      2513,
+      2533,
+      2543,
+      2603,
+      2625,
+      2634,
+      2654,
+      2679,
+      2739,
+      2749,
+      2809,
+      2819,
+      2885,
+      2890,
+      2975,
+      3010,
+      3025,
+      3030,
+      3288,
+      3321,
+      3333,
+      3338,
+      3344,
+      3382,
+      3398,
+      3403,
+      3408,
+      3413,
+      3429,
+      3457
+    ],
+    "action": "Update endpoint protection signatures with 210 malware samples",
+    "targets": [
+      {
+        "targetNodeId": "0110ff87-b919-41b9-b772-7fbf775b4343",
+        "attackers": [
+          {
+            "attackerNodeId": "0110ff87-b919-41b9-b772-7fbf775b4343"
+          }
+        ],
+        "breakdown": {
+          "name": "Attack",
+          "count": 88
+        }
+      },
+      {
+        "targetNodeId": "372dc152-4b0b-4d92-9966-a51cdd115000",
+        "attackers": [
+          {
+            "attackerNodeId": "372dc152-4b0b-4d92-9966-a51cdd115000"
+          }
+        ],
+        "breakdown": {
+          "name": "Attack",
+          "count": 8
+        }
+      },
+      {
+        "targetNodeId": "8b7d152a-ce20-46af-ba9f-131339b1297f",
+        "attackers": [
+          {
+            "attackerNodeId": "8b7d152a-ce20-46af-ba9f-131339b1297f"
+          }
+        ],
+        "breakdown": {
+          "name": "Attack",
+          "count": 8
+        }
+      }
+    ],
+    "isCritical": true,
+    "hasDataAssets": false,
+    "isExternal": false,
+    "severityScore": 13,
+    "severity": "High",
+    "impact": 0.44203020046132124,
+    "riskBreakdown": {
+      "current": {
+        "attackSurfaceFactor": 89.89247311827957,
+        "criticalSegmentFactor": 89.89247311827957,
+        "knownAttacksFactor": 94.77848101265823,
+        "mitreRiskFactor": 91.33902077151336
+      },
+      "goal": {
+        "attackSurfaceFactor": 85.80645161290322,
+        "criticalSegmentFactor": 85.80645161290322,
+        "knownAttacksFactor": 88.60759493670885,
+        "mitreRiskFactor": 88.00074183976261
+      }
+    },
+    "criteria": "result:(not-blocked) AND Attack_Type:(\"Malware Drop\" \"Write Malware to Drop\" \"Write Exploit to Disk\")",
+    "mitigationPoints": {
+      "key": "Attack",
+      "value": 96
+    }
+  }
+]

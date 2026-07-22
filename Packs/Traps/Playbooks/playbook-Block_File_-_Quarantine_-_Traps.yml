@@ -1,0 +1,313 @@
+id: Traps Quarantine Event
+version: -1
+fromversion: 5.0.0
+name: Traps Quarantine Event
+hidden: true
+deprecated: true
+description: Deprecated. Use CortexXDR instead.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db8c61b1-9887-4c83-82f8-16e173bff1de
+    type: start
+    task:
+      id: db8c61b1-9887-4c83-82f8-16e173bff1de
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 51601fa9-ee3f-427a-84ac-aee609d05d44
+    type: condition
+    task:
+      id: 51601fa9-ee3f-427a-84ac-aee609d05d44
+      version: -1
+      name: Is Traps integration enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Traps
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 56243283-6b5a-4157-89f8-8c9399bac654
+    type: title
+    task:
+      id: 56243283-6b5a-4157-89f8-8c9399bac654
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: b2123675-876c-4e2c-8a25-adcf8d22572b
+    type: condition
+    task:
+      id: b2123675-876c-4e2c-8a25-adcf8d22572b
+      version: -1
+      name: Is there an event to remediate?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EventId
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 88b5716c-4a11-4782-89e2-14b2242192aa
+    type: regular
+    task:
+      id: 88b5716c-4a11-4782-89e2-14b2242192aa
+      version: -1
+      name: Traps - Quarantine event files
+      description: Creates a quarantine entry for the specified event.
+      script: '|||traps-event-quarantine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      event_id:
+        complex:
+          root: inputs.EventId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 9bdd1880-87ae-4f48-8e16-aedf3e2b53e1
+    type: regular
+    task:
+      id: 9bdd1880-87ae-4f48-8e16-aedf3e2b53e1
+      version: -1
+      name: Traps - Quarantine event result
+      description: Returns the result of the specified quarantine operation.
+      script: Traps|||traps-event-quarantine-result
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      operation_id:
+        complex:
+          root: Traps
+          accessor: Quarantine.OperationID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 9be11901-8854-4938-8964-be3017955ca6
+    type: playbook
+    task:
+      id: 9be11901-8854-4938-8964-be3017955ca6
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Traps.QuarantineResult.OperationID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: operation_id
+      PollingCommandName:
+        simple: traps-event-quarantine-result
+      Timeout:
+        simple: "10"
+      dt:
+        simple: Traps.QuarantineResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 8bcd878a-4b1c-44bd-8682-72ff5a6c1d02
+    type: regular
+    task:
+      id: 8bcd878a-4b1c-44bd-8682-72ff5a6c1d02
+      version: -1
+      name: Traps - Quarantine event result
+      description: Returns the result of the specified quarantine operation.
+      script: Traps|||traps-event-quarantine-result
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      operation_id:
+        complex:
+          root: Traps
+          accessor: Quarantine.OperationID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_2_#default#": 0.29,
+      "3_2_#default#": 0.15
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 940,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EventId
+  value: {}
+  required: false
+  description: Traps event ID. The playbook quarantines the related files.
+outputs: []
+tests:
+- No Test

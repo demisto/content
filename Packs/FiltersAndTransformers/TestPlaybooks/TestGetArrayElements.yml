@@ -1,0 +1,300 @@
+id: TestGetArrayElements
+inputs: []
+name: TestGetArrayElements
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1c01d694-9326-404e-840c-80e6cf6ebafd
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 1c01d694-9326-404e-840c-80e6cf6ebafd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      id: 656783a2-6a11-45c7-84d3-4d6c88674ab6
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 656783a2-6a11-45c7-84d3-4d6c88674ab6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: JustAnArray
+      value:
+        simple: '["first_element", "second_element", "last_element"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 675ca513-2853-4500-8e4d-29a8b1502358
+      iscommand: false
+      name: Set
+      script: Set
+      type: regular
+      version: -1
+    taskid: 675ca513-2853-4500-8e4d-29a8b1502358
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: JustAnArray
+                transformers:
+                - operator: FirstArrayElement
+          operator: isEqualString
+          right:
+            value:
+              simple: first_element
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: JustAnArray
+                transformers:
+                - operator: LastArrayElement
+          operator: isEqualString
+          right:
+            value:
+              simple: last_element
+      label: "yes"
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b67753b-5600-47ee-8164-79c1df46a36e
+      iscommand: false
+      name: Verify first and last array elements
+      type: condition
+      version: -1
+    taskid: 7b67753b-5600-47ee-8164-79c1df46a36e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c3387d55-8439-48bf-8d89-90fb93762bac
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c3387d55-8439-48bf-8d89-90fb93762bac
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: EmptyArray
+      value:
+        simple: '[]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: ac1445f8-cbce-48b4-8faf-4bfa91c674ef
+      iscommand: false
+      name: Set an empty array
+      script: Set
+      type: regular
+      version: -1
+    taskid: ac1445f8-cbce-48b4-8faf-4bfa91c674ef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: EmptyArray
+                transformers:
+                - operator: FirstArrayElement
+          operator: isNotExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: EmptyArray
+                transformers:
+                - operator: LastArrayElement
+          operator: isNotExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9637ab98-7895-446f-87eb-955af1c374aa
+      iscommand: false
+      name: Verify first and last array elements are not defined
+      type: condition
+      version: -1
+    taskid: 9637ab98-7895-446f-87eb-955af1c374aa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.9.0
+description: ''

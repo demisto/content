@@ -1,0 +1,113 @@
+{
+    "data": [
+        {
+            "host_name": "host1",
+            "computer_id": 2232836718,
+            "ipaddress_client": "4.4.4.4",
+            "ipaddress_server": "4.4.4.4",
+            "port_number": 8080,
+            "send_state": "None",
+            "receive_state": "None",
+            "status": "Leader",
+            "protocol_version": 314,
+            "full_version": "7.2.314.3476",
+            "last_registration": "2021-11-15T08:49:18Z",
+            "public_key_valid": true,
+            "registered_with_tls": false
+        },
+        {
+            "host_name": "host2",
+            "computer_id": 9065264,
+            "ipaddress_client": "3.3.3.3",
+            "ipaddress_server": "4.4.4.4",
+            "port_number": 8081,
+            "send_state": "None",
+            "receive_state": "None",
+            "status": "Blocked",
+            "protocol_version": 315,
+            "full_version": "7.4.5.1204",
+            "last_registration": "2021-11-15T08:49:16Z",
+            "public_key_valid": true,
+            "registered_with_tls": true
+        },
+        {
+            "host_name": "host3",
+            "computer_id": 8082,
+            "ipaddress_client": "3.3.3.3",
+            "ipaddress_server": "4.4.4.4",
+            "port_number": 3000,
+            "send_state": "None",
+            "receive_state": "None",
+            "status": "Normal",
+            "protocol_version": 315,
+            "full_version": "7.4.5.1204",
+            "last_registration": "2021-11-15T08:49:16Z",
+            "public_key_valid": true,
+            "registered_with_tls": true
+        },
+        {
+            "host_name": "host1",
+            "computer_id": 4000,
+            "ipaddress_client": "1.1.1.1",
+            "ipaddress_server": "2.2.2.2",
+            "port_number": 17472,
+            "send_state": "None",
+            "receive_state": "None",
+            "status": "Slow link",
+            "protocol_version": 315,
+            "full_version": "7.4.5.1204",
+            "last_registration": "2021-11-15T08:49:16Z",
+            "public_key_valid": true,
+            "registered_with_tls": true
+        },
+        {
+            "host_name": "host2",
+            "computer_id": 123,
+            "ipaddress_client": "3.4.5.6",
+            "ipaddress_server": "1.1.1.1",
+            "port_number": 8080,
+            "send_state": "None",
+            "receive_state": "None",
+            "status": "Leader",
+            "protocol_version": 315,
+            "full_version": "7.4.5.1204",
+            "last_registration": "2021-11-15T08:49:16Z",
+            "public_key_valid": true,
+            "registered_with_tls": true
+        },
+        {
+            "send_forward_count": 0,
+            "send_backward_count": 0,
+            "send_none_count": 2,
+            "send_ok_count": 0,
+            "receive_forward_count": 0,
+            "receive_backward_count": 0,
+            "receive_none_count": 2,
+            "receive_ok_count": 0,
+            "slowlink_count": 0,
+            "blocked_count": 0,
+            "leader_count": 2,
+            "normal_count": 0,
+            "registered_with_tls_count": 1,
+            "versions": [
+                {
+                    "version_string": "7.2.314.3476",
+                    "count": 1,
+                    "filtered": 1
+                },
+                {
+                    "version_string": "7.4.5.1204",
+                    "count": 1,
+                    "filtered": 1
+                }
+            ]
+        },
+        {
+            "cache_id": 3442589785,
+            "page_row_count": 2,
+            "filtered_row_count": 2,
+            "cache_row_count": 2,
+            "expiration": "2021-11-15T08:51:03Z"
+        }
+    ]
+}

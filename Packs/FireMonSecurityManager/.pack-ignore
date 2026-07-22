@@ -1,0 +1,9 @@
+[file:FireMonSecurityManager.yml]
+ignore=IN136,DS107,IN126
+
+[file:FireMonSecurityManager_image.png]
+ignore=IM111
+
+[known_words]
+PP
+FireMon

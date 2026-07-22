@@ -1,0 +1,12 @@
+[file:DuoAdminApi_image.png]
+ignore=IM111
+
+[known_words]
+duoadmin
+
+[file:DuoModelingRule.yml]
+ignore=MR108
+
+[file:DuoModelingRule_1_3.yml]
+ignore=MR108
+

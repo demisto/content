@@ -1,0 +1,736 @@
+id: RiskIQAsset Enrichment - RiskIQ Digital Footprint
+version: -1
+name: RiskIQAsset Enrichment - RiskIQ Digital Footprint
+description: |-
+  Enriches the "RiskIQAsset" type of indicators with basic information and CVEs detected for the asset, performs a vulnerability scan for "Host" and "IP Address" type of assets, and enriches received information in the context as well as provides the user to add to allow list a list of "IP Address" type of assets. This playbook also enriches the detected CVEs. To select the indicators you want to enrich, go to playbook inputs, choose "from indicators" and set your query. For example type:RiskIQAsset etc. The default playbook query is "type:RiskIQAsset". In case indicators with specific "riskiqassettype" are to be enriched, the query must be edited accordingly. This playbook needs to be used with caution as it might use up the integrations' API license when running for large amounts of indicators.
+  Supported integrations:
+  - RiskIQ Digital Footprint
+  - Tenable.io
+  - Google Cloud Compute
+  - AWS - EC2
+  - Okta v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7a5757fa-5af0-467d-8be1-ecd780b26733
+    type: start
+    task:
+      id: 7a5757fa-5af0-467d-8be1-ecd780b26733
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a90401a4-b4c6-4d87-8a08-71e7ae74eac9
+    type: condition
+    task:
+      id: a90401a4-b4c6-4d87-8a08-71e7ae74eac9
+      version: -1
+      name: Is RiskIQ Digital Footprint integration enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e331dd13-13ac-4f01-85ef-2e76e6f79b91
+    type: condition
+    task:
+      id: e331dd13-13ac-4f01-85ef-2e76e6f79b91
+      version: -1
+      name: Is Tenable.io enabled?
+      description: Checks whether there is an active instance of the Tenable.io integration
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Tenable.io
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c4b8efcc-230f-4b5f-884e-93c1eae2762f
+    type: condition
+    task:
+      id: c4b8efcc-230f-4b5f-884e-93c1eae2762f
+      version: -1
+      name: Is there a query result and RiskIQAsset Type?
+      description: Checks if there is any query result for the query applied in the
+        previous step and if the queried indicators consist of RiskIQAsset Type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "21"
+      - "20"
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery.CustomFields
+                accessor: riskiqassettype
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c2d8b383-3715-4542-86bc-b373643d62a9
+    type: title
+    task:
+      id: c2d8b383-3715-4542-86bc-b373643d62a9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: c2621b7b-c1dc-47bb-8e36-4421bd42ce7e
+    type: condition
+    task:
+      id: c2621b7b-c1dc-47bb-8e36-4421bd42ce7e
+      version: -1
+      name: Is there a Host or IP Address asset?
+      description: Checks if there is a Host or IP Address asset.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: Host
+            iscontext: false
+          right:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: CustomFields.riskiqassettype
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              simple: IP Address
+            iscontext: false
+          right:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: CustomFields.riskiqassettype
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9c50ec14-2a36-4984-83ac-aeaca15c9c1d
+    type: playbook
+    task:
+      id: 9c50ec14-2a36-4984-83ac-aeaca15c9c1d
+      version: -1
+      name: Vulnerability Scan - RiskIQ Digital Footprint - Tenable.io
+      description: |-
+        Performs a vulnerability scan for an asset of type "Host" and "IP Address" using Tenable.io integration.
+        Supported integration:
+        - Tenable.io
+      playbookName: Vulnerability Scan - RiskIQ Digital Footprint - Tenable.io
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      asset_name:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+              right:
+                value:
+                  simple: Host
+            - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+              right:
+                value:
+                  simple: IP Address
+          accessor: value
+      asset_type:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+              right:
+                value:
+                  simple: IP Address
+            - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+              right:
+                value:
+                  simple: Host
+          accessor: CustomFields.riskiqassettype
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 70f1c7dd-4250-4436-812c-40e91e0c82fd
+    type: playbook
+    task:
+      id: 70f1c7dd-4250-4436-812c-40e91e0c82fd
+      version: -1
+      name: RiskIQAsset Basic Information Enrichment - RiskIQ Digital Footprint
+      description: |-
+        This playbook receives indicators from its parent playbook and enriches the basic information and the detected CVEs for the "RiskIQAsset" type of indicators. This playbook needs to be used with caution as it might use up the integrations' API license when running for large amounts of indicators.
+        Supported Integrations:
+        - RiskIQ Digital Footprint
+        - VulnDB
+        - CVE Search
+        - IBM X-Force
+      playbookName: RiskIQAsset Basic Information Enrichment - RiskIQ Digital Footprint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      asset_name:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+          accessor: value
+      asset_type:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+          accessor: CustomFields.riskiqassettype
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: e4501376-a575-4de7-89c4-fd5d9f583900
+    type: condition
+    task:
+      id: e4501376-a575-4de7-89c4-fd5d9f583900
+      version: -1
+      name: Is there an IP Address asset?
+      description: Checks if there is an IP Address asset.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: IP Address
+            iscontext: false
+          right:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: CustomFields.riskiqassettype
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4e8cd968-5536-42eb-89ee-37b91afcbe04
+    type: title
+    task:
+      id: 4e8cd968-5536-42eb-89ee-37b91afcbe04
+      version: -1
+      name: IP Whitelisting and Exclusion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: cc00bc07-fdd5-46bc-8eb1-4f5a2e82382a
+    type: title
+    task:
+      id: cc00bc07-fdd5-46bc-8eb1-4f5a2e82382a
+      version: -1
+      name: Vulnerability Scan
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: cbb83c51-3e73-4294-829e-9cfb4ba481f4
+    type: title
+    task:
+      id: cbb83c51-3e73-4294-829e-9cfb4ba481f4
+      version: -1
+      name: Basic Information Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: d7091426-4110-456f-8450-a2f5d22dcb5e
+    type: playbook
+    task:
+      id: d7091426-4110-456f-8450-a2f5d22dcb5e
+      version: -1
+      name: IP Whitelist And Exclusion - RiskIQ Digital Footprint
+      description: Adds the IP Address(es) to allow list after checking if it should be added to allow list
+        according to the user inputs provided. This playbook also adds these IP Address
+        indicators to the exclusion list and tags it with "RiskIQ Whitelisted IP Address"
+        tag.
+      playbookName: IP Whitelist And Exclusion - RiskIQ Digital Footprint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+      auto_exclude_whitelisted_ip_address:
+        complex:
+          root: inputs.auto_exclude_whitelisted_ip_address
+      auto_whitelist_ip_address:
+        complex:
+          root: inputs.auto_whitelist_ip_address
+      aws_security_group_name:
+        complex:
+          root: inputs.aws_security_group_name
+      gcp_firewall_name:
+        complex:
+          root: inputs.gcp_firewall_name
+      ip_address:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.riskiqassettype
+                iscontext: true
+              right:
+                value:
+                  simple: IP Address
+          accessor: value
+      okta_zone_id:
+        complex:
+          root: inputs.okta_zone_id
+      support_contact:
+        complex:
+          root: inputs.support_contact
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_6_#default#": 0.19,
+      "1_6_#default#": 0.16,
+      "2_10_yes": 0.51,
+      "2_6_#default#": 0.51,
+      "5_6_#default#": 0.19,
+      "9_6_#default#": 0.18
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1005,
+        "width": 1940,
+        "x": -720,
+        "y": -310
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: type:RiskIQAsset
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of IP ranges to check if the IP Address is in that range for
+    adding to allow list. The list should be provided in CIDR notation, separated by commas.
+    An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
+    (without quotes). If a list is not provided, will use the default list provided
+    in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
+- key: auto_whitelist_ip_address
+  value:
+    complex:
+      root: incident
+      accessor: riskiqautowhitelistipaddress
+  required: false
+  description: Automatically add the IP Address(es) to allow list. You can set this as 'Yes'
+    or 'No' manually here or you can set it into a custom incident field 'RiskIQ Auto
+    Whitelist IP Address'.
+  playbookInputQuery:
+- key: auto_exclude_whitelisted_ip_address
+  value:
+    complex:
+      root: incident
+      accessor: riskiqautoexcludewhitelistedipaddress
+  required: false
+  description: Automatically add the IP Address(es) on allow list to the exclusions
+    list. You can set this as 'Yes' or 'No' manually here or you can set it into a
+    custom incident field 'RiskIQ Auto Exclude Whitelisted IP Address'.
+  playbookInputQuery:
+- key: support_contact
+  value:
+    complex:
+      root: incident
+      accessor: riskiqsupportcontact
+  required: false
+  description: The contact email address of the support team from which manual inputs
+    should be fetched.
+  playbookInputQuery:
+- key: aws_security_group_name
+  value:
+    complex:
+      root: incident
+      accessor: riskiqassetawssecuritygroupname
+  required: false
+  description: Name of the AWS Security Group to update the IPs on allow list.
+  playbookInputQuery:
+- key: gcp_firewall_name
+  value:
+    complex:
+      root: incident
+      accessor: riskiqassetgcpfirewallname
+  required: false
+  description: Name of the GCP Firewall where the playbook should set the IPs on allow list.
+  playbookInputQuery:
+- key: okta_zone_id
+  value:
+    complex:
+      root: incident
+      accessor: riskiqassetoktazoneid
+  required: false
+  description: ID of the Okta Zone to update the IPs on allow list. Use !okta-list-zones
+    to obtain the available zones.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

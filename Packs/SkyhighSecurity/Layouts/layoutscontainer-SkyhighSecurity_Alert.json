@@ -1,0 +1,877 @@
+{
+    "id": "Skyhigh Security Alert",
+    "version": -1,
+    "name": "Skyhigh Security Alert",
+    "system": false,
+    "group": "incident",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Child Incidents",
+                        "static": false,
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 106,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-1d83cf50-fb91-11ec-b8f1-4f20a873546d",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "accountid",
+                                "height": 22,
+                                "id": "359dd330-fb94-11ec-b8f1-4f20a873546d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mvisionactivitycount",
+                                "height": 22,
+                                "id": "3af85e90-fb94-11ec-b8f1-4f20a873546d",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertaction",
+                                "height": 22,
+                                "id": "23109c00-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertcategory",
+                                "height": 22,
+                                "id": "26e3c410-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "categories",
+                                "height": 22,
+                                "id": "2de74480-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "city",
+                                "height": 22,
+                                "id": "30f2afc0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "cloudservice",
+                                "height": 22,
+                                "id": "37fce6f0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "country",
+                                "height": 22,
+                                "id": "43af7080-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "deviceexternalips",
+                                "height": 22,
+                                "id": "4fafcbf0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mvisiondevicetype",
+                                "height": 22,
+                                "id": "56649020-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domainname",
+                                "height": 22,
+                                "id": "59768b10-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "eventaction",
+                                "height": 22,
+                                "id": "6227e290-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "eventid",
+                                "height": 22,
+                                "id": "630f0e40-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filehash",
+                                "height": 22,
+                                "id": "672be980-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "lastupdatetime",
+                                "height": 22,
+                                "id": "6efdb670-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "malwarefamily",
+                                "height": 22,
+                                "id": "78ecbe10-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "malwarename",
+                                "height": 22,
+                                "id": "7994bde0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "orgunit",
+                                "height": 22,
+                                "id": "7ed0ebd0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 17,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "os",
+                                "height": 22,
+                                "id": "840d40d0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 18,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "policyactions",
+                                "height": 22,
+                                "id": "8a68e880-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 19,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "policydescription",
+                                "height": 44,
+                                "id": "8cdcf5c0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 20,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "policyid",
+                                "height": 22,
+                                "id": "91834c50-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 21,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "region",
+                                "height": 22,
+                                "id": "9792a8c0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 22,
+                                "listId": "caseinfoid-1d83cf50-fb91-11ec-b8f1-4f20a873546d",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "riskscore",
+                                "height": 22,
+                                "id": "9e265060-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 23,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rulename",
+                                "height": 22,
+                                "id": "a224ce30-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 24,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceips",
+                                "height": 22,
+                                "id": "af560880-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 25,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcestatus",
+                                "height": 22,
+                                "id": "b2f8aab0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 26,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "starttime",
+                                "height": 22,
+                                "id": "b7276040-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 27,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "mvisionuseragent",
+                                "height": 22,
+                                "id": "bdb366c0-fb96-11ec-b8f1-4f20a873546d",
+                                "index": 28,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "More Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-d44439f0-fb96-11ec-b8f1-4f20a873546d",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityactivitycount",
+                                "height": 22,
+                                "id": "54af4990-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityactivitynames",
+                                "height": 22,
+                                "id": "57d40930-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityactorid",
+                                "height": 22,
+                                "id": "595f8b30-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityactoridtype",
+                                "height": 22,
+                                "id": "5b1a0c70-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityanomalycategory",
+                                "height": 22,
+                                "id": "5db9bd90-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityanomalycause",
+                                "height": 22,
+                                "id": "5f506320-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityanomalyvalue",
+                                "height": 22,
+                                "id": "6b1dc7b0-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritycontentitemcreatedon",
+                                "height": 22,
+                                "id": "6c02a970-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritycontentitemhierarchy",
+                                "height": 22,
+                                "id": "7950e1a0-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritycontentitemid",
+                                "height": 22,
+                                "id": "7bffadf0-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritycontentitemname",
+                                "height": 22,
+                                "id": "7f08f650-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritycontentitemparent",
+                                "height": 22,
+                                "id": "86acfc80-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritycontentitemsize",
+                                "height": 22,
+                                "id": "8892ac70-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritycontentitemtype",
+                                "height": 22,
+                                "id": "89983590-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritydevicetype",
+                                "height": 22,
+                                "id": "8fb1a420-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityispartofthreat",
+                                "height": 22,
+                                "id": "90708750-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityistokenized",
+                                "height": 22,
+                                "id": "912f1c60-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritymalwareconfidence",
+                                "height": 22,
+                                "id": "91fe7a50-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 17,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritymatchcount",
+                                "height": 22,
+                                "id": "92d32f70-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 18,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityresolutionaction",
+                                "height": 22,
+                                "id": "93b52b00-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 19,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityscanname",
+                                "height": 22,
+                                "id": "949292b0-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 20,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityscanrundate",
+                                "height": 22,
+                                "id": "99ff1f70-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 21,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritysignificantlyupdatedat",
+                                "height": 22,
+                                "id": "9e611a00-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 22,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecuritytotalmatchcount",
+                                "height": 22,
+                                "id": "a2e346c0-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 23,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityuniqueactivitynames",
+                                "height": 22,
+                                "id": "a702ba10-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 24,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityuseragent",
+                                "height": 22,
+                                "id": "aa02b3a0-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 25,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "skyhighsecurityuserattributes",
+                                "height": 22,
+                                "id": "ad19b7a0-fb97-11ec-b8f1-4f20a873546d",
+                                "index": 26,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "More Specific Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "fromVersion": "6.5.0",
+    "description": "Layout for Skyhigh Security Alert incident type.",
+    "marketplaces": ["xsoar"]
+}

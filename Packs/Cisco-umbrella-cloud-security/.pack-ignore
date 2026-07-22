@@ -1,0 +1,6 @@
+[file:Cisco-umbrella-cloud-security.yml]
+ignore=BA108,BA109
+
+[file:Cisco-umbrella-cloud-security_image.png]
+ignore=IM111
+

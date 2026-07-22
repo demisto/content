@@ -1,0 +1,26 @@
+[MODEL: dataset="thinkst_canary_raw", model="Endpoint"]
+filter _raw_log contains "incident" or _raw_log contains "alert"
+| alter priority =arrayindex(regextract(_raw_log,"\<\d+\>"), 0),
+    severity =arrayindex(regextract(_raw_log,"\<\d+\>(\d+)"), 0),
+    time =arrayindex(regextract(_raw_log,"\d{4}\-\d{2}\-\d{2}T\d\d\:\d\d\:\d\d\.\d+"), 0),
+    UTC =arrayindex(regextract(_raw_log,"\+\d\d\:\d\d"),0),
+    customer=arrayindex(regextract(_raw_log,"([\w\-]+)\sThinkstCanary"),0),
+    id=arrayindex(regextract(_raw_log,"ThinkstCanary\s(\d{4})"),0),
+    eventid =arrayindex(regextract(_raw_log,"\seventid\=\"(\d+)\""),0),
+    ReverseDNS = arrayindex(regextract(_raw_log,"ReverseDNS\=\"([\w\-\.]+)\"\sCanaryName"),0),
+    CanaryLocation = arrayindex(regextract(_raw_log,"CanaryLocation\=\"([\w\s]+)\""),0),
+    Description =arrayindex(regextract(_raw_log,"Description\=\"([\w\s]+)\""),0),
+    timestamp =arrayindex(regextract(_raw_log,"Timestamp\=\"([\d]+)\""),0),
+    CanaryPort =arrayindex(regextract(_raw_log,"CanaryPort\=\"([\d]+)\""),0),
+    CanaryIP =arrayindex(regextract(_raw_log," CanaryIP\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\""),0),
+    SourceIP =arrayindex(regextract(_raw_log," SourceIP\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\""),0),
+    FakeCreds =arrayindex(regextract(_raw_log,"FakeCreds\=\"([\s\w\d]+)\"\s"),0),
+    CanaryID =arrayindex(regextract(_raw_log,"CanaryID\=\"([\s\w\d]+)\""),0),
+    summary = arrayindex(regextract(_raw_log,"\]\s﻿(.*)"),0),
+    Message =  arrayindex(regextract(_raw_log,"Message\=\"([\w\s\d]+)\""),0)
+| alter XDM.Endpoint.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E6S",time),
+    XDM.Endpoint.original_event_id = eventid,
+    XDM.Endpoint.original_event_description = Description,
+    XDM.Endpoint.reason = summary,
+    XDM.Endpoint.Target.host.ipv4_addresses = arraycreate(coalesce(CanaryIP,"")),
+    XDM.Endpoint.Actor.host.device_id = CanaryID;

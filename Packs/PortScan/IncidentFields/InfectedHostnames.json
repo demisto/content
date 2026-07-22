@@ -1,0 +1,43 @@
+{
+    "id": "incident_infectedhostnames",
+    "version": -1,
+    "modified": "2020-03-25T14:26:39.38638117Z",
+    "name": "Infected Hostnames",
+    "ownerOnly": false,
+    "placeholder": "",
+    "description": "Hostnames that were infected with the malware.",
+    "cliName": "infectedhostnames",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "",
+    "fieldCalcScript": "",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": null,
+    "validationRegex": "",
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Port Scan"
+    ],
+    "systemAssociatedTypes": null,
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": null,
+    "defaultRows": null,
+    "sla": 0,
+    "threshold": 72,
+    "breachScript": "",
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

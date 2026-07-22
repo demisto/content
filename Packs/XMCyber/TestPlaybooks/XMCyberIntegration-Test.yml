@@ -1,0 +1,627 @@
+id: XMCyberIntegration-Test
+name: XMCyberIntegration-Test
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 7c83c62e-c3fa-4bc7-b3e1-51b5d70b0c3f
+    type: start
+    task:
+      id: 7c83c62e-c3fa-4bc7-b3e1-51b5d70b0c3f
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 32b79020-3565-466c-b1aa-20122377ea18
+    type: regular
+    task:
+      id: 32b79020-3565-466c-b1aa-20122377ea18
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 0206c881-f2f8-43be-86df-b51c78458e41
+    type: regular
+    task:
+      id: 0206c881-f2f8-43be-86df-b51c78458e41
+      version: -1
+      name: xmcyber-affected-critical-assets-list
+      description: ''
+      script: '|||xmcyber-affected-critical-assets-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      entityId:
+        simple: "6324751896077844368"
+      timeId: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: 4d770f49-fc01-4ba7-919d-5791073ae13d
+    type: condition
+    task:
+      id: 4d770f49-fc01-4ba7-919d-5791073ae13d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRiskList.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRiskList.average
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRiskList.minimum
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: 486f36c8-29f2-40a0-89c9-da386e7930d5
+    type: regular
+    task:
+      id: 486f36c8-29f2-40a0-89c9-da386e7930d5
+      version: -1
+      name: xmcyber-affected-entities-list
+      description: ''
+      script: '|||xmcyber-affected-entities-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      entityId:
+        simple: "6324751896077844368"
+      timeId: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: 2328bc3c-7ff0-4b65-8344-9e3a291cde1e
+    type: condition
+    task:
+      id: 2328bc3c-7ff0-4b65-8344-9e3a291cde1e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList.technique
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: 422072c2-1f90-4754-9636-3c973405d8af
+    type: regular
+    task:
+      id: 422072c2-1f90-4754-9636-3c973405d8af
+      version: -1
+      name: xmcyber-version-supported
+      description: ''
+      script: '|||xmcyber-version-supported'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: 5b5c8e7b-1531-4428-81ca-6c9c01d0176d
+    type: condition
+    task:
+      id: 5b5c8e7b-1531-4428-81ca-6c9c01d0176d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.IsVersion.valid
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: 161e2316-07ee-453f-ac22-946eaff47cb2
+    type: regular
+    task:
+      id: 161e2316-07ee-453f-ac22-946eaff47cb2
+      version: -1
+      name: xmcyber-version-get
+      description: ''
+      script: '|||xmcyber-version-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: 0dc22270-c9a0-4996-944c-2b4f0533328b
+    type: condition
+    task:
+      id: 0dc22270-c9a0-4996-944c-2b4f0533328b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.Version.system
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: 0b9034da-fd8d-4db2-8c65-ff4c582a0ea1
+    type: regular
+    task:
+      id: 0b9034da-fd8d-4db2-8c65-ff4c582a0ea1
+      version: -1
+      name: ip
+      description: ''
+      script: 'XMCyber|||ip'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      ip:
+        simple: 192.168.111.185
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: 5069c1b2-94ad-4c37-a6d2-d0b0f5078f73
+    type: condition
+    task:
+      id: 5069c1b2-94ad-4c37-a6d2-d0b0f5078f73
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.isAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRisk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexityLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.technique
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityReport
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '12':
+    id: 12
+    taskid: ec5eaab2-8b3c-44db-8a2c-ab39502e7093
+    type: regular
+    task:
+      id: ec5eaab2-8b3c-44db-8a2c-ab39502e7093
+      version: -1
+      name: xmcyber-entity-get
+      description: ''
+      script: '|||xmcyber-entity-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      hostname:
+        simple: USERCC59
+      ip: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '13':
+    id: '13'
+    taskid: d7c68352-0834-4e70-9dfb-663855479569
+    type: condition
+    task:
+      id: d7c68352-0834-4e70-9dfb-663855479569
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '14'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.isAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRisk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexityLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.technique
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityReport
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '14':
+    id: 14
+    taskid: 37bb1fc5-9542-452c-b4b9-192b1065fd28
+    type: regular
+    task:
+      id: 37bb1fc5-9542-452c-b4b9-192b1065fd28
+      version: -1
+      name: hostname
+      description: ''
+      script: '|||hostname'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      hostname:
+        simple: USERCC59
+      ip: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '15':
+    id: '15'
+    taskid: 2921796a-d266-49a8-bd4c-7c72aefe30d9
+    type: condition
+    task:
+      id: 2921796a-d266-49a8-bd4c-7c72aefe30d9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.displayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.isAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entitiesAtRiskList
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.criticalAssetsAtRisk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.averageComplexityLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.technique
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.compromisingTechniques.count
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityType
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: XMCyber.entityReport
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '16':
+    id: '16'
+    taskid: 5cf3d8a7-588b-4bef-8d7b-bafebbc3addf
+    type: title
+    task:
+      id: 5cf3d8a7-588b-4bef-8d7b-bafebbc3addf
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width": 380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: ''
+marketplaces:
+  - xsoar

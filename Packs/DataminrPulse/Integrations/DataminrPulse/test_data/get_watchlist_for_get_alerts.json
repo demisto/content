@@ -1,0 +1,33 @@
+{
+  "watchlists": {
+    "TOPIC": [
+      {
+        "id": 3320153,
+        "type": "TOPIC",
+        "name": "Attack Vendor",
+        "description": "",
+        "properties": {
+          "watchlistColor": "darkblue"
+        }
+      },
+      {
+        "id": 3320156,
+        "type": "TOPIC",
+        "name": "Cyber-Physical",
+        "description": "",
+        "properties": {
+          "watchlistColor": "darkblue"
+        }
+      },
+      {
+        "id": 3320155,
+        "type": "TOPIC",
+        "name": "Data Security",
+        "description": "",
+        "properties": {
+          "watchlistColor": "red"
+        }
+      }
+    ]
+  }
+}

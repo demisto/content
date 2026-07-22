@@ -1,0 +1,29 @@
+{
+    "data": [
+        {
+            "ip": "12.4.49.74",
+            "domain": "base2.pets.com",
+            "type": "DOMAIN_RESOLUTION",
+            "assetType": "DOMAIN",
+            "assetKey": "base2.pets.com",
+            "provider": {
+                "id": "AWS",
+                "name": "Amazon Web Services"
+            },
+            "lastObserved": "2020-06-16T05:40:54.572Z",
+            "tenant": {
+                "id": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5",
+                "name": "VanDelay Industries",
+                "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+            },
+            "businessUnits": [
+                {
+                    "id": "a1f0f39b-f358-3c8c-947b-926887871b88",
+                    "name": "VanDelay Import-Export",
+                    "tenantId": "04b5140e-bbe2-3e9c-9318-a39a3b547ed5"
+                }
+            ],
+            "commonName": null
+        }
+    ]
+}

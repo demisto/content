@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "MITRE ATT\u0026CK CoA"
+    ],
+    "caseInsensitive": true,
+    "cliName": "fileblockingprofilename",
+    "closeForm": false,
+    "content": true,
+    "description": "File Blocking best practices profile name.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_fileblockingprofilename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "File Blocking Profile Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

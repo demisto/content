@@ -1,0 +1,216 @@
+id: SCADAfence_test
+version: -1
+name: SCADAfence_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fa9129fb-42ca-453f-8bfc-e1da842461a4
+    type: start
+    task:
+      id: fa9129fb-42ca-453f-8bfc-e1da842461a4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 357fa8e8-66fa-45a8-8a34-b46cc707f55a
+    type: regular
+    task:
+      id: 357fa8e8-66fa-45a8-8a34-b46cc707f55a
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 328a194b-07b0-4cd7-80c8-a4d3711b2f95
+    type: regular
+    task:
+      id: 328a194b-07b0-4cd7-80c8-a4d3711b2f95
+      version: -1
+      name: Fetch critical alerts
+      script: SCADAfence CNM|||scadafence-getAlerts
+      type: regular
+      iscommand: true
+      brand: SCADAfence CNM
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      severity:
+        simple: Critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: ebd5f4b9-ee76-496e-801b-92b4ed41841f
+    type: regular
+    task:
+      id: ebd5f4b9-ee76-496e-801b-92b4ed41841f
+      version: -1
+      name: Mark alerts in progress
+      script: SCADAfence CNM|||scadafence-setAlertStatus
+      type: regular
+      iscommand: true
+      brand: SCADAfence CNM
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      alertId:
+        simple: ${SCADAfence.Alert.id}
+      alertStatus:
+        simple: InProgress
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 057dd374-0090-4c96-8e5f-925be1f46936
+    type: regular
+    task:
+      id: 057dd374-0090-4c96-8e5f-925be1f46936
+      version: -1
+      name: Suspicious asset details
+      script: SCADAfence CNM|||scadafence-getAsset
+      type: regular
+      iscommand: true
+      brand: SCADAfence CNM
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      assetType: {}
+      hostName: {}
+      ipAddress:
+        simple: SCADAfence.Alert.ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: d2d6fedb-3714-4874-8fb1-1310105d8f8b
+    type: regular
+    task:
+      id: d2d6fedb-3714-4874-8fb1-1310105d8f8b
+      version: -1
+      name: Resolve alerts
+      script: SCADAfence CNM|||scadafence-setAlertStatus
+      type: regular
+      iscommand: true
+      brand: SCADAfence CNM
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alertId:
+        simple: ${SCADAfence.Alert.id}
+      alertStatus:
+        simple: Resolved
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: e0807884-77f0-4713-8fde-0b1bf1814dbc
+    type: regular
+    task:
+      id: e0807884-77f0-4713-8fde-0b1bf1814dbc
+      version: -1
+      name: Verify alert ip
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: SCADAfence.Alert.ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

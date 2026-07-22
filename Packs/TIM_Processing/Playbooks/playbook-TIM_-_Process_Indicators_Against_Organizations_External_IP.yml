@@ -1,0 +1,435 @@
+id: TIM - Process Indicators Against Organizations External IP List
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: TIM - Process Indicators Against Organizations External IP List
+description: This playbook processes indicators to check if they exist in a Cortex
+  XSOAR list containing the organizational External IP addresses or CIDR, and tags
+  the indicators accordingly.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 78e61b73-8045-41d4-8937-e6a0fde8c8f7
+    type: start
+    task:
+      id: 78e61b73-8045-41d4-8937-e6a0fde8c8f7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 99674279-5cec-40aa-8b03-2d24760e057e
+    type: condition
+    task:
+      id: 99674279-5cec-40aa-8b03-2d24760e057e
+      version: -1
+      name: Are there IP results?
+      description: Check for IP results from the indicators query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "101"
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "101":
+    id: "101"
+    taskid: 88642d57-0552-499e-832b-ae4cee5bc5ab
+    type: condition
+    task:
+      id: 88642d57-0552-499e-832b-ae4cee5bc5ab
+      version: -1
+      name: Is there an organization external IP list?
+      description: 'Check if there is IP list available '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "112"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalIPList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": -1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "102":
+    id: "102"
+    taskid: a9ed9aa9-94bc-41aa-84ee-ae943852b117
+    type: regular
+    task:
+      id: a9ed9aa9-94bc-41aa-84ee-ae943852b117
+      version: -1
+      name: 'Tag indicators as organizational external ip '
+      description: Adds 'organizational_external_ip' tag to matched IP indicators
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: organizational_external_ip
+      indicatorsValues:
+        complex:
+          root: playbookQuery.value
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OrganizationsExternalIPList
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "105":
+    id: "105"
+    taskid: 33154239-54b9-4257-8b01-e5c4466197c9
+    type: title
+    task:
+      id: 33154239-54b9-4257-8b01-e5c4466197c9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": -480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: a39f893b-ba8c-4f6c-83c1-0f4777b847cc
+    type: condition
+    task:
+      id: a39f893b-ba8c-4f6c-83c1-0f4777b847cc
+      version: -1
+      name: Is there an organization external CIDR list?
+      description: 'Check if there is CIDR list available '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "111"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalCIDRList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": -1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "110":
+    id: "110"
+    taskid: 7bcca1b6-03c0-4c1f-8c1a-fbeb15813609
+    type: regular
+    task:
+      id: 7bcca1b6-03c0-4c1f-8c1a-fbeb15813609
+      version: -1
+      name: 'Tag indicators as organizational external ip '
+      description: Adds 'organizational_external_ip' tag to matched IP indicators
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: organizational_external_ip
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          accessor: value
+          transformers:
+          - operator: IPv4Whitelist
+            args:
+              cidr_ranges:
+                value:
+                  simple: inputs.OrganizationsExternalCIDRList
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -710,
+          "y": -770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "111":
+    id: "111"
+    taskid: 6ab4bd2f-5cd8-400e-8dc4-32aeeeff3b33
+    type: condition
+    task:
+      id: 6ab4bd2f-5cd8-400e-8dc4-32aeeeff3b33
+      version: -1
+      name: Check indicators against CIDR list
+      description: Checks if there are IP indicators that exist in the Organizational
+        External CIDR list
+      type: condition
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: value
+                transformers:
+                - operator: IPv4Whitelist
+                  args:
+                    cidr_ranges:
+                      value:
+                        simple: inputs.OrganizationsExternalCIDRList
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: None
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": -950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "112":
+    id: "112"
+    taskid: b17feb3e-95e3-4864-85bb-f8cb3f30ba00
+    type: condition
+    task:
+      id: b17feb3e-95e3-4864-85bb-f8cb3f30ba00
+      version: -1
+      name: Check indicators against IP list
+      description: Checks if there are IP indicators that exist in the Organizational
+        External IP list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "102"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery.value
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.OrganizationsExternalIPList
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "101_105_#default#": 0.17,
+      "109_105_#default#": 0.17,
+      "111_105_#default#": 0.21,
+      "111_110_yes": 0.73,
+      "112_105_#default#": 0.19,
+      "19_105_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1035,
+        "width": 1820,
+        "x": -710,
+        "y": -1450
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: type:IP
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: OrganizationsExternalIPList
+  value: {}
+  required: false
+  description: A Cortex XSOAR list containing the organization's External IP address
+    values. The value should be taken from the Lists inputs. The list should be with comma separated values.
+  playbookInputQuery:
+- key: OrganizationsExternalCIDRList
+  value: {}
+  required: false
+  description: A Cortex XSOAR list containing the organization's External CIDR values.
+    The value should be taken from the Lists inputs. The list should be with comma separated values.
+  playbookInputQuery:
+outputs: []
+quiet: true
+marketplaces:
+- xsoar
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

@@ -1,0 +1,7 @@
+[INGEST:vendor="mysql", product="enterprise", target_dataset="mysql_enterprise_raw", no_hit = keep]
+// Support only date time of format: yyyy-MM-dd hh:mm:ss. For example: "2021-10-03 10:00:00".
+filter _raw_log ~= "timestamp\":\s*\"\d{4,}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}"
+| alter tmp_raw_log = replex(_raw_log ,"\,$","")
+| alter tmp_timestamp = json_extract_scalar(tmp_raw_log ,"$.timestamp")
+| alter _time = parse_timestamp("%Y-%m-%d %H:%M:%S",tmp_timestamp)
+| fields - tmp_timestamp, tmp_raw_log;

@@ -1,0 +1,46 @@
+commonfields:
+  id: HTMLDocsAutomation
+  version: -1
+enabled: true
+name: HTMLDocsAutomation
+args:
+- description: War-room entry ID of sample file
+  name: entryID
+  required: true
+- description: Documentation overview
+  name: overview
+- description: Setting to work with Demisto instructions. Number the steps by 'x.' (i.e. '1.')
+  name: setupOnIntegration
+- description: Top use-cases. Number the steps by 'x.' (i.e. '1.')
+  name: useCases
+- description: Integration troubleshooting
+  name: troubleshooting
+- description: Fetched incidents data. Number the steps by 'x.' (i.e. '1.')
+  name: fetchedData
+- description: Additional information. Number the steps by 'x.' (i.e. '1.')
+  name: addInfo
+- description: Known limitations. Number the steps by 'x.' (i.e. '1.')
+  name: limit
+- description: 'Entry ID for file containing command examples. Each Command should be in a separate line. For example: !fidelis-list-alerts time_frame="Last 7 Days"'
+  name: commands
+- auto: PREDEFINED
+  defaultValue: per-command
+  description: Permissions diaplay options in the documantation
+  name: permissions
+  predefined:
+  - global
+  - per-command
+  - none
+comment: |-
+  Deprecated. The recommended way to generate documentation is via the demisto-sdk. 
+  See: https://xsoar.pan.dev/docs/integrations/integration-docs
+timeout: '0'
+script: '-'
+tags: []
+dockerimage: demisto/python3:3.7.4.1150
+type: python
+subtype: python3
+deprecated: true
+tests:
+- No test
+fromversion: 5.0.0

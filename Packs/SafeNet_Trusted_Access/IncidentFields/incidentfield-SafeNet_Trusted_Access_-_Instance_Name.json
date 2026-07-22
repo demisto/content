@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeNet Trusted Access Push Reject Alert",
+        "SafeNet Trusted Access Account Lockout Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safenettrustedaccessinstancename",
+    "closeForm": false,
+    "content": true,
+    "description": "Name of the SafeNet Trusted Access integration instance.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safenettrustedaccessinstancename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeNet Trusted Access - Instance Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,186 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "added": 1,
+                        "badhighlight": "0",
+                        "changeFromPrevious": "File Added",
+                        "changed": 0,
+                        "contentOffset": 924,
+                        "deleted": 0,
+                        "dirAndFile": "D:\\CimTrakTestFolder\\UnknownFile - Copy - Copy - Copy.txt",
+                        "end": 1,
+                        "eventTime": "2022-03-05 14:15:31",
+                        "file": "UnknownFile - Copy - Copy - Copy.txt",
+                        "fileSize": 28,
+                        "foundInBlacklist": "0",
+                        "generationid": 140,
+                        "hash": "SHA256:391A45ECF20A3602BC8D8F06F81C9EC56F1B018F29C061750BF671747B5407E2",
+                        "id": 3154,
+                        "initialPromotionTime": "2022-01-25 15:09:22",
+                        "isauthcopy": "0",
+                        "objectDetailId": 3154,
+                        "objectId": 7,
+                        "objectPath": "DSK050->local->TestLog",
+                        "parentId": 1,
+                        "path": "D:\\CimTrakTestFolder\\",
+                        "position": 1,
+                        "reasonType": 0,
+                        "reconciled": "0",
+                        "start": 1,
+                        "status": "M",
+                        "subGenerationId": 0,
+                        "ticketNumber": "",
+                        "total": 16
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getUnreconciledItems"
+        },
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [
+                    {
+                        "agentData": {
+                            "agentPriority": 1,
+                            "alternateSystemId": "test",
+                            "encryptionType": 99,
+                            "heartbeat": 60,
+                            "hmacType": 1,
+                            "keyLength": 0,
+                            "keyReset": 0,
+                            "licenseType": 0,
+                            "objectId": 1,
+                            "perfStat": 60
+                        },
+                        "objectData": {
+                            "agentObjectId": 1,
+                            "compliancePolicyCount": "2",
+                            "contact": "",
+                            "createDate": "2021-10-23 16:08:51",
+                            "description": "",
+                            "events": 30,
+                            "inService": "",
+                            "intrusionSize": 0,
+                            "intrusions": 0,
+                            "location": "",
+                            "logsByDays": true,
+                            "name": "local",
+                            "networkDevicePolicyCount": "0",
+                            "objectGroupCount": "5",
+                            "objectId": 1,
+                            "objectPath": "DSK050->local",
+                            "objectStatus": 0,
+                            "objectSubType": 1,
+                            "objectType": 1,
+                            "parentId": 0,
+                            "requireNotes": false,
+                            "revisions": 0,
+                            "systemIntegrityCount": "3",
+                            "tags": [],
+                            "templateId": 0,
+                            "url": "",
+                            "warnMinutes": 0
+                        },
+                        "objectsCustom": {
+                            "CimcorTrustedFileRegistryTaskAssigneeId": "-99",
+                            "MaxObjects": "200000",
+                            "OfflineCache": "0",
+                            "OfflineCacheRolloffKeepQuantity": "0",
+                            "WhitelistMode": "0"
+                        },
+                        "state": {
+                            "agentConnected": true,
+                            "agentIp": "127.0.0.1",
+                            "build": 18029,
+                            "cimTrakAgentRunningDate": "2022-03-08 18:55:58",
+                            "cimTrakVersion": "Build 18029",
+                            "components": [
+                                {
+                                    "displayName": "CimTrak Agent",
+                                    "enabled": true,
+                                    "name": "ctagent",
+                                    "version": "Build 18029"
+                                },
+                                {
+                                    "displayName": "Log Monitor",
+                                    "enabled": true,
+                                    "name": "ctlogmonitor",
+                                    "version": "Build 18029"
+                                },
+                                {
+                                    "displayName": "CimTrak Compliance Module",
+                                    "enabled": true,
+                                    "name": "ctcompliance",
+                                    "version": "Build 18029"
+                                }
+                            ],
+                            "connectTime": "2022-03-08 18:56:07.59057",
+                            "disconnectTime": "2022-01-25 12:22:51",
+                            "osRunningDate": "2022-02-10 00:22:37",
+                            "osVersion": "Windows 10 Version 10.0.19043 x64",
+                            "pathDelimiter": "\\",
+                            "realtimeEnabled": true
+                        }
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getAgentInfo"
+        }
+    ],
+    "response": {
+        "CustomFields": {
+            "fileSize": 28,
+            "hash": "SHA256:391A45ECF20A3602BC8D8F06F81C9EC56F1B018F29C061750BF671747B5407E2",
+            "objectPath": "DSK050->local->TestLog",
+            "ticketNumber": ""
+        },
+        "details": "File Added: D:\\CimTrakTestFolder\\UnknownFile - Copy - Copy - Copy.txt",
+        "name": "CimTrak - File Added",
+        "occurred": "2022-03-05T14:15:31.000Z",
+        "rawJSON": {
+            "added": 1,
+            "badhighlight": "0",
+            "changeFromPrevious": "File Added",
+            "changed": 0,
+            "contentOffset": 924,
+            "deleted": 0,
+            "dirAndFile": "D:\\CimTrakTestFolder\\UnknownFile - Copy - Copy - Copy.txt",
+            "end": 1,
+            "eventTime": "2022-03-05 14:15:31",
+            "file": "UnknownFile - Copy - Copy - Copy.txt",
+            "fileSize": 28,
+            "foundInBlacklist": "0",
+            "generationid": 140,
+            "hash": "SHA256:391A45ECF20A3602BC8D8F06F81C9EC56F1B018F29C061750BF671747B5407E2",
+            "id": 3154,
+            "initialPromotionTime": "2022-01-25 15:09:22",
+            "ip": "127.0.0.1",
+            "isauthcopy": "0",
+            "objectDetailId": 3154,
+            "objectId": 7,
+            "objectPath": "DSK050->local->TestLog",
+            "parentId": 1,
+            "path": "D:\\CimTrakTestFolder\\",
+            "position": 1,
+            "reasonType": 0,
+            "reconciled": "0",
+            "start": 1,
+            "status": "M",
+            "subGenerationId": 0,
+            "ticketNumber": "",
+            "total": 16
+        },
+        "severity": 2,
+        "type": "CimTrak Alert"
+    }
+}

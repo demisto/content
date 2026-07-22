@@ -1,0 +1,10 @@
+[file:layoutscontainer-News_Layout.json]
+ignore=BA101
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:PopularNews_image.png]
+ignore=IM111
+
+[known_words]
+clickable

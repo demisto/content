@@ -1,0 +1,266 @@
+id: SafeBreach - Rerun Single Insight
+version: -1
+name: SafeBreach - Rerun Single Insight
+description: Deprecated. No available replacement.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 65f703f9-9ef0-4393-8396-ac27fc84e3ae
+    type: start
+    task:
+      id: 65f703f9-9ef0-4393-8396-ac27fc84e3ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7e533299-05f4-44a9-8554-3c1fdc539e78
+    type: regular
+    task:
+      id: 7e533299-05f4-44a9-8554-3c1fdc539e78
+      version: -1
+      name: Rerun single insight
+      description: Reruns a specific SafeBreach Insight related simulations in your environment.
+      script: SafeBreach v2|||safebreach-rerun-insight
+      type: regular
+      iscommand: true
+      brand: SafeBreach v2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      insightId: {}
+      insightIds:
+        complex:
+          root: inputs.InsightIds
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 23e5cece-bc30-4ccb-8d45-b95362a8667e
+    type: title
+    task:
+      id: 23e5cece-bc30-4ccb-8d45-b95362a8667e
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b86a0ead-02ca-4f61-88c8-08c75a12fbcd
+    type: condition
+    task:
+      id: b86a0ead-02ca-4f61-88c8-08c75a12fbcd
+      version: -1
+      name: Was insight rerun successfully triggered?
+      description: Check whether "SafeBreach.Insight.Rerun" exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Rerun context exists:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Rerun context exists
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SafeBreach
+                accessor: Insight.Rerun
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d84cd89c-2a46-4db9-82a3-be303317da92
+    type: regular
+    task:
+      id: d84cd89c-2a46-4db9-82a3-be303317da92
+      version: -1
+      name: Wait few seconds before continue
+      description: Sleep for 5 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 9c4c1a32-d09e-45df-851d-1b729f1f949d
+    type: regular
+    task:
+      id: 9c4c1a32-d09e-45df-851d-1b729f1f949d
+      version: -1
+      name: Print insight without tests
+      description: Print the insight id that didn't run.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: SafeBreach
+          filters:
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: SafeBreach.Insight.Rerun
+                iscontext: true
+          accessor: Insight.Id
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Insight didn''t run: '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 965,
+        "width": 780,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: InsightIds
+  value:
+    complex:
+      root: SafeBreach
+      accessor: Insight.Id
+  required: true
+  description: SafeBreach Insight Ids
+  playbookInputQuery:
+outputs:
+- contextPath: SafeBreach.Insight.Id
+  description: Insight unique ID.
+  type: Number
+- contextPath: SafeBreach.Insight.Rerun.Name
+  description: Insight rerun test name.
+  type: String
+- contextPath: SafeBreach.Insight.Rerun.Id
+  description: ID of the rerun insight test.
+  type: String
+- contextPath: SafeBreach.Insight.Rerun.AttacksCount
+  description: Count of the attacks executed in the insight rerun test.
+  type: Number
+- contextPath: SafeBreach.Test.Id
+  description: ID of the test.
+  type: String
+- contextPath: SafeBreach.Test.Name
+  description: Name of the test.
+  type: String
+- contextPath: SafeBreach.Test.AttacksCount
+  description: The number of attacks executed in the insight rerun test.
+  type: Number
+- contextPath: SafeBreach.Test.Status
+  description: Test run status. For insight rerun, starts from PENDING.
+  type: String
+- contextPath: SafeBreach.Test.ScheduledTime
+  description: Time when the test was triggered.
+  type: String
+quiet: true
+fromversion: 5.5.0
+tests:
+- No tests (deprecated)
+deprecated: true

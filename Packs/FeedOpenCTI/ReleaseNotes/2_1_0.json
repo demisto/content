@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Due to a breaking change in the OpenCTI product, We now support version 5.12.17 and above, and lower versions may encounter issues."
+}

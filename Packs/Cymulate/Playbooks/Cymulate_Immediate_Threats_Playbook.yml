@@ -1,0 +1,469 @@
+id: Cymulate Immediate Threats
+version: -1
+name: Cymulate Immediate Threats
+description: Cymulate official playbook.
+fromversion: 6.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a7c00c0a-5181-48d8-8bd4-cd133bf0d87e
+    type: start
+    task:
+      description: First task.
+      id: a7c00c0a-5181-48d8-8bd4-cd133bf0d87e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4cd7bb94-f1ca-4003-8f4f-dd1f9788c857
+    type: regular
+    task:
+      description: Push malicious hashes to Endpoint Security block list.
+      id: 4cd7bb94-f1ca-4003-8f4f-dd1f9788c857
+      version: -1
+      name: Push malicious hashes to Endpoint Security block list
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f4c78891-3865-41d2-8694-f5d2a7f17208
+    type: regular
+    task:
+      description: Push malicious Emails to Email Gateway block list
+      id: f4c78891-3865-41d2-8694-f5d2a7f17208
+      version: -1
+      name: Push malicious Emails to Email Gateway block list
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a407f347-50e5-41e2-8e7c-fcf8abf06f49
+    type: regular
+    task:
+      description: Push malicious URL's to Web Gateway block list.
+      id: a407f347-50e5-41e2-8e7c-fcf8abf06f49
+      version: -1
+      name: Push malicious URL's to Web Gateway block list
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f6a0d688-55dc-4d48-8a29-be19e36a610f
+    type: condition
+    task:
+      id: f6a0d688-55dc-4d48-8a29-be19e36a610f
+      version: -1
+      name: Rerun Simulation
+      description: Extract user's response from EmailAskUser reply. Returns the first
+        textual response line of the provided entry that contains the reply body.
+        Use ${lastCompletedTaskEntries} to analyze the previous playbook task containing
+        the user's reply.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Done:
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Please rerun simulation
+      body:
+        simple: Please rerun Immediate Threat simulation again
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Done
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 75e37490-4ad6-4f31-8628-8053c3748bbf
+    type: condition
+    task:
+      id: 75e37490-4ad6-4f31-8628-8053c3748bbf
+      version: -1
+      name: Any payloads penetrated?
+      description: "Gets a value and return it. This is to be used in playbook conditional\
+        \ tasks - get a value from incident field, label or context, and act accordingly.\
+        \ \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.cymulatestatus
+            iscontext: true
+          right:
+            value:
+              simple: Penetrated
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 0b0698d5-d440-44dd-8a36-2d457d99628a
+    type: condition
+    task:
+      description: Check if any IOC is related to Endpoint Security.
+      id: 0b0698d5-d440-44dd-8a36-2d457d99628a
+      version: -1
+      name: Any IOC's related to Endpoint Security?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.cymulatesha1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sha256
+            iscontext: false
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.md5
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.attackvector
+            iscontext: true
+          right:
+            value:
+              simple: Endpoint Security
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: adecd058-bc4f-47b5-8790-12228ef79271
+    type: condition
+    task:
+      description: Check if any IOC is related to Web Gateway.
+      id: adecd058-bc4f-47b5-8790-12228ef79271
+      version: -1
+      name: Any IOC's related to Web Gateway?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.cymulatesha1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sha256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.md5
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.attackvector
+            iscontext: true
+          right:
+            value:
+              simple: Web Gateway
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 7f8dbf5c-0580-4bb2-801e-ff5efc8bfdb8
+    type: condition
+    task:
+      description: Check if any IOC is related to Email Gateway.
+      id: 7f8dbf5c-0580-4bb2-801e-ff5efc8bfdb8
+      version: -1
+      name: Any IOC's related to Email Gateway?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.cymulatesha1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.sha256
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.md5
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.attackvector
+            iscontext: true
+          right:
+            value:
+              simple: Email Gateway
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 2b810e64-ad01-4ebc-8c85-367511eb1e3a
+    type: title
+    task:
+      description: ''
+      id: 2b810e64-ad01-4ebc-8c85-367511eb1e3a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 48d4ac7d-b04b-4892-846a-6504e52732ec
+    type: condition
+    task:
+      description: Get immediate threats intelligence.
+      id: 48d4ac7d-b04b-4892-846a-6504e52732ec
+      version: -1
+      name: Get immediate threats intelligence
+      type: condition
+      iscommand: false
+      brand: cymulate_v2
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: cymulatemodule
+            iscontext: true
+          right:
+            value:
+              simple: Immediate Threats Intelligence
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_5_#default#": 0.79,
+      "13_3_yes": 0.46,
+      "5_14_Done": 0.79,
+      "6_14_#default#": 0.19,
+      "8_13_#default#": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2345,
+        "width": 1650,
+        "x": 210,
+        "y": -590
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- Cymulate V2 Test
+- Cymulate Immediate Threats

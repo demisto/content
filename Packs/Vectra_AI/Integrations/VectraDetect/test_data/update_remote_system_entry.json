@@ -1,0 +1,53 @@
+[
+    {
+        "IndicatorTimeline": null,
+        "InstanceID": "",
+        "Relationships": null,
+        "brand": "none",
+        "cacheVersn": 0,
+        "category": "chat",
+        "contents": "note from xsoar",
+        "contentsSize": 15,
+        "created": "2024-07-22T14:21:26.827134032+05:30",
+        "cronView": false,
+        "endingDate": "0001-01-01T00:00:00Z",
+        "entryTask": null,
+        "errorSource": "",
+        "file": "",
+        "fileID": "",
+        "fileMetadata": null,
+        "format": "markdown",
+        "id": "6@290319",
+        "incidentCreationTime": "0001-01-01T00:00:00Z",
+        "investigationId": "290319",
+        "isTodo": false,
+        "mirrored": false,
+        "modified": "2024-07-22T14:21:32.110182144+05:30",
+        "note": true,
+        "parentContent": null,
+        "parentEntryTruncated": false,
+        "parentId": "",
+        "pinned": false,
+        "playbookId": "",
+        "recurrent": false,
+        "reputationSize": 0,
+        "reputations": null,
+        "retryTime": "0001-01-01T00:00:00Z",
+        "scheduled": false,
+        "sizeInBytes": 0,
+        "startDate": "0001-01-01T00:00:00Z",
+        "system": "",
+        "tags": [
+            "note"
+        ],
+        "tagsRaw": [
+            "note"
+        ],
+        "taskId": "",
+        "times": 0,
+        "timezoneOffset": 0,
+        "type": 1,
+        "user": "admin",
+        "version": 2
+    }
+]

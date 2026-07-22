@@ -1,0 +1,36 @@
+{
+    "name": "Shodan",
+    "description": "A search engine used for searching Internet-connected devices",
+    "support": "xsoar",
+    "currentVersion": "1.2.11",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Free Enricher"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Shodan",
+        "Banner"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "asm",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "exposure_management"
+    ]
+}

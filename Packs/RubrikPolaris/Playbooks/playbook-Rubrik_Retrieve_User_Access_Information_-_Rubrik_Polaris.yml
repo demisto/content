@@ -1,0 +1,895 @@
+id: Rubrik Retrieve User Access Information - Rubrik Polaris
+version: -1
+name: Rubrik Retrieve User Access Information - Rubrik Polaris
+description: This playbook retrieves User Intelligence information for the provided username or email, which includes the user's risk level and the types of analyzer hits.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 90ca09a7-f94b-4197-8db9-e356c8aff9ef
+    type: start
+    task:
+      id: 90ca09a7-f94b-4197-8db9-e356c8aff9ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 292.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ff58472d-adce-43aa-8fbe-ab9f40c92d46
+    type: title
+    task:
+      id: ff58472d-adce-43aa-8fbe-ab9f40c92d46
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 2300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b706d89f-8683-4a15-8eec-7b4208f39a99
+    type: condition
+    task:
+      id: b706d89f-8683-4a15-8eec-7b4208f39a99
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 292.5,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5241c127-7ae8-4f30-8ecd-18c541fe50d2
+    type: regular
+    task:
+      id: 5241c127-7ae8-4f30-8ecd-18c541fe50d2
+      version: -1
+      name: Retrieve user access information from RSC using the playbook input and the next UPN page number.
+      description: Retrieve user access information from RSC using information collected from the playbook input and the next UPN page number.
+      script: '|||rubrik-sonar-user-access-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      extend-context:
+        simple: subplaybook_user_risk_levels=xsoar_risk_levels
+      next_page_token:
+        complex:
+          root: next_page_token
+      page_number:
+        complex:
+          root: RubrikPolaris.PageToken.UserAccess
+          accessor: next_upn_page_number
+      risk_levels:
+        complex:
+          root: inputs.risk_levels
+      search_time_period:
+        complex:
+          root: inputs.search_time_period
+      user_email:
+        complex:
+          root: inputs.user_email
+      user_name:
+        complex:
+          root: inputs.user_name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 292.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 06782a32-9af6-43da-847f-61444ed15645
+    type: regular
+    task:
+      id: 06782a32-9af6-43da-847f-61444ed15645
+      version: -1
+      name: Retrieve user access information from RSC using the playbook input and the next page token.
+      description: Retrieve user access information from RSC using information collected from the playbook input and the next page token.
+      script: '|||rubrik-sonar-user-access-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      extend-context:
+        simple: subplaybook_user_risk_levels=xsoar_risk_levels
+      next_page_token:
+        complex:
+          root: next_page_token
+      risk_levels:
+        complex:
+          root: inputs.risk_levels
+      search_time_period:
+        complex:
+          root: inputs.search_time_period
+      user_email:
+        complex:
+          root: inputs.user_email
+      user_name:
+        complex:
+          root: inputs.user_name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: dc659bf7-6bf0-4901-8beb-337149391c24
+    type: condition
+    task:
+      id: dc659bf7-6bf0-4901-8beb-337149391c24
+      version: -1
+      name: Check if the next UPN page is available or not.
+      description: Check if the next UPN page is available or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      - "39"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: has_next_upn_page
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f3bb4953-0eb3-4738-87f4-f52db16dcd5e
+    type: regular
+    task:
+      id: f3bb4953-0eb3-4738-87f4-f52db16dcd5e
+      version: -1
+      name: Set the end cursor for the next set of pages.
+      description: |-
+        Set the end cursor for the next set of pages in context under the key "next_page_token". If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: next_page_token
+      value:
+        complex:
+          root: RubrikPolaris.PageToken.UserAccess
+          accessor: endCursor
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 8c9dad8c-dc81-4519-815a-b8e27247d107
+    type: regular
+    task:
+      id: 8c9dad8c-dc81-4519-815a-b8e27247d107
+      version: -1
+      name: Delete context for the previous page token information for the sub-playbook.
+      description: |-
+        Delete context for the previous page token information for the sub-playbook.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: next_page_token
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 4cfeca98-f410-45ce-8378-330e17b1864b
+    type: condition
+    task:
+      id: 4cfeca98-f410-45ce-8378-330e17b1864b
+      version: -1
+      name: Check if the next iteration is not required.
+      description: Check whether the loop will be ended or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: hasNextPage
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: RubrikPolaris.PageToken.UserAccess
+                accessor: has_next_upn_page
+                transformers:
+                - operator: Stringify
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 1d68058a-c069-40be-8338-7ca3e8970362
+    type: regular
+    task:
+      id: 1d68058a-c069-40be-8338-7ca3e8970362
+      version: -1
+      name: Delete context for the specified keys.
+      description: |-
+        Delete context for the specified keys.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      key:
+        complex:
+          root: delete_keys_for_rubrik_retrieve_user_access_information_playbook
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 1ed5e28d-3781-4a46-85a0-49f8860675c2
+    type: regular
+    task:
+      id: 1ed5e28d-3781-4a46-85a0-49f8860675c2
+      version: -1
+      name: Set the final user risk levels.
+      description: |-
+        Set the final user risk levels.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: user_risk_levels
+      value:
+        complex:
+          root: subplaybook_user_risk_levels
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '[]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d3bda4f0-8889-4352-8b4d-eaa77d8f48f8
+    type: regular
+    task:
+      id: d3bda4f0-8889-4352-8b4d-eaa77d8f48f8
+      version: -1
+      name: Delete the sub-playbook user risk levels.
+      description: |-
+        Delete the sub-playbook user risk levels.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: subplaybook_user_risk_levels
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 1cc906a7-5e8f-42d5-8c48-19e17f8f2bbc
+    type: regular
+    task:
+      id: 1cc906a7-5e8f-42d5-8c48-19e17f8f2bbc
+      version: -1
+      name: Delete context for the previous page token information.
+      description: |-
+        Delete context for the previous page token information.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: next_page_token
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 4153b73f-cad1-45a1-861f-b2f92927a291
+    type: condition
+    task:
+      id: 4153b73f-cad1-45a1-861f-b2f92927a291
+      version: -1
+      name: Check if the final user risk level is set.
+      description: Check if the final user risk level is set.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: user_risk_levels
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: c78c20d5-3772-44ad-8501-ceec034b0403
+    type: regular
+    task:
+      id: c78c20d5-3772-44ad-8501-ceec034b0403
+      version: -1
+      name: Delete the previous user risk levels.
+      description: |-
+        Delete the previous user risk levels.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: user_risk_levels
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 8c90c029-9a9e-428b-8b16-0dd6a09d94f5
+    type: regular
+    task:
+      id: 8c90c029-9a9e-428b-8b16-0dd6a09d94f5
+      version: -1
+      name: Set the delete keys.
+      description: |-
+        Set the delete keys.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: delete_keys_for_rubrik_retrieve_user_access_information_playbook
+      value:
+        simple: RubrikPolaris.PageToken.UserAccess.next_upn_page_number,next_page_token,RubrikPolaris.PageToken.UserAccess.endCursor
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2315,
+        "width": 1140,
+        "x": 150,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: user_name
+  value: {}
+  required: false
+  description: The name of the user to search for.
+  playbookInputQuery:
+- key: user_email
+  value: {}
+  required: false
+  description: The email or the UPN of the user to search for.
+  playbookInputQuery:
+- key: search_time_period
+  value:
+    simple: 7 days
+  required: false
+  description: Specify the search time period to look for user access.
+  playbookInputQuery:
+- key: risk_levels
+  value:
+    simple: HIGH_RISK
+  required: false
+  description: |-
+    The comma-separated list of risk levels.
+
+    Supported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK.
+
+    Note: For any other values, whether the obtained result is filtered or not, is not confirmed.
+  playbookInputQuery:
+outputs:
+- contextPath: RubrikPolaris.UserAccess.principalId
+  description: The ID of the user.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.fullName
+  description: The full name of the user.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.upn
+  description: The user principal name.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.riskLevel
+  description: The risk level of the user.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.totalCount
+  description: The total number of high-risk files.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.violatedCount
+  description: The number of high-risk files that violate policies.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.__typename
+  description: The high-risk file count field type.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.totalCount
+  description: Total number of medium-risk files.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.violatedCount
+  description: The number of medium-risk files that violate policies.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.__typename
+  description: The type of the medium risk file count field.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.totalCount
+  description: The total number of low-risk files.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.violatedCount
+  description: The number of low-risk files that violate policies.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.__typename
+  description: The type of the low-risk file count field.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.sensitiveFiles.__typename
+  description: The type of the sensitive files field.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.totalHits
+  description: The total number of sensitive hits.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.violatedHits
+  description: The number of sensitive hits that violate policies.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.__typename
+  description: The type of the total sensitive hits field.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.totalCount
+  description: The total number of sensitive objects.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.violatedCount
+  description: The Number of sensitive objects that violate policies.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.__typename
+  description: The type of the sensitive object count field.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.numDescendants
+  description: The number of descendant users associated with this user.
+  type: number
+- contextPath: RubrikPolaris.UserAccess.domainName
+  description: The domain name associated with this user.
+  type: string
+- contextPath: RubrikPolaris.UserAccess.__typename
+  description: The type of the User Access field.
+  type: string
+- contextPath: RubrikPolaris.PageToken.UserAccess.name
+  description: Name of the command.
+  type: string
+- contextPath: RubrikPolaris.PageToken.UserAccess.startCursor
+  description: The start cursor for the current page.
+  type: string
+- contextPath: RubrikPolaris.PageToken.UserAccess.endCursor
+  description: The end cursor for the current page.
+  type: string
+- contextPath: RubrikPolaris.PageToken.UserAccess.hasNextPage
+  description: Whether the result has the next page or not.
+  type: boolean
+- contextPath: RubrikPolaris.PageToken.UserAccess.hasPreviousPage
+  description: Whether the result has the previous page or not.
+  type: boolean
+- contextPath: RubrikPolaris.PageToken.UserAccess.next_upn_page_number
+  description: The next UPN page number.
+  type: string
+- contextPath: RubrikPolaris.PageToken.UserAccess.has_next_upn_page
+  description: Whether the result has the next UPN page or not.
+  type: boolean
+- contextPath: user_risk_levels
+  description: List of user risk levels retrieved by the command.
+  type: unknown
+tests:
+- RubrikPolaris-Test
+fromversion: 6.5.0

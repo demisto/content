@@ -1,0 +1,216 @@
+deprecated: true
+description: Deprecated. Use the `xdr-script-commands-execute` command instead. Initiates a new script execution of shell commands.
+id: Cortex XDR - Execute commands
+inputs:
+- description: A comma-separated list of endpoint IDs.
+  key: endpoint_ids
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: A comma-separated list of shell commands to execute.
+  key: commands
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    The timeout in seconds for this execution.
+    (Default is: '600')
+  key: script_timeout
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Amount of time to poll action status before declaring a timeout and
+    resuming the playbook (in minutes).
+  key: polling_timeout
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "10"
+name: Cortex XDR - Execute commands
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ac39719f-7adb-4e30-8b98-f5a5df25c325
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ac39719f-7adb-4e30-8b98-f5a5df25c325
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      commands:
+        complex:
+          root: inputs.commands
+      endpoint_ids:
+        complex:
+          root: inputs.endpoint_ids
+      timeout:
+        complex:
+          root: inputs.script_timeout
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Initiate a new endpoint script execution of shell commands.
+      id: fded77b1-3d84-4346-81ee-dc408e4edafa
+      iscommand: true
+      name: Run script execute commands
+      script: '|||xdr-run-script-execute-commands'
+      type: regular
+      version: -1
+    taskid: fded77b1-3d84-4346-81ee-dc408e4edafa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
+      timeout:
+        complex:
+          root: inputs.polling_timeout
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the action status of an action ID. \nEnter the action ID
+        of the action whose status you want to know.
+      id: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
+      iscommand: false
+      name: Cortex XDR - Check Action Status
+      playbookId: Cortex XDR - Check Action Status
+      type: playbook
+      version: -1
+    taskid: 0c7c90aa-c8f7-4710-897a-518a5ce810f3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action_id:
+        complex:
+          accessor: action_id
+          root: PaloAltoNetworksXDR.ScriptRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieve the results of a script execution action.
+      id: e4e1bbc6-e612-4f5d-8dc8-65fd75f15766
+      iscommand: true
+      name: Get script execution results
+      script: '|||xdr-get-script-execution-results'
+      type: regular
+      version: -1
+    taskid: e4e1bbc6-e612-4f5d-8dc8-65fd75f15766
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 550
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 07ef5958-2971-458a-8983-312970ae419b
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 07ef5958-2971-458a-8983-312970ae419b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

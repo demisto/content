@@ -1,0 +1,30 @@
+{
+    "http_method": "GET",
+    "revision": "12345",
+    "results": [
+        {
+            "name": "Tanjiro",
+            "q_origin_key": "Tanjiro",
+            "uuid": "00000000-0000-0000-0000-000000000000",
+            "color": 0,
+            "comment": "",
+            "member": [
+                {
+                    "name": "Mario",
+                    "q_origin_key": "Mario"
+                }
+            ],
+            "tagging": [],
+            "fabric-object": "disable"
+        }
+    ],
+    "vdom": "root",
+    "path": "firewall",
+    "name": "addrgrp6",
+    "mkey": "Tanjiro",
+    "status": "success",
+    "http_status": 200,
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}

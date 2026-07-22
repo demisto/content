@@ -1,0 +1,3 @@
+!bitsight-companies-guid-get
+!bitsight-company-details-get guid=00000000-0000-0000-0000-000000000001
+!bitsight-company-findings-get guid=00000000-0000-0000-0000-000000000001 first_seen=2021-01-01 last_seen=2022-03-01 limit=2

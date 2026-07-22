@@ -1,0 +1,493 @@
+id: Ataya - Securely logging device access to network
+version: -1
+name: Ataya - Securely logging device access to network
+description: With this playbook, we can enable Identity-Aware Security Across Multiaccess Networks.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 42dfc20c-14c3-4e5e-86d4-1cd61e2f0498
+    type: start
+    task:
+      id: 42dfc20c-14c3-4e5e-86d4-1cd61e2f0498
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0b1ec360-a643-4937-8708-58a2bd799e34
+    type: regular
+    task:
+      id: 0b1ec360-a643-4937-8708-58a2bd799e34
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      closeNotes:
+        simple: Session has been successfully updated by User ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a2dddb43-ea33-4c3b-8f40-8949303725c1
+    type: regular
+    task:
+      id: a2dddb43-ea33-4c3b-8f40-8949303725c1
+      version: -1
+      name: Create and Update User ID
+      description: Login user on PAN NGFW by User ID.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <login> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.sourceip}\" timeout=\"20\"> \n               </entry> \n          </login> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ba940b24-c0f6-418d-8242-420e0ee522d1
+    type: condition
+    task:
+      id: ba940b24-c0f6-418d-8242-420e0ee522d1
+      version: -1
+      name: Event Type Inspection for Session Control
+      description: Check the action type of 5G UE sessions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      create:
+      - "3"
+      delete:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: create
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: create
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: modify
+          ignorecase: true
+    - label: delete
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: delete
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c6eb7979-d297-497c-8913-e9e7b7197877
+    type: regular
+    task:
+      id: c6eb7979-d297-497c-8913-e9e7b7197877
+      version: -1
+      name: Remove User ID
+      description: Logout user on PAN NGFW by User ID.
+      script: '|||pan-os'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cmd:
+        simple: "<uid-message> \n     <version>1.0</version> \n     <type>update</type> \n     <payload> \n          <logout> \n               <entry name=\"${incident.atayaimei}\" ip=\"${incident.sourceip}\" timeout=\"20\"> \n               </entry> \n          </logout> \n     </payload> \n</uid-message>"
+      type:
+        simple: user-id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 28da22af-b157-49cd-863e-813073de9bcf
+    type: condition
+    task:
+      id: 28da22af-b157-49cd-863e-813073de9bcf
+      version: -1
+      name: Is Panorama Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "4"
+    scriptarguments:
+      brandname:
+        simple: Panorama
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 01fc0b8c-5012-455a-8ef1-297c88fd5b25
+    type: title
+    task:
+      id: 01fc0b8c-5012-455a-8ef1-297c88fd5b25
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c4260f09-0689-46c1-8174-64baa8ab7f48
+    type: collection
+    task:
+      id: c4260f09-0689-46c1-8174-64baa8ab7f48
+      version: -1
+      name: Pause for review the unassigned device
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator
+      subject:
+        simple: Needs approval
+      body:
+        simple: The unassigned device need to be approved.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Should the client be approved to access the network?
+            ID: ${incident.atayaid}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: New device needs approval
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 8d964650-d075-442c-8f73-7d3e10c3c8f9
+    type: regular
+    task:
+      id: 8d964650-d075-442c-8f73-7d3e10c3c8f9
+      version: -1
+      name: Approve the Unassigned Device
+      description: approve user to access external network
+      script: '|||ataya-assign-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      imsi:
+        simple: ${incident.atayaid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1072.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d5fa5d19-0ac4-4458-87e2-4210f71beb94
+    type: condition
+    task:
+      id: d5fa5d19-0ac4-4458-87e2-4210f71beb94
+      version: -1
+      name: Is Reject Event Type Detected?
+      description: Check the action of 5G UE sessions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      Authentication:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Authentication
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.eventtype
+            iscontext: true
+          right:
+            value:
+              simple: reject
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fa949a0f-bd5b-41e8-8b9a-411c672d0986
+    type: condition
+    task:
+      id: fa949a0f-bd5b-41e8-8b9a-411c672d0986
+      version: -1
+      name: Is Ataya Harmony Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "12"
+    scriptarguments:
+      brandname:
+        simple: Ataya Harmony
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_8_#default#": 0.81,
+      "4_3_create": 0.71,
+      "4_6_delete": 0.84
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1402.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

@@ -1,0 +1,8 @@
+id: F5_APM_ParsingRule
+name: F5 APM Parsing Rule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

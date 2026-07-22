@@ -1,0 +1,389 @@
+{
+  "_cls": "Incident.NetworkVisibilityIncident",
+  "doc_version": 143,
+  "sensor_type": "VISIBILITY",
+  "start_time": 1625203133278,
+  "end_time": 1625203336164,
+  "last_updated_time": 1625203336164,
+  "ended": "True",
+  "closed_time": 1625203656083,
+  "severity": 50,
+  "affected_assets": [
+    {
+      "labels": [
+        "source"
+      ],
+      "ip": "1.1.1.1",
+      "vm_id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285",
+      "vm": {
+        "id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285",
+        "name": "Accounting-lb-1",
+        "recent_domains": [],
+        "tenant_name": "esx10/lab_a/Apps/Accounting",
+        "full_name": "esx10/lab_a/Apps/Accounting\\Accounting-lb-1"
+      },
+      "is_inner": "True"
+    }
+  ],
+  "enriched": "True",
+  "reenrich_count": 0,
+  "tags": [
+    {
+      "id": "c5376c29-3333-45c4-9675-8a00aa9e9cd3",
+      "visible": "True",
+      "tag_class": "ENRICHER",
+      "display_name": "Internal",
+      "search_names": [
+        "Internal",
+        "Listed IP"
+      ],
+      "shortened_group_display_name": "Internal",
+      "tag_type_key": "listed ip",
+      "tag_args": {
+        "category": "Internal"
+      },
+      "source": "NetworkActivityDetector\\detect_listed_ips",
+      "events": []
+    }
+  ],
+  "iocs": [],
+  "recommendations": [
+    {
+      "id": "24d64a0a-yyyy-4eb5-90ad-5d8f55f107a6",
+      "parts": [
+        {
+          "type": "text",
+          "value": "Compromised VM "
+        },
+        {
+          "type": "expression",
+          "value": "Accounting-lb-1"
+        },
+        {
+          "type": "text",
+          "value": " - take a snapshot, suspend or stop the VM, or disconnect its network cards"
+        }
+      ],
+      "rule_type": "",
+      "handle_template": "Details",
+      "details": [
+        {
+          "parts": [
+            {
+              "value": "Asset IP:",
+              "type": "bold"
+            },
+            {
+              "type": "text",
+              "value": " "
+            },
+            {
+              "type": "expression",
+              "value": "1.1.1.1"
+            }
+          ]
+        }
+      ],
+      "type": "VMRecommendation"
+    }
+  ],
+  "similarity_calculated": "True",
+  "incident_group": [
+    {
+      "gname": "GRP-00ac9ead",
+      "gid": "00ac9ead-2222-47f2-8bac-35bf12ca2b4f"
+    }
+  ],
+  "stories": [
+    {
+      "template": "Process {type:processes|[malicious_process->process_name]} on asset {[asset_name]} ({type:ip|[ip_address]}), communicating on port {[destination_port]}, was identified as [malicious_process->reputation_info] by Guardicore Reputation Service",
+      "arguments": {
+        "malicious_process": {
+          "process_name": "xzas9876",
+          "reputation_info": "{Known malware}"
+        },
+        "destination_port": 53,
+        "asset_name": "Accounting-lb-1",
+        "ip_address": "1.1.1.1",
+        "malicious_process->process_name": "xzas9876",
+        "malicious_process->reputation_info": "{Known malware}"
+      },
+      "tags": [
+        {
+          "display_name": "Known malware",
+          "tag_class": "ENRICHER",
+          "events": [
+            "686e7645-1111-458e-8bad-ff2b01cb7651",
+            "8ad2d6d9-1111-4894-ad9c-0760fd7e5a22"
+          ]
+        }
+      ],
+      "time": 1625203336484,
+      "parts": [
+        {
+          "type": "text",
+          "value": "Process "
+        }
+      ]
+    }
+  ],
+  "flow_ids": [
+    "dec9a88051eb8a761f11119ca7f9b04e2422211ea2a9daa94f5bedf25f7e2b0e"
+  ],
+  "remote_index": "incidents__1__2021_07_02_00_00_00",
+  "is_experimental": "False",
+  "original_id": "",
+  "experimental_id": "",
+  "first_asset": {
+    "asset_type": "VM",
+    "asset_id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285"
+  },
+  "second_asset": {
+    "asset_type": "VM",
+    "asset_id": "e69d1434-28d3-4774-a933-c2c993412edc"
+  },
+  "labels": [
+    {
+      "id": "f8f96eb3-3476-476e-9ff9-f7312372ed4f",
+      "key": "ZT_host",
+      "value": "accounting.gc.procellab.zone",
+      "name": "ZT_host: accounting.gc.procellab.zone",
+      "color_index": -1,
+      "asset_ids": [
+        "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285"
+      ]
+    }
+  ],
+  "policy_revision": 62,
+  "id": "c2acca07-e9bf-4d63-9a26-ff6c749d24d2",
+  "incident_type": "Reveal",
+  "has_export": "True",
+  "concatenated_tags": [
+    {
+      "display_name": "Internal",
+      "tag_class": "ENRICHER",
+      "events": []
+    },
+    {
+      "display_name": "Known malware",
+      "tag_class": "ENRICHER",
+      "events": [
+        "8ad2d6d9-fe7c-4894-ad9c-0760fd7e5a22",
+        "686e7645-1c75-458e-8bad-ff2b01cb7651"
+      ]
+    }
+  ],
+  "direction": "unidirectional",
+  "source_asset": {
+    "labels": [
+      "source"
+    ],
+    "ip": "1.1.1.1",
+    "vm_id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285",
+    "vm": {
+      "id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285",
+      "name": "Accounting-lb-1",
+      "recent_domains": [],
+      "tenant_name": "esx10/lab_a/Apps/Accounting",
+      "full_name": "esx10/lab_a/Apps/Accounting\\Accounting-lb-1"
+    },
+    "is_inner": "True"
+  },
+  "destination_asset": {
+    "labels": [
+      "destination"
+    ],
+    "ip": "1.1.1.1",
+    "vm_id": "e69d1434-28d3-4774-a933-c2c993412edc",
+    "vm": {
+      "id": "e69d1434-28d3-4774-a933-c2c993412edc",
+      "name": "DC-01",
+      "recent_domains": [],
+      "tenant_name": "esx10/lab_a/Endpoints",
+      "full_name": "esx10/lab_a/Endpoints\\DC-01"
+    },
+    "is_inner": "True"
+  },
+  "has_policy_violations": "False",
+  "total_events_count": 1,
+  "limited_events_count": 1,
+  "events": [
+    {
+      "_cls": "VisibilityDetectionEvent.PassiveDetectionNodeEvent.PassiveDetectionProcessEvent",
+      "doc_version": 143,
+      "uuid": "686e7645-1c75-458e-8bad-ff2b01cb7651",
+      "time": 1625203336484,
+      "received_time": 1625203336484,
+      "processed_time": 1625203336484,
+      "event_source": "Visibility Detection",
+      "tag_refs": [],
+      "is_experimental": "False",
+      "incident_id": "c2acca07-e9bf-4d63-9a26-ff6c749d24d2",
+      "flow_id": "dec9a88051eb8a761f4e5b9ca7f9b04e2422211ea2a9daa94f5bedf25f7e2b0e",
+      "flow": {
+        "count": 2,
+        "ip_protocols": [
+          "Udp"
+        ],
+        "destination_ports": [
+          53
+        ],
+        "source_username": "None",
+        "source_node_type": "asset",
+        "source_process_id": "a6b7627587bcb5efb4c36af5e678d02676695080f2f2678e8cdff38b10e4d79f",
+        "source_ip": "1.1.1.1",
+        "source_process_name": "xzas9876",
+        "source_process": "xzas9876",
+        "destination_node_type": "asset",
+        "destination_process_id": "b1e023747e3bafa4bd279fe1a346973541428360d1e166e8c80c8a568004b787",
+        "destination_ip": "1.1.1.1",
+        "destination_process_name": "Unknown Server (53/UDP)",
+        "destination_process": "Unknown Server (53/UDP)"
+      },
+      "source_asset": {
+        "asset_type": "asset",
+        "asset_id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285",
+        "asset_value": "Accounting-lb-1 (1.1.1.1)",
+        "asset_name": "Accounting-lb-1"
+      },
+      "destination_asset": {
+        "asset_type": "asset",
+        "asset_id": "e69d1434-28d3-4774-a933-c2c993412edc",
+        "asset_value": "DC-01 (1.1.1.1)",
+        "asset_name": "DC-01"
+      },
+      "connection_type": "SUCCESSFUL",
+      "side": 1,
+      "date": 1625203133278,
+      "result": {
+        "verdict": "malicious",
+        "reasons": [
+          "Known malware"
+        ],
+        "score": 1.0,
+        "severity": "High",
+        "experimental_verdict": "malicious",
+        "experimental_reasons": [
+          "Known malware"
+        ],
+        "experimental_score": 1.0,
+        "experimental_severity": "High"
+      },
+      "answer_origin": "QServer",
+      "destination_port": 53,
+      "source_process_name": "xzas9876",
+      "destination_process_name": "Unknown Server (53/UDP)",
+      "process_name": "xzas9876",
+      "process_path": "/bin/xzas9876",
+      "process_hash": "c31d3e52ddcc0d9c32c79f43febf5e1609cce5ae60546e112163c4329f52cbd9",
+      "asset_name": "Accounting-lb-1",
+      "ip_address": "1.1.1.1",
+      "slot_start_time": 1625203133278,
+      "count": 2,
+      "protocol": "Udp",
+      "service_port": 53,
+      "event_group": "Passive Detection",
+      "type": "PassiveDetectionProcessEvent",
+      "type_title": "suspicious process",
+      "visibility": "Front",
+      "policy_revision": 1,
+      "violating_policy_rule_id": "default",
+      "violating_policy_verdict": "allowed",
+      "source_agent_matching": {
+        "verdict": "ALLOW",
+        "rule_id": "default",
+        "revision": 1
+      },
+      "destination_agent_matching": {
+        "verdict": "ALLOW",
+        "rule_id": "default",
+        "revision": 1
+      },
+      "management_matching": {
+        "rule_action": 0,
+        "rule_id": "default",
+        "revision": 1
+      },
+      "has_mismatch_alert": "False",
+      "last_connection": {
+        "destination_node_id": "e69d1434-28d3-4774-a933-c2c993412edc",
+        "slot_start_time": 1625203133000,
+        "source_node_id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285",
+        "flow_id": "dec9a88051eb8a761f4e5b9ca7f9b04e2422211ea2a9daa94f5bedf25f7e2b0e",
+        "incidents": [
+          {
+            "incident_id": "c2acca07-e9bf-4d63-9a26-ff6c749d24d2",
+            "incident_type": "Reveal"
+          }
+        ],
+        "policy_verdict": "allowed",
+        "destination_process_id": "b1e023747e3bafa4bd279fe1a346973541428360d1e166e8c80c8a568004b787",
+        "source_process_id": "a6b7627587bcb5efb4c36af5e678d02676695080f2f2678e8cdff38b10e4d79f",
+        "policy_rule": "453f583c-2a17-4b40-98ba-2539fc61d39b",
+        "has_mismatch_alert": "False",
+        "original_policy_verdict": "allowed",
+        "source_agent_matching": {
+          "verdict": "None",
+          "rule": "None"
+        },
+        "destination_agent_matching": {
+          "verdict": "None",
+          "rule": "None"
+        },
+        "management_matching": {
+          "rule_action": "None",
+          "rule": "None"
+        }
+      },
+      "reputation_tags": [
+        {
+          "id": "dff5c483-99b5-474c-a839-07ad111fe46d",
+          "visible": "True",
+          "tag_class": "ENRICHER",
+          "display_name": "Known malware",
+          "search_names": [
+            "Suspicious Process",
+            "Reputation",
+            "Known malware"
+          ],
+          "shortened_group_display_name": "Known malware",
+          "tag_type_key": "suspicious process",
+          "tag_args": {
+            "process_name": "xzas9876",
+            "process_path": "/bin/xzas9876",
+            "side": 1,
+            "reason": "Known malware"
+          },
+          "source": "PassiveDetector\\detect_process",
+          "events": [
+            "686e7645-1c75-458e-8bad-ff2b01cb7651",
+            "8ad2d6d9-fe7c-4894-ad9c-0760fd7e5a22"
+          ],
+          "time": 1625203336484
+        }
+      ],
+      "policy_verdict": "allowed",
+      "source_ip": "1.1.1.1",
+      "source_node_type": "asset",
+      "source_process_id": "a6b7627587bcb5efb4c36af5e678d02676695080f2f2678e8cdff38b10e4d79f",
+      "source_process": "xzas9876",
+      "source": {
+        "vm": {
+          "_id": "53d49bdc-0be0-4b7e-b7e3-d3dcc79bc285",
+          "name": "Accounting-lb-1"
+        }
+      },
+      "destination_ip": "1.1.1.1",
+      "destination_node_type": "asset",
+      "destination_process_id": "b1e023747e3bafa4bd279fe1a346973541428360d1e166e8c80c8a568004b787",
+      "destination_process": "Unknown Server (53/UDP)",
+      "destination": {
+        "vm": {
+          "_id": "e69d1434-28d3-4774-a933-c2c993412edc",
+          "name": "DC-01"
+        }
+      }
+    }
+  ],
+  "is_bc_format_incident": "False"
+}

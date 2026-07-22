@@ -1,0 +1,1368 @@
+description: |-
+  This playbook automates the download and installation of the following Dynamic Update types on Palo Alto firewalls:
+    - App/Threat
+    - Anti-Virus
+    - WildFire
+    - GlobalProtect Clientless VPN
+
+  NOTE: This playbook is intended for use with a single PAN-OS integration instance.
+id: 'PAN-OS - Download and Install Dynamic Content Updates'
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - targetDevice
+  - itemsToUpdate
+  name: General (Inputs group)
+inputs:
+- description: |
+    The serial number of a specific firewall to target (Required when connected to Panorama) [Optional].
+  key: targetDevice
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: |-
+    Specifies which item types to download and install.  Select ONE of the following options:
+    all
+    app/threat
+    anti-virus
+    wildfire
+    gp
+  key: itemsToUpdate
+  playbookInputQuery: null
+  required: true
+  value:
+    simple: all
+name: PAN-OS - Download and Install Dynamic Content Updates
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs:
+  - DynamicUpdates
+outputs:
+- contextPath: DynamicUpdates
+  description: A dictionary containing details of the Dynamic Update type(s) downloaded and installed, including their version number and associated job IDs.
+  type: unknown
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ae08e3f3-db0a-454b-8f86-d5b01a78e5df
+      description: Initial task to start dynamic content update playbook.
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: ae08e3f3-db0a-454b-8f86-d5b01a78e5df
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -540
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.itemsToUpdate
+          operator: containsGeneral
+          right:
+            value:
+              simple: all
+      label: All Types
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.itemsToUpdate
+          operator: containsGeneral
+          right:
+            value:
+              simple: app/threat
+      label: App/Threat
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.itemsToUpdate
+          operator: containsGeneral
+          right:
+            value:
+              simple: anti-virus
+      label: Anti-Virus
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.itemsToUpdate
+          operator: containsGeneral
+          right:
+            value:
+              simple: wildfire
+      label: WildFire
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.itemsToUpdate
+          operator: containsGeneral
+          right:
+            value:
+              simple: gp
+      label: GP
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "23"
+      All Types:
+      - "2"
+      Anti-Virus:
+      - "12"
+      App/Threat:
+      - "11"
+      GP:
+      - "14"
+      WildFire:
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determine dynamic update type(s) to install based on playbook input.
+      id: 3ba18f71-0382-47fe-8b70-81de9506373b
+      iscommand: false
+      name: Check Dynamic Updates Type
+      type: condition
+      version: -1
+    taskid: 3ba18f71-0382-47fe-8b70-81de9506373b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 140
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+      - "7"
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 398bcca4-8b0e-41b0-a699-c248b4c72781
+      description: Option selected is 'all'. Execute all Download and Install branches.
+      iscommand: false
+      name: Update All Types
+      type: title
+      version: -1
+    taskid: 398bcca4-8b0e-41b0-a699-c248b4c72781
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 340
+        }
+      }
+  "3":
+    continueonerrortype: "errorPath"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+      '#error#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      polling:
+        simple: "true"
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads the latest app/threat dynamic update.
+      id: d5d78a40-a9db-441d-9966-ed43e682e356
+      iscommand: true
+      name: Download Latest App/Threat Update
+      script: '|||pan-os-download-latest-content-update'
+      type: regular
+      version: -1
+    taskid: d5d78a40-a9db-441d-9966-ed43e682e356
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 520
+        }
+      }
+    continueonerror: true
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      polling:
+        simple: "true"
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Installs the latest app/threat dynamic update.
+      id: 12b78d3c-6e7c-40df-8848-a8bf8bfa6e95
+      iscommand: true
+      name: Install Latest App/Threat Update
+      script: '|||pan-os-install-latest-content-update'
+      type: regular
+      version: -1
+    taskid: 12b78d3c-6e7c-40df-8848-a8bf8bfa6e95
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 810
+        }
+      }
+  "5":
+    continueonerrortype: "errorPath"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+      '#error#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads the latest antivirus dynamic update.
+      id: c71c9faa-fbad-4b05-b02b-ae97e3269ab9
+      iscommand: true
+      name: Download Latest Anti-Virus Update
+      script: '|||pan-os-download-latest-antivirus-update'
+      type: regular
+      version: -1
+    taskid: c71c9faa-fbad-4b05-b02b-ae97e3269ab9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 520
+        }
+      }
+    continueonerror: true
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Installs the latest Antivirus update.
+      id: 666470de-248b-4c25-bb81-b9b198674377
+      iscommand: true
+      name: Install Latest Anti-Virus Update
+      script: '|||pan-os-install-latest-antivirus-update'
+      type: regular
+      version: -1
+    taskid: 666470de-248b-4c25-bb81-b9b198674377
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 810
+        }
+      }
+  "7":
+    continueonerrortype: "errorPath"
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+      '#error#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads the latest WildFire dynamic update.
+      id: 8a1d6d58-cc2b-4e60-99ab-e65d00021ce9
+      iscommand: true
+      name: Download Latest WildFire Update
+      script: '|||pan-os-download-latest-wildfire-update'
+      type: regular
+      version: -1
+    taskid: 8a1d6d58-cc2b-4e60-99ab-e65d00021ce9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 520
+        }
+      }
+    continueonerror: true
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Installs the latest WildFire dynamic update.
+      id: 30e46b47-600c-4a84-97d0-2866e651b938
+      iscommand: true
+      name: Install Latest WildFire Update
+      script: '|||pan-os-install-latest-wildfire-update'
+      type: regular
+      version: -1
+    taskid: 30e46b47-600c-4a84-97d0-2866e651b938
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 810
+        }
+      }
+  "9":
+    continueonerrortype: "errorPath"
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+      '#error#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Downloads the latest GlobalProtect Clientless VPN dynamic update.
+      id: 526711cd-f768-4f64-acbd-1fb0a6d104af
+      iscommand: true
+      name: Download Latest GP Clientless VPN Update
+      script: '|||pan-os-download-latest-gp-update'
+      type: regular
+      version: -1
+    taskid: 526711cd-f768-4f64-acbd-1fb0a6d104af
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 520
+        }
+      }
+    continueonerror: true
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.targetDevice}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Installs the latest GlobalProtect Clientless VPN dynamic update.
+      id: a953a1b0-f293-44df-9131-df3a21548d69
+      iscommand: true
+      name: Install Latest GP Clientless VPN Update
+      script: '|||pan-os-install-latest-gp-update'
+      type: regular
+      version: -1
+    taskid: a953a1b0-f293-44df-9131-df3a21548d69
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 810
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5232d21f-2ca6-4123-9a11-b74d7852615c
+      description: Option selected is 'App/Threat'.
+      iscommand: false
+      name: App/Threat Only
+      type: title
+      version: -1
+    taskid: 5232d21f-2ca6-4123-9a11-b74d7852615c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 340
+        }
+      }
+  "12":
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19ba4187-000d-47dd-a69e-bb0ac562dbc1
+      description: Option selected is 'Anti-Virus'
+      iscommand: false
+      name: Anti-Virus Only
+      type: title
+      version: -1
+    taskid: 19ba4187-000d-47dd-a69e-bb0ac562dbc1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 340
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f88cb4f2-ef2e-49d0-9806-9a97f0ac9ab7
+      description: Option selected is 'WildFire'.
+      iscommand: false
+      name: WildFire Only
+      type: title
+      version: -1
+    taskid: f88cb4f2-ef2e-49d0-9806-9a97f0ac9ab7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 340
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b4365e9c-3cc3-48f2-b3af-f4017833350d
+      description: Option selected is 'GlobalProtect'.
+      iscommand: false
+      name: GP Only
+      type: title
+      version: -1
+    taskid: b4365e9c-3cc3-48f2-b3af-f4017833350d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 340
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AppThreat
+      value:
+        simple: '{"AppThreat":{"DownloadJobID":"${Panorama.Content.Download.JobID}","VersionDownloaded":"${Panorama.Content.Download.Details.details.line.[2]}","InstallJobID": "${Panorama.Content.Install.JobID}","Result":"Installation Successful"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 6097c1ae-a310-4ccb-82db-bb13e32e6a4e
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 6097c1ae-a310-4ccb-82db-bb13e32e6a4e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1140,
+          "y": 1030
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AntiVirus
+      value:
+        simple: '{"AntiVirus":{"DownloadJobID":"${Panorama.AntiVirus.Download.JobID}","VersionDownloaded":"${Panorama.AntiVirus.Download.Details.details.line.[2]}","InstallJobID": "${Panorama.AntiVirus.Install.JobID}","Result":"Installation Successful"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 95b88615-5a00-4a4c-a1c3-4d4f21b77292
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 95b88615-5a00-4a4c-a1c3-4d4f21b77292
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -360,
+          "y": 1030
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: WildFire
+      value:
+        simple: '{"WildFire": {"DownloadJobID":"${Panorama.WildFire.Download.JobID}","VersionDownloaded":"${Panorama.WildFire.Download.Details.details.line.[2]}","InstallJobID": "${Panorama.WildFire.Install.JobID}","Result":"Installation Successful"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: e3cf8dbf-baab-482b-bc4f-39af56d8b5f5
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: e3cf8dbf-baab-482b-bc4f-39af56d8b5f5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1030
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: GP
+      value:
+        simple: '{"GP": {"DownloadJobID": "${Panorama.GP.Download.JobID}","VersionDownloaded":"${Panorama.GP.Download.Details.details.line.[2]}","InstallJobID":"${Panorama.GP.Install.JobID}","Result":"Installation Successful"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 1c57d1e3-0688-47e6-bc57-7dd19ed2e6a7
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 1c57d1e3-0688-47e6-bc57-7dd19ed2e6a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1030
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DynamicUpdates
+      value:
+        complex:
+          root: AppThreat
+          transformers:
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: AntiVirus
+            operator: append
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: WildFire
+            operator: append
+          - args:
+              item:
+                iscontext: true
+                value:
+                  simple: GP
+            operator: append
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Combine the results of all download and install tasks into a single context key.
+      id: 27ab556a-ca83-4217-b0b9-2bc71280039d
+      iscommand: false
+      name: Combine Update Details
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 27ab556a-ca83-4217-b0b9-2bc71280039d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1260
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook concluded after successful execution of Download and Install commands.
+      id: fa1bf705-f780-4208-9545-72902a308dee
+      iscommand: false
+      name: Completed with Success
+      type: title
+      version: -1
+    taskid: fa1bf705-f780-4208-9545-72902a308dee
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1410
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91d17bed-5f31-479f-b4c6-2326c1293fbf
+      description: Check if a Panorama integration instance is active.
+      iscommand: false
+      name: Is the Panorama Integration enabled?
+      type: condition
+      version: -1
+    taskid: 91d17bed-5f31-479f-b4c6-2326c1293fbf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -380
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Please configure and enable a Panorama integration instance.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry for missing active Panorama integration instance.
+      id: bac2a881-64f0-4b20-b938-5063c7314a0c
+      iscommand: false
+      name: No active Panorama integration instance found
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: bac2a881-64f0-4b20-b938-5063c7314a0c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": -190
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: |-
+          The input passed did not match any valid options. Please select ONE of the following options:
+          all
+          app/threat
+          anti-virus
+          wildfire
+          gp
+      value:
+        simple: |-
+          The input passed did not match any valid options. Please select ONE of the following options:
+          all
+          app/threat
+          anti-virus
+          wildfire
+          gp
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry when the playbook input for itemsToUpdate did not match any valid options.
+      id: 7c9dc2d4-42a6-445b-803e-625cae82fe78
+      iscommand: false
+      name: Invalid option selected
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 7c9dc2d4-42a6-445b-803e-625cae82fe78
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 335
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information from all PAN-OS systems in the topology.
+      id: cb4bb223-77d3-4444-b315-89fced009866
+      iscommand: true
+      name: Get System Info
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: cb4bb223-77d3-4444-b315-89fced009866
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -200
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.ShowSystemInfo.Result.model
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Panorama
+                root: PANOS.ShowSystemInfo.Result.model
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.targetDevice
+          operator: isEmpty
+      label: Panorama with no target ID
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "1"
+      Panorama with no target ID:
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f1fe9e51-37ad-4c17-9d12-664a4c9b2ae0
+      description: Check if a target firewall is specified when running on a Panorama instance.
+      iscommand: false
+      name: If it is a Panorama instance was target firewall provided?
+      type: condition
+      version: -1
+    taskid: f1fe9e51-37ad-4c17-9d12-664a4c9b2ae0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -50
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: A target firewall ID is required when running this playbook with a Panorama instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error message for missing target ID.
+      id: 31714fce-1632-4096-b192-4936c54ec8ec
+      iscommand: false
+      name: Print message for missing target ID
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 31714fce-1632-4096-b192-4936c54ec8ec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1920,
+          "y": 100
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook concluded without executing the Download and Install commands.
+      id: b5b069aa-5249-4ed5-835e-127189fe6c9c
+      iscommand: false
+      name: Completed with errors
+      type: title
+      version: -1
+    taskid: b5b069aa-5249-4ed5-835e-127189fe6c9c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1420
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c9e1828c-a369-4fb5-81be-86d3c5534548
+      description: Marks the playbook as completed.
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: c9e1828c-a369-4fb5-81be-86d3c5534548
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1600
+        }
+      }
+  "34":
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AppThreat
+      value:
+        simple: '{"AppThreat":{"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 19a3f46e-61bf-4a0e-bba7-5e8d70bff208
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 19a3f46e-61bf-4a0e-bba7-5e8d70bff208
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": 910
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AntiVirus
+      value:
+        simple: '{"AntiVirus":{"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 0f844dee-7674-405f-957f-8d29eaaf3e7a
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 0f844dee-7674-405f-957f-8d29eaaf3e7a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 910
+        }
+      }
+  "36":
+    continueonerrortype: ""
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: WildFire
+      value:
+        simple: '{"WildFire": {"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 770ff331-00f4-4327-a8e6-c2f82b6cf007
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 770ff331-00f4-4327-a8e6-c2f82b6cf007
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 940
+        }
+      }
+  "37":
+    continueonerrortype: ""
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: GP
+      value:
+        simple: '{"GP": {"DownloadJobID":"N/A","VersionDownloaded":N/A","InstallJobID": "N/A","Result":"Failed - Download Error"}}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 74db7145-d9a5-45f5-8402-3bc9c24a32c4
+      iscommand: false
+      name: Store Formatted Details
+      script: Set
+      type: regular
+      version: -1
+    taskid: 74db7145-d9a5-45f5-8402-3bc9c24a32c4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 940
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_13_WildFire": 0.72,
+      "21_22_#default#": 0.22,
+      "21_24_yes": 0.44,
+      "25_1_#default#": 0.48,
+      "25_27_Panorama with no target ID": 0.37,
+      "3_34_#error#": 0.36,
+      "5_35_#error#": 0.36,
+      "7_36_#error#": 0.34,
+      "9_37_#error#": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2200,
+        "width": 3900,
+        "x": -1380,
+        "y": -540
+      }
+    }
+  }
+fromversion: 6.10.0
+supportedModules:
+- agentix
+- xsiam
+- cloud_posture
+marketplaces:
+- platform

@@ -1,0 +1,75 @@
+{
+  "authlogs": [
+    {
+      "access_device": {
+        "browser": "Chrome",
+        "browser_version": "67.0.3396.99",
+        "flash_version": "uninstalled",
+        "hostname": null,
+        "ip": "111.111.11.111",
+        "is_encryption_enabled": true,
+        "is_firewall_enabled": true,
+        "is_password_set": true,
+        "java_version": "uninstalled",
+        "location": {
+          "city": "Ann Arbor",
+          "country": "United States",
+          "state": "Michigan"
+        },
+        "os": "Mac OS X",
+        "os_version": "10.14.1",
+        "security_agents": []
+      },
+      "adaptive_trust_assessments": {
+        "more_secure_auth": {
+          "features_version": "3.0",
+          "model_version": "2022.07.19.001",
+          "policy_enabled": false,
+          "reason": "Normal level of trust; no detection of known attack pattern",
+          "trust_level": "NORMAL"
+        },
+        "remember_me": {
+          "features_version": "3.0",
+          "model_version": "2022.07.19.001",
+          "policy_enabled": false,
+          "reason": "Known Access IP",
+          "trust_level": "NORMAL"
+        }
+      },
+      "alias": "",
+      "application": {
+        "key": "DIY231J8BR23QK4UKBY8",
+        "name": "Microsoft Azure Active Directory"
+      },
+      "auth_device": {
+        "ip": "111.111.111.111",
+        "key": "DP5BJ05HI4WRBVI4Q7JF",
+        "location": {
+          "city": "Ann Arbor",
+          "country": "United States",
+          "state": "Michigan"
+        },
+        "name": "My iPhone X (734-555-2342)"
+      },
+      "email": "narroway@example.com",
+      "event_type": "authentication",
+      "factor": "duo_push",
+      "isotimestamp": "2020-02-13T18:56:20.351346+00:00",
+      "ood_software": null,
+      "reason": "user_approved",
+      "result": "success",
+      "timestamp": 1581620180,
+      "trusted_endpoint_status": "not trusted",
+      "txid": "340a23e3-23f3-23c1-87dc-1491a23dfdbb",
+      "user": {
+        "groups": ["Duo Users", "CorpHQ Users"],
+        "key": "DU3KC77WJ06Y5HIV7XKQ",
+        "name": "narroway@example.com"
+      }
+    }
+  ],
+  "metadata": {
+    "next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"],
+    "total_objects": 1
+  }
+}

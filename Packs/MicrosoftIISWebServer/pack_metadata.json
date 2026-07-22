@@ -1,0 +1,28 @@
+{
+    "name": "Microsoft IIS Web Server",
+    "description": "The Microsoft IIS Web Server pack parses IIS logs and normalizes them to the Cortex Data Model (XDM) schema.",
+    "support": "xsoar",
+    "currentVersion": "1.0.18",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2022-05-29T00:00:00Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Microsoft",
+        "IIS",
+        "Internet Information Services"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

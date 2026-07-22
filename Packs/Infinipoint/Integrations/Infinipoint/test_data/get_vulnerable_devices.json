@@ -1,0 +1,14 @@
+[
+  {
+    "$device": "37dee181-dd6e-48ce-9591-19e803a41bd9",
+    "$host": "OSX-Sign-Machine.local",
+    "cve_id": null,
+    "device_risk": 10,
+    "device_risk_type": 4,
+    "mac_address": "-",
+    "os_name": "Mac OS X 10.15.3",
+    "platform": "darwin",
+    "software_name": null,
+    "vulnerability_count": 101
+  }
+]

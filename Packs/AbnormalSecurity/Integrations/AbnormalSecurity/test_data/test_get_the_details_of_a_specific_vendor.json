@@ -1,0 +1,16 @@
+{
+    "vendorDomain": "test-domain-1.com",
+    "riskLevel": "High",
+    "vendorContacts": [
+        "john.doe@test-domain-1.com"
+    ],
+    "companyContacts": [
+        "john.doe@test-domain-2.com",
+        "jane.doe@test-domain-2.com"
+    ],
+    "vendorCountries": [],
+    "analysis": [
+        "Vendor Compromise Seen in Abnormal Community"
+    ],
+    "vendorIpAddresses": []
+}

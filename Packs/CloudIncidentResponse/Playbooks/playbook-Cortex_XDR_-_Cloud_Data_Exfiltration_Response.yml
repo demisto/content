@@ -1,0 +1,1289 @@
+id: Cortex XDR - Cloud Data Exfiltration Response
+version: -1
+name: Cortex XDR - Cloud Data Exfiltration Response
+description: "## Data Exfiltration Response\n\nThe Data Exfiltration Response playbook is designed to address data exfiltration activity alerts in the cloud environment. This playbook is intended for handling \"An identity performed a suspicious download of multiple cloud storage object\" alert.\nThe playbook supports AWS, GCP, and Azure and executes the following:\n- Enrichment involved assets. \n- Determines the appropriate verdict based on the data collected from the enrichment phase. \n- Cloud Persistence Threat Hunting:\n  - Conducts threat hunting activities to identify any cloud persistence techniques\n- Verdict Handling:\n  - Handles false positives identified during the investigation\n  - Handles true positives by initiating appropriate response actions"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 252889fb-0601-4988-86d1-b3eb1eb04a6b
+    type: start
+    task:
+      id: 252889fb-0601-4988-86d1-b3eb1eb04a6b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ac2e50a3-49a8-416d-80df-9901b2cac69f
+    type: title
+    task:
+      id: ac2e50a3-49a8-416d-80df-9901b2cac69f
+      version: -1
+      name: Entity Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 33196fe3-9146-4d0b-859a-9ef20edaa6f9
+    type: title
+    task:
+      id: 33196fe3-9146-4d0b-859a-9ef20edaa6f9
+      version: -1
+      name: Enumeration Alert Search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: dff685bb-f246-461c-8bbf-1b5556836ac9
+    type: regular
+    task:
+      id: dff685bb-f246-461c-8bbf-1b5556836ac9
+      version: -1
+      name: Search alerts for cloud enumeration activity
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments will be concatenated using the AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      alert_name:
+        simple: '*enumeration*'
+      user_name:
+        complex:
+          root: Account.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d4e75314-8c10-4cf0-8e7c-60168b68fab7
+    type: title
+    task:
+      id: d4e75314-8c10-4cf0-8e7c-60168b68fab7
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: cd74dd8f-5047-4f4b-85d1-b1f5955bd8ae
+    type: title
+    task:
+      id: cd74dd8f-5047-4f4b-85d1-b1f5955bd8ae
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c7d5219a-6934-4143-84fc-e947732501a7
+    type: regular
+    task:
+      id: c7d5219a-6934-4143-84fc-e947732501a7
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      closeReason:
+        simple: True Positive.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: f8d3d697-5489-448b-8e44-ad7beb407a02
+    type: condition
+    task:
+      id: f8d3d697-5489-448b-8e44-ad7beb407a02
+      version: -1
+      name: Found malicious evidence based on enrichment data
+      description: "This step will ensure check the following and if one of them those conditions match, this alert as malicious/suspicious:\n\n- Is there access to a backup bucket? \n - if the IP is a known IP in the company\n- Is the IP malicious?\n- Is there an enumeration alert associated with the same user?\n- Is the IP known as one of the organization VPN address?\n- Are there minimum access to this bucket? Will be determined by a threshold"
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      Malicious:
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious
+            iscontext: true
+          right:
+            value: {}
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Alert
+                accessor: alert_description
+            iscontext: true
+          right:
+            value:
+              simple: 'enumeration '
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.OriginalAlert.event
+                accessor: is_bucket_name_backup_storage
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.OriginalAlert.event
+                accessor: is_caller_ip_organization_vpn_ip_address
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+          ignorecase: true
+        - operator: lessThanOrEqual
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.OriginalAlert.event
+                accessor: cloud_provider_bucket_name_days_seen_count_bucket_object_download
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: ae9cdfb0-7471-4fd2-842c-dd034b3e2439
+    type: condition
+    task:
+      id: ae9cdfb0-7471-4fd2-842c-dd034b3e2439
+      version: -1
+      name: Review the alert findings
+      description: |-
+        The enrichment process didn't identify any further suspicious activity.
+        Please review these alert findings and choose how to handle it.
+
+        Suggested checklist for the analyst:
+        - Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publicly available?
+        - Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands (such as API keys).
+
+
+            Did you find this alert to be malicious/suspicious?
+          - If you choose yes, the playbook will continue with containment actions
+          - No, will finish end the playbook."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "30"
+      "Yes":
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |-
+          The enrichment process didn't identify any further suspicious activity.
+          Please review this alert findings and choose how to handle it.
+
+          Suggested checklist for the analyst:
+          - Check the environment of the bucket - Is it in QA / Dev / Alpha / Production? Is it should be publically available?
+          - Check the information in the bucket - Is there any PII? Any configurations that might be potentially harmful in the wrong hands ( such as API keys).
+
+
+          Did you find this alert malicious/suspicious?
+          - If you choose yes, the playbook will continue with containment actions
+          - No, will finish end the playbook."
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Yes
+      - No
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 1a625493-42f3-412e-855c-1afe731f45f0
+    type: title
+    task:
+      id: 1a625493-42f3-412e-855c-1afe731f45f0
+      version: -1
+      name: 'Investigation '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: ae3f462e-fbce-4cef-8199-3b4aae06e2e9
+    type: title
+    task:
+      id: ae3f462e-fbce-4cef-8199-3b4aae06e2e9
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+      - "84"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: e8ad0409-bb88-40dc-8cec-68256339e1d7
+    type: title
+    task:
+      id: e8ad0409-bb88-40dc-8cec-68256339e1d7
+      version: -1
+      name: No Malicious activity identified
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 6e401998-6621-438e-8f42-42482b3507dc
+    type: regular
+    task:
+      id: 6e401998-6621-438e-8f42-42482b3507dc
+      version: -1
+      name: Check IP Reputation
+      description: Checks the specified IP address against the AbuseIP database.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      ip:
+        complex:
+          root: incident.xdralerts
+          accessor: hostiplist
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 45c4c88f-2f95-48d1-8241-bef653e9c59b
+    type: title
+    task:
+      id: 45c4c88f-2f95-48d1-8241-bef653e9c59b
+      version: -1
+      name: Malicious Activity identified
+      description: Optionally increases the alert severity to the new value if it is greater than the existing severity.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 693a2e41-813b-4844-8242-acd59e6d9059
+    type: regular
+    task:
+      id: 693a2e41-813b-4844-8242-acd59e6d9059
+      version: -1
+      name: Get cloud extra data
+      description: Returns information about each alert ID.
+      script: '|||xdr-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      alert_ids:
+        complex:
+          root: inputs.alertID
+      filter_alert_fields:
+        simple: "false"
+      ignore-outputs:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 6930558e-e8e7-451c-8951-df3283cb61de
+    type: title
+    task:
+      id: 6930558e-e8e7-451c-8951-df3283cb61de
+      version: -1
+      name: Containment Plan
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "83"
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 4f6d2911-8546-4c0e-8d4c-481296abbe8d
+    type: title
+    task:
+      id: 4f6d2911-8546-4c0e-8d4c-481296abbe8d
+      version: -1
+      name: Set Alert Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 6a1fdc94-be9a-4832-850c-c495bf5daed5
+    type: playbook
+    task:
+      id: 6a1fdc94-be9a-4832-850c-c495bf5daed5
+      version: -1
+      name: Cloud Threat Hunting - Persistence
+      description: |-
+        ---
+
+        ## Cloud Threat Hunting - Persistence Playbook
+
+        The playbook is responsible for hunting persistence activity in the cloud. It supports AWS, GCP, and Azure - one at a time.
+
+        ### Hunting Queries
+
+        The playbook executes hunting queries for each provider related to each of the following:
+
+        1. IAM
+        2. Compute Resources
+        3. Compute Functions
+
+        ### Indicator Extraction
+
+        If relevant events are found during the search, indicators will be extracted using the `ExtractIndicators-CloudLogging` script.
+
+        ---
+      playbookName: Cloud Threat Hunting - Persistence
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      AWSAccessKeyID:
+        complex:
+          root: alertJson.raw_abioc.event._aws_specific_fields
+          accessor: access_key_id
+      AWSTimespan:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 2 hours ago
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: +
+              fields:
+                value:
+                  simple: "1"
+      AzureTimespan:
+        simple: 2h
+      GCPProjectName:
+        complex:
+          root: incident.xdralerts
+          accessor: project
+      GCPTimespan:
+        complex:
+          root: incident
+          accessor: occurred
+          transformers:
+          - operator: ModifyDateTime
+            args:
+              variation:
+                value:
+                  simple: 2 hours ago
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Z
+              toReplace:
+                value:
+                  simple: "+00:00"
+      cloudProvider:
+        complex:
+          root: incident.xdralerts
+          accessor: cloudprovider
+          transformers:
+          - operator: uniq
+      region:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: region
+          transformers:
+          - operator: uniq
+      username:
+        complex:
+          root: incident.xdralerts
+          accessor: username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 44ead2a9-768d-4a8b-89f4-511ccce41b3d
+    type: playbook
+    task:
+      id: 44ead2a9-768d-4a8b-89f4-511ccce41b3d
+      version: -1
+      name: Cloud Response - Generic
+      description: |-
+        This playbook provides response playbooks for:
+        - AWS
+        - Azure
+        - GCP
+
+        The response actions available are:
+        - Terminate/Shut down/Power off an instance
+        - Delete/Disable a user
+        - Delete/Revoke/Disable credentials
+        - Block indicators
+      playbookName: Cloud Response - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      AWS-accessKeyRemediationType:
+        simple: Disable
+      AWS-resourceRemediationType:
+        simple: Stop
+      AWS-userRemediationType:
+        simple: Revoke
+      Azure-resourceRemediationType:
+        simple: Poweroff
+      Azure-userRemediationType:
+        simple: Disable
+      GCP-resourceRemediationType:
+        simple: Stop
+      GCP-userRemediationType:
+        simple: Disable
+      autoAccessKeyRemediation:
+        simple: "False"
+      autoBlockIndicators:
+        complex:
+          root: inputs.autoBlockIndicators
+      autoResourceRemediation:
+        simple: "False"
+      autoUserRemediation:
+        complex:
+          root: inputs.autoUserRemediation
+      cloudProvider:
+        complex:
+          root: incident.xdralerts
+          accessor: cloudprovider
+          transformers:
+          - operator: uniq
+      username:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts.user_name
+          filters:
+          - - operator: notStartWith
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                iscontext: true
+              right:
+                value:
+                  simple: key1(
+            - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                iscontext: true
+              right:
+                value:
+                  simple: key2(
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 8d6f7fe8-2cd7-40e8-8cba-6a9510f68c92
+    type: playbook
+    task:
+      id: 8d6f7fe8-2cd7-40e8-8cba-6a9510f68c92
+      version: -1
+      name: Cloud User Investigation - Generic
+      playbookName: Cloud User Investigation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      AwsTimeSearchFrom:
+        simple: "1"
+      AzureSearchTime:
+        simple: ago(1d)
+      GcpProjectName:
+        complex:
+          root: incident.xdralerts
+          accessor: project
+      GcpTimeSearchFrom:
+        simple: "1"
+      MfaAttemptThreshold:
+        simple: "10"
+      Username:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts.user_name
+          filters:
+            - - operator: notStartWith
+                left:
+                  value:
+                    simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                  iscontext: true
+                right:
+                  value:
+                    simple: key1(
+              - operator: notStartWith
+                left:
+                  value:
+                    simple: PaloAltoNetworksXDR.Incident.alerts.user_name
+                  iscontext: true
+                right:
+                  value:
+                    simple: key2(
+          transformers:
+          - operator: uniq
+      cloudProvider:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: cloud_provider
+          transformers:
+          - operator: uniq
+      failedLogonThreshold:
+        simple: "20"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: b5b6055c-2808-4e80-8828-b4d424533d53
+    type: condition
+    task:
+      id: b5b6055c-2808-4e80-8828-b4d424533d53
+      version: -1
+      name: Found any persistence evidences or user abnormal activity?
+      description: Checks if results are returned from the Cloud Threat Hunting - Persistence and Cloud User Investigation - Generic sub-playbooks.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AWSQuery
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: GCPQuery
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AwsMFAConfigCount
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AwsUserRoleChangesCount
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AwsSuspiciousActivitiesCount
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AwsScriptBasedUserAgentCount
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: GcpSuspiciousApiUsage
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: GsuiteUnusualLoginAllowedCount
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: GsuiteUserPasswordLeaked
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureScriptBasedUserAgentEvents
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: b4d64aed-f0ba-4f76-83a6-67e469740ba7
+    type: playbook
+    task:
+      id: b4d64aed-f0ba-4f76-83a6-67e469740ba7
+      version: -1
+      name: Cloud Credentials Rotation - Generic
+      description: |-
+        ## **Cloud Credentials Rotation - Generic**
+
+        This comprehensive playbook combines the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
+
+        The primary objective is to offer an efficient way to address compromised credentials across different cloud platforms. By consolidating the key steps from AWS, Azure, and GCP, it minimizes the time spent searching for platform-specific procedures and accelerates the remediation process, ensuring the highest level of security for your cloud environments.
+
+        ## **Integrations for Each Sub-Playbook**
+
+        In order to seamlessly execute the actions mentioned in each sub-playbook, specific integrations are essential. These integrations facilitate the automated tasks and processes that the playbook carries out. Here are the required integrations for each sub-playbook:
+
+        ### **AWS Sub-Playbook:**
+        1. [**AWS - IAM**](https://xsoar.pan.dev/docs/reference/integrations/aws---iam): Used to manage AWS Identity and Access Management.
+        2. [**AWS - EC2**](https://xsoar.pan.dev/docs/reference/integrations/aws---ec2): Essential for managing Amazon Elastic Compute Cloud (EC2) instances.
+
+        ### **GCP Sub-Playbook:**
+        1. [**Google Workspace Admin**](https://xsoar.pan.dev/docs/reference/integrations/g-suite-admin): Manages users, groups, and other entities within Google Workspace.
+        2. [**GCP-IAM**](https://xsoar.pan.dev/docs/reference/integrations/gcp-iam): Ensures management and control of GCP's Identity and Access Management.
+
+        ### **Azure Sub-Playbook:**
+        1. [**Microsoft Graph Users**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user): Manages users and related entities in Microsoft Graph.
+        2. [**Microsoft Graph Applications**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-applications): Manages applications within Microsoft Graph.
+      playbookName: Cloud Credentials Rotation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      AWS-accessKeyID:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+          accessor: accessKeyId
+      AWS-instanceID:
+        complex:
+          root: alert.username
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: i-
+              ignorecase: true
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "2"
+      AWS-newInstanceProfileName:
+        complex:
+          root: inputs.AWS-newInstanceProfileName
+      AWS-newRoleName:
+        complex:
+          root: inputs.AWS-newRoleName
+      AWS-roleNameToRestrict:
+        complex:
+          root: inputs.AWS-roleNameToRestrict
+      AWS-userID:
+        complex:
+          root: incident
+          accessor: username
+      Azure-AppID:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig.claims
+          accessor: appid
+      Azure-ObjectID:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+          accessor: claims
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}
+              unpack_matches: {}
+          - operator: ExtractInbetween
+            args:
+              from:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"
+              to:
+                value:
+                  simple: '"'
+      Azure-userID:
+        complex:
+          root: incident
+          accessor: username
+      GCP-SAEmail:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig
+          accessor: principalEmail
+      GCP-cloudProject:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: project
+      GCP-userID:
+        complex:
+          root: incident
+          accessor: username
+      GCP-zone:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: zone
+      RemediationType:
+        complex:
+          root: inputs.credentialsRemediationType
+      cloudProvider:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event
+          accessor: cloud_provider
+      identityType:
+        complex:
+          root: PaloAltoNetworksXDR.OriginalAlert.event.identity_orig.sessionContext.sessionIssuer
+          accessor: type
+      shouldCloneSA:
+        complex:
+          root: inputs.shouldCloneSA
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "32_47_#default#": 0.28,
+      "32_64_Malicious": 0.21
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2565,
+        "width": 1660,
+        "x": 260,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: alertID
+  value: {}
+  required: false
+  description: The XDR alert ID.
+  playbookInputQuery:
+- key: autoUserRemediation
+  value:
+    simple: "False"
+  required: false
+  description: 'Whether to execute the user remediation automatically. (Default: False)'
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: 'Whether to execute the block remediation automatically. (Default: False)'
+  playbookInputQuery:
+- key: credentialsRemediationType
+  value:
+    simple: Reset
+  required: false
+  description: |-
+    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
+
+    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
+    Supports: GCP, GSuite Admin and MSGraph Users.
+
+    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
+    Supports: AWS.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
+  playbookInputQuery:
+- key: shouldCloneSA
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to clone the compromised SA before putting a deny policy to it.
+    Supports: AWS.
+    True/False
+  playbookInputQuery:
+- key: AWS-newRoleName
+  value: {}
+  required: false
+  description: The new role name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-newInstanceProfileName
+  value: {}
+  required: false
+  description: The new instance profile name to assign in the clone service account flow.
+  playbookInputQuery:
+- key: AWS-roleNameToRestrict
+  value: {}
+  required: false
+  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces: ["xsoar"]
+fromversion: 6.9.0

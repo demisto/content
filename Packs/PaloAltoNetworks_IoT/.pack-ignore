@@ -1,0 +1,17 @@
+[file:PaloAltoNetworks_IoT.yml]
+ignore=IN126,BA108,BA109
+
+[file:iot_alert_post_processing.yml]
+ignore=BA108,BA109
+
+[file:iot_check_servicenow.yml]
+ignore=BA108,BA109,SC106
+
+[file:iot_get_raci.yml]
+ignore=BA108,BA109
+
+[file:iot_vuln_post_processing.yml]
+ignore=BA108,BA109
+
+[file:iot_incident_url.json]
+ignore=IF100

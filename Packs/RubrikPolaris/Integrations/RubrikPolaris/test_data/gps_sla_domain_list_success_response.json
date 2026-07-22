@@ -1,0 +1,180 @@
+{
+  "data": {
+    "slaDomains": {
+      "edges": [
+        {
+          "node": {
+            "name": "Bronzecd",
+            "id": "00000000-0000-0000-0000-000000000002",
+            "description": "Rubrik default Bronze level SLA Domain policy",
+            "protectedObjectCount": 0,
+            "baseFrequency": {
+              "duration": 1,
+              "unit": "DAYS"
+            },
+            "archivalSpec": {
+              "archivalLocationName": "AWS S3:bucket-1234"
+            },
+            "archivalSpecs": [],
+            "replicationSpec": null,
+            "replicationSpecsV2": [
+              {
+                "cluster": {
+                  "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+                  "name": "sand2-rbk01"
+                },
+                "awsTarget": {
+                  "accountId": "",
+                  "accountName": "",
+                  "region": "NOT_DEFINED"
+                },
+                "azureTarget": {
+                  "region": "NotDefined"
+                },
+                "retentionDuration": {
+                  "duration": 30,
+                  "unit": "DAYS"
+                },
+                "targetMapping": null
+              },
+              {
+                "cluster": {
+                  "id": "543343-8910-4e4d-9dca-0798f5fc6d61",
+                  "name": "sand2-rbk02"
+                },
+                "awsTarget": {
+                  "accountId": "",
+                  "accountName": "",
+                  "region": "NOT_DEFINED"
+                },
+                "azureTarget": {
+                  "region": "NotDefined"
+                },
+                "retentionDuration": {
+                  "duration": 30,
+                  "unit": "DAYS"
+                },
+                "targetMapping": null
+              }
+            ],
+            "localRetentionLimit": null,
+            "snapshotSchedule": {
+              "minute": null,
+              "hourly": null,
+              "daily": {
+                "basicSchedule": {
+                  "frequency": 1,
+                  "retention": 32,
+                  "retentionUnit": "DAYS"
+                }
+              },
+              "weekly": null,
+              "monthly": {
+                "basicSchedule": {
+                  "frequency": 1,
+                  "retention": 12,
+                  "retentionUnit": "MONTHS"
+                },
+                "dayOfMonth": "FIRST_DAY"
+              },
+              "quarterly": null,
+              "yearly": {
+                "basicSchedule": {
+                  "frequency": 1,
+                  "retention": 2,
+                  "retentionUnit": "YEARS"
+                },
+                "dayOfYear": "FIRST_DAY",
+                "yearStartMonth": "JANUARY"
+              }
+            },
+            "objectSpecificConfigs": {
+              "awsRdsConfig": null,
+              "sapHanaConfig": null,
+              "vmwareVmConfig": null
+            },
+            "objectTypes": []
+          }
+        },
+        {
+          "node": {
+            "name": "Gold",
+            "id": "00000000-0000-0000-0000-000000000000",
+            "description": "Rubrik default Gold level SLA Domain policy",
+            "protectedObjectCount": 0,
+            "baseFrequency": {
+              "duration": 4,
+              "unit": "HOURS"
+            },
+            "archivalSpecs": [],
+            "replicationSpec": null,
+            "replicationSpecsV2": [
+              {
+                "cluster": {
+                  "id": "4d4a41d5-8910-4e4d-9dca-0798f5fc6d61",
+                  "name": "sand2-rbk01"
+                },
+                "awsTarget": {
+                  "accountId": "",
+                  "accountName": "",
+                  "region": "NOT_DEFINED"
+                },
+                "azureTarget": {
+                  "region": "NotDefined"
+                },
+                "retentionDuration": {
+                  "duration": 30,
+                  "unit": "DAYS"
+                },
+                "targetMapping": null
+              }
+            ],
+            "localRetentionLimit": null,
+            "snapshotSchedule": {
+              "minute": null,
+              "hourly": {
+                "basicSchedule": {
+                  "frequency": 4,
+                  "retention": 72,
+                  "retentionUnit": "HOURS"
+                }
+              },
+              "daily": {
+                "basicSchedule": {
+                  "frequency": 1,
+                  "retention": 32,
+                  "retentionUnit": "DAYS"
+                }
+              },
+              "weekly": null,
+              "monthly": {
+                "basicSchedule": {
+                  "frequency": 1,
+                  "retention": 12,
+                  "retentionUnit": "MONTHS"
+                },
+                "dayOfMonth": "FIRST_DAY"
+              },
+              "quarterly": null,
+              "yearly": {
+                "basicSchedule": {
+                  "frequency": 1,
+                  "retention": 2,
+                  "retentionUnit": "YEARS"
+                },
+                "dayOfYear": "FIRST_DAY",
+                "yearStartMonth": "JANUARY"
+              }
+            },
+            "objectSpecificConfigs": {
+              "awsRdsConfig": null,
+              "sapHanaConfig": null,
+              "vmwareVmConfig": null
+            },
+            "objectTypes": []
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{"uid": "123",
+                             "name": "update host",
+                             "type": "host",
+                             "domain": {
+                                 "uid": "987654",
+                                 "name": "SMC User",
+                                 "domain-type": "domain"
+                             },
+                             "ipv4-address": "8.8.8.8",
+                             "interfaces": [],
+                             "groups": [],
+                        "comments": "",
+                        "meta-info": {
+                                 "lock": "unlocked",
+                                 "validation-state": "ok",
+                                 "last-modify-time": {
+                                     "posix": 1591292554497,
+                                     "iso-8601": "2020-06-04T20:42+0300"
+                                 },
+                                 "last-modifier": "admin",
+                                 "creation-time": {
+                                     "posix": 1591292483022,
+                                     "iso-8601": "2020-06-04T20:41+0300"
+                                 },
+                                 "creator": "admin"
+                             },
+                        "read-only": true
+                        }

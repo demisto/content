@@ -1,0 +1,103 @@
+id: Cyble Vision Alert V2
+version: -1
+name: Cyble Vision Alert V2
+description: ""
+fromversion: 6.2.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cb40da4b-67b5-4ee2-8699-4d43f60f2e7e
+    type: start
+    task:
+      id: cb40da4b-67b5-4ee2-8699-4d43f60f2e7e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5014e329-91cf-4501-817a-54775795639e
+    type: regular
+    task:
+      id: 5014e329-91cf-4501-817a-54775795639e
+      version: -1
+      name: cyble-vision-fetch-alerts
+      description: Fetch alerts based on the given parameters. The alerts would have multiple events grouped into one, based on a specific service type. This way the user will see, in some cases, more events than the limit provides.
+      script: cybleeventsv2|||cyble-vision-fetch-alerts
+      type: regular
+      iscommand: true
+      brand: cybleeventsv2
+    scriptarguments:
+      end_date:
+        simple: ${incident.end_date}
+      from:
+        simple: "0"
+      limit:
+        simple: "5"
+      order_by:
+        simple: asc
+      start_date:
+        simple: ${incident.start_date}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: start_date
+  value:
+    simple: "2023-05-30T00:00:00+00:00"
+  required: true
+  description: ""
+  playbookInputQuery: null
+- key: end_date
+  value:
+    simple: "2023-05-31T00:00:00+00:00"
+  required: true
+  description: ""
+  playbookInputQuery: null
+outputs: []
+tests:
+- No tests (auto formatted)

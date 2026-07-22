@@ -1,0 +1,204 @@
+id: Hybrid-analysis quick-scan
+version: -1
+fromversion: 5.0.0
+name: Hybrid-analysis quick-scan
+description: Deprecated. No available replacement.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b423ee2f-8cf3-4d22-8e68-a83d5310a181
+    type: start
+    task:
+      id: b423ee2f-8cf3-4d22-8e68-a83d5310a181
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c331db18-b495-4259-8a42-3bd8b339d196
+    type: playbook
+    task:
+      id: c331db18-b495-4259-8a42-3bd8b339d196
+      version: -1
+      name: GenericPolling
+      description: ""
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: 'min_malicious_scanners'
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.min_malicious_scanners}
+      Ids:
+        simple: ${HybridAnalysis.URL.ScanID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: scanID
+      PollingCommandName:
+        simple: hybrid-analysis-quick-scan-url-results
+      Timeout:
+        simple: "10"
+      dt:
+        simple: HybridAnalysis.URL(val.Finished != true).ScanID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 646ceb09-7cbb-45ea-8a0b-69f26bf41040
+    type: regular
+    task:
+      id: 646ceb09-7cbb-45ea-8a0b-69f26bf41040
+      version: -1
+      name: Run quick-scan command
+      description: Submits the URL of a website, or the URL that contains the file, for analysis.
+      script: '|||hybrid-analysis-quick-scan-url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      scan_type:
+        simple: ${inputs.scan_type}
+      url:
+        simple: ${inputs.url}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 54affafa-cdf2-4bc3-8b97-60ef9ad06ef9
+    type: regular
+    task:
+      id: 54affafa-cdf2-4bc3-8b97-60ef9ad06ef9
+      version: -1
+      name: Get quick-scan results
+      description: Returns the scan results of the given URL ID.
+      script: '|||hybrid-analysis-quick-scan-url-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ID:
+        simple: ${HybridAnalysis.URL.ID}
+      min_malicious_scanners:
+        simple: ${inputs.min_malicious_scanners}
+      scanID:
+        simple: ${HybridAnalysis.URL.ScanID}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: bfc75b23-0f21-46dc-8672-aed9a2bf8397
+    type: title
+    task:
+      id: bfc75b23-0f21-46dc-8672-aed9a2bf8397
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value: {}
+  required: false
+  description: The website URL, or the URL that contains the file to submit.
+- key: scan_type
+  value:
+    simple: all
+  required: false
+  description: The type of scan. Run the hybrid-analysis-list-scanners command to view available scanners.
+- key: min_malicious_scanners
+  value:
+    simple: "2"
+  required: false
+  description: The number of scanners that report the file as malicious to determine whether the file is malicious. Default is "2".
+outputs:
+- contextPath: HybridAnalysis.URL.SubmissionType
+  description: The type of the submission - file or url
+tests:
+- No tests (deprecated)
+deprecated: true

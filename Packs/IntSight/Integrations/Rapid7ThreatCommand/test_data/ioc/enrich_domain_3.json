@@ -1,0 +1,138 @@
+{
+    "OriginalValue": "test",
+    "Status": "Done",
+    "Data": {
+        "Value": "servot.myjino.ru",
+        "Type": "Domains",
+        "Sources": [
+            {
+                "Name": "Cyber Crime Tracker",
+                "ConfidenceLevel": 1
+            },
+            {
+                "Name": "Cyware",
+                "ConfidenceLevel": 2
+            },
+            {
+                "Name": "Threat Library",
+                "ConfidenceLevel": 3
+            }
+        ],
+        "SystemTags": [
+            "Actions on Objective",
+            "Collection",
+            "Credential Access",
+            "Installation",
+            "T1056.001 - Input Capture: Keylogging",
+            "T1417.001 - Input Capture: Keylogging",
+            "anubis",
+            "audio",
+            "bankbot",
+            "bankingbot",
+            "cachedcredentialstealing",
+            "ccinfrastructure",
+            "collectgeneralsystemanduserinformation",
+            "contactlistcapture",
+            "credentialstealing",
+            "creditcardstealing",
+            "global",
+            "gpsdatacapture",
+            "keylogging",
+            "malware related",
+            "mazain",
+            "recordaudio",
+            "screenshottaking",
+            "securityevasion",
+            "smscapture",
+            "smsmanagement",
+            "stealingcreditcarddata",
+            "trojan"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [
+            "anubis",
+            "mazain"
+        ],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "Data_FirstSeen",
+        "LastSeen": "Data_LastSeen",
+        "UpdateDate": "Data_UpdateDate",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Medium",
+            "Score": 60,
+            "Origin": "system"
+        },
+        "DnsRecords": [
+            {
+                "Value": "ns1.jino.ru. hostmaster.jino.ru. 2017040301 16384 2048 1048576 25600",
+                "Type": "SOA",
+                "FirstResolved": "Data_DnsRecords[0]_FirstResolved",
+                "LastResolved": "Data_DnsRecords[0]_LastResolved",
+                "Count": 70
+            }
+        ],
+        "Subdomains": [
+            "www.servot.myjino.ru"
+        ],
+        "Whois": {
+            "History": [],
+            "Current": {
+                "RegistrationDetails": {
+                    "CreatedDate": "Data_Whois_Current_RegistrationDetails_CreatedDate",
+                    "ExpiresDate": "Data_Whois_Current_RegistrationDetails_ExpiresDate",
+                    "Statuses": [
+                        "REGISTERED,",
+                        "DELEGATED,",
+                        "VERIFIED"
+                    ],
+                    "NameServers": []
+                },
+                "RegistrantDetails": [
+                    {
+                        "Organization": "Avguro Technologies, Ltd.",
+                        "Name": "Avguro Technologies, Ltd.",
+                        "Email": "",
+                        "Telephone": "",
+                        "Fax": "",
+                        "City": "",
+                        "State": "",
+                        "Country": "",
+                        "Address": "",
+                        "PostalCode": "",
+                        "CountryCode": ""
+                    }
+                ]
+            }
+        },
+        "Resolutions": [
+            {
+                "ResolvedIpAddress": "Data_Resolutions[0]_ResolvedIpAddress",
+                "Location": "RU",
+                "ASN": 8342,
+                "Operator": "JSC RTComm.RU",
+                "FirstResolved": "Data_Resolutions[0]_FirstResolved",
+                "LastResolved": "Data_Resolutions[0]_LastResolved",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            }
+        ],
+        "RelatedHashes": {
+            "downloaded": [],
+            "communicating": [
+                "19084c0bee7c21c93aba4a7f807102a07713650a8792594e75bdceac78789681",
+                "210c00b809ae45a588920a13d67c1e78146bc9ce01a09203942b9bfd0f03ee4d",
+                "test"
+            ],
+            "referencing": [
+                "test",
+                "test"
+            ]
+        }
+    }
+}

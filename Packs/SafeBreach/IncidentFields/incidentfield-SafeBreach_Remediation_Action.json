@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachremediationaction",
+    "closeForm": false,
+    "content": true,
+    "description": "Suggested remediation action to be taken to fix the issue",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachremediationaction",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Remediation Action",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "Suggested remediation actions to take for the Insight",
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

@@ -1,0 +1,86 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "RSA NetWitness v11.5 - incoming mapper",
+    "mapping": {
+        "NetWitness Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "RSA Rule Id": {
+                    "simple": "ruleId"
+                },
+                "Assigned User": {
+                    "simple": "assignee"
+                },
+                "Description": {
+                    "simple": "summary"
+                },
+                "Destination IP": {
+                    "simple": "alertMeta.DestinationIp.[]"
+                },
+                "First Seen": {
+                    "simple": "firstAlertTime"
+                },
+                "Incident Link": {
+                    "simple": "incident_url"
+                },
+                "Last Modified By": {
+                    "simple": "lastUpdatedBy"
+                },
+                "Last Modified On": {
+                    "simple": "lastUpdated"
+                },
+                "RSA Alert Count": {
+                    "simple": "alertCount"
+                },
+                "RSA Event Count": {
+                    "simple": "eventCount"
+                },
+                "RSA Id": {
+                    "simple": "id"
+                },
+                "Risk Score": {
+                    "simple": "riskScore"
+                },
+                "Source Category": {
+                    "simple": "categories.[].name"
+                },
+                "Source Created By": {
+                    "simple": "createdBy"
+                },
+                "Source IP": {
+                    "simple": "alertMeta.SourceIp.[]"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "occurred": {
+                    "simple": "created"
+                },
+                "severity": {
+                    "simple": "priority"
+                },
+                "RSA Alerts": {
+                    "simple": "alerts"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "RSA NetWitness v11.5 - incoming mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

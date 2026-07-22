@@ -1,0 +1,61 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachremediationdata",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Product",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "product",
+            "required": true,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Remediation Data",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "remediationdata",
+            "required": true,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {
+            "product": "Splunk"
+        }
+    ],
+    "description": "Vendor specific remediation data for Insight resolution",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachremediationdata",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Remediation Data",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

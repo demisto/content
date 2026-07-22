@@ -1,0 +1,78 @@
+{
+    "query_usage": {
+        "request_id": "00000000-0000-0000-0000-000000000001",
+        "ips": [
+            "0.0.0.1"
+        ],
+        "used_queries": 261,
+        "remaining_queries": 49739,
+        "query_limit": 50000,
+        "foundation_api_usage": {
+            "used_queries": 15,
+            "remaining_queries": 0,
+            "query_limit": 0
+        }
+    },
+    "entry_context": {
+        "IP(val.Address && val.Address == obj.Address)": [
+            {
+                "Address": "0.0.0.1",
+                "ASN": 13335,
+                "ASOwner": "NET, US",
+                "Region": "US",
+                "Description": "0.0.0.1 has been identified as a \"cdn\", indicating private and reserved addresses defined by RFC 1918, RFC 5735, and RFC 6598, as well as net that have not been allocated to a Regional Internet Registry (RIR) by the Internet Assigned Numbers Authority.",
+                "Geo": {
+                    "Country": "US"
+                },
+                "Organization": {
+                    "Name": "NET, US"
+                },
+                "Tags": "cdn: (cloudflare)"
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "0.0.0.1",
+                "Type": "ip",
+                "Vendor": "Team Cymru Scout",
+                "Score": 2,
+                "Reliability": "B - Usually reliable"
+            }
+        ],
+        "TeamCymruScout.IP(val.ip && val.ip == obj.ip)": {
+            "ip": "0.0.0.1",
+            "country_code": "US",
+            "as_info": [
+                {
+                    "asn": 13335,
+                    "as_name": "NET, US"
+                }
+            ],
+            "insights": {
+                "overall_rating": "suspicious",
+                "insights": [
+                    {
+                        "rating": "suspicious",
+                        "message": "Test data Insight Message."
+                    },
+                    {
+                        "rating": "suspicious",
+                        "message": "0.0.0.1 has been identified as a \"cdn\", indicating private and reserved addresses defined by RFC 1918, RFC 5735, and RFC 6598, as well as net that have not been allocated to a Regional Internet Registry (RIR) by the Internet Assigned Numbers Authority."
+                    }
+                ]
+            },
+            "tags": [
+                {
+                    "id": 81,
+                    "name": "cdn",
+                    "children": [
+                        {
+                            "id": 210,
+                            "name": "cloudflare"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

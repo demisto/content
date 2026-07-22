@@ -1,0 +1,80 @@
+{
+    "data": [
+        {
+            "accountId": "123456",
+            "accountName": "Palo Alto Networks",
+            "activityType": 5040,
+            "activityUuid": "123-456",
+            "agentId": null,
+            "agentUpdatedVersion": null,
+            "comments": null,
+            "createdAt": "2022-09-06T20:37:10.895199Z",
+            "data": {
+                "accountId": 123456,
+                "accountName": "Palo Alto Networks",
+                "expiration": null,
+                "fullScopeDetails": "Account Palo Alto Networks",
+                "fullScopeDetailsPath": "Global / Palo Alto Networks",
+                "groupName": null,
+                "licensesDescription": "",
+                "scopeLevel": "Account",
+                "scopeName": "Palo Alto Networks",
+                "siteName": null,
+                "username": "SentinelOne"
+            },
+            "description": null,
+            "groupId": null,
+            "groupName": null,
+            "hash": null,
+            "id": "123456",
+            "osFamily": null,
+            "primaryDescription": "",
+            "secondaryDescription": null,
+            "siteId": null,
+            "siteName": null,
+            "threatId": null,
+            "updatedAt": "2022-09-06T20:37:10.867305Z",
+            "userId": "123456"
+        },
+        {
+            "accountId": "123456",
+            "accountName": "Palo Alto Networks",
+            "activityType": 23,
+            "activityUuid": "123-456",
+            "agentId": null,
+            "agentUpdatedVersion": null,
+            "comments": null,
+            "createdAt": "2022-09-06T20:37:55.912951Z",
+            "data": {
+                "accountName": "Palo Alto Networks",
+                "byUser": "SA-API",
+                "fullScopeDetails": "Account Palo Alto Networks",
+                "fullScopeDetailsPath": "Global / Palo Alto Networks",
+                "groupName": null,
+                "role": "Admin",
+                "scopeLevel": "Account",
+                "scopeName": "Palo Alto Networks",
+                "siteName": null,
+                "userScope": "account",
+                "username": "Matt Chase"
+            },
+            "description": "",
+            "groupId": null,
+            "groupName": null,
+            "hash": null,
+            "id": "123456",
+            "osFamily": null,
+            "primaryDescription": "",
+            "secondaryDescription": null,
+            "siteId": null,
+            "siteName": null,
+            "threatId": null,
+            "updatedAt": "2022-09-06T20:37:55.912951Z",
+            "userId": "1503807937830229037"
+        }
+    ],
+    "pagination": {
+        "nextCursor": "null",
+        "totalItems": 2
+    }
+}

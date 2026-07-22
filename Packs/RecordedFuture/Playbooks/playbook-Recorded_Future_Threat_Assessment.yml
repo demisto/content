@@ -1,0 +1,485 @@
+id: Recorded Future Threat Assessment
+version: -1
+name: Recorded Future Threat Assessment
+description: Threat Assessment using the Recorded Future SOAR Triage API and the context
+  Phishing.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: adb7954a-1b6a-4644-8985-ad77bdbc0295
+    type: start
+    task:
+      id: adb7954a-1b6a-4644-8985-ad77bdbc0295
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: d70bec20-aa9b-44c2-8901-a8b730247d25
+    type: condition
+    task:
+      id: d70bec20-aa9b-44c2-8901-a8b730247d25
+      version: -1
+      name: Is there anything to assess?
+      description: Checks whether the playbook's input contains at least one domain
+        name to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.CVE
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: d1410bed-68ef-4308-8a99-964df74ff88e
+    type: title
+    task:
+      id: d1410bed-68ef-4308-8a99-964df74ff88e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 8b5c54f4-ef8e-4b2f-8af7-6bc093b49ff3
+    type: condition
+    task:
+      id: 8b5c54f4-ef8e-4b2f-8af7-6bc093b49ff3
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Checks if there is an active instance of the Recorded Future API
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 436a7665-15ab-4274-80fe-e9d17d0896e9
+    type: regular
+    task:
+      id: 436a7665-15ab-4274-80fe-e9d17d0896e9
+      version: -1
+      name: Get Threat Assessment from Recorded Future
+      description: Get an indication of the risk based on context.
+      script: Recorded Future v2|||recordedfuture-threat-assessment
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      context:
+        simple: ${inputs.threat-assessment-context}
+      cve:
+        simple: ${inputs.CVE}
+      domain:
+        simple: ${inputs.Domain}
+      file:
+        simple: ${inputs.MD5},${inputs.SHA1},${inputs.SHA256}
+      filter:
+        simple: ${inputs.filter}
+      ip:
+        simple: ${inputs.IP}
+      url:
+        simple: ${inputs.URL}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 53365659-56c0-4f05-8e96-4437c06fcc74
+    type: title
+    task:
+      id: 53365659-56c0-4f05-8e96-4437c06fcc74
+      version: -1
+      name: Threat Assessment Using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 80d37316-6d8f-4e04-8993-39d4432ca5ee
+    type: regular
+    task:
+      id: 80d37316-6d8f-4e04-8993-39d4432ca5ee
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      recordedfuturethreatassessment:
+        simple: ${RecordedFuture.Entities.context}
+      value:
+        simple: ${RecordedFuture.Entities.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_24_#default#": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 790,
+        "x": 0,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CVE
+  value:
+    complex:
+      root: CVE
+      accessor: ID
+      transformers:
+      - operator: uniq
+  required: false
+  description: CVE ID to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: IP Address to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: URL to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: MD5 to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+      transformers:
+      - operator: uniq
+  required: false
+  description: SHA-1 to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
+  required: false
+  description: SHA-256 to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+      transformers:
+      - operator: uniq
+  required: false
+  description: Domain to check if it is related to the C2 context.
+  playbookInputQuery:
+- key: threat-assessment-context
+  value:
+    simple: phishing
+  required: true
+  description: Context to use for assessment. This is used by Recorded Future to calculate
+    the relevant score and verdict. Valid values are "c2", "malware" and "phishing".
+  playbookInputQuery:
+- key: filter
+  value:
+    simple: "yes"
+  required: false
+  description: 'Makes sure that we filter out values that are zero in score from the
+    threat assessment api. '
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: File.SHA256
+  description: SHA-256
+  type: string
+- contextPath: File.SHA512
+  description: SHA-512
+  type: string
+- contextPath: File.SHA1
+  description: SHA-1
+  type: string
+- contextPath: File.MD5
+  description: MD5
+  type: string
+- contextPath: File.CRC32
+  description: CRC32
+  type: string
+- contextPath: File.CTPH
+  description: CTPH
+  type: string
+- contextPath: IP.Address
+  description: IP address
+  type: string
+- contextPath: IP.ASN
+  description: ASN
+  type: string
+- contextPath: IP.Geo.Country
+  description: IP Geolocation Country
+  type: string
+- contextPath: Domain.Name
+  description: Domain name
+  type: string
+- contextPath: URL.Data
+  description: URL name
+  type: string
+- contextPath: CVE.ID
+  description: Vulnerability name
+  type: string
+- contextPath: RecordedFuture.verdict
+  description: Recorded Future verdict
+  type: boolean
+- contextPath: RecordedFuture.context
+  description: Threat Assessment Context
+  type: string
+- contextPath: RecordedFuture.riskScore
+  description: Recorded Future Max Score
+  type: number
+- contextPath: RecordedFuture.Entities.id
+  description: Entity ID
+  type: string
+- contextPath: RecordedFuture.Entities.name
+  description: Entity Name
+  type: string
+- contextPath: RecordedFuture.Entities.type
+  description: Entity Type
+  type: string
+- contextPath: RecordedFuture.Entities.score
+  description: Entity Score
+  type: string
+- contextPath: RecordedFuture.Entities.Evidence.ruleid
+  description: Recorded Future Risk Rule ID
+  type: string
+- contextPath: RecordedFuture.Entities.Evidence.timestamp
+  description: Recorded Future Evidence Timestamp
+  type: date
+- contextPath: RecordedFuture.Entities.Evidence.mitigation
+  description: Recorded Future Evidence Mitigation
+  type: string
+- contextPath: RecordedFuture.Entities.Evidence.description
+  description: Recorded Future Evidence Description
+  type: string
+- contextPath: RecordedFuture.Entities.Evidence.rule
+  description: Recorded Future Risk Rule
+  type: string
+- contextPath: RecordedFuture.Entities.Evidence.level
+  description: Recorded Future Risk Rule Level
+  type: number
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

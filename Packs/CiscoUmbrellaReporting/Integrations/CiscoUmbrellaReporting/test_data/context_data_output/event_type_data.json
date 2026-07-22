@@ -1,0 +1,33 @@
+{
+    "meta": {},
+    "data": [
+        {
+            "count": 0,
+            "eventtype": "application"
+        },
+        {
+            "count": 0,
+            "eventtype": "antivirus"
+        },
+        {
+            "count": 0,
+            "eventtype": "cisco_amp"
+        },
+        {
+            "count": 0,
+            "eventtype": "url_integration"
+        },
+        {
+            "count": 0,
+            "eventtype": "url_security"
+        },
+        {
+            "count": 0,
+            "eventtype": "domain_integration"
+        },
+        {
+            "count": 0,
+            "eventtype": "domain_security"
+        }
+    ]
+}

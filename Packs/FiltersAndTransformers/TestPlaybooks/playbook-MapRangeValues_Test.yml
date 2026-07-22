@@ -1,0 +1,877 @@
+id: MapRangeValuesTest
+version: -1
+name: MapRangeValuesTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 58d10831-2f17-4369-844b-d2f30933010f
+    type: start
+    task:
+      id: 58d10831-2f17-4369-844b-d2f30933010f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0765021c-16e7-4bcc-81d7-16f97d6055c9
+    type: regular
+    task:
+      id: 0765021c-16e7-4bcc-81d7-16f97d6055c9
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2a6e1da1-9e95-440b-81ed-4eae7331f7e8
+    type: regular
+    task:
+      id: 2a6e1da1-9e95-440b-81ed-4eae7331f7e8
+      version: -1
+      name: test string veryhigh
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: severity_veryhigh_int
+      value:
+        complex:
+          root: ${severity_veryhigh_str}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: info,low,med,high,veryhigh
+              map_to:
+                value:
+                  simple: 0.5,1,2,3,4
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4cc92231-8c9d-4c12-897a-df7dda7a18fe
+    type: condition
+    task:
+      id: 4cc92231-8c9d-4c12-897a-df7dda7a18fe
+      version: -1
+      name: Verify the correct int was selected for veryhigh
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${severity_veryhigh_int}
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f2c6ba28-07ea-425c-8a1b-f2d89d3eda66
+    type: regular
+    task:
+      id: f2c6ba28-07ea-425c-8a1b-f2d89d3eda66
+      version: -1
+      name: Set string info
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: severity_info_str
+      value:
+        simple: info
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 098c5931-e9d0-4011-8828-de94e7923f9e
+    type: regular
+    task:
+      id: 098c5931-e9d0-4011-8828-de94e7923f9e
+      version: -1
+      name: info to float
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: severity_info_float
+      value:
+        complex:
+          root: ${severity_info_str}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: info,low,med,high,veryhigh
+              map_to:
+                value:
+                  simple: 0.5,1,2,3,4
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d1c2c3f5-ac81-4cff-896a-ec346cecdd14
+    type: condition
+    task:
+      id: d1c2c3f5-ac81-4cff-896a-ec346cecdd14
+      version: -1
+      name: Verify info to 0.5
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${severity_info_float}
+            iscontext: true
+          right:
+            value:
+              simple: "0.5"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: bebcc447-17ae-4d8d-85f3-99a289dd7633
+    type: regular
+    task:
+      id: bebcc447-17ae-4d8d-85f3-99a289dd7633
+      version: -1
+      name: Set int to severity
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: severity_high_int
+      value:
+        simple: "3.0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b229ac45-8e54-48ff-8082-ec7570f3f8f8
+    type: regular
+    task:
+      id: b229ac45-8e54-48ff-8082-ec7570f3f8f8
+      version: -1
+      name: 3 to high
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: severity_high_str
+      value:
+        complex:
+          root: ${severity_high_int}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 0,0.5,1,2,3,4
+              map_to:
+                value:
+                  simple: Unknown,Informational,Low,Medium,High,Critical
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 16bb946a-0e9e-4695-86d5-394b7b2f6836
+    type: condition
+    task:
+      id: 16bb946a-0e9e-4695-86d5-394b7b2f6836
+      version: -1
+      name: Verify 3 to high
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${severity_high_str}
+            iscontext: true
+          right:
+            value:
+              simple: High
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ce85b19e-f145-40d1-8bb7-5cf1a4811e46
+    type: regular
+    task:
+      id: ce85b19e-f145-40d1-8bb7-5cf1a4811e46
+      version: -1
+      name: Set severity float
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: severity_info_float
+      value:
+        simple: "0.5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5fcab3d2-7b60-428e-88ac-efd8c47d6c16
+    type: regular
+    task:
+      id: 5fcab3d2-7b60-428e-88ac-efd8c47d6c16
+      version: -1
+      name: 0.5 to info
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: severity_info_str
+      value:
+        complex:
+          root: ${severity_info_float}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 0,0.5,1,2,3,4
+              map_to:
+                value:
+                  simple: Unknown,Informational,Low,Medium,High,Critical
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 54d94e62-cce3-451c-82cf-e3658ae06a02
+    type: condition
+    task:
+      id: 54d94e62-cce3-451c-82cf-e3658ae06a02
+      version: -1
+      name: Verity 0.5 to info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${severity_info_str}
+            iscontext: true
+          right:
+            value:
+              simple: Informational
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9d891757-8ab4-422d-86a3-b82e724381f4
+    type: regular
+    task:
+      id: 9d891757-8ab4-422d-86a3-b82e724381f4
+      version: -1
+      name: Set string veryhigh
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: severity_veryhigh_str
+      value:
+        simple: veryhigh
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 81bbb9ba-11eb-464c-827a-7599ced85e2d
+    type: regular
+    task:
+      id: 81bbb9ba-11eb-464c-827a-7599ced85e2d
+      version: -1
+      name: Set list with range
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      key:
+        simple: list_range
+      value:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f1bd4181-bdc0-4c00-8787-27f7c03fb27b
+    type: regular
+    task:
+      id: f1bd4181-bdc0-4c00-8787-27f7c03fb27b
+      version: -1
+      name: map the list with the range
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: map_result_list_range
+      value:
+        complex:
+          root: ${list_range}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 1-3,4
+              map_to:
+                value:
+                  simple: 5,1
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3a52cd5c-9ce9-4023-87f3-4b9a78c59b1c
+    type: condition
+    task:
+      id: 3a52cd5c-9ce9-4023-87f3-4b9a78c59b1c
+      version: -1
+      name: Verify map of list with a range object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${map_result_list_range}
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 62dd901e-dc42-4ceb-88c8-2bac70444a0d
+    type: title
+    task:
+      id: 62dd901e-dc42-4ceb-88c8-2bac70444a0d
+      version: -1
+      name: Finish
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2007147e-b9e3-41f2-8396-f1d8ace83ee1
+    type: regular
+    task:
+      id: 2007147e-b9e3-41f2-8396-f1d8ace83ee1
+      version: -1
+      name: Map a float str to string
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: map_result_float_string_critical
+      value:
+        complex:
+          root: ${list_severity}
+          transformers:
+          - operator: MapRangeValues
+            args:
+              map_from:
+                value:
+                  simple: 0.0,0.1-3.9,4.0-6.9,7.0-8.9,9.0-10.0
+              map_to:
+                value:
+                  simple: Informational,Low,Medium,High,Critical
+              sep: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 8351a8ca-0884-40b7-8408-2b7ce30e346d
+    type: regular
+    task:
+      id: 8351a8ca-0884-40b7-8408-2b7ce30e346d
+      version: -1
+      name: Set list_severity
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: list_severity
+      value:
+        simple: "9.1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 2d58be16-d71b-47ac-8d9d-f452d01851ac
+    type: condition
+    task:
+      id: 2d58be16-d71b-47ac-8d9d-f452d01851ac
+      version: -1
+      name: Verify Critical
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${map_result_float_string_critical}
+            iscontext: true
+          right:
+            value:
+              simple: Critical
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3605,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.1.0
+description: ''

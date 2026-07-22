@@ -1,0 +1,7 @@
+# GR103 is temporary, see CIAC-11705
+[file:classifier-User_Profile_-_Clarizen_(Outgoing).json]
+ignore=MP106,GR103
+
+
+[file:ClarizenIAM_image.png]
+ignore=IM111

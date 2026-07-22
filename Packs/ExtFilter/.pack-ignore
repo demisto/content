@@ -1,0 +1,8 @@
+[file:README.md]
+ignore=RM106
+[file:pack_metadata.json]
+ignore=PA129
+[file:1_1_13.md]
+ignore=RN113,RN114
+[known_words]
+lhs

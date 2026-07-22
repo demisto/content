@@ -1,0 +1,1402 @@
+id: Proactive Threat Hunting - SDO Threat Hunting
+version: -1
+name: Proactive Threat Hunting - SDO Threat Hunting
+description: |-
+  This playbook will be executed when the analyst chooses to perform SDO hunting.
+  The playbook receives an SDO type indicator and executes the following steps:
+
+  - Searches IOCs related to the SDO indicator - IPs, Hashes, Domains, URLs.
+  - Hunts for the found IOCs using the "Threat Hunting - Generic" sub-playbook.
+  - Searches attack patterns that are related to the SDO indicator.
+  - Searches LOLBAS tools that are related to the found attack patterns.
+  - Hunts for LOLBin executions command-line arguments that are similar to LOLBAS  malicious commands patterns.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 03780881-d798-4c4a-8dc7-cab2c0e04912
+    type: start
+    task:
+      id: 03780881-d798-4c4a-8dc7-cab2c0e04912
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b32d342c-cd82-44ba-83fa-363d76b120ee
+    type: regular
+    task:
+      id: b32d342c-cd82-44ba-83fa-363d76b120ee
+      version: -1
+      name: Get SDO from TIM
+      description: |-
+        Searches Cortex XSOAR indicators.
+
+        Searches for Cortex XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: type:"${inputs.SDOType}"
+      size:
+        simple: "500"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 0de6a093-317b-4f93-8b52-9fccc138e98b
+    type: collection
+    task:
+      id: 0de6a093-317b-4f93-8b52-9fccc138e98b
+      version: -1
+      name: Choose Campaign to hunt
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Choose the campaigns to hunt for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: foundIndicators
+            accessor: value
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Choose the campaigns to hunt for
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1042fe9d-c392-494f-8a84-63f5e17e0099
+    type: playbook
+    task:
+      id: 1042fe9d-c392-494f-8a84-63f5e17e0099
+      version: -1
+      name: TIM - Indicator Relationships Analysis
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
+      playbookName: TIM - Indicator Relationships Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+      - "34"
+    scriptarguments:
+      Indicator:
+        complex:
+          root: Choose the campaigns to hunt for.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty:
+                value:
+                  simple: "false"
+              defaultValue:
+                value:
+                  simple: inputs.SDOName
+                iscontext: true
+      LimitResults:
+        simple: "200"
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7806f0cb-9372-4189-82d4-4fe07c1c6e0a
+    type: title
+    task:
+      id: 7806f0cb-9372-4189-82d4-4fe07c1c6e0a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 30a47edc-ccf1-42dd-8686-400563cca15e
+    type: playbook
+    task:
+      id: 30a47edc-ccf1-42dd-8686-400563cca15e
+      version: -1
+      name: Threat Hunting - Generic
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: RelatedIPs
+      MD5:
+        complex:
+          root: RelatedFiles
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: RelatedFiles
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA256:
+        complex:
+          root: RelatedFiles
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: RelatedFiles
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: RelatedURLs
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedDomains
+                iscontext: true
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 17705d17-e1d0-4bd3-8efa-8ad73fbc86a3
+    type: condition
+    task:
+      id: 17705d17-e1d0-4bd3-8efa-8ad73fbc86a3
+      version: -1
+      name: Has SDO name input?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SDOName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 192c8ba9-16ac-4c33-8eb8-5d93cf17ccdc
+    type: regular
+    task:
+      id: 192c8ba9-16ac-4c33-8eb8-5d93cf17ccdc
+      version: -1
+      name: Set chosen campaign to layout
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      indicatorsValues:
+        complex:
+          root: Choose the campaigns to hunt for.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: SDO Name
+      output:
+        simple: '#### ${Choose the campaigns to hunt for.Answers.0}'
+    - incidentfield: SDO Feed
+      output:
+        simple: '#### ${incident.sdofeed}'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9e7112c8-f542-44e1-8925-bcb7defbeb47
+    type: regular
+    task:
+      id: 9e7112c8-f542-44e1-8925-bcb7defbeb47
+      version: -1
+      name: Add tags to indicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: Hunting Session
+      indicatorsValues:
+        complex:
+          root: RelatedFiles
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedDomains
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedIPs
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedURLs
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8016cd02-5726-46e6-8758-67367704b27b
+    type: regular
+    task:
+      id: 8016cd02-5726-46e6-8758-67367704b27b
+      version: -1
+      name: Get attack pattern related tools
+      description: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      scriptName: SearchIndicatorRelationships
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      entities:
+        complex:
+          root: RelatedAttackPatterns
+      limit:
+        simple: "500"
+      relationships:
+        simple: related-to
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Attack Patterns
+      output:
+        complex:
+          root: RelatedAttackPatterns
+    - incidentfield: Report Name
+      output:
+        simple: '#### ${RelatedReport}'
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b51a0eec-4e8d-4d59-8af6-74f0b4e49501
+    type: playbook
+    task:
+      id: b51a0eec-4e8d-4d59-8af6-74f0b4e49501
+      version: -1
+      name: Search LOLBAS Tools By Name
+      description: This playbook searches for LOLBAS tools by their name, and returns the tool command from LOLBAS.
+      playbookName: Search LOLBAS Tools By Name
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      Tool:
+        complex:
+          root: Relationships
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Relationships.EntityBType
+                iscontext: true
+              right:
+                value:
+                  simple: tool
+              ignorecase: true
+          accessor: EntityB
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f8f5ea76-846c-4d7f-8d8c-394a665ce49c
+    type: regular
+    task:
+      id: f8f5ea76-846c-4d7f-8d8c-394a665ce49c
+      version: -1
+      name: Set Tools
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      tools:
+        complex:
+          root: LotlTools
+          accessor: value
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 9303894e-5d31-4a4f-8ad4-a1d0eda0abb4
+    type: regular
+    task:
+      id: 9303894e-5d31-4a4f-8ad4-a1d0eda0abb4
+      version: -1
+      name: Set StringSimilarity Results To Layout
+      description: Accepts a JSON object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      extend-context:
+        simple: stringsimilaritymarkdown=
+      title:
+        simple: StringSimilarity Results
+      value:
+        complex:
+          root: StringSimilarity
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 1860
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Suspicious lolbin executions found
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: String Similarity Results
+      output:
+        simple: ${stringsimilaritymarkdown}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: f291afb5-9b54-4834-84a2-9cdb3d882d82
+    type: regular
+    task:
+      id: f291afb5-9b54-4834-84a2-9cdb3d882d82
+      version: -1
+      name: Associate indicators to incident
+      description: commands.local.cmd.associate.indicators
+      script: Builtin|||associateIndicatorsToIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      indicatorsValues:
+        complex:
+          root: RelatedFiles
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedDomains
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedIPs
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: RelatedURLs
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3f6c22f6-410f-4f3a-8b4b-e5d46a107f7a
+    type: condition
+    task:
+      id: 3f6c22f6-410f-4f3a-8b4b-e5d46a107f7a
+      version: -1
+      name: Has Related IOC's?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RelatedDomains
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedFiles
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: RelatedURLs
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 65eef55e-89ce-46d5-8608-ef3fdc5e89d6
+    type: condition
+    task:
+      id: 65eef55e-89ce-46d5-8608-ef3fdc5e89d6
+      version: -1
+      name: Suspicious Lolbin executions found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "21"
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: StringSimilarity
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 67c84d03-4c7d-475f-8efa-b3919dbb9a3d
+    type: regular
+    task:
+      id: 67c84d03-4c7d-475f-8efa-b3919dbb9a3d
+      version: -1
+      name: Set SDO name
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: Choose the campaigns to hunt for.Answers.0
+      value:
+        complex:
+          root: inputs.SDOName
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: d3a8c367-09c0-4f90-824c-b5e05c72a371
+    type: regular
+    task:
+      id: d3a8c367-09c0-4f90-824c-b5e05c72a371
+      version: -1
+      name: Print hunt executed message to notes
+      description: Prints text to the War Room. (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      value:
+        simple: 'The threat hunting seesion has been executed. To view the outcomes, kindly navigate to the SDO Hunting Session tab. IMPORTANT: You will receive a notification in this section once the hunting session is finished and an "Investigation & Response" tab will display with further steps that can be taken.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: b3c284a7-e33e-4e91-898d-dabe51798330
+    type: condition
+    task:
+      id: b3c284a7-e33e-4e91-898d-dabe51798330
+      version: -1
+      name: IOCs found?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Splunk
+                accessor: DetectedInternalIPs
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Splunk.DetectedExternalIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Splunk.DetectedExternalIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: PANWHunting.DetectedInternalIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: PANWHunting.DetectedExternalIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: QRadar.DetectedInternalIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: QRadar.DetectedExternalIPs
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Microsoft365Defender.RetrievedEmails.SHA256
+                      iscontext: true
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: Microsoft365Defender.RetrievedEmails.Url
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 41feb33c-4160-4e93-8f08-de2865ef878f
+    type: regular
+    task:
+      id: 41feb33c-4160-4e93-8f08-de2865ef878f
+      version: -1
+      name: Set tag on IOCs found
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: Hunting Session - Exist In Environment
+      indicatorsValues:
+        complex:
+          root: PANWHunting
+          accessor: DetectedInternalIPs
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PANWHunting.DetectedExternalIPs
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PANWHunting.DetectedInternalIPs
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Microsoft365Defender.RetrievedEmails.SHA256
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Microsoft365Defender.RetrievedEmails.Url
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: QRadar.DetectedInternalIPs
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: QRadar.DetectedExternalIPs
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1500
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: IOCs found during the threat hunting session
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: b92ba575-6cb0-4d98-8927-caff7321c37a
+    type: regular
+    task:
+      id: b92ba575-6cb0-4d98-8927-caff7321c37a
+      version: -1
+      name: Print Hunt Completed To Notes
+      description: Prints text to the War Room. (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      value:
+        simple: The threat hunting session completed. The hunting session results is displayed in the SDO Hunting Session tab. Navigate to "Investigation & Response" tab for further post-hunting actions.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2030
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Hunting Session Status
+      output:
+        simple: Finished
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 7cee7d7b-fa63-4b6a-8594-9256125e4396
+    type: condition
+    task:
+      id: 7cee7d7b-fa63-4b6a-8594-9256125e4396
+      version: -1
+      name: Has Lotl tools?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LotlTools
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 37616759-422f-47ed-83c0-b17cfe90d55d
+    type: playbook
+    task:
+      id: 37616759-422f-47ed-83c0-b17cfe90d55d
+      version: -1
+      name: Search and Compare Process Executions - Generic
+      description: |-
+        This playbook is a generic playbook that receives a process name and a command-line argument. It searches for the given process executions and compares the command-line argument from the results to the command-line argument received from the playbook input. The playbook supports searching process executions using the following integrations:
+
+        - Cortex XDR XQL Engine
+        - Cortex XDR IR(Search executions inside XDR alerts)
+        - Microsoft Defender For Endpoint
+
+        Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
+        - value: *process name*
+        - commands: *command-line arguments*
+      playbookName: Search and Compare Process Executions - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      HuntingTimeFrame:
+        complex:
+          root: inputs.HuntingTimeFrame
+      Processes:
+        complex:
+          root: LotlTools
+      StringSimilarityThreshold:
+        complex:
+          root: inputs.StringSimilarityThreshold
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: aa9071c9-8926-4ae8-82f6-a5253cf91ee1
+    type: regular
+    task:
+      id: aa9071c9-8926-4ae8-82f6-a5253cf91ee1
+      version: -1
+      name: Set suspicious executions to layout
+      description: Accepts a JSON object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      extend-context:
+        simple: suspiciousexecutionmarkdown=
+      title:
+        simple: Suspicious Executions Found
+      value:
+        complex:
+          root: Findings
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -620,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Suspicious Executions Found
+      output:
+        simple: ${suspiciousexecutionmarkdown}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 68dd35d0-6e38-4237-8ec5-29b30a4a5723
+    type: condition
+    task:
+      id: 68dd35d0-6e38-4237-8ec5-29b30a4a5723
+      version: -1
+      name: Has related attack patterns?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RelatedAttackPatterns
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 498f8a3f-74fc-4bb5-8ede-b0eed39c0e1b
+    type: regular
+    task:
+      id: 498f8a3f-74fc-4bb5-8ede-b0eed39c0e1b
+      version: -1
+      name: Set no results found
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      suspiciousexecutionsfound:
+        simple: '#### No results found'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "23_29_#default#": 0.15,
+      "27_29_#default#": 0.25,
+      "30_29_#default#": 0.19,
+      "34_29_#default#": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2705,
+        "width": 2180,
+        "x": -620,
+        "y": -450
+      }
+    }
+  }
+inputs:
+- key: SDOName
+  value: {}
+  required: false
+  description: The SDO name.
+  playbookInputQuery:
+- key: SDOType
+  value:
+    simple: Campaign
+  required: false
+  description: The SDO type.
+  playbookInputQuery:
+- key: HuntingTimeFrame
+  value:
+    simple: 30 days
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  playbookInputQuery:
+- key: StringSimilarityThreshold
+  value: {}
+  required: false
+  description: 'StringSimilarity automation threshold. StringSimilarity is being used in this playbook to compare between pattern of malicious use in a tool and command-line arguments found in the environment. Please provide number between 0 and 1, where 1 represents the most similar results of string comparisons. The automation will output only the results with a similarity score equal to or greater than the specified threshold.'
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

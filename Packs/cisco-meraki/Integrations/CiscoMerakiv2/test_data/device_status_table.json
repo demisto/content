@@ -1,0 +1,14 @@
+[
+    {
+        "Serial": "0000-0000-0000",
+        "Name": "My AP",
+        "Network ID": "N_24329156",
+        "Status": "online",
+        "Model": "MR34",
+        "IP Type": "dhcp",
+        "Gateway": "0.0.0.0",
+        "Public IP": "0.0.0.0",
+        "Lan IP": "0.0.0.0",
+        "Last Reported At": "2018-02-11T00:00:00.090210Z"
+    }
+]

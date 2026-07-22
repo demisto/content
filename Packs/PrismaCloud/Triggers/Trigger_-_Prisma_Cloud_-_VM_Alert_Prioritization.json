@@ -1,0 +1,18 @@
+{
+  "trigger_id": "0d1389eba67bdd284ab668368e230000",
+  "playbook_id": "Prisma Cloud - VM Alert Prioritization",
+  "suggestion_reason": "Recommended for Prisma Cloud - VM Alert Prioritization alerts",
+  "description": "This trigger is responsible for handling Prisma Cloud - VM Alert Prioritization alerts",
+  "trigger_name": "Prisma Cloud - VM Alert Prioritization",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Prisma Cloud - VM Alert Prioritization"
+        }
+      ]
+    }
+  }
+}

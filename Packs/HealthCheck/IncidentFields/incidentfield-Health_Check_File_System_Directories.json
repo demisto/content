@@ -1,0 +1,62 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "System Diagnostics and Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "healthcheckfilesystemdirectories",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Path",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "path",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 250
+        },
+        {
+            "displayName": "Size",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "size",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "Filesystem directory non empty paths ",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_healthcheckfilesystemdirectories",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Health Check File System Directories",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

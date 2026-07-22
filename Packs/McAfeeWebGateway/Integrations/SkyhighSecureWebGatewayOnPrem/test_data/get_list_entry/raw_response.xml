@@ -1,0 +1,1 @@
+<entry><id>0</id><title>List entry at position 0</title><link href="https://192.168.100.55:4712/Konfigurator/REST/list/com.scur.type.regex.386/entry/0" rel="self"/><content><listEntry><entry>http*://test.evil/*</entry><description>this is really evil</description></listEntry></content></entry>

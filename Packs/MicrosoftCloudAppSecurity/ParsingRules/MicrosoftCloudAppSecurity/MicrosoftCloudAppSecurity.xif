@@ -1,0 +1,3 @@
+[INGEST:vendor="Microsoft", product="defender_cloud_apps", target_dataset="microsoft_defender_cloud_apps_raw", no_hit=keep]
+filter to_string(timestamp) ~= "\d{13,}"
+| alter _time = to_timestamp(to_integer(timestamp), "millis");

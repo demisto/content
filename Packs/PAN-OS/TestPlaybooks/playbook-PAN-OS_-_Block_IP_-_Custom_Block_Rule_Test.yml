@@ -1,0 +1,106 @@
+id: PAN-OS - Block IP - Custom Block Rule Test
+version: -1
+name: PAN-OS - Block IP - Custom Block Rule Test
+starttaskid: "0"
+fromversion: "6.1.0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98aa4cc4-b9c7-4523-8f20-9f25d6a320ae
+    type: start
+    task:
+      id: 98aa4cc4-b9c7-4523-8f20-9f25d6a320ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 37984fe3-025a-49d3-8f79-33dab40ce05e
+    type: playbook
+    task:
+      id: 37984fe3-025a-49d3-8f79-33dab40ce05e
+      version: -1
+      name: PAN-OS - Block IP - Custom Block Rule
+      description: |-
+        This playbook blocks IP addresses using Palo Alto Networks Panorama or Firewall through Custom Block Rules.
+        The playbook will get malicious IP addresses as inputs, create a custom bi-directional rule to block them, and commit the configuration.
+
+        ***Note - The playbook will not check if the IP address is already blocked.
+      playbookName: PAN-OS - Block IP - Custom Block Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      IP: {}
+      LogForwarding: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: d95ecc29-bab5-4272-881c-5c5870227006
+    type: title
+    task:
+      id: d95ecc29-bab5-4272-881c-5c5870227006
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 435,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

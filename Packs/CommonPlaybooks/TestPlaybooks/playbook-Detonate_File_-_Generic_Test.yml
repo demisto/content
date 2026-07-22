@@ -1,0 +1,316 @@
+id: Detonate File - Generic Test
+version: -1
+name: Detonate File - Generic Test
+fromversion: "5.0.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1b6bad7a-c34a-41aa-812c-4e2add0efaeb
+    type: start
+    task:
+      id: 1b6bad7a-c34a-41aa-812c-4e2add0efaeb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9f30d10e-cc19-406b-8b7b-45641e1fe4c0
+    type: regular
+    task:
+      id: 9f30d10e-cc19-406b-8b7b-45641e1fe4c0
+      version: -1
+      name: Download PDF file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      filename:
+        simple: test.pdf
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: http://www.pdf995.com/samples/pdf.pdf
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1087
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8e7d6a8e-efd9-4545-827b-96b1fd582afe
+    type: regular
+    task:
+      id: 8e7d6a8e-efd9-4545-827b-96b1fd582afe
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 882
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bd95552e-b718-4720-85ed-efafc79104c5
+    type: title
+    task:
+      id: bd95552e-b718-4720-85ed-efafc79104c5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1465
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 38b30ac0-950b-4fe2-8672-4cc67686e4fe
+    type: playbook
+    task:
+      id: 38b30ac0-950b-4fe2-8672-4cc67686e4fe
+      version: -1
+      name: Detonate File - Generic
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1265
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a89690b6-302c-47dc-8d75-435500fd0cc9
+    type: title
+    task:
+      id: a89690b6-302c-47dc-8d75-435500fd0cc9
+      version: -1
+      name: Empty Input Testing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: de65c1d0-d8f0-4836-8253-57d5e169fae7
+    type: regular
+    task:
+      id: de65c1d0-d8f0-4836-8253-57d5e169fae7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7dc6a7f1-3ee4-4023-814b-c82e2070f9ba
+    type: playbook
+    task:
+      id: 7dc6a7f1-3ee4-4023-814b-c82e2070f9ba
+      version: -1
+      name: Detonate File - Generic
+      description: Detonate file through active integrations that support file detonation
+      playbookName: Detonate File - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 116fbc73-5158-4223-865a-bafd9a042575
+    type: title
+    task:
+      id: 116fbc73-5158-4223-865a-bafd9a042575
+      version: -1
+      name: Empty Input Test
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1480,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: Detonate File Generic Tests including empty inputs"

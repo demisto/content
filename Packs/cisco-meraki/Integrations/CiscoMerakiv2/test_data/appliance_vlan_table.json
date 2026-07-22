@@ -1,0 +1,12 @@
+[
+    {
+        "ID": "1234",
+        "Name": "My VLAN",
+        "Group Policy ID": "101",
+        "Interface ID": "1284392014819",
+        "Appliance IP": "0.0.0.0",
+        "Mask": 28,
+        "CIDR": "0.0.0.0/24",
+        "Subnet": "0.0.0.0/24"
+    }
+]

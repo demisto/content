@@ -1,0 +1,14 @@
+{
+    "id": "xDome - Classifier",
+    "name": "xDome - Classifier",
+    "type": "classification",
+    "description": "Classifies xDome incidents (device-alert-relations) that are fetched via the built in XSOAR fetch mechanism.",
+    "defaultIncidentType": "Claroty xDome Alert",
+    "keyTypeMap": {},
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,18 @@
+{
+    "successful_creation": {
+        "args": {
+            "name": "acme",
+            "description": "Deployment description",
+            "nodes": "'10000000-3712-4730-8483-b4ba07e4f0af,32c3b42f-fe65-438c-8178-0c1565e07511'"
+        },
+        "command": "safebreach-create-deployment"
+    },
+    "failed_creation": {
+        "args": {
+            "name": "acme",
+            "description": "Deployment description",
+            "nodes": "'10000000-3712-4730-8483-b4ba07e4f0af,32c3b42f-fe65-438c-8178-0c1565e07511'"
+        },
+        "command": "safebreach-create-deployment"
+    }
+}

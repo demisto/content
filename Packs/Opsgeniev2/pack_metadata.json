@@ -1,0 +1,25 @@
+{
+    "name": "Opsgenie v2 (Deprecated)",
+    "description": "Deprecated. Use OpsGenie instead.",
+    "support": "community",
+    "hidden": true,
+    "currentVersion": "1.0.7",
+    "author": "Adam Baumeister",
+    "url": "",
+    "email": "",
+    "created": "2020-12-20T17:38:25Z",
+    "categories": [
+        "Messaging and Conferencing"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix"
+    ]
+}

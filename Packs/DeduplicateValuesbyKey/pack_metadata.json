@@ -1,0 +1,24 @@
+{
+    "name": "DeduplicateValuesbyKey (Deprecated)",
+    "description": "Deprecated. DeduplicateValuesbyKey script moved to CommonScripts pack.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Laura Farvour",
+    "url": "",
+    "email": "",
+    "hidden": true,
+    "created": "2021-12-07T17:00:09Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "lfarvour"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

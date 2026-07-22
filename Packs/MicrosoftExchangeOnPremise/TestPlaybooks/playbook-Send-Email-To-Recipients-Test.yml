@@ -1,0 +1,104 @@
+id: Send Email To Recipients
+version: -1
+name: Send Email To Recipients
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e7f82f87-46bc-476d-8525-91c933d09c88
+    type: start
+    task:
+      id: e7f82f87-46bc-476d-8525-91c933d09c88
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 59ebb938-5cba-4c87-8663-ce8ca6f1442d
+    type: regular
+    task:
+      id: 59ebb938-5cba-4c87-8663-ce8ca6f1442d
+      version: -1
+      name: Send Mail
+      script: EWS v2|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    scriptarguments:
+      attachIDs:
+        simple: ${inputs.attIDs}
+      cc:
+        simple: ${inputs.cc}
+      subject:
+        simple: EWS v2 send mail Test - UT8uFQBBVcJeqAC4t4XvzZ9bBvfLYSk1zST8Fkx7rtHs4SfjvtYzCv1ElFGsX10gNWZlH7XpHGgWv31KI3LbDGBGPLPckyPaZvujMZRa6JloV22SIH0wqvPGYiFcYPm9muVjDyj75R4QTyatXimGcdOcdKwt2Rofv0UFDAKW2W2EU9tKoeGIy5p2DEvKk12qgiCxqNFd4mqCXoR1P9rypsuYlQ3OaIa6hzvoZMrH0qWSqL43wjGbM25d8OhKcoda
+      to:
+        simple: ${inputs.to}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 240,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: to
+  value:
+    simple: buildtests@demisto.int
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: cc
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: attIDs
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+tests:
+- No test
+fromversion: 5.0.0
+description: ''

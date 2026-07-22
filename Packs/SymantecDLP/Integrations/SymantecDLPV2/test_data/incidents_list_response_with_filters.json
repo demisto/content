@@ -1,0 +1,40 @@
+{
+    "incidents": [
+        {
+            "isHidingNotAllowed": false,
+            "policyVersion": 4,
+            "policyGroupId": 1,
+            "messageSource": "NETWORK",
+            "matchCount": 3,
+            "creationDate": "2022-03-06T09:23:49.038",
+            "isBlockedStatusSuperseded": false,
+            "isHidden": false,
+            "preventOrProtectStatusId": 0,
+            "policyId": 2,
+            "detectionDate": "2022-03-06T09:23:41.46",
+            "detectionServerId": 1,
+            "senderIPAddress": "1.1.1.1",
+            "incidentId": 3616,
+            "severityId": 2,
+            "incidentStatusId": 21
+        },
+        {
+            "isHidingNotAllowed": false,
+            "policyVersion": 4,
+            "policyGroupId": 21,
+            "messageSource": "NETWORK",
+            "matchCount": 2,
+            "creationDate": "2022-03-06T09:23:49.023",
+            "isBlockedStatusSuperseded": false,
+            "isHidden": false,
+            "preventOrProtectStatusId": 0,
+            "policyId": 41,
+            "detectionDate": "2022-03-06T09:23:41.46",
+            "detectionServerId": 1,
+            "senderIPAddress": "1.1.1.1",
+            "incidentId": 3615,
+            "severityId": 1,
+            "incidentStatusId": 21
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "value": [
+        {
+            "@odata.type": "#microsoft.graph.security.intelligenceProfileIndicator",
+            "id": "1234",
+            "source": "microsoft",
+            "firstSeenDateTime": "2022-05-02T23:09:20.000Z",
+            "lastSeenDateTime": "null",
+            "artifact": {
+                "@odata.type": "#microsoft.graph.security.hostname",
+                "id": "fake-malicious.site"
+            }
+        }
+    ]
+}

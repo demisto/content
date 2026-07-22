@@ -1,0 +1,80 @@
+commonfields:
+  id: ADUserLogonInfo
+  version: -1
+name: ADUserLogonInfo
+script: >-
+  # Optional arguments and default values
+
+  attrs = 'name,displayname,lastlogon,lastlogoff,logoncount,badPasswordTime,badPwdCount,lastLogonTimestamp,pwdLastSet,whenCreated,whenChanged,memberOf'
+
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+  userDN = ''
+
+  resp = ''
+
+  if demisto.get(demisto.args(), 'dn'):
+      userDN = demisto.args()['dn']
+  elif demisto.get(demisto.args(), 'name'):
+      resp = demisto.executeCommand( 'AdSearch', { 'filter' : "(&(objectCategory=User)(name=" + demisto.args()['name'] + "))" } )
+  elif demisto.get(demisto.args(), 'email'):
+      resp = demisto.executeCommand( 'ADGetUsersByEmail', { 'email' : demisto.args()['email'] } )
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'You must provide either dn, name or email as argument!' } )
+      sys.exit(0)
+  if type(resp)==list and len( [ r for r in resp if isError(r) ] ) > 0 :
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned by ad command: ' + r['Contents'] } )
+      sys.exit(0)
+  if type(resp)==list and len(resp)==1 and type(resp[0])==dict and 'Contents' in resp[0] and type(resp[0]['Contents'])==list and len(resp[0]['Contents'])==1 and type(resp[0]['Contents'][0])==dict and 'dn' in resp[0]['Contents'][0]:
+      userDN = resp[0]['Contents'][0]['dn']
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unexpected output from ad command.' } )
+      sys.exit(0)
+  if userDN:
+      filterstr = r"(&(objectClass=User)(distinguishedName=" + userDN + "))"
+      resAD = demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } )
+      try:
+          for m in resAD:
+              if isError(m):
+                  continue
+              for f in [ 'lastlogon' , 'lastlogoff' , 'pwdLastSet' , 'badPasswordTime' , 'lastLogonTimestamp' ]:
+                  if m['Contents'][0][f] == "0":
+                      m['Contents'][0][f] = "N/A"
+                  else:
+                      try:
+                          m['Contents'][0][f] = FormatADTimestamp( m['Contents'][0][f] )
+                      except:
+                          pass # Could not prettify timestamp - return as is
+              for f in [ 'whenChanged' , 'whenCreated' ]:
+                  try:
+                      m['Contents'][0][f] = PrettifyCompactedTimestamp( m['Contents'][0][f] )
+                  except:
+                      pass # Could not prettify timestamp - return as is
+          demisto.results ( resAD )
+      except Exception as ex:
+          demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing output from ad command. Invalid output:\n' + str( resAD ) } )
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'User not found.' } )
+type: python
+subtype: python2
+tags:
+- active directory
+comment: Deprecated. Use Active Directory to retrieve detailed information about a user account. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+system: true
+args:
+- name: dn
+  description: Active Directory Distinguished Name for the desired user
+- name: name
+  description: Name of the desired user
+- name: email
+  description: Email address of the desired user
+- name: attributes
+  description: Include these AD attributes of the resulting objects in addition to the default ones
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - ad-search
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

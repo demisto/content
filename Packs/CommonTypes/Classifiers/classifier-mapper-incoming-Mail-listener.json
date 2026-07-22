@@ -1,0 +1,204 @@
+{
+	"id": "mail-listener-mapper",
+    "name": "Mail Listener - Incoming Mapper",
+    "type": "mapping-incoming",
+    "description": "Maps incoming phishing email messages fields.",
+	"version": -1,
+	"defaultIncidentType": "Phishing",
+	"mapping": {
+		"Phishing": {
+			"internalMapping": {
+				"Email HTML": {
+					"complex": null,
+					"simple": "HTML"
+				},
+				"Attachment Name": {
+					"simple": "attachments",
+					"complex": null
+				},
+				"Email BCC": {
+					"simple": "bcc",
+					"complex": null
+				},
+				"Email Body": {
+					"simple": "text",
+					"complex": null
+				},
+				"Email CC": {
+					"simple": "",
+					"complex": {
+						"root": "cc",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email From": {
+					"simple": "headers.From",
+					"complex": null
+				},
+				"Email Message ID": {
+					"simple": "",
+					"complex": {
+						"root": "rawHeaders",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "string.substringFrom",
+								"args": {
+									"from": {
+										"value": {
+											"simple": "Message-ID: \u003c",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							},
+							{
+								"operator": "string.substringTo",
+								"args": {
+									"to": {
+										"value": {
+											"simple": "\u003e",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Received": {
+					"simple": "",
+					"complex": {
+						"root": "rawHeaders",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "string.substringFrom",
+								"args": {
+									"from": {
+										"value": {
+											"simple": "Received:",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							},
+							{
+								"operator": "string.substringTo",
+								"args": {
+									"to": {
+										"value": {
+											"simple": ";",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Return Path": {
+					"simple": "headers.Return-Path",
+					"complex": null
+				},
+				"Email Sender IP": {
+					"simple": "",
+					"complex": {
+						"root": "rawHeaders",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "string.substringFrom",
+								"args": {
+									"from": {
+										"value": {
+											"simple": "x-originating-ip: [",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							},
+							{
+								"operator": "string.substringTo",
+								"args": {
+									"to": {
+										"value": {
+											"simple": "]",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email Subject": {
+					"simple": "subject",
+					"complex": null
+				},
+				"Email To": {
+					"simple": "",
+					"complex": {
+						"root": "to",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "general.join",
+								"args": {
+									"separator": {
+										"value": {
+											"simple": ",",
+											"complex": null
+										},
+										"isContext": false
+									}
+								}
+							}
+						]
+					}
+				},
+				"Email To Count": {
+					"simple": "",
+					"complex": {
+						"root": "to",
+						"filters": [],
+						"accessor": "",
+						"transformers": [
+							{
+								"operator": "general.count",
+								"args": {}
+							}
+						]
+					}
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"fromVersion": "6.0.0"
+}

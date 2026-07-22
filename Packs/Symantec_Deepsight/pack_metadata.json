@@ -1,0 +1,20 @@
+{
+    "name": "Accenture Deepsight Intelligence (Deprecated)",
+    "description": "Deprecated. Use Accenture CTI v2 instead.",
+    "support": "xsoar",
+    "hidden": true,
+    "currentVersion": "1.0.5",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ]
+}

@@ -1,0 +1,1621 @@
+id: SignalSciences-Test
+version: -1
+fromversion: 5.0.0
+name: SignalSciences-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 49a0e644-55be-4440-8ea3-d0cdb067c084
+    type: start
+    task:
+      id: 49a0e644-55be-4440-8ea3-d0cdb067c084
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: dfcce3a7-d1d3-4e2f-8842-04dba4c9b377
+    type: regular
+    task:
+      id: dfcce3a7-d1d3-4e2f-8842-04dba4c9b377
+      version: -1
+      name: Add ip to block list
+      script: '|||sigsci-blacklist-add-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        simple: 8.3.3.3,8.2.2.2
+      note:
+        simple: test blacklist
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 50a5122a-9632-43e1-8ea2-57e854d433ab
+    type: regular
+    task:
+      id: 50a5122a-9632-43e1-8ea2-57e854d433ab
+      version: -1
+      name: Get block list
+      script: '|||sigsci-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1a80e9bd-3889-4355-8982-72b175a4f40f
+    type: regular
+    task:
+      id: 1a80e9bd-3889-4355-8982-72b175a4f40f
+      version: -1
+      name: Remove IP from block list
+      script: '|||sigsci-blacklist-remove-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      IP:
+        simple: ${SigSciences.Corp.Site.Blacklist.Source}
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e7042dbe-6891-4943-87f8-82830f622e65
+    type: regular
+    task:
+      id: e7042dbe-6891-4943-87f8-82830f622e65
+      version: -1
+      name: Add ip to allow list
+      script: '|||sigsci-whitelist-add-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ip:
+        simple: 8.3.3.3
+      note:
+        simple: test adding ip to allow list
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 55798587-f4e8-45b9-86e7-7398b77b04ce
+    type: regular
+    task:
+      id: 55798587-f4e8-45b9-86e7-7398b77b04ce
+      version: -1
+      name: Get allow list
+      script: '|||sigsci-get-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: df33e137-bd62-4559-8d59-d37c15c55b94
+    type: regular
+    task:
+      id: df33e137-bd62-4559-8d59-d37c15c55b94
+      version: -1
+      name: Remove IP from allow list
+      script: '|||sigsci-whitelist-remove-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      IP:
+        simple: ${SigSciences.Corp.Site.Whitelist.Source}
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f0dca8f9-5f94-4887-8463-2f9d121c0b73
+    type: regular
+    task:
+      id: f0dca8f9-5f94-4887-8463-2f9d121c0b73
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+      - "18"
+      - "44"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2140ee46-02cd-4c20-8d2a-c01874ac880e
+    type: regular
+    task:
+      id: 2140ee46-02cd-4c20-8d2a-c01874ac880e
+      version: -1
+      name: Add alert
+      script: '|||sigsci-add-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action:
+        simple: flagged
+      enabled:
+        simple: "True"
+      interval:
+        simple: "10"
+      long_name:
+        simple: demisto-test
+      siteName:
+        simple: node_goat
+      tag_name:
+        simple: USERAGENT
+      threshold:
+        simple: "100"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2be3bf87-329d-4fca-8002-045e87ad2cf7
+    type: regular
+    task:
+      id: 2be3bf87-329d-4fca-8002-045e87ad2cf7
+      version: -1
+      name: Get alerts
+      script: '|||sigsci-get-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: df9abb3b-5f47-44b0-844b-63e5cc5f527b
+    type: regular
+    task:
+      id: df9abb3b-5f47-44b0-844b-63e5cc5f527b
+      version: -1
+      name: Update alert
+      script: '|||sigsci-update-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      action:
+        simple: flagged
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      enabled:
+        simple: "True"
+      interval:
+        simple: "1"
+      long_name:
+        simple: node_goat-test-alert-2
+      siteName:
+        simple: node_goat
+      tag_name:
+        simple: USERAGENT
+      threshold:
+        simple: "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ade46ea1-d4f0-43e6-871d-3da7e30ff5a6
+    type: regular
+    task:
+      id: ade46ea1-d4f0-43e6-871d-3da7e30ff5a6
+      version: -1
+      name: Get updated alert
+      script: '|||sigsci-get-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 4568db69-b794-4065-872a-432e05d9e688
+    type: condition
+    task:
+      id: 4568db69-b794-4065-872a-432e05d9e688
+      version: -1
+      name: Verify alert has been updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Alert.Threshold
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 11360e2f-f719-4108-8aab-532df2e54e23
+    type: regular
+    task:
+      id: 11360e2f-f719-4108-8aab-532df2e54e23
+      version: -1
+      name: Delete alert
+      script: '|||sigsci-delete-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      alert_id:
+        simple: ${SigSciences.Corp.Site.Alert.ID}
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d351128f-8013-40da-8a8a-00f0017b71f8
+    type: title
+    task:
+      id: d351128f-8013-40da-8a8a-00f0017b71f8
+      version: -1
+      name: Test block list and allow list
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c0991ddb-0a11-4a16-89f7-5d5a33f23e31
+    type: title
+    task:
+      id: c0991ddb-0a11-4a16-89f7-5d5a33f23e31
+      version: -1
+      name: Test alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 5fd74439-9e0a-4305-8fc1-c6310439aa5f
+    type: title
+    task:
+      id: 5fd74439-9e0a-4305-8fc1-c6310439aa5f
+      version: -1
+      name: Test lists
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 5aa7daf0-76cf-4772-8ba6-5cc7594c278f
+    type: regular
+    task:
+      id: 5aa7daf0-76cf-4772-8ba6-5cc7594c278f
+      version: -1
+      name: Create site list
+      script: '|||sigsci-create-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entries_list:
+        simple: 1.2.3.4,5.6.7.8
+      list_name:
+        simple: test-site-list
+      list_type:
+        simple: IP
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 475ea121-1180-41d9-89d8-8f4c76b72c73
+    type: regular
+    task:
+      id: 475ea121-1180-41d9-89d8-8f4c76b72c73
+      version: -1
+      name: Get site list
+      script: '|||sigsci-get-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      list_id:
+        simple: site.test-site-list
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 03e7440d-01a1-4ec1-8c80-fa430c4f4e27
+    type: regular
+    task:
+      id: 03e7440d-01a1-4ec1-8c80-fa430c4f4e27
+      version: -1
+      name: Update site list
+      script: '|||sigsci-update-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      entries_list:
+        complex:
+          root: SigSciences
+          accessor: Corp.Site.List.Entries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      list_id:
+        simple: site.test-site-list
+      method:
+        simple: Remove
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1cdde08e-b17e-418f-85d4-2019a1586367
+    type: condition
+    task:
+      id: 1cdde08e-b17e-418f-85d4-2019a1586367
+      version: -1
+      name: Verify site list has been updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: SigSciences.Site.List.Entries
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3add0235-f406-4448-832c-3c475c6534d3
+    type: regular
+    task:
+      id: 3add0235-f406-4448-832c-3c475c6534d3
+      version: -1
+      name: Delete site list
+      script: '|||sigsci-delete-site-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      list_id:
+        simple: site.test-site-list
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 6422a55b-0200-4d2d-89ab-f5ae03feed12
+    type: regular
+    task:
+      id: 6422a55b-0200-4d2d-89ab-f5ae03feed12
+      version: -1
+      name: Get all alerts
+      script: '|||sigsci-get-all-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 702cd6ee-9dc7-41c2-8676-1b50baa7fd1f
+    type: condition
+    task:
+      id: 702cd6ee-9dc7-41c2-8676-1b50baa7fd1f
+      version: -1
+      name: Verify alert was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Alert.LongName
+            iscontext: true
+          right:
+            value:
+              simple: node_goat-test-tag-2
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 9fe968a0-e9b7-49be-8075-14fd5d85beef
+    type: regular
+    task:
+      id: 9fe968a0-e9b7-49be-8075-14fd5d85beef
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: SigSciences.Corp.Site.Alert
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 5dd8435c-3cb8-4c4e-88db-456cc649126b
+    type: title
+    task:
+      id: 5dd8435c-3cb8-4c4e-88db-456cc649126b
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: c23db929-bbbd-4b72-8b32-916e4d0ff8f8
+    type: regular
+    task:
+      id: c23db929-bbbd-4b72-8b32-916e4d0ff8f8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: SigSciences.Corp.Site.List
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 6844ea39-dcd9-47f0-8ed7-d33df7a7c941
+    type: regular
+    task:
+      id: 6844ea39-dcd9-47f0-8ed7-d33df7a7c941
+      version: -1
+      name: Get all site lists
+      script: '|||sigsci-get-all-site-lists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 4c9b9da5-c78c-43fe-8145-b26df5527ad0
+    type: condition
+    task:
+      id: 4c9b9da5-c78c-43fe-8145-b26df5527ad0
+      version: -1
+      name: Verify site list was deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.List.Name
+            iscontext: true
+          right:
+            value:
+              simple: test-site-list
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 233ba8b2-1ddb-452d-8df8-e0f89eb867e4
+    type: title
+    task:
+      id: 233ba8b2-1ddb-452d-8df8-e0f89eb867e4
+      version: -1
+      name: Test site lists
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 921051f6-fcae-47d0-8df5-e632e2926f80
+    type: title
+    task:
+      id: 921051f6-fcae-47d0-8df5-e632e2926f80
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 2705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 1cf1cc46-d921-475d-8c6f-008213b250a6
+    type: title
+    task:
+      id: 1cf1cc46-d921-475d-8c6f-008213b250a6
+      version: -1
+      name: Test requests / events
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 0ac142d5-7c96-4ab0-8e29-f9f4e284be08
+    type: title
+    task:
+      id: 0ac142d5-7c96-4ab0-8e29-f9f4e284be08
+      version: -1
+      name: Test requests
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 91ccc7ef-e596-4fff-89df-a91b29b3afdd
+    type: regular
+    task:
+      id: 91ccc7ef-e596-4fff-89df-a91b29b3afdd
+      version: -1
+      name: Get requests
+      script: '|||sigsci-get-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      q:
+        simple: '"https://dashboard.signalsciences.net/api/v0/corps/demisto/sites/demisto/requests?q=from:-7d
+          tag:sqli tag:xss tag:cmdexe tag:traversal"'
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: f587589b-e112-4884-8628-189a77039def
+    type: regular
+    task:
+      id: f587589b-e112-4884-8628-189a77039def
+      version: -1
+      name: Get request by ID
+      script: '|||sigsci-get-request-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      request_id:
+        simple: 5c82c5d0b62acc0007d8eb03
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 6e65cab2-69ea-41b3-837e-bbc95874fb0e
+    type: condition
+    task:
+      id: 6e65cab2-69ea-41b3-837e-bbc95874fb0e
+      version: -1
+      name: Verify IP was added to block list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Blacklist.Source
+            iscontext: true
+          right:
+            value:
+              simple: 8.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 1cc6bd51-ef37-4ed6-8c6c-77a1f9481dfb
+    type: regular
+    task:
+      id: 1cc6bd51-ef37-4ed6-8c6c-77a1f9481dfb
+      version: -1
+      name: Get block list
+      script: '|||sigsci-get-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 65e9adc8-ec74-48ae-82d4-22cd60b5fd42
+    type: regular
+    task:
+      id: 65e9adc8-ec74-48ae-82d4-22cd60b5fd42
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: SigSciences.Corp.Site.Blacklist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 52e27bc4-d0ec-4297-868d-1b6891e8f1e7
+    type: condition
+    task:
+      id: 52e27bc4-d0ec-4297-868d-1b6891e8f1e7
+      version: -1
+      name: Verify IP was deleted from block list (block list is empty)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Blacklist.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: b3c6a7a2-230b-4437-8be5-1a032ae48208
+    type: regular
+    task:
+      id: b3c6a7a2-230b-4437-8be5-1a032ae48208
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: SigSciences.Corp.Site.Whitelist
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 00e460f6-38bb-4958-8daa-ce780253f289
+    type: regular
+    task:
+      id: 00e460f6-38bb-4958-8daa-ce780253f289
+      version: -1
+      name: Get allow list
+      script: '|||sigsci-get-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 5e026177-04f8-4094-80c2-27acee3169c2
+    type: title
+    task:
+      id: 5e026177-04f8-4094-80c2-27acee3169c2
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: b45004c0-702c-4996-8817-ffa3c54f7969
+    type: condition
+    task:
+      id: b45004c0-702c-4996-8817-ffa3c54f7969
+      version: -1
+      name: Verify IP was deleted from allow list (allow list is empty)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Whitelist.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 58b69ce7-9e79-47e3-80ab-a3b1c6057741
+    type: condition
+    task:
+      id: 58b69ce7-9e79-47e3-80ab-a3b1c6057741
+      version: -1
+      name: Verify IP was added to allow list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SigSciences.Corp.Site.Whitelist.Source
+            iscontext: true
+          right:
+            value:
+              simple: 8.3.3.3
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: c3a81e8c-88c2-469d-806a-c40861be36f7
+    type: regular
+    task:
+      id: c3a81e8c-88c2-469d-806a-c40861be36f7
+      version: -1
+      name: Get all site lists
+      script: '|||sigsci-get-all-site-lists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      siteName:
+        simple: node_goat
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: ea5022a8-ba4a-4cee-8bcc-b7a7114a2e68
+    type: regular
+    task:
+      id: ea5022a8-ba4a-4cee-8bcc-b7a7114a2e68
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: SigSciences.Corp.Site.List
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3310,
+        "width": 2470,
+        "x": -320,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

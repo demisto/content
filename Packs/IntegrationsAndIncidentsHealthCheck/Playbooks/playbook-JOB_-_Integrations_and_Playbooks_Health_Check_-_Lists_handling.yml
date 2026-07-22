@@ -1,0 +1,1759 @@
+id: JOB - Integrations and Playbooks Health Check - Lists handling
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: JOB - Integrations and Incidents Health Check - Lists handling
+description: This playbook is triggered by a 'JOB - Integrations and Playbooks Health'
+  playbook and is responsible for creating or updating related XSOAR lists.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 814f2f15-e8a9-4162-8b7a-75842231adde
+    type: start
+    task:
+      id: 814f2f15-e8a9-4162-8b7a-75842231adde
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 475c1efe-7fff-4c17-88e3-cfe5543bd6af
+    type: regular
+    task:
+      id: 475c1efe-7fff-4c17-88e3-cfe5543bd6af
+      version: -1
+      name: Create failing playbooks name list
+      description: Create a failing playbook names list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Playbook Name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Playbooks Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1470,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5614028d-61ed-4d1c-8b68-ebb464f006a4
+    type: title
+    task:
+      id: 5614028d-61ed-4d1c-8b68-ebb464f006a4
+      version: -1
+      name: Done incident lists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 3ae9c1fe-5747-40a1-86f5-5bafb1d00b7a
+    type: regular
+    task:
+      id: 3ae9c1fe-5747-40a1-86f5-5bafb1d00b7a
+      version: -1
+      name: Create failing incidents data  list
+      description: Create a failing incidents list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Incident Created Date
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Incidents Dates
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3180,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 743b2b50-27bb-4a23-8459-5c0b8975cd50
+    type: title
+    task:
+      id: 743b2b50-27bb-4a23-8459-5c0b8975cd50
+      version: -1
+      name: Incident Lists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+      - "22"
+      - "28"
+      - "29"
+      - "21"
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: a60fd83f-90c6-4468-89f7-9645a0fc6495
+    type: title
+    task:
+      id: a60fd83f-90c6-4468-89f7-9645a0fc6495
+      version: -1
+      name: Integration Lists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+      - "36"
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2380,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 3d359f44-93af-4d58-8959-825dc7f231b0
+    type: regular
+    task:
+      id: 3d359f44-93af-4d58-8959-825dc7f231b0
+      version: -1
+      name: Create failing incident commands  list
+      description: Create a failing incident commands list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Command Name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Incident Commands
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 18e29e9c-26d9-4a69-8e24-1e6adc683fc2
+    type: regular
+    task:
+      id: 18e29e9c-26d9-4a69-8e24-1e6adc683fc2
+      version: -1
+      name: Create failing unassigned incident list
+      description: Create an unassigned failed incidents list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: GetFailedTasks.Incident Owner
+                iscontext: true
+          accessor: Incident ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Unassigned Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 9b28b578-f06e-4fe3-819a-cd304e3b7878
+    type: regular
+    task:
+      id: 9b28b578-f06e-4fe3-819a-cd304e3b7878
+      version: -1
+      name: Create error entries ID list
+      description: Create an error entries ID list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Error Entry ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Error Entries ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: d63ba3f0-000b-4b4c-896a-57037c185166
+    type: regular
+    task:
+      id: d63ba3f0-000b-4b4c-896a-57037c185166
+      version: -1
+      name: Create failing incidents ID
+      description: Create a failing incidents ID list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Incident ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Incidents ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: d091b317-c775-4bb3-8917-ba51b3288fea
+    type: condition
+    task:
+      id: d091b317-c775-4bb3-8917-ba51b3288fea
+      version: -1
+      name: Checks if failing incident commands list exists
+      description: Checks whether the failing incident commands list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "Yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Incident Commands
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: a6833f85-ccc4-4236-8c59-c3d903393a1d
+    type: condition
+    task:
+      id: a6833f85-ccc4-4236-8c59-c3d903393a1d
+      version: -1
+      name: Checks if error entries ID list exists
+      description: Checks whether the error entries ID list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "Yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Error Entries ID
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 17891723-9ca0-49c5-827e-93aa5c4e3c83
+    type: condition
+    task:
+      id: 17891723-9ca0-49c5-827e-93aa5c4e3c83
+      version: -1
+      name: Checks if failing playbooks name list exists
+      description: Checks whether the failing playbooks name list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Playbooks Name
+    view: |-
+      {
+        "position": {
+          "x": -1700,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 5159d991-1437-4060-81e0-9f5bf9475429
+    type: condition
+    task:
+      id: 5159d991-1437-4060-81e0-9f5bf9475429
+      version: -1
+      name: Checks if unassigned failed incidents list exists
+      description: Checks whether the failed incidents list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "Yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Unassigned Incident
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 47b639c6-be4e-462d-81a6-748b14bcd8c3
+    type: regular
+    task:
+      id: 47b639c6-be4e-462d-81a6-748b14bcd8c3
+      version: -1
+      name: Sets error entries ID to list
+      description: Set data in error entries ID list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks.Error Entry ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Error Entries ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: ffa161bc-857f-447b-840b-8cef9672a254
+    type: regular
+    task:
+      id: ffa161bc-857f-447b-840b-8cef9672a254
+      version: -1
+      name: Sets unassigned failed incidents to list
+      description: Set data in the unassigned failed incidents list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          filters:
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: GetFailedTasks.Incident Owner
+                iscontext: true
+          accessor: Incident ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Unassigned Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: f049d8f1-270c-4826-8559-6a981fe0b5eb
+    type: regular
+    task:
+      id: f049d8f1-270c-4826-8559-6a981fe0b5eb
+      version: -1
+      name: Sets failing playbook names to list
+      description: Set data in the failing playbook names list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Playbook Name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Playbooks Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1890,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 4a409038-586d-467e-8640-0cc48ef9a9c2
+    type: condition
+    task:
+      id: 4a409038-586d-467e-8640-0cc48ef9a9c2
+      version: -1
+      name: Checks if failing incidents ID list exists
+      description: Checks whether the failing incidents ID list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "Yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Incidents ID
+    view: |-
+      {
+        "position": {
+          "x": -2550,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: ff585d67-0df1-48f6-8595-86603a777185
+    type: condition
+    task:
+      id: ff585d67-0df1-48f6-8595-86603a777185
+      version: -1
+      name: Checks if failing incidents dates list exists
+      description: Checks whether the failing incidents dates list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "Yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Incidents Dates
+    view: |-
+      {
+        "position": {
+          "x": -3340,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: d40aa1a7-062f-4b21-81d7-7d77b5eda23d
+    type: regular
+    task:
+      id: d40aa1a7-062f-4b21-81d7-7d77b5eda23d
+      version: -1
+      name: Sets failing incident IDs to list
+      description: Set data in the failing incidents ID list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Incident ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Incidents ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2740,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: f25ee995-1bfa-4e6e-87ec-669c2981f8d5
+    type: regular
+    task:
+      id: f25ee995-1bfa-4e6e-87ec-669c2981f8d5
+      version: -1
+      name: Sets failing incidents dates to list
+      description: Set data in the failing incidents list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Incident Created Date
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Incidents Dates
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3610,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 544f2357-3672-47d1-82d9-db1189999e8d
+    type: condition
+    task:
+      id: 544f2357-3672-47d1-82d9-db1189999e8d
+      version: -1
+      name: Checks if failed integrations categories list exists
+      description: Checks whether the failed integrations categories list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "Yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Integrations Category
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: a5b4becc-f439-417d-8b21-4bc949c99828
+    type: regular
+    task:
+      id: a5b4becc-f439-417d-8b21-4bc949c99828
+      version: -1
+      name: Creates Failing Integrations Category list
+      description: Create a failing integrations category list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedInstances
+          accessor: category
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Integrations Category
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: f66cbc56-4b07-43cd-8aca-40ba67943789
+    type: regular
+    task:
+      id: f66cbc56-4b07-43cd-8aca-40ba67943789
+      version: -1
+      name: Sets failing integrations category to list
+      description: Set data in the failing integrations category list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedInstances
+          accessor: category
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Integrations Category
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1730,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 9d7f2b1d-6e71-406a-8d99-c2b98ce4e1a6
+    type: title
+    task:
+      id: 9d7f2b1d-6e71-406a-8d99-c2b98ce4e1a6
+      version: -1
+      name: Done Integrations lists
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2380,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 2cc9e285-c32d-4ee3-85de-5b6fa770726e
+    type: condition
+    task:
+      id: 2cc9e285-c32d-4ee3-85de-5b6fa770726e
+      version: -1
+      name: Checks if failing instance list exists
+      description: Checks whether the failing instance list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      "Yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Instance Names
+    view: |-
+      {
+        "position": {
+          "x": 2800,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 6f3208bf-1285-43ec-810f-bb1b95d6109e
+    type: regular
+    task:
+      id: 6f3208bf-1285-43ec-810f-bb1b95d6109e
+      version: -1
+      name: Sets failing instance names to list
+      description: Set data in the failing instance names list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedInstances
+          accessor: instance
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Instance Names
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2590,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 3cbbfa22-6a03-44ac-830e-ab14d84d70a5
+    type: regular
+    task:
+      id: 3cbbfa22-6a03-44ac-830e-ab14d84d70a5
+      version: -1
+      name: Creates failing instances list
+      description: Create new failing instance names list
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedInstances
+          accessor: instance
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Instance Names
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3010,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: a7763191-6777-4163-81ae-a9bca37d200a
+    type: condition
+    task:
+      id: a7763191-6777-4163-81ae-a9bca37d200a
+      version: -1
+      name: Checks if checked integrations list exists
+      description: Checks whether the  checked integrations list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "Yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XSOARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Checked Integrations
+    view: |-
+      {
+        "position": {
+          "x": 3660,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: e9614873-e66f-48aa-8b6c-1b8f666844ac
+    type: regular
+    task:
+      id: e9614873-e66f-48aa-8b6c-1b8f666844ac
+      version: -1
+      name: 'Sets succeed checked integrations to list '
+      description: Set data in the checked integrations list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      listData:
+        complex:
+          root: SuccessInstances
+          accessor: instance
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Checked Integrations
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3450,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 046241de-4185-4494-89b1-e15d53f7aad9
+    type: regular
+    task:
+      id: 046241de-4185-4494-89b1-e15d53f7aad9
+      version: -1
+      name: 'Adds failed checked integrations to list '
+      description: Add data to the checked integrations list.
+      script: Builtin|||addToList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedInstances
+          accessor: instance
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Checked Integrations
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3660,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: df4d9b9c-bf41-4153-8b91-7b614944e7f4
+    type: regular
+    task:
+      id: df4d9b9c-bf41-4153-8b91-7b614944e7f4
+      version: -1
+      name: Creates checked integrations list
+      description: Create a checked integrations list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      listData:
+        complex:
+          root: SuccessInstances
+          accessor: instance
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Checked Integrations
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3870,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 30ff4578-3f2f-491a-860d-3a8f93e00c4b
+    type: title
+    task:
+      id: 30ff4578-3f2f-491a-860d-3a8f93e00c4b
+      version: -1
+      name: Create Lists for Table Widgets
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: f0ab0594-a831-46f2-862c-5aedcd0645f9
+    type: regular
+    task:
+      id: f0ab0594-a831-46f2-862c-5aedcd0645f9
+      version: -1
+      name: Sets Command names to list
+      description: Set data in the Command names list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      listData:
+        complex:
+          root: GetFailedTasks
+          accessor: Command Name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      listName:
+        simple: XSOAR Health - Failed Incident Commands
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1020,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 2edc826b-9806-4ae6-8f24-65d5c256c489
+    type: regular
+    task:
+      id: 2edc826b-9806-4ae6-8f24-65d5c256c489
+      version: -1
+      name: Sets integrations grid to context
+      description: Set the incident grid in context under the key integrationsTable.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      key:
+        simple: FailedintegrationsTable
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: incident
+          accessor: integrationstestgrid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 8d7ac3dd-3389-43fb-8ffa-803be15fd152
+    type: regular
+    task:
+      id: 8d7ac3dd-3389-43fb-8ffa-803be15fd152
+      version: -1
+      name: Sets incidents grid to context
+      description: Set the incident grid in context under the key incidentsTable.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: FailedincidentsTable
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: incident
+          accessor: playbooktaskserrors
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: eb264c6d-81e6-44db-8c4b-95c21fd1ba6f
+    type: title
+    task:
+      id: eb264c6d-81e6-44db-8c4b-95c21fd1ba6f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: ebf39ab4-385a-4a1a-8a2e-664b09c4347c
+    type: regular
+    task:
+      id: ebf39ab4-385a-4a1a-8a2e-664b09c4347c
+      version: -1
+      name: Sets integrations table to list
+      description: Set data in integrations table list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedintegrationsTable
+      listName:
+        simple: XSOAR Health - Failed Integrations Table
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 1f40b3b3-2801-4095-8af4-acddda709ec1
+    type: regular
+    task:
+      id: 1f40b3b3-2801-4095-8af4-acddda709ec1
+      version: -1
+      name: Creates failing integrations table list
+      description: Create an integrations table list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedintegrationsTable
+      listName:
+        simple: XSOAR Health - Failed Integrations Table
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 7d500941-bb9e-46c9-8840-d68adf74ffbd
+    type: regular
+    task:
+      id: 7d500941-bb9e-46c9-8840-d68adf74ffbd
+      version: -1
+      name: Creates failing incidents table list
+      description: Create an incidents table list.
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedincidentsTable
+      listName:
+        simple: XSOAR Health - Failed Incidents Table
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 644790dc-380f-43fc-8070-f95c119b1699
+    type: regular
+    task:
+      id: 644790dc-380f-43fc-8070-f95c119b1699
+      version: -1
+      name: Sets incidents table to list
+      description: Set data in the incidents table list.
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      listData:
+        complex:
+          root: FailedincidentsTable
+      listName:
+        simple: XSOAR Health - Failed Incidents Table
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: dd756ca5-ca89-40d0-85ee-9780e6d6598f
+    type: condition
+    task:
+      id: dd756ca5-ca89-40d0-85ee-9780e6d6598f
+      version: -1
+      name: Checks if integrations table list exists
+      description: Checks whether the integrations table list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "Yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XOSARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Integrations Table
+    view: |-
+      {
+        "position": {
+          "x": 1160,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 37ceaddc-b5ad-4217-8994-57ba892ad62a
+    type: condition
+    task:
+      id: 37ceaddc-b5ad-4217-8994-57ba892ad62a
+      version: -1
+      name: Checks if incidents table list exists
+      description: Checks whether the incidents table list exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "Yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: XOSARlists
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR Health - Failed Incidents Table
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 09bcd8ca-d2f0-43cd-861f-8b4367de364e
+    type: regular
+    task:
+      id: 09bcd8ca-d2f0-43cd-861f-8b4367de364e
+      version: -1
+      name: Set lists names to context
+      description: Set the XSOAR lists name in context under the key XSOARlists.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "13"
+    scriptarguments:
+      key:
+        simple: XSOARlists
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: lists
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=Object.keys(val)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1875,
+        "width": 7860,
+        "x": -3610,
+        "y": 820
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+marketplaces:
+  - xsoar

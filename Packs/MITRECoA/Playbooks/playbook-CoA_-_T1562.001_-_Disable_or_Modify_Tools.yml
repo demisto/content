@@ -1,0 +1,250 @@
+description: "This playbook Remediates the Disable or Modify Tools technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1562.001: Impair Defenses: Disable or Modify Tools\n\nKill Chain phases:\n- Defense Evasion\n\nMITRE ATT&CK Description:\nAdversaries may disable security tools to avoid possible detection of their tools and activities. This can take the form of killing security software or event logging processes, deleting Registry keys so that tools do not start at run time, or other methods to interfere with security tools scanning or reporting information.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n\n"
+id: MITRE ATT&CK CoA - T1562.001 - Disable or Modify Tools
+inputs: []
+name: MITRE ATT&CK CoA - T1562.001 - Disable or Modify Tools
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8b55d6be-bc80-443f-8617-a7b0f20cbd57
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 8b55d6be-bc80-443f-8617-a7b0f20cbd57
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -300
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Configure XDR Behavioral Threat Protection under the Malware Security Profile.
+      id: f2802473-aa9a-4d7c-889b-4c32e7a24128
+      iscommand: false
+      name: Manual - Configure XDR Behavioral Threat Protection under the Malware Security Profile
+      type: regular
+      version: -1
+    taskid: f2802473-aa9a-4d7c-889b-4c32e7a24128
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 028b6b84-667a-4be6-8b73-f17b996678cc
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 028b6b84-667a-4be6-8b73-f17b996678cc
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 725
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1562.001
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 5a55b730-b809-42bf-82bd-13302cbe5aba
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 5a55b730-b809-42bf-82bd-13302cbe5aba
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 8feaf870-e4ed-4ba6-8ad6-d5e312181c0b
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 8feaf870-e4ed-4ba6-8ad6-d5e312181c0b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -150
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: abb29ffa-8fca-4e21-88c6-448b13734dc8
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: abb29ffa-8fca-4e21-88c6-448b13734dc8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 20
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 51f7a99e-393f-4ae2-8619-79507bf1020e
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 51f7a99e-393f-4ae2-8619-79507bf1020e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_1_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1090,
+        "width": 690,
+        "x": 50,
+        "y": -300
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

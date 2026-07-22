@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+	  "associatedTypes": [
+        "Commvault Suspicious File Activity"
+    ],
+    "caseInsensitive": true,
+    "cliName": "commvaultjobid",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_commvaultjobid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Commvault Job Id",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

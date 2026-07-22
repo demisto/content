@@ -1,0 +1,39 @@
+{
+  "chunk_size": 3,
+  "next_stream_position": "1152923112629260788",
+  "entries": [
+    {
+      "source": {
+        "item_type": "file",
+        "item_id": "753421883491",
+        "item_name": "vandijk3.gif",
+        "parent": {
+          "type": "folder",
+          "name": "All Files",
+          "id": "0"
+        },
+        "owned_by": {
+          "type": "user",
+          "id": "14342567114",
+          "name": "Andrew Shamah",
+          "login": "ashamah@paloaltonetworks.com"
+        }
+      },
+      "created_by": {
+        "type": "user",
+        "id": "14342567114",
+        "name": "Andrew Shamah",
+        "login": "ashamah@paloaltonetworks.com"
+      },
+      "created_at": "2020-12-15T00:44:58-08:00",
+      "event_id": "451677f7-9c7c-497d-a272-69903c1f6c29",
+      "event_type": "RENAME",
+      "ip_address": "37.142.10.140",
+      "type": "event",
+      "additional_details": {
+        "size": 18860439,
+        "version_id": "803108695891"
+      }
+    }
+  ]
+}

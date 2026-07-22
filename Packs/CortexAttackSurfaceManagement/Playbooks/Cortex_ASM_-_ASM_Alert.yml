@@ -1,0 +1,3575 @@
+id: Cortex ASM - ASM Alert
+version: -1
+name: Cortex ASM - ASM Alert
+description: This playbook handles ASM alerts by enriching asset information and providing a means of remediating the issue directly or through contacting service owners.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b7b07d0b-fee5-4b51-8e6b-928088c82c42
+    type: start
+    task:
+      id: b7b07d0b-fee5-4b51-8e6b-928088c82c42
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "4":
+    id: "4"
+    taskid: c300597e-a947-4a0e-8551-7e862c5caa53
+    type: title
+    task:
+      id: c300597e-a947-4a0e-8551-7e862c5caa53
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 5260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "5":
+    id: "5"
+    taskid: c77b9c64-6bba-4ba5-85b5-726d41384dab
+    type: title
+    task:
+      id: c77b9c64-6bba-4ba5-85b5-726d41384dab
+      version: -1
+      name: Triage and Qualifier Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "180"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "6":
+    id: "6"
+    taskid: 6e545db5-41cc-4414-8755-1094a1c03fe8
+    type: title
+    task:
+      id: 6e545db5-41cc-4414-8755-1094a1c03fe8
+      version: -1
+      name: Enrichment Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "185"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1b80b617-5189-4039-8315-7b11be105d7d
+    type: title
+    task:
+      id: 1b80b617-5189-4039-8315-7b11be105d7d
+      version: -1
+      name: Decision Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "186"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4a19c6fd-f41a-40d5-87b9-811c1235dc71
+    type: title
+    task:
+      id: 4a19c6fd-f41a-40d5-87b9-811c1235dc71
+      version: -1
+      name: Notification Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "179"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b149b6cb-541e-45b8-8b18-27fecce33932
+    type: title
+    task:
+      id: b149b6cb-541e-45b8-8b18-27fecce33932
+      version: -1
+      name: Validation Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: 'Send an email.'
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 3055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e70c7cd7-c4d1-4f49-8ca1-8d1522da9d6a
+    type: title
+    task:
+      id: e70c7cd7-c4d1-4f49-8ca1-8d1522da9d6a
+      version: -1
+      name: Remediation Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "187"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: e460ad6f-77f0-4911-887d-9954b478ff75
+    type: title
+    task:
+      id: e460ad6f-77f0-4911-887d-9954b478ff75
+      version: -1
+      name: Summarization Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "177"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 3855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: c428c373-5c79-44cb-80e7-de555c354c34
+    type: condition
+    task:
+      id: c428c373-5c79-44cb-80e7-de555c354c34
+      version: -1
+      name: Service exposure still observable?
+      description: Determines if service was still observable and also if automated remediation was done.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "no":
+      - "135"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmservicedetection
+                accessor: scanresult
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: REMEDIATED
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediation
+                accessor: outcome
+            iscontext: true
+          right:
+            value:
+              simple: Success
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 2076296d-2bfe-4b4c-8cdf-7bb538290e97
+    type: collection
+    task:
+      id: 2076296d-2bfe-4b4c-8cdf-7bb538290e97
+      version: -1
+      name: What to do if Remediation Confirmation Scan is inconclusive?
+      description: Determines if alert should be closed or kept open for auto-closure based on analyst input.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "135"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: The post migration NMAP scan wasn't conclusive, decide next steps.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: If you know the issue has been remediated, choose to keep open and have next Xpanse scan auto-close or manually close now.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Close Now
+        - simple: Wait to Auto-close
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Select a next step
+      description: The post migration Remediation Confirmation Scan wasn't conclusive. Decide the next steps.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 21578536-97b4-4a27-842c-4b119942084d
+    type: condition
+    task:
+      id: 21578536-97b4-4a27-842c-4b119942084d
+      version: -1
+      name: What was data collection task response?
+      description: Determines the next action (remediation or ticket) based on the previous data collection task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "88"
+      Automated remediation:
+      - "12"
+      Manual remediation:
+      - "63"
+      Notification email:
+      - "60"
+      ServiceNow ticket:
+      - "10"
+      Jira ticket:
+      - "156"
+      Slack message:
+      - "183"
+    separatecontext: false
+    conditions:
+    - label: Automated remediation
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: "selected"
+            iscontext: true
+          right:
+            value:
+              simple: Automated remediation by restricting open ports
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: selected
+            iscontext: true
+          right:
+            value:
+              simple: Automated remediation by isolating the endpoint on the network
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: selected
+            iscontext: true
+          right:
+            value:
+              simple: Automated remediation by creating empty S3 bucket
+        - left:
+            iscontext: true
+            value:
+              simple: alert.asmdatacollection.selected
+          operator: isEqualString
+          right:
+            value:
+              simple: Automated remediation by patching vulnerable software
+    - label: Manual remediation
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: "selected"
+            iscontext: true
+          right:
+            value:
+              simple: Manual remediation
+    - label: ServiceNow ticket
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: "selected"
+            iscontext: true
+          right:
+            value:
+              simple: File a ServiceNow Ticket
+    - label: Notification email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: "selected"
+            iscontext: true
+          right:
+            value:
+              simple: Send a notification email
+    - label: Jira ticket
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: selected
+            iscontext: true
+          right:
+            value:
+              simple: File a Jira Ticket
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmdatacollection.selected
+          operator: isEqualString
+          right:
+            value:
+              simple: Send a Slack message
+      label: Slack message
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 4d07e99c-e580-4bdf-8883-f051bd03c896
+    type: collection
+    task:
+      id: 4d07e99c-e580-4bdf-8883-f051bd03c896
+      version: -1
+      name: Verify service exposure resolved by service owner
+      description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please verify service exposure was resolved by service owner and mark "complete" when done:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Yes, remediation complete
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Verify that service exposure was resolved by service owner
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: e04643ac-8595-484f-82b5-e5afcd13544f
+    type: title
+    task:
+      id: e04643ac-8595-484f-82b5-e5afcd13544f
+      version: -1
+      name: Notification Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "176"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 4e9b77ee-dc7b-47da-83a3-3e9c0e6f878f
+    type: title
+    task:
+      id: 4e9b77ee-dc7b-47da-83a3-3e9c0e6f878f
+      version: -1
+      name: Manual Remediation Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: f2dd6603-f4fa-4499-8958-14daaf688193
+    type: regular
+    task:
+      id: f2dd6603-f4fa-4499-8958-14daaf688193
+      version: -1
+      name: Set remediation grid field
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridfield:
+        simple: asmremediation
+      keys:
+        simple: action,actiontimestamp,outcome,outcometimestamp
+      val1:
+        simple: Manual remediation
+      val2:
+        complex:
+          root: alert.asmdatacollection
+          accessor: timestamp
+      val3:
+        simple: Manual remediation completed
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 78bbbc1a-fe99-4e9a-8435-8960b0af1087
+    type: condition
+    task:
+      id: 78bbbc1a-fe99-4e9a-8435-8960b0af1087
+      version: -1
+      name: Manual remediation selected?
+      description: Determines if "manual remediation" was selected on main data collection task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "73"
+      manual from RPR:
+      - "103"
+      manual from data collection:
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "manual from data collection"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: "selected"
+            iscontext: true
+          right:
+            value:
+              simple: Manual remediation
+          ignorecase: true
+    - label: manual from RPR
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RemediationAction
+            iscontext: true
+          right:
+            value:
+              simple: Manual
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 0b8598c4-c5e0-4cce-8383-c91f58facf2d
+    type: regular
+    task:
+      id: 0b8598c4-c5e0-4cce-8383-c91f58facf2d
+      version: -1
+      name: Set remediation grid field
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridfield:
+        simple: asmremediation
+      keys:
+        simple: action,actiontimestamp,outcome,outcometimestamp
+      val1:
+        complex:
+          root: alert.asmnotification
+          accessor: type
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Notified service owner via '
+              suffix: {}
+      val2:
+        complex:
+          root: alert.asmnotification
+          accessor: timestamp
+      val3:
+        simple: Resolved by service owner
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: b7f68d25-ba83-4275-8340-e9b0d96fd9e3
+    type: regular
+    task:
+      id: b7f68d25-ba83-4275-8340-e9b0d96fd9e3
+      version: -1
+      name: Set alert summary grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "136"
+    scriptarguments:
+      gridfield:
+        simple: asmalertsummary
+      keys:
+        simple: link,entryid
+      val1:
+        complex:
+          root: demistoUrls
+          accessor: server
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /xsoar/entry/download/
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${lastCompletedTaskEntries.[0]}
+                iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: '%40'
+              toReplace:
+                value:
+                  simple: '@'
+      val2:
+        complex:
+          root: lastCompletedTaskEntries
+          accessor: '[0]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 7760cd6c-8132-4e21-8eb5-9769a3834bc9
+    type: playbook
+    task:
+      id: 7760cd6c-8132-4e21-8eb5-9769a3834bc9
+      version: -1
+      name: Cortex ASM - Detect Service
+      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbookId: Cortex ASM - Detect Service
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      ASMRuleID:
+        complex:
+          root: alert
+          accessor: asmattacksurfaceruleid
+      RemoteIP:
+        complex:
+          root: alert
+          accessor: remoteip
+      RemotePort:
+        complex:
+          root: alert
+          accessor: remoteport
+      ScanNumber:
+        simple: "2"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: f3b899dd-18a9-48f6-8503-7cf6263aca64
+    type: collection
+    task:
+      id: f3b899dd-18a9-48f6-8503-7cf6263aca64
+      version: -1
+      name: Complete manual remediation
+      description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "133"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please complete manual remediation and mark "complete" when done:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Yes, remediation complete
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Verify that manual remediation was completed
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 4ac1a981-fe3b-4cad-807b-3b40afbba041
+    type: regular
+    task:
+      id: 4ac1a981-fe3b-4cad-807b-3b40afbba041
+      version: -1
+      name: Set remediation grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridfield:
+        simple: asmremediation
+      keys:
+        simple: action,actiontimestamp,outcome,outcometimestamp
+      val1:
+        simple: Manual remediation
+      val2:
+        complex:
+          root: RPR_Timestamp
+      val3:
+        simple: Manual remediation completed
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 9384d7c9-9814-45cb-863d-6cecba635833
+    type: condition
+    task:
+      id: 9384d7c9-9814-45cb-863d-6cecba635833
+      version: -1
+      name: Close or keep open?
+      description: Determines if the alert will be closed or kept open.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Automated-Remediation':
+      - "112"
+      '#default#':
+      - "4"
+      Automated-Remediation With Rule Match:
+      - "114"
+      Close Now:
+      - "111"
+      Close Now With Rule Match:
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: Automated-Remediation With Rule Match
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediation
+                accessor: outcome
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmremediationpathrule
+            iscontext: true
+    - label: ' Automated-Remediation'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediation
+                accessor: outcome
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+    - label: Close Now With Rule Match
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Select a next step.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Close Now
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmremediationpathrule
+            iscontext: true
+    - label: Close Now
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Select a next step.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Close Now
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 9243de06-b239-4956-80c8-b0c36a28ce99
+    type: regular
+    task:
+      id: 9243de06-b239-4956-80c8-b0c36a28ce99
+      version: -1
+      name: Close alert (close now)
+      description: Close the current alert because auto-close was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved' by Active Response Module
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 4790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: eac13f7d-5da0-4dfa-8b41-568ab413edec
+    type: regular
+    task:
+      id: eac13f7d-5da0-4dfa-8b41-568ab413edec
+      version: -1
+      name: Close alert (remediated automatically)
+      description: Close the current alert because Automated Remediation path was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved - Remediated Automatically' by Active Response Module
+      closeReason:
+        simple: Resolved - Remediated Automatically
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 4790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: b94080d0-cf5d-408b-8a5f-d1a3e781f33b
+    type: regular
+    task:
+      id: b94080d0-cf5d-408b-8a5f-d1a3e781f33b
+      version: -1
+      name: Close alert (close now) with rule match
+      description: Close the current alert because auto-close was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: alert.asmremediationpathrule
+          accessor: rule_name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Alert status set to ''Resolved'' by Active Response Module - Remediation Path Rule: '
+              suffix: {}
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -470,
+          "y": 4650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 9cce412b-6cb5-403e-8ba5-1092762c0fb6
+    type: regular
+    task:
+      id: 9cce412b-6cb5-403e-8ba5-1092762c0fb6
+      version: -1
+      name: Close alert (remediated automatically) with rule match
+      description: Close the current alert because Automated Remediation path was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: alert.asmremediationpathrule
+          accessor: rule_name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Alert status set to ''Resolved - Remediated Automatically'' by Active Response Module - Remediation Path Rule: '
+              suffix: {}
+      closeReason:
+        simple: Resolved - Remediated Automatically
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 4660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 598c7420-4eeb-48fc-8b5f-b539d6085c05
+    type: title
+    task:
+      id: 598c7420-4eeb-48fc-8b5f-b539d6085c05
+      version: -1
+      name: Analysis Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "175"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 83cd02a3-ed01-4a17-8376-a2b8c394944c
+    type: regular
+    task:
+      id: 83cd02a3-ed01-4a17-8376-a2b8c394944c
+      version: -1
+      name: Set playbook stage grid field (triage)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: triage
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 422e3206-c215-49c0-8c50-0225df53a429
+    type: regular
+    task:
+      id: 422e3206-c215-49c0-8c50-0225df53a429
+      version: -1
+      name: Set playbook stage grid field (enrichment)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "121"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: enrichment
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: 4d3f708f-412f-409d-815c-d8daf22f1000
+    type: regular
+    task:
+      id: 4d3f708f-412f-409d-815c-d8daf22f1000
+      version: -1
+      name: Set playbook stage grid field (analysis)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "144"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: analysis
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 028eece5-24f0-4890-89f8-3803d33144e0
+    type: regular
+    task:
+      id: 028eece5-24f0-4890-89f8-3803d33144e0
+      version: -1
+      name: Set playbook stage grid field (decision)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: d814ba48-42c5-414d-86c9-dfeb842f02f0
+    type: regular
+    task:
+      id: d814ba48-42c5-414d-86c9-dfeb842f02f0
+      version: -1
+      name: Set playbook stage grid field (decision)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 1125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: b48cba1e-0a6c-4a12-8bf7-9f2bbf47b37a
+    type: regular
+    task:
+      id: b48cba1e-0a6c-4a12-8bf7-9f2bbf47b37a
+      version: -1
+      name: Set playbook stage grid field (decision)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: 768ae5de-aa06-4975-8e4c-aa9ae75ece4b
+    type: regular
+    task:
+      id: 768ae5de-aa06-4975-8e4c-aa9ae75ece4b
+      version: -1
+      name: Set playbook stage grid field (decision)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: cd2d1025-4773-4743-8baf-dec1932028bd
+    type: regular
+    task:
+      id: cd2d1025-4773-4743-8baf-dec1932028bd
+      version: -1
+      name: Set playbook stage grid field (remediation)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: remediation
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: 238955d2-13ea-4e94-816f-d28db1defaf2
+    type: regular
+    task:
+      id: 238955d2-13ea-4e94-816f-d28db1defaf2
+      version: -1
+      name: Set playbook stage grid field (notification)
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: notification
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 2005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: e33d4d1a-08ec-4517-8930-445a3b108f08
+    type: regular
+    task:
+      id: e33d4d1a-08ec-4517-8930-445a3b108f08
+      version: -1
+      name: Set playbook stage grid field (validation)
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: validation
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 8c17fd19-2790-46fa-878d-ad53d3fff9f8
+    type: regular
+    task:
+      id: 8c17fd19-2790-46fa-878d-ad53d3fff9f8
+      version: -1
+      name: Set playbook stage grid field (summarization)
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "110"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: summarization
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 4310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: 6152a9df-a84b-4bbe-8a9f-59afec75c4ae
+    type: title
+    task:
+      id: 6152a9df-a84b-4bbe-8a9f-59afec75c4ae
+      version: -1
+      name: continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "142"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1110,
+          "y": 995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: 0e38bd21-c3da-422c-8ac8-a2ebcaf93a39
+    type: regular
+    task:
+      id: 0e38bd21-c3da-422c-8ac8-a2ebcaf93a39
+      version: -1
+      name: Close alert (accepted risk)
+      description: Close the current alert because the service is no longer observed.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved - Risk Accepted' by Active Response Module
+      closeReason:
+        simple: Resolved - Risk Accepted
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -920,
+          "y": 4650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: 167fe7ef-89a1-413f-85cb-94d9c086d6d1
+    type: condition
+    task:
+      id: 167fe7ef-89a1-413f-85cb-94d9c086d6d1
+      version: -1
+      name: Are there any matches from accepted risk lists?
+      description: Checks if the system IDs, folders, and projects are present in the accepted risk lists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "141"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ASSET-ID
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskIDs
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GCP-Project-Number
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskProjects
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmcloud.provider
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS
+                accessor: project
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskProjects
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GCP-Folder-Number
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskOther
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmcloud
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmcloud.provider
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Azure
+                accessor: organization
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskOther
+            iscontext: true
+        - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ASSET-RG
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.AcceptedRiskProjects
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: 87cca956-c103-4e7c-84a4-0bfa10d39b81
+    type: condition
+    task:
+      id: 87cca956-c103-4e7c-84a4-0bfa10d39b81
+      version: -1
+      name: What is the remediation action?
+      description: Determines what the remediation action is (direct action or data collection task).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "48"
+      Automated Remediation:
+      - "146"
+      Jira Ticket:
+      - "161"
+      Manual Remediation:
+      - "152"
+      Notification Email:
+      - "163"
+      ServiceNow Ticket:
+      - "162"
+      Slack:
+      - "181"
+    separatecontext: false
+    conditions:
+    - label: Automated Remediation
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RemediationAction
+            iscontext: true
+          right:
+            value:
+              simple: AR
+    - label: ServiceNow Ticket
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RemediationAction
+            iscontext: true
+          right:
+            value:
+              simple: SNOW
+    - label: Notification Email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RemediationAction
+            iscontext: true
+          right:
+            value:
+              simple: Email
+    - label: Manual Remediation
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RemediationAction
+            iscontext: true
+          right:
+            value:
+              simple: Manual
+    - label: Jira Ticket
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RemediationAction
+            iscontext: true
+          right:
+            value:
+              simple: Jira
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: RemediationAction
+          operator: isEqualString
+          right:
+            value:
+              simple: Slack
+      label: Slack
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: 5cc9450d-b22b-4100-8390-f3ec343b9319
+    type: title
+    task:
+      id: 5cc9450d-b22b-4100-8390-f3ec343b9319
+      version: -1
+      name: Automated Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "129"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "152":
+    id: "152"
+    taskid: 3ca6aa20-4977-4c33-8d6f-4506f9f5af07
+    type: title
+    task:
+      id: 3ca6aa20-4977-4c33-8d6f-4506f9f5af07
+      version: -1
+      name: Manual Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "128"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "156":
+    id: "156"
+    taskid: 79daba2b-1791-4d5c-855c-fb9d663191ee
+    type: title
+    task:
+      id: 79daba2b-1791-4d5c-855c-fb9d663191ee
+      version: -1
+      name: Notification Stage
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "178"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "157":
+    id: "157"
+    taskid: 9c6555fc-9a4f-480d-8292-0aa18468581c
+    type: regular
+    task:
+      id: 9c6555fc-9a4f-480d-8292-0aa18468581c
+      version: -1
+      name: Set playbook stage grid field (decision)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "156"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "161":
+    id: "161"
+    taskid: 5617a3f5-278a-492e-8d16-09e896120c1d
+    type: title
+    task:
+      id: 5617a3f5-278a-492e-8d16-09e896120c1d
+      version: -1
+      name: Jira Ticket
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "157"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "162":
+    id: "162"
+    taskid: 0d78ff20-65b6-48a7-8f3e-c0d99809a5bf
+    type: title
+    task:
+      id: 0d78ff20-65b6-48a7-8f3e-c0d99809a5bf
+      version: -1
+      name: ServiceNow Ticket
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "130"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "163":
+    id: "163"
+    taskid: 68147b67-a457-4d09-817b-bbf1a7539f20
+    type: title
+    task:
+      id: 68147b67-a457-4d09-817b-bbf1a7539f20
+      version: -1
+      name: Email Notification
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "131"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "164":
+    id: "164"
+    taskid: cf574345-4885-46c3-8781-6fe82703cd32
+    type: regular
+    task:
+      id: cf574345-4885-46c3-8781-6fe82703cd32
+      version: -1
+      name: Set remediation grid field
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "168"
+    scriptarguments:
+      gridfield:
+        simple: asmremediation
+      keys:
+        simple: action,actiontimestamp,outcome,outcometimestamp
+      val1:
+        simple: close service port from internet
+      val2:
+        simple: TIMESTAMP
+      val3:
+        simple: Success
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "165":
+    id: "165"
+    taskid: 3b65d35e-d409-446e-8200-8c7a2d26b927
+    type: condition
+    task:
+      id: 3b65d35e-d409-446e-8200-8c7a2d26b927
+      version: -1
+      name: Are there service owners with emails?
+      description: Verifies if we have emails for service owners.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "166"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmserviceowner
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: alert.asmserviceowner.email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '@'
+                accessor: email
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "166":
+    id: "166"
+    taskid: ddad11be-1a2e-45a3-8030-1696ba3fe875
+    type: regular
+    task:
+      id: ddad11be-1a2e-45a3-8030-1696ba3fe875
+      version: -1
+      name: Send remediation notification email to service owners
+      description: Send an email to service owners regarding the status of the automated remediation action that was taken.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "169"
+    scriptarguments:
+      htmlBody:
+        complex:
+          root: inputs.RemediationNotificationHTMLBody
+      subject:
+        complex:
+          root: inputs.RemediationNotificationSubject
+      to:
+        complex:
+          root: alert.asmserviceowner
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.asmserviceowner.email
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
+          accessor: email
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "168":
+    id: "168"
+    taskid: 3f1c6f44-04d4-4590-838c-d88bc36fbd79
+    type: regular
+    task:
+      id: 3f1c6f44-04d4-4590-838c-d88bc36fbd79
+      version: -1
+      name: Set playbook stage grid field (remediation)
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "165"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: remediation
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "169":
+    id: "169"
+    taskid: ef95362b-ca5f-483b-8f1c-b49eaa591bb5
+    type: regular
+    task:
+      id: ef95362b-ca5f-483b-8f1c-b49eaa591bb5
+      version: -1
+      name: Set playbook stage grid field (notification)
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: notification
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "171":
+    id: "171"
+    taskid: 1b619bad-e5c8-41f8-85f8-54c7ad48c8bc
+    type: regular
+    task:
+      id: 1b619bad-e5c8-41f8-85f8-54c7ad48c8bc
+      version: -1
+      name: Initialize grid fields
+      description: Clear ASM grid fields in case the playbook is rerun.
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      asmalertsummary:
+        simple: '[]'
+      asmcloud:
+        simple: '[]'
+      asmdatacollection:
+        simple: '[]'
+      asmdevcheckdetails:
+        simple: '[]'
+      asmenrichmentstatus:
+        simple: '[]'
+      asmnotification:
+        simple: '[]'
+      asmplaybookstage:
+        simple: '[]'
+      asmprivateip:
+        simple: '[]'
+      asmremediation:
+        simple: '[]'
+      asmremediationobjectives:
+        simple: '[{"option": "File a ServiceNow Ticket", "statement": "In this case, a ServiceNow ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "File a Jira Ticket", "statement": "In this case, a Jira ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "Send a notification email", "statement": "In this case, an email ticket will be created with some information on the alert and possible remediation guidance suggestions."},{"option": "Manual remediation", "statement": "In this case, we will require you to manually remediate this exposure."}]'
+      asmremediationpathrule:
+        simple: '[]'
+      asmservicedetection:
+        simple: '[]'
+      asmserviceowner:
+        simple: '[]'
+      asmserviceownerunrankedraw:
+        simple: '[]'
+      asmsystemids:
+        simple: '[]'
+      asmtags:
+        simple: '[]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "172":
+    id: "172"
+    taskid: 24dedd51-5427-4637-8cfc-b5dc476678a7
+    type: regular
+    task:
+      id: 24dedd51-5427-4637-8cfc-b5dc476678a7
+      version: -1
+      name: GenerateSummaryReport - Analysis
+      description: Generate an ASM Alert Summary report.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GenerateASMReport
+    nexttasks:
+      '#none#':
+      - "126"
+    scriptarguments:
+      alert_details:
+        complex:
+          root: alert
+          accessor: details
+      alert_id:
+        complex:
+          root: alert
+          accessor: id
+      alert_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_severityStr:
+        complex:
+          root: alert
+          accessor: severityStr
+      asm_asset_id:
+        complex:
+          root: alert
+          accessor: asmassetid
+      asm_cloud:
+        complex:
+          root: alert
+          accessor: asmcloud
+      asm_data_collection:
+        complex:
+          root: alert
+          accessor: asmdatacollection
+      asm_notification:
+        complex:
+          root: alert
+          accessor: asmnotification
+      asm_private_ip:
+        complex:
+          root: alert
+          accessor: asmprivateip
+      asm_related:
+        complex:
+          root: alert
+          accessor: asmrelated
+      asm_remediation:
+        complex:
+          root: alert
+          accessor: asmremediation
+      asm_remediation_guidance:
+        complex:
+          root: RemediationGuidance
+      asm_remediation_path_rule:
+        complex:
+          root: alert
+          accessor: asmremediationpathrule
+      asm_service_detection:
+        complex:
+          root: alert
+          accessor: asmservicedetection
+      asm_service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      asm_service_owner:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      asm_system_ids:
+        complex:
+          root: alert
+          accessor: asmsystemids
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+      report_type:
+        simple: analysis
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 27b52a79-73b2-46f1-8df7-8f139873b8f4
+    type: playbook
+    task:
+      id: 27b52a79-73b2-46f1-8df7-8f139873b8f4
+      version: -1
+      name: Cortex ASM - Remediation Guidance
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbookId: Cortex ASM - Remediation Guidance
+      description: ''
+    nexttasks:
+      '#none#':
+      - "172"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "176":
+    id: "176"
+    taskid: e7101013-512c-48bf-8a4c-6a70b08dec6d
+    type: playbook
+    task:
+      id: e7101013-512c-48bf-8a4c-6a70b08dec6d
+      version: -1
+      name: Cortex ASM - Email Notification
+      description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbookId: Cortex ASM - Email Notification
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      OwnerNotificationBody:
+        complex:
+          root: inputs.OwnerNotificationBody
+      OwnerNotificationSubject:
+        complex:
+          root: inputs.OwnerNotificationSubject
+      RemediationGuidance:
+        complex:
+          root: RemediationGuidance
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: ac48f670-dfa1-4419-8bd3-a0bdc2b54c40
+    type: regular
+    task:
+      id: ac48f670-dfa1-4419-8bd3-a0bdc2b54c40
+      version: -1
+      name: GenerateSummaryReport - Summary
+      description: Generate an ASM Alert Summary report.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GenerateASMReport
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      alert_details:
+        complex:
+          root: alert
+          accessor: details
+      alert_id:
+        complex:
+          root: alert
+          accessor: id
+      alert_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_severityStr:
+        complex:
+          root: alert
+          accessor: severityStr
+      asm_asset_id:
+        complex:
+          root: alert
+          accessor: asmassetid
+      asm_cloud:
+        complex:
+          root: alert
+          accessor: asmcloud
+      asm_data_collection:
+        complex:
+          root: alert
+          accessor: asmdatacollection
+      asm_notification:
+        complex:
+          root: alert
+          accessor: asmnotification
+      asm_private_ip:
+        complex:
+          root: alert
+          accessor: asmprivateip
+      asm_related:
+        complex:
+          root: alert
+          accessor: asmrelated
+      asm_remediation:
+        complex:
+          root: alert
+          accessor: asmremediation
+      asm_remediation_guidance:
+        complex:
+          root: RemediationGuidance
+      asm_remediation_path_rule:
+        complex:
+          root: alert
+          accessor: asmremediationpathrule
+      asm_service_detection:
+        complex:
+          root: alert
+          accessor: asmservicedetection
+      asm_service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      asm_service_owner:
+        complex:
+          root: alert
+          accessor: asmserviceowner
+      asm_system_ids:
+        complex:
+          root: alert
+          accessor: asmsystemids
+      asm_tags:
+        complex:
+          root: alert
+          accessor: asmtags
+      report_type:
+        simple: summary
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 3980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: 31a1fbd0-1f8f-462a-81fd-79b5f5c2d462
+    type: playbook
+    task:
+      id: 31a1fbd0-1f8f-462a-81fd-79b5f5c2d462
+      version: -1
+      name: Cortex ASM - Jira Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbookId: Cortex ASM - Jira Notification
+      description: ''
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      JiraProjectKey:
+        complex:
+          root: inputs.JiraProjectKey
+      OwnerNotificationBody:
+        complex:
+          root: inputs.OwnerNotificationBody
+      RemediationGuidance:
+        complex:
+          root: RemediationGuidance
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: 70be4075-98e6-4a30-85bd-2a2fd6c3bbbd
+    type: playbook
+    task:
+      id: 70be4075-98e6-4a30-85bd-2a2fd6c3bbbd
+      version: -1
+      name: Cortex ASM - ServiceNow Notification
+      type: playbook
+      iscommand: false
+      brand: ""
+      playbookId: Cortex ASM - ServiceNow Notification
+      description: ''
+    nexttasks:
+      '#none#':
+      - "134"
+    scriptarguments:
+      OwnerNotificationBody:
+        complex:
+          root: inputs.OwnerNotificationBody
+      RemediationGuidance:
+        complex:
+          root: RemediationGuidance
+      NotificationTicketType:
+        complex:
+          root: inputs.NotificationTicketType
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "180":
+    id: "180"
+    taskid: bd53973d-cb69-4fd3-838f-093a8acec197
+    type: regular
+    task:
+      id: bd53973d-cb69-4fd3-838f-093a8acec197
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      type: regular
+      iscommand: false
+      brand: ""
+      script: DeleteContext
+    nexttasks:
+      '#none#':
+      - "171"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    continueonerrortype: ""
+    id: "181"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "182"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab2861ef-0661-4556-82e8-ca82ca8247cd
+      iscommand: false
+      name: Slack Message
+      type: title
+      version: -1
+      description: ''
+    taskid: ab2861ef-0661-4556-82e8-ca82ca8247cd
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 960
+        }
+      }
+  "182":
+    continueonerrortype: ""
+    id: "182"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "183"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 98805312-6ca7-42e5-8c15-1d823f925f77
+      iscommand: false
+      name: Set playbook stage grid field (decision)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 98805312-6ca7-42e5-8c15-1d823f925f77
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1085
+        }
+      }
+  "183":
+    continueonerrortype: ""
+    id: "183"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "184"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27daf64d-b14d-4a42-8a5b-cf42d0953d35
+      iscommand: false
+      name: Notification Stage
+      type: title
+      version: -1
+      description: ''
+    taskid: 27daf64d-b14d-4a42-8a5b-cf42d0953d35
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1580
+        }
+      }
+  "184":
+    continueonerrortype: ""
+    id: "184"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "134"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      InstantMessageChannel:
+        simple: ${inputs.InstantMessageChannel}
+      OwnerNotificationBody:
+        simple: ${inputs.OwnerNotificationBody}
+      RemediationGuidance:
+        simple: ${RemediationGuidance}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook is used to create instant messages toward service owners to notify them of their internet exposures.
+      id: 0f2ae625-39be-4cb7-8d21-7e1632aa18a0
+      iscommand: false
+      name: 'Cortex ASM - Instant Message'
+      playbookId: 'Cortex ASM - Instant Message'
+      type: playbook
+      version: -1
+    taskid: 0f2ae625-39be-4cb7-8d21-7e1632aa18a0
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1780
+        }
+      }
+  "185":
+    continueonerrortype: ""
+    id: "185"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "125"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
+      RemoteIP:
+        complex:
+          accessor: remoteip
+          root: alert
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 937819ab-91bd-438e-8329-4b00b1d6dfeb
+      iscommand: false
+      name: Cortex ASM - Enrichment
+      playbookId: Cortex ASM - Enrichment
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 937819ab-91bd-438e-8329-4b00b1d6dfeb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -870
+        }
+      }
+  "186":
+    continueonerrortype: ""
+    id: "186"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "145"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      BypassDevCheck:
+        simple: ${inputs.BypassDevCheck}
+      ExternallyDetectedProviders:
+        simple: ${alert.asmprovider}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3898edf1-25e6-484d-8f4e-572a9c84455c
+      iscommand: false
+      name: Cortex ASM - Remediation Path Rules
+      playbookId: Cortex ASM - Remediation Path Rules
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 3898edf1-25e6-484d-8f4e-572a9c84455c
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 480
+        }
+      }
+  "187":
+    continueonerrortype: ""
+    id: "187"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "164"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 647b684a-7cfd-4edb-883d-4de8c9516d5b
+      iscommand: false
+      name: Cortex ASM - Remediation
+      playbookId: Cortex ASM - Remediation
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 647b684a-7cfd-4edb-883d-4de8c9516d5b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 1675
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "110_111_Close Now": 0.88,
+      "110_112_ Automated-Remediation": 0.88,
+      "145_152_Manual Remediation": 0.68,
+      "145_161_Jira Ticket": 0.87,
+      "145_163_Notification Email": 0.74,
+      "20_135_no": 0.53,
+      "48_10_ServiceNow ticket": 0.82,
+      "48_183_Slack message": 0.87,
+      "48_60_Notification email": 0.88,
+      "48_63_Manual remediation": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 7105,
+        "width": 2960,
+        "x": -1110,
+        "y": -1780
+      }
+    }
+  }
+inputs:
+- key: OwnerNotificationSubject
+  value:
+    simple: "A new security risk was identified on an external service owned by your team"
+  required: true
+  description: 'Subject of the notification (email or ticket) sent to potential service owner.'
+  playbookInputQuery:
+- key: OwnerNotificationBody
+  value:
+    simple: |+
+      Infosec identified a security risk on an external service potentially owned by your team: ${alert.name}<br><br>
+
+      Description: ${alert.details}
+      <br><br>
+
+  required: true
+  description: Body of the notification (email or ticket) sent to potential service owner.
+  playbookInputQuery:
+- key: NotificationTicketType
+  value:
+    simple: incident
+  required: true
+  description: The ticket type used by ticketing systems. The default is "incident" because ticketing systems such as ServiceNow and Cherwell use it as default.
+  playbookInputQuery:
+- key: RemediationNotificationSubject
+  value:
+    simple: |-
+      A new security risk was addressed on an external service owned by your team
+  required: true
+  description: Subject of the notification (email or ticket) sent to the service owner after remediation.
+  playbookInputQuery:
+- key: RemediationNotificationHTMLBody
+  value:
+    simple: |-
+      <!DOCTYPE html>
+      <html lang="en">
+      <body>
+          <p>
+              Infosec identified a security risk on an external service potentially owned by your
+              team:<br><b>${alert.name}</b>
+          </p>
+          <p>
+              <b>Alert Details:</b> ${alert.details}<br>
+              <b>Action Taken:</b> ${alert.asmremediation.[0].action}<br>
+              <b>Action Outcome:</b> ${alert.asmremediation.[0].outcome}<br>
+          </p>
+      </body>
+      </html>
+  required: true
+  description: 'Body of the notification (email or ticket) sent to the service owner after remediation.'
+  playbookInputQuery:
+- key: BypassDevCheck
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Determine whether to bypass the Dev Check in automated remediation criteria: https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix
+
+    Set to "True" if you want to bypass.  Default is "False".
+  playbookInputQuery:
+- key: AcceptedRiskIDs
+  value: {}
+  required: false
+  description: Comma-separated list of instance/VM IDs that are considered an accepted risk and that should be closed.
+  playbookInputQuery:
+- key: AcceptedRiskProjects
+  value: {}
+  required: false
+  description: Comma-separated list of projects numbers that are considered an accepted risk and that should be closed.  For example, a list of GCP projects, names of Azure Resource Groups, and AWS accounts.
+  playbookInputQuery:
+- key: AcceptedRiskOther
+  value: {}
+  required: false
+  description: Comma-separated list of other items that are considered an accepted risk and that should be closed. For example, a list of folders numbers in GCP and subscription IDs in Azure.
+  playbookInputQuery:
+- key: JiraProjectKey
+  value: {}
+  required: true
+  description: The Jira project key to associate with the issue.
+  playbookInputQuery:
+- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+  key: AWSAssumeRoleName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Channel to send instant messages for notification purposes.  For Slack, this will be the channel ID.
+  key: InstantMessageChannel
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - OwnerNotificationSubject
+  - OwnerNotificationBody
+  - NotificationTicketType
+  - RemediationNotificationSubject
+  - RemediationNotificationHTMLBody
+  - BypassDevCheck
+  - AcceptedRiskIDs
+  - AcceptedRiskProjects
+  - AcceptedRiskOther
+  - JiraProjectKey
+  - AWSAssumeRoleName
+  - InstantMessageChannel
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []

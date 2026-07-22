@@ -1,0 +1,85 @@
+{
+  "raw_response": {
+    "data": {
+      "activitySeries": {
+        "activityConnection": {
+          "nodes": [
+            {
+              "id": "0a8f7e92-7eaa-4b56-a96d-3f9ec2329277",
+              "message": "Completed backup of the transaction log for SQL Server database 'AdventureWorks2012' from 'sx1-sql12-1\\MSSQLSERVER'.",
+              "time": "2021-08-23T06:04:29.174Z"
+            },
+            {
+              "id": "4c725cee-490e-4587-a746-7897613cbb25",
+              "message": "Deleted the temporary file 7283bdb2-ff46-4885-962f-12478df466a8.trn",
+              "time": "2021-08-23T06:04:25.272Z"
+            },
+            {
+              "id": "89260f80-b86a-41a9-b6fd-5d6c2a1d6fa6",
+              "message": "Retrieved transaction log backup data (total 176 KB) from the temporary file C:\\Users\\Rubrik$\\AppData\\Local\\Temp\\Rubrik_Log_Backup\\7283bdb2-ff46-4885-962f-12478df466a8.trn in 4 seconds. Data transfer rate was 35.4 KBps",
+              "time": "2021-08-23T06:04:23.202Z"
+            },
+            {
+              "id": "8243536e-ab72-4849-8187-470e405a740d",
+              "message": "Backed up the transaction log to the temporary file C:\\Users\\Rubrik$\\AppData\\Local\\Temp\\Rubrik_Log_Backup\\7283bdb2-ff46-4885-962f-12478df466a8.trn in 1 seconds",
+              "time": "2021-08-23T06:04:12.623Z"
+            },
+            {
+              "id": "ef86d790-9808-4ff6-9333-15494d23929b",
+              "message": "Started backup of the transaction log for SQL Server database 'AdventureWorks2012' from 'sx1-sql12-1\\MSSQLSERVER'.",
+              "time": "2021-08-23T06:04:10.360Z"
+            }
+          ]
+        },
+        "progress": null,
+        "lastUpdated": "2021-08-23T06:04:29.174Z",
+        "lastActivityStatus": "Success"
+      }
+    }
+  },
+  "empty_response": {
+    "data": {
+      "activitySeries": {
+        "activityConnection": {
+          "nodes": []
+        },
+        "progress": null,
+        "lastUpdated": "2021-08-23T06:04:29.174Z",
+        "lastActivityStatus": "Success"
+      }
+    }
+  },
+  "outputs": {
+    "ActivitySeriesId": "dummy",
+    "ClusterId": "dummy",
+    "Message": [
+      {
+        "id": "0a8f7e92-7eaa-4b56-a96d-3f9ec2329277",
+        "message": "Completed backup of the transaction log for SQL Server database 'AdventureWorks2012' from 'sx1-sql12-1\\MSSQLSERVER'.",
+        "time": "2021-08-23T06:04:29.174Z"
+      },
+      {
+        "id": "4c725cee-490e-4587-a746-7897613cbb25",
+        "message": "Deleted the temporary file 7283bdb2-ff46-4885-962f-12478df466a8.trn",
+        "time": "2021-08-23T06:04:25.272Z"
+      },
+      {
+        "id": "89260f80-b86a-41a9-b6fd-5d6c2a1d6fa6",
+        "message": "Retrieved transaction log backup data (total 176 KB) from the temporary file C:\\Users\\Rubrik$\\AppData\\Local\\Temp\\Rubrik_Log_Backup\\7283bdb2-ff46-4885-962f-12478df466a8.trn in 4 seconds. Data transfer rate was 35.4 KBps",
+        "time": "2021-08-23T06:04:23.202Z"
+      },
+      {
+        "id": "8243536e-ab72-4849-8187-470e405a740d",
+        "message": "Backed up the transaction log to the temporary file C:\\Users\\Rubrik$\\AppData\\Local\\Temp\\Rubrik_Log_Backup\\7283bdb2-ff46-4885-962f-12478df466a8.trn in 1 seconds",
+        "time": "2021-08-23T06:04:12.623Z"
+      },
+      {
+        "id": "ef86d790-9808-4ff6-9333-15494d23929b",
+        "message": "Started backup of the transaction log for SQL Server database 'AdventureWorks2012' from 'sx1-sql12-1\\MSSQLSERVER'.",
+        "time": "2021-08-23T06:04:10.360Z"
+      }
+    ],
+    "EventComplete": "True"
+  }
+}
+

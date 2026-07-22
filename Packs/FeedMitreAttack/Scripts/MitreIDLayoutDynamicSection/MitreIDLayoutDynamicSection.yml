@@ -1,0 +1,18 @@
+commonfields:
+  id: MitreIDLayoutDynamicSection
+  version: -1
+name: MitreIDLayoutDynamicSection
+comment: Deprecated. Use FeedMitreAttackv2 instead.
+script: '-'
+type: python
+tags:
+- dynamic-indicator-section
+enabled: true
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 5.5.0
+deprecated: true
+tests:
+- No test

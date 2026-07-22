@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Post Intrusion Ransomware"
+    ],
+    "caseInsensitive": true,
+    "cliName": "ransomwareonionaddress",
+    "closeForm": false,
+    "content": true,
+    "description": "Onion service address for communication with the ransomware operators group",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ransomwareonionaddress",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Ransomware Onion Address",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "openEnded": true
+}

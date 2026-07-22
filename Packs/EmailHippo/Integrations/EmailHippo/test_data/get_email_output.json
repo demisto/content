@@ -1,0 +1,179 @@
+{
+    "api_result": {
+        "meta": {
+            "lastModified": "Mon, 27 Nov 2023 08:56:58 GMT",
+            "expires": "Thu, 07 Dec 2023 08:56:58 GMT",
+            "email": "test@example.com",
+            "tld": null,
+            "domain": "example.com",
+            "subDomain": null,
+            "user": "test"
+        },
+        "disposition": {
+            "isRole": false,
+            "isFreeMail": false
+        },
+        "emailVerification": {
+            "syntaxVerification": {
+                "isSyntaxValid": true,
+                "reason": "Success"
+            },
+            "dnsVerification": {
+                "isDomainHasDnsRecord": false,
+                "isDomainHasMxRecords": false,
+                "recordRoot": null,
+                "recordWww": null,
+                "mxRecords": null,
+                "txtRecords": null
+            },
+            "mailboxVerification": {
+                "result": "Bad",
+                "reason": "DomainIsInexistent"
+            }
+        },
+        "infrastructure": {
+            "mail": {
+                "serviceTypeId": "Other",
+                "mailServerLocation": null,
+                "smtpBanner": null
+            },
+            "web": {
+                "hasAliveWebServer": false
+            }
+        },
+        "sendAssess": {
+            "inboxQualityScore": 0,
+            "sendRecommendation": "None"
+        },
+        "spamAssess": {
+            "isDisposableEmailAddress": false,
+            "isDarkWebEmailAddress": false,
+            "isGibberishDomain": false,
+            "isGibberishUser": false,
+            "domainRiskScore": 0,
+            "formatRiskScore": 0,
+            "profanityRiskScore": 0,
+            "overallRiskScore": 0,
+            "actionRecomendation": "None",
+            "blockLists": []
+        },
+        "spamTrapAssess": {
+            "isSpamTrap": false,
+            "spamTrapDescriptor": null
+        },
+        "hippoTrust": {
+            "score": 0,
+            "level": "None"
+        },
+        "social": {
+            "gravatar": null
+        },
+        "domain": null,
+        "performance": {
+            "syntaxCheck": 0,
+            "dnsLookup": 10,
+            "spamAssessment": 0,
+            "mailboxVerification": 0,
+            "webInfrastructurePing": 0,
+            "other": 0,
+            "overallExecutionTime": 0
+        }
+    },
+    "expected_context": {
+        "Account(val.Email.Address && val.Email.Address == obj.Email.Address)": [
+            {
+                "Email": {"Address": "test@example.com"},
+                "Domain": "example.com"
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "test@example.com",
+                "Type": "email",
+                "Vendor": "Email Hippo",
+                "Score": 0
+            }
+        ],
+        "EmailHippo.Email(val.Address && val.Address == obj.Address)": {
+            "meta": {
+                "lastModified": "Mon, 27 Nov 2023 08:56:58 GMT",
+                "expires": "Thu, 07 Dec 2023 08:56:58 GMT",
+                "email": "test@example.com",
+                "tld": null,
+                "domain": "example.com",
+                "subDomain": null,
+                "user": "test"
+            },
+            "disposition": {
+                "isRole": false,
+                "isFreeMail": false
+            },
+            "emailVerification": {
+                "syntaxVerification": {
+                    "isSyntaxValid": true,
+                    "reason": "Success"
+                },
+                "dnsVerification": {
+                    "isDomainHasDnsRecord": false,
+                    "isDomainHasMxRecords": false,
+                    "recordRoot": null,
+                    "recordWww": null,
+                    "mxRecords": null,
+                    "txtRecords": null
+                },
+                "mailboxVerification": {
+                    "result": "Bad",
+                    "reason": "DomainIsInexistent"
+                }
+            },
+            "infrastructure": {
+                "mail": {
+                    "serviceTypeId": "Other",
+                    "mailServerLocation": null,
+                    "smtpBanner": null
+                },
+                "web": {
+                    "hasAliveWebServer": false
+                }
+            },
+            "sendAssess": {
+                "inboxQualityScore": 0,
+                "sendRecommendation": "None"
+            },
+            "spamAssess": {
+                "isDisposableEmailAddress": false,
+                "isDarkWebEmailAddress": false,
+                "isGibberishDomain": false,
+                "isGibberishUser": false,
+                "domainRiskScore": 0,
+                "formatRiskScore": 0,
+                "profanityRiskScore": 0,
+                "overallRiskScore": 0,
+                "actionRecomendation": "None",
+                "blockLists": []
+            },
+            "spamTrapAssess": {
+                "isSpamTrap": false,
+                "spamTrapDescriptor": null
+            },
+            "hippoTrust": {
+                "score": 0,
+                "level": "None"
+            },
+            "social": {
+                "gravatar": null
+            },
+            "domain": null,
+            "performance": {
+                "syntaxCheck": 0,
+                "dnsLookup": 10,
+                "spamAssessment": 0,
+                "mailboxVerification": 0,
+                "webInfrastructurePing": 0,
+                "other": 0,
+                "overallExecutionTime": 0
+            },
+            "Address": "test@example.com"
+        }
+    }
+}

@@ -1,0 +1,356 @@
+id: HippoEmailTest
+version: -1
+name: HippoEmailTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f19ef288-f056-4d2a-89e1-dbe3b2cbe927
+    type: start
+    task:
+      id: f19ef288-f056-4d2a-89e1-dbe3b2cbe927
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9b2f7ab9-ddd3-4777-825b-b971b044ba7f
+    type: regular
+    task:
+      id: 9b2f7ab9-ddd3-4777-825b-b971b044ba7f
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ef8fc6c7-b748-45d9-8004-557005fadaa2
+    type: regular
+    task:
+      id: ef8fc6c7-b748-45d9-8004-557005fadaa2
+      version: -1
+      name: Domain reputation
+      description: Returns Domain information and reputation.
+      script: Email Hippo|||domain
+      type: regular
+      iscommand: true
+      brand: Email Hippo
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        simple: ${inputs.first_domain},${inputs.second_doman}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f0c1c160-51ad-4256-80d9-34f9e93b744f
+    type: regular
+    task:
+      id: f0c1c160-51ad-4256-80d9-34f9e93b744f
+      version: -1
+      name: Email reputation
+      description: Return Email information and reputation.
+      script: Email Hippo|||email
+      type: regular
+      iscommand: true
+      brand: Email Hippo
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      email:
+        simple: ${inputs.first_email},${inputs.second_email}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 025935b9-6282-480e-898a-a41758ea16c2
+    type: condition
+    task:
+      id: 025935b9-6282-480e-898a-a41758ea16c2
+      version: -1
+      name: Check response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.first_domain
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.second_doman
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: inputs.first_email
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.Address
+            iscontext: true
+          right:
+            value:
+              simple: inputs.second_email
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 47f514ec-837a-408d-8380-b671802b1bfc
+    type: title
+    task:
+      id: 47f514ec-837a-408d-8380-b671802b1bfc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 21370938-6637-4d72-8177-8d5a8457f4b0
+    type: regular
+    task:
+      id: 21370938-6637-4d72-8177-8d5a8457f4b0
+      version: -1
+      name: Get quota
+      description: Get the Email quota from the API.
+      script: Email Hippo|||email-hippo-email-quota-get
+      type: regular
+      iscommand: true
+      brand: Email Hippo
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c89af4cb-141f-49d6-86b0-6414ebbf786f
+    type: condition
+    task:
+      id: c89af4cb-141f-49d6-86b0-6414ebbf786f
+      version: -1
+      name: Check response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: EmailHippo.Quota.quotaUsed
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: first_domain
+  value:
+    simple: google.com
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: second_doman
+  value:
+    simple: bing.com
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: first_email
+  value:
+    simple: test@example.com
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: second_email
+  value:
+    simple: test@example_1.com
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: ''

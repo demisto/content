@@ -1,0 +1,9 @@
+[file:README.md]
+ignore=RM102
+
+[file:acalvioapp.yml]
+ignore=IN136
+
+[file:acalvioapp_image.png]
+ignore=IM111
+

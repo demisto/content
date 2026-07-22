@@ -1,0 +1,31 @@
+{
+    "name": "Ansible Azure",
+    "description": "Manage and control Azure services.",
+    "support": "xsoar",
+    "currentVersion": "1.0.20",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Cloud Service Provider",
+        "IT Services"
+    ],
+    "tags": [
+        "IT"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Asset Management",
+        "Infrastructure Configuration",
+        "system configuration"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

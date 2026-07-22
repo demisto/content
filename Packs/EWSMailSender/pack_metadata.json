@@ -1,0 +1,27 @@
+{
+    "name": "EWS Mail Sender",
+    "description": "Exchange Web Services and Office 365 Email Sender. Note: this Integration supports Office 365 basic authentication only. If you are using Office 365, we recommend using the EWS O365 Integration instead, which supports modern authentication (oauth2).",
+    "support": "xsoar",
+    "currentVersion": "1.2.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "MicrosoftExchangeOnPremise": {
+            "mandatory": true,
+            "display_name": "Microsoft Exchange On-Premise"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

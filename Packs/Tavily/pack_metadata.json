@@ -1,0 +1,29 @@
+{
+    "name": "Tavily",
+    "description": "Tavily is a web service that provides real-time web search and retrieval capabilities through an API, enabling developers to fetch and extract relevant information from the internet in structured formats like JSON.",
+    "support": "community",
+    "currentVersion": "1.0.12",
+    "author": "Roei Shunim",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_runtime_security",
+        "cloud_posture",
+        "xsiam",
+        "edr",
+        "cloud"
+    ],
+    "githubUser": []
+}

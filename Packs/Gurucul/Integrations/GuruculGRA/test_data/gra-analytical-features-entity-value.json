@@ -1,0 +1,15 @@
+{
+  "analyticalFeatures": {
+    "analyticalFeature1": 2,
+    "analyticalFeature2": 1
+  },
+  "analyticalFeatureValues": {
+    "analyticalFeature1": {
+      "analyticalFeature1a": 2,
+      "analyticalFeature1b": 1
+    },
+    "analyticalFeature2": {
+      "analyticalFeature2a": 19
+    }
+  }
+}

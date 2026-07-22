@@ -1,0 +1,160 @@
+{
+  "Devices": [
+    {
+      "EasIds": {},
+      "TimeZone": "",
+      "Udid": "dummy-udid",
+      "SerialNumber": "ABCD123",
+      "MacAddress": "ABABABABABAB",
+      "Imei": "",
+      "EasId": "",
+      "AssetNumber": "",
+      "DeviceFriendlyName": "user123 Inspiron 5567 Windows Desktop 10",
+      "DeviceReportedName": "user123's Laptop",
+      "LocationGroupId": {
+        "Id": {
+          "Value": 1111
+        },
+        "Name": "dummy-name",
+        "Uuid": "dummy-uuid"
+      },
+      "LocationGroupName": "dummy-name",
+      "UserId": {
+        "Id": {
+          "Value": 111111
+        },
+        "Name": "user",
+        "Uuid": "dummy-uuid"
+      },
+      "UserName": "user123",
+      "DataProtectionStatus": 0,
+      "UserEmailAddress": "dummy-email",
+      "Ownership": "Undefined",
+      "PlatformId": {
+        "Id": {
+          "Value": 12
+        },
+        "Name": "WinRT"
+      },
+      "Platform": "WinRT",
+      "ModelId": {
+        "Id": {
+          "Value": 83
+        },
+        "Name": "Inspiron 5567"
+      },
+      "Model": "Inspiron 5567",
+      "OperatingSystem": "10.0.18363",
+      "PhoneNumber": "",
+      "LastSeen": "2021-06-28T04:35:20.150",
+      "EnrollmentStatus": "Enrolled",
+      "ComplianceStatus": "Compliant",
+      "CompromisedStatus": false,
+      "LastEnrolledOn": "2021-06-23T12:44:21.720",
+      "LastComplianceCheckOn": "0001-01-01T00:00:00.000",
+      "LastCompromisedCheckOn": "2021-06-23T12:54:53.210",
+      "IsSupervised": false,
+      "VirtualMemory": 0,
+      "OEMInfo": "Dell Inc.",
+      "IsDeviceDNDEnabled": false,
+      "IsDeviceLocatorEnabled": false,
+      "IsCloudBackupEnabled": false,
+      "IsActivationLockEnabled": false,
+      "IsNetworkTethered": false,
+      "BatteryLevel": "",
+      "IsRoaming": false,
+      "SystemIntegrityProtectionEnabled": false,
+      "ProcessorArchitecture": 9,
+      "TotalPhysicalMemory": 0,
+      "AvailablePhysicalMemory": 0,
+      "OSBuildVersion": "1379",
+      "EnrollmentUserUuid": "",
+      "ManagedBy": 1,
+      "WifiSsid": "",
+      "DepTokenSource": 0,
+      "Id": {
+        "Value": 5614
+      },
+      "Uuid": "dummy-uuid1"
+    },
+    {
+      "EasIds": {},
+      "TimeZone": "",
+      "Udid": "dummy-udid",
+      "SerialNumber": "ABCD123",
+      "MacAddress": "ABABABABABAB",
+      "Imei": "",
+      "EasId": "",
+      "AssetNumber": "",
+      "DeviceFriendlyName": "user123 Inspiron 7650 Windows Desktop 10",
+      "DeviceReportedName": "user123's Laptop",
+      "LocationGroupId": {
+        "Id": {
+          "Value": 1111
+        },
+        "Name": "dummy-name",
+        "Uuid": "dummy-uuid"
+      },
+      "LocationGroupName": "dummy-name",
+      "UserId": {
+        "Id": {
+          "Value": 111111
+        },
+        "Name": "user",
+        "Uuid": "dummy-uuid"
+      },
+      "UserName": "user123",
+      "DataProtectionStatus": 0,
+      "UserEmailAddress": "dummy-email",
+      "Ownership": "C",
+      "PlatformId": {
+        "Id": {
+          "Value": 12
+        },
+        "Name": "WinRT"
+      },
+      "Platform": "WinRT",
+      "ModelId": {
+        "Id": {
+          "Value": 83
+        },
+        "Name": "Inspiron 7650"
+      },
+      "Model": "Inspiron 7650",
+      "OperatingSystem": "10.0.18363",
+      "PhoneNumber": "",
+      "LastSeen": "2021-06-28T04:35:20.150",
+      "EnrollmentStatus": "Enrolled",
+      "ComplianceStatus": "Compliant",
+      "LastEnrolledOn": "2021-06-23T12:44:21.720",
+      "LastComplianceCheckOn": "0001-01-01T00:00:00.000",
+      "LastCompromisedCheckOn": "2021-06-23T12:54:53.210",
+      "IsSupervised": false,
+      "VirtualMemory": 0,
+      "OEMInfo": "Dell Inc.",
+      "IsDeviceDNDEnabled": false,
+      "IsDeviceLocatorEnabled": false,
+      "IsCloudBackupEnabled": false,
+      "IsActivationLockEnabled": false,
+      "IsNetworkTethered": false,
+      "BatteryLevel": "",
+      "IsRoaming": false,
+      "SystemIntegrityProtectionEnabled": false,
+      "ProcessorArchitecture": 9,
+      "TotalPhysicalMemory": 0,
+      "AvailablePhysicalMemory": 0,
+      "OSBuildVersion": "1379",
+      "EnrollmentUserUuid": "",
+      "ManagedBy": 1,
+      "WifiSsid": "",
+      "DepTokenSource": 0,
+      "Id": {
+        "Value": 5614
+      },
+      "Uuid": "dummy-uuid2"
+    }
+  ],
+  "Page": 0,
+  "PageSize": 1,
+  "Total": 2
+}

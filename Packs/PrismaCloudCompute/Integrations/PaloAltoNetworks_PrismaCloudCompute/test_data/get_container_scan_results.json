@@ -1,0 +1,184 @@
+[
+    {
+        "_id": "a1",
+        "collections": [
+            "All",
+            "Access Group"
+        ],
+        "csa": false,
+        "firewallProtection": {
+            "enabled": false,
+            "outOfBandMode": "",
+            "supported": false
+        },
+        "hostname": "a1",
+        "info": {
+            "allCompliance": {},
+            "app": "a2",
+            "cloudMetadata": {
+                "accountID": "ii",
+                "image": "img",
+                "name": "a1",
+                "provider": "gcp",
+                "region": "europe-west4-c",
+                "resourceID": "4"
+            },
+            "cluster": "demo",
+            "clusterType": "GKE",
+            "complianceDistribution": {
+                "critical": 7,
+                "high": 5,
+                "low": 0,
+                "medium": 0,
+                "total": 12
+            },
+            "complianceIssues": [
+                {
+                    "cause": "",
+                    "cri": false,
+                    "cve": "",
+                    "cvss": 0,
+                    "description": "Process ID (PID) namespaces isolate the process ID number space",
+                    "discovered": "0001-01-01T00:00:00Z",
+                    "exploit": "",
+                    "fixDate": 0,
+                    "functionLayer": "",
+                    "id": 515,
+                    "layerTime": 0,
+                    "link": "",
+                    "packageName": "",
+                    "packageVersion": "",
+                    "published": 0,
+                    "riskFactors": null,
+                    "secret": {},
+                    "severity": "critical",
+                    "status": "",
+                    "templates": [
+                        "GGG"
+                    ],
+                    "text": "",
+                    "title": "Do not share the process namespace",
+                    "twistlock": false,
+                    "type": "container",
+                    "vecStr": "",
+                    "wildfireMalware": {}
+                }
+            ],
+            "complianceIssuesCount": 12,
+            "complianceRiskScore": 7050000,
+            "id": "a4",
+            "image": "img3",
+            "imageID": "sha256:a5",
+            "imageName": "img5",
+            "infra": false,
+            "installedProducts": {
+                "crio": true
+            },
+            "labels": [
+                "aa"
+            ],
+            "name": "a7",
+            "namespace": "system",
+            "network": {
+                "ports": []
+            },
+            "processes": [
+                {
+                    "name": "a7"
+                }
+            ],
+            "profileID": "sha256:a3",
+            "startTime": "2023-09-10T01:46:16.542Z"
+        },
+        "scanTime": "2023-09-26T01:46:44.579Z"
+    },
+    {
+        "_id": "a2",
+        "agentless": true,
+        "agentlessScanID": 476,
+        "collections": [
+            "All"
+        ],
+        "csa": false,
+        "firewallProtection": {
+            "enabled": false,
+            "outOfBandMode": "",
+            "supported": false
+        },
+        "hostname": "hostname",
+        "info": {
+            "allCompliance": {},
+            "app": "app9",
+            "cloudMetadata": {
+                "accountID": "66",
+                "image": "img7",
+                "name": "a5-master",
+                "provider": "aws",
+                "region": "eu-south-1",
+                "resourceID": "i-3",
+                "type": "m5.xlarge"
+            },
+            "cluster": "a5",
+            "clusterType": "",
+            "complianceDistribution": {
+                "critical": 7,
+                "high": 5,
+                "low": 0,
+                "medium": 0,
+                "total": 12
+            },
+            "complianceIssues": [
+                {
+                    "cause": "",
+                    "cri": true,
+                    "cve": "",
+                    "cvss": 0,
+                    "description": "The main container's host has full access to its network interfaces",
+                    "discovered": "0001-01-01T00:00:00Z",
+                    "exploit": "",
+                    "fixDate": 0,
+                    "functionLayer": "",
+                    "id": 5059,
+                    "layerTime": 0,
+                    "link": "",
+                    "packageName": "",
+                    "packageVersion": "",
+                    "published": 0,
+                    "riskFactors": null,
+                    "secret": {},
+                    "severity": "critical",
+                    "status": "",
+                    "templates": null,
+                    "text": "",
+                    "title": "Do not share the host's network namespace",
+                    "twistlock": false,
+                    "type": "container",
+                    "vecStr": "",
+                    "wildfireMalware": {}
+                }
+            ],
+            "complianceIssuesCount": 12,
+            "complianceRiskScore": 7050000,
+            "id": "a5",
+            "image": "a7",
+            "imageID": "a9",
+            "imageName": "a7",
+            "infra": false,
+            "installedProducts": {
+                "crio": true
+            },
+            "labels": [
+                "tag"
+            ],
+            "name": "aaa",
+            "namespace": "test",
+            "network": {
+                "ports": []
+            },
+            "processes": [],
+            "profileID": "a9_test_a5",
+            "startTime": "2022-09-14T09:07:18.502Z"
+        },
+        "scanTime": "2023-09-26T00:20:45.054Z"
+    }
+]

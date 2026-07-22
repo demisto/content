@@ -1,0 +1,6 @@
+[known_words]
+graphql
+
+[file:GraphQL.yml]
+ignore=BA124
+

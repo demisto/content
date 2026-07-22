@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachremediationdatacount",
+    "closeForm": false,
+    "content": true,
+    "description": "Total number of indicators that were tested and represent the Insight issue",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachremediationdatacount",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Remediation Data Count",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

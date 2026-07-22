@@ -1,0 +1,9 @@
+[file:README.md]
+ignore=RM113
+
+[known_words]
+ansii
+
+[file:AnsibleMicrosoftWindows.yml]
+ignore=BA124
+

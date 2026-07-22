@@ -1,0 +1,21 @@
+{
+    "name": "Advanced Filter (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.1.13",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2020-10-17T18:23:26Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

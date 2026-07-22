@@ -1,0 +1,30 @@
+{
+    "id": "incident_devsecopsheadcommitauthor",
+    "version": -1,
+    "modified": "2020-08-09T11:20:43.902159302+04:00",
+    "name": "DevSecOps Head Commit Author",
+    "ownerOnly": false,
+    "cliName": "devsecopsheadcommitauthor",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "DevSecOps New Git PR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

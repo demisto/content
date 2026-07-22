@@ -1,0 +1,238 @@
+{
+    "totalResults": 5,
+    "startIndex": 1,
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "Resources": [
+        {
+            "owner": {
+                "displayName": "Dennis.Barnes",
+                "value": "7f000001705911b4817059d31233035e",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d31233035e"
+            },
+            "requirements": [],
+            "active": true,
+            "inheritance": [],
+            "type": {
+                "iiq": false,
+                "requirements": false,
+                "permits": false,
+                "displayName": "IT",
+                "manualAssignment": false,
+                "name": "it",
+                "autoAssignment": false,
+                "assignmentSelector": false
+            },
+            "descriptions": [
+                {
+                    "locale": "en_US",
+                    "value": "Has a user account on the company database."
+                }
+            ],
+            "identAttr": {},
+            "permits": [],
+            "meta": {
+                "created": "2020-02-18T13:42:49.914-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d31239035f",
+                "lastModified": "2020-02-18T13:43:32.895-06:00",
+                "version": "W/\"1582055012895\"",
+                "resourceType": "Role"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Role"
+            ],
+            "name": "User - IT",
+            "displayableName": "User - IT",
+            "id": "7f000001705911b4817059d31239035f"
+        },
+        {
+            "owner": {
+                "displayName": "Lori.Ferguson",
+                "value": "7f000001705911b4817059d30e42034c",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30e42034c"
+            },
+            "requirements": [],
+            "active": true,
+            "inheritance": [
+                {
+                    "displayName": "User - IT",
+                    "value": "7f000001705911b4817059d31239035f",
+                    "$ref": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d31239035f"
+                }
+            ],
+            "type": {
+                "iiq": false,
+                "requirements": false,
+                "permits": false,
+                "displayName": "IT",
+                "manualAssignment": false,
+                "name": "it",
+                "autoAssignment": false,
+                "assignmentSelector": false
+            },
+            "descriptions": [
+                {
+                    "locale": "en_US",
+                    "value": "Manages the accounts payable function within the organization's established policies. Arranges and oversees completion of all work. Examines records of amounts due and makes sure invoices are paid according to terms and discounts taken. Directs invoice processing and verification, expense coding, and drafting of payment checks or vouchers. Supplies regular or written reports. Suggests improvements in processes to increase effectiveness of unit."
+                }
+            ],
+            "identAttr": {},
+            "permits": [],
+            "meta": {
+                "created": "2020-02-18T13:42:49.925-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d312450361",
+                "lastModified": "2020-02-18T13:43:32.909-06:00",
+                "version": "W/\"1582055012909\"",
+                "resourceType": "Role"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Role"
+            ],
+            "name": "Accounting General Access - IT",
+            "displayableName": "Accounting General Access - IT",
+            "id": "7f000001705911b4817059d312450361"
+        },
+        {
+            "owner": {
+                "displayName": "Lori.Ferguson",
+                "value": "7f000001705911b4817059d30e42034c",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30e42034c"
+            },
+            "requirements": [],
+            "active": true,
+            "inheritance": [
+                {
+                    "displayName": "Accounting General Access - IT",
+                    "value": "7f000001705911b4817059d312450361",
+                    "$ref": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d312450361"
+                }
+            ],
+            "type": {
+                "iiq": false,
+                "requirements": false,
+                "permits": false,
+                "displayName": "IT",
+                "manualAssignment": false,
+                "name": "it",
+                "autoAssignment": false,
+                "assignmentSelector": false
+            },
+            "descriptions": [
+                {
+                    "locale": "en_US",
+                    "value": "Manages the accounts payable function within the organization's established policies. Arranges and oversees completion of all work. Examines records of amounts due and makes sure invoices are paid according to terms and discounts taken. Directs invoice processing and verification, expense coding, and drafting of payment checks or vouchers. Supplies regular or written reports. Suggests improvements in processes to increase effectiveness of unit."
+                }
+            ],
+            "identAttr": {},
+            "permits": [],
+            "meta": {
+                "created": "2020-02-18T13:42:49.931-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d3124b0362",
+                "lastModified": "2020-02-18T13:43:32.923-06:00",
+                "version": "W/\"1582055012923\"",
+                "resourceType": "Role"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Role"
+            ],
+            "name": "Accounts Payable Access - IT",
+            "displayableName": "Accounts Payable Access - IT",
+            "id": "7f000001705911b4817059d3124b0362"
+        },
+        {
+            "owner": {
+                "displayName": "Amanda.Ross",
+                "value": "7f000001705911b4817059d30cf50348",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30cf50348"
+            },
+            "requirements": [],
+            "active": true,
+            "inheritance": [
+                {
+                    "displayName": "Accounting General Access - IT",
+                    "value": "7f000001705911b4817059d312450361",
+                    "$ref": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d312450361"
+                }
+            ],
+            "type": {
+                "iiq": false,
+                "requirements": false,
+                "permits": false,
+                "displayName": "IT",
+                "manualAssignment": false,
+                "name": "it",
+                "autoAssignment": false,
+                "assignmentSelector": false
+            },
+            "descriptions": [
+                {
+                    "locale": "en_US",
+                    "value": "Oversees accounts payable recordkeeping. Supervises recording of amounts due, verification of invoices, and calculation of discounts. Ensures expense coding, voucher preparation, and check issuance are accomplished accurately and timely. Produces various reports for management including accounts payable register."
+                }
+            ],
+            "identAttr": {},
+            "permits": [],
+            "meta": {
+                "created": "2020-02-18T13:42:49.964-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d3126c0365",
+                "lastModified": "2020-02-18T13:43:32.937-06:00",
+                "version": "W/\"1582055012937\"",
+                "resourceType": "Role"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Role"
+            ],
+            "name": "Payables Approver/Submitter - IT",
+            "displayableName": "Payables Approver/Submitter - IT",
+            "id": "7f000001705911b4817059d3126c0365"
+        },
+        {
+            "owner": {
+                "displayName": "Patricia.Jones",
+                "value": "7f000001705911b4817059d30c0a0344",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30c0a0344"
+            },
+            "requirements": [],
+            "active": true,
+            "inheritance": [
+                {
+                    "displayName": "Accounting General Access - IT",
+                    "value": "7f000001705911b4817059d312450361",
+                    "$ref": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d312450361"
+                }
+            ],
+            "type": {
+                "iiq": false,
+                "requirements": false,
+                "permits": false,
+                "displayName": "IT",
+                "manualAssignment": false,
+                "name": "it",
+                "autoAssignment": false,
+                "assignmentSelector": false
+            },
+            "descriptions": [
+                {
+                    "locale": "en_US",
+                    "value": "Manages the accounts receivable function within the organization's established policies. Arranges and oversees completion of all work including posting, processing, and verification of receipts, credit claims, refunds, interest charges, or other similar records. Produces regular or special written reports. Suggests improvements in processes to increase effectiveness of unit."
+                }
+            ],
+            "identAttr": {},
+            "permits": [],
+            "meta": {
+                "created": "2020-02-18T13:42:49.983-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Roles/7f000001705911b4817059d3127e0367",
+                "lastModified": "2020-02-18T13:43:32.951-06:00",
+                "version": "W/\"1582055012951\"",
+                "resourceType": "Role"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Role"
+            ],
+            "name": "Accounts Receivable Access - IT",
+            "displayableName": "Accounts Receivable Access - IT",
+            "id": "7f000001705911b4817059d3127e0367"
+        }
+    ]
+}

@@ -1,0 +1,14 @@
+!pan-os-edl-get-external-file file_path=test_playbook_list4.txt
+!pan-os-edl-search-external-file file_path=test_playbook_list4.txt search_string=koko
+!pan-os-edl-update-internal-list add_or_remove=add list_items=toto.com list_name=test_playbook_list4
+!pan-os-edl-update-external-file file_path=test_playbook_list4.txt list_name=test_playbook_list4 verbose=true
+!pan-os-edl-update add_or_remove=remove file_path=test_playbook_list4.txt list_items=toto.com list_name=test_playbook_list4 verbose=true
+!pan-os-edl-update-from-external-file file_path=test_playbook_list4.txt list_name=test_playbook_list4 type=override
+!pan-os-edl-delete-external-file file_path=test_playbook_list5.txt
+!pan-os-edl-search-internal-list list_name=test_playbook_list4 search_string=koko.com
+!pan-os-edl-search-internal-list list_name=test_playbook_list4
+!pan-os-edl-dump-internal-list list_name=test_playbook_list4 destination=incident_context
+!pan-os-edl-compare file_path=test_playbook_list4.txt list_name=list_name=test_playbook_list4
+!pan-os-edl-get-external-file-metadata file_path=test_playbook_list4.txt
+!pan-os-edl-print-internal-list list_name=test_playbook_list4
+!pan-os-edl-list-internal-lists

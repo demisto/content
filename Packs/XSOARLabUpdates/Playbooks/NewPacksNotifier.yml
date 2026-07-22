@@ -1,0 +1,465 @@
+description: Send updates on new released packs to slack channel
+id: NewPacksNotifier
+inputs:
+- description: Comma seperated channel names on slack to send the notification to.
+  key: channel_name
+  playbookInputQuery:
+  required: true
+  value: {}
+name: NewPacksNotifier
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7fe56a7c-aaed-4ea4-8831-b36e9f57b1c1
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 7fe56a7c-aaed-4ea4-8831-b36e9f57b1c1
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      last_message_time_str:
+        simple: ${LastRun}
+      last_run_str:
+        simple: ${LastRun}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Extract the index and gets a list of all new packs since last run
+        into context.
+      id: b2ea0809-c82d-44e0-8973-ab7b319bca3e
+      iscommand: false
+      name: Build Slack Blocks From Index
+      script: BuildSlackBlocksFromIndex
+      type: regular
+      version: -1
+    taskid: b2ea0809-c82d-44e0-8973-ab7b319bca3e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${Blocks}
+          operator: isNotEqualString
+          right:
+            value:
+              simple: no new packs
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if slack blocks is not "no new packs"
+      id: c4ed36d2-575d-42bd-8a88-709db0bce50d
+      iscommand: false
+      name: Check If Blocks Exists
+      type: condition
+      version: -1
+    taskid: c4ed36d2-575d-42bd-8a88-709db0bce50d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${LastRun.[1]}
+      listName:
+        simple: NewPacksNotifierLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.set
+      id: 1a889442-4435-40d5-8d85-e3d3429a107f
+      iscommand: true
+      name: Set Last Run
+      script: Builtin|||setList
+      type: regular
+      version: -1
+    taskid: 1a889442-4435-40d5-8d85-e3d3429a107f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: LastRun=.
+      listName:
+        simple: NewPacksNotifierLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.get
+      id: 67fa3bf9-2731-481a-87ed-495c551556be
+      iscommand: true
+      name: Get Last Run
+      script: Builtin|||getList
+      type: regular
+      version: -1
+    taskid: 67fa3bf9-2731-481a-87ed-495c551556be
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 03ac1d7d-3ae2-4193-8a5e-767ba818736e
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 03ac1d7d-3ae2-4193-8a5e-767ba818736e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "YES":
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listName:
+        simple: NewPacksNotifierLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if list exist in demisto lists.
+      id: 1c9704b6-417c-4c11-8574-50f6103e8072
+      iscommand: false
+      name: Check If NewPacksNotifierLastRun List Exists
+      script: IsListExist
+      type: condition
+      version: -1
+    taskid: 1c9704b6-417c-4c11-8574-50f6103e8072
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dateFormat:
+        simple: iso
+      daysAgo:
+        simple: "7"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: cff86449-7cab-4231-8091-93913cb90498
+      iscommand: false
+      name: Get Week Ago Time
+      script: GetTime
+      type: regular
+      version: -1
+    taskid: cff86449-7cab-4231-8091-93913cb90498
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      listData:
+        simple: ${TimeNow}
+      listName:
+        simple: NewPacksNotifierLastRun
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.list.create
+      id: b8d42a22-a11b-4665-86f0-5be4b3d3c82b
+      iscommand: true
+      name: Create NewPacksNotifierLastRun List
+      script: Builtin|||createList
+      type: regular
+      version: -1
+    taskid: b8d42a22-a11b-4665-86f0-5be4b3d3c82b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Done
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: e0919f70-7e74-417e-815a-724950e4ab61
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: e0919f70-7e74-417e-815a-724950e4ab61
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://storage.googleapis.com/marketplace-dist/content/packs/index.zip
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends http request. Returns the response as json.
+      id: 5388715e-5da4-49dd-89d2-28f5e4cddffc
+      iscommand: false
+      name: Download index.zip from marketplace-dist bucket
+      script: http
+      type: regular
+      version: -1
+    taskid: 5388715e-5da4-49dd-89d2-28f5e4cddffc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      arrayData:
+        simple: ${inputs.channel_name}
+      contextKey:
+        simple: channels
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Will create an array object in context from given string input '
+      id: 17c2d0c1-b995-4b34-8786-02aaf3483e89
+      iscommand: false
+      name: Split Channels
+      script: CreateArray
+      type: regular
+      version: -1
+    taskid: 17c2d0c1-b995-4b34-8786-02aaf3483e89
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks:
+        simple: ${Blocks}
+      channel:
+        simple: ${channels}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to a user, group, or channel.
+      id: 32e70211-5ee4-441e-8234-bbe07736a702
+      iscommand: true
+      name: Send Slack Message
+      script: '|||send-notification'
+      type: regular
+      version: -1
+    taskid: 32e70211-5ee4-441e-8234-bbe07736a702
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

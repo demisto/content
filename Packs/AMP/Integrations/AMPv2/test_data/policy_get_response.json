@@ -1,0 +1,69 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": {
+        "name": "data_name",
+        "description": "data_description",
+        "guid": "data_guid",
+        "product": "data_product",
+        "default": "data_default",
+        "serial_number": "data_serial_number",
+        "links": {
+            "policy_xml": "data_links_policy_xml"
+        },
+        "file_lists": [
+            {
+                "name": "data_file_lists[0]_name",
+                "guid": "data_file_lists[0]_guid",
+                "type": "data_file_lists[0]_type"
+            },
+            {
+                "name": "data_file_lists[1]_name",
+                "guid": "data_file_lists[1]_guid",
+                "type": "data_file_lists[1]_type"
+            },
+            {
+                "name": "data_file_lists[2]_name",
+                "guid": "data_file_lists[2]_guid",
+                "type": "data_file_lists[2]_type"
+            }
+        ],
+        "ip_lists": [],
+        "isolation_ip_lists": [],
+        "exclusion_sets": [
+            {
+                "name": "data_exclusion_sets[0]_name",
+                "guid": "data_exclusion_sets[0]_guid"
+            },
+            {
+                "name": "data_exclusion_sets[1]_name",
+                "guid": "data_exclusion_sets[1]_guid"
+            },
+            {
+                "name": "data_exclusion_sets[2]_name",
+                "guid": "data_exclusion_sets[2]_guid"
+            },
+            {
+                "name": "data_exclusion_sets[3]_name",
+                "guid": "data_exclusion_sets[3]_guid"
+            },
+            {
+                "name": "data_exclusion_sets[4]_name",
+                "guid": "data_exclusion_sets[4]_guid"
+            },
+            {
+                "name": "data_exclusion_sets[5]_name",
+                "guid": "data_exclusion_sets[5]_guid"
+            },
+            {
+                "name": "data_exclusion_sets[6]_name",
+                "guid": "data_exclusion_sets[6]_guid"
+            }
+        ],
+        "used_in_groups": []
+    }
+}

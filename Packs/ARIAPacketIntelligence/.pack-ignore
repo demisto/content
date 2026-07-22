@@ -1,0 +1,5 @@
+[file:README.md]
+ignore=RM104
+
+[file:ARIAPacketIntelligence.yml]
+ignore=IN153

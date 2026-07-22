@@ -1,0 +1,44 @@
+[MODEL: dataset = absolute_secure_endpoint_raw]
+alter 
+    get_IpAddress_ipv4 = if(parsed_fields_NewValue -> IpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", parsed_fields_NewValue -> IpAddress),
+    get_IpAddress_ipv6 = if(parsed_fields_NewValue -> IpAddress ~= "\:", parsed_fields_NewValue -> IpAddress),
+    get_Longitude = if(objectDisplayName = "Device Location", parsed_fields_OldValue -> Longitude),
+    get_Latitude = if(objectDisplayName = "Device Location", parsed_fields_OldValue -> Latitude)
+| alter
+// General Fields
+    xdm.event.id = id,
+    xdm.event.type = eventType,
+    xdm.event.operation_sub_type = verb,
+    xdm.source.host.device_id = if(actorObjectType = "Device", actorDisplayId),
+    xdm.source.user.identifier = if(actorObjectType = "User", actorDisplayId),
+    xdm.source.application.version = if(actorObjectType = "System", actorDisplayId),
+    xdm.source.user.identity_type = if(
+    	actorObjectType = "Device", XDM_CONST.IDENTITY_TYPE_MACHINE,
+		actorObjectType = "User", XDM_CONST.IDENTITY_TYPE_USER,
+		actorObjectType = "System", XDM_CONST.IDENTITY_TYPE_BUILTIN,
+		actorObjectType = "NA", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
+		actorObjectType = null, null, to_string(actorObjectType)),
+    xdm.source.host.hostname = if(actorObjectType = "Device", actorDisplayName),
+	xdm.source.user.username = if(actorObjectType = "User", actorDisplayName),
+	xdm.source.application.name = if(actorObjectType = "System", actorDisplayName),
+    xdm.target.resource.id = objectDisplayId,
+    xdm.target.resource.type = objectObjectType,
+    xdm.target.resource.name = objectDisplayName,
+    xdm.target.resource.sub_type = to_string(object_create(
+    	"secondaryObjectDisplayId", secondaryObjectDisplayId,
+    	"secondaryObjectDisplayName", secondaryObjectDisplayName, 
+    	"secondaryObjectType",secondaryObjectType)),
+// Fields extracted from objectProperties 
+    xdm.target.host.ipv6_addresses = arraycreate(parsed_fields_NewValue -> DeviceSystemInformationUpdated_LocalIpV6Addr),
+    xdm.target.host.ipv6_public_addresses = arraycreate(parsed_fields_NewValue -> DeviceSystemInformationUpdated_PublicIpV6Addr),
+    xdm.target.host.ipv4_public_addresses = arraycreate(parsed_fields_NewValue -> DeviceSystemInformationUpdated_PublicIpAddr),
+    xdm.target.host.ipv4_addresses = arraycreate(parsed_fields_NewValue -> DeviceSystemInformationUpdated_LocalIpAddr),
+    xdm.source.ipv4 = get_IpAddress_ipv4,
+    xdm.source.ipv6 = get_IpAddress_ipv6,
+    xdm.source.user_agent = parsed_fields_NewValue -> BrowserAgent,
+    xdm.source.location.longitude = to_float(get_Longitude),
+    xdm.source.location.latitude = to_float(get_Latitude),
+    xdm.source.location.city = if(objectDisplayName = "Device Location", parsed_fields_OldValue -> City),
+    xdm.source.location.country = if(objectDisplayName = "Device Location", parsed_fields_OldValue -> CountryName),
+    xdm.target.resource_before.value = to_string(parsed_fields_OldValue),
+    xdm.target.resource.value = to_string(parsed_fields_NewValue);

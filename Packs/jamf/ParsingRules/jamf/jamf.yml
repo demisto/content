@@ -1,0 +1,8 @@
+name: jamf Parsing Rule
+id: jamf_ParsingRule
+fromversion: 8.4.0
+tags: [jamf]
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

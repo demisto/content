@@ -1,0 +1,107 @@
+args:
+- description: The model name (or list name) in Demisto.
+  name: modelName
+  required: true
+- description: Seed for the hash function, at the pre-process stage.
+  name: hashSeed
+- description: Subject of the email.
+  isArray: true
+  name: emailSubject
+- description: Body of the email.
+  isArray: true
+  name: emailBody
+- description: HTML body of the email. Only use this field if the emailBody argument is empty.
+  isArray: true
+  name: emailBodyHTML
+- defaultValue: '20'
+  description: Maximum number of positive/negative words to return for the model decision. Default is 20.
+  name: topWordsLimit
+- defaultValue: '0.05'
+  description: Threshold to determine word importance (range 0-1). Default is 0.05.
+  name: wordThreshold
+- auto: PREDEFINED
+  defaultValue: list
+  description: How the model is stored in Demisto. Can be "list" or "mlModel". Default is "list".
+  name: modelStoreType
+  predefined:
+  - list
+  - mlModel
+- defaultValue: '5'
+  description: Minimum number of characters for the prediction.
+  name: minTextLength
+- defaultValue: '0.8'
+  description: The label probability threshold. Default is 0.8.
+  name: labelProbabilityThreshold
+- description: The confidence threshold. The model will provide predictions only if their confidence is above this threshold.
+  name: confidenceThreshold
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to return an error when there is no prediction. Default is "true".
+  name: returnError
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to set Demisto out-of-the-box DBot fields.
+  name: setIncidentFields
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: Any
+  description: The language of the input text. Default is "Any". Can be "Any", "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other". If "Any"  or "Other" is selected, the script preprocess the entire input, no matter what its acutual language is. If a specific language is selected, the script filters out any other language from the output text.
+  name: language
+  predefined:
+  - Any
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
+- auto: PREDEFINED
+  defaultValue: tokenizer
+  description: Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
+  name: tokenizationMethod
+  predefined:
+  - tokenizer
+  - byWords
+  - byLetters
+comment: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
+commonfields:
+  id: DBotPredictPhishingWords
+  version: -1
+name: DBotPredictPhishingWords
+outputs:
+- contextPath: DBotPredictPhishingWords.Label
+  description: The predicted label.
+  type: String
+- contextPath: DBotPredictPhishingWords.Probability
+  description: The predicted probability (range 0-1).
+  type: Number
+- contextPath: DBotPredictPhishingWords.PositiveWords
+  description: A list of words in the input text that supports the model decision.
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.NegativeWords
+  description: A list of words in the input text that do not support the model decision. These words better support a different classification class.
+  type: Unknown
+- contextPath: DBotPredictPhishingWords.TextTokensHighlighted
+  description: The input text (after pre-processing) with the positive words that support the model decision.
+  type: String
+script: '-'
+subtype: python3
+tags:
+- ml
+- phishing
+timeout: 60µs
+type: python
+dockerimage: demisto/ml:1.0.0.6144857
+tests:
+- Create Phishing Classifier V2 ML Test
+- DbotPredictOufOfTheBoxTestV2
+fromversion: 5.0.0
+marketplaces:
+- xsoar

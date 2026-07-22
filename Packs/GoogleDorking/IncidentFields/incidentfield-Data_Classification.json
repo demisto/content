@@ -1,0 +1,35 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "googledorkingdataclassification",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_googledorkingdataclassification",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Google Dorking Data Classification",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "public",
+        "internal-only",
+        "confidential",
+        "restricted"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

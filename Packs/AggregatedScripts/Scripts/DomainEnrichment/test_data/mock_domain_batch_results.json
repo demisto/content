@@ -1,0 +1,33 @@
+{
+    "batch1_createNewIndicator": [
+      { "Type": 1, "EntryContext": {} },
+      { "Type": 1, "EntryContext": {} }
+    ],
+    "batch2_core": [
+      {
+        "Type": 1,
+        "EntryContext": {
+          "Core.AnalyticsPrevalence.Domain": [
+            { "Domain": "example.com", "FirstSeen": "2024-01-01" },
+            { "Domain": "example2.com", "FirstSeen": "2024-01-02" }
+          ]
+        }
+      }
+    ],
+    "batch2_enrichIndicators": [
+      {
+        "Type": 1,
+        "Metadata": { "brand": "brand1" },
+        "EntryContext": {
+          "DBotScore(val.Indicator && val.Vendor)": [
+            { "Indicator": "example.com", "Vendor": "brand1", "Score": 2 }
+          ]
+        }
+      },
+      {
+        "Type": 1,
+        "EntryContext": {}
+      }
+    ]
+  }
+  

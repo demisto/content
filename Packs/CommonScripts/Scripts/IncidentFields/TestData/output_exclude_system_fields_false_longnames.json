@@ -1,0 +1,2066 @@
+{
+    "AD Groups": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "AD Groups",
+        "shortName": "adgroups",
+        "type": "shortText"
+    },
+    "Account": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Account",
+        "shortName": "account",
+        "type": "shortText"
+    },
+    "Account ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Account ID",
+        "shortName": "accountid",
+        "type": "shortText"
+    },
+    "Affected Data Type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Affected Data Type",
+        "shortName": "affecteddatatype",
+        "type": "shortText"
+    },
+    "Affected Individuals Contact Information": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Affected Individuals Contact Information",
+        "shortName": "affectedindividualscontactinformation",
+        "type": "grid"
+    },
+    "Affected data": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Affected data",
+        "shortName": "affecteddata",
+        "type": "multiSelect"
+    },
+    "Agent ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Agent ID",
+        "shortName": "agentid",
+        "type": "shortText"
+    },
+    "App": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Access"
+        ],
+        "name": "App",
+        "shortName": "app",
+        "type": "shortText"
+    },
+    "Approximate number of affected data subjects": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Approximate number of affected data subjects",
+        "shortName": "approximatenumberofaffecteddatasubjects",
+        "type": "shortText"
+    },
+    "Asset ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Vulnerability"
+        ],
+        "name": "Asset ID",
+        "shortName": "assetid",
+        "type": "shortText"
+    },
+    "Attachment Count": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Attachment Count",
+        "shortName": "attachmentcount",
+        "type": "number"
+    },
+    "Attachment Extension": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Attachment Extension",
+        "shortName": "attachmentextension",
+        "type": "shortText"
+    },
+    "Attachment Hash": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Attachment Hash",
+        "shortName": "attachmenthash",
+        "type": "shortText"
+    },
+    "Attachment ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Attachment ID",
+        "shortName": "attachmentid",
+        "type": "shortText"
+    },
+    "Attachment Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Attachment Name",
+        "shortName": "attachmentname",
+        "type": "shortText"
+    },
+    "Attachment size": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Attachment size",
+        "shortName": "attachmentsize",
+        "type": "shortText"
+    },
+    "Attachment type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Attachment type",
+        "shortName": "attachmenttype",
+        "type": "shortText"
+    },
+    "Blocked Action": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Blocked Action",
+        "shortName": "blockedaction",
+        "type": "shortText"
+    },
+    "Bugtraq": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Vulnerability"
+        ],
+        "name": "Bugtraq",
+        "shortName": "bugtraq",
+        "type": "shortText"
+    },
+    "CVE": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Vulnerability"
+        ],
+        "name": "CVE",
+        "shortName": "cve",
+        "type": "shortText"
+    },
+    "CVSS": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Vulnerability",
+            "Malware"
+        ],
+        "name": "CVSS",
+        "shortName": "cvss",
+        "type": "shortText"
+    },
+    "City": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "City",
+        "shortName": "city",
+        "type": "shortText"
+    },
+    "Command Line": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Crowdstrike",
+            "Traps"
+        ],
+        "name": "Command Line",
+        "shortName": "commandline",
+        "type": "shortText"
+    },
+    "Company Address": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Company Address",
+        "shortName": "companyaddress",
+        "type": "shortText"
+    },
+    "Company City": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Company City",
+        "shortName": "companycity",
+        "type": "shortText"
+    },
+    "Company Country": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Company Country",
+        "shortName": "companycountry",
+        "type": "shortText"
+    },
+    "Company Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Company Name",
+        "shortName": "companyname",
+        "type": "shortText"
+    },
+    "Company Postal Code": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Company Postal Code",
+        "shortName": "companypostalcode",
+        "type": "shortText"
+    },
+    "Company has Insurance for the Breach": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Company has Insurance for the Breach",
+        "shortName": "companyhasinsuranceforthebreach",
+        "type": "shortText"
+    },
+    "Computer Form Factor": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Computer Form Factor",
+        "shortName": "computerformfactor",
+        "type": "shortText"
+    },
+    "Computer Model": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Computer Model",
+        "shortName": "computermodel",
+        "type": "shortText"
+    },
+    "Computer Type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Computer Type",
+        "shortName": "computertype",
+        "type": "shortText"
+    },
+    "Contact Address": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Contact Address",
+        "shortName": "contactaddress",
+        "type": "shortText"
+    },
+    "Contact Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Contact Name",
+        "shortName": "contactname",
+        "type": "shortText"
+    },
+    "Coordinates": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Coordinates",
+        "shortName": "coordinates",
+        "type": "shortText"
+    },
+    "Country": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Country",
+        "shortName": "country",
+        "type": "shortText"
+    },
+    "Country where business has its main establishment": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Country where business has its main establishment",
+        "shortName": "countrywherebusinesshasitsmainestablishment",
+        "type": "shortText"
+    },
+    "Country where the breach took place": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Country where the breach took place",
+        "shortName": "countrywherethebreachtookplace",
+        "type": "shortText"
+    },
+    "Critical Assets": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing",
+            "Malware",
+            "Access",
+            "Network"
+        ],
+        "name": "Critical Assets",
+        "shortName": "criticalassets",
+        "type": "grid"
+    },
+    "DPO E-mail Address": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "DPO E-mail Address",
+        "shortName": "dpoemailaddress",
+        "type": "shortText"
+    },
+    "Data Encryption Status": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Data Encryption Status",
+        "shortName": "dataencryptionstatus",
+        "type": "multiSelect"
+    },
+    "Date/time of the breach": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Date/time of the breach",
+        "shortName": "datetimeofthebreach",
+        "type": "date"
+    },
+    "Dest": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Access",
+            "Malware"
+        ],
+        "name": "Dest",
+        "shortName": "dest",
+        "type": "shortText"
+    },
+    "Dest NT Domain": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Access",
+            "Malware"
+        ],
+        "name": "Dest NT Domain",
+        "shortName": "destntdomain",
+        "type": "shortText"
+    },
+    "Destination IP": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "Destination IP",
+        "shortName": "destinationip",
+        "type": "shortText"
+    },
+    "Detection End Time": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "Detection End Time",
+        "shortName": "detectionendtime",
+        "type": "date"
+    },
+    "Detection ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "Detection ID",
+        "shortName": "detectionid",
+        "type": "number"
+    },
+    "Detection SLA": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "Detection SLA",
+        "shortName": "detectionsla",
+        "type": "timer"
+    },
+    "Detection Ticketed": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "Detection Ticketed",
+        "shortName": "detectionticketed",
+        "type": "boolean"
+    },
+    "Detection URL": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "Detection URL",
+        "shortName": "detectionurl",
+        "type": "url"
+    },
+    "Detection Update Time": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "Detection Update Time",
+        "shortName": "detectionupdatetime",
+        "type": "date"
+    },
+    "Device Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Device Name",
+        "shortName": "devicename",
+        "type": "shortText"
+    },
+    "Duration": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Access"
+        ],
+        "name": "Duration",
+        "shortName": "duration",
+        "type": "shortText"
+    },
+    "E-mail Address": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "E-mail Address",
+        "shortName": "emailaddress",
+        "type": "shortText"
+    },
+    "Email Authenticity Check": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Authenticity Check",
+        "shortName": "emailauthenticitycheck",
+        "type": "singleSelect"
+    },
+    "Email BCC": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email BCC",
+        "shortName": "emailbcc",
+        "type": "shortText"
+    },
+    "Email Body": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Body",
+        "shortName": "emailbody",
+        "type": "longText"
+    },
+    "Email Body Format": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Body Format",
+        "shortName": "emailbodyformat",
+        "type": "shortText"
+    },
+    "Email Body HTML": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Body HTML",
+        "shortName": "emailbodyhtml",
+        "type": "html"
+    },
+    "Email CC": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email CC",
+        "shortName": "emailcc",
+        "type": "shortText"
+    },
+    "Email Classification": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Classification",
+        "shortName": "emailclassification",
+        "type": "singleSelect"
+    },
+    "Email Client Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Client Name",
+        "shortName": "emailclientname",
+        "type": "shortText"
+    },
+    "Email From": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email From",
+        "shortName": "emailfrom",
+        "type": "shortText"
+    },
+    "Email HTML": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email HTML",
+        "shortName": "emailhtml",
+        "type": "longText"
+    },
+    "Email Headers": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Headers",
+        "shortName": "emailheaders",
+        "type": "grid"
+    },
+    "Email In Reply To": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email In Reply To",
+        "shortName": "emailinreplyto",
+        "type": "shortText"
+    },
+    "Email Keywords": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Keywords",
+        "shortName": "emailkeywords",
+        "type": "shortText"
+    },
+    "Email Message ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Message ID",
+        "shortName": "emailmessageid",
+        "type": "shortText"
+    },
+    "Email Received": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Received",
+        "shortName": "emailreceived",
+        "type": "shortText"
+    },
+    "Email Reply To": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Reply To",
+        "shortName": "emailreplyto",
+        "type": "shortText"
+    },
+    "Email Return Path": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Return Path",
+        "shortName": "emailreturnpath",
+        "type": "shortText"
+    },
+    "Email Sender IP": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Sender IP",
+        "shortName": "emailsenderip",
+        "type": "shortText"
+    },
+    "Email Size": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Size",
+        "shortName": "emailsize",
+        "type": "number"
+    },
+    "Email Source": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Source",
+        "shortName": "emailsource",
+        "type": "shortText"
+    },
+    "Email Subject": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email Subject",
+        "shortName": "emailsubject",
+        "type": "shortText"
+    },
+    "Email To": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email To",
+        "shortName": "emailto",
+        "type": "shortText"
+    },
+    "Email To Count": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email To Count",
+        "shortName": "emailtocount",
+        "type": "shortText"
+    },
+    "Email URL Clicked": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Email URL Clicked",
+        "shortName": "emailurlclicked",
+        "type": "shortText"
+    },
+    "Email dest_ip": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "Email dest_ip",
+        "shortName": "emaildestip",
+        "type": "shortText"
+    },
+    "ExtraHop Appliance ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "ExtraHop Appliance ID",
+        "shortName": "extrahopapplianceid",
+        "type": "number"
+    },
+    "ExtraHop Hostname": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "ExtraHop Hostname",
+        "shortName": "extrahophostname",
+        "type": "shortText"
+    },
+    "File Hash": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "File Hash",
+        "shortName": "filehash",
+        "type": "shortText"
+    },
+    "File Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "File Name",
+        "shortName": "filename",
+        "type": "shortText"
+    },
+    "File Path": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "File Path",
+        "shortName": "filepath",
+        "type": "shortText"
+    },
+    "File Size": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "File Size",
+        "shortName": "filesize",
+        "type": "shortText"
+    },
+    "First Seen": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware",
+            "Prisma Cloud"
+        ],
+        "name": "First Seen",
+        "shortName": "firstseen",
+        "type": "shortText"
+    },
+    "GDPR Notify Authorities": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "GDPR Notify Authorities",
+        "shortName": "gdprnotifyauthorities",
+        "type": "timer"
+    },
+    "Hire Date": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Hire Date",
+        "shortName": "hiredate",
+        "type": "date"
+    },
+    "Home Address City": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Home Address City",
+        "shortName": "homeaddresscity",
+        "type": "shortText"
+    },
+    "Home Address Country": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Home Address Country",
+        "shortName": "homeaddresscountry",
+        "type": "shortText"
+    },
+    "Home Address State / Province": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Home Address State / Province",
+        "shortName": "homeaddressstateprovince",
+        "type": "shortText"
+    },
+    "Home Address Street 1": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Home Address Street 1",
+        "shortName": "homeaddressstreet1",
+        "type": "shortText"
+    },
+    "Home Address Street 2": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Home Address Street 2",
+        "shortName": "homeaddressstreet2",
+        "type": "shortText"
+    },
+    "Home Address ZIP / Post Code": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Home Address ZIP / Post Code",
+        "shortName": "homeaddresszippostcode",
+        "type": "shortText"
+    },
+    "Home Phone": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Home Phone",
+        "shortName": "homephone",
+        "type": "shortText"
+    },
+    "Host Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "Host Name",
+        "shortName": "hostname",
+        "type": "shortText"
+    },
+    "Infected Hosts": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Infected Hosts",
+        "shortName": "infectedhosts",
+        "type": "grid"
+    },
+    "Is the Data Subject to DPIA ": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Is the Data Subject to DPIA ",
+        "shortName": "isthedatasubjecttodpia",
+        "type": "shortText"
+    },
+    "Isolated": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Isolated",
+        "shortName": "isolated",
+        "type": "shortText"
+    },
+    "Last Modified By": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Last Modified By",
+        "shortName": "lastmodifiedby",
+        "type": "shortText"
+    },
+    "Last Modified On": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Last Modified On",
+        "shortName": "lastmodifiedon",
+        "type": "shortText"
+    },
+    "Last Seen": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Last Seen",
+        "shortName": "lastseen",
+        "type": "shortText"
+    },
+    "Likely Impact": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Likely Impact",
+        "shortName": "likelyimpact",
+        "type": "shortText"
+    },
+    "Malicious Behavior": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Malicious Behavior",
+        "shortName": "maliciousbehavior",
+        "type": "shortText"
+    },
+    "Malicious Cause (If the cause is a malicious attack)": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Malicious Cause (If the cause is a malicious attack)",
+        "shortName": "maliciouscauseifthecauseisamaliciousattack",
+        "type": "multiSelect"
+    },
+    "Malware Family": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "Malware Family",
+        "shortName": "malwarefamily",
+        "type": "shortText"
+    },
+    "Measures to Mitigate": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Measures to Mitigate",
+        "shortName": "measurestomitigate",
+        "type": "shortText"
+    },
+    "Mobile Phone": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Mobile Phone",
+        "shortName": "mobilephone",
+        "type": "shortText"
+    },
+    "NIST Stage": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "NIST Stage",
+        "shortName": "niststage",
+        "type": "shortText"
+    },
+    "PID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "PID",
+        "shortName": "pid",
+        "type": "shortText"
+    },
+    "Parent Process ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Crowdstrike",
+            "Traps"
+        ],
+        "name": "Parent Process ID",
+        "shortName": "parentprocessid",
+        "type": "shortText"
+    },
+    "Participants": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "Participants",
+        "shortName": "participants",
+        "type": "grid"
+    },
+    "Phishing Sub-type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Phishing Sub-type",
+        "shortName": "phishingsubtype",
+        "type": "multiSelect"
+    },
+    "Policy Deleted": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy Deleted",
+        "shortName": "policydeleted",
+        "type": "shortText"
+    },
+    "Policy Description": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy Description",
+        "shortName": "policydescription",
+        "type": "longText"
+    },
+    "Policy Details": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy Details",
+        "shortName": "policydetails",
+        "type": "shortText"
+    },
+    "Policy ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy ID",
+        "shortName": "policyid",
+        "type": "shortText"
+    },
+    "Policy Recommendation": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy Recommendation",
+        "shortName": "policyrecommendation",
+        "type": "longText"
+    },
+    "Policy Remediable": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy Remediable",
+        "shortName": "policyremediable",
+        "type": "shortText"
+    },
+    "Policy Severity": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy Severity",
+        "shortName": "policyseverity",
+        "type": "shortText"
+    },
+    "Policy Type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Policy Type",
+        "shortName": "policytype",
+        "type": "shortText"
+    },
+    "Possible Cause of the Breach": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Possible Cause of the Breach",
+        "shortName": "possiblecauseofthebreach",
+        "type": "multiSelect"
+    },
+    "Postal Code": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Postal Code",
+        "shortName": "postalcode",
+        "type": "shortText"
+    },
+    "Previous Coordinates": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Previous Coordinates",
+        "shortName": "previouscoordinates",
+        "type": "shortText"
+    },
+    "Previous Country": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Previous Country",
+        "shortName": "previouscountry",
+        "type": "shortText"
+    },
+    "Previous Sign In Date Time": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Previous Sign In Date Time",
+        "shortName": "previoussignindatetime",
+        "type": "date"
+    },
+    "Previous Source IP": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Previous Source IP",
+        "shortName": "previoussourceip",
+        "type": "shortText"
+    },
+    "Prisma Cloud ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Prisma Cloud ID",
+        "shortName": "prismacloudid",
+        "type": "shortText"
+    },
+    "Prisma Cloud Reason": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Prisma Cloud Reason",
+        "shortName": "prismacloudreason",
+        "type": "shortText"
+    },
+    "Prisma Cloud Rules": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Prisma Cloud Rules",
+        "shortName": "prismacloudrules",
+        "type": "grid"
+    },
+    "Prisma Cloud Status": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Prisma Cloud Status",
+        "shortName": "prismacloudstatus",
+        "type": "shortText"
+    },
+    "Prisma Cloud Time": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Prisma Cloud Time",
+        "shortName": "prismacloudtime",
+        "type": "shortText"
+    },
+    "RRN": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "RRN",
+        "shortName": "rrn",
+        "type": "shortText"
+    },
+    "Rating": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Rating",
+        "shortName": "rating",
+        "type": "shortText"
+    },
+    "Raw": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "Raw",
+        "shortName": "raw",
+        "type": "shortText"
+    },
+    "Raw Participants": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "ExtraHop Detection"
+        ],
+        "name": "Raw Participants",
+        "shortName": "rawparticipants",
+        "type": "longText"
+    },
+    "Region": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Region",
+        "shortName": "region",
+        "type": "shortText"
+    },
+    "Region ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Region ID",
+        "shortName": "regionid",
+        "type": "shortText"
+    },
+    "Remediation SLA": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "Remediation SLA",
+        "shortName": "remediationsla",
+        "type": "timer"
+    },
+    "Reporter Email Address": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Phishing"
+        ],
+        "name": "Reporter Email Address",
+        "shortName": "reporteremailaddress",
+        "type": "shortText"
+    },
+    "Resource API Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Resource API Name",
+        "shortName": "resourceapiname",
+        "type": "shortText"
+    },
+    "Resource Cloud Type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Resource Cloud Type",
+        "shortName": "resourcecloudtype",
+        "type": "shortText"
+    },
+    "Resource ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Resource ID",
+        "shortName": "resourceid",
+        "type": "shortText"
+    },
+    "Resource Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Resource Name",
+        "shortName": "resourcename",
+        "type": "shortText"
+    },
+    "Resource Type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Resource Type",
+        "shortName": "resourcetype",
+        "type": "shortText"
+    },
+    "Risk Rating": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Risk Rating",
+        "shortName": "riskrating",
+        "type": "shortText"
+    },
+    "Risk Score": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Risk Score",
+        "shortName": "riskscore",
+        "type": "shortText"
+    },
+    "SKU Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "SKU Name",
+        "shortName": "skuname",
+        "type": "shortText"
+    },
+    "SKU TIER": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "SKU TIER",
+        "shortName": "skutier",
+        "type": "shortText"
+    },
+    "Sector of Affected Party": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Sector of Affected Party",
+        "shortName": "sectorofaffectedparty",
+        "type": "shortText"
+    },
+    "Sign In Date Time": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Sign In Date Time",
+        "shortName": "signindatetime",
+        "type": "date"
+    },
+    "Signature": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Vulnerability",
+            "Malware"
+        ],
+        "name": "Signature",
+        "shortName": "signature",
+        "type": "shortText"
+    },
+    "Size - number of employees": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Size - number of employees",
+        "shortName": "sizenumberofemployees",
+        "type": "shortText"
+    },
+    "Size - turnover": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Size - turnover",
+        "shortName": "sizeturnover",
+        "type": "shortText"
+    },
+    "Source IP": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "Source IP",
+        "shortName": "sourceip",
+        "type": "shortText"
+    },
+    "Src": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Access",
+            "Malware"
+        ],
+        "name": "Src",
+        "shortName": "src",
+        "type": "shortText"
+    },
+    "Src NT Domain": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Access"
+        ],
+        "name": "Src NT Domain",
+        "shortName": "srcntdomain",
+        "type": "shortText"
+    },
+    "Src OS": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Src OS",
+        "shortName": "srcos",
+        "type": "shortText"
+    },
+    "Src User": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Access"
+        ],
+        "name": "Src User",
+        "shortName": "srcuser",
+        "type": "shortText"
+    },
+    "Subscription Assigned By": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Assigned By",
+        "shortName": "subscriptionassignedby",
+        "type": "shortText"
+    },
+    "Subscription Created By": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Created By",
+        "shortName": "subscriptioncreatedby",
+        "type": "shortText"
+    },
+    "Subscription Created On": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Created On",
+        "shortName": "subscriptioncreatedon",
+        "type": "shortText"
+    },
+    "Subscription Description": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Description",
+        "shortName": "subscriptiondescription",
+        "type": "shortText"
+    },
+    "Subscription ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription ID",
+        "shortName": "subscriptionid",
+        "type": "shortText"
+    },
+    "Subscription Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Name",
+        "shortName": "subscriptionname",
+        "type": "shortText"
+    },
+    "Subscription Type": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Type",
+        "shortName": "subscriptiontype",
+        "type": "shortText"
+    },
+    "Subscription Updated By": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Updated By",
+        "shortName": "subscriptionupdatedby",
+        "type": "shortText"
+    },
+    "Subscription Updated On": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "Subscription Updated On",
+        "shortName": "subscriptionupdatedon",
+        "type": "shortText"
+    },
+    "Subtype": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Subtype",
+        "shortName": "subtype",
+        "type": "shortText"
+    },
+    "System Default": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "System Default",
+        "shortName": "systemdefault",
+        "type": "shortText"
+    },
+    "Telephone no.": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Telephone no.",
+        "shortName": "telephoneno",
+        "type": "shortText"
+    },
+    "Terminated Action": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Terminated Action",
+        "shortName": "terminatedaction",
+        "type": "shortText"
+    },
+    "Test Import Field 1": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Test Import"
+        ],
+        "name": "Test Import Field 1",
+        "shortName": "testimportfield1",
+        "type": "shortText"
+    },
+    "Threat Actor": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "Threat Actor",
+        "shortName": "threatactor",
+        "type": "shortText"
+    },
+    "Time to Assignment": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "Time to Assignment",
+        "shortName": "timetoassignment",
+        "type": "timer"
+    },
+    "Traps ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Traps ID",
+        "shortName": "trapsid",
+        "type": "shortText"
+    },
+    "Travel Map Link": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Travel Map Link",
+        "shortName": "travelmaplink",
+        "type": "shortText"
+    },
+    "Triggered Security Profile": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Traps"
+        ],
+        "name": "Triggered Security Profile",
+        "shortName": "triggeredsecurityprofile",
+        "type": "shortText"
+    },
+    "URL SSL Verification": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "URL SSL Verification",
+        "shortName": "urlsslverification",
+        "type": "grid"
+    },
+    "User": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "User",
+        "shortName": "user",
+        "type": "shortText"
+    },
+    "User First / Middle Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "User First / Middle Name",
+        "shortName": "userfirstmiddlename",
+        "type": "shortText"
+    },
+    "User Last Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "User Last Name",
+        "shortName": "userlastname",
+        "type": "shortText"
+    },
+    "Username": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Impossible Traveler"
+        ],
+        "name": "Username",
+        "shortName": "username",
+        "type": "shortText"
+    },
+    "VPC ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Prisma Cloud"
+        ],
+        "name": "VPC ID",
+        "shortName": "vpcid",
+        "type": "shortText"
+    },
+    "Vendor ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Vulnerability"
+        ],
+        "name": "Vendor ID",
+        "shortName": "vendorid",
+        "type": "shortText"
+    },
+    "Vendor Product": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Malware"
+        ],
+        "name": "Vendor Product",
+        "shortName": "vendorproduct",
+        "type": "shortText"
+    },
+    "Vulnerability Category": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Vulnerability"
+        ],
+        "name": "Vulnerability Category",
+        "shortName": "vulnerabilitycategory",
+        "type": "shortText"
+    },
+    "Where is data hosted": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "GDPR Data Breach"
+        ],
+        "name": "Where is data hosted",
+        "shortName": "whereisdatahosted",
+        "type": "multiSelect"
+    },
+    "Work Location": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "New Employee"
+        ],
+        "name": "Work Location",
+        "shortName": "worklocation",
+        "type": "shortText"
+    },
+    "XDR Alert Count": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Alert Count",
+        "shortName": "xdralertcount",
+        "type": "number"
+    },
+    "XDR Alerts": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Alerts",
+        "shortName": "xdralerts",
+        "type": "grid"
+    },
+    "XDR Assigned User Email": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Assigned User Email",
+        "shortName": "xdrassigneduseremail",
+        "type": "shortText"
+    },
+    "XDR Assigned User Pretty Name": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Assigned User Pretty Name",
+        "shortName": "xdrassigneduserprettyname",
+        "type": "shortText"
+    },
+    "XDR Description": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Description",
+        "shortName": "xdrdescription",
+        "type": "shortText"
+    },
+    "XDR Detection Time": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Detection Time",
+        "shortName": "xdrdetectiontime",
+        "type": "date"
+    },
+    "XDR File Artifacts": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR File Artifacts",
+        "shortName": "xdrfileartifacts",
+        "type": "grid"
+    },
+    "XDR High Severity Alert Count": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR High Severity Alert Count",
+        "shortName": "xdrhighseverityalertcount",
+        "type": "number"
+    },
+    "XDR Incident ID": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Incident ID",
+        "shortName": "xdrincidentid",
+        "type": "shortText"
+    },
+    "XDR Low Severity Alert Count": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Low Severity Alert Count",
+        "shortName": "xdrlowseverityalertcount",
+        "type": "number"
+    },
+    "XDR Medium Severity Alert Count": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Medium Severity Alert Count",
+        "shortName": "xdrmediumseverityalertcount",
+        "type": "number"
+    },
+    "XDR Network Artifacts": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Network Artifacts",
+        "shortName": "xdrnetworkartifacts",
+        "type": "grid"
+    },
+    "XDR Notes": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Notes",
+        "shortName": "xdrnotes",
+        "type": "shortText"
+    },
+    "XDR Resolve Comment": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Resolve Comment",
+        "shortName": "xdrresolvecomment",
+        "type": "shortText"
+    },
+    "XDR Status": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR Status",
+        "shortName": "xdrstatus",
+        "type": "shortText"
+    },
+    "XDR URL": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR URL",
+        "shortName": "xdrurl",
+        "type": "url"
+    },
+    "XDR User Count": {
+        "associatedToAll": false,
+        "associatedTypes": [
+            "Cortex XDR Incident"
+        ],
+        "name": "XDR User Count",
+        "shortName": "xdrusercount",
+        "type": "number"
+    },
+    "attachment": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "attachment",
+        "shortName": "attachment",
+        "type": "internal"
+    },
+    "category": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "category",
+        "shortName": "category",
+        "type": "shortText"
+    },
+    "closeNotes": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "closeNotes",
+        "shortName": "closenotes",
+        "type": "longText"
+    },
+    "closeReason": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "closeReason",
+        "shortName": "closereason",
+        "type": "singleSelect"
+    },
+    "closingUserId": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "closingUserId",
+        "shortName": "closinguserid",
+        "type": "shortText"
+    },
+    "dbotClosed": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "dbotClosed",
+        "shortName": "dbotclosed",
+        "type": "date"
+    },
+    "dbotCreated": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "dbotCreated",
+        "shortName": "dbotcreated",
+        "type": "date"
+    },
+    "dbotDueDate": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "dbotDueDate",
+        "shortName": "dbotduedate",
+        "type": "date"
+    },
+    "dbotModified": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "dbotModified",
+        "shortName": "dbotmodified",
+        "type": "date"
+    },
+    "dbotSource": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "dbotSource",
+        "shortName": "dbotsource",
+        "type": "shortText"
+    },
+    "dbotStatus": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "dbotStatus",
+        "shortName": "dbotstatus",
+        "type": "singleSelect"
+    },
+    "dbotTotalTime": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "dbotTotalTime",
+        "shortName": "dbottotaltime",
+        "type": "date"
+    },
+    "details": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "details",
+        "shortName": "details",
+        "type": "longText"
+    },
+    "droppedCount": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "droppedCount",
+        "shortName": "droppedcount",
+        "type": "internal"
+    },
+    "from": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "from",
+        "shortName": "from",
+        "type": "shortText"
+    },
+    "labels": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "labels",
+        "shortName": "labels",
+        "type": "internal"
+    },
+    "linkedCount": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "linkedCount",
+        "shortName": "linkedcount",
+        "type": "internal"
+    },
+    "md5": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "md5",
+        "shortName": "md5",
+        "type": "shortText"
+    },
+    "name": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "name",
+        "shortName": "name",
+        "type": "shortText"
+    },
+    "occurred": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "occurred",
+        "shortName": "occurred",
+        "type": "date"
+    },
+    "owner": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "owner",
+        "shortName": "owner",
+        "type": "singleSelect"
+    },
+    "phase": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "phase",
+        "shortName": "phase",
+        "type": "singleSelect"
+    },
+    "playbookId": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "playbookId",
+        "shortName": "playbookid",
+        "type": "singleSelect"
+    },
+    "reminder": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "reminder",
+        "shortName": "reminder",
+        "type": "date"
+    },
+    "roles": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "roles",
+        "shortName": "roles",
+        "type": "role"
+    },
+    "runStatus": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "runStatus",
+        "shortName": "runstatus",
+        "type": "internal"
+    },
+    "severity": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "severity",
+        "shortName": "severity",
+        "type": "singleSelect"
+    },
+    "sourceBrand": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "sourceBrand",
+        "shortName": "sourcebrand",
+        "type": "shortText"
+    },
+    "sourceInstance": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "sourceInstance",
+        "shortName": "sourceinstance",
+        "type": "shortText"
+    },
+    "to": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "to",
+        "shortName": "to",
+        "type": "shortText"
+    },
+    "type": {
+        "associatedToAll": true,
+        "associatedTypes": "all",
+        "name": "type",
+        "shortName": "type",
+        "type": "singleSelect"
+    }
+}

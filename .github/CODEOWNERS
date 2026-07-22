@@ -1,0 +1,194 @@
+
+# Development
+**/AGENTS.md @yuvalbenshalom @ShahafBenYakir
+
+# Marketplace Related - Marketplace PMs only
+/Config/approved_tags.json @israelpoli @demisto/content-leaders
+/Config/approved_usecases.json @israelpoli @demisto/content-leaders
+/Tests/Marketplace/landingPage_sections.json @israelpoli @demisto/content-leaders
+/Config/approved_categories.json @israelpoli @demisto/content-leaders
+/Config/core_packs_list.json @israelpoli @demisto/content-leaders
+/Config/core_packs_mpv2_list.json @israelpoli @demisto/content-leaders
+/Config/corepacks_override.json @israelpoli
+
+# Docker native image
+/Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
+
+# Test Collection
+/Tests/conf.json @merit-maita
+
+# PANW Products
+/Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
+/Packs/PAN-OS/Integrations/ @lironcohen272
+
+# Important Integrations
+/Packs/QRadar/Integrations/QRadar_v3/* @jbabazadeh
+/Packs/Slack/Integrations/* @amshamah419 @rshunim
+/Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
+/Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
+/Packs/MicrosoftExchangeOnline/Integrations @amshamah419
+/Packs/ContentManagement/* @adi88d
+/Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
+/Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
+/Packs/rasterize/Integrations/rasterize/* @adi88d @MosheEichler @DeanArbel
+
+# Important Scripts
+/Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
+/Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
+/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1 @noydavidi
+/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1 @noydavidi
+/Packs/ApiModules/Scripts/EWSApiModule @noydavidi
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
+/Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
+
+# Common Packs
+/Packs/CommonTypes/ @melamedbn @idovandijk
+/Packs/CommonPlaybooks/ @melamedbn @idovandijk
+/Packs/CommonDashboards/ @melamedbn @idovandijk
+/Packs/ContentManagement/ @talzich
+/Packs/CommonTypes/IndicatorTypes/* @Ni-Knight
+/Packs/CommonTypes/Layouts/* @Ni-Knight
+
+# Indicators Formatters
+/Packs/CommonScripts/Scripts/ExtractDomainAndFQDNFromUrlAndEmail/* @Ni-Knight
+/Packs/CommonScripts/Scripts/FormatURL/* @Ni-Knight
+/Packs/CommonScripts/Scripts/ExtractAttackPattern/* @Ni-Knight
+/Packs/CommonScripts/Scripts/VerifyCIDR/* @Ni-Knight
+/Packs/CommonScripts/Scripts/VerifyIPv6Indicator/* @Ni-Knight
+/Packs/CommonScripts/Scripts/ExtractEmailV2/* @Ni-Knight
+/Packs/CommonScripts/Scripts/UnEscapeIPs/* @Ni-Knight
+
+# SDK Related
+.pre-commit-config_template.yaml @yedidyacohenpalo
+validation_config.toml @yedidyacohenpalo
+
+# XDR Related
+/Packs/CortexXDR/Integrations/ @jlevypaloalto
+/Packs/Core/Integrations/ @jlevypaloalto
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @jlevypaloalto
+
+# Demisto Class
+Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
+
+# TIM Related
+/Packs/TAXIIServer/Integrations/* @MosheEichler
+/Packs/FeedTAXII/Integrations/* @MosheEichler
+/Packs/EDL/Integrations/* @MosheEichler
+/Packs/FeedJSON/Integrations/* @MosheEichler
+/Packs/FeedMitreAttackv2/* @MosheEichler
+/Packs/ApiModules/Scripts/TAXII2ApiModule/* @MosheEichler
+/Packs/ApiModules/Scripts/NGINXApiModule/* @MosheEichler
+
+# ML scripts
+/Packs/ML/ @jlevypaloalto
+/Packs/PhishingURL/ @jlevypaloalto
+/Packs/Phishing/Scripts/PhishingDedupPreprocessingRule @jlevypaloalto
+/Packs/Phishing/Scripts/FindDuplicateEmailIncidents @jlevypaloalto
+/Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
+/Packs/Campaign/Scripts/FindEmailCampaign/ @jlevypaloalto
+/Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
+/Packs/Base/Scripts/FindSimilarIncidentsByText/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
+/Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidents/ @jlevypaloalto
+/Packs/Base/Scripts/DBotTrainClustering/ @jlevypaloalto
+/Packs/Base/Scripts/DBotBuildPhishingClassifier/ @jlevypaloalto
+/Packs/Base/Scripts/DBotPreprocessTextData/ @jlevypaloalto
+/Packs/Base/Scripts/DBotFindSimilarIncidentsByIndicators/ @jlevypaloalto
+/Packs/Base/Scripts/DBotSuggestClassifierMapping/ @jlevypaloalto
+/Packs/Base/Scripts/GetMLModelEvaluation/ @jlevypaloalto
+/Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto
+
+# Platform Automation
+/Packs/AzureDevOps/ @omerKarkKatz
+/Packs/Jira/ @omerKarkKatz
+/Packs/ServiceNow/ @omerKarkKatz
+/Packs/MicrosoftTeams/ @omerKarkKatz
+/Packs/Slack/ @omerKarkKatz
+
+/Packs/PingIdentity @Shellyber
+/Packs/Okta @Shellyber
+/Packs/Core @Shellyber
+/Packs/CortexXDR @Shellyber
+/Packs/SentinelOne @Shellyber
+/Packs/CrowdStrikeFalcon @Shellyber @talzich
+/Packs/CrowdStrikeFalconSandbox @Shellyber
+/Packs/CrowdStrikeFalconStreamingV2 @Shellyber
+/Packs/MicrosoftExchangeOnline @Shellyber @noydavidi
+/Packs/AggregatedScripts @Shellyber
+/Packs/MicrosoftExchangeOnPremise/ @Shellyber @noydavidi
+/Packs/Office365AndAzureAuditLog @Shellyber @noydavidi
+/Packs/MicrosoftManagementActivity @Shellyber @noydavidi
+/Packs/Microsoft365Defender @Shellyber @noydavidi
+/Packs/AzureSentinel/ @Shellyber
+/Packs/MicrosoftDefenderAdvancedThreatProtection @Shellyber @noydavidi
+/Packs/MicrosoftCloudAppSecurity @Shellyber @noydavidi
+/Packs/FeedAzureADConnectHealth @Shellyber @noydavidi
+/Packs/AzureRiskyUsers @Shellyber @noydavidi
+/Packs/MicrosoftGraphListener @Shellyber @noydavidi
+/Packs/MicrosoftGraphUser @Shellyber @noydavidi
+/Packs/MicrosoftGraphMail @Shellyber @noydavidi
+/Packs/MicrosoftGraphSecurity @Shellyber @noydavidi
+/Packs/MicrosoftGraphFiles @Shellyber @noydavidi
+
+
+/Packs/AWS @Moish-Gilboa
+/Packs/AWS-AccessAnalyzer @Moish-Gilboa
+/Packs/AWS-ACM @Moish-Gilboa
+/Packs/AWS-Athena @Moish-Gilboa
+/Packs/AWS-CloudTrail @Moish-Gilboa
+/Packs/AWS-CloudWatchLogs @Moish-Gilboa
+/Packs/AWS-EC2 @Moish-Gilboa
+/Packs/AWS-EKS @Moish-Gilboa
+/Packs/AWS-Enrichment-Remediation @Moish-Gilboa
+/Packs/AWS-GuardDuty @Moish-Gilboa
+/Packs/AWS-IAM @Moish-Gilboa
+/Packs/AWS-IAMIdentityCenter @Moish-Gilboa
+/Packs/AWS-ILM @Moish-Gilboa
+/Packs/AWS-Lambda @Moish-Gilboa
+/Packs/AWS-NetworkFirewall @Moish-Gilboa
+/Packs/AWS-Organizations @Moish-Gilboa
+/Packs/AWS-Route53 @Moish-Gilboa
+/Packs/AWS-S3 @Moish-Gilboa
+/Packs/Aws-SecretsManager @Moish-Gilboa
+/Packs/AWS-SecurityHub @Moish-Gilboa
+/Packs/AWS-SecurityLake @Moish-Gilboa
+/Packs/AWS-SNS @Moish-Gilboa
+/Packs/AWS-SNS-Listener @Moish-Gilboa
+/Packs/AWS-SQS @Moish-Gilboa
+/Packs/AWS_DynamoDB @Moish-Gilboa
+/Packs/AWS_ELB @Moish-Gilboa
+/Packs/AWS_Sagemaker @Moish-Gilboa
+/Packs/AWS_SystemManager @Moish-Gilboa
+/Packs/AWS_WAF @Moish-Gilboa
+/Packs/GoogleCloudCompute @Moish-Gilboa
+/Packs/GoogleCloudFunctions @Moish-Gilboa
+/Packs/GoogleCloudLogging @Moish-Gilboa
+/Packs/GoogleCloudSCC @Moish-Gilboa
+/Packs/GoogleCloudStorage @Moish-Gilboa
+/Packs/GoogleCloudTranslate @Moish-Gilboa
+/Packs/OracleCloudInfrastructure @Moish-Gilboa
+/Packs/OracleCloudInfrastructureFeed @Moish-Gilboa
+/Packs/Azure @Moish-Gilboa
+/Packs/AzureCompute @Moish-Gilboa
+/Packs/AzureDataExplorer @Moish-Gilboa
+/Packs/AzureFirewall @Moish-Gilboa
+/Packs/AzureKeyVault @Moish-Gilboa
+/Packs/AzureKubernetesServices @Moish-Gilboa
+/Packs/AzureLogAnalytics @Moish-Gilboa
+/Packs/AzureNetworkSecurityGroups @Moish-Gilboa
+/Packs/AzureResourceGraph @Moish-Gilboa
+/Packs/AzureSQLManagement @Moish-Gilboa
+/Packs/AzureStorage @Moish-Gilboa
+/Packs/AzureStorageContainer @Moish-Gilboa
+/Packs/AzureStorageFileShare @Moish-Gilboa
+/Packs/AzureStorageQueue @Moish-Gilboa
+/Packs/AzureStorageTable @Moish-Gilboa
+/Packs/AzureWAF @Moish-Gilboa
+/Packs/AnsibleAzure @Moish-Gilboa
+/Packs/MicrosoftECM @Moish-Gilboa
+/Packs/MicrosoftGraphDeviceManagement @Moish-Gilboa
+/Packs/MicrosoftIntune @Moish-Gilboa
+/Packs/AzureSecurityCenter @Moish-Gilboa
+

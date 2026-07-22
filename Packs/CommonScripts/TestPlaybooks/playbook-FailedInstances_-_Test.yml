@@ -1,0 +1,280 @@
+id: FailedInstances - Test
+version: -1
+name: FailedInstances - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d9678cb-420c-4dcc-8449-437657a1e428
+    type: start
+    task:
+      id: 9d9678cb-420c-4dcc-8449-437657a1e428
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e02aeeda-2444-430f-8a7c-993cfe78f945
+    type: regular
+    task:
+      id: e02aeeda-2444-430f-8a7c-993cfe78f945
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 0a4ccb93-1732-4c4f-89d5-95c475d2e12d
+    type: regular
+    task:
+      id: 0a4ccb93-1732-4c4f-89d5-95c475d2e12d
+      version: -1
+      name: Check for Failed Instances
+      description: Executes test for all integration instances available and returns a detailed table about failed integration instances
+      scriptName: FailedInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4c7da8c8-b793-4c6b-8433-5acd5c98a235
+    type: condition
+    task:
+      id: 4c7da8c8-b793-4c6b-8433-5acd5c98a235
+      version: -1
+      name: Check good instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SuccessInstances.brand
+            iscontext: true
+          right:
+            value:
+              simple: Whois
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SuccessInstances.information
+            iscontext: true
+          right:
+            value:
+              simple: succeed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SuccessInstances.status
+            iscontext: true
+          right:
+            value:
+              simple: success
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ebcbb903-e2b8-454d-8e39-8323b0d31e3e
+    type: title
+    task:
+      id: ebcbb903-e2b8-454d-8e39-8323b0d31e3e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: de46beb9-6fcc-4047-8266-88ef793abee3
+    type: condition
+    task:
+      id: de46beb9-6fcc-4047-8266-88ef793abee3
+      version: -1
+      name: Check another success instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SuccessInstances.brand
+            iscontext: true
+          right:
+            value:
+              simple: d2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SuccessInstances.status
+            iscontext: true
+          right:
+            value:
+              simple: success
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 312f6b43-7bb2-4125-8567-543f499e481d
+    type: condition
+    task:
+      id: 312f6b43-7bb2-4125-8567-543f499e481d
+      version: -1
+      name: Check Total count
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InstancesCount.TotalCount
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InstancesCount.TotalCount
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 1310,
+        "x": -10,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

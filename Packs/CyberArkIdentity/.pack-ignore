@@ -1,0 +1,12 @@
+[known_words]
+cyberark
+
+[file:CyberArkIdentityParsingRules.yml]
+ignore=PR101
+
+[file:CyberArkIdentityEventCollector.yml]
+ignore=MR108
+
+[file:CyberArkIdentityEventCollector_1_3.yml]
+ignore=MR108
+

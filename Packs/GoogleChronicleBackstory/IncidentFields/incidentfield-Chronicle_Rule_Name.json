@@ -1,0 +1,33 @@
+{
+    "id": "incident_chroniclerulename",
+    "version": -1,
+    "modified": "2021-01-18T14:04:51.633853353+05:30",
+    "name": "Chronicle Rule Name",
+    "ownerOnly": false,
+    "placeholder": "Name of the rule generating the detection.",
+    "description": "Name of the rule generating the detection.",
+    "cliName": "chroniclerulename",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Chronicle Rule Detection",
+        "Chronicle Curated Rule Detection"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

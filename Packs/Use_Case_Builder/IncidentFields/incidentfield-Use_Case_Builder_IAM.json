@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuilderiam",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuilderiam",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Builder IAM",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "template": "# IAM (Identity and Access Management)\n## Top Use Cases:\n\n- Create, update and delete users.\n- Manage user groups.\n- Block users, Force change of passwords.\n- Manage access to resources and applications.\n- Create, update and delete roles.\n",
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

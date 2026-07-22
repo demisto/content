@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Note: From now on it is not possible to send a query when the query fields are separated by an ampersand. The fields in the query can only be separated by `^`. For example: `query=somekey=1^active=true`"}

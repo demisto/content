@@ -1,0 +1,591 @@
+id: DLP - User Message App Check
+version: -1
+name: DLP - User Message App Check
+description: Check if the given message app exists and is configured and retrieve the user details from it.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 19727acc-e5df-4907-8890-aaadd67a4e95
+    type: start
+    task:
+      id: 19727acc-e5df-4907-8890-aaadd67a4e95
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7d96386d-2657-44ae-819a-7346c6124fe7
+    type: condition
+    task:
+      id: 7d96386d-2657-44ae-819a-7346c6124fe7
+      version: -1
+      name: Is Slack v3 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: SlackV3
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6e29fdb0-1cb4-4c33-89fb-b89d0c882334
+    type: regular
+    task:
+      id: 6e29fdb0-1cb4-4c33-89fb-b89d0c882334
+      version: -1
+      name: Find user on slack
+      description: Gets details about a specified user.
+      script: SlackV3|||slack-get-user-details
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      user:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 08f87b86-f565-41be-8e72-f32d56778f24
+    type: regular
+    task:
+      id: 08f87b86-f565-41be-8e72-f32d56778f24
+      version: -1
+      name: Update feedback status via API to "SEND_NOTIFICATION_FAILURE"
+      description: Set feedback status to "SEND_NOTIFICATION_FAILURE".
+      script: '|||pan-dlp-update-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      error_details:
+        simple: User ${incident.sourceusername} not found on Slack
+      feedback:
+        simple: SEND_NOTIFICATION_FAILURE
+      incident_id:
+        simple: ${incident.pandlpincidentid}
+      region:
+        simple: ${incident.pandlpincidentregion}
+      user_id:
+        simple: ${incident.sourceusername}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 984daff2-f3cf-4fbc-8438-005a57b0c84f
+    type: condition
+    task:
+      id: 984daff2-f3cf-4fbc-8438-005a57b0c84f
+      version: -1
+      name: Is Microsoft Teams enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Teams
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c6296856-7a2a-4ec1-8a58-c0eb56fbc689
+    type: regular
+    task:
+      id: c6296856-7a2a-4ec1-8a58-c0eb56fbc689
+      version: -1
+      name: Set user display name (Slack)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: user_display_name
+      value:
+        complex:
+          root: Slack.User
+          accessor: Name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: bb2f3f8f-d83b-4180-820c-14083cc3fbc0
+    type: regular
+    task:
+      id: bb2f3f8f-d83b-4180-820c-14083cc3fbc0
+      version: -1
+      name: Set user display name (Email/MSTeams)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: user_display_name
+      value:
+        complex:
+          root: inputs.UserDisplayName
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: incident.sourceusername
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8cce0aab-62c9-483e-8793-4c868f041c1e
+    type: condition
+    task:
+      id: 8cce0aab-62c9-483e-8793-4c868f041c1e
+      description: ""
+      version: -1
+      name: User exists on Slack?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Slack.User.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 59226be6-39e5-4361-87c5-fa1fa030361d
+    type: title
+    task:
+      id: 59226be6-39e5-4361-87c5-fa1fa030361d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: cad55a70-43ec-4948-8c4b-201495141c5b
+    type: condition
+    task:
+      id: cad55a70-43ec-4948-8c4b-201495141c5b
+      description: ""
+      version: -1
+      name: User email exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.UserEmail
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4e4989f1-ac4b-4289-8901-c23526126cec
+    type: regular
+    task:
+      id: 4e4989f1-ac4b-4289-8901-c23526126cec
+      version: -1
+      name: Set incident feedback status to "Send notification failure"
+      description: Set feedback to "Exception not requested".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: Send notification failure
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 34d95494-4d6b-4af9-8ed2-620a2e651b3a
+    type: condition
+    task:
+      id: 34d95494-4d6b-4af9-8ed2-620a2e651b3a
+      description: ""
+      version: -1
+      name: What is the selected message app?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      Email:
+      - "13"
+      MSTeams:
+      - "4"
+      Slack:
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: Slack
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Slack
+          ignorecase: true
+    - label: MSTeams
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Teams
+          ignorecase: true
+    - label: Email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Email
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1858ad0a-6ded-4067-8823-c76754b263dc
+    type: title
+    task:
+      id: 1858ad0a-6ded-4067-8823-c76754b263dc
+      version: -1
+      name: No message app - failure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_3_#default#": 0.17,
+      "13_6_yes": 0.17,
+      "16_4_MSTeams": 0.53,
+      "1_2_yes": 0.43,
+      "1_3_no": 0.1,
+      "4_3_no": 0.11,
+      "4_6_yes": 0.15,
+      "8_3_#default#": 0.12,
+      "8_5_yes": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1595,
+        "width": 1860,
+        "x": 260,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: UserEmail
+  value: {}
+  required: false
+  description: The user email address that will be used through email communication in case both Slack and MS Teams are not enabled.
+  playbookInputQuery:
+- key: UserDisplayName
+  value: {}
+  required: false
+  description: The display name of the user. Will be used in case MS Teams or Email are the message app.
+  playbookInputQuery:
+- key: UserMessageApp
+  value: {}
+  required: false
+  description: |-
+    The communication method with the user.
+    Can be one of the following:
+
+    - Slack
+    - Microsoft Teams
+    - Email
+
+    If you choose to set "Email", it's also possible to set the relevant email integration instance with the "SendEmailInstance" input.
+  playbookInputQuery:
+outputs:
+- contextPath: user_display_name
+  description: The user display name.
+  type: unknown
+- contextPath: Slack.User
+  type: unknown
+  description: The user name returned from Slack.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

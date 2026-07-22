@@ -1,0 +1,853 @@
+id: Proactive Threat Hunting - Block Indicators
+version: -1
+name: Proactive Threat Hunting - Block Indicators
+description: This playbook will be executed from the "Proactive Threat Hunting" layout button with the objective of blocking indicators specified by the analyst.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 373d00c0-6e3b-4a0d-8fdb-fd7e4ff82acf
+    type: start
+    task:
+      id: 373d00c0-6e3b-4a0d-8fdb-fd7e4ff82acf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "8"
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 13569f3d-eefd-4c99-8d9d-a169f732f1c7
+    type: regular
+    task:
+      id: 13569f3d-eefd-4c99-8d9d-a169f732f1c7
+      version: -1
+      name: Get indicators
+      description: |-
+        Searches Cortex XSOAR Indicators.
+
+        Searches for Cortex XSOAR indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: incident.id:${incident.id} tags:"Hunting Session - Exist In Environment"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Block Indicators Status
+      output:
+        simple: Executed
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2c28f1e1-dbbd-41ed-8bcf-94075968d126
+    type: playbook
+    task:
+      id: 2c28f1e1-dbbd-41ed-8bcf-94075968d126
+      version: -1
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: "False"
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: foundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: foundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+              ignorecase: true
+          accessor: value
+      EmailToBlock:
+        complex:
+          root: None
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: foundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: foundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+          accessor: value
+      IP:
+        complex:
+          root: foundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: foundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: IP
+              ignorecase: true
+          accessor: value
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: None
+          transformers:
+          - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: None
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: foundIndicators
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: foundIndicators.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          accessor: value
+      UserVerification:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 08b09081-0f1c-42a0-8d02-9a58ac4088ca
+    type: title
+    task:
+      id: 08b09081-0f1c-42a0-8d02-9a58ac4088ca
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9038c930-e180-482e-8b0f-583892205ba6
+    type: regular
+    task:
+      id: 9038c930-e180-482e-8b0f-583892205ba6
+      version: -1
+      name: Print update to notes
+      description: Prints text to the War Room. (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      value:
+        simple: Block indicators procedure has executed. Follow the work plan to continue.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -620
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1e8e2819-875f-4dff-838f-e2be4f776c73
+    type: collection
+    task:
+      id: 1e8e2819-875f-4dff-838f-e2be4f776c73
+      version: -1
+      name: Which IOCs To Block?
+      description: Asking the user to select IOCs to block.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which IOCs To Block?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: All IOCs that are related to the SDO
+        - simple: IOCs detected in my environment
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Which IOCs To Block?
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1c5125f8-0ee3-4eba-82f4-cce0659f3e34
+    type: condition
+    task:
+      id: 1c5125f8-0ee3-4eba-82f4-cce0659f3e34
+      version: -1
+      name: Block only detected IOCs?
+      description: Checks the user response in the collection task "Which IOCs to block?".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Which IOCs To Block?.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: IOCs detected in my environment
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c3cce0f0-efa5-451e-805f-61c1aad85074
+    type: regular
+    task:
+      id: c3cce0f0-efa5-451e-805f-61c1aad85074
+      version: -1
+      name: Get indicators
+      description: |-
+        Searches Cortex XSOAR indicators.
+
+        Searches for Cortex XSOAR indicators and returns the id, indicator_type, value, and score/verdict.
+
+        You can add additional fields from the indicators using the add_field_to_context argument.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: incident.id:${incident.id} tags:"Hunting Session"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Block Indicators Status
+      output:
+        simple: Executed
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5f157551-88c5-4df4-8754-672b18b2a6fd
+    type: regular
+    task:
+      id: 5f157551-88c5-4df4-8754-672b18b2a6fd
+      version: -1
+      name: Delete context to avoid duplications - foundIndicators
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: foundIndicators
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": -800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fa3ec0b7-9d40-4f43-8855-64cd8bf4500c
+    type: regular
+    task:
+      id: fa3ec0b7-9d40-4f43-8855-64cd8bf4500c
+      version: -1
+      name: Delete context to avoid duplications - IOCs to block
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: Which IOCs To Block?
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": -800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 01e94d39-b13c-40db-8732-af1a36b3a8eb
+    type: condition
+    task:
+      id: 01e94d39-b13c-40db-8732-af1a36b3a8eb
+      version: -1
+      name: Executed from freestyle hunt?
+      description: Checks if the playbook was executed from the Freestyle Hunt tab.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: freestylehunt
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: fa0df08a-f415-4fc3-8e99-ef242f8e05ee
+    type: collection
+    task:
+      id: fa0df08a-f415-4fc3-8e99-ef242f8e05ee
+      version: -1
+      name: 'Upload a CSV file '
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please Upload a CSV file
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: attachments
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Please Upload a CSV file
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5e2137da-2a58-4950-8e7f-7759b14ba83d
+    type: regular
+    task:
+      id: 5e2137da-2a58-4950-8e7f-7759b14ba83d
+      version: -1
+      name: Extract Indicators From CSV
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      entryID:
+        complex:
+          root: Please Upload a CSV file.Answers.0.[0]
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bc1e2558-c767-4191-8951-e3ea835a86fa
+    type: playbook
+    task:
+      id: bc1e2558-c767-4191-8951-e3ea835a86fa
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |+
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2
+
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: "True"
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: ExtractedIndicators
+          accessor: File
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2dabf83a-5538-4a01-8c1c-f7565198bb1a
+    type: regular
+    task:
+      id: 2dabf83a-5538-4a01-8c1c-f7565198bb1a
+      version: -1
+      name: Delete context to avoid duplications - ExtractedIndicators
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: ExtractedIndicators
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_1_yes": 0.46,
+      "6_7_#default#": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1445,
+        "width": 1250,
+        "x": 30,
+        "y": -940
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

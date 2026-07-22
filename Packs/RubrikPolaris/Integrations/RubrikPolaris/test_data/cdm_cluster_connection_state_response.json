@@ -1,0 +1,28 @@
+{
+  "raw_response": {
+    "data": {
+      "clusterConnection": {
+        "nodes": [
+          {
+            "state": {
+              "connectedState": "Connected"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "ClusterId": "dummy",
+    "Cluster": {
+      "ConnectionState": "Connected"
+    }
+  },
+  "empty_response": {
+    "data": {
+      "clusterConnection": {
+        "nodes": []
+      }
+    }
+  }
+}

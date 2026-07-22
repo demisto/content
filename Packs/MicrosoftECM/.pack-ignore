@@ -1,0 +1,9 @@
+[file:README.md]
+ignore=RM106
+
+[file:MicrosoftECM.yml]
+ignore=MR108
+
+[file:MicrosoftECM_1_3.yml]
+ignore=MR108
+

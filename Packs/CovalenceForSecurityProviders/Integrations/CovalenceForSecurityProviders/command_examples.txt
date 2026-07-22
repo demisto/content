@@ -1,0 +1,14 @@
+!cov-secpr-list-alerts
+!cov-secpr-list-sensors
+!cov-secpr-get-sensor sensor_id=7924c18f-c745-455b-9738-bb8fcf56d86a
+!cov-secpr-connections-summary-ip source_ip=1.1.1.1 max_count=10
+!cov-secpr-connections-summary-port source_ip=1.1.1.1 max_count=10
+!cov-secpr-list-dns-resolutions max_count=10
+!cov-secpr-list-internal-networks
+!cov-secpr-set-internal-networks cidr='1.2.1.1/24' notes=update
+!cov-secpr-list-endpoint-agents
+!cov-secpr-find-endpoint-agents-by-user user=dco
+!cov-secpr-find-endpoint-agents-by-uuid uuid=4dda9c12-b9ec-498b-8e89-1b2bc9078643
+!cov-secpr-search-endpoint-process name=explorer.exe
+!cov-secpr-search-endpoint-installed-software name=firefox
+!cov-secpr-list-organizations

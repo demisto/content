@@ -1,0 +1,131 @@
+args:
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Clean html from text value?
+  name: cleanHtml
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Remove line breaks?
+  name: removeLineBreaks
+  predefined:
+  - 'yes'
+  - 'no'
+- defaultValue: utf-8
+  description: Text encoding
+  name: encoding
+- description: If non-empty hash the words with this seed.
+  name: hashWordWithSeed
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: Remove non-english words
+  name: removeNonEnglishWords
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Remove english stop words ("the", "a", "an", etc)
+  name: removeStopWords
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Remove punctuation
+  name: removePunctuation
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Replace emails with magic
+  name: replaceEmails
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Replace urls with magic
+  name: replaceUrls
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Replace numbers with magic
+  name: replaceNumbers
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: Remove non-alphabetic words
+  name: removeNonAlphaWords
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: 'Use lemmatization. you can read more about lemma here: https://en.wikipedia.org/wiki/Lemmatisation'
+  name: useLemmatization
+  predefined:
+  - 'yes'
+  - 'no'
+- description: The text value
+  name: value
+  required: true
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: Is the input text value is json encoded?
+  name: isValueJson
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: English
+  description: The language of the input text. Default is "English". Can be "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other".
+  name: language
+  predefined:
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
+- auto: PREDEFINED
+  defaultValue: tokenizer
+  description: Tokenization method for text. Only required when the language argument is set to "Other". Can be "tokenizer", "byWords", or "byLetters".
+  name: tokenizationMethod
+  predefined:
+  - tokenizer
+  - byWords
+  - byLetters
+comment: Deprecated. Use DBotPreProcessTextData instead.
+commonfields:
+  id: WordTokenizerNLP
+  version: -1
+enabled: true
+name: WordTokenizerNLP
+outputs:
+- contextPath: WordTokenizeOutput
+  description: Output text
+  type: Unknown
+script: '-'
+subtype: python2
+tags:
+- phishing
+- ml
+timeout: 60µs
+type: python
+dockerimage: demisto/dl:1.4
+runas: DBotWeakRole
+runonce: true
+tests:
+- No test
+fromversion: 5.0.0
+deprecated: true

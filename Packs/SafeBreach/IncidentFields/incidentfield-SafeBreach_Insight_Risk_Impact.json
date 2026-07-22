@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachinsightriskimpact",
+    "closeForm": false,
+    "content": true,
+    "description": "Risk impact of the Insight on the whole environment",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachinsightriskimpact",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Insight Risk Impact",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

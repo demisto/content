@@ -1,0 +1,14 @@
+{
+  "success": true,
+  "data": [
+    {
+      "_id": "id_12345",
+      "addresses": [
+        "test@cymulate.com"
+      ],
+      "categories": [],
+      "inProgress": true,
+      "progress": 0
+    }
+  ]
+}

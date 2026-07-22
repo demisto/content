@@ -1,0 +1,37 @@
+{
+    "defaultIncidentType": "Armorblox",
+    "description": "Classifies Armorblox Incidents.",
+    "feed": false,
+    "id": "e8ded555-9409-4d33-842c-45d29b6ab31c",
+    "keyTypeMap": {
+        "ABUSE_INCIDENT_TYPE": "Armorblox Abuse Mailbox Report",
+        "DLP_INCIDENT_TYPE": "Armorblox Outbound Threat",
+        "THREAT_INCIDENT_TYPE": "Armorblox Inbound Threat"
+    },
+    "name": "Armorblox - Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "incident_type",
+            "filters": [],
+            "root": "incidents",
+            "transformers": [
+                {
+                    "args": {
+                        "descending": {
+                            "value": {
+                                "simple": "false"
+                            }
+                        }
+                    },
+                    "operator": "sort"
+                },
+                {
+                    "operator": "FirstArrayElement"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

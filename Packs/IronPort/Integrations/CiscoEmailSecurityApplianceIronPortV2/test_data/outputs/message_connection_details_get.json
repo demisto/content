@@ -1,0 +1,18 @@
+{
+    "senderGroup": "RELAYLIST",
+    "messages": {
+        "summary": [
+            {
+                "timestamp": "16 Nov 2018 11:01:08 (GMT)",
+                "description": "ICID 19213 sender_group: RELAYLIST sender_ip: 1.11.11.1, \n                 sbrs: not enabled",
+                "lastEvent": false
+            },
+            {
+                "timestamp": "16 Nov 2018 11:01:08 (GMT)",
+                "description": "Protocol SMTP interface Management  (IP 10.76.71.196) on \n                 incoming connection (ICID 19213) from sender IP 1.11.11.1. Reverse DNS\n                 host vm30bsd0199.com verified yes.",
+                "lastEvent": false
+            }
+        ]
+    },
+    "sbrs": "not enabled"
+}

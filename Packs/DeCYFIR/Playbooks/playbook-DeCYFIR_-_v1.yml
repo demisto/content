@@ -1,0 +1,676 @@
+id: DeCYFIR - v1
+version: -1
+name: DeCYFIR - v1
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: b7a09b64-2308-4487-8e79-50cde7b38fb2
+    type: start
+    task:
+      id: b7a09b64-2308-4487-8e79-50cde7b38fb2
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: d3875ca2-8683-4c73-82f5-d6e6baa859bf
+    type: condition
+    task:
+      id: d3875ca2-8683-4c73-82f5-d6e6baa859bf
+      version: -1
+      name: Check  DeCYFIR Categories
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Check  DeCYFIR Categories
+    nexttasks:
+      '#default#':
+      - '17'
+      AS | DR-IM_BF | DR-DW:
+      - '22'
+      - '24'
+      - '21'
+      - '20'
+      - '14'
+      DR-SO_PE:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: AS | DR-IM_BF | DR-DW
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: category
+            iscontext: true
+          right:
+            value:
+              simple: Attack Surface
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.category
+            iscontext: true
+          right:
+            value:
+              simple: Impersonation & Infringement
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.category
+            iscontext: true
+          right:
+            value:
+              simple: Data Breach & Web Monitoring
+    - label: DR-SO_PE
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: category
+            iscontext: true
+          right:
+            value:
+              simple: Social & Public Exposure
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 14dd6c08-e662-4c90-87de-94179c6348b3
+    type: playbook
+    task:
+      id: 14dd6c08-e662-4c90-87de-94179c6348b3
+      version: -1
+      name: Default
+      description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
+      playbookName: Default
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      Enrich:
+        simple: 'True'
+      OnCall:
+        simple: 'false'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: e436f133-2c18-4817-8a6b-fe478e1e058c
+    type: regular
+    task:
+      id: e436f133-2c18-4817-8a6b-fe478e1e058c
+      version: -1
+      name: DomainReputation
+      description: A context script for Domain entities
+      scriptName: DomainReputation
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      domain:
+        simple: ${Domain.Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 9d087919-f6f2-479b-80ea-5d49b3bdf309
+    type: regular
+    task:
+      id: 9d087919-f6f2-479b-80ea-5d49b3bdf309
+      version: -1
+      name: IPReputation
+      description: A context script for IP entities
+      scriptName: IPReputation
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      ip:
+        simple: ${IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1490,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 8b801953-de57-4613-88d9-1e5cc3c1bc99
+    type: regular
+    task:
+      id: 8b801953-de57-4613-88d9-1e5cc3c1bc99
+      version: -1
+      name: URLReputation
+      description: A context script for URL entities
+      scriptName: URLReputation
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      url:
+        simple: ${URL.Data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 82289db8-e07e-4046-835a-1d6662baeb2a
+    type: playbook
+    task:
+      id: 82289db8-e07e-4046-835a-1d6662baeb2a
+      version: -1
+      name: CVE Enrichment - Generic v2
+      description: |-
+        This playbook performs CVE Enrichment using the following integrations:
+        - VulnDB
+        - CVE Search
+        - IBM X-Force Exchange
+      playbookName: CVE Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1980,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 42d41f58-1ceb-4da8-88f2-532fbad76636
+    type: regular
+    task:
+      id: 42d41f58-1ceb-4da8-88f2-532fbad76636
+      version: -1
+      name: GenerateSummaryReports
+      description: Generate report summaries for the passed incidents.
+      scriptName: GenerateSummaryReports
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      ids:
+        simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 165258bc-238e-46eb-86d0-cc48d450971a
+    type: title
+    task:
+      id: 165258bc-238e-46eb-86d0-cc48d450971a
+      version: -1
+      name: DONE
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: f618dda6-79d1-4f54-82d5-fb6aa23d508a
+    type: condition
+    task:
+      id: f618dda6-79d1-4f54-82d5-fb6aa23d508a
+      version: -1
+      name: Check severity Critical & High
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checking severity Critical & High
+    nexttasks:
+      '#default#':
+      - '2'
+      yes:
+      - '19'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: severity
+            iscontext: true
+          right:
+            value:
+              simple: '4'
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.severity
+            iscontext: true
+          right:
+            value:
+              simple: '3'
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: b33e0291-d6ce-47bb-8543-997695f9fa68
+    type: regular
+    task:
+      id: b33e0291-d6ce-47bb-8543-997695f9fa68
+      version: -1
+      name: AssignAnalystToIncident
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      assignBy:
+        simple: random
+      onCall:
+        simple: 'false'
+      roles:
+        simple: Analyst
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 5cff5d34-450d-4f44-814f-88f07d31562c
+    type: condition
+    task:
+      id: 5cff5d34-450d-4f44-814f-88f07d31562c
+      version: -1
+      name: Does Domain data exist?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Checking the domain value is exists or not
+    nexttasks:
+      '#default#':
+      - '17'
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: cf237b46-a36b-4c1e-8d0f-99bc9aa80713
+    type: condition
+    task:
+      id: cf237b46-a36b-4c1e-8d0f-99bc9aa80713
+      version: -1
+      name: Does IP data exist?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Does IP data exist or not
+    nexttasks:
+      '#default#':
+      - '17'
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: 0ebb92f8-97e0-4dd7-8e65-c428499dd69a
+    type: condition
+    task:
+      id: 0ebb92f8-97e0-4dd7-8e65-c428499dd69a
+      version: -1
+      name: Does URL data exist?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Does URL data exist or not
+    nexttasks:
+      '#default#':
+      - '17'
+      yes:
+      - '13'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: 375726a0-fcd2-4d04-8f9b-1d4d61c1adb2
+    type: regular
+    task:
+      id: 375726a0-fcd2-4d04-8f9b-1d4d61c1adb2
+      version: -1
+      name: FileReputation
+      description: A context script for hash entities
+      scriptName: FileReputation
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      file:
+        simple: ${File.Malicious}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: 1cc2df46-206b-4e1c-864d-f5e30c96f443
+    type: condition
+    task:
+      id: 1cc2df46-206b-4e1c-864d-f5e30c96f443
+      version: -1
+      name: Does any File Malicious data exist?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Does any File Malicious data exist or not
+    nexttasks:
+      '#default#':
+      - '17'
+      yes:
+      - '23'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Malicious
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_19_yes": 0.54,
+      "18_2_#default#": 0.56,
+      "20_17_#default#": 0.1,
+      "20_9_yes": 0.57,
+      "21_11_yes": 0.32,
+      "21_17_#default#": 0.11,
+      "22_13_yes": 0.62,
+      "22_17_#default#": 0.1,
+      "24_17_#default#": 0.1,
+      "24_23_yes": 0.51,
+      "2_21_AS | DR-IM_BF | DR-DW": 0.9,
+      "2_24_AS | DR-IM_BF | DR-DW": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1745,
+        "width": 2180,
+        "x": 180,
+        "y": -120
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: DeCYFIR API's provides External Threat Landscape Management insights.
+tests:
+- No tests (auto formatted)

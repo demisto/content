@@ -1,0 +1,43 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Infinipoint Compliant",
+        "Infinipoint NotCompliant"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "infinipointhostname",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "",
+    "editForm": true,
+    "fieldCalcScript": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_infinipointhostname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Infinipoint hostname",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "required": false,
+    "script": "",
+    "selectValues": null,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

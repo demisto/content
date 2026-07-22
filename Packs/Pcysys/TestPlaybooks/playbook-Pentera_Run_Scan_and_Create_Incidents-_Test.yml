@@ -1,0 +1,113 @@
+id: Pentera Run Scan and Create Incidents - Test
+version: -1
+name: Pentera Run Scan and Create Incidents - Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0f3c125c-0340-40ad-8ae1-b487469ec90d
+    type: start
+    task:
+      id: 0f3c125c-0340-40ad-8ae1-b487469ec90d
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: ff0bc97c-5864-4f96-890e-0ce7a67eac4f
+    type: regular
+    task:
+      id: ff0bc97c-5864-4f96-890e-0ce7a67eac4f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: b7ea9c3c-2f56-4c03-8f19-1437f09e8bd5
+    type: playbook
+    task:
+      id: b7ea9c3c-2f56-4c03-8f19-1437f09e8bd5
+      version: -1
+      name: Pentera Run Scan and Create Incidents
+      playbookName: Pentera Run Scan and Create Incidents
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      PenteraTaskName:
+        simple: Test Template for Playbook
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 5600fcfe-be79-4e09-822b-414beb8ea694
+    type: title
+    task:
+      id: 5600fcfe-be79-4e09-822b-414beb8ea694
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 560,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

@@ -1,0 +1,244 @@
+id: Cortex ASM - Service Ownership
+version: -1
+name: Cortex ASM - Service Ownership
+description: Identifies and recommends the most likely owners of the service, additionally citing an explanation and ranking score for each.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c2b9f9a3-1791-4bae-88fa-218fb9363813
+    type: start
+    task:
+      id: c2b9f9a3-1791-4bae-88fa-218fb9363813
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fa87fb97-33f7-4e96-8c0a-2bcaa794b242
+    type: regular
+    task:
+      id: fa87fb97-33f7-4e96-8c0a-2bcaa794b242
+      version: -1
+      name: Normalize and rank likely service owners
+      description: Recommend most likely service owners from those surfaced by Cortex ASM Enrichment.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: RankServiceOwners
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      owners:
+        complex:
+          root: alert.asmserviceownerunrankedraw
+          filters:
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: alert.asmserviceownerunrankedraw.accounttype
+                iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: alert.asmserviceownerunrankedraw.accounttype
+                iscontext: true
+              right:
+                value:
+                  simple: SERVICE-ACCOUNT
+      asmsystemids:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: alert.asmsystemids.type
+                iscontext: true
+              right:
+                value:
+                  simple: ASSET-NAME
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3c890c55-0002-44ef-8205-1027ca45d05f
+    type: condition
+    task:
+      id: 3c890c55-0002-44ef-8205-1027ca45d05f
+      version: -1
+      name: Is asmserviceownerunrankedraw populated?
+      description: Determines if the asmserviceowner or asmserviceownerunrankedraw fields have been populated to continue.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      unranked raw:
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "unranked raw"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.asmserviceownerunrankedraw
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.asmserviceownerunrankedraw.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.asmserviceownerunrankedraw.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.asmserviceownerunrankedraw.source
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 18ae13e1-3413-44ba-82be-078c4c18fa9e
+    type: title
+    task:
+      id: 18ae13e1-3413-44ba-82be-078c4c18fa9e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 06c23e12-3c68-49cc-81cb-37141b08c56d
+    type: regular
+    task:
+      id: 06c23e12-3c68-49cc-81cb-37141b08c56d
+      version: -1
+      name: Look up project owners for service account
+      description: Parse a GCP service account email for the project name, then lookup project owners and add them to a list of potential service owners for ranking.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GetProjectOwners
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      external_service:
+        simple: ${alert.asmprovider}
+      owners:
+        simple: ${alert.asmserviceownerunrankedraw}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "9_10_#default#": 0.65
+    },
+    "paper": {
+      "dimensions": {
+        "height": 785,
+        "width": 620,
+        "x": -50,
+        "y": -150
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

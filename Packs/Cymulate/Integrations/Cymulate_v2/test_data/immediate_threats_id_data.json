@@ -1,0 +1,20 @@
+[
+    {
+      "ID": "id_12345",
+      "Timestamp": "2021-01-24T13:23:20.958Z",
+      "Agent": {
+        "edrAddress": "DESKTOP-123",
+        "browsingAddress": "DESKTOP-97K3DED"
+      },
+      "TemplateName": "new_campaign_targeting_security_researchers_333fc3c7-d933-4b54-bafc-ca65ba26c801"
+    },
+    {
+      "ID": "id_67890",
+      "Timestamp": "2021-02-24T13:23:04.886Z",
+      "Agent": {
+        "edrAddress": "LAPTOP-L839VER5",
+        "browsingAddress": "LAPTOP-456"
+      },
+      "TemplateName": "new_campaign_targeting_security_researchers_333fc3c7-d933-4b54-bafc-ca65ba26c801"
+    }
+  ]

@@ -1,0 +1,317 @@
+id: TestIsNotInCidrRanges
+version: -1
+name: TestIsNotInCidrRanges
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a21bae17-c296-443c-85f0-67fd303d8863
+    type: start
+    task:
+      id: a21bae17-c296-443c-85f0-67fd303d8863
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f0c2daad-d010-48eb-884d-98a225f1d14d
+    type: regular
+    task:
+      id: f0c2daad-d010-48eb-884d-98a225f1d14d
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      type: regular
+      iscommand: false
+      brand: ""
+      script: DeleteContext
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 844fd8b0-c218-478c-8a26-89558472efac
+    type: regular
+    task:
+      id: 844fd8b0-c218-478c-8a26-89558472efac
+      version: -1
+      name: Set CIDR range
+      type: regular
+      iscommand: false
+      brand: ""
+      description: 'Set a value in context under the key you entered.'
+      script: Set
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: cidr
+      value:
+        simple: 11.1.1.0/24
+  "16":
+    id: "16"
+    taskid: 6283a4ca-7e64-403b-882f-28dcf227e9b4
+    type: regular
+    task:
+      id: 6283a4ca-7e64-403b-882f-28dcf227e9b4
+      version: -1
+      name: Set IP
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: ip
+      value:
+        simple: '11.1.1.1'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d9af0aa3-c1ed-4b00-886b-ccd80bed0371
+    type: regular
+    task:
+      id: d9af0aa3-c1ed-4b00-886b-ccd80bed0371
+      version: -1
+      name: Set CIDR range
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: cidr
+      value:
+        simple: '192.168.1.0/24'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ip
+          operator: IsNotInCidrRanges
+          right:
+            iscontext: true
+            value:
+              simple: cidr
+      label: "yes"
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fa5c3d98-54cf-41e6-89ed-ed8340d72fa8
+      iscommand: false
+      name: IsNotInCIDRRanges?
+      type: condition
+      version: -1
+    taskid: fa5c3d98-54cf-41e6-89ed-ed8340d72fa8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ip
+          operator: IsNotInCidrRanges
+          right:
+            iscontext: true
+            value:
+              simple: cidr
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ecea9613-d219-44bc-8c9f-9a7b31dc5d0c
+      iscommand: false
+      name: IsNotInCIDRRanges?
+      type: condition
+      version: -1
+    taskid: ecea9613-d219-44bc-8c9f-9a7b31dc5d0c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14e9c3f1-8dcd-4330-86c0-4c0e12bdff7d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 14e9c3f1-8dcd-4330-86c0-4c0e12bdff7d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0
+sourceplaybookid: TestIsNotInCidrRanges
+description: ''

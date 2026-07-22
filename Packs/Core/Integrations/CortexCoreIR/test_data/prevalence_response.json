@@ -1,0 +1,72 @@
+{
+  "domain": {
+    "api_id": "core-get-domain-analytics-prevalence",
+    "results": [
+      {
+        "args": {
+          "domain_name": "some_name"
+        },
+        "value": true,
+        "data": {
+          "prevalence": {
+            "value": 0,
+            "description": "The prevalence of the domain."
+          },
+          "local_prevalence": {
+            "value": 0,
+            "description": "The local prevalence of the domain."
+          }
+        },
+        "debug": {
+        }
+      }
+    ]
+  },
+  "ip": {
+    "api_id": "core-get-ip-analytics-prevalence",
+    "results": [
+      {
+        "args": {
+          "ip_address": "some_ip"
+        },
+        "value": true,
+        "data": {
+          "prevalence": {
+            "value": 0,
+            "description": "The prevalence of the ip."
+          },
+          "local_prevalence": {
+            "value": 0,
+            "description": "The local prevalence of the ip."
+          }
+        },
+        "debug": {
+        }
+      }
+    ]
+  },
+  "registry": {
+    "api_id": "core-get-registry-analytics-prevalence",
+    "results": [
+      {
+        "args": {
+          "key_name": "some key",
+          "value_name": "some value"
+        },
+        "value": true,
+        "data": {
+          "prevalence": {
+            "value": 0,
+            "description": "The prevalence of the registry."
+          },
+          "local_prevalence": {
+            "value": 0,
+            "description": "The local prevalence of the registry."
+          }
+        },
+        "debug": {
+        }
+      }
+    ]
+  }
+}

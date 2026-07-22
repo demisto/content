@@ -1,0 +1,592 @@
+id: HasiCoprTerraformTest
+version: -1
+name: HasiCoprTerraformTest
+fromversion: 6.10.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6375b828-bb18-4371-815f-ca382522a88f
+    type: start
+    task:
+      id: 6375b828-bb18-4371-815f-ca382522a88f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 626a14eb-fddc-441a-832b-89c6e2f89388
+    type: regular
+    task:
+      id: 626a14eb-fddc-441a-832b-89c6e2f89388
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5bb5eb7e-4a8c-458a-8672-35ba16b45603
+    type: regular
+    task:
+      id: 5bb5eb7e-4a8c-458a-8672-35ba16b45603
+      version: -1
+      name: Get runs
+      description: List Runs in a Workspace.
+      script: HashicorpTerraform|||terraform-runs-list
+      type: regular
+      iscommand: true
+      brand: HashicorpTerraform
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d56a6240-1a27-4a0b-8f81-c54d4e593a3e
+    type: condition
+    task:
+      id: d56a6240-1a27-4a0b-8f81-c54d4e593a3e
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Terraform.Run.data.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: bf005cc4-5bbf-4753-8bae-4ed9daa6944e
+    type: condition
+    task:
+      id: bf005cc4-5bbf-4753-8bae-4ed9daa6944e
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Terraform.Policy.id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 32d0a14c-8316-40f9-863b-480cbf3ed08c
+    type: regular
+    task:
+      id: 32d0a14c-8316-40f9-863b-480cbf3ed08c
+      version: -1
+      name: Get policies
+      description: List the policies for an organization or get a specific policy.
+      script: HashicorpTerraform|||terraform-policies-list
+      type: regular
+      iscommand: true
+      brand: HashicorpTerraform
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 76a15b24-c939-4b4e-8776-ff9b48f8b023
+    type: title
+    task:
+      id: 76a15b24-c939-4b4e-8776-ff9b48f8b023
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ceaa78e4-a2bd-4d32-8678-787fde152023
+    type: regular
+    task:
+      id: ceaa78e4-a2bd-4d32-8678-787fde152023
+      version: -1
+      name: Get policies set
+      description: List the policy sets for an organization or get a specific policy set.
+      script: HashicorpTerraform|||terraform-policy-set-list
+      type: regular
+      iscommand: true
+      brand: HashicorpTerraform
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 53b3c8d0-49b6-435c-81b9-eb6287adcd7b
+    type: condition
+    task:
+      id: 53b3c8d0-49b6-435c-81b9-eb6287adcd7b
+      version: -1
+      name: Check results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Terraform.PolicySet.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Terraform.PolicySet.relationships.policies.data.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3a9c20ab-f588-4c89-8028-417d2ecc037f
+    type: regular
+    task:
+      id: 3a9c20ab-f588-4c89-8028-417d2ecc037f
+      version: -1
+      name: Get policies checks
+      description: List the policy checks for a Terraform run.
+      script: HashicorpTerraform|||terraform-policies-checks-list
+      type: regular
+      iscommand: true
+      brand: HashicorpTerraform
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      run_id:
+        complex:
+          root: ${Terraform.Run.data
+          accessor: id}
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 281f4176-8cde-472b-8bfa-587300ee929d
+    type: regular
+    task:
+      id: 281f4176-8cde-472b-8bfa-587300ee929d
+      version: -1
+      name: Get plan meta
+      description: Get plan JSON file or the plan meta data.
+      script: HashicorpTerraform|||terraform-plan-get
+      type: regular
+      iscommand: true
+      brand: HashicorpTerraform
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      plan_id:
+        complex:
+          root: Terraform.Run.data.relationships.plan.data
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1881c39a-2d9a-4b1d-868f-ec2296b3164c
+    type: condition
+    task:
+      id: 1881c39a-2d9a-4b1d-868f-ec2296b3164c
+      version: -1
+      name: Check response
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Terraform.Plan.attributes.status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b318ab98-ca6c-4bbc-8c75-0c70d045ea5c
+    type: regular
+    task:
+      id: b318ab98-ca6c-4bbc-8c75-0c70d045ea5c
+      version: -1
+      name: Get plan file result
+      description: Get plan JSON file or the plan meta data.
+      script: HashicorpTerraform|||terraform-plan-get
+      type: regular
+      iscommand: true
+      brand: HashicorpTerraform
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      json_output:
+        simple: "true"
+      plan_id:
+        complex:
+          root: Terraform.Plan
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9675207f-b3a6-4a2b-80d6-9b7706157b1c
+    type: regular
+    task:
+      id: 9675207f-b3a6-4a2b-80d6-9b7706157b1c
+      version: -1
+      name: Run action
+      description: 'Perform an action on a Terraform run. The available actions are: apply, cancel, discard, force-cancel, force-execute.'
+      script: HashicorpTerraform|||terraform-run-action
+      type: regular
+      iscommand: true
+      brand: HashicorpTerraform
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      action:
+        simple: discard
+      comment:
+        simple: comment from TPB
+      run_id:
+        complex:
+          root: Terraform.Run.data
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Terraform.Run.data.attributes.actions.is-discardable
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7fd5e23d-089a-4003-8bab-faf19a556929
+    type: condition
+    task:
+      id: 7fd5e23d-089a-4003-8bab-faf19a556929
+      version: -1
+      name: There are run to discard
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: Terraform.Run.data.attributes.actions.is-discardable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1452.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 1782.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: ''

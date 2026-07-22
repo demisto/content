@@ -1,0 +1,43 @@
+{
+    "cloudAccountId": "cloudAccountId",
+    "cloudAccountName": "cloudAccountName",
+    "description": "description",
+    "externalId": "sg-externalId",
+    "isProtected": true,
+    "regionId": "regionId",
+    "securityGroupId": "securityGroupId",
+    "securityGroupName": "securityGroupName",
+    "services": {
+        "inbound": [
+            {
+                "scope": [
+                    {
+                        "data": {
+                            "id": "1305id81",
+                            "name": "name"
+                        },
+                        "type": "type"
+                    }
+                ]
+            }
+        ],
+        "outbound": [
+            {
+                "scope": [
+                    {
+                        "data": {
+                            "cidr": "cidr",
+                            "note": "note"
+                        },
+                        "type": "type"
+                    }
+                ]
+            }
+        ]
+    },
+    "tags": {
+        "test": "success"
+    },
+    "vpcId": "vpc-vpcId",
+    "vpcName": null
+}

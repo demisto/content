@@ -1,0 +1,44 @@
+{
+    "last_seen": null,
+    "ctix_modified": 1652087164,
+    "created": 1651648700,
+    "base_type": "sdo",
+    "pattern_type": "stix",
+    "modified": 1651648700,
+    "ctix_created": 1651648700,
+    "pattern_version": "2.1",
+    "first_seen": null,
+    "name": "8.8.8.8",
+    "tld": "",
+    "valid_from": 1644335851,
+    "attribute_value": "8.8.8.8",
+    "confidence_type": "CTIX",
+    "pattern": "[ipv4-addr:value = '8.8.8.8']",
+    "ctix_score": 18,
+    "fang_analyst_description": null,
+    "defang_analyst_description": null,
+    "analyst_score": null,
+    "country": "Netherlands",
+    "attribute_field": "value",
+    "tlp": "WHITE",
+    "sources": [
+        {
+            "id": "e941f6fb-387b-452c-b77d-b5b05c5e9df2",
+            "name": "CrowdStrike",
+            "source_type": "API_FEEDS"
+        }
+    ],
+    "types": [
+        "anomalous-activity"
+    ],
+    "ctix_tlp": null,
+    "sub_type": "ipv4-addr",
+    "type": "indicator",
+    "valid_until": null,
+    "analyst_tlp": null,
+    "asn": null,
+    "description": null,
+    "confidence_score": 18,
+    "aliases": null,
+    "analyst_description": null
+}

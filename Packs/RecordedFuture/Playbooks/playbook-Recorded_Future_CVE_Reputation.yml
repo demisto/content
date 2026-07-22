@@ -1,0 +1,329 @@
+id: Recorded Future CVE Reputation
+version: -1
+name: Recorded Future CVE Reputation
+description: CVE reputation with Recorded Future SOAR enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 812bc576-9c30-453e-8b30-7671d8c68ade
+    type: start
+    task:
+      id: 812bc576-9c30-453e-8b30-7671d8c68ade
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 52d6c5d0-d5b3-467c-8410-766e7c274632
+    type: condition
+    task:
+      id: 52d6c5d0-d5b3-467c-8410-766e7c274632
+      version: -1
+      name: Is there a CVE ID to get reputation of?
+      description: Checks whether the playbook's input contains at least one domain
+        name for which to retrieve the reputation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.CVE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: ebb1418e-2cee-43ba-898b-dd3d039db302
+    type: title
+    task:
+      id: ebb1418e-2cee-43ba-898b-dd3d039db302
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: e94dae4a-53ae-4f18-8e09-e4e6f6b85de8
+    type: condition
+    task:
+      id: e94dae4a-53ae-4f18-8e09-e4e6f6b85de8
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Checks if there is an active instance of the Recorded Future API
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b4ebb4f7-615c-465b-8927-9b23e38dbe53
+    type: regular
+    task:
+      id: b4ebb4f7-615c-465b-8927-9b23e38dbe53
+      version: -1
+      name: Get CVE reputation from Recorded Future
+      description: Get a quick indicator of the risk associated with a specific CVE.
+      script: Recorded Future v2|||cve
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      cve:
+        simple: ${inputs.CVE}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 11c140fa-79ce-4595-84ac-6274a0b9b7f4
+    type: title
+    task:
+      id: 11c140fa-79ce-4595-84ac-6274a0b9b7f4
+      version: -1
+      name: Get reputation using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 617ca2be-df7c-4921-86e4-513b1d4df570
+    type: regular
+    task:
+      id: 617ca2be-df7c-4921-86e4-513b1d4df570
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      recordedfutureriskrules:
+        simple: ${RecordedFuture.CVE.rules}
+      value:
+        simple: ${inputs.CVE}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_24_#default#": 0.57,
+      "26_24_#default#": 0.55,
+      "26_28_yes": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 895,
+        "width": 860,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CVE
+  value:
+    complex:
+      root: CVE
+      accessor: ID
+  required: false
+  description: The CVE ID for which to get the reputation.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: CVE.ID
+  description: Vulnerability name
+  type: string
+- contextPath: RecordedFuture.CVE.riskLevel
+  description: Recorded Future vulnerability risk level
+  type: string
+- contextPath: RecordedFuture.CVE.riskScore
+  description: Risk score
+  type: number
+- contextPath: RecordedFuture.CVE.Evidence.rule
+  description: Recorded Future risk rule name
+  type: string
+- contextPath: RecordedFuture.CVE.Evidence.mitigation
+  description: Recorded Future risk rule mitigation
+  type: string
+- contextPath: RecordedFuture.CVE.Evidence.description
+  description: Recorded Future risk rule description
+  type: string
+- contextPath: RecordedFuture.CVE.Evidence.timestamp
+  description: Recorded Future risk rule timestamp
+  type: date
+- contextPath: RecordedFuture.CVE.Evidence.level
+  description: Recorded Future risk rule level
+  type: number
+- contextPath: RecordedFuture.CVE.Evidence.ruleid
+  description: Recorded Future risk rule ID
+  type: string
+- contextPath: RecordedFuture.CVE.name
+  description: Vulnerability name
+  type: string
+- contextPath: RecordedFuture.CVE.maxRules
+  description: Maximum count of Recorded Future vulnerability risk rules
+  type: number
+- contextPath: RecordedFuture.CVE.ruleCount
+  description: Number of triggered Recorded Future vulnerability risk rules
+  type: number
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

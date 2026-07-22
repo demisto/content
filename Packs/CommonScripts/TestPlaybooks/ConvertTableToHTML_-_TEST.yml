@@ -1,0 +1,235 @@
+id: ConvertTableToHTML - TEST
+version: -1
+name: ConvertTableToHTML - TEST
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8f7f76ee-762f-431b-8979-aaac1f851914
+    type: start
+    task:
+      id: 8f7f76ee-762f-431b-8979-aaac1f851914
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a562232f-4fa7-4c19-8bcd-fb9f926a7c09
+    type: regular
+    task:
+      id: a562232f-4fa7-4c19-8bcd-fb9f926a7c09
+      version: -1
+      name: ConvertTableToHTML with context_key argument
+      description: Converts a given array to an HTML table
+      scriptName: ConvertTableToHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      context_key:
+        simple: KEY
+      headers:
+        simple: "N"
+      table:
+        simple: '[1,2,3]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bd5b2516-dd36-4b3a-8e42-993b279f72f8
+    type: regular
+    task:
+      id: bd5b2516-dd36-4b3a-8e42-993b279f72f8
+      version: -1
+      name: ConvertTableToHTML with default context path
+      description: Converts a given array to an HTML table
+      scriptName: ConvertTableToHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      headers:
+        simple: "N"
+      table:
+        simple: '[1,2,3]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2d0c6267-2341-460e-89ec-f4e0f97de67b
+    type: condition
+    task:
+      id: 2d0c6267-2341-460e-89ec-f4e0f97de67b
+      version: -1
+      name: verify outputs eq
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HTMLTable
+            iscontext: true
+          right:
+            value:
+              simple: KEY
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f911f3f0-281a-41a0-8c2f-993759ac1655
+    type: title
+    task:
+      id: f911f3f0-281a-41a0-8c2f-993759ac1655
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9f99c2b5-ed10-43ad-8142-1b0432d358f8
+    type: regular
+    task:
+      id: 9f99c2b5-ed10-43ad-8142-1b0432d358f8
+      version: -1
+      name: error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: error
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: ''

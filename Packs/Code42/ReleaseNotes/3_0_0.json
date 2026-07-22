@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Username/password auth has been replaced by API Client auth. To continue fetching Code42 Alert incidents you will need to update your credentials to an API Client ID + Secret. See https://support.code42.com/Incydr/Admin/Code42_console_reference/API_clients for information on API Clients."}

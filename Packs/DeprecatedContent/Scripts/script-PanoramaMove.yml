@@ -1,0 +1,44 @@
+commonfields:
+  id: PanoramaMove
+  version: -1
+name: PanoramaMove
+script: >-
+  var req = {
+          type: 'config',
+          action: 'move',
+          key: 'keyvalue',
+          xpath: args.xpath || '/config/devices/entry/vsys/entry/rulebase/security/rules/entry[@name=\'' + args.src +'\']',
+          where: args.where,
+      };
+  if (args.dst) {
+      req.dst = args.dst
+  }
+
+  var raw = executeCommand('panorama', req);
+
+  return raw[0].Contents.response['-status'];
+type: javascript
+tags:
+- panorama
+- firewall
+comment: Deprecated. Use the "panorama-move-rule" command instead.
+system: true
+args:
+- name: xpath
+  description: Usually not required as "src" is sufficient. Full XPath to the source rule to be moved.
+- name: src
+  description: Source value for the request. For further information, see the Panorama XML API Documentation.
+- name: where
+  required: true
+  description: Values for the "where" parameter include "before", "after", "top" or "bottom". For further information, see the Panorama XML API Documentation.
+- name: dst
+  description: Destination xpath to move the rule. For further information, see the Panorama XML API Documentation.
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - panorama
+timeout: 0s
+tests:
+- No tests
+fromversion: 5.0.0

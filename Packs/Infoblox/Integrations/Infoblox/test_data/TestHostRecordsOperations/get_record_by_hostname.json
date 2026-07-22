@@ -1,0 +1,17 @@
+{
+    "result": [
+        {
+            "_ref": "record:host/ZG5zLmhvc3QkLl9kZWZhdWx0LnRlc3QuY2lhYy0zNjA3:ciac-3607.test/default", 
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default", 
+                    "configure_for_dhcp": false, 
+                    "host": "ciac-3607.test", 
+                    "ipv4addr": "192.168.1.0"
+                }
+            ], 
+            "name": "ciac-3607.test", 
+            "view": "default"
+        }
+    ]
+}

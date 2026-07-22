@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Email Communication",
+    "description": "Classifies MS Graph Mail Single User email messages.",
+    "feed": false,
+    "id": "MS Graph Mail Single User - Classifier - Email Communication",
+    "keyTypeMap": {
+        "High": "Email Communication",
+        "Low": "Email Communication",
+        "MicrosoftGraphMailSingleUser": "Email Communication",
+        "Normal": "Email Communication"
+    },
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "name": "MS Graph Mail Single User - Classifier - Email Communication",
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

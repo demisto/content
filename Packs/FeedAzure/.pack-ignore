@@ -1,0 +1,9 @@
+[file:README.md]
+ignore=RM104
+
+[file:playbook-TIM_-_Process_Azure_indicators.yml]
+ignore=PB115
+
+
+[file:FeedAzure_image.png]
+ignore=IM111

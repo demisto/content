@@ -1,0 +1,17 @@
+{
+    "Success": true,
+    "Result": {
+        "Number": "00000132",
+        "Id": "adfghjkl"
+    },
+    "ErrorMessage": null,
+    "ErrorCode": null,
+    "records": [{
+        "Id": "id1",
+        "Name": "testdata"
+    },
+    {
+        "Id": "id2",
+        "Name": "testdata2"
+    }]
+}

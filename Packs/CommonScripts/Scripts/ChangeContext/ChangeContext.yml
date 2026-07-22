@@ -1,0 +1,39 @@
+args:
+- description: The context to change (i.e., ${Context.Key}).
+  name: input
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: If "True" replaces the existing key. The default is "True".
+  name: inplace
+  predefined:
+  - 'True'
+  - 'False'
+- description: 'A list of key-values to replace key for value in the following format: {"old_key1":"new_key1", "old_key2":"new_key2"}.'
+  name: replace_dict
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: If "True" capitalizes the first letter of the context key.
+  name: capitalize
+  predefined:
+  - 'True'
+  - 'False'
+- description: The context path in which to output the results. Should be in the format of Context.Key.
+  name: output_key
+  required: true
+comment: 'Enables changing context in two ways. The first is to capitalize the first letter of each key in following level of the context key entered. The second is to change context keys to new values. '
+commonfields:
+  id: ChangeContext
+  version: -1
+enabled: true
+name: ChangeContext
+script: '-'
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.13.10404775
+runas: DBotWeakRole
+subtype: python3
+fromversion: 5.0.0
+tags:
+- Utility
+tests:
+- No tests (auto formatted)

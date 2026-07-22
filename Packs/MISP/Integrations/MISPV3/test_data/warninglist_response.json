@@ -1,0 +1,9 @@
+{
+    "8.8.8.8": [
+        {
+            "id": "111",
+            "matched": "8.8.8.8/32",
+            "name": "List of known IPv4 public DNS resolvers"
+        }
+    ]
+}

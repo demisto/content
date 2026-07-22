@@ -1,0 +1,13 @@
+{
+ "id": "placeholder-image",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Image",
+ "widgetType": "image",
+ "category": "utilities",
+ "isPredefined": true,
+ "params": {
+  "text": ""
+ },
+ "description": ""
+}

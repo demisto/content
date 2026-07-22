@@ -1,0 +1,76 @@
+{
+	"vectra_vectra_raw": {
+	  "threat": {
+		"type": "int",
+		"is_array": false
+	  },
+	  "summary": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "id": {
+		"type": "int",
+		"is_array": false
+	  },
+	  "src_ip": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "description": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "category": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "detection_type": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "tags": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "state": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "src_host": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "role": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "user": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "result": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "dvchost": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "version": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "headend_addr": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "source_ip": {
+		"type": "string",
+		"is_array": false
+	  },
+	  "message": {
+		"type": "string",
+		"is_array": false
+	  }
+	}
+  }

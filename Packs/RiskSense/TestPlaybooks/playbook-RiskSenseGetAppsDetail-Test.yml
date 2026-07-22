@@ -1,0 +1,423 @@
+id: RiskSense Get Apps Detail - Test
+version: -1
+name: RiskSense Get Apps Detail - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-get-apps-detail" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 75a1fadc-305a-4e2e-863f-e3da8abfdeed
+    type: start
+    task:
+      id: 75a1fadc-305a-4e2e-863f-e3da8abfdeed
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 376a6182-eccf-4e7a-872a-3a793fae2ddb
+    type: regular
+    task:
+      id: 376a6182-eccf-4e7a-872a-3a793fae2ddb
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 4f66b3c8-718e-4134-83d9-f2c77d87e743
+    type: regular
+    task:
+      id: 4f66b3c8-718e-4134-83d9-f2c77d87e743
+      version: -1
+      name: Execute Risksense-get-apps-detail command from Demisto.
+      description: This command is used to lookup single application details in depth.Command
+        accepts application id as an argument.
+      script: RiskSense|||risksense-get-app-detail
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      application_id:
+        simple: "19397"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 9ea5e63e-c7c6-453c-8ca8-f67c2be03728
+    type: condition
+    task:
+      id: 9ea5e63e-c7c6-453c-8ca8-f67c2be03728
+      version: -1
+      name: Is context data  exists?
+      description: Look up the application details.The application details can be
+        searched based on input parameters like fieldname (name, network etc), operator
+        (EXACT, IN, LIKE), page, size, sort by and sort direction.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.GroupID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.ClientID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Uri
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.DiscoveredOn
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.LastFoundOn
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Total
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Info
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Critical
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.High
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Low
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.UrlCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Network.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Network.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Icon.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.ManufacturedBy
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.ManufacturedBy
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.LastScanDate
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.LastScanDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.HipaaComplianceAsset
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.HipaaComplianceAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.PciComplianceAsset
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.CMDB.PciComplianceAsset
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Source.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Note.Note
+            iscontext: true
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: Application.Note.Note
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: c5d5f5a0-0028-494f-84d7-6d7321f30070
+    type: regular
+    task:
+      id: c5d5f5a0-0028-494f-84d7-6d7321f30070
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 7827325c-f247-4043-833e-1ef7fe90b865
+    type: title
+    task:
+      id: 7827325c-f247-4043-833e-1ef7fe90b865
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: f8176d57-3878-4a31-8d20-36287cf8ad01
+    type: regular
+    task:
+      id: f8176d57-3878-4a31-8d20-36287cf8ad01
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

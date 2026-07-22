@@ -1,0 +1,57 @@
+{
+    "data": {
+      "messages": {
+        "sdrAge": "30 days (or greater)",
+        "attachments": [
+          "test.jpg"
+        ],
+        "hostName": "(Name unresolved,  SN:11111:11111)",
+        "direction": "incoming",
+        "messageStatus": "Quarantined by Multiple Engines",
+        "senderGroup": "ACCEPTLIST",
+        "subject": "test",
+        "sdrCategory": "N/A",
+        "mid": [
+          765,
+          766,
+          767
+        ],
+        "sendingHostSummary": {
+          
+        },
+        "ampDetails": [
+          {
+            "timestamp": "20 Sep 2022 13:30:53 (GMT +00:00)",
+            "description": "File reputation query initiating. File Name = test.jpg, MID = 765, File Size = 325663 bytes, File Type = image/jpeg"
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "Response received for file reputation query from Cloud. File Name = test.jpg, MID = 765, Disposition = FILE UNKNOWN, Malware = None, Analysis Score = 0, sha256 = 132123123, upload_action = Recommended to send the file for analysis, verdict_source = AMP, Suspected Malware Categories = None"
+          },
+          {
+            "timestamp": "20 Sep 2022 13:30:54 (GMT +00:00)",
+            "description": "File not uploaded for analysis. MID = 765 File SHA256[132123123] file mime[image/jpeg] Reason: The file type is not configured for analysis",
+            "lastEvent": true
+          }
+        ],
+        "ampTgCategories": [
+          
+        ],
+        "smtpAuthId": "",
+        "midHeader": "<test@test.com>",
+        "timestamp": "20 Sep 2022 13:30:51 (GMT +00:00)",
+        "messageSize": "439.25 (KB)",
+        "sdrThreatLevels": "3",
+        "sdrReputation": "Neutral",
+        "recipient": [
+          "test@test.com"
+        ],
+        "showAMPDetails": true,
+        "sender": "test@test.com",
+        "allIcid": [
+          23092
+        ],
+        "headerFrom": "test@test.com"
+      }
+    }
+  }

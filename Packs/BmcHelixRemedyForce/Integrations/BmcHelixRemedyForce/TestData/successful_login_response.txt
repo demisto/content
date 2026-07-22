@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns="urn:partner.soap.sforce.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <soapenv:Body>
+        <loginResponse>
+            <result>
+                <metadataServerUrl>https://202006150054120059.my.salesforce.com/services/Soap/m/35.0/00D2x000005srFc</metadataServerUrl>
+                <passwordExpired>false</passwordExpired>
+                <sandbox>false</sandbox>
+                <serverUrl>https://202006150054120059.my.salesforce.com/services/Soap/u/35.0/00D2x000005srFc</serverUrl>
+                <sessionId>SOME_VALID_SESSION_ID</sessionId>
+                <userId>0052x000002DhcgAAC</userId>
+                <userInfo>
+                    <accessibilityMode>false</accessibilityMode>
+                    <currencySymbol>$</currencySymbol>
+                    <orgAttachmentFileSizeLimit>5242880</orgAttachmentFileSizeLimit>
+                    <orgDefaultCurrencyIsoCode>USD</orgDefaultCurrencyIsoCode>
+                    <orgDisallowHtmlAttachments>false</orgDisallowHtmlAttachments>
+                    <orgHasPersonAccounts>false</orgHasPersonAccounts>
+                    <organizationId>00D2x000005srFcEAI</organizationId>
+                    <organizationMultiCurrency>false</organizationMultiCurrency>
+                    <organizationName>Org</organizationName>
+                    <profileId>00e2x000001ehpdAAA</profileId>
+                    <roleId>00E2x000001G7kKEAS</roleId>
+                    <sessionSecondsValid>7200</sessionSecondsValid>
+                    <userDefaultCurrencyIsoCode xsi:nil="true"/>
+                    <userEmail>abc.def@org.com</userEmail>
+                    <userFullName>abc def</userFullName>
+                    <userId>0052x000002DhcgAAC</userId>
+                    <userLanguage>en_US</userLanguage>
+                    <userLocale>en_US</userLocale>
+                    <userName>abc.def20200615005412@bmcremedyforce.com</userName>
+                    <userTimeZone>America/Los_Angeles</userTimeZone>
+                    <userType>Standard</userType>
+                    <userUiSkin>Theme3</userUiSkin>
+                </userInfo>
+            </result>
+        </loginResponse>
+    </soapenv:Body>
+</soapenv:Envelope>

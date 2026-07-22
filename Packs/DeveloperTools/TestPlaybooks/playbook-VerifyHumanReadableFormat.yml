@@ -1,0 +1,87 @@
+id: VerifyHumanReadableFormat
+version: -1
+name: VerifyHumanReadableFormat
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a10080a4-a157-4b18-ae17-3d2126198949
+    type: start
+    task:
+      id: a10080a4-a157-4b18-ae17-3d2126198949
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 9d730003-f421-4e2b-a60f-9bc54b996086
+    type: regular
+    task:
+      id: 9d730003-f421-4e2b-a60f-9bc54b996086
+      version: -1
+      name: VerifyTableToMarkDown
+      description: ""
+      scriptName: VerifyTableToMarkDown
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 3f0ad000-a2ae-4712-9994-0802f125ac7a
+    type: regular
+    task:
+      id: 3f0ad000-a2ae-4712-9994-0802f125ac7a
+      version: -1
+      name: VerifyTreeToFlatObject
+      description: ""
+      scriptName: VerifyTreeToFlatObject
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

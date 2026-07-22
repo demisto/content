@@ -1,0 +1,51 @@
+commonfields:
+  id: GoogleappsGetUser
+  version: -1
+name: GoogleappsGetUser
+script: >
+  import re
+
+
+  args = demisto.args()
+
+  for key in args.keys():
+      args[re.sub(r'([A-Z])',lambda x:'-'+x.group(1).lower(),key)] = args.pop(key)
+
+  resp = demisto.executeCommand("googleapps-get-user", args)
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- google apps
+comment: Deprecated. Fetch info on specific user
+system: true
+args:
+- name: userKey
+  default: true
+  description: userKey - Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
+- name: projection
+  description: 'What subset of fields to fetch for this user, Acceptable values are: "basic": Do not include any custom fields for the user. (default), "custom": Include custom fields from schemas requested in customFieldMask, "full": Include all fields associated with this user.'
+- name: viewTypePublicDomain
+  auto: PREDEFINED
+  description: Whether to fetch the administrator-only or domain-wide public view of the user, will use admin_view(Results include both administrator-only and domain-public fields for the user) by default, if true will use "domain_public"(Results only include fields for the user that are publicly visible to other users in the domain)
+- name: customFieldMask
+  description: A comma-separated list of schema names. All fields from these schemas are fetched. This should only be set when projection=custom.
+scripttarget: 0
+dependson:
+  must:
+  - googleapps-get-user
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

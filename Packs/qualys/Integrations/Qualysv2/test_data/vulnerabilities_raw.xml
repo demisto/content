@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE KNOWLEDGE_BASE_VULN_LIST_OUTPUT SYSTEM "">
+<!-- This report was generated with an evaluation version of  //-->
+<KNOWLEDGE_BASE_VULN_LIST_OUTPUT>
+  <RESPONSE>
+    <DATETIME>2024-02-12T15:21:40Z</DATETIME>
+    <VULN_LIST>
+      <VULN>
+        <QID>10052</QID>
+        <VULN_TYPE>Vulnerability</VULN_TYPE>
+        <SEVERITY_LEVEL>3</SEVERITY_LEVEL>
+        <TITLE><![CDATA[Vtecrm Vtenext Multiple Security Vulnerabilities]]></TITLE>
+        <CATEGORY>CGI</CATEGORY>
+        <LAST_SERVICE_MODIFICATION_DATETIME>2023-12-19T12:02:30Z</LAST_SERVICE_MODIFICATION_DATETIME>
+        <PUBLISHED_DATETIME>2021-01-21T12:51:22Z</PUBLISHED_DATETIME>
+        <PATCHABLE>0</PATCHABLE>
+        <SOFTWARE_LIST>
+          <SOFTWARE>
+            <PRODUCT><![CDATA[vtenext]]></PRODUCT>
+            <VENDOR><![CDATA[vtenext]]></VENDOR>
+          </SOFTWARE>
+        </SOFTWARE_LIST>
+        <CVE_LIST>
+          <CVE>
+            <ID><![CDATA[CVE-2020-10227]]></ID>
+          </CVE>
+          <CVE>
+            <ID><![CDATA[CVE-2020-10228]]></ID>
+          </CVE>
+          <CVE>
+            <ID><![CDATA[CVE-2020-10229]]></ID>
+          </CVE>
+        </CVE_LIST>
+        <CORRELATION>
+          <EXPLOITS>
+            <EXPLT_SRC>
+              <SRC_NAME><![CDATA[nvd]]></SRC_NAME>
+              <EXPLT_LIST>
+                <EXPLT>
+                  <REF><![CDATA[CVE-2020-10229]]></REF>
+                </EXPLT>
+                <EXPLT>
+                  <REF><![CDATA[]]></REF>
+                  <DESC><![CDATA[]]></DESC>
+                  <LINK><![CDATA[]]></LINK>
+                </EXPLT>
+              </EXPLT_LIST>
+            </EXPLT_SRC>
+          </EXPLOITS>
+        </CORRELATION>
+        <PCI_FLAG>1</PCI_FLAG>
+        <THREAT_INTELLIGENCE>
+          <THREAT_INTEL id="2"><![CDATA[Exploit_Public]]></THREAT_INTEL>
+          <THREAT_INTEL id="8"><![CDATA[No_Patch]]></THREAT_INTEL>
+          <THREAT_INTEL id="13"><![CDATA[Privilege_Escalation]]></THREAT_INTEL>
+          <THREAT_INTEL id="15"><![CDATA[Remote_Code_Execution]]></THREAT_INTEL>
+        </THREAT_INTELLIGENCE>
+        <DISCOVERY>
+          <REMOTE>1</REMOTE>
+          <ADDITIONAL_INFO>Exploit Available</ADDITIONAL_INFO>
+        </DISCOVERY>
+      </VULN>
+      <VULN>
+        <QID>10186</QID>
+        <VULN_TYPE>Vulnerability</VULN_TYPE>
+        <SEVERITY_LEVEL>2</SEVERITY_LEVEL>
+        <TITLE><![CDATA[]]></TITLE>
+        <CATEGORY>CGI</CATEGORY>
+        <LAST_SERVICE_MODIFICATION_DATETIME>2024-02-10T12:03:39Z</LAST_SERVICE_MODIFICATION_DATETIME>
+        <PUBLISHED_DATETIME>2000-11-10T11:00:00Z</PUBLISHED_DATETIME>
+        <BUGTRAQ_LIST>
+          <BUGTRAQ>
+            <ID><![CDATA[1881]]></ID>
+            <URL><![CDATA[]]></URL>
+          </BUGTRAQ>
+        </BUGTRAQ_LIST>
+        <PATCHABLE>1</PATCHABLE>
+        <SOFTWARE_LIST>
+          <SOFTWARE>
+            <PRODUCT><![CDATA[]]></PRODUCT>
+            <VENDOR><![CDATA[cgi]]></VENDOR>
+          </SOFTWARE>
+        </SOFTWARE_LIST>
+        <CVE_LIST>
+          <CVE>
+            <ID><![CDATA[]]></ID>
+          </CVE>
+        </CVE_LIST>
+        <CORRELATION>
+          <EXPLOITS>
+            <EXPLT_SRC>
+              <SRC_NAME><![CDATA[The Exploit-DB]]></SRC_NAME>
+              <EXPLT_LIST>
+                <EXPLT>
+                </EXPLT>
+              </EXPLT_LIST>
+            </EXPLT_SRC>
+            <EXPLT_SRC>
+              <SRC_NAME><![CDATA[exploitdb]]></SRC_NAME>
+              <EXPLT_LIST>
+                <EXPLT>
+                </EXPLT>
+              </EXPLT_LIST>
+            </EXPLT_SRC>
+            <EXPLT_SRC>
+              <SRC_NAME><![CDATA[nvd]]></SRC_NAME>
+              <EXPLT_LIST>
+                <EXPLT>
+                </EXPLT>
+              </EXPLT_LIST>
+            </EXPLT_SRC>
+            <EXPLT_SRC>
+              <SRC_NAME><![CDATA[seebug]]></SRC_NAME>
+            </EXPLT_SRC>
+          </EXPLOITS>
+        </CORRELATION>
+        <PCI_FLAG>1</PCI_FLAG>
+        <THREAT_INTELLIGENCE>
+          <THREAT_INTEL id="2"><![CDATA[Exploit_Public]]></THREAT_INTEL>
+        </THREAT_INTELLIGENCE>
+        <DISCOVERY>
+          <REMOTE>1</REMOTE>
+          <ADDITIONAL_INFO>Patch Available, Exploit Available</ADDITIONAL_INFO>
+        </DISCOVERY>
+      </VULN>
+    </VULN_LIST>
+  </RESPONSE>
+</KNOWLEDGE_BASE_VULN_LIST_OUTPUT>
+<!-- This report was generated with an evaluation version of  //-->
+<!-- CONFIDENTIAL AND PROPRIETARY INFORMATION. Qualys provides the QualysGuard Service "As Is," without any warranty of any kind. Qualys makes no warranty that the information contained in this report is complete or error-free. Copyright 2024, Qualys, Inc. //-->

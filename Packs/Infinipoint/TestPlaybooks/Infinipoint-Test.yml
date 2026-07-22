@@ -1,0 +1,1583 @@
+id: Infinipoint-Test
+version: -1
+name: Infinipoint-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ec86f5cc-2b23-418d-86ef-606c428c56c7
+    type: start
+    task:
+      id: ec86f5cc-2b23-418d-86ef-606c428c56c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 547fac7a-1e94-4bff-82ee-41ad854dcaae
+    type: regular
+    task:
+      id: 547fac7a-1e94-4bff-82ee-41ad854dcaae
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a9969479-8138-4557-8492-692af0c354f1
+    type: regular
+    task:
+      id: a9969479-8138-4557-8492-692af0c354f1
+      version: -1
+      name: infinipoint-get-cve
+      script: '|||infinipoint-get-cve'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cve_id:
+        simple: CVE-2020-9859
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: abd2f4e7-7cc4-421f-86f6-9f927addfc22
+    type: condition
+    task:
+      id: abd2f4e7-7cc4-421f-86f6-9f927addfc22
+      version: -1
+      name: Validate Outputs (infinipoint-get-cve)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Infinipoint
+                accessor: Cve.Details.cve_id
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Infinipoint.Cve.Details.campaign_intelligence.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 58e95c16-2eac-4376-886b-e41b01470e3f
+    type: title
+    task:
+      id: 58e95c16-2eac-4376-886b-e41b01470e3f
+      version: -1
+      name: Success - infinipoint-get-cve
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 9dec32fe-5b50-449f-8e45-64c577aa997c
+    type: regular
+    task:
+      id: 9dec32fe-5b50-449f-8e45-64c577aa997c
+      version: -1
+      name: Failed to get cve
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Failed to get cve
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 66b55ef3-424e-4436-8df8-372aa7908fc4
+    type: regular
+    task:
+      id: 66b55ef3-424e-4436-8df8-372aa7908fc4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 07e6dd49-771a-405d-8e13-f2aee77fcb18
+    type: condition
+    task:
+      id: 07e6dd49-771a-405d-8e13-f2aee77fcb18
+      version: -1
+      name: Validate Output (infinipoint-get-assets-hardware)
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infinipoint.Assets.Hardware.$device
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 91408933-2775-403f-81a6-1343c34a3e61
+    type: title
+    task:
+      id: 91408933-2775-403f-81a6-1343c34a3e61
+      version: -1
+      name: Success - infinipoint-get-assets-hardware
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 32c01580-f776-4a57-8fee-7a18b38c51f0
+    type: regular
+    task:
+      id: 32c01580-f776-4a57-8fee-7a18b38c51f0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 7f978dfe-b932-4c61-8602-d8f14f89eac5
+    type: regular
+    task:
+      id: 7f978dfe-b932-4c61-8602-d8f14f89eac5
+      version: -1
+      name: infinipoint-get-assets-cloud
+      script: '|||infinipoint-get-assets-cloud'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      host: {}
+      os_type: {}
+      source:
+        simple: GCP API
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 3a167095-20f3-4d54-8625-2ed22870e29e
+    type: condition
+    task:
+      id: 3a167095-20f3-4d54-8625-2ed22870e29e
+      version: -1
+      name: Validate Output (infinipoint-get-assets-cloud)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infinipoint.Assets.Cloud.$device
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 8de0871e-2ab4-42cd-8b92-ab9c1657f64f
+    type: title
+    task:
+      id: 8de0871e-2ab4-42cd-8b92-ab9c1657f64f
+      version: -1
+      name: Success - infinipoint-get-assets-cloud
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 976e877d-b31a-4257-8988-484bef7c61e6
+    type: regular
+    task:
+      id: 976e877d-b31a-4257-8988-484bef7c61e6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 3f375d29-6c74-4672-8de8-894dfb58c1f0
+    type: regular
+    task:
+      id: 3f375d29-6c74-4672-8de8-894dfb58c1f0
+      version: -1
+      name: infinipoint-get-assets-users
+      script: '|||infinipoint-get-assets-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      host: {}
+      username:
+        simple: et
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 441e5f47-4cbb-4aaf-8996-d167ac7304a8
+    type: condition
+    task:
+      id: 441e5f47-4cbb-4aaf-8996-d167ac7304a8
+      version: -1
+      name: Validate Output (infinipoint-get-assets-user)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Infinipoint
+                accessor: Assets.User.$device
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 58bdfc0b-4542-4bbc-8b83-fb22f43ded36
+    type: title
+    task:
+      id: 58bdfc0b-4542-4bbc-8b83-fb22f43ded36
+      version: -1
+      name: Success - infinipoint-get-assets-user
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 4839a7e3-5c95-4294-8e4f-25925a888851
+    type: regular
+    task:
+      id: 4839a7e3-5c95-4294-8e4f-25925a888851
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 5fa1df85-a7b7-46a0-8921-da8a772aeedb
+    type: regular
+    task:
+      id: 5fa1df85-a7b7-46a0-8921-da8a772aeedb
+      version: -1
+      name: infinipoint-get-device
+      script: '|||infinipoint-get-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      agentVersion: {}
+      host: {}
+      osName: {}
+      osType:
+        simple: "1"
+      status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: fa52d4cc-a8c7-46f2-8981-00885bafec38
+    type: condition
+    task:
+      id: fa52d4cc-a8c7-46f2-8981-00885bafec38
+      version: -1
+      name: Validate Output (infinipoint-get-device)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infinipoint.Devices.host
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 421b8839-3343-4a1f-8408-86f54ef7a06c
+    type: title
+    task:
+      id: 421b8839-3343-4a1f-8408-86f54ef7a06c
+      version: -1
+      name: Success - infinipoint-get-device
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 907b0aa2-e92b-41b6-8b80-f3031abfd3c6
+    type: regular
+    task:
+      id: 907b0aa2-e92b-41b6-8b80-f3031abfd3c6
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: cd843e3d-d729-478d-891b-d2da59e6a77a
+    type: regular
+    task:
+      id: cd843e3d-d729-478d-891b-d2da59e6a77a
+      version: -1
+      name: infinipoint-get-vulnerable-devices
+      script: '|||infinipoint-get-vulnerable-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      device_os: {}
+      device_risk:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 910c0afc-8c4b-4be8-8e47-515d85cf031e
+    type: condition
+    task:
+      id: 910c0afc-8c4b-4be8-8e47-515d85cf031e
+      version: -1
+      name: Validate Output (infinipoint-get-vulnerable-devices)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infinipoint.Vulnerability.Devices.$device
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 370,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 7e96bdc1-d459-41cb-8873-722bd161a050
+    type: title
+    task:
+      id: 7e96bdc1-d459-41cb-8873-722bd161a050
+      version: -1
+      name: Success -  infinipoint-get-vulnerable-devices
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 10095e56-6429-4f8e-8528-e1c3d384db22
+    type: regular
+    task:
+      id: 10095e56-6429-4f8e-8528-e1c3d384db22
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 3470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 7a387a89-2918-492c-8017-30367d970d1e
+    type: regular
+    task:
+      id: 7a387a89-2918-492c-8017-30367d970d1e
+      version: -1
+      name: infinipoint-get-tag
+      script: '|||infinipoint-get-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      name:
+        simple: et
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 3640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: e60e6296-6c57-4c51-830e-0a0b3f27124a
+    type: condition
+    task:
+      id: e60e6296-6c57-4c51-830e-0a0b3f27124a
+      version: -1
+      name: Validate Output (infinipoint-get-tag)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infinipoint.Tags.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 3770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 92c22b07-85ab-4cdf-8ff7-0fe0ca282e3b
+    type: title
+    task:
+      id: 92c22b07-85ab-4cdf-8ff7-0fe0ca282e3b
+      version: -1
+      name: Success -  infinipoint-get-tag
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 3940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 653605ce-fa5f-484c-8531-851763220782
+    type: regular
+    task:
+      id: 653605ce-fa5f-484c-8531-851763220782
+      version: -1
+      name: infinipoint-get-networks
+      script: '|||infinipoint-get-networks'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      alias: {}
+      cidr: {}
+      gateway_ip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 4245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 42cd1be1-8da4-4a53-83de-ee99ab8b2f47
+    type: condition
+    task:
+      id: 42cd1be1-8da4-4a53-83de-ee99ab8b2f47
+      version: -1
+      name: Validate Output - infinipoint-get-networks
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Infinipoint.Networks.Info.cidr
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 4380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: e97b31ad-0b40-42a3-827e-a02caaf4a880
+    type: title
+    task:
+      id: e97b31ad-0b40-42a3-827e-a02caaf4a880
+      version: -1
+      name: Success - infinipoint-get-networks
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 4560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 470f9cec-2d8e-453a-8eed-a7d5a62e567e
+    type: regular
+    task:
+      id: 470f9cec-2d8e-453a-8eed-a7d5a62e567e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 4060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 164cf52b-8504-49c8-88b5-9f97865aaad8
+    type: regular
+    task:
+      id: 164cf52b-8504-49c8-88b5-9f97865aaad8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 4670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 25e18909-33bb-44b0-80cf-938d4a98cea2
+    type: regular
+    task:
+      id: 25e18909-33bb-44b0-80cf-938d4a98cea2
+      version: -1
+      name: infinipoint-get-action
+      description: Get results for a given action ID
+      tags:
+      - polling
+      script: '|||infinipoint-get-action-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      action_id:
+        simple: ${Infinipoint.Scripts.execute.actionId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 5020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 4e9d015d-f326-49db-85ad-8d81a76dcb7e
+    type: condition
+    task:
+      id: 4e9d015d-f326-49db-85ad-8d81a76dcb7e
+      version: -1
+      name: Validate Output (infinipoint-run-script flow)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Infinipoint.Responses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 5140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 3397f1ef-d157-46a5-8ff0-3e8caba778ec
+    type: title
+    task:
+      id: 3397f1ef-d157-46a5-8ff0-3e8caba778ec
+      version: -1
+      name: Success - run script flow
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 67a6c96d-9d88-43ec-80f9-7503f9e24beb
+    type: regular
+    task:
+      id: 67a6c96d-9d88-43ec-80f9-7503f9e24beb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: be08ccaa-842b-44cc-86c9-890baca3d50e
+    type: regular
+    task:
+      id: be08ccaa-842b-44cc-86c9-890baca3d50e
+      version: -1
+      name: infinipoint-get-action
+      description: Get results for a given action ID
+      tags:
+      - polling
+      script: '|||infinipoint-get-action-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      action_id:
+        simple: ${Infinipoint.Scripts.execute.actionId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 5975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: f2d8c32f-ceed-4456-808e-38a8562face7
+    type: condition
+    task:
+      id: f2d8c32f-ceed-4456-808e-38a8562face7
+      version: -1
+      name: Validate Output (infinipoint-run-osquery flow)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Infinipoint.Responses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 6100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 3bad60b4-412f-44d6-832b-75f4af7bcee9
+    type: title
+    task:
+      id: 3bad60b4-412f-44d6-832b-75f4af7bcee9
+      version: -1
+      name: Success - run osquery flow
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 6280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 1163968e-6614-4cca-858f-817a48f28a28
+    type: regular
+    task:
+      id: 1163968e-6614-4cca-858f-817a48f28a28
+      version: -1
+      name: sleep 30
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 5920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 0beb428a-b239-4a2d-850c-d32364e435e7
+    type: regular
+    task:
+      id: 0beb428a-b239-4a2d-850c-d32364e435e7
+      version: -1
+      name: sleep 30
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 4980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 09ac6099-af5b-4b7a-8eb4-313707d09353
+    type: regular
+    task:
+      id: 09ac6099-af5b-4b7a-8eb4-313707d09353
+      version: -1
+      name: infinipoint-get-osquery
+      script: '|||infinipoint-get-queries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      name:
+        simple: os_version
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 5580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: ee77d7a0-e2ea-4f54-86d3-0b855c7cb5ec
+    type: regular
+    task:
+      id: ee77d7a0-e2ea-4f54-86d3-0b855c7cb5ec
+      version: -1
+      name: infinipoint-run-osquery
+      description: Run queries on managed devices
+      script: '|||infinipoint-execute-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      id:
+        simple: ${Infinipoint.Scripts.Search.id}
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": 5750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: a2774f79-9abb-4b32-89af-b4e652950145
+    type: regular
+    task:
+      id: a2774f79-9abb-4b32-89af-b4e652950145
+      version: -1
+      name: Infinipoint-run-scripts
+      description: Run queries on managed devices
+      script: '|||infinipoint-execute-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      id:
+        simple: ${Infinipoint.Scripts.Search.id}
+      target: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 4810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: db2591d0-014b-4fe6-8339-24afa457de3e
+    type: regular
+    task:
+      id: db2591d0-014b-4fe6-8339-24afa457de3e
+      version: -1
+      name: infinipoint-get-scripts
+      script: '|||infinipoint-get-queries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      name:
+        simple: User Profile Not In Use
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 4680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: ec1562ea-bd60-4230-8183-bba03e7ab6bb
+    type: regular
+    task:
+      id: ec1562ea-bd60-4230-8183-bba03e7ab6bb
+      version: -1
+      name: infinipoint-get-assets-hardware
+      description: Get managed devices
+      script: '|||infinipoint-get-assets-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      $host: {}
+      os_type:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6525,
+        "width": 1160,
+        "x": 90,
+        "y": -180
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

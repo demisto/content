@@ -1,0 +1,27 @@
+{
+    "name": "OTRS Service Management XSOAR Pack",
+    "description": "An Integration Pack to Create, Update, and Delete OTRS Tickets",
+    "support": "partner",
+    "currentVersion": "1.1.11",
+    "author": "OTRS AG",
+    "url": "https://otrs.com/",
+    "email": "sales@otrs.com",
+    "created": "2020-04-09T07:27:43Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "OTRS"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

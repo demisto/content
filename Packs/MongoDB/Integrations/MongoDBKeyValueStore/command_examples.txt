@@ -1,0 +1,7 @@
+!mongodb-write-key-value key=demisto value=test5
+!mongodb-get-key-value key=demisto
+!mongodb-list-incidents
+!mongodb-list-key-values id=1234
+!mongodb-delete-key key=hello id=1234
+!mongodb-get-keys-number id=1234
+!mongodb-purge-entries id=2468

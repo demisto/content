@@ -1,0 +1,45 @@
+[
+    [
+        "Client Type",
+        "Domain(s)"
+    ],
+    [
+        "Webex Meetings Desktop Application",
+        "*.mock.com\t\t\t*.mock.com\t\t\t*.mock.com"
+    ],
+    [
+        "Webex Desktop Clients (Mac/PC, including WebApp the browser based thin client) connecting to Webex Meetings",
+        "*.mock.com"
+    ],
+    [
+        "On-prem SIP/H323 devices calling into (or being called back from) a Webex Meeting",
+        "*.mock.com (note IP dialing also available)"
+    ],
+    [
+        "Webex Mobile Clients (iOS, Android) connecting to Webex Meetings",
+        "*.mock.com"
+    ],
+    [
+        "Certificate Validation",
+        "*.mock.com\t\t\t*.mock.com\t\t\t*.mock.com\t\t\t*.mock.com\t\t\t*.mock.org\t\t\t*.mock.com"
+    ],
+    [
+        "People Insights Integration",
+        "*.mock.com"
+    ],
+    [
+        "Webex Meetings site performance analytics and Webex App",
+        "*.mock.com\t\t\t*.mock.com"
+    ],
+    [
+        "Webex Events Webcasts (Attendees only)",
+        "*.mock.com"
+    ],
+    [
+        "Used for Slido PPT add-in and to allow Slido webpages to create polls/quizzes in pre-meeting",
+        "*.mock.com\t\t\t*.mock.mock\t\t\t*.mock.mock.com"
+    ],
+    [
+        "If you have Webex app Desktop Clients, Cloud Registered Devices (including Webex Boards) connecting to Webex Meetings, you also need to allow the list of domains outlined in https://help.webex.com/WBX000028782/Network-Requirements-for-Webex-Teams-Services"
+    ]
+]

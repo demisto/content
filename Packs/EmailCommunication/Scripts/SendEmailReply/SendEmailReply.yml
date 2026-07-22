@@ -1,0 +1,74 @@
+args:
+- defaultValue: ${File}
+  description: Files.
+  isArray: true
+  name: files
+- defaultValue: ${incident.attachment}
+  description: Attachment.
+  isArray: true
+  name: attachment
+- description: The mailbox from which emails are sent from the 3rd party integration.
+  name: service_mail
+- name: mail_sender_instance
+  description: Name of the mail sender instance name for transmitting emails.
+- name: new_thread
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  - n/a
+  description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only.
+  defaultValue: n/a
+- name: subject_include_incident_id
+  description: Include the Incident ID within the email subject.
+  defaultValue: 'false'
+- name: reputation_calc_async
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: Specify whether to calculate the reputation in an asynchronous way.
+  defaultValue: 'false'
+- auto: PREDEFINED
+  defaultValue: html
+  description: 'The body type of the email. Can be: "text", or "HTML".'
+  name: body_type
+  predefined:
+  - text
+  - HTML
+- description: The mailbox address to send the email from.
+  name: from
+- name: timezone
+  defaultValue: UTC
+  description: Timezone used for email thread timestamps (must be a valid IANA timezone such as UTC, Europe/London, or America/New_York; defaults to UTC if not specified or invalid).
+comment: |-
+  Send email reply
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+commonfields:
+  id: SendEmailReply
+  version: -1
+enabled: true
+name: SendEmailReply
+script: ''
+subtype: python3
+system: true
+type: python
+fromversion: 5.0.0
+dockerimage: demisto/bs4-py3:1.0.0.7704170
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dependson:
+  must:
+  - core-api-post
+  - core-api-download
+tags: []
+scripttarget: 0
+runas: DBotWeakRole
+runonce: false

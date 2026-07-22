@@ -1,0 +1,47 @@
+{
+  "empty_response": {
+    "data": {}
+  },
+  "raw_response": {
+    "data": {
+      "vsphereVmDownloadSnapshotFiles": {
+        "id": "dummy_id",
+        "status": "QUEUED",
+        "links": [
+          {
+            "href": "dummy_url",
+            "rel": "self"
+          }
+        ]
+      },
+      "filesetDownloadSnapshotFiles": {
+        "id": "dummy_id",
+        "status": "QUEUED",
+        "links": [
+          {
+            "href": "dummy_url",
+            "rel": "self"
+          }
+        ]
+      },
+      "downloadVolumeGroupSnapshotFiles": {
+        "id": "dummy_id",
+        "status": "QUEUED",
+        "links": [
+          {
+            "href": "dummy_url",
+            "rel": "self"
+          }
+        ]
+      }
+    }
+  },
+  "outputs": {
+    "id": "dummy_id",
+    "status": "QUEUED",
+    "links": {
+      "href": "dummy_url",
+      "rel": "self"
+    }
+  }
+}

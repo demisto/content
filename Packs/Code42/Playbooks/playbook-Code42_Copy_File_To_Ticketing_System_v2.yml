@@ -1,0 +1,222 @@
+id: Code42 Copy File To Ticketing System v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Code42 Copy File To Ticketing System v2
+description: Downloads a file from Code42 and attaches it to a ticketing system. This playbook uses Jira out-of-the-box, but you can swap it with a different Ticketing system and achieve the same result. For example, to use ServiceNow, change the command `jira-issue-upload-file` to be `servicenow-upload-file` and use the `id` parameter for `issueId` and `file_id` for `entryId`.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fed44edd-ce2f-44f7-8671-63579af89d01
+    type: start
+    task:
+      id: fed44edd-ce2f-44f7-8671-63579af89d01
+      version: -1
+      name: ""
+      description: The start task.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 31ccfbe7-73aa-4ce7-8c83-1abb21e0ff2b
+    type: title
+    task:
+      id: 31ccfbe7-73aa-4ce7-8c83-1abb21e0ff2b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0213431c-6c1a-4c43-82bd-309be99440fc
+    type: regular
+    task:
+      id: 0213431c-6c1a-4c43-82bd-309be99440fc
+      version: -1
+      name: Download File
+      description: Downloads a file from Code42 servers.
+      script: Code42|||code42-download-file
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      filename:
+        simple: ${inputs.Filename}
+      hash:
+        simple: ${inputs.Hash}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4249ab1f-ea70-4ef2-89a5-1fbd528f25bf
+    type: regular
+    task:
+      id: 4249ab1f-ea70-4ef2-89a5-1fbd528f25bf
+      version: -1
+      name: Upload to Ticketing System
+      description: Uploads a file attachment to an issue.
+      script: Jira V3|||jira-issue-upload-file
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      attachment_name:
+        complex:
+          root: File
+          accessor: Name
+          transformers:
+          - operator: LastArrayElement
+      issue_id:
+        simple: ${inputs.IssueId}
+      upload:
+        complex:
+          root: File
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: ce280a8c-0c97-4b2c-8af4-d149b9fcd736
+    type: condition
+    task:
+      id: ce280a8c-0c97-4b2c-8af4-d149b9fcd736
+      version: -1
+      name: Is Jira available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "23"
+      "yes":
+      - "24"
+    scriptarguments:
+      brandname:
+        simple: Jira V3
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hash
+  value: {}
+  required: true
+  description: The hash of the file to download from Code42 and attach to the ticketing system.
+  playbookInputQuery:
+- key: IssueId
+  value: {}
+  required: true
+  description: The ID of the Ticket to upload the file to.
+  playbookInputQuery:
+- key: Filename
+  value: {}
+  required: false
+  description: The name of the file to download/upload.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

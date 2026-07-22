@@ -1,0 +1,20 @@
+{
+  "attackSignaturesCheck": "true",
+  "defenseAttributes": {
+    "maximumTotalLengthOfGWTData": "any",
+    "maximumValueLength": "any",
+    "tolerateGWTParsingWarnings": "false"
+  },
+  "description": "",
+  "id": "json-profile-md5",
+  "isDefault": "false",
+  "isReferenced": "false",
+  "_kind": "tm:asm:policies:gwt-profiles:gwt-profilestate",
+  "lastUpdateMicros": 1596553383000000,
+  "metacharElementCheck": "false",
+  "name": "json-profile",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/gwt-profiles/json-profile-md5?ver=15.1.0",
+  "signatureOverrides": [
+    
+  ]
+}

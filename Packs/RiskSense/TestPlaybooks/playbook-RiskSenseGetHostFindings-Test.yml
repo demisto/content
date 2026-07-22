@@ -1,0 +1,416 @@
+id: RiskSense Get Host Findings - Test
+version: -1
+name: RiskSense Get Host Findings - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-get-host-findings" command. 
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10b39b81-f0f8-4b75-8977-1fe9f12a3e8e
+    type: start
+    task:
+      id: 10b39b81-f0f8-4b75-8977-1fe9f12a3e8e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 3e6023f1-5419-4bd7-89aa-fdc231b6db0a
+    type: regular
+    task:
+      id: 3e6023f1-5419-4bd7-89aa-fdc231b6db0a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 82a50be1-ce5a-45d9-8bf0-7b89ac19db18
+    type: regular
+    task:
+      id: 82a50be1-ce5a-45d9-8bf0-7b89ac19db18
+      version: -1
+      name: Execute risksense-get-host-findings command from Demisto
+      description: A detailed host finding view with the severity level. Displays
+        vulnerability information like CVE, Threats associated with current findings
+        and origin of findings.
+      script: RiskSense|||risksense-get-host-findings
+      type: regular
+      iscommand: true
+      brand: RiskSense
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      exclude:
+        simple: "false"
+      fieldname:
+        simple: titles
+      operator:
+        simple: EXACT
+      page: {}
+      size: {}
+      sort_by: {}
+      sort_direction: {}
+      value:
+        simple: 'NULL Pointer Dereference - based vulnerability identified : CVE-2017-3169'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 8bea6e9e-5c4d-4022-8f4c-b717f5caabb6
+    type: condition
+    task:
+      id: 8bea6e9e-5c4d-4022-8f4c-b717f5caabb6
+      version: -1
+      name: Is context data matched to the response?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.HostName
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.HostIpAddress
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Title
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.RiskRating
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Host.Criticality
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Severity
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Group.ID
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Tag.ID
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.TagAsset.ID
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.HostID
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.SourceID
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Network.ID
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Assessment.ID
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.LastFoundOn
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.FindingType
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.ScannerName
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Vulnerability.BaseScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.Vulnerability.Cve
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: HostFinding.ID
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: d63cfd54-e4a8-48e0-89ca-7430276e1204
+    type: regular
+    task:
+      id: d63cfd54-e4a8-48e0-89ca-7430276e1204
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: 8455350c-2248-431b-8e57-3c08cfc1cb2b
+    type: title
+    task:
+      id: 8455350c-2248-431b-8e57-3c08cfc1cb2b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 7b6c0521-c487-45b8-8b8e-58db33e0deb0
+    type: regular
+    task:
+      id: 7b6c0521-c487-45b8-8b8e-58db33e0deb0
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_7_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

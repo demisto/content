@@ -1,0 +1,299 @@
+{
+    "@name": "jl-test-1",
+    "@uuid": "4c2d39ea-d2bd-45c1-8003-91264c4ade3b",
+    "@admin": "demistoadmin",
+    "@dirtyId": "13",
+    "@time": "2023/06/05 04:28:35",
+    "@loc": "SA_FWs",
+    "profile-setting": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "profiles": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "spyware": {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "member": {
+                    "@admin": "demistoadmin",
+                    "@dirtyId": "13",
+                    "@time": "2023/06/05 04:28:35",
+                    "#text": "default"
+                }
+            },
+            "virus": {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "member": {
+                    "@admin": "demistoadmin",
+                    "@dirtyId": "13",
+                    "@time": "2023/06/05 04:28:35",
+                    "#text": "default"
+                }
+            }
+        },
+        "group": {
+            "member": "Prince Security Profile Group"
+        }
+    },
+    "qos": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "marking": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "ip-precedence": {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "cs1"
+            }
+        }
+    },
+    "target": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "devices": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "entry": [
+                {
+                    "@name": "007051000185487",
+                    "@admin": "demistoadmin",
+                    "@dirtyId": "13",
+                    "@time": "2023/06/05 04:28:35"
+                },
+                {
+                    "@name": "007051000188986",
+                    "@admin": "demistoadmin",
+                    "@dirtyId": "13",
+                    "@time": "2023/06/05 04:28:35"
+                }
+            ]
+        },
+        "negate": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "no"
+        }
+    },
+    "option": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "disable-server-response-inspection": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "yes"
+        }
+    },
+    "to": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "internal"
+        }
+    },
+    "from": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "internal"
+        }
+    },
+    "source": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "1.1.1.1"
+        }
+    },
+    "destination": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "my_shared_address_object_test"
+        }
+    },
+    "source-user": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "me"
+        }
+    },
+    "category": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": [
+            {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "alcohol-and-tobacco"
+            },
+            {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "auctions"
+            }
+        ]
+    },
+    "application": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "8x8"
+        }
+    },
+    "service": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": [
+            {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "new group"
+            },
+            {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "service-http"
+            },
+            {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "service-https"
+            }
+        ]
+    },
+    "source-hip": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "good name"
+        }
+    },
+    "destination-hip": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": {
+            "@admin": "demistoadmin",
+            "@dirtyId": "13",
+            "@time": "2023/06/05 04:28:35",
+            "#text": "bad nam"
+        }
+    },
+    "tag": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "member": [
+            {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "APIiiiiii"
+            },
+            {
+                "@admin": "demistoadmin",
+                "@dirtyId": "13",
+                "@time": "2023/06/05 04:28:35",
+                "#text": "test2shared"
+            }
+        ]
+    },
+    "action": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "reset-server"
+    },
+    "icmp-unreachable": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "yes"
+    },
+    "log-start": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "yes"
+    },
+    "rule-type": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "intrazone"
+    },
+    "description": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "bbbbbbbbbb"
+    },
+    "group-tag": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "moishy tags"
+    },
+    "schedule": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "test-schedule"
+    },
+    "log-setting": {
+        "@admin": "demistoadmin",
+        "@dirtyId": "13",
+        "@time": "2023/06/05 04:28:35",
+        "#text": "Log forwarding for SA"
+    }
+}

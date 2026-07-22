@@ -1,0 +1,20 @@
+[
+  {
+    "Fname": "fname1",
+    "Lname": "lname1",
+    "Email": "email1",
+      "Phones": "p1: phone1\np2: phone2"
+  },
+  {
+    "Fname": "fname2",
+    "Lname": "lname2",
+    "Email": "email2",
+      "Phones": "p1: phone1\np2: phone2"
+  },
+  {
+    "Fname": "fname3",
+    "Lname": "lname3",
+    "Email": "email3",
+      "Phones": "p1: phone1\np2: phone2\n\np1: phone3\np2: phone4"
+  }
+]

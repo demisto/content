@@ -1,0 +1,49 @@
+args:
+- description: The domain to query.
+  name: domain
+  required: true
+- description: "IP of the DNS Server to use (default: system settings)."
+  name: server
+- description: "Use TCP for the query (default: false)."
+  name: use_tcp
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
+- description: "Comma separated list of query types (default: CNAME,NS,A,AAAA)."
+  name: qtype
+  defaultValue: CNAME,NS,A,AAAA
+comment: Returns DNS details for a domain.
+commonfields:
+  id: GetDomainDNSDetails
+  version: -1
+name: GetDomainDNSDetails
+outputs:
+- contextPath: DomainDNSDetails.A
+  description: Domain A records.
+  type: String
+- contextPath: DomainDNSDetails.AAAA
+  description: Domain AAAA records.
+  type: String
+- contextPath: DomainDNSDetails.CNAME
+  description: Domain CNAME records.
+  type: String
+- contextPath: DomainDNSDetails.NS
+  description: Domain NS records.
+  type: String
+- contextPath: DomainDNSDetails.domain
+  description: Domain name used in the query.
+  type: String
+- contextPath: DomainDNSDetails.server
+  description: Name server that returned the result.
+  type: String
+script: '-'
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/netutils:1.0.0.10187688
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

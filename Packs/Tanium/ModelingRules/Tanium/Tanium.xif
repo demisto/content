@@ -1,0 +1,16 @@
+[MODEL: dataset = tanium_integrity_monitor_raw]
+alter
+        md5_hash = arrayindex(regextract(json_extract_scalar(_raw_log, "$.Hash"), "^[a-f0-9]{32}"), 0),
+        sha256_hash = arrayindex(regextract(json_extract_scalar(_raw_log, "$.Hash"), "^[a-f0-9]{64}"),0),
+        description = if(json_extract_scalar(_raw_log, "$.Event Time") !~= "\d{2}:\d{2}:\d{2}", json_extract_scalar(_raw_log, "$.Event Time"), null)
+
+| alter
+        xdm.source.host.hostname = json_extract_scalar(_raw_log, "$.Computer Name"),
+        xdm.target.file.path = json_extract_scalar(_raw_log, "$.File Path"),
+        xdm.event.type = json_extract_scalar(_raw_log, "$.Change Type"),
+        xdm.source.process.executable.path = json_extract_scalar(_raw_log, "$.Process Path"),
+        xdm.source.user.username = json_extract_scalar(_raw_log, "$.User"),
+        xdm.target.resource.value = json_extract_scalar(_raw_log, "$.Detail"),
+        xdm.source.process.executable.md5 = md5_hash,
+        xdm.source.process.executable.sha256 = sha256_hash,
+        xdm.event.description = description;

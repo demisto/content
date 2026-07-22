@@ -1,0 +1,113 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "rha1_analytics": {
+            "rl": {
+                "rha1_counters": {
+                    "sha1": "21841b32c6165b27dddbd4d6eb3a672defe54271",
+                    "rha1_type": "pe01",
+                    "rha1_first_seen": "2015-05-26T03:53:56",
+                    "rha1_last_seen": "2020-04-20T00:42:11",
+                    "sample_counters": {
+                        "known": 0,
+                        "malicious": 144,
+                        "suspicious": 0,
+                        "total": 144
+                    },
+                    "sample_metadata": {
+                        "md5": "3133c2231fcee5d6b0b4c988a5201da1",
+                        "sha256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346",
+                        "classification": "MALICIOUS",
+                        "sample_type": "PE/Exe/UPX",
+                        "sample_size": 636416,
+                        "sample_available": true,
+                        "trust_factor": 5,
+                        "threat_level": 5,
+                        "threat_name": "Win32.Ransomware.Tox",
+                        "malware_family": "Tox",
+                        "malware_type": "Ransomware",
+                        "platform": "Win32",
+                        "first_seen": "2015-05-30T22:04:00",
+                        "last_seen": "2021-04-19T11:10:35.567000"
+                    }
+                }
+            }
+        }
+    },
+    "HumanReadable": "## ReversingLabs RHA1 Analytics results for hash 21841b32c6165b27dddbd4d6eb3a672defe54271\n ### Sample counters\n **KNOWN**: 0\n    **MALICIOUS**:  144\n    **SUSPICIOUS**: 0\n    **TOTAL**:    144\n ### Sample metadata\n **Classification**: MALICIOUS\n    **MD5 hash**: 3133c2231fcee5d6b0b4c988a5201da1\n    **SHA-256 hash**: 2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346\n    **First seen**: 2015-05-30T22:04:00\n    **Last seen**: 2021-04-19T11:10:35.567000\n    **Sample available**: True\n    **Sample size**: 636416 bytes\n    **Sample type**: PE/Exe/UPX\n        **Threat name**: Win32.Ransomware.Tox\n        **Threat level**: 5",
+    "EntryContext": {
+        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+            {
+                "MD5": "3133c2231fcee5d6b0b4c988a5201da1",
+                "SHA1": "21841b32c6165b27dddbd4d6eb3a672defe54271",
+                "SHA256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346",
+                "Hashes": [
+                    {
+                        "type": "MD5",
+                        "value": "3133c2231fcee5d6b0b4c988a5201da1"
+                    },
+                    {
+                        "type": "SHA1",
+                        "value": "21841b32c6165b27dddbd4d6eb3a672defe54271"
+                    },
+                    {
+                        "type": "SHA256",
+                        "value": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346"
+                    }
+                ],
+                "Malicious": {
+                    "Vendor": "ReversingLabs TitaniumCloud v2",
+                    "Description": "Win32.Ransomware.Tox"
+                }
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "21841b32c6165b27dddbd4d6eb3a672defe54271",
+                "Type": "file",
+                "Vendor": "ReversingLabs TitaniumCloud v2",
+                "Score": 3,
+                "Reliability": "C - Fairly reliable"
+            }
+        ],
+        "ReversingLabs": {
+            "rha1_analytics": {
+                "rl": {
+                    "rha1_counters": {
+                        "sha1": "21841b32c6165b27dddbd4d6eb3a672defe54271",
+                        "rha1_type": "pe01",
+                        "rha1_first_seen": "2015-05-26T03:53:56",
+                        "rha1_last_seen": "2020-04-20T00:42:11",
+                        "sample_counters": {
+                            "known": 0,
+                            "malicious": 144,
+                            "suspicious": 0,
+                            "total": 144
+                        },
+                        "sample_metadata": {
+                            "md5": "3133c2231fcee5d6b0b4c988a5201da1",
+                            "sha256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346",
+                            "classification": "MALICIOUS",
+                            "sample_type": "PE/Exe/UPX",
+                            "sample_size": 636416,
+                            "sample_available": true,
+                            "trust_factor": 5,
+                            "threat_level": 5,
+                            "threat_name": "Win32.Ransomware.Tox",
+                            "malware_family": "Tox",
+                            "malware_type": "Ransomware",
+                            "platform": "Win32",
+                            "first_seen": "2015-05-30T22:04:00",
+                            "last_seen": "2021-04-19T11:10:35.567000"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

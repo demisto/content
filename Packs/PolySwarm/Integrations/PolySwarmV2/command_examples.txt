@@ -1,0 +1,9 @@
+!polyswarm-get-report scan_uuid="25e755c8957163376b3437ce808843c1c2598e0fb3c5f31dc958576cd5cde63e"
+!file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"
+!ip ip="8.8.8.8"
+!url url="https://polyswarm.io"
+!domain domain="polyswarm.io"
+!url-scan url="https://polyswarm.io"
+!file-rescan hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe"
+!get-file hash="2410907a92b16dbd23a88d6bbd5037eae20eea809279f370293b587e1996eafe
+!file-scan entryID="995@0c42ee2d-57ff-4ccf-88ef-8d51c7936595"

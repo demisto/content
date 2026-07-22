@@ -1,0 +1,10 @@
+{
+  "value": [
+    {
+      "TableName": "xsoar1"
+    },
+    {
+      "TableName": "xsoar2"
+    }
+  ]
+}

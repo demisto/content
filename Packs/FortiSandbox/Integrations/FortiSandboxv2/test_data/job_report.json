@@ -1,0 +1,15 @@
+{
+    "id": "50",
+    "ver": "2.5",
+    "result": {
+        "url": "/scan/result/get-pdf-report",
+        "status": {
+            "code": 0,
+            "message": "OK"
+        },
+        "data": {
+            "report": "\"RGVjb2RlZCBQaWthY2h1\"",
+            "report_name": "pikachu.pdf"
+        }
+    }
+}

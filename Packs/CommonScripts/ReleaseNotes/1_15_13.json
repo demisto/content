@@ -1,0 +1,5 @@
+{
+    "breakingChanges": true,
+    "marketplaces": ["marketplacev2"],
+    "breakingChangesNotes": "The misnamed, recently-released ***PrintToParentAlert*** script is no longer available. Use ***PrintToParentIncident*** instead."
+}

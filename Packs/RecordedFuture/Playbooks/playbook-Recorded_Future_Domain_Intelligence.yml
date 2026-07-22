@@ -1,0 +1,548 @@
+id: Recorded Future Domain Intelligence
+version: -1
+name: Recorded Future Domain Intelligence
+description: Domain enrichment using Recorded Future intelligence
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f4b60c32-9586-439f-800c-c8cb71ee5589
+    type: start
+    task:
+      id: f4b60c32-9586-439f-800c-c8cb71ee5589
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 85412671-162b-4f6f-8aa9-3cbabe89098e
+    type: condition
+    task:
+      id: 85412671-162b-4f6f-8aa9-3cbabe89098e
+      version: -1
+      name: Is there a domain to enrich?
+      description: Checks whether the playbook's input contains at least one domain
+        name to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 5c25e685-6692-4d66-828f-4cbc4264844c
+    type: title
+    task:
+      id: 5c25e685-6692-4d66-828f-4cbc4264844c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: a19c274b-c50c-498c-8ad7-b352e8cf6c08
+    type: condition
+    task:
+      id: a19c274b-c50c-498c-8ad7-b352e8cf6c08
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Checks if there is an active instance of the Recorded Future API
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: ee31f6ce-5751-4049-85a3-d3fc1b55eaf1
+    type: regular
+    task:
+      id: ee31f6ce-5751-4049-85a3-d3fc1b55eaf1
+      version: -1
+      name: Get domain intelligence from Recorded Future
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      entity:
+        simple: ${inputs.Domain}
+      entity_type:
+        simple: domain
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 4b34cf28-ad8f-4788-8080-5c751c6642eb
+    type: title
+    task:
+      id: 4b34cf28-ad8f-4788-8080-5c751c6642eb
+      version: -1
+      name: Enrich Using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 3e1b7c13-3ace-4ad2-81f2-18fc6e425eb5
+    type: regular
+    task:
+      id: 3e1b7c13-3ace-4ad2-81f2-18fc6e425eb5
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      recordedfutureriskrules:
+        simple: ${RecordedFuture.Domain.concatRules}
+      value:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_24_#default#": 0.57,
+      "26_24_#default#": 0.55,
+      "26_28_yes": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1060,
+        "width": 740,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+  required: false
+  description: The domain name to enrich.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: Domain.Name
+  description: Domain name
+  type: string
+- contextPath: RecordedFuture.Domain.criticality
+  description: Risk Criticality
+  type: number
+- contextPath: RecordedFuture.Domain.criticalityLabel
+  description: Risk Criticality Label
+  type: string
+- contextPath: RecordedFuture.Domain.riskString
+  description: Risk String
+  type: string
+- contextPath: RecordedFuture.Domain.riskSummary
+  description: Risk Summary
+  type: string
+- contextPath: RecordedFuture.Domain.rules
+  description: Risk Rules
+  type: string
+- contextPath: RecordedFuture.Domain.score
+  description: Risk Score
+  type: number
+- contextPath: RecordedFuture.Domain.firstSeen
+  description: Evidence First Seen
+  type: date
+- contextPath: RecordedFuture.Domain.lastSeen
+  description: Evidence Last Seen
+  type: date
+- contextPath: RecordedFuture.Domain.intelCard
+  description: Recorded Future Intelligence Card URL
+  type: string
+- contextPath: RecordedFuture.Domain.type
+  description: Entity Type
+  type: string
+- contextPath: RecordedFuture.Domain.name
+  description: Entity
+  type: string
+- contextPath: RecordedFuture.Domain.id
+  description: Recorded Future Entity ID
+  type: string
+- contextPath: RecordedFuture.Domain.metrics.type
+  description: Recorded Future Metrics Type
+  type: string
+- contextPath: RecordedFuture.Domain.metrics.value
+  description: Recorded Future Metrics Value
+  type: number
+- contextPath: RecordedFuture.Domain.threatLists.description
+  description: Recorded Future Threat List Description
+  type: string
+- contextPath: RecordedFuture.Domain.threatLists.id
+  description: Recorded Future Threat List ID
+  type: string
+- contextPath: RecordedFuture.Domain.threatLists.name
+  description: Recorded Future Threat List Name
+  type: string
+- contextPath: RecordedFuture.Domain.threatLists.type
+  description: Recorded Future Threat List Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttacker.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttacker.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttacker.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttacker.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTarget.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTarget.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTarget.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTarget.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedThreatActor.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedThreatActor.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedThreatActor.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedThreatActor.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalware.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalware.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalware.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalware.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCyberVulnerability.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedIpAddress.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedIpAddress.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedIpAddress.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedIpAddress.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedInternetDomainName.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedProduct.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedProduct.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedProduct.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedProduct.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCountries.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCountries.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCountries.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCountries.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedHash.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedHash.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedHash.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedHash.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTechnology.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTechnology.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTechnology.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedTechnology.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedEmailAddress.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttackVector.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttackVector.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttackVector.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedAttackVector.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedMalwareCategory.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedOperations.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedOperations.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedOperations.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedOperations.type
+  description: Recorded Future Related Type
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCompany.count
+  description: Recorded Future Related Count
+  type: number
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCompany.id
+  description: Recorded Future Related ID
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCompany.name
+  description: Recorded Future Related Name
+  type: string
+- contextPath: RecordedFuture.Domain.relatedEntities.RelatedCompany.type
+  description: Recorded Future Related Type
+  type: string
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

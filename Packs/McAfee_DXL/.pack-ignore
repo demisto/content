@@ -1,0 +1,14 @@
+[file:McAfee_DXL]
+ignore=PA116
+
+[file:McAfee_DXL.yml]
+ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM104,RM106
+
+[file:McAfee_DXL_image.png]
+ignore=IM111
+
+[known_words]
+DXL

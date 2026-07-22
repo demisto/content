@@ -1,0 +1,4 @@
+[INGEST:vendor="FireEye", product="HX", target_dataset="FireEye_HX_raw", no_hit = keep]
+// supports only RFC 3339 compatible timestamps
+filter cefVersion = null and to_string(event_at) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.]?\d{0,6}[Zz]|\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.]?\d{0,6}[\+\-]{1}\d{2}:\d{2}"
+| alter _time = event_at;

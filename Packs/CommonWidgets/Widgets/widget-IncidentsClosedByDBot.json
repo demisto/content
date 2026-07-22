@@ -1,0 +1,24 @@
+{
+ "id": "closed-by-dbot-incidents-percentage",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "Closed By Dbot",
+ "dataType": "scripts",
+ "widgetType": "number",
+ "query": "DBotClosedIncidentsPercentage",
+ "description": "Showing percentage of incidents handled and closed by DBot, without an owner being assigned to, across all incidents in the provided period",
+ "isPredefined": true,
+ "params": {
+  "currencySign": "%",
+  "signAlignment": "right",
+  "colors": {
+   "isEnabled": true,
+   "items": {
+    "#00CD33": {
+     "value": -1
+    }
+   },
+   "type": "above"
+  }
+ }
+}

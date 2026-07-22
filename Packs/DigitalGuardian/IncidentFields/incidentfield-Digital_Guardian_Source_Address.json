@@ -1,0 +1,42 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Digital Guardian Security Event"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "digitalguardiansourceaddress",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "Digital Guardian Source Address",
+    "editForm": true,
+    "fieldCalcScript": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_digitalguardiansourceaddress",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Digital Guardian Source Address",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "required": false,
+    "script": "",
+    "selectValues": null,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

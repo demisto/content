@@ -1,0 +1,14 @@
+{
+    "test_case_1":{
+        "args": {
+            "uuid": "uuid",
+            "ip": "8.8.8.8",
+            "dns_name": "dns_name",
+            "repository_id": "1"
+        },
+        "mock_response": {"error_code": 0, "error_msg": "", "response": {"dnsName":"dns_name","ip":"8.8.8.8", "uuid": "uuid"},"timestamp":1687092423, "type":"regular"},
+        "expected_hr": ["### Tenable.sc Device\n|IP|UUID|DNSName|\n|---|---|---|\n| 8.8.8.8 | uuid | dns_name |\n", null],
+        "expected_ec": [{"IP": "8.8.8.8", "UUID": "uuid", "DNSName": "dns_name"},
+        {"IPAddress": "8.8.8.8", "Hostname": "dns_name"}]
+    }
+}

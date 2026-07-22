@@ -1,0 +1,43 @@
+{
+  "outputs": {
+    "Udid": "dummy-udid",
+    "SerialNumber": "ABCD123",
+    "MacAddress": "ABABABABABAB",
+    "FriendlyName": "user123-laptop2 Inspiron 15",
+    "OrganizationGroupName": "M12345678",
+    "BatteryLevelPercentage": "700",
+    "Supervised": false,
+    "DataEncrypted": false,
+    "PlatformInfo": {
+      "DeviceType": "WinRT",
+      "PlatformName": "WinRT",
+      "ModelName": "Inspiron 15 7000 Gaming",
+      "OsVersion": "10.0.19042"
+    },
+    "CarrierInfo": {
+      "RoamingEnabled": false
+    },
+    "EnrollmentInfo": {
+      "EnrollmentStatus": "ENROLLED",
+      "Compliant": false,
+      "EnrollmentTimestamp": "2021-06-28T01:59:29.077Z",
+      "LastSeenTimestamp": "2021-07-07T10:06:04.433Z",
+      "Ownership": "EMPLOYEE",
+      "OrganizationGroupId": "dummy-uuid",
+      "OrganizationGroupName": "M12345678",
+      "UserName": "user123-laptop2",
+      "UserEmailAddress": "dummy-email",
+      "EnrollmentUserUuid": "dummy-uuid",
+      "ManagedBy": "MDM"
+    },
+    "OSBuildVersion": "1052",
+    "Links": [
+      {
+        "Rel": "self",
+        "Href": "http://as1687.awmdm.com/API/mdm/devices/12345678-1234-1234-1234-123456789ABC"
+      }
+    ],
+    "Uuid": "12345678-1234-1234-1234-123456789ABC"
+  },
+  "readable_output": "### Device\n|Device Friendly Name|UUID|Platform|Model|Ownership|Serial Number|MAC Address|Compliance Status|User Email Address|Last Seen (In UTC)|\n|---|---|---|---|---|---|---|---|---|---|\n| user123-laptop2 Inspiron 15 | 12345678-1234-1234-1234-123456789ABC | WinRT | Inspiron 15 7000 Gaming | EMPLOYEE | ABCD123 | ABABABABABAB | Non-Compliant | dummy-email | July 07, 2021 at 10:06:04 AM |\n"
+}

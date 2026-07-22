@@ -1,0 +1,16 @@
+{
+    "id": 1,
+    "name": "new_url_list",
+    "data": {
+        "urls": [
+            "www.google.com",
+            "www.abc.com"
+        ],
+        "type": "exact",
+        "json_version": 2
+    },
+    "modify_by": "modify_by",
+    "modify_time": "modify_time",
+    "modify_type": "Edited",
+    "pending": 0
+}

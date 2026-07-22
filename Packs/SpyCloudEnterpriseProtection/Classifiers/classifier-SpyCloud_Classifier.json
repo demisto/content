@@ -1,0 +1,21 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "SpyCloud - Classifier",
+    "keyTypeMap": {
+        "2": "SpyCloud Informative Data",
+        "20": "SpyCloud Breach Data",
+        "25": "SpyCloud Malware Data",
+        "5": "SpyCloud Informative Data"
+    },
+    "name": "SpyCloud - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "severity"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

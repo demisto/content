@@ -1,0 +1,89 @@
+{
+    "response": {
+      "status": {
+        "code": 1001,
+        "label": "FOUND",
+        "message": "The requested data has been found."
+      },
+      "md5": "da855ff838250f45d528a5a05692f14e",
+      "features": [
+        "av",
+        "te",
+        "extraction"
+      ],
+      "te": {
+        "combined_verdict": "malicious",
+        "severity": 4,
+        "confidence": 3,
+        "summary_report": "8cf485d8-d095-4487-ba36-a887d20fc83a",
+        "images": [
+          {
+            "report": {
+              "verdict": "malicious",
+              "xml_report": "ef5f38d8-c35e-42fa-b3f1-388e681e18b9"
+            },
+            "status": "found",
+            "id": "5e5de275-a103-4f67-b55b-47532918fa59",
+            "revision": 1
+          },
+          {
+            "report": {
+              "verdict": "malicious",
+              "xml_report": "c7486ce7-9cde-484d-9ba4-bfc51fd88f99"
+            },
+            "status": "found",
+            "id": "7e6fe36e-889e-4c25-8704-56378f0830df",
+            "revision": 1
+          }
+        ],
+        "status": {
+          "code": 1001,
+          "label": "FOUND",
+          "message": "The requested data has been found"
+        }
+      },
+      "av": {
+        "malware_info": {
+          "signature_name": "Exploit.JS.Pdfka.fma.W.ygrku",
+          "malware_family": 22,
+          "malware_type": 104,
+          "sevirity": 4,
+          "confidence": 5
+        },
+        "status": {
+          "code": 1001,
+          "label": "FOUND",
+          "message": "The requested data has been found"
+        }
+      },
+      "extraction": {
+        "method": "pdf",
+        "extract_result": "CP_EXTRACT_RESULT_SUCCESS",
+        "extracted_file_download_id": "82f67772-2116-4d29-a5be-245a434af2ae",
+        "output_file_name": "MyFile.docx.pdf",
+        "time": "1.374",
+        "extract_content": "Database Queries",
+        "extraction_data": {
+          "input_extension": "docx",
+          "input_real_extension": "xls",
+          "message": "OK",
+          "orig_file_url": "",
+          "output_file_name": "MyFile.cleaned.xls.pdf",
+          "protection_name": "Potential malicious content extracted",
+          "protection_type": "Conversion to PDF",
+          "risk": 2,
+          "scrub_activity": "Active content was found - XLS file was converted to PDF",
+          "scrub_method": "Convert to PDF",
+          "scrub_result": 0,
+          "scrub_time": "1.374",
+          "scrubbed_content": "Database Queries"
+        },
+        "tex_product": false,
+        "status": {
+          "code": 1001,
+          "label": "FOUND",
+          "message": "The requested data has been found."
+        }
+      }
+    }
+  }

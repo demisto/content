@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "query_time": 0.463722221,
+    "powered_by": "empower-api",
+    "trace_id": ""
+  },
+  "combined": {
+    "resources": {
+      "1": {
+        "session_id": "3",
+        "task_id": "4",
+        "complete": true,
+        "stdout": "",
+        "stderr": "Cannot find a process with the process identifier 5260.",
+        "base_command": "kill",
+        "aid": "1",
+        "errors": [],
+        "query_time": 0.462066577,
+        "offline_queued": false
+      }
+    }
+  },
+  "errors": []
+}

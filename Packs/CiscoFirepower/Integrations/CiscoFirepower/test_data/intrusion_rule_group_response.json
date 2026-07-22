@@ -1,0 +1,11 @@
+{
+    "name": "TestGroupUpdate",
+    "id": "id",
+    "type": "IntrusionRuleGroup",
+    "isSystemDefined": false,
+    "description": "TestGroupUpdate",
+    "links": {
+        "self": "links_self",
+        "parent": "links_parent"
+    }
+}

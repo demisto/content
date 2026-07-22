@@ -1,0 +1,872 @@
+id: TIM - ArcSight Add Url Indicators
+version: -1
+fromversion: 5.5.0
+name: TIM - ArcSight Add Url Indicators
+description: |-
+  This playbook queries indicators based on a pre-defined
+    query or results from a parent playbook and adds the resulting indicators to an ArcSight
+  Active List. The Active List ID should also be defined in the playbook inputs as well as the field name in the Active list to add to.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eceeb759-3757-4dea-b57b-56f1292aa665
+    type: start
+    task:
+      id: eceeb759-3757-4dea-b57b-56f1292aa665
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+    type: condition
+    task:
+      id: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+      version: -1
+      name: Is ArcSight Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "30"
+      - "60"
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ArcSight ESM v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 310ea840-6e2d-40e0-87e5-72ea5a29f8a9
+    type: condition
+    task:
+      id: 310ea840-6e2d-40e0-87e5-72ea5a29f8a9
+      version: -1
+      name: Are there filtered results?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: URL
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: cfce5c74-05e4-4119-8b56-36b7af7e6bd9
+    type: condition
+    task:
+      id: cfce5c74-05e4-4119-8b56-36b7af7e6bd9
+      version: -1
+      name: Is there an ArcSight Block list Url Active List and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightBlackListUrlActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightBlackUrlValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 85867485-236a-42ee-861e-c0a8af184917
+    type: regular
+    task:
+      id: 85867485-236a-42ee-861e-c0a8af184917
+      version: -1
+      name: Add Url to ArcSight Active list block list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightBlackUrlValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: ReplaceMatchGroup
+            args:
+              regex:
+                value:
+                  simple: .*?(:).*?:\/\/
+              replace_with:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightBlackListUrlActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: b0fa0dd1-44a2-43b3-8d12-4a0f7126e492
+    type: condition
+    task:
+      id: b0fa0dd1-44a2-43b3-8d12-4a0f7126e492
+      version: -1
+      name: Is there an ArcSight allow list Url Active List and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightWhiteListUrlActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightWhiteListUrlValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 658489eb-f20a-425a-89fe-72df6b3ff2dd
+    type: regular
+    task:
+      id: 658489eb-f20a-425a-89fe-72df6b3ff2dd
+      version: -1
+      name: Add Url to ArcSight Active list allow list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_white
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightWhiteListUrlValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: ReplaceMatchGroup
+            args:
+              regex:
+                value:
+                  simple: .*?(:).*?:\/\/
+              replace_with:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightWhiteListUrlActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 44b4b9d6-42eb-43c4-8c59-237257ebeac6
+    type: title
+    task:
+      id: 44b4b9d6-42eb-43c4-8c59-237257ebeac6
+      version: -1
+      name: Done
+      description: Adds the SIEM tag to the indicator.
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: 9adfc39a-b0b7-4f9f-8a66-155cf82d4292
+    type: regular
+    task:
+      id: 9adfc39a-b0b7-4f9f-8a66-155cf82d4292
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: b4d1988d-98ee-4df1-8468-0fa6acac98cd
+    type: regular
+    task:
+      id: b4d1988d-98ee-4df1-8468-0fa6acac98cd
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_white
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 0fd68f0f-026b-4d7d-8b31-5f566030492d
+    type: condition
+    task:
+      id: 0fd68f0f-026b-4d7d-8b31-5f566030492d
+      version: -1
+      name: Is there an ArcSight watch list Url Active List and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightWatchListUrlActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightWatchListUrlValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_watchlist
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 66e3c549-6b6b-45e7-8fe2-3ab080cc02b9
+    type: regular
+    task:
+      id: 66e3c549-6b6b-45e7-8fe2-3ab080cc02b9
+      version: -1
+      name: Add Url to ArcSight Active list watch list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_watchlist
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightWatchListUrlValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: ReplaceMatchGroup
+            args:
+              regex:
+                value:
+                  simple: .*?(:).*?:\/\/
+              replace_with:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightWatchListUrlActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 573ca2ab-2fec-458d-814f-3b415a98f927
+    type: regular
+    task:
+      id: 573ca2ab-2fec-458d-814f-3b415a98f927
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_watchlist
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: URL
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1600,
+        "width": 2660,
+        "x": 910,
+        "y": -175
+      }
+    }
+  }
+inputs:
+- key: ArcSightBlackListUrlActiveListID
+  value: {}
+  required: false
+  description: ID of the block list Url Active List resource as appears in ArcSight.
+  playbookInputQuery: null
+- key: ArcsightBlackUrlValueFieldName
+  value: {}
+  required: false
+  description: The name of the block list Active List field to insert the Url value
+    to.
+  playbookInputQuery: null
+- key: ArcSightWhiteListUrlActiveListID
+  value: {}
+  required: false
+  description: ID of the allow list Url Active List resource as appears in ArcSight.
+  playbookInputQuery: null
+- key: ArcsightWhiteListUrlValueFieldName
+  value: {}
+  required: false
+  description: The name of the allow list Active List field to insert the Url value
+    to.
+  playbookInputQuery: null
+- key: ArcSightWatchListUrlActiveListID
+  value: {}
+  required: false
+  description: ID of the watch list Url Active List resource as appears in ArcSight.
+  playbookInputQuery: null
+- key: ArcsightWatchListUrlValueFieldName
+  value: {}
+  required: false
+  description: The name of the watch list Active List field to insert the Url value
+    to.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+  - No test

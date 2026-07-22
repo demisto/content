@@ -1,0 +1,5 @@
+[file:Packs/GCP-IAM/Integrations/GCPIAM/GCPIAM.yml]
+ignore=DS108
+
+[file:Packs/GCP-IAM/Integrations/GCPIAM/README.md]
+ignore=RM112

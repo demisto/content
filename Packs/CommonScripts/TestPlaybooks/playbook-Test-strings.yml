@@ -1,0 +1,262 @@
+id: strings-test
+version: -1
+name: strings-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a02a962f-e841-4089-8e78-31f7512cc8db
+    type: start
+    task:
+      id: a02a962f-e841-4089-8e78-31f7512cc8db
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 752ae89e-1d3c-4e10-8dea-b078b6df0728
+    type: regular
+    task:
+      id: 752ae89e-1d3c-4e10-8dea-b078b6df0728
+      version: -1
+      name: Create string file
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data:
+        simple: check out it works
+      entryId: {}
+      filename:
+        simple: teststring.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 281
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 461c3a3f-8cb2-4116-84f4-43f996a90e9a
+    type: regular
+    task:
+      id: 461c3a3f-8cb2-4116-84f4-43f996a90e9a
+      version: -1
+      name: extract strings
+      scriptName: Strings
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      chars: {}
+      entry:
+        simple: ${lastCompletedTaskEntries}
+      filter: {}
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 456,
+          "y": 489
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 51d9f9bd-fd52-44c0-8e28-30d68800cc99
+    type: regular
+    task:
+      id: 51d9f9bd-fd52-44c0-8e28-30d68800cc99
+      version: -1
+      name: result to context
+      scriptName: PublishEntriesToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ids:
+        simple: ${lastCompletedTaskEntries}
+      out:
+        simple: strings
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 454,
+          "y": 710
+        }
+      }
+  "4":
+    id: "4"
+    taskid: bb659f18-509b-443f-8479-d5c8bc77f494
+    type: regular
+    task:
+      id: bb659f18-509b-443f-8479-d5c8bc77f494
+      version: -1
+      name: Check value
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      expectedValue:
+        simple: '["check out it works"]'
+      fields: {}
+      path:
+        simple: strings
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 904
+        }
+      }
+  "6":
+    id: "6"
+    taskid: f6df2d9e-6ef5-45c6-83f8-8df945bbeaa4
+    type: regular
+    task:
+      id: f6df2d9e-6ef5-45c6-83f8-8df945bbeaa4
+      version: -1
+      name: Create binary file
+      scriptName: CreateBinaryFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 791,
+          "y": 1048
+        }
+      }
+  "7":
+    id: "7"
+    taskid: a02cba9a-b3f1-4ea5-85c1-70484a330dc1
+    type: regular
+    task:
+      id: a02cba9a-b3f1-4ea5-85c1-70484a330dc1
+      version: -1
+      name: Extract from binary files
+      scriptName: Strings
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      chars: {}
+      entry:
+        simple: ${lastCompletedTaskEntries}
+      filter: {}
+      size: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 793,
+          "y": 1295
+        }
+      }
+  "8":
+    id: "8"
+    taskid: c5d94ae7-a3cd-46e7-8a1b-c061e87e1986
+    type: regular
+    task:
+      id: c5d94ae7-a3cd-46e7-8a1b-c061e87e1986
+      version: -1
+      name: Result to context
+      scriptName: PublishEntriesToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ids:
+        simple: ${lastCompletedTaskEntries}
+      out:
+        simple: binaryFile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 791,
+          "y": 1491
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 1239ef05-a0de-4a13-8753-e04dfc92cc39
+    type: regular
+    task:
+      id: 1239ef05-a0de-4a13-8753-e04dfc92cc39
+      version: -1
+      name: verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      expectedValue:
+        simple: '["test"]'
+      fields: {}
+      path:
+        simple: binaryFile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1715
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1760,
+        "width": 730,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,683 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "XSOAR Summary",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 7,
+            "i": "2054da70-8d2d-11ed-aaea-5513d4d2e96d",
+            "id": "2054da70-8d2d-11ed-aaea-5513d4d2e96d",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "382c00f1-33ac-44d6-8ffd-8bc8829c7767",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-01-05T19:13:56.659718296Z",
+                "name": "Live Community",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "limit": "10"
+                },
+                "prevName": "Live Community",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "RSSWidget_LC",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "93729f70-8d31-11ed-aecc-5dccbe14e065",
+            "id": "93729f70-8d31-11ed-aecc-5dccbe14e065",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 30,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.615732902Z",
+                "name": "Active Incidents - Line chart",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "type"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Incidents - Line chart",
+                "propagationLabels": [],
+                "query": "-category:job and -status:archived and -status:closed",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 6,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "388d29d0-8d32-11ed-aecc-5dccbe14e065",
+            "id": "388d29d0-8d32-11ed-aecc-5dccbe14e065",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "disk-current-usage",
+                "isPredefined": true,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.616955063Z",
+                "name": "Disk Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 60
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "Disk Current Usage",
+                "propagationLabels": [],
+                "query": "disk.usedPercent./",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 18,
+                "widgetType": "number"
+            },
+            "x": 6,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "3d6c1c90-8d32-11ed-aecc-5dccbe14e065",
+            "id": "3d6c1c90-8d32-11ed-aecc-5dccbe14e065",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "cpu-current-usage",
+                "isPredefined": true,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.620831175Z",
+                "name": "CPU Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 50
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "CPU Current Usage",
+                "propagationLabels": [],
+                "query": "cpu.usedPercent",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 18,
+                "widgetType": "number"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "4459cb10-8d32-11ed-aecc-5dccbe14e065",
+            "id": "4459cb10-8d32-11ed-aecc-5dccbe14e065",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "memory-current-usage",
+                "isPredefined": true,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.620365002Z",
+                "name": "Memory Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 70
+                            },
+                            "#FF1B15": {
+                                "value": 90
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "Memory Current Usage",
+                "propagationLabels": [],
+                "query": "memory.usedPercent",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 18,
+                "widgetType": "number"
+            },
+            "x": 10,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "5a678b90-8d32-11ed-aecc-5dccbe14e065",
+            "id": "5a678b90-8d32-11ed-aecc-5dccbe14e065",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 30,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.615827377Z",
+                "name": "Malicious/Suspicious Indicators in Incidents",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {},
+                        "type": "above"
+                    },
+                    "valuesFormat": "regular"
+                },
+                "prevName": "Malicious/Suspicious Indicators in Incidents",
+                "propagationLabels": [],
+                "query": "(verdict:Malicious) and incident.id:*",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "number"
+            },
+            "x": 10,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "be52c4d0-8d32-11ed-aecc-5dccbe14e065",
+            "id": "be52c4d0-8d32-11ed-aecc-5dccbe14e065",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "incident-severity-by-types",
+                "isPredefined": true,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.616224647Z",
+                "name": "Incident Severity by Type",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "severity",
+                        "rawType"
+                    ]
+                },
+                "prevName": "Incident Severity by Type",
+                "propagationLabels": [],
+                "query": "-category:job and -status:archived and -status:closed",
+                "shouldCommit": false,
+                "sort": [
+                    {
+                        "asc": true,
+                        "field": "severity",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 18,
+                "widgetType": "bar"
+            },
+            "x": 9,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "8f45d3c0-8d33-11ed-aecc-5dccbe14e065",
+            "id": "8f45d3c0-8d33-11ed-aecc-5dccbe14e065",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "top-active-playbooks",
+                "isPredefined": true,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.618465028Z",
+                "name": "Top Active Playbooks",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "playbookId"
+                    ]
+                },
+                "prevName": "Top Active Playbooks",
+                "propagationLabels": [],
+                "query": "status:active -category:job",
+                "shouldCommit": false,
+                "size": 5,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 18,
+                "widgetType": "column"
+            },
+            "x": 6,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "733666e0-8d3d-11ed-ab8d-db82a841bdea",
+            "id": "733666e0-8d3d-11ed-ab8d-db82a841bdea",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.62003365Z",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# Analyst Links\n| Link | Description |\n| --- | --- |\n| [Palo Alto Networks URL Filtering](https://urlfiltering.paloaltonetworks.com/) | Check a URL Category via Palo Altos Test a Site utility |\n| [Cortex XSOAR Admin Guide](https://docs-cortex.paloaltonetworks.com/p/XSOAR) | Cortex XSOAR Admin Guide |\n| [Cortex XSOAR Developer Guide](https://xsoar.pan.dev/) | The XSOAR Developer Guide |\n| [Cortex XSOAR Integration Reference](https://xsoar.pan.dev/docs/reference/index) | Reference documentation for Cortex XSOAR Integrations |\n| [Palo Alto Networks Live Community](https://live.paloaltonetworks.com/) | Palo Alto Networks Live Community, which includes training and how-to blog posts! |\n| [Palo Alto Networks Support Portal](https://support.paloaltonetworks.com/) | Palo Alto Networks Support Portal |"
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "b82027f0-8d3d-11ed-ab8d-db82a841bdea",
+            "id": "b82027f0-8d3d-11ed-ab8d-db82a841bdea",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.62003365Z",
+                "name": "Working Incidents",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# Working Incidents\n| Item | Notes | \n| --- | --- |\n| Assign an Owner | Select Owner via the **Owner field**, or use the **+Assign to Me button+** to assign to yourself |\n| Closing an Incident | Select **+Actions -\u003e Close Incident+**, and complete close notes and reason | \n| Editing an Incident | Select **+Actions -\u003e Edit+**, or edit the field on the layout |\n| Linking Incidents | Use the **+Link Incidents button+** or run !linkIncidents in the CLI |\n| Closing as Duplicate | Use the **+Close as Duplicate button+** or run **!CloseInvestigationAsDuplicate** in the CLI | \n| Inviting a Team Member | You can tag team members with **@username**, or select the 3-dots, and select Team.  You can also select ALT \\+ E (Win) or Option (Mac) \\+ E to navigate to this quickly |\n| Restrict Incident | Restricts the Incident to only invited Team Members. Select **+Actions -\u003e Restrict Incident+** | \n| Fast Navigation |  Command \\+ K (Mac) or Ctrl \\+ K (Win) |\n| Focus on the CLI | Command \\+ ; (Mac) or Ctrl \\+ ; (Win) | \n\n### Notes\n- Mark entries as a Note by selecting **+Actions -\u003e Mark as Note+** on the war room entry. \n- Notes are important information that you want to make it easy for others to find and read.\n- Screenshots and images can be uploaded in line to Notes via the Command Line Interface (CLI)\n- Notes can be tagged, and war room filters applied to view Notes with specific tags.\n\n### Evidence\n- Mark entries as Evidence by selecting **+Actions -\u003e Mark as Evidence+** on the war room entry. \n- Evidence can be reviewed on the Evidence Board.\n"
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 4,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "23045a50-8d3e-11ed-ab8d-db82a841bdea",
+            "id": "23045a50-8d3e-11ed-ab8d-db82a841bdea",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.2.11",
+                "modified": "2023-01-05T18:07:40.62003365Z",
+                "name": "Useful commands",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# Useful Commands\n### Investigation / Enrichment\n| Command | Functionality |\n| --- | --- |\n| !DomainReputation | Checks Domain reputation |\n| !FileReputation | Checks reputation of a File hash |\n| !IPReputation | Checks IP address reputation |\n| !URLReputation | Checks URL reputation. |\n| !ExtractIndicatorsFromTextFile | Extracts IOCs from text file |\n| !ExtractIndicatorsFromWordFile | Extracts IOCs from Word file |\n| !ReadPDFFileV2 | Extracts IOCs from PDF file |\n\n### Data Manipulation\n| Command | Functionality |\n| --- | --- |\n| !Base64Decode | Decodes base64-encoded input |\n| !Base64EncodeV2 | Encodes input into base64 |\n| !UnEscapeIPs| Removes escape characters [ ] from IP(s) |\n| !UnEscapeURLs | Removes escape characters from URLs |\n| !UnzipFile | Unzips a file (supports password protection) |\n| !ZipFile | Zips a file with optional password |\n\n### Related Incidents \u0026 Canvas\n- Use the Related Incidents tab to find similar Incidents based on common fields and Indicators.\n- Use the Canvas to construct a map of the Incidents and Indicators visually. "
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 8,
+            "y": 7
+        }
+    ],
+    "name": "XSOAR Summary",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "isPredefined": true
+}

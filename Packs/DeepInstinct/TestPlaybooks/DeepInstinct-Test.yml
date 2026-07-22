@@ -1,0 +1,619 @@
+id: Deep_Instinct-Test
+version: -1
+name: Deep_Instinct-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7bf3ee81-ce47-4e0c-8e45-3419c37a8a35
+    type: start
+    task:
+      id: 7bf3ee81-ce47-4e0c-8e45-3419c37a8a35
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6bd51705-545a-48e8-8cea-453e91a6374b
+    type: regular
+    task:
+      id: 6bd51705-545a-48e8-8cea-453e91a6374b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 9a7f6d09-e099-4cc2-87bf-c470afed3ca6
+    type: regular
+    task:
+      id: 9a7f6d09-e099-4cc2-87bf-c470afed3ca6
+      version: -1
+      name: deepinstinct-get-device
+      description: get specific device by ID
+      script: '|||deepinstinct-get-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      device_id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 7076bcd6-6a50-4074-869c-341e0515dd9a
+    type: regular
+    task:
+      id: 7076bcd6-6a50-4074-869c-341e0515dd9a
+      version: -1
+      name: add hash to allow list
+      description: add file hash to allow list
+      script: '|||deepinstinct-add-hash-to-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      comment: {}
+      file_hash:
+        simple: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww0000
+      policy_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 611
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0b41eddc-f319-456e-85b3-53b05349c3f9
+    type: regular
+    task:
+      id: 0b41eddc-f319-456e-85b3-53b05349c3f9
+      version: -1
+      name: add hash to block list
+      description: add file hash to block list
+      script: '|||deepinstinct-add-hash-to-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      comment: {}
+      file_hash:
+        simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb0000
+      policy_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 961
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 30d212bc-07be-4ccb-8537-e38a318807db
+    type: regular
+    task:
+      id: 30d212bc-07be-4ccb-8537-e38a318807db
+      version: -1
+      name: add device to group
+      description: add multiple devices to group
+      script: '|||deepinstinct-add-devices-to-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      device_ids:
+        simple: "1"
+      group_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1351
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 3715d7af-16f3-4a4d-87f5-9448547f1fec
+    type: regular
+    task:
+      id: 3715d7af-16f3-4a4d-87f5-9448547f1fec
+      version: -1
+      name: remove device from group
+      description: remove list of devices from group
+      script: '|||deepinstinct-remove-devices-from-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      device_ids:
+        simple: "1"
+      group_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: b4824a87-6e45-4987-8fc5-b197766e98f5
+    type: regular
+    task:
+      id: b4824a87-6e45-4987-8fc5-b197766e98f5
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 64b88a26-611d-4b99-8785-cae43709f63a
+    type: condition
+    task:
+      id: 64b88a26-611d-4b99-8785-cae43709f63a
+      version: -1
+      name: Verify output device
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DeepInstinct.Devices.id
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DeepInstinct
+                accessor: Devices.os
+            iscontext: true
+          right:
+            value:
+              simple: WINDOWS
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DeepInstinct.Devices.hostname
+            iscontext: true
+          right:
+            value:
+              simple: Mock_2020-04-09 17:49:39.408405_1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DeepInstinct.Devices.group_id
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: ca4af3ba-521d-4500-826d-9ec3182c398d
+    type: condition
+    task:
+      id: ca4af3ba-521d-4500-826d-9ec3182c398d
+      version: -1
+      name: Verify device in group
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DeepInstinct.Devices.group_id
+            iscontext: true
+          right:
+            value:
+              simple: "6"
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 38876ef2-6f25-44a6-8d02-d49e3518dcf5
+    type: regular
+    task:
+      id: 38876ef2-6f25-44a6-8d02-d49e3518dcf5
+      version: -1
+      name: get device after adding group
+      description: get specific device by ID
+      script: '|||deepinstinct-get-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      device_id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: b02ca518-5290-436a-8636-11721768b372
+    type: regular
+    task:
+      id: b02ca518-5290-436a-8636-11721768b372
+      version: -1
+      name: get device after removing group
+      description: get specific device by ID
+      script: '|||deepinstinct-get-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      device_id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 8190e7cf-8131-476b-8d84-42b464e13d5f
+    type: condition
+    task:
+      id: 8190e7cf-8131-476b-8d84-42b464e13d5f
+      version: -1
+      name: Verify device not in group
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DeepInstinct.Devices.group_id
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": -70,
+          "y": 2195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: dd8e6e55-0777-4a29-8529-21098d7156e9
+    type: regular
+    task:
+      id: dd8e6e55-0777-4a29-8529-21098d7156e9
+      version: -1
+      name: delete files remotely
+      description: delete multiple files remotely
+      script: '|||deepinstinct-delete-files-remotely'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      event_ids:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: eb78410b-b756-4ba2-819f-914d8944517e
+    type: regular
+    task:
+      id: eb78410b-b756-4ba2-819f-914d8944517e
+      version: -1
+      name: terminate process
+      description: terminate list of processes
+      script: '|||deepinstinct-terminate-processes'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      event_ids:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: c68d892f-59d3-4b85-8d5d-b1938b130a3a
+    type: regular
+    task:
+      id: c68d892f-59d3-4b85-8d5d-b1938b130a3a
+      version: -1
+      name: close events
+      description: close list of events
+      script: '|||deepinstinct-close-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      event_ids:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 97fd0dbe-72bd-44ff-84d6-88e797a8885b
+    type: regular
+    task:
+      id: 97fd0dbe-72bd-44ff-84d6-88e797a8885b
+      version: -1
+      name: Remove hash from allow list
+      description: remove file hash from allow list
+      script: '|||deepinstinct-remove-hash-from-whitelist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file_hash:
+        simple: wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww0000
+      policy_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 85cce36e-fb20-4fec-8064-20e53be704fe
+    type: regular
+    task:
+      id: 85cce36e-fb20-4fec-8064-20e53be704fe
+      version: -1
+      name: Remove hash from block list
+      description: remove file hash from block list
+      script: '|||deepinstinct-remove-hash-from-blacklist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file_hash:
+        simple: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb0000
+      policy_id:
+        simple: "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2845,
+        "width": 920,
+        "x": -70,
+        "y": 90
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,46 @@
+args:
+- description: War-room entry ID of sample file
+  name: entryID
+  required: true
+- description: Documentation overview
+  name: overview
+- description: Setting to work with Demisto instructions. Number the steps by 'x.' (i.e. '1.')
+  name: setupOnIntegration
+- description: Top use-cases. Number the steps by 'x.' (i.e. '1.')
+  name: useCases
+- description: Integration troubleshooting
+  name: troubleshooting
+- description: Fetched incidents data. Number the steps by 'x.' (i.e. '1.')
+  name: fetchedData
+- description: Additional information. Number the steps by 'x.' (i.e. '1.')
+  name: addInfo
+- description: Known limitations. Number the steps by 'x.' (i.e. '1.')
+  name: limit
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: Flag for creating documentation with errors
+  name: withErrors
+  predefined:
+  - 'True'
+  - 'False'
+- description: 'Entry ID for file containing command examples. Each Command should be in a separate line. For example: !fidelis-list-alerts time_frame="Last 7 Days"'
+  name: commands
+comment: |-
+  Deprecated. The recommended way to generate documentation is via the demisto-sdk.
+  See: https://xsoar.pan.dev/docs/integrations/integration-docs
+commonfields:
+  id: DocumentationAutomation
+  version: -1
+enabled: true
+name: DocumentationAutomation
+script: '-'
+timeout: '0'
+type: python
+tags: []
+runas: DBotWeakRole
+subtype: python2
+fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)
+dockerimage: demisto/python:2.7.18.20958

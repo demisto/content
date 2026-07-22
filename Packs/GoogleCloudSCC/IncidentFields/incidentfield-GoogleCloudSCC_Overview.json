@@ -1,0 +1,30 @@
+{
+ "id": "incident_googlecloudsccoverview",
+ "version": -1,
+ "modified": "2021-01-21T18:30:25.190624216+05:30",
+ "name": "GoogleCloudSCC Overview",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccoverview",
+ "type": "longText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

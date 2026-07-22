@@ -1,0 +1,83 @@
+{
+    "content": [
+        {
+            "id": "65",
+            "accountId": "25",
+            "name": "Test",
+            "description": "test_22_01",
+            "trmId": "e2",
+            "privacyId": "a2",
+            "appSettingsId": "a5",
+            "phishingPolicyId": "25",
+            "knoxPolicyId": null,
+            "appPolicyId": "25",
+            "extensionPolicyId": "25",
+            "dormancyPolicyId": "25",
+            "networkPolicyId": "25",
+            "brandingPolicyId": null,
+            "osRiskPolicyId": "25",
+            "emmConnectionId": null,
+            "emmGroupId": null,
+            "emmPriority": null,
+            "created": "2024-01-22T11:37:36.749+00:00",
+            "modified": "2024-01-22T11:37:36.749+00:00",
+            "team": {
+                "id": "33",
+                "name": "Default"
+            },
+            "global": false
+        },
+        {
+            "id": "1d",
+            "accountId": "25",
+            "name": "GroupTest",
+            "description": "",
+            "trmId": "b9",
+            "privacyId": "c3",
+            "appSettingsId": "a5",
+            "phishingPolicyId": "8a",
+            "knoxPolicyId": null,
+            "appPolicyId": "96",
+            "extensionPolicyId": "25",
+            "dormancyPolicyId": "ff",
+            "networkPolicyId": "97",
+            "brandingPolicyId": null,
+            "osRiskPolicyId": "84",
+            "emmConnectionId": null,
+            "emmGroupId": null,
+            "emmPriority": null,
+            "created": "2023-12-12T14:05:43.874+00:00",
+            "modified": "2023-12-12T14:05:53.024+00:00",
+            "team": {
+                "id": "33",
+                "name": "Default"
+            },
+            "global": false
+        }
+    ],
+    "pageable": {
+        "sort": {
+            "unsorted": true,
+            "sorted": false,
+            "empty": true
+        },
+        "pageNumber": 0,
+        "pageSize": 20,
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "totalPages": 1,
+    "totalElements": 2,
+    "last": true,
+    "first": true,
+    "numberOfElements": 2,
+    "sort": {
+        "unsorted": true,
+        "sorted": false,
+        "empty": true
+    },
+    "size": 20,
+    "number": 0,
+    "empty": false
+}

@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachinsightcategory",
+    "closeForm": false,
+    "content": true,
+    "description": "Security control category of the Insight",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachinsightcategory",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Insight Category",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

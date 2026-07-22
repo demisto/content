@@ -1,0 +1,73 @@
+{
+  "items": [
+    {
+      "allowEmptyValue": "true",
+      "allowRepeatedParameterName": "true",
+      "attackSignaturesCheck": "true",
+      "checkMaxValueLength": "false",
+      "checkMinValueLength": "false",
+      "createdBy": "GUI",
+      "dataType": "alpha-numeric",
+      "enableRegularExpression": "false",
+      "id": "parameter-md5-1",
+      "inClassification": "false",
+      "isBase64": "false",
+      "isCookie": "true",
+      "isHeader": "false",
+      "isReferenced": "false",
+      "_kind": "tm:asm:policies:parameters:parameterstate",
+      "lastUpdateMicros": 1597158139000000,
+      "level": "global",
+      "mandatory": "false",
+      "metacharsOnParameterValueCheck": "false",
+      "name": "param-1",
+      "parameterEnumValues": [
+
+      ],
+      "performStaging": "false",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/parameters/parameter-md5-1?ver=15.1.0",
+      "sensitiveParameter": "false",
+      "signatureOverrides": [
+
+      ],
+      "type": "explicit",
+      "valueType": "user-input"
+    },
+    {
+      "allowEmptyValue": "true",
+      "allowRepeatedParameterName": "true",
+      "attackSignaturesCheck": "true",
+      "checkMaxValueLength": "false",
+      "checkMinValueLength": "false",
+      "createdBy": "GUI",
+      "dataType": "alpha-numeric",
+      "enableRegularExpression": "false",
+      "id": "parameter-md5-2",
+      "inClassification": "false",
+      "isBase64": "false",
+      "isCookie": "true",
+      "isHeader": "false",
+      "isReferenced": "false",
+      "_kind": "tm:asm:policies:parameters:parameterstate",
+      "lastUpdateMicros": 1597158139000000,
+      "level": "global",
+      "mandatory": "false",
+      "metacharsOnParameterValueCheck": "false",
+      "name": "param-2",
+      "parameterEnumValues": [
+
+      ],
+      "performStaging": "true",
+      "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/parameters/parameter-md5-2?ver=15.1.0",
+      "sensitiveParameter": "false",
+      "signatureOverrides": [
+
+      ],
+      "type": "explicit",
+      "valueType": "user-input"
+    }
+  ],
+  "_kind": "tm:asm:policies:parameters:parametercollectionstate",
+  "selfLink": "https://localhost/mgmt/tm/asm/policies/0000/parameters?ver=15.1.0",
+  "totalItems": 2
+}

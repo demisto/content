@@ -1,0 +1,238 @@
+id: playbook-feodotrackeripblock_test
+version: -1
+name: playbook-feodotrackeripblock_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9d9cd24e-880b-4579-8a69-4732b1a07df5
+    type: start
+    task:
+      id: 9d9cd24e-880b-4579-8a69-4732b1a07df5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ea2a32fd-c9b3-417f-8776-ec70123a2cec
+    type: regular
+    task:
+      id: ea2a32fd-c9b3-417f-8776-ec70123a2cec
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6f8e93ff-ae9e-45dc-866f-412799808bd7
+    type: regular
+    task:
+      id: 6f8e93ff-ae9e-45dc-866f-412799808bd7
+      version: -1
+      name: feodotracker-ipblocklist-get-indicators
+      script: '|||feodotracker-ipblocklist-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      extend-context:
+        simple: indicators=.
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6bfb6a20-457c-4ea4-84bc-59beda3f0401
+    type: title
+    task:
+      id: 6bfb6a20-457c-4ea4-84bc-59beda3f0401
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a02c3e4c-d7bc-420e-bf4c-fdf335e1ca28
+    type: condition
+    task:
+      id: a02c3e4c-d7bc-420e-bf4c-fdf335e1ca28
+      version: -1
+      name: Test Indicators
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: indicators.[0].value
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: indicators.[0].type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b27ee32c-326d-408d-b682-07a3011069e2
+    type: condition
+    task:
+      id: b27ee32c-326d-408d-b682-07a3011069e2
+      version: -1
+      name: VerifyOutput
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: indicators.[0]
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 195.25,
+          "y": 551
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_3_yes": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 900,
+        "width": 526.25,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

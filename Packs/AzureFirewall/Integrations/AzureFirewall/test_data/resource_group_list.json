@@ -1,0 +1,16 @@
+{
+    "value": [
+        {
+            "id": "id",
+            "name": "name",
+            "type": "Microsoft.Resources/resourceGroups",
+            "location": "location",
+            "tags": {
+                "Name": "name"
+            },
+            "properties": {
+                "provisioningState": "Succeeded"
+            }
+        }
+    ]
+}

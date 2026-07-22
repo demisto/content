@@ -1,0 +1,10 @@
+[file:README.md]
+ignore=RM102,RM104
+
+[file:Akamai_WAF.yml]
+ignore=BA108,BA109,BA124
+
+[known_words]
+Akamai
+WAF
+

@@ -1,0 +1,173 @@
+id: ConcentricAI Demo Playbook
+version: -1
+name: ConcentricAI Demo Playbook
+description: This playbook will show how to handle a risk incident and fetch all appropriate
+  file details with respect to it along with user details for the owner of the File.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ed889bf3-8a59-4ba8-8c9d-c88e0dcf437d
+    type: start
+    task:
+      id: ed889bf3-8a59-4ba8-8c9d-c88e0dcf437d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 249d57b8-d848-48b7-8a02-6bfc1a4cc543
+    type: regular
+    task:
+      id: 249d57b8-d848-48b7-8a02-6bfc1a4cc543
+      version: -1
+      name: ConcentricAI - get file details
+      description: Get's file information
+      script: '|||concentricai-get-file-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file-name:
+        simple: ${inputs.File Name}
+      path:
+        simple: ${inputs.Path Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 837879a0-02c0-47f2-8659-f4ddb0183089
+    type: regular
+    task:
+      id: 837879a0-02c0-47f2-8659-f4ddb0183089
+      version: -1
+      name: ConcentricAI - get user details
+      description: Get's user details
+      script: '|||concentricai-get-user-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      user:
+        simple: ${inputs.User Name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 928228d5-fe19-479a-8245-fa911efee32f
+    type: regular
+    task:
+      id: 928228d5-fe19-479a-8245-fa911efee32f
+      version: -1
+      name: ConcentricAI - get file sharing details
+      description: Get's file sharing details
+      script: '|||concentricai-get-file-sharing-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      cid:
+        simple: ${ConcentricAI.FileInfo.cid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 485,
+        "width": 880,
+        "x": 220,
+        "y": 170
+      }
+    }
+  }
+inputs:
+- key: File Name
+  value:
+    simple: ${incident.filename}
+  required: true
+  description: File Name to check
+  playbookInputQuery:
+- key: Path Name
+  value:
+    simple: ${incident.filepath}
+  required: true
+  description: The path of the file.
+  playbookInputQuery:
+- key: User Name
+  value:
+    complex:
+      root: incident
+      accessor: agentid
+      transformers:
+      - operator: Cut
+        args:
+          delimiter:
+            value:
+              simple: '@'
+          fields:
+            value:
+              simple: "1"
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests

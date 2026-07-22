@@ -1,0 +1,24 @@
+[file:incidentfield-MAD_Event_Count.json]
+ignore=IF100
+
+[file:incidentfield-MAD_First_Event_Time.json]
+ignore=IF100
+
+[file:incidentfield-MAD_Incident_Id.json]
+ignore=IF100
+
+[file:incidentfield-MAD_Last_Event_Time.json]
+ignore=IF100
+
+[file:classifier-Mandiant_Automated_Defense_Incoming_mapper.json]
+ignore=BA101
+
+[file:RespondAnalyst_image.png]
+ignore=IM111
+
+[file:classifier-Mandiant_Automated_Defense.json]
+ignore=BA101
+
+# GR103 is temporary, see CIAC-11656
+[file:incidenttype-Mandiant_Automated_Defense_Incident.json]
+ignore=GR103

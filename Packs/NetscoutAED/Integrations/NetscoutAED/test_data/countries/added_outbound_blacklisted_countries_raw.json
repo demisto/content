@@ -1,0 +1,22 @@
+{
+    "single_country_output":[
+        {
+            "annotation": "Test",
+            "country": "BS",
+            "updateTime": 1615724285
+        }],
+
+    "multiple_country_output": [
+        {
+            "annotation": "Test",
+            "country": "AU",
+            "updateTime": 1615917278
+        },
+        {
+            "annotation": null,
+            "country": "BS",
+            "updateTime": 1615724285
+        }
+    ]
+}
+

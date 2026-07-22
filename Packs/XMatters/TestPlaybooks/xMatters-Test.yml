@@ -1,0 +1,315 @@
+id: xMatters-Test
+version: -1
+name: xMatters-Test
+description: Nightly build test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d7da110a-51df-46d6-8f4c-2f32d5d35af1
+    type: start
+    task:
+      id: d7da110a-51df-46d6-8f4c-2f32d5d35af1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 947d522e-42c7-407f-842f-102070d08455
+    type: regular
+    task:
+      id: 947d522e-42c7-407f-842f-102070d08455
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 94e7dfec-ebe0-4aa7-8b9b-256589573a04
+    type: regular
+    task:
+      id: 94e7dfec-ebe0-4aa7-8b9b-256589573a04
+      version: -1
+      name: xm-trigger-workflow
+      script: '|||xm-trigger-workflow'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      body:
+        simple: Test Body
+      close_task_id: {}
+      incident_id: {}
+      recipients:
+        simple: admin
+      subject:
+        simple: Test Subject
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7707e813-95bd-44dc-864d-ba5b25485a7e
+    type: condition
+    task:
+      id: 7707e813-95bd-44dc-864d-ba5b25485a7e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: request_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 68f78036-307c-4a95-86cc-4e8c862671f2
+    type: regular
+    task:
+      id: 68f78036-307c-4a95-86cc-4e8c862671f2
+      version: -1
+      name: xm-get-events
+      script: '|||xm-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      form: {}
+      from: {}
+      priority: {}
+      property_name: {}
+      property_value: {}
+      request_id: {}
+      status: {}
+      to: {}
+      workflow: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 21bdbc5c-9f13-4057-886b-2d195661a21a
+    type: condition
+    task:
+      id: 21bdbc5c-9f13-4057-886b-2d195661a21a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Events
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c628d893-acec-49a8-8487-8e02fae86c15
+    type: regular
+    task:
+      id: c628d893-acec-49a8-8487-8e02fae86c15
+      version: -1
+      name: xm-get-event
+      script: '|||xm-get-event'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      event_id:
+        simple: "33999001"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 3f668135-aa93-4ccf-81ef-3499d552c7a1
+    type: condition
+    task:
+      id: 3f668135-aa93-4ccf-81ef-3499d552c7a1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Event
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 07273a65-353c-42ec-82a8-29511f978fc4
+    type: title
+    task:
+      id: 07273a65-353c-42ec-82a8-29511f978fc4
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1615,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

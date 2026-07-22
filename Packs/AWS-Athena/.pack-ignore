@@ -1,0 +1,6 @@
+[file:AWS-Athena.yml]
+ignore=IN110,IN109,BA108,BA109,BA124
+
+[file:AWS-Athena_image.png]
+ignore=IM111
+

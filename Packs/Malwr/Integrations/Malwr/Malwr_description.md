@@ -1,0 +1,1 @@
+This integration uses the Marlwr sandbox API to submit, analyze and detonate files.

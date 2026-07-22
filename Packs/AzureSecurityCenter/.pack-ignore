@@ -1,0 +1,15 @@
+[file:AzureSecurityCenter_v2.yml]
+ignore=BA108,BA109,DS107
+
+[file:README.md]
+ignore=RM106
+
+[file:classifier-Mandiant_Automated_Defense_Incoming_mapper.json]
+ignore=BA101
+
+[file:AzureSecurityCenter_v2_image.png]
+ignore=IM111
+
+[file:MicrosoftDefenderForCloudModelingRules.yml]
+ignore=MR108
+

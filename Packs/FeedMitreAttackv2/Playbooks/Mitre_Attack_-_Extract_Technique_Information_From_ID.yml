@@ -1,0 +1,297 @@
+id: Mitre Attack - Extract Technique Information From ID
+version: -1
+name: Mitre Attack - Extract Technique Information From ID
+description: |-
+  This playbook accepts as input MITRE techniques IDs.
+  It returns the MITRE technique name and full technique data using the MITRE integration.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 088729b4-0d99-4e56-8af7-24065d2428b7
+    type: start
+    task:
+      id: 088729b4-0d99-4e56-8af7-24065d2428b7
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  '2':
+    id: '2'
+    taskid: c06c8807-6cce-4048-8f8c-6f4fa6a0c274
+    type: regular
+    task:
+      id: c06c8807-6cce-4048-8f8c-6f4fa6a0c274
+      version: -1
+      name: Get MITRE name
+      description: Gets the Attack Pattern value from the Attack Pattern ID.
+      script: '|||mitre-get-indicator-name'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      attack_ids:
+        complex:
+          root: inputs.TechniqueID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  '3':
+    id: '3'
+    taskid: e8ae624f-69bd-4cb7-8467-37ed23b8f308
+    type: regular
+    task:
+      id: e8ae624f-69bd-4cb7-8467-37ed23b8f308
+      version: -1
+      name: Get MITRE details
+      description: Looks up the indicator reputation.
+      script: '|||attack-pattern'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      attack_pattern:
+        complex:
+          root: MITREATTACK
+          accessor: value
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  '5':
+    id: '5'
+    taskid: 78c61601-dac1-4c2e-86f8-d868beab2f9b
+    type: title
+    task:
+      id: 78c61601-dac1-4c2e-86f8-d868beab2f9b
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  '6':
+    id: '6'
+    taskid: f2c805ba-07f6-4550-8fdb-c03098941b75
+    type: condition
+    task:
+      id: f2c805ba-07f6-4550-8fdb-c03098941b75
+      version: -1
+      name: Are there techniques?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: 'Are there techniques?'
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MITREATTACK.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  '7':
+    id: '7'
+    taskid: c004b40d-2957-4ead-88f0-c63a111947bc
+    type: condition
+    task:
+      id: c004b40d-2957-4ead-88f0-c63a111947bc
+      version: -1
+      name: Is MITRE ATT&CK v2 available?
+      description: Returns 'yes' if the integration brand is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      no:
+      - '5'
+      yes:
+      - "8"
+    scriptarguments:
+      brandname:
+        simple: MITRE ATT&CK v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "8":
+    id: "8"
+    taskid: e013809e-88cf-4415-87cf-32fe291b92a7
+    type: condition
+    task:
+      id: e013809e-88cf-4415-87cf-32fe291b92a7
+      version: -1
+      name: Are MITRE Attack Technique IDs provided?
+      type: condition
+      description: Are MITRE Attack Technique IDs provided?
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.TechniqueID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1045,
+        "width": 1000,
+        "x": 120,
+        "y": -320
+      }
+    }
+  }
+inputs:
+- key: TechniqueID
+  value: {}
+  required: false
+  description: "Accepts a single MITRE technique ID or array of technique IDs, for example \nT1210."
+  playbookInputQuery:
+outputs:
+- contextPath: AttackPattern
+  description: Array of attack pattern names and IDs.
+  type: string
+- contextPath: MITREATTACK
+  description: Full MITRE data for the attack pattern.
+  type: string
+tests:
+- FeedMitreAttackv2_test
+fromversion: 6.2.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

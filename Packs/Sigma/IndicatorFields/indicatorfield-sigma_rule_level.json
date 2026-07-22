@@ -1,0 +1,39 @@
+{
+    "id": "indicator_sigmarulelevel",
+    "version": -1,
+    "modified": "2024-07-15T10:14:27.839530431Z",
+    "name": "Sigma Rule Level",
+    "ownerOnly": false,
+    "cliName": "sigmarulelevel",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "",
+        "Critical",
+        "High",
+        "Medium",
+        "Low",
+        "Informational"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Sigma Rule"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

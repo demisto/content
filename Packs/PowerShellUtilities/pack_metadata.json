@@ -1,0 +1,24 @@
+{
+    "name": "PowerShell Utilities (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Oliver Li",
+    "url": "",
+    "email": "",
+    "created": "2022-04-03T19:10:08Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Oliver-Lii"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

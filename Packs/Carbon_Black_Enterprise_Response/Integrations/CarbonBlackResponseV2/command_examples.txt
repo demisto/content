@@ -1,0 +1,19 @@
+!cb-edr-alert-search status=Unresolved limit=2
+!cb-edr-binary-search company_name=Microsoft limit=2
+!cb-edr-processes-search process_name=chrome.exe limit=2
+!cb-edr-process-get get_related=true process_id="00000018-0000-164c-01d5-9ed472b33472" segment_id=1622034003651
+!cb-edr-process-segments-get process_id="00000018-0000-164c-01d5-9ed472b33472" limit=2
+!cb-edr-process-events-list process_id="00000018-0000-164c-01d5-9ed472b33472" segment_id=1622034003651 count=2
+!cb-edr-watchlists-list limit=2
+!cb-edr-binary-bans-list limit=2
+!cb-edr-sensors-list limit=2
+!cb-edr-quarantine-device sensor_id=15
+!cb-edr-unquarantine-device sensor_id=15
+!cb-edr-watchlist-update id=2406 description="example description" search_query=chrome.exe
+!cb-edr-watchlist-create name=example_name search_query=chrome.exe
+!cb-edr-watchlist-delete id=2412
+!cb-edr-binary-ban md5=0ea59cf80ef9703b3d92ca6b25426458 text=example
+!cb-edr-alert-update alert_ids=9f67733c-0632-4c55-bae0-985d9440c207 status=Unresolved
+!cb-edr-binary-summary md5=9532bd6c36a788d329668ac0d30ce822
+!cb-edr-binary-download md5=e3a2ad05e24105b35e986cf9cb38ec47
+!endpoint id=15 ip=x.x.x.x hostname=WIN-SOSSKVTTQAB using="VMware Carbon Black EDR_instance_1"

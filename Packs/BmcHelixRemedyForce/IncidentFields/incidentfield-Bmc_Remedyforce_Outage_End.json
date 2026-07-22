@@ -1,0 +1,32 @@
+{
+ "id": "incident_bmcremedyforceoutageend",
+ "version": -1,
+ "modified": "2020-07-10T16:32:44.607710343+05:30",
+ "name": "Bmc Remedyforce Outage End",
+ "ownerOnly": false,
+ "description": "The Outage End Date of the BMC Remedyforce Incident.",
+ "cliName": "bmcremedyforceoutageend",
+ "type": "date",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Bmc Remedyforce Incident",
+  "Bmc Remedyforce Service Request"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

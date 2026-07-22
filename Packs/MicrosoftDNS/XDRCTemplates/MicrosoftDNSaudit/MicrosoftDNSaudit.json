@@ -1,0 +1,9 @@
+{
+  "id": "MicrosoftDNSaudit",
+  "name": "MicrosoftDNSaudit",
+  "os_type": "AGENT_OS_WINDOWS",
+  "profile_type": "WINLOGBEAT",
+  "content_global_id": "MicrosoftDNSaudit",
+  "from_xdr_version": "3.5.0",
+  "yaml_template": ""
+}

@@ -1,0 +1,21 @@
+{
+    "name": "GenerateAsBuilt (Deprecated)",
+    "description": "Deprecated. GenerateAsBuilt script moved to CommonScripts pack.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Adam Baumeister",
+    "url": "",
+    "email": "abaumeister@paloaltonetworks.com",
+    "created": "2021-06-02T00:00:00Z",
+    "hidden": true,
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

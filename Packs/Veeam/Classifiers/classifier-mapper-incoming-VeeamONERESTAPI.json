@@ -1,0 +1,1293 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Veeam One Incoming Mapper",
+    "mapping": {
+        "Backup Copy Creation Time": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Backup Server Security Status": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Enterprise Application Backup": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Immutability Change Tracking": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Immutability State": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Incident Fetch Error": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "details": {
+                    "simple": "details"
+                }
+            }
+        },
+        "Incremental Backup Size": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Job Disabling": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Job Duration": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Job Duration Deviation (Veeam Backup for Microsoft 365)": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Malware Detection Change Tracking": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Physical Machine Backup": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Possible Malware Activity": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Virtual Machine Backup": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        },
+        "Virtual Machine Replica": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Veeam Alarm Status": {
+                    "simple": "status"
+                },
+                "Veeam Alarm Template ID": {
+                    "simple": "alarmTemplateId"
+                },
+                "Veeam Alarm Template Name": {
+                    "simple": "name"
+                },
+                "Alert ID": {
+                    "simple": "predefinedAlarmId"
+                },
+                "Veeam Assigned Object": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alarmAssignment",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Alarm Created By"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Comment": {
+                    "simple": "comment"
+                },
+                "Event ID": {
+                    "simple": "triggeredAlarmId"
+                },
+                "Number Of Found Related Alerts": {
+                    "simple": "childAlarmsCount"
+                },
+                "Veeam Number of Triggered Alarms": {
+                    "simple": "repeatCount"
+                },
+                "Veeam Remediation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "remediation",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {
+                                        "isContext": false
+                                    },
+                                    "is_auto_json_transform": {
+                                        "isContext": false
+                                    },
+                                    "json_transform_properties": {
+                                        "isContext": false
+                                    },
+                                    "title": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "Remediation"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Veeam Triggered Time": {
+                    "simple": "triggeredTime"
+                },
+                "details": {
+                    "simple": "description"
+                }
+            }
+        }
+    },
+    "name": "Veeam One Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

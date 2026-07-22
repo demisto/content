@@ -1,0 +1,332 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Use Case Automation",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "ff588500-ac29-11eb-98fe-2706b6bd2bbe",
+            "id": "ff588500-ac29-11eb-98fe-2706b6bd2bbe",
+            "reflectDimensions": false,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Commands executed",
+                "fromServerVersion": "",
+                "id": "number-of-used-commands",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-03T14:18:36.23324452Z",
+                "name": "Commands executed",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "tableColumns": []
+                },
+                "prevName": "Count of Commands used",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 2,
+                "widgetType": "number"
+            },
+            "x": 10,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "444de400-c211-11eb-80b4-59f9f28834c5",
+            "id": "444de400-c211-11eb-80b4-59f9f28834c5",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "command-executions-per-integration-category",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T13:08:12.515578789Z",
+                "name": "Use Case Category Command executions per Integration",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "category"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "regular"
+                },
+                "prevName": "Command executions per Integration Category",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 6,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "09f1ad40-e84e-11ed-a517-45b7a9e96a13",
+            "id": "09f1ad40-e84e-11ed-a517-45b7a9e96a13",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "others",
+                "commitMessage": "",
+                "dataType": "roi",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "roi",
+                "isPredefined": true,
+                "itemVersion": "1.2.18",
+                "modified": "2023-04-17T15:06:21.764951153Z",
+                "name": "Return On Investment (ROI)",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "currencySign": "$"
+                },
+                "prevName": "Return On Investment (ROI)",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "size": 5,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 3,
+                "widgetType": "number"
+            },
+            "x": 10,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "4f7b7ee0-e84e-11ed-a517-45b7a9e96a13",
+            "id": "4f7b7ee0-e84e-11ed-a517-45b7a9e96a13",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "command-executions-per-integration-category",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-05-31T13:08:12.515578789Z",
+                "name": "Use Case Category Command executions per Integration",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "category"
+                    ],
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "regular"
+                },
+                "prevName": "Command executions per Integration Category",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration",
+                "shouldCommit": false,
+                "size": 5,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 6,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 3
+        }
+    ],
+    "name": "Use Case Automation",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 7,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "description": "",
+    "isPredefined": true
+}

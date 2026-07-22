@@ -1,0 +1,92 @@
+[
+    {
+        "ID": "70FED0AD-8C95-4B52-A8EE-47F9AF72514F",
+        "AlertSeqId": 151,
+        "Name": "DNS CUSTOM - Copy(2)",
+        "Time": "2022-04-13T10:01:35",
+        "Severity": "High",
+        "Category": "Privilege Escalation",
+        "Status": "Open",
+        "CloseReason": "",
+        "NumOfAlertedEvents": 1,
+        "ContainsFlaggedData": false,
+        "ContainsSensitiveData": false,
+        "ContainMaliciousExternalIP": false,
+        "EventUTC": "2022-04-13T10:01:35",
+        "IPThreatTypes": "",
+        "Devices": [
+            {
+                "Name": "bl012-col1",
+                "Asset": ""
+            }
+        ],
+        "Sources": [
+            {
+                "Platform": "DNS",
+                "FileServerOrDomain": "BL012-DNS1"
+            }
+        ],
+        "Locations": [
+            {
+                "Country": "Canada",
+                "State": "British Columbia",
+                "BlacklistLocation": false,
+                "AbnormalLocation": "New/abnormal to user and peers"
+            }
+        ],
+        "Users": [
+            {
+                "Name": "DefaultAccount (L1839.com)",
+                "SamAccountName": "DefaultAccount",
+                "PrivilegedAccountType": "",
+                "Department": ""
+            }
+        ],
+        "Url": "https://test.com/analytics/entity/Alert/70FED0AD-8C95-4B52-A8EE-47F9AF72514F"
+    },
+    {
+        "ID": "08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0",
+        "AlertSeqId": 152,
+        "Name": "DNS CUSTOM",
+        "Time": "2022-04-13T10:01:33",
+        "Severity": "High",
+        "Category": "Privilege Escalation",
+        "Status": "Open",
+        "CloseReason": "",
+        "NumOfAlertedEvents": 1,
+        "ContainsFlaggedData": false,
+        "ContainsSensitiveData": false,
+        "ContainMaliciousExternalIP": false,
+        "EventUTC": "2022-04-13T10:01:33",
+        "IPThreatTypes": "",
+        "Devices": [
+            {
+                "Name": "bl012-col1",
+                "Asset": ""
+            }
+        ],
+        "Sources": [
+            {
+                "Platform": "DNS",
+                "FileServerOrDomain": "BL012-DNS1"
+            }
+        ],
+        "Locations": [
+            {
+                "Country": "Canada",
+                "State": "British Columbia",
+                "BlacklistLocation": false,
+                "AbnormalLocation": "New/abnormal to user and peers"
+            }
+        ],
+        "Users": [
+            {
+                "Name": "DefaultAccount (L1839.com)",
+                "SamAccountName": "DefaultAccount",
+                "PrivilegedAccountType": "",
+                "Department": ""
+            }
+        ],
+        "Url": "https://test.com/analytics/entity/Alert/08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0"
+    }
+]

@@ -1,0 +1,979 @@
+id: GCP - Firewall Remediation
+version: -1
+name: GCP - Firewall Remediation
+description: This playbook adds new firewall rules with access only from  private ip address range and blocks traffic that's exposed to public internet. For example, if RDP is exposed to the entire world, this playbook adds new firewall rules that only allows traffic from private ip address and blocks rest of the RDP traffic.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c6a877b0-9a22-46b8-8c0c-30cba0e17740
+    type: start
+    task:
+      id: c6a877b0-9a22-46b8-8c0c-30cba0e17740
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4471fb64-f541-4278-869d-c5729ea7f592
+    type: condition
+    task:
+      id: 4471fb64-f541-4278-869d-c5729ea7f592
+      version: -1
+      name: Is Google Cloud Compute enabled and are Input values defined?
+      description: Determines if the AWS - EC2 integration instance is configured and Input values are defined to pull enrichment data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.GcpInstance
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.GcpZone
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.GcpNetwork
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.RemotePort
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.RemoteProtocol
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.GcpProject
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 555044d9-a9a3-400a-82fc-b70268ec6370
+    type: title
+    task:
+      id: 555044d9-a9a3-400a-82fc-b70268ec6370
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e9fce7cb-14aa-4ccb-8608-472bc41fd2e0
+    type: condition
+    task:
+      id: e9fce7cb-14aa-4ccb-8608-472bc41fd2e0
+      version: -1
+      name: Does the remediation allow rule exist?
+      description: Check whether the last command returned remediation allow rule or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute.Firewalls.name
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: GoogleCloudCompute.Firewalls.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: allow
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: e03bdde0-6637-42fc-8ba6-7cea1b2fa278
+    type: regular
+    task:
+      id: e03bdde0-6637-42fc-8ba6-7cea1b2fa278
+      version: -1
+      name: Get network tags information.
+      description: Returns the tags of instance.
+      script: Google Cloud Compute|||gcp-compute-get-instance
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      instance:
+        complex:
+          root: inputs.GcpInstance
+          transformers:
+          - operator: uniq
+      zone:
+        complex:
+          root: inputs.GcpZone
+          transformers:
+          - operator: uniq
+      project_id:
+        complex:
+          root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 9fb75ebf-313b-44e3-8698-5184e20f397e
+    type: regular
+    task:
+      id: 9fb75ebf-313b-44e3-8698-5184e20f397e
+      version: -1
+      name: Add block everything firewall rule
+      description: Creates a firewall rule in the specified project using the data included in the request.
+      script: Google Cloud Compute|||gcp-compute-insert-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      denied:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ',ports='
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ipprotocol=
+              suffix: {}
+          - operator: toLowerCase
+          - operator: uniq
+      direction:
+        simple: INGRESS
+      name:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: remediation-block-
+              suffix: {}
+      network:
+        complex:
+          root: inputs.GcpNetwork
+          transformers:
+          - operator: uniq
+      priority:
+        simple: "1"
+      sourceRanges:
+        simple: 0.0.0.0/0
+      targetTags:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: remediation-tag-
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - operator: toLowerCase
+          - operator: uniq
+      project_id:
+        complex:
+          root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: de50c1d9-0557-45c2-822c-dc56dc96b981
+    type: regular
+    task:
+      id: de50c1d9-0557-45c2-822c-dc56dc96b981
+      version: -1
+      name: Add allow rule
+      description: Creates a firewall rule in the specified project using the data included in the request.
+      script: Google Cloud Compute|||gcp-compute-insert-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      allowed:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ',ports='
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ipprotocol=
+              suffix: {}
+          - operator: uniq
+      direction:
+        simple: INGRESS
+      name:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: remediation-allow-
+              suffix: {}
+      network:
+        complex:
+          root: inputs.GcpNetwork
+          transformers:
+          - operator: uniq
+      priority:
+        simple: "0"
+      sourceRanges:
+        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+      targetTags:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: remediation-tag-
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - operator: toLowerCase
+          - operator: uniq
+      project_id:
+        complex:
+          root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 6dd52356-815d-4290-818e-aebb99466cfe
+    type: condition
+    task:
+      id: 6dd52356-815d-4290-818e-aebb99466cfe
+      version: -1
+      name: Does the network tags already exist on the instance?
+      description: |+
+        Check whether the last command returned remediation tag or not. If the tag is not present, the tag remediation-tag-{port#}-{protocol} is created.
+
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute.Instances.tags
+                accessor: items
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.RemotePort
+                transformers:
+                - operator: concat
+                  args:
+                    prefix:
+                      value:
+                        simple: remediation-tag-
+                    suffix: {}
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: '-'
+                - operator: concat
+                  args:
+                    prefix: {}
+                    suffix:
+                      value:
+                        simple: inputs.RemoteProtocol
+                      iscontext: true
+                - operator: toLowerCase
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 3d2f4027-fb88-4a53-892f-f9a798a49c03
+    type: regular
+    task:
+      id: 3d2f4027-fb88-4a53-892f-f9a798a49c03
+      version: -1
+      name: Add and set network tags
+      description: Add network tag for the specified instance.
+      script: Google Cloud Compute|||gcp-compute-add-network-tag
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      instance:
+        complex:
+          root: inputs.GcpInstance
+      tag:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: remediation-tag-
+              suffix: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - operator: toLowerCase
+      zone:
+        complex:
+          root: inputs.GcpZone
+      project_id:
+        complex:
+          root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: f92c805d-5e4c-4bed-8c96-2c6dd7cb8401
+    type: regular
+    task:
+      id: f92c805d-5e4c-4bed-8c96-2c6dd7cb8401
+      version: -1
+      name: Lookup firewall remediation allow rule
+      description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
+      script: Google Cloud Compute|||gcp-compute-list-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      filters:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: name="remediation-allow-
+              suffix:
+                value:
+                  simple: '"'
+      project_id:
+        complex:
+          root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ff6b5e19-0f27-4995-8f13-60ac491c8be4
+    type: title
+    task:
+      id: ff6b5e19-0f27-4995-8f13-60ac491c8be4
+      version: -1
+      name: continue
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 41eff6bc-6aa4-4ef1-835e-6b0f1916661c
+    type: regular
+    task:
+      id: 41eff6bc-6aa4-4ef1-835e-6b0f1916661c
+      version: -1
+      name: Lookup firewall remediation block rule
+      description: Retrieves the list of firewall rules available to the specified project. If these don't exist, the allow and block rules are created of the format remediation-[allow|block]-port-{port#}-{protocol}.
+      script: Google Cloud Compute|||gcp-compute-list-firewall
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      filters:
+        complex:
+          root: RuleSuffix
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: name="remediation-block-
+              suffix:
+                value:
+                  simple: '"'
+      project_id:
+        complex:
+          root: inputs.GcpProject
+      using:
+        simple: ${inputs.instance_name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: dea1700d-d157-42ea-809c-05b442f4fa17
+    type: condition
+    task:
+      id: dea1700d-d157-42ea-809c-05b442f4fa17
+      version: -1
+      name: Does the remediation block rule exist?
+      description: Check whether the last command returned remediation block rule or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute.Firewalls.name
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: GoogleCloudCompute.Firewalls.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: block
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 3ee347de-30d6-4311-8beb-37496b3cd9e9
+    type: regular
+    task:
+      id: 3ee347de-30d6-4311-8beb-37496b3cd9e9
+      version: -1
+      name: Set VPCNetwork temporary context
+      description: Set a value in context for the VPC network and truncate to 30 characters so that firewall rule name isn't too long.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      key:
+        simple: VPCNetwork
+      value:
+        complex:
+          root: inputs.GcpNetwork
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: networks/
+          - operator: LastArrayElement
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "0"
+              to:
+                value:
+                  simple: "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 11e193fb-c0c3-4037-8765-16b013f3b51a
+    type: regular
+    task:
+      id: 11e193fb-c0c3-4037-8765-16b013f3b51a
+      version: -1
+      name: Set RuleSuffix temporary context
+      description: Set a value in context under the key you entered.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: Set
+    nexttasks:
+      '#none#':
+      - "32"
+      - "34"
+    scriptarguments:
+      key:
+        simple: RuleSuffix
+      value:
+        complex:
+          root: inputs.RemotePort
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: -port-
+              suffix:
+                value:
+                  simple: '-'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: VPCNetwork
+                iscontext: true
+              suffix:
+                value:
+                  simple: inputs.RemoteProtocol
+                iscontext: true
+          - operator: toLowerCase
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_18_yes": 0.32,
+      "35_18_yes": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2035,
+        "width": 1160,
+        "x": 20,
+        "y": -130
+      }
+    }
+  }
+inputs:
+- key: GcpInstance
+  value: {}
+  required: true
+  description: The name of the GCP instance that has the public ip.
+  playbookInputQuery:
+- key: GcpZone
+  value: {}
+  required: true
+  description: The zone of the GCP instance that is hosted in.
+  playbookInputQuery:
+- key: GcpNetwork
+  value: {}
+  required: true
+  description: The VPC network of the GCP instance.
+  playbookInputQuery:
+- key: RemotePort
+  value:
+    complex:
+      root: alert
+      accessor: remoteport
+  required: true
+  description: The remote port that is publicly exposed to.
+  playbookInputQuery:
+- key: RemoteProtocol
+  value: {}
+  required: true
+  description: The remote protocol that is publicly exposed to.
+  playbookInputQuery:
+- key: GcpProject
+  value:
+    complex:
+      root: alert.asmcloud
+      accessor: Project
+      transformers:
+      - operator: FirstArrayElement
+  required: true
+  description: The name of the GCP project associated with the instance and related objects.
+  playbookInputQuery:
+- description: Google Cloud Compute integration instance to use if you have multiple instances configured (optional).
+  key: instance_name
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

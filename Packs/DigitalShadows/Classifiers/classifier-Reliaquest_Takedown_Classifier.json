@@ -1,0 +1,30 @@
+{
+	"defaultIncidentType": "",
+	"description": "",
+	"feed": false,
+	"id": "Reliaquest Takedown Classifier",
+	"keyTypeMap": {
+		"brand-abuse": "Reliaquest Takedown Incident",
+		"copyright": "Reliaquest Takedown Incident",
+		"counterfeit": "Reliaquest Takedown Incident",
+		"fraud": "Reliaquest Takedown Incident",
+		"imporsonation": "Reliaquest Takedown Incident",
+		"malware": "Reliaquest Takedown Incident",
+		"messaging": "Reliaquest Takedown Incident",
+		"mobile-app-unauthorized": "Reliaquest Takedown Incident",
+		"mobile_app_unauthorized": "Reliaquest Takedown Incident",
+		"pac_file": "Reliaquest Takedown Incident",
+		"phishing": "Reliaquest Takedown Incident",
+		"pii": "Reliaquest Takedown Incident",
+		"social-media-brand-abuse": "Reliaquest Takedown Incident",
+		"trademark": "Reliaquest Takedown Incident",
+		"vishing": "Reliaquest Takedown Incident"
+	},
+	"name": "Reliaquest Takedown Classifier",
+	"fromVersion": "6.9.0",
+	"transformer": {
+		"simple": "type"
+	},
+	"type": "classification",
+	"version": -1
+}

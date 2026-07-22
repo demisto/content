@@ -1,0 +1,621 @@
+id: url_enrichment_-_generic
+version: -1
+name: URL Enrichment - Generic
+fromversion: 5.0.0
+description: |-
+  Deprecated. Use "URL Enrichment - Generic v2" playbook instead. Enrich URL using one or more integrations.
+
+  URL enrichment includes:
+  * Verify URL SSL
+  * Threat information
+  * URL reputaiton
+  * Take URL screenshot
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+    type: start
+    task:
+      id: 8ec1d86f-9108-44d5-8c64-49fa9294f043
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -39
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 53e529ea-dc35-4f97-84ae-f0b0d471aa8e
+    type: condition
+    task:
+      id: 53e529ea-dc35-4f97-84ae-f0b0d471aa8e
+      version: -1
+      name: Do we have URLs?
+      description: do we have a url to check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    scriptarguments:
+      value:
+        simple: inputs.url
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 165
+        }
+      }
+  "20":
+    id: "20"
+    taskid: 8fcb9133-0893-4133-8602-a26947510691
+    type: regular
+    task:
+      id: 8fcb9133-0893-4133-8602-a26947510691
+      version: -1
+      name: Get URLs reputation
+      description: Run reputation for the given url
+      scriptName: URLReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      file:
+        simple: ${File.SHA256}
+      ip: {}
+      url:
+        simple: ${inputs.url}
+    reputationcalc: 0
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 1010
+        }
+      }
+  "24":
+    id: "24"
+    taskid: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+    type: title
+    task:
+      id: 86cea036-b5bf-40d7-86f9-278a0e1d5557
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1185
+        }
+      }
+  "25":
+    id: "25"
+    taskid: 3d331702-e1e3-4106-86dc-d88714dfc19f
+    type: condition
+    task:
+      id: 3d331702-e1e3-4106-86dc-d88714dfc19f
+      version: -1
+      name: 'Is Rasterize integration enabled? '
+      description: Check if we can use rasterize
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "26"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: Rasterize
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80.5,
+          "y": 835
+        }
+      }
+  "26":
+    id: "26"
+    taskid: da3cf2fe-f7e1-4d46-8fb6-45739ae10f7b
+    type: regular
+    task:
+      id: da3cf2fe-f7e1-4d46-8fb6-45739ae10f7b
+      version: -1
+      name: Get URL screenshot
+      description: Get the screenshot of the url page
+      script: Rasterize|||rasterize
+      type: regular
+      iscommand: true
+      brand: Rasterize
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      height: {}
+      type: {}
+      url:
+        simple: ${inputs.url}
+      width: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 163,
+          "y": 1010
+        }
+      }
+  "27":
+    id: "27"
+    taskid: a8b035c8-713a-4eb7-8e8d-fe1c5adc790a
+    type: condition
+    task:
+      id: a8b035c8-713a-4eb7-8e8d-fe1c5adc790a
+      version: -1
+      name: Should the system take the URLs screenshots?
+      description: 'Check if the Rasterize input equals to "True" '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "25"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.Rasterize
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "28":
+    id: "28"
+    taskid: 1db2760c-e81e-4a9f-80a0-84efb609d3f3
+    type: title
+    task:
+      id: 1db2760c-e81e-4a9f-80a0-84efb609d3f3
+      version: -1
+      name: Enrich URLs
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+      - "30"
+      - "31"
+      - "35"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+  "29":
+    id: "29"
+    taskid: c5661851-815e-4a10-8476-a968c41eb6e9
+    type: title
+    task:
+      id: c5661851-815e-4a10-8476-a968c41eb6e9
+      version: -1
+      name: Take Screenshots
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "30":
+    id: "30"
+    taskid: bb725dfb-4d4c-4428-8a8c-63c117d350fa
+    type: title
+    task:
+      id: bb725dfb-4d4c-4428-8a8c-63c117d350fa
+      version: -1
+      name: URL reputation
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 515
+        }
+      }
+  "31":
+    id: "31"
+    taskid: f7cbd050-2f16-4d62-84d1-0dcef6c8a64a
+    type: title
+    task:
+      id: f7cbd050-2f16-4d62-84d1-0dcef6c8a64a
+      version: -1
+      name: Verify URLs
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1329.5,
+          "y": 515
+        }
+      }
+  "32":
+    id: "32"
+    taskid: e0e0aaf2-da6f-4b4c-8fc0-87b0474c5707
+    type: regular
+    task:
+      id: e0e0aaf2-da6f-4b4c-8fc0-87b0474c5707
+      version: -1
+      name: URL SSL Verification
+      description: Verify URL SSL certificate
+      scriptName: URLSSLVerification
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      url:
+        simple: ${inputs.url}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1329.5,
+          "y": 1010
+        }
+      }
+  "33":
+    id: "33"
+    taskid: 3f10b64b-59b0-4968-8ec6-e66911654ec0
+    type: condition
+    task:
+      id: 3f10b64b-59b0-4968-8ec6-e66911654ec0
+      version: -1
+      name: Should the system verify the URLs?
+      description: 'Check if the VerifyURL input equals to "True" '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "32"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.VerifyURL
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1329.5,
+          "y": 708
+        }
+      }
+  "34":
+    id: "34"
+    taskid: a283aea5-6246-483c-893e-5ade81c0d073
+    type: condition
+    task:
+      id: a283aea5-6246-483c-893e-5ade81c0d073
+      version: -1
+      name: Should the system get the URL Reputation?
+      description: "Should the system retrieve the url reputation from all of the relevant integration?\nDefault: True\n "
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "20"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 708
+        }
+      }
+  "35":
+    id: "35"
+    taskid: d2ef3a60-d0bd-4368-8cb2-bfede3130f58
+    type: title
+    task:
+      id: d2ef3a60-d0bd-4368-8cb2-bfede3130f58
+      version: -1
+      name: Enrich using Virus Total Private API
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1825,
+          "y": 515
+        }
+      }
+  "36":
+    id: "36"
+    taskid: d28f230f-511e-490f-821c-387389336800
+    type: condition
+    task:
+      id: d28f230f-511e-490f-821c-387389336800
+      version: -1
+      name: Is Virus Total Private API enabled?
+      description: Checks if there is an active instance of the Virus Total Private API enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "37"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal - Private API
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1825,
+          "y": 708
+        }
+      }
+  "37":
+    id: "37"
+    taskid: 552cab93-1b17-405d-8741-84ce788d53d9
+    type: regular
+    task:
+      id: 552cab93-1b17-405d-8741-84ce788d53d9
+      version: -1
+      name: Get URL report form Virus Total Private API
+      description: |
+        Retrieves a report for a given URL.
+      script: VirusTotal - Private API|||vt-private-get-url-report
+      type: regular
+      iscommand: true
+      brand: VirusTotal - Private API
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      allInfo: {}
+      fullResponse: {}
+      resource:
+        complex:
+          root: inputs.url
+      shortFormat: {}
+      threshold: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1825,
+          "y": 1010
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1289,
+        "width": 2285.5,
+        "x": -80.5,
+        "y": -39
+      }
+    }
+  }
+inputs:
+- key: url
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: url to enrich
+- key: Rasterize
+  value:
+    simple: "False"
+  required: false
+  description: Should the system take safe screenshots of input URLs?
+- key: VerifyURL
+  value:
+    simple: "False"
+  required: false
+  description: Should the system verify the input URLs?
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the URL
+outputs:
+- contextPath: URL
+  description: The URL's object
+  type: uknown
+- contextPath: URL.Data
+  description: The enriched URL
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore
+  type: unknown
+- contextPath: URL.Malicious
+  description: whether url was detected as malicious
+  type: unknown
+- contextPath: URL.Vendor
+  description: name of vendor who labeled as malicious
+  type: string
+- contextPath: URL.Description
+  description: additional info on the url
+  type: string
+tests:
+- No test (provided a test for URL enrichment v2)
+deprecated: true

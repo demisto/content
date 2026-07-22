@@ -1,0 +1,9 @@
+[file:ApacheWebServerParsingRules.yml]
+ignore=PR101
+
+[file:ApacheWebServerModelingRules_1_3.yml]
+ignore=MR108
+
+[file:ApacheWebServerModelingRules.yml]
+ignore=MR108
+

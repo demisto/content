@@ -1,0 +1,873 @@
+id: Employee Status Survey
+version: -1
+name: Employee Status Survey
+description: 'Note: This is a beta playbook, which lets you implement and test pre-release
+  software. Since the playbook is beta, it might contain bugs. Updates to the playbook
+  during the beta phase might include non-backward compatible features. We appreciate
+  your feedback on the quality and usability of the playbook to help us identify issues,
+  fix them, and continually improve. Manages a crisis event where employees have to
+  work remotely due to a pandemic, issues with the workplace or similar situations.
+  Sends a questionnaire to all direct reports under a given manager. The questionnaire
+  asks the employees for their health status and whether they need any help. The data
+  is saved as employee indicators in Cortex XSOAR, while IT and HR incidents are created
+  to provide assistance to employees who requested it. The questionnaire expires after
+  24 hours by default, and during that time the responses are processed every 5 minutes.
+  These settings can be edited via the task that sends the questionnaire and the loop settings
+  of the Continuously Process Survey Responses playbook, respectively.'
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: dc120eb5-ec5a-4a94-8d27-4b5c6181b542
+    type: start
+    task:
+      id: dc120eb5-ec5a-4a94-8d27-4b5c6181b542
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 65\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: bf8e9709-ae78-4d41-82df-9b95562eab06
+    type: collection
+    task:
+      id: bf8e9709-ae78-4d41-82df-9b95562eab06
+      version: -1
+      name: Send employee status questionnaire
+      description: Sends a questionnaire to the direct reports of the configured user,
+        asking for their health status and whether they need IT or HR related help.
+      type: collection
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    sla:
+      hours: 0
+      days: 1
+      weeks: 0
+    view: "{\n  \"position\": {\n    \"x\": 90,\n    \"y\": 1515\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: MSGraphUserDirectReports
+          accessor: Reports.UserPrincipalName
+          transformers:
+          - operator: uniq
+      subject:
+        simple: Voluntary employee checkin
+      body:
+        simple: "Hi,\n\nYour voluntary participation in this employee\nhealth check\
+          \ enables us to be proactive in protecting our employees. Thank you for\
+          \ your participation.\n\nRegards,\nEmployee Health Monitoring Team"
+      methods:
+      - email
+      - SlackV2
+      format: html
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 0
+    form:
+      questions:
+      - id: '0'
+        label: ''
+        labelarg:
+          simple: Which out of the following options best represents your current
+            health condition?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ''
+        - No health issues with me or my family
+        - One of my family members is not feeling well
+        - I am not feeling well
+        - I choose not to answer
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      - id: '1'
+        label: ''
+        labelarg:
+          simple: Additional information about health concerns
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: 'These comments will be routed to the HR department. '
+        readonly: false
+      - id: '2'
+        label: ''
+        labelarg:
+          simple: Are you facing any IT related issues with your remote work setup?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ''
+        - Yes, I need help
+        - No, I am good
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: 'If you are facing challenges, please describe your problem in the
+          comments field below. '
+        readonly: false
+      - id: '3'
+        label: ''
+        labelarg:
+          simple: Additional information about IT concerns
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options:
+        - Yes
+        - No
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: 'These comments will be routed to the IT department. '
+        readonly: false
+      title: Employee Status Report
+      description: 'Please answer the following question to the best of your knowledge '
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 32240f49-b065-4067-8a51-83612932adc1
+    type: title
+    task:
+      id: 32240f49-b065-4067-8a51-83612932adc1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 437.5,\n    \"y\": 2345\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: b3a33314-b624-4275-8674-f09d60b653bc
+    type: regular
+    task:
+      id: b3a33314-b624-4275-8674-f09d60b653bc
+      version: -1
+      name: Close Investigation
+      description: Closes the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 437.5,\n    \"y\": 2140\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: 6ea424f5-f8fe-4a14-81dd-d7545569c7df
+    type: regular
+    task:
+      id: 6ea424f5-f8fe-4a14-81dd-d7545569c7df
+      version: -1
+      name: Create tracker for processed survey responses
+      description: Creates a context key used for tracking the number of survey responses
+        that were processed. The context key is essentially an iterator that starts
+        with a value of 0 and is incremented for each processed survey response.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      append: {}
+      key:
+        simple: lastupdatedindex
+      stringify: {}
+      value:
+        simple: '0'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -140,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: 90169082-c8c4-42d6-8c75-8b040c304d7e
+    type: playbook
+    task:
+      id: 90169082-c8c4-42d6-8c75-8b040c304d7e
+      version: -1
+      name: Continuously Process Survey Responses
+      description: Continuously processes new questionnaire responses as they are
+        received.
+      playbookName: Continuously Process Survey Responses
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    separatecontext: false
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isExists
+          left:
+            value:
+              simple: survey_expired
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: survey_expired
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+      exitCondition: ''
+      wait: 300
+      max: 290
+    view: "{\n  \"position\": {\n    \"x\": 662.5,\n    \"y\": 1515\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: ce495d46-ddad-4d19-834c-eef5d54a53bb
+    type: regular
+    task:
+      id: ce495d46-ddad-4d19-834c-eef5d54a53bb
+      version: -1
+      name: Stop processing responses due to survey expiration
+      description: Sets a key in context indicating that the survey expired, which
+        in turn stops the survey response processing.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      append: {}
+      key:
+        simple: survey_expired
+      stringify: {}
+      value:
+        simple: '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 90,\n    \"y\": 1690\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: 4b2cc8e4-ba51-4fec-8413-051d702da515
+    type: playbook
+    task:
+      id: 4b2cc8e4-ba51-4fec-8413-051d702da515
+      version: -1
+      name: Process Survey Response
+      playbookName: Process Survey Response
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: lastupdatedindex
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Employee Status Report
+                accessor: Answers
+                transformers:
+                - operator: count
+            iscontext: true
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: "{\n  \"position\": {\n    \"x\": 510,\n    \"y\": 1890\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '17':
+    id: '17'
+    taskid: fd037972-9392-452f-8b72-7b9800cb9c59
+    type: condition
+    task:
+      id: fd037972-9392-452f-8b72-7b9800cb9c59
+      version: -1
+      name: Any remaining responses to process after survey expiration?
+      description: Checks whether there are still employee responses to process, after
+        the survey expired.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      'yes':
+      - '16'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: lessThan
+          left:
+            value:
+              simple: lastupdatedindex
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Employee Status Report
+                accessor: Answers
+                transformers:
+                - operator: count
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 662.5,\n    \"y\": 1690\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: da85aa6c-07b2-46d6-8edd-690994860ad2
+    type: title
+    task:
+      id: da85aa6c-07b2-46d6-8edd-690994860ad2
+      version: -1
+      name: Employee Info Collection
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '19':
+    id: '19'
+    taskid: e877e146-ef87-407b-8b6d-d78303c5907f
+    type: title
+    task:
+      id: e877e146-ef87-407b-8b6d-d78303c5907f
+      version: -1
+      name: Initialize Record Creation
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '20':
+    id: '20'
+    taskid: 8983f564-320c-417e-89cb-f836e9b31577
+    type: title
+    task:
+      id: 8983f564-320c-417e-89cb-f836e9b31577
+      version: -1
+      name: Survey Send-out
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 90,\n    \"y\": 1390\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '21':
+    id: '21'
+    taskid: 3a3b99ad-d414-4bb4-83c5-8af92d3fe9fe
+    type: title
+    task:
+      id: 3a3b99ad-d414-4bb4-83c5-8af92d3fe9fe
+      version: -1
+      name: Continuous Survey Processing
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 662.5,\n    \"y\": 1390\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '22':
+    id: '22'
+    taskid: b768d7be-9794-4b19-8647-375b7a1123a3
+    type: regular
+    task:
+      id: b768d7be-9794-4b19-8647-375b7a1123a3
+      version: -1
+      name: Get manager details
+      description: "Retrieves the properties and relationships of a user object. For\
+        \ more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).\n\
+        Permissions: - User.Read (Delegated) - User.Read.All (Application)"
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      properties: {}
+      user:
+        complex:
+          root: inputs.ManagerEmail
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '23':
+    id: '23'
+    taskid: a6cd6476-f0e9-4a13-8b1f-b4809717237b
+    type: regular
+    task:
+      id: a6cd6476-f0e9-4a13-8b1f-b4809717237b
+      version: -1
+      name: Get manager's direct reports
+      description: Retrieves the direct reports for a user. Direct reports are the
+        people who have that user configured as their manager.
+      script: '|||msgraph-direct-reports'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      user:
+        complex:
+          root: inputs.ManagerEmail
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '25':
+    id: '25'
+    taskid: 45fbdec9-52f0-4b3f-8ee0-c422c4ec8a7f
+    type: regular
+    task:
+      id: 45fbdec9-52f0-4b3f-8ee0-c422c4ec8a7f
+      version: -1
+      name: Create employee indicators for direct reports
+      description: Creates or updates indicators for the direct report employees in
+        Cortex XSOAR.
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      comment: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      department: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      fileextension: {}
+      filetype: {}
+      firstname:
+        complex:
+          root: MSGraphUserDirectReports
+          accessor: Reports.GivenName
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle:
+        complex:
+          root: MSGraphUserDirectReports
+          accessor: Reports.JobTitle
+      lastname:
+        complex:
+          root: MSGraphUserDirectReports
+          accessor: Reports.Surname
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      merge:
+        simple: 'True'
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      relatedIncidents: {}
+      reportedby: {}
+      reputation: {}
+      seenNow: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      size: {}
+      source: {}
+      sourceTimeStamp: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type:
+        simple: Employee
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: MSGraphUserDirectReports
+          accessor: Reports.UserPrincipalName
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 1040\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: a7dd2927-db77-4b9b-881b-f5406de39dc1
+    type: condition
+    task:
+      id: a7dd2927-db77-4b9b-881b-f5406de39dc1
+      version: -1
+      name: Is Microsoft Graph User enabled?
+      description: Checks if the Microsoft Graph User integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '27'
+      'yes':
+      - '22'
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Graph User
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 360\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '27':
+    id: '27'
+    taskid: 5db9255e-81be-48f8-8ea6-2cbdbf636d51
+    type: title
+    task:
+      id: 5db9255e-81be-48f8-8ea6-2cbdbf636d51
+      version: -1
+      name: Cannot Send Survey
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1650,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '28':
+    id: '28'
+    taskid: 9ea8cc99-ed42-478e-80bb-5d86a325f002
+    type: condition
+    task:
+      id: 9ea8cc99-ed42-478e-80bb-5d86a325f002
+      version: -1
+      name: Is Slack or a mail sender integration enabled?
+      description: 'Checks if at least one of the following integrations is enabled:
+        Slack, Gmail or EWS Mail Sender.'
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      'yes':
+      - '20'
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: EWS Mail Sender
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Gmail
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SlackV2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 377.5,\n    \"y\": 1210\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '29':
+    id: '29'
+    taskid: 14ed3efd-6e7f-4093-86e1-74977f327f37
+    type: title
+    task:
+      id: 14ed3efd-6e7f-4093-86e1-74977f327f37
+      version: -1
+      name: Cannot Process Survey
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1650,\n    \"y\": 1390\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {\n    \"26_22_yes\": 0.46,\n    \"26_27_#default#\"\
+  : 0.9,\n    \"28_29_#default#\": 0.47\n  },\n  \"paper\": {\n    \"dimensions\"\
+  : {\n      \"height\": 2345,\n      \"width\": 2170,\n      \"x\": -140,\n     \
+  \ \"y\": 65\n    }\n  }\n}"
+inputs:
+- key: ManagerEmail
+  value:
+    complex:
+      root: incident
+      accessor: manageremail
+  required: false
+  description: The email of the manager whose direct reports should be contacted for
+    their health status and offered assistance.
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: Employee Status Survey
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

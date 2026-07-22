@@ -1,0 +1,1812 @@
+{
+  "name": "http://www.dummy.org/",
+  "type": "PAGE",
+  "firstSeen": 1539018024251,
+  "lastSeen": 1591634124324,
+  "uuid": "8dfdd21e-5012-3bd6-f9a5-c3151f1b9e40",
+  "label": "http://www.dummy.org/",
+  "description": "http://www.dummy.org/",
+  "asset": {
+    "url": "http://www.dummy.org/",
+    "httpMethod": "GET",
+    "service": "http://www.dummy.org:80",
+    "ipAddresses": [
+      {
+        "value": "104.28.12.78",
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "172.67.132.223",
+        "firstSeen": 1590571255102,
+        "lastSeen": 1591580985105,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "104.28.13.78",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "0.0.0.0",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "successful": [
+      {
+        "value": true,
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": false,
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213
+      }
+    ],
+    "httpResponseCodes": [
+      {
+        "value": 200,
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": 0,
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213
+      }
+    ],
+    "httpResponseMessages": [
+      {
+        "value": "OK",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "Service Unavailable",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213
+      },
+      {
+        "value": "Proxy Authentication Required",
+        "firstSeen": 1539233562406,
+        "lastSeen": 1543521869887
+      }
+    ],
+    "responseTimes": [
+      {
+        "value": 414,
+        "firstSeen": 1591595881794,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "frames": [
+      {
+        "value": true,
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "windows": [
+      {
+        "value": true,
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "nonHtmlFrames": [{"name": "Dummy"}],
+    "undirectedContent": [{"name": "Dummy"}],
+    "contentTypes": [
+      {
+        "value": "text/html",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "contentLengths": [
+      {
+        "value": 60901,
+        "firstSeen": 1591580985105,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "windowNames": [
+      {
+        "value": ": TopLevelWindow@7229a64a",
+        "firstSeen": 1591555686897,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": ": TopLevelWindow@385ca21f",
+        "firstSeen": 1591238861984,
+        "lastSeen": 1591238861984
+      },
+      {
+        "value": ": TopLevelWindow@6c87806e",
+        "firstSeen": 1591136873627,
+        "lastSeen": 1591136873627
+      },
+      {
+        "value": ": TopLevelWindow@695c4275",
+        "firstSeen": 1591099672610,
+        "lastSeen": 1591099672610
+      },
+      {
+        "value": ": TopLevelWindow@203fc20f",
+        "firstSeen": 1590947995325,
+        "lastSeen": 1590947995325
+      },
+      {
+        "value": ": TopLevelWindow@4a328ca1",
+        "firstSeen": 1590611910698,
+        "lastSeen": 1590611910698
+      },
+      {
+        "value": ": TopLevelWindow@3dca558b",
+        "firstSeen": 1590538330662,
+        "lastSeen": 1590538330662
+      },
+      {
+        "value": ": TopLevelWindow@56cbcec9",
+        "firstSeen": 1590505303630,
+        "lastSeen": 1590505303630
+      },
+      {
+        "value": ": TopLevelWindow@127790d3",
+        "firstSeen": 1590003319818,
+        "lastSeen": 1590003319818
+      },
+      {
+        "value": ": TopLevelWindow@9946b3b",
+        "firstSeen": 1589890950501,
+        "lastSeen": 1589890950501
+      },
+      {
+        "value": ": TopLevelWindow@f9cc51a",
+        "firstSeen": 1589395866636,
+        "lastSeen": 1589395866636
+      },
+      {
+        "value": ": TopLevelWindow@f710547",
+        "firstSeen": 1589300598858,
+        "lastSeen": 1589300598858
+      },
+      {
+        "value": ": TopLevelWindow@3d0d3c54",
+        "firstSeen": 1589288238636,
+        "lastSeen": 1589288238636
+      },
+      {
+        "value": ": TopLevelWindow@6e28ee27",
+        "firstSeen": 1588799034862,
+        "lastSeen": 1588799034862
+      },
+      {
+        "value": ": TopLevelWindow@4adbc2a2",
+        "firstSeen": 1588714322905,
+        "lastSeen": 1588714322905
+      },
+      {
+        "value": ": TopLevelWindow@4d44a84e",
+        "firstSeen": 1588714037011,
+        "lastSeen": 1588714037011
+      },
+      {
+        "value": ": TopLevelWindow@3e5fa653",
+        "firstSeen": 1588676046434,
+        "lastSeen": 1588676046434
+      },
+      {
+        "value": ": TopLevelWindow@76ee6116",
+        "firstSeen": 1588183902230,
+        "lastSeen": 1588183902230
+      },
+      {
+        "value": ": TopLevelWindow@42570a80",
+        "firstSeen": 1588094754189,
+        "lastSeen": 1588094754189
+      },
+      {
+        "value": ": TopLevelWindow@14a3df5e",
+        "firstSeen": 1587551369327,
+        "lastSeen": 1587551369327
+      },
+      {
+        "value": ": TopLevelWindow@bfa3cee",
+        "firstSeen": 1587471221101,
+        "lastSeen": 1587471221101
+      }
+    ],
+    "charsets": [
+      {
+        "value": "UTF-8",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "utf-8",
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897
+      }
+    ],
+    "titles": [
+      {
+        "value": "ja tarvikud - e-pood",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "ERROR: The requested URL could not be retrieved",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213
+      },
+      {
+        "value": "ERROR: Cache Access Denied",
+        "firstSeen": 1539233562406,
+        "lastSeen": 1543521869887
+      }
+    ],
+    "languages": [
+      {
+        "value": "et",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "responseHeaders": [
+      {
+        "headerName": "CF-Cache-Status",
+        "headerValue": "DYNAMIC",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "CF-RAY",
+        "headerValue": "59d6279a5b260507-LAX",
+        "firstSeen": 1591078248838,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "Connection",
+        "headerValue": "close",
+        "firstSeen": 1590661399485,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "Content-Encoding",
+        "headerValue": "gzip",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "Content-Type",
+        "headerValue": "text/html",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "Date",
+        "headerValue": "Mon, 08 Jun 2020 05:58:01 GMT",
+        "firstSeen": 1591595881794,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "headerName": "Server",
+        "headerValue": "cloudflare",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "Set-Cookie",
+        "headerValue": "__cfduid=d08757163fb72ae75df81aae5757da6f01591595880; expires=Wed, 08-Jul-20 05:58:00 GMT; path=/; domain=.dummy.org; HttpOnly; SameSite=Lax",
+        "firstSeen": 1591595881794,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "X-Powered-By",
+        "headerValue": "PHP/5.4.16",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794
+      },
+      {
+        "headerName": "cf-request-id",
+        "headerValue": "03341aea11000004ef551e9200000001",
+        "firstSeen": 1591595881794,
+        "lastSeen": 1591595881794
+      }
+    ],
+    "cookies": [
+      {
+        "cookieName": "__cfduid",
+        "cookieDomain": "dummy.org",
+        "firstSeen": 1590661399485,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "webComponents": [
+      {
+        "ruleid": [],
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "CloudFlare",
+        "webComponentCategory": "CDN",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "CloudFlare",
+        "webComponentCategory": "DDOS Protection",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "CloudFlare",
+        "webComponentCategory": "Server",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "PHP",
+        "webComponentCategory": "Framework",
+        "webComponentVersion": "5.4.16",
+        "cves": [
+          {
+            "name": "CVE-2015-8994",
+            "cvssScore": 6.800000190734863,
+            "cweID": "CWE-264"
+          }
+        ],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "Microsoft Ajax CDN",
+        "webComponentCategory": "CDN",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "Microsoft Ajax Content Delivery Network",
+        "webComponentCategory": "CDN",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "jQuery",
+        "webComponentCategory": "JavaScript Library",
+        "webComponentVersion": "2.2.4",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "jquery",
+        "webComponentCategory": "JavaScript Library",
+        "webComponentVersion": "2.2.4",
+        "cves": [],
+        "current": true
+      },
+      {
+        "ruleid": [],
+        "firstSeen": 1587471221101,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "ports": [],
+        "webComponentName": "twitter-bootstrap",
+        "webComponentCategory": "JavaScript Library",
+        "webComponentVersion": "4.1.3",
+        "cves": [],
+        "current": true
+      }
+    ],
+    "assetSecurityPolicies": [
+      {
+        "policyName": "content-security-policy-high",
+        "isAffected": false,
+        "description": "no violations",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "content-security-policy-low",
+        "isAffected": false,
+        "description": "no violations",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "form",
+        "isAffected": true,
+        "description": "Page contains forms.",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "insecure-form",
+        "isAffected": true,
+        "description": "Page contains insecure forms.",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "insecure-login-form",
+        "isAffected": false,
+        "description": "Form does not use insecure login.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "login-form",
+        "isAffected": false,
+        "description": "Form does not use password input types.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "public-key-pinning-extensions-for-http",
+        "isAffected": false,
+        "description": "Page does not use HTTPS.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "strict-transport-security",
+        "isAffected": false,
+        "description": "Page does not use HTTPS.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "x-content-type-options",
+        "isAffected": true,
+        "description": "Header X-Content-Type-Options is not present.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "x-frame-options",
+        "isAffected": true,
+        "description": "X-Frame-Options not found.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "x-permitted-cross-domain-policies",
+        "isAffected": false,
+        "description": "Header X-Permitted-Cross-Domain-Policies is not present.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "form",
+        "isAffected": false,
+        "description": "Page does not contain forms.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213,
+        "recent": true,
+        "current": true
+      },
+      {
+        "policyName": "insecure-form",
+        "isAffected": false,
+        "description": "Page does not contain forms.",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "responseBodyMinhashSignatures": [
+      {
+        "values": [
+          -2147103118,
+          -2147288535,
+          -2147449952,
+          -2147268217,
+          -2147319162,
+          -2147177900,
+          -2147269754,
+          -2147457647,
+          -2147327818,
+          -2147413862,
+          -2147137229,
+          -2147277547,
+          -2147247749,
+          -2147319486,
+          -2147006839,
+          -2147297133,
+          -2147415118,
+          -2147476701,
+          -2147174574,
+          -2147141780,
+          -2146297342,
+          -2147221298,
+          -2147384837,
+          -2146732537,
+          -2147210358,
+          -2147154540,
+          -2147364383,
+          -2147267092,
+          -2147304298,
+          -2146939192,
+          -2147418058,
+          -2147319805,
+          -2147084185,
+          -2147137238,
+          -2147426963,
+          -2146948485,
+          -2147453598,
+          -2147228138,
+          -2147275058,
+          -2147388811,
+          -2147161753,
+          -2146441498,
+          -2147287567,
+          -2147402121,
+          -2147136725,
+          -2147299612,
+          -2147054135,
+          -2147301133,
+          -2147399400,
+          -2147023346,
+          -2146793535,
+          -2147050707,
+          -2147138769,
+          -2147480397,
+          -2147243606,
+          -2147405699,
+          -2147426047,
+          -2147422948,
+          -2147399988,
+          -2147332254,
+          -2147154223,
+          -2147290578,
+          -2147322255,
+          -2147364394,
+          -2147265334,
+          -2147373440,
+          -2147474336,
+          -2147322144,
+          -2147389095,
+          -2146731155,
+          -2146761344,
+          -2147246436,
+          -2146777951,
+          -2147178401,
+          -2147130147,
+          -2147359512,
+          -2147169761,
+          -2146941873,
+          -2147213182,
+          -2147269136,
+          -2147378427,
+          -2147320657,
+          -2147369752,
+          -2147237058,
+          -2147376478,
+          -2147343078,
+          -2147085532,
+          -2146969938,
+          -2147296799,
+          -2147334665,
+          -2147291887,
+          -2147099650,
+          -2147083373,
+          -2147385113,
+          -2147283264,
+          -2147303374,
+          -2147340875,
+          -2147365186,
+          -2147400536,
+          -2147439108,
+          -2147282724,
+          -2147362753,
+          -2147026149,
+          -2147014667,
+          -2147193379,
+          -2147358286,
+          -2147284045,
+          -2147461230,
+          -2147339292,
+          -2147121745,
+          -2147158228,
+          -2147077601,
+          -2147342142,
+          -2147462314,
+          -2147259314,
+          -2147391234,
+          -2147483267,
+          -2146675319,
+          -2147159471,
+          -2147415666,
+          -2147451868,
+          -2147453871,
+          -2147120882,
+          -2147429190,
+          -2147381871,
+          -2147313789,
+          -2147196612,
+          -2147473514,
+          -2147332126,
+          -2147438772,
+          -2147164953,
+          -2146959877,
+          -2147181767,
+          -2147078239,
+          -2147396405,
+          -2147360207,
+          -2146964496,
+          -2147113668,
+          -2147279787,
+          -2147372919,
+          -2146899021,
+          -2147211138,
+          -2147348640,
+          -2146891727,
+          -2147432004,
+          -2147410255,
+          -2147331909,
+          -2147028764,
+          -2147215576,
+          -2147387762,
+          -2146967053,
+          -2146943909,
+          -2147253083,
+          -2147405445,
+          -2147379647,
+          -2147426385,
+          -2147089002,
+          -2147328856,
+          -2147430353,
+          -2147364874,
+          -2147423022,
+          -2147381454,
+          -2147375349,
+          -2146878836,
+          -2147282942,
+          -2147457892,
+          -2147419403,
+          -2147304622,
+          -2147472177,
+          -2147425405,
+          -2146860264,
+          -2147439335,
+          -2147099531,
+          -2147136568,
+          -2146854579,
+          -2147449803,
+          -2146482154,
+          -2147040938,
+          -2147476624,
+          -2147427354,
+          -2147417641,
+          -2147395907,
+          -2147348533,
+          -2147129534,
+          -2147036244,
+          -2147373274,
+          -2147290605,
+          -2147455419,
+          -2147301199,
+          -2147262187,
+          -2147259838,
+          -2146958126,
+          -2147296892,
+          -2147408293,
+          -2146953882,
+          -2146331776,
+          -2147241353,
+          -2147290548,
+          -2147309381,
+          -2147394585
+        ],
+        "firstSeen": 1591580985105,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "fullDomMinhashSignatures": [
+      {
+        "values": [
+          -2146571963,
+          -2147217885,
+          -2146976797,
+          -2147268217,
+          -2147154146,
+          -2146966034,
+          -2147312492,
+          -2147457647,
+          -2147474423,
+          -2147413862,
+          -2147137229,
+          -2146947197,
+          -2147446860,
+          -2147319486,
+          -2146461127,
+          -2147311982,
+          -2147454768,
+          -2147409523,
+          -2147365052,
+          -2147173997,
+          -2147318856,
+          -2146929182,
+          -2147182874,
+          -2147406531,
+          -2147060271,
+          -2147405710,
+          -2147364383,
+          -2147267092,
+          -2146769626,
+          -2147216930,
+          -2146551680,
+          -2147319805,
+          -2146640600,
+          -2147466827,
+          -2147372292,
+          -2146646016,
+          -2147453598,
+          -2147423743,
+          -2147281586,
+          -2147388811,
+          -2147389776,
+          -2147437621,
+          -2147287567,
+          -2147402121,
+          -2147136725,
+          -2147299612,
+          -2147116613,
+          -2147301133,
+          -2147425750,
+          -2146984006,
+          -2147306593,
+          -2147050707,
+          -2147138769,
+          -2147460879,
+          -2147156475,
+          -2147405699,
+          -2147426047,
+          -2146781400,
+          -2147260538,
+          -2147332254,
+          -2146972979,
+          -2147168145,
+          -2147322255,
+          -2147032990,
+          -2146809613,
+          -2147373440,
+          -2147474336,
+          -2147407642,
+          -2147389095,
+          -2146731155,
+          -2146775500,
+          -2147396191,
+          -2147223024,
+          -2147192567,
+          -2147349919,
+          -2147359512,
+          -2147169761,
+          -2147189879,
+          -2147213182,
+          -2147014654,
+          -2147481264,
+          -2147026748,
+          -2147425612,
+          -2147104917,
+          -2147379919,
+          -2147376308,
+          -2147085532,
+          -2146965454,
+          -2147353281,
+          -2147334665,
+          -2147291887,
+          -2147099650,
+          -2147083373,
+          -2147385113,
+          -2147283264,
+          -2147303374,
+          -2147447379,
+          -2147200132,
+          -2147413323,
+          -2147439108,
+          -2147389866,
+          -2147362753,
+          -2147026149,
+          -2146937077,
+          -2147281357,
+          -2147358286,
+          -2147284045,
+          -2147461230,
+          -2147339292,
+          -2147467496,
+          -2147158228,
+          -2147458219,
+          -2147342142,
+          -2147462314,
+          -2147259314,
+          -2147421632,
+          -2147483267,
+          -2147036306,
+          -2147159471,
+          -2147415666,
+          -2147451868,
+          -2147453871,
+          -2147120882,
+          -2147429190,
+          -2147381871,
+          -2147313789,
+          -2146297917,
+          -2147473514,
+          -2147271900,
+          -2147418751,
+          -2147164953,
+          -2146959877,
+          -2147477785,
+          -2146898518,
+          -2146255442,
+          -2147360207,
+          -2147065235,
+          -2147419808,
+          -2147147719,
+          -2147470354,
+          -2147169234,
+          -2147211138,
+          -2147252696,
+          -2146824431,
+          -2147432004,
+          -2147410255,
+          -2147335892,
+          -2147358569,
+          -2147314549,
+          -2147387762,
+          -2146970200,
+          -2146943909,
+          -2147427502,
+          -2147405445,
+          -2147379647,
+          -2147426385,
+          -2147339171,
+          -2147328856,
+          -2147437776,
+          -2147381683,
+          -2147423022,
+          -2147381454,
+          -2147375349,
+          -2147064379,
+          -2147136220,
+          -2147457892,
+          -2146965845,
+          -2147304622,
+          -2147472177,
+          -2147304112,
+          -2147474945,
+          -2147389683,
+          -2147476503,
+          -2146849458,
+          -2147022879,
+          -2147449803,
+          -2146482154,
+          -2147040938,
+          -2147476624,
+          -2147427354,
+          -2147417641,
+          -2147262966,
+          -2147348533,
+          -2147129534,
+          -2147341855,
+          -2147453363,
+          -2147273750,
+          -2147369323,
+          -2147301199,
+          -2147439712,
+          -2146880057,
+          -2146958126,
+          -2147428434,
+          -2147408293,
+          -2146359470,
+          -2147467648,
+          -2147241353,
+          -2147180458,
+          -2147442502,
+          -2147394585
+        ],
+        "firstSeen": 1591555686897,
+        "lastSeen": 1591555686897,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "responseBodyHashSignatures": [
+      {
+        "value": "d7f9d9c9364528a3f1461b5b27c66fef754772d6",
+        "firstSeen": 1591580985105,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "errors": [
+      {
+        "value": "DNS lookup failed",
+        "firstSeen": 1539018024251,
+        "lastSeen": 1587159528213,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "Socket timeout: timeout",
+        "firstSeen": 1560827385625,
+        "lastSeen": 1580502057115
+      },
+      {
+        "value": "Socket timeout: connect timed out",
+        "firstSeen": 1563128573358,
+        "lastSeen": 1568234100098
+      },
+      {
+        "value": "Unknown host: lookup for 198.46.179.176 failed: host not found",
+        "firstSeen": 1564178960388,
+        "lastSeen": 1564178960388
+      },
+      {
+        "value": "Unknown host: lookup for 38.111.164.0 failed: host not found",
+        "firstSeen": 1564096524706,
+        "lastSeen": 1564096524706
+      },
+      {
+        "value": "Upstream Failure: ERR_CACHE_ACCESS_DENIED 0",
+        "firstSeen": 1539233562406,
+        "lastSeen": 1543521869887
+      }
+    ],
+    "firstSeen": 1539018024251,
+    "lastSeen": 1591595881794,
+    "count": 860,
+    "cause": {
+      "causepageguid": "En4ObZVNRueBKmCVuEovPQ==",
+      "cause": "redirect",
+      "location": "http://www.dummy.org/",
+      "possiblematches": 0,
+      "loopdetected": false,
+      "version": 103
+    },
+    "referrer": "http://dummy.org/",
+    "redirectUrls": [{"name": "Dummy"}],
+    "redirectType": "FINAL",
+    "finalUrls": [
+      {
+        "value": "http://www.dummy.org/",
+        "firstSeen": 1543430385561,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "finalResponseCodes": [
+      {
+        "value": 200,
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": 0,
+        "firstSeen": 1543430385561,
+        "lastSeen": 1587159528213
+      }
+    ],
+    "parkedPage": [
+      {
+        "value": false,
+        "firstSeen": 1543945850937,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": true,
+        "firstSeen": 1543814870293,
+        "lastSeen": 1543869195356
+      }
+    ],
+    "resourceUrls": [
+      {
+        "url": "http://www.dummy.org/plugins/slickslider/slick.min.js",
+        "resources": [
+          {
+            "md5": "29065e3aefec2f239f60f5d121bf0dfb",
+            "responseBodySize": 42851,
+            "firstSeen": 1587471222547,
+            "lastSeen": 1591555689072,
+            "count": 21,
+            "firstSeenCrawlGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+            "firstSeenPageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+            "firstSeenResourceGuid": "6a5c7e17-464b-44a7-81a1-386ef03e2422",
+            "lastSeenCrawlGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+            "lastSeenPageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+            "lastSeenResourceGuid": "1d6a8a0c-3b91-4c03-a571-20699a8c8d7d",
+            "responseBodyMinhash": [],
+            "contentType": "application/javascript",
+            "sha256": "JrrvXATohmgu/ndLA0htWZ8Y85YdaNXNhl7lh/HEcwY=",
+            "sha384": "mt4VQN6XDRstFYbic8mSw5SwvknKpOVBJJT3eVhu8/ge1ub4414oxJi+xj52kciQ",
+            "sha512": "TSAq8pK7wJFP9JMBQ434BT8gZpRpEx00go5EQfujQf7iFg3Zr6htxW5Ac/aBS+oEgeGnBzP6EHnsYrJHsOftgg==",
+            "url": "http://www.dummy.org/plugins/slickslider/slick.min.js",
+            "cached": false,
+            "host": "www.dummy.org"
+          }
+        ],
+        "firstSeen": 1587471222547,
+        "lastSeen": 1591555689072,
+        "recent": true,
+        "current": true
+      },
+      {
+        "url": "http://www.dummy.org/js/bootstrap.bundle.min.js",
+        "resources": [
+          {
+            "md5": "ef58fee438cd2da2c3b33ff6f1cfeebf",
+            "responseBodySize": 70966,
+            "firstSeen": 1587471222185,
+            "lastSeen": 1591555688360,
+            "count": 21,
+            "firstSeenCrawlGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+            "firstSeenPageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+            "firstSeenResourceGuid": "45451c5e-568a-4883-ab27-4171a2041d35",
+            "lastSeenCrawlGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+            "lastSeenPageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+            "lastSeenResourceGuid": "414c982a-a634-4824-bf3a-0a526781c084",
+            "responseBodyMinhash": [],
+            "contentType": "application/javascript",
+            "sha256": "E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=",
+            "sha384": "pjaaA8dDz/5BgdFUPX6M/9SUZv4d12SUPF0axWc+VRZkx5xU3daN+lYb49+Ax+Tl",
+            "sha512": "U85Jq47KunKegjv6gVMAnQwtQjovdXz/DQOvQoxrD6j3aGfDDbp5AAJuOdnQx1sefM90D9KBKSQkZGR5hrLbtg==",
+            "url": "http://www.dummy.org/js/bootstrap.bundle.min.js",
+            "cached": false,
+            "host": "www.dummy.org"
+          }
+        ],
+        "firstSeen": 1587471222185,
+        "lastSeen": 1591555688360,
+        "recent": true,
+        "current": true
+      },
+      {
+        "url": "https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js",
+        "resources": [
+          {
+            "md5": "2f6b11a7e914718e0290410e85366fe9",
+            "responseBodySize": 85578,
+            "firstSeen": 1587471221384,
+            "lastSeen": 1591555687123,
+            "count": 21,
+            "firstSeenCrawlGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+            "firstSeenPageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+            "firstSeenResourceGuid": "0bb23baf-0d09-4cde-8909-04ce55568dc5",
+            "lastSeenCrawlGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+            "lastSeenPageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+            "lastSeenResourceGuid": "9e3a0a7f-71a6-40f3-b265-c9a02d4b06d2",
+            "responseBodyMinhash": [],
+            "contentType": "application/javascript",
+            "sha256": "BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=",
+            "sha384": "rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB",
+            "sha512": "DUC8yqWf7ez3JD1jszxCWSVB0DMP78eOyBpMa5aJki1bIRARykviOuImIczkxlj1KhVSyS16w2FSQetkD4UU2w==",
+            "url": "https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js",
+            "cached": false,
+            "host": "ajax.aspnetcdn.com"
+          }
+        ],
+        "firstSeen": 1587471221384,
+        "lastSeen": 1591555687123,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "guids": [
+      {
+        "pageGuid": "69f251b6-b07e-4dbc-acc8-c07278e3d72a",
+        "crawlStateGuid": "d705245f-e1f6-4a43-8c38-d3e4f983c2f6",
+        "loadDate": 1591555686897
+      },
+      {
+        "pageGuid": "28b32f72-8285-4ec8-8c95-e0d12c35c5da",
+        "crawlStateGuid": "a6be1784-6717-448d-8391-f2e843ea4bcb",
+        "loadDate": 1591238861984
+      },
+      {
+        "pageGuid": "758b1f76-d211-45ca-9bbe-3fdb64092725",
+        "crawlStateGuid": "4a776d04-40df-4567-a4eb-87c949e2b028",
+        "loadDate": 1591136873627
+      },
+      {
+        "pageGuid": "97e44648-586c-467b-871e-3a03ae94f9ba",
+        "crawlStateGuid": "0138f316-015f-4157-a9c4-bd155bbf968d",
+        "loadDate": 1591099672610
+      },
+      {
+        "pageGuid": "83d8ef28-32be-40b9-a042-c428110159b1",
+        "crawlStateGuid": "c7e16015-1cb0-4087-92b5-4ea122ea38e3",
+        "loadDate": 1590947995325
+      },
+      {
+        "pageGuid": "1dc0441f-63ab-406a-a18d-eb0e526f377d",
+        "crawlStateGuid": "b7b781b3-8487-4048-9eec-0b33d89c1043",
+        "loadDate": 1590611910698
+      },
+      {
+        "pageGuid": "a03515b4-3ada-41b8-bb43-7abb87f7e93c",
+        "crawlStateGuid": "21c4c5ea-5d01-42b7-8189-3549ab7e47d5",
+        "loadDate": 1590538330662
+      },
+      {
+        "pageGuid": "e0dc82f9-763d-4f52-a8a9-ad27941341d9",
+        "crawlStateGuid": "17efc848-542b-4320-8e0e-2d665d6746c5",
+        "loadDate": 1590505303630
+      },
+      {
+        "pageGuid": "e6a8d6d0-916e-4946-ab64-a80aca5024cf",
+        "crawlStateGuid": "24cf04f1-7414-4d13-adbc-a7e055eb6848",
+        "loadDate": 1590003319818
+      },
+      {
+        "pageGuid": "f7ca3219-8139-449d-a28e-e9ebfaf578ad",
+        "crawlStateGuid": "b5420c2e-b3dc-4124-9650-a12a60a91b43",
+        "loadDate": 1589890950501
+      },
+      {
+        "pageGuid": "d2ecd7ee-a020-42ee-8b7e-45197ab26841",
+        "crawlStateGuid": "c2b63d73-d22f-45de-8bc8-5a39f0175a5a",
+        "loadDate": 1589395866636
+      },
+      {
+        "pageGuid": "edde809e-2db4-4a54-9c63-59faec06f2c8",
+        "crawlStateGuid": "759131fc-8d01-445f-a198-fb9ee889fdd2",
+        "loadDate": 1589300598858
+      },
+      {
+        "pageGuid": "8ffc6e38-7460-4038-856a-5be822ef72a4",
+        "crawlStateGuid": "bbb6af8d-9c88-4568-ae32-373713d8ecc5",
+        "loadDate": 1589288238636
+      },
+      {
+        "pageGuid": "27f4b727-e005-436b-b9ec-545fbf6ef9bd",
+        "crawlStateGuid": "6ce11be2-6117-493f-b62d-9a08f69e882c",
+        "loadDate": 1588799034862
+      },
+      {
+        "pageGuid": "6270ae18-c269-4d6f-91e1-2ff70ded84de",
+        "crawlStateGuid": "6515c906-c1e7-4078-8c01-17908b1684b3",
+        "loadDate": 1588714322905
+      },
+      {
+        "pageGuid": "36b30846-0eac-4e18-bf11-86eb0f643fbb",
+        "crawlStateGuid": "c399821c-b848-4f3d-b08d-3f1aa33e0994",
+        "loadDate": 1588714037011
+      },
+      {
+        "pageGuid": "42eaefba-7a32-441f-949e-115f842fd17a",
+        "crawlStateGuid": "1fd7032c-0c8e-43ac-887b-e5c627b5417c",
+        "loadDate": 1588676046434
+      },
+      {
+        "pageGuid": "5593105d-da57-4933-9029-f784ac1fdbae",
+        "crawlStateGuid": "8b1228cd-be68-4148-b10a-0b6485347cb3",
+        "loadDate": 1588183902230
+      },
+      {
+        "pageGuid": "c8305ac9-76ad-4940-9a33-efc08d3c7f06",
+        "crawlStateGuid": "20c64cba-55b6-46cb-9b3b-cc3291d8e419",
+        "loadDate": 1588094754189
+      },
+      {
+        "pageGuid": "8fac79c9-e220-4e29-b531-d99801108c33",
+        "crawlStateGuid": "474a076a-0142-48b5-92f6-775d8df60ff6",
+        "loadDate": 1587551369327
+      },
+      {
+        "pageGuid": "5f5e754e-4acf-49bd-ab8e-9a9d8ac1acd2",
+        "crawlStateGuid": "d1ed541e-b07c-4bf2-8f23-985db7a7d295",
+        "loadDate": 1587471221101
+      }
+    ],
+    "finalIpAddresses": [
+      {
+        "value": "104.28.12.78",
+        "firstSeen": 1587507942671,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "172.67.132.223",
+        "firstSeen": 1590571255102,
+        "lastSeen": 1591580985105
+      },
+      {
+        "value": "104.28.13.78",
+        "firstSeen": 1587240988037,
+        "lastSeen": 1591349073046
+      },
+      {
+        "value": "0.0.0.0",
+        "firstSeen": 1557369370175,
+        "lastSeen": 1587159528213
+      }
+    ],
+    "ipBlocks": [
+      {
+        "ipBlock": "104.28.0.0/20",
+        "firstSeen": 1591007889526,
+        "lastSeen": 1591007889526,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "finalAsns": [
+      {
+        "value": 13335,
+        "firstSeen": 1591007889526,
+        "lastSeen": 1591007889526,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "finalIpBlocks": [
+      {
+        "ipBlock": "104.28.0.0/20",
+        "firstSeen": 1591007889526,
+        "lastSeen": 1591007889526,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "responseBodies": [
+      {
+        "value": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html><html lang=\"et\"><head>\n<meta charset=\"utf-8\"/>\n<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\"/>\n<meta content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" name=\"viewport\"/>\n<meta content=\"et\" name=\"language\"/>\n<meta content=\"index,follow\" name=\"robots\"/>\n<link href=\"http://www.dummy.org/\" rel=\"canonical\"/>\n<title>Tööriistad ja tarvikud - e-pood</title>\n<meta content=\"Lai valik tööriistu ja seadmeid proffidele ning kodusesse. Uute tööriistadega saab töö lihtsalt ja kiirelt tehtud. Hea hind ja valik.\" name=\"description\"/>\n<link href=\"/apple-touch-icon.png\" rel=\"apple-touch-icon\" sizes=\"180x180\"/>\n<link href=\"/favicon-32x32.png\" rel=\"icon\" sizes=\"32x32\" type=\"image/png\"/>\n<link href=\"/favicon-16x16.png\" rel=\"icon\" sizes=\"16x16\" type=\"image/png\"/>\n<link href=\"/site.webmanifest\" rel=\"manifest\"/>\n<link color=\"#1e4886\" href=\"/safari-pinned-tab.svg\" rel=\"mask-icon\"/>\n<meta content=\"#1e4886\" name=\"msapplication-TileColor\"/>\n<meta content=\"#ffffff\" name=\"theme-color\"/><meta content=\"website\" property=\"og:type\"/>\n<meta content=\"http://www.dummy.org/\" property=\"og:url\"/>\n<meta content=\"Tööriistad ja tarvikud - e-pood\" property=\"og:title\"/>\n<meta content=\"Tööriistad ja tarvikud\" property=\"og:site_name\"/>\n<meta content=\"Lai valik tööriistu ja seadmeid proffidele ning kodusesse. Uute tööriistadega saab töö lihtsalt ja kiirelt tehtud. Hea hind ja valik.\" property=\"og:description\"/>\n<meta content=\"http://www.dummy.org/apple-touch-icon.png\" property=\"og:image\"/>\n<script src=\"https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js\"/>\n<script src=\"/js/bootstrap.bundle.min.js\"/>\n<link href=\"/css/bootstrap.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/fonts/fontawesome/css/all.min.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/css/ui.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/css/responsive.css\" media=\"only screen and (max-width: 1200px)\" rel=\"stylesheet\"/>\n<link href=\"/plugins/slickslider/slick.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/plugins/slickslider/slick-theme.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<script src=\"/plugins/slickslider/slick.min.js\"/>\n\n<script>\n$(document).ready(function() {\n    if ($('.slider-items-slick').length &gt; 0) {\n        $('.slider-items-slick').slick({\n\t\t                infinite: true,\n            swipeToSlide: true,\n            slidesToShow: 4,\n            dots: true,\n            slidesToScroll: 1,\n            prevArrow: '&lt;button type=\"button\" class=\"slick-prev\"&gt;&lt;i class=\"fa fa-chevron-left\"&gt;&lt;/i&gt;&lt;/button&gt;',\n           \tnextArrow: '&lt;button type=\"button\" class=\"slick-next\"&gt;&lt;i class=\"fa fa-chevron-right\"&gt;&lt;/i&gt;&lt;/button&gt;',\n            responsive: [\n                {\n                    breakpoint: 768,\n                    settings: {\n                        slidesToShow: 2\n                    }\n                },\n                {\n                    breakpoint: 640,\n                    settings: {\n                        slidesToShow: 1\n                    }\n                }\n            ]\n        });\n    }\n}); \n</script>\n\n</head><body>\n<header class=\"section-header\">\n<nav class=\"navbar navbar-main navbar-expand-lg navbar-light border-bottom\">\n  <div class=\"container\">\n \t<div class=\"col-lg-6 col-sm-12\">\n\t\t<nav class=\"flex-fill\"> \n\t\t<ol class=\"breadcrumb\">\n\t\t\t<li class=\"breadcrumb-item\"><a href=\"http://www.dummy.org/\">Pealeht</a></li>\n\t\t</ol>  \n\t\t</nav>\n\t</div>\n\t<div class=\"col-lg-6 col-sm-12\">\n\t\t<form class=\"search\" id=\"searchform\" method=\"get\" onsubmit=\"document.getElementById('searchform').action='/search/'+document.getElementById('formcontrol').value.split(' ').join(' ').toLowerCase()+'/';\" role=\"search\" target=\"_blank\">\n\t\t\t<div class=\"input-group w-100\">\n\t\t\t    <input class=\"form-control\" id=\"formcontrol\" placeholder=\"Otsing\" type=\"text\"/>\n\t\t\t    <div class=\"input-group-append\">\n\t\t\t      <button class=\"btn btn-primary\" type=\"submit\">\n\t\t\t        <i class=\"fa fa-search\"/>\n\t\t\t      </button>\n\t\t\t    </div>\n\t\t    </div>\n\t\t</form>\n\t</div>\n  </div>\n</nav>\n</header>\n<section class=\"section-name padding-y-sm bg\">\n<div class=\"container\">\n<header class=\"section-heading\">\n\t<h3 class=\"section-title\">Kõik kategooriad</h3>\n</header>\n<div class=\"row\">\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/abrasiivtooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Abrasiivtööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1qjiClTXYBeNkHFrdq6AiuVXaq/25pcs-6-150mm-6-Holes-Sanding-Disc-Hook-Loop-Abrasive-Sandpaper-for-Orbital-Sander.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Abrasiivtööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/aiatooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Aiatööriistad\" src=\"https://ae01.alicdn.com/kf/H74809c168bdc4eac8f272d96972cb9f1X/180-mm-long-handle-scissors-standard-quality-level-3Cr13-Stainless-Steel-bonsai-tools-made-by-TianBonsai.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Aiatööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/ehitustooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Ehitustööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1p2CFNXXXXXXeXXXXq6xXFXXXo/New-Professional-Caulk-Away-Remover-and-Finisher-Made-by-Builders-Choice-Tools-Limited-Bulider-Tools-Tile.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Ehitustööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/elektrilised-tooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Elektrilised tööriistad\" src=\"https://ae01.alicdn.com/kf/Hff5f159e273f4190bb52c28c4dd1ddbaw/WOSAI-Cordless-leaf-Blower-Cordless-String-Blower-20V-Electric-Air-Blower-Cordless-Sweeper-Garden-Tools.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Elektrilised tööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/elektritooriistade-tarvikud/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Elektritööriistade tarvikud\" src=\"https://ae01.alicdn.com/kf/HTB1_fJPIVXXXXcvapXXq6xXFXXXJ/Free-Shipping-11-Pieces-Brass-Dremel-Collet-Mini-Drill-Chucks-Including-0-5-0-8-1.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Elektritööriistade tarvikud</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/kasitooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Käsitööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1.qwsXU_rK1Rjy0Fcq6zEvVXaI/DUAN-FA-Tactical-Knife-Survival-Paratroopers-Knife-Blade-Stainless-Steel-Diving-Straight-Knife-Outdoor-Camping-Pocket.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Käsitööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/keevitusseadmed/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Keevitusseadmed\" src=\"https://ae01.alicdn.com/kf/HTB1XNvLneuSBuNjSsziq6zq8pXar/EU-US-Plug-220V-60W-Electrical-Soldering-Iron-Adjustable-Temperature-Soldering-Gun-Welding-Rework-Repair-Tool.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Keevitusseadmed</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/mootevahendid/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Mõõtevahendid\" src=\"https://ae01.alicdn.com/kf/HTB1ZzuCKmzqK1RjSZFjq6zlCFXas/NEW-South-Galaxy-1-GPS-RTK.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Mõõtevahendid</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/puidutootlemismasinate-varuosad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Puidutöötlemismasinate varuosad\" src=\"https://ae01.alicdn.com/kf/H7b2d164551c54fee8e9da231aa16d061T/TASP-319mm-HSS-Thickness-Planer-Blade-319x18-2x3-2mm-Wood-Planer-Knife-For-Ryobi-ETP1531AK-JET.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Puidutöötlemismasinate varuosad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/puidutootlemisseadmed/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Puidutöötlemisseadmed\" src=\"https://ae01.alicdn.com/kf/H7b64e24710af4493a62a2621cee8d2008/CNC3018Pro-withER11-diy-mini-cnc-engraving-machine-laser-engraving-Pcb-PVC-Milling-Machine-wood-router-cnc.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Puidutöötlemisseadmed</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/puur/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Puur\" src=\"https://ae01.alicdn.com/kf/Hfbc1c644bcd14e5885d1a2156adf9475R/XCAN-0-9mm-10pcs-set-Carbide-PCB-Drill-Bits-Print-Circuit-Board-Mini-CNC-Engraving-Drilling.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Puur</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/saelehed/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Saelehed\" src=\"https://ae01.alicdn.com/kf/Hd49df41812c548ad9b7ce31be2f94d89k/Free-shipping-of-1PC-125-22-23-30-40T-tct-saw-blade-wood-cutting-blades-cutting.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Saelehed</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Tööpingid ja tarvikud\" src=\"https://ae01.alicdn.com/kf/HTB1ECYcQVXXXXblXpXXq6xXFXXXB/HUHAO-1pc-6mm-Flat-Bottom-Engraving-Bits-45-50mm-Lengthened-CNC-Router-Tools-V-Carbide-Carving.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Tööpingid ja tarvikud</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/tooriistade-hoiustamine/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Tööriistade hoiustamine\" src=\"https://ae01.alicdn.com/kf/HTB1gyX.UwHqK1RjSZFgq6y7JXXa3/AideTek-SMD-storage-SMT-resistor-capacitor-Electronics-Storage-Cases-Organizers-transparent-toolbox-storage-box-plastic-BOXALL.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Tööriistade hoiustamine</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/tooriistakomplektid/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Tööriistakomplektid\" src=\"https://ae01.alicdn.com/kf/HTB1SEDrLpXXXXa9XFXXq6xXFXXXs/Bird-patterned-roller-7inch-3d-wallpaper-decoration-toll-wall-painting-roller-rubber-roller-without-handle-grip.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Tööriistakomplektid</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n</div>\n</div>\n</section>\n<section class=\"section-content padding-y bg\">\n<div class=\"container\">\n<header class=\"section-heading\">\n\t<h4 class=\"section-title\">Esiletõstetud tooted</h4>\n</header>\n<div class=\"slider-items-slick row\" data-slick=\"{&quot;slidesToShow&quot;: 4, &quot;slidesToScroll&quot;: 1}\">\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/50959993723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"RM101 digitaalne multimeeter 6000 loeb taustvalgustusega vahelduv- / alalisvoolu ampermeetri voltmeeter Ohmi kaasaskantavat pingemõõturit RICHMETERS 098/100/109/111\" src=\"https://ae01.alicdn.com/kf/Ha569bf8a19c24534803f979a64939e3bk/RM101-Digital-Multimeter-6000-counts-Backlight-AC-DC-Ammeter-Voltmeter-Ohm-Portable-Voltage-meter-RICHMETERS-098.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">RM101 digitaalne multimeeter 6000 loeb taustvalgustusega vahelduv- / alalisvoolu ampermeetri voltmeeter Ohmi kaasaskantavat pingemõõturit RICHMETERS 098/100/109/111</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">30%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/tooriistakomplektid/70173351623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO tööriistakomplekti käsitööriistad autoremondi jaoks - mutrivõtme mutrivõtme komplekt - professionaalsete jalgratta autoremonditööriistade komplektid\" src=\"https://ae01.alicdn.com/kf/H685d1f84598e4018a8ca0ed1f97b4b83C/WORKPRO-Tool-Set-Hand-Tools-for-Car-Repair-Ratchet-Spanner-Wrench-Socket-Set-Professional-Bicycle-Car.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO tööriistakomplekti käsitööriistad autoremondi jaoks - mutrivõtme mutrivõtme komplekt - professionaalsete jalgratta autoremonditööriistade komplektid</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">45%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/90721517523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"USB 5 V 9 V 12 V 20 V QC 2.0 3.0 LCD voolu pinge laadija mahtuvuse testija USB laadija arsti voolumõõtur Tekst voltmeeter 15% soodsam\" src=\"https://ae01.alicdn.com/kf/HTB1ieolSpXXXXbpXXXXq6xXFXXXu/USB-5V-9V-12V-20V-QC-2-0-3-0-LCD-Current-Voltage-Charger-Capacity-Tester.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">USB 5 V 9 V 12 V 20 V QC 2.0 3.0 LCD voolu pinge laadija mahtuvuse testija USB laadija arsti voolumõõtur Tekst voltmeeter 15% soodsam</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">15%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/9077200571.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Digitaalse termomeetri külmiku sügavkülma temperatuurimõõtur 26% soodsam\" src=\"https://ae01.alicdn.com/kf/HTB1Nd1xXYY1gK0jSZTEq6xDQVXaP/Digital-Thermometer-Fridge-Freezer-Temperature-Meter-26-off.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Digitaalse termomeetri külmiku sügavkülma temperatuurimõõtur 26% soodsam</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">26%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/27967871823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"TASP 230V 2-ühes elektriline naelutaja ja klammerdajaga mööbli klambripüstol klambrite ja naeltega puusepatööstuses kasutatavate tööriistade raami jaoks\" src=\"https://ae01.alicdn.com/kf/Hed65e103b02246559e2316b23436a238D/TASP-230V-2-in-1-Electric-Nailer-and-Stapler-Furniture-Staple-Gun-for-Frame-with-Staples.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">TASP 230V 2-ühes elektriline naelutaja ja klammerdajaga mööbli klambripüstol klambrite ja naeltega puusepatööstuses kasutatavate tööriistade raami jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">39%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektritooriistade-tarvikud/2838405502.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"HILDA 6tk HSS ketassae tera pöörlev tööriist Dremeli metallilõikuri elektriliste tööriistade komplekti puulõikeketaste jaoks - puurvarda lõikamine\" src=\"https://ae01.alicdn.com/kf/HTB1wozjKXXXXXXNXpXXq6xXFXXXF/HILDA-6pcs-HSS-Circular-Saw-Blade-Rotary-Tool-For-Dremel-Metal-Cutter-Power-Tool-Set-Wood.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">HILDA 6tk HSS ketassae tera pöörlev tööriist Dremeli metallilõikuri elektriliste tööriistade komplekti puulõikeketaste jaoks - puurvarda lõikamine</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">43%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/abrasiivtooriistad/01634916323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"DRELD 36tk dremeli lisatarvikud 24mm Abrasiivkettad lõikekettad tugevdatud lõikega lihvkettad pöörleva lõiketera tööriistad\" src=\"https://ae01.alicdn.com/kf/H2c51a2fffc944b6884c4b2b8049f32e2j/DRELD-36pcs-dremel-accessories-24mm-Abrasive-Disc-Cutting-Discs-Reinforced-Cut-Off-Grinding-Wheels-Rotary-Blade.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">DRELD 36tk dremeli lisatarvikud 24mm Abrasiivkettad lõikekettad tugevdatud lõikega lihvkettad pöörleva lõiketera tööriistad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">15%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/83456052523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks\" src=\"https://ae01.alicdn.com/kf/HTB11MXDPxTpK1RjSZFMq6zG_VXaD/GOXAWEE-110V-220V-Power-Tools-Electric-Mini-Drill-with-0-3-3-2mm-Universal-Chuck-Shiled.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">63%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/puur/05495448323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"XCAN 10 tk / komplekt 0,3–1,2 mm PCB minipuur Bitum volframterasest karbiid trükkplaadi jaoks cnc puurmasinad\" src=\"https://ae01.alicdn.com/kf/Hc29df52f2b884170b8d1596fb00714eey/XCAN-10pcs-set-0-3mm-to-1-2mm-PCB-mini-drill-Bit-tungsten-steel-carbide-for.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">XCAN 10 tk / komplekt 0,3–1,2 mm PCB minipuur Bitum volframterasest karbiid trükkplaadi jaoks cnc puurmasinad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">5%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/01080118323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"HILDA muutuva kiirusega pöörlemistööriistade elektrilised tööriistad, 400W minipuur, Dremel Rotary Tools mini-lihvimismasina jaoks 6-asendis\" src=\"https://ae01.alicdn.com/kf/HTB1djpBjTXYBeNkHFrdq6AiuVXax/HILDA-Variable-Speed-Rotary-Tool-Electric-Tools-400W-Mini-Drill-6-position-for-Dremel-Rotary-Tools.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">HILDA muutuva kiirusega pöörlemistööriistade elektrilised tööriistad, 400W minipuur, Dremel Rotary Tools mini-lihvimismasina jaoks 6-asendis</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">48%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/53453721823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"12/13 in usb tester alalisvoolu arvesti digitaalne voltmeeter voltimetro voltmeeter võimsuse pank vattmeeter pinge tester arsti detektor\" src=\"https://ae01.alicdn.com/kf/H090529be93654eb6807751da136486766/12-13-in-1-usb-tester-dc-power-meter-digital-voltmeter-voltimetro-volt-meter-power-bank.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">12/13 in usb tester alalisvoolu arvesti digitaalne voltmeeter voltimetro voltmeeter võimsuse pank vattmeeter pinge tester arsti detektor</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">19%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/7503299871.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"TASP 230V 130W pöörlevate tööriistade komplekt Elektriliste mini-puurgraveeride komplekt koos manuste ja tarvikutega käsitööprojektide elektrilised tööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1p2wiBH1YBuNjSszeq6yblFXaW/TASP-230V-130W-Rotary-Tool-Set-Electric-Mini-Drill-Engraver-Kit-with-Attachments-and-Accessories-Power.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">TASP 230V 130W pöörlevate tööriistade komplekt Elektriliste mini-puurgraveeride komplekt koos manuste ja tarvikutega käsitööprojektide elektrilised tööriistad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">39%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/53017578723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"HTC-1 siseruumides kasutatav LCD-digitaalne elektrooniline termomeeter hügromeeter, mis mõõdab temperatuuri niiskuse arvesti äratuskella ilmajaama\" src=\"https://ae01.alicdn.com/kf/HTB1xtFpgRDH8KJjy1zeq6xjepXad/HTC-1-Indoor-Room-LCD-Digital-Electronic-Thermometer-Hygrometer-Measuring-Temperature-Humidity-Meter-Alarm-Clock-Weather.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">HTC-1 siseruumides kasutatav LCD-digitaalne elektrooniline termomeeter hügromeeter, mis mõõdab temperatuuri niiskuse arvesti äratuskella ilmajaama</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">20%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/32539410723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Roostevabast terasest grilltarvikud Grill Liha Termomeeter Dial Temperatuuri mõõtur Gage Cooking Toitesond Kodumajapidamises kasutatavad köögiriistad\" src=\"https://ae01.alicdn.com/kf/HTB1Yu3aQpXXXXcSXpXXq6xXFXXXg/Stainless-steel-BBQ-Accessories-Grill-Meat-Thermometer-Dial-Temperature-Gauge-Gage-Cooking-Food-Probe-Household-Kitchen.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Roostevabast terasest grilltarvikud Grill Liha Termomeeter Dial Temperatuuri mõõtur Gage Cooking Toitesond Kodumajapidamises kasutatavad köögiriistad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">25%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/tooriistakomplektid/77404019623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO kodutööriistade komplekt majapidamistööriistade komplektid pistikupesade komplekti kruvikeerajate komplekt kodu remonditööriistad DIY käsitööriistadele\" src=\"https://ae01.alicdn.com/kf/H109881bcfefe48efbdf8ff84037b2b5fo/WORKPRO-Home-Tool-Set-Household-Tool-Kits-Socket-Set-Screwdriver-Set-Home-Repair-Tools-for-DIY.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO kodutööriistade komplekt majapidamistööriistade komplektid pistikupesade komplekti kruvikeerajate komplekt kodu remonditööriistad DIY käsitööriistadele</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:94%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">58%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/87637782623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Uus saabub -50 ~ 110 ° c LED Temperatuuri arvesti anduri andur Probe 12V digitaalse termomeetri monitori tester 15% OFF\" src=\"https://ae01.alicdn.com/kf/HTB1Md.6X2fsK1RjSszgq6yXzpXaF/New-arrive-50-110-c-LED-Temperature-meter-Detector-Sensor-Probe-12V-Digital-Thermometer-Monitor-tester.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Uus saabub -50 ~ 110 ° c LED Temperatuuri arvesti anduri andur Probe 12V digitaalse termomeetri monitori tester 15% OFF</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">15%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/55118219723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO 3PC kokkuklapitava kasuliku noa komplekt roostevabast terasest noaga karbipaberi lõikamiseks kiirtera nuga\" src=\"https://ae01.alicdn.com/kf/Ha640c7f6a49c4b24a9e992d5211a7218r/WORKPRO-3PC-Folding-Utility-Knife-Set-Stainless-steel-Knife-for-Cutting-Box-Paper-Quick-change-Blade.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO 3PC kokkuklapitava kasuliku noa komplekt roostevabast terasest noaga karbipaberi lõikamiseks kiirtera nuga</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">50%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/puur/98001049723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"BINOAX 5 tk karbiidotsik HSS puurvarda saega komplekt metallpuidust puurimisava lõiketööriist lukkude paigaldamiseks 16 / 18,5 / 20/25 / 30mm\" src=\"https://ae01.alicdn.com/kf/HTB16TisTjDpK1RjSZFrq6y78VXao/BINOAX-5-Pcs-Carbide-Tip-HSS-Drill-Bit-Saw-Set-Metal-Wood-Drilling-Hole-Cut-Tool.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">BINOAX 5 tk karbiidotsik HSS puurvarda saega komplekt metallpuidust puurimisava lõiketööriist lukkude paigaldamiseks 16 / 18,5 / 20/25 / 30mm</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">10%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/85772585623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"SNDWAY lasermõõtur 40M 60M 80M 100M kaugusmõõtja trena laserlint vahemiku leidja ehitada mõõtmise seade joonlaud test tööriist\" src=\"https://ae01.alicdn.com/kf/HTB1B4RMSpXXXXa0XXXXq6xXFXXXS/SNDWAY-laser-distance-meter-40M-60M-80M-100M-rangefinder-trena-laser-tape-range-finder-build-measure.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">SNDWAY lasermõõtur 40M 60M 80M 100M kaugusmõõtja trena laserlint vahemiku leidja ehitada mõõtmise seade joonlaud test tööriist</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">26%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/25920980823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO raskeveokite kokkuklapitav nuga torulõikuri tasku nuga puitkäepidemega nuga 10PCS labadega\" src=\"https://ae01.alicdn.com/kf/Hb61ab2bd06854993b74291c220f3b5b8A/WORKPRO-Heavy-Duty-Folding-Knife-Pipe-Cutter-Pocket-Knife-Wood-Handle-Knife-with-10PCS-Blades.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO raskeveokite kokkuklapitav nuga torulõikuri tasku nuga puitkäepidemega nuga 10PCS labadega</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">50%</span>\n\t</a>\n\t</div>\n</div>\n</div>\n</section>\n<section class=\"section-content padding-y bg\">\n<div class=\"container\">\n<header class=\"section-heading\">\n\t<h4 class=\"section-title\">Maksimaalsed allahindlused</h4>\n</header>\n<div class=\"slider-items-slick row\" data-slick=\"{&quot;slidesToShow&quot;: 4, &quot;slidesToScroll&quot;: 1}\">\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/78860942323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"all-sun EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 Aku tühjenemise indikaator ülekoormuskaitse MULTIMETER Automotive Tester\" src=\"https://ae01.alicdn.com/kf/HTB1jGTKX4_rK1RkHFqDq6yJAFXam/all-sun-EM3081-EM3082-Digital-Multimeter-3-1-2-1999-Low-Battery-Indication-Overload-Protection-MULTIMETER.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">all-sun EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 Aku tühjenemise indikaator ülekoormuskaitse MULTIMETER Automotive Tester</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">84%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/72881919723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"DAOMACHENi kaasaskantav multifunktsionaalne tööriista nuga Survival Bowie enesekaitse mini puuviljatera jahinuga tasuta kohaletoimetamine\" src=\"https://ae01.alicdn.com/kf/HTB1_LaSRFXXXXb.aXXXq6xXFXXXq/DAOMACHEN-Portable-Multifunctional-Tool-Knife-Outdoor-Survival-Bowie-self-defense-Mini-Fruit-blade-Hunting-Knife-Free.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">DAOMACHENi kaasaskantav multifunktsionaalne tööriista nuga Survival Bowie enesekaitse mini puuviljatera jahinuga tasuta kohaletoimetamine</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:94%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">78%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/06421329723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"DAOMACHENi taktikaline jahinõu õues telkimine ellujäämiseks mõeldud noad mitme sukeldumisega tööriist ja kivipesutera Tasuta kiire saatmine\" src=\"https://ae01.alicdn.com/kf/HTB1RCWYQpXXXXbeXFXXq6xXFXXXb/DAOMACHEN-tactical-hunting-knife-outdoors-camping-survive-knives-multi-diving-tool-Stone-wash-blade-Free-fast.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">DAOMACHENi taktikaline jahinõu õues telkimine ellujäämiseks mõeldud noad mitme sukeldumisega tööriist ja kivipesutera Tasuta kiire saatmine</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">78%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/66154056723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Puutetundlik lüliti 2100mAh Homekit seinalaadija adapter EU pistikupesa toitenupp topelt USB-porti pistikupesa paneeli katkestaja\" src=\"https://ae01.alicdn.com/kf/HTB182ElOXXXXXbgXXXXq6xXFXXXX/Touch-Switch-2100mAh-Homekit-Wall-Charger-Adapter-EU-Plug-Socket-Power-Push-Button-Dual-USB-Port.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Puutetundlik lüliti 2100mAh Homekit seinalaadija adapter EU pistikupesa toitenupp topelt USB-porti pistikupesa paneeli katkestaja</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">75%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/2298249791.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"KÕIK PÄEV kogu päike EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 vahelduvvoolu / alalisvoolu ampermeeter Voltmeeter Ohm kaasaskantav meeter pingemõõtur\" src=\"https://ae01.alicdn.com/kf/H70a1bb759fe4470a836ffa5263dcee1fL/ALL-SUN-all-sun-EM3081-EM3082-Digital-Multimeter-3-1-2-1999-AC-DC-Ammeter-Voltmeter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">KÕIK PÄEV kogu päike EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 vahelduvvoolu / alalisvoolu ampermeeter Voltmeeter Ohm kaasaskantav meeter pingemõõtur</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">72%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/85518119723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Täis-Tang uus välistingimustes kasutatav taktikaline nuga ellujäämise matkatööriistade kollektsioon Jahinoad imporditud K-kestaga kinnitatud teraga nuga\" src=\"https://ae01.alicdn.com/kf/HTB1rvioQpXXXXXnaVXXq6xXFXXXC/Full-Tang-New-Outdoor-Tactical-Knife-Survival-Camping-Tools-Collection-Hunting-Knives-With-Imported-K-sheath.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Täis-Tang uus välistingimustes kasutatav taktikaline nuga ellujäämise matkatööriistade kollektsioon Jahinoad imporditud K-kestaga kinnitatud teraga nuga</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">65%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/31250331823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"GM320 laser-LCD-digitaalse infrapunatermomeetri temperatuurimõõturi püstoli punkt -50 ~ 380 kraadi mittekontaktset termomeetrit\" src=\"https://ae01.alicdn.com/kf/HTB13tNgfpTM8KJjSZFlq6yO8FXaA/GM320-Laser-LCD-Digital-IR-Infrared-Thermometer-Temperature-Meter-Gun-Point-50-380-Degree-Non-Contact.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">GM320 laser-LCD-digitaalse infrapunatermomeetri temperatuurimõõturi püstoli punkt -50 ~ 380 kraadi mittekontaktset termomeetrit</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">64%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/83456052523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks\" src=\"https://ae01.alicdn.com/kf/HTB11MXDPxTpK1RjSZFMq6zG_VXaD/GOXAWEE-110V-220V-Power-Tools-Electric-Mini-Drill-with-0-3-3-2mm-Universal-Chuck-Shiled.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">63%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/17626919723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"2017 Full Tang uusim taktikaline nuga ellujäämise kämping välitööriistade kollektsioon Jahinoad imporditud K-kestaga kui gife\" src=\"https://ae01.alicdn.com/kf/HTB1nvPhQVXXXXbfaFXXq6xXFXXXw/2017-Full-Tang-Newest-Tactical-Knife-Survival-Camping-Outdoor-Tools-Collection-Hunting-Knives-With-Imported-K.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">2017 Full Tang uusim taktikaline nuga ellujäämise kämping välitööriistade kollektsioon Jahinoad imporditud K-kestaga kui gife</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">62%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/16830989723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"1PC arhitektuurne vormimisruuter, 1/2-osaline varrejoa nuga Puidutöötlemislõikur Puidutöötlemisriistade lõikurlõikur\" src=\"https://ae01.alicdn.com/kf/HTB1vBfEPVXXXXXEXFXXq6xXFXXXC/1PC-Architectural-Molding-Router-Bit-1-2-Shank-Line-knife-Woodworking-cutter-Tenon-Cutter-for-Woodworking.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">1PC arhitektuurne vormimisruuter, 1/2-osaline varrejoa nuga Puidutöötlemislõikur Puidutöötlemisriistade lõikurlõikur</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/25926159723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"2-bitine käsipuu ruuteri bitikomplekt - pisipilt / flööt - 1/2 &quot;varre puidutöötleja Lõikur puidutöötlemise tööriistade jaoks\" src=\"https://ae01.alicdn.com/kf/HTB1vSdaPVXXXXXQaXXXq6xXFXXXT/2-Bit-Handrail-Router-Bit-Set-Thumbnail-Bead-Flute-1-2-Shank-Woodworking-cutter-Tenon-Cutter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">2-bitine käsipuu ruuteri bitikomplekt - pisipilt / flööt - 1/2 \"varre puidutöötleja Lõikur puidutöötlemise tööriistade jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/27667159723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"3tk 1/4 ümmarguse rööpa ja ruudukujulise ruuteri bitti komplekt lameda tõstetud paneeli tööriistad Puitlõikamine kvaliteetsest puidust CNC otsmilli\" src=\"https://ae01.alicdn.com/kf/HTB1zNMQPFXXXXaWXVXXq6xXFXXXf/3pcs-1-4-Round-Rail-Stile-Router-Bits-Set-Cove-Raised-Panel-Tools-Wood-Cutting-High.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">3tk 1/4 ümmarguse rööpa ja ruudukujulise ruuteri bitti komplekt lameda tõstetud paneeli tööriistad Puitlõikamine kvaliteetsest puidust CNC otsmilli</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/52809549723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Rööpa- ja õmblukk vertikaalse paneeliga tõsteseade 3-bitine komplekt Ogee 1/4 &quot;varre puidutöötleja Lõikur puidutöötlemise tööriistadele\" src=\"https://ae01.alicdn.com/kf/HTB1AsQ_PFXXXXbcXFXXq6xXFXXXD/Rail-and-Stile-w-Vertical-Panel-Raiser-3-Bit-Set-Ogee-1-4-Shank-Woodworking-cutter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Rööpa- ja õmblukk vertikaalse paneeliga tõsteseade 3-bitine komplekt Ogee 1/4 \"varre puidutöötleja Lõikur puidutöötlemise tööriistadele</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/13982159723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Vutlar, 2-bitine ruuteri bitikomplekt, 1/2-osaline varrejoone nuga, puidutöötlemislõikur\" src=\"https://ae01.alicdn.com/kf/HTB10IUIPFXXXXXKapXXq6xXFXXXF/Mitered-Door-Drawer-Molding-2-Bit-Router-Bit-Set-1-2-Shank-Line-knife-Woodworking-cutter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Vutlar, 2-bitine ruuteri bitikomplekt, 1/2-osaline varrejoone nuga, puidutöötlemislõikur</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/58333588523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Kvaliteetne YSM10 M4 / M5 / M6 / M8 / M10 220 V elektriline needi mutrirelv Elektriline neetimisriist Elektriline neetimispüstol\" src=\"https://ae01.alicdn.com/kf/HTB1mmK5QFXXXXXTXVXXq6xXFXXXN/High-Quality-YSM10-M4-M5-M6-M8-M10-220V-Electrical-Rivet-Nut-Gun-Electrical-Riveting-Tool.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Kvaliteetne YSM10 M4 / M5 / M6 / M8 / M10 220 V elektriline needi mutrirelv Elektriline neetimisriist Elektriline neetimispüstol</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/61359422323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Tippkvaliteediga 220V 3,2-4,0-4,8-6,4 mm niidipüstoli elektriline neetimisrihm Taiwanis\" src=\"https://ae01.alicdn.com/kf/HTB1ny6kQFXXXXayXpXXq6xXFXXXV/Top-Quality-220V-3-2-4-0-4-8-6-4mm-Riveter-Gun-Electrical-Riveting-Tool.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Tippkvaliteediga 220V 3,2-4,0-4,8-6,4 mm niidipüstoli elektriline neetimisrihm Taiwanis</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/0989899202.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"KÕIK PÄEVA Digitaalse multimeetri dioodiga transistoride aku tester AC / DC ampermeeter Voltmeeter Ohm kaasaskantav arvesti pingemõõtur EM420B\" src=\"https://ae01.alicdn.com/kf/HTB1yIpnSyrpK1RjSZFhq6xSdXXaz/ALL-SUN-Digital-Multimeter-Diode-Transistor-Battery-Tester-AC-DC-Ammeter-Voltmeter-Ohm-Portable-Meter-voltage.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">KÕIK PÄEVA Digitaalse multimeetri dioodiga transistoride aku tester AC / DC ampermeeter Voltmeeter Ohm kaasaskantav arvesti pingemõõtur EM420B</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/32924602823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Suur allahindlus Geigeri loendurituumakiirguse detektor beeta gamma röntgenikiirguse isiklik dosimeeter Marmortester Radioaktiivne detektor\" src=\"https://ae01.alicdn.com/kf/HTB1wihbdazB9uJjSZFMq6xq4XXa1/Big-Discount-Geiger-Counter-Nuclear-Radiation-Detector-Beta-Gamma-X-ray-Personal-Dosimeter-Marble-Tester-Radioactive.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Suur allahindlus Geigeri loendurituumakiirguse detektor beeta gamma röntgenikiirguse isiklik dosimeeter Marmortester Radioaktiivne detektor</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:86%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/87299422323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Tippkvaliteediga Taiwani 2,4–4,8 mm niidukiga 220V elektrienergiaga neetimisriista neetimisriist\" src=\"https://ae01.alicdn.com/kf/HTB1C8KJQFXXXXaPapXXq6xXFXXXk/Top-Quality-220V-Electricity-Power-Riveter-Gun-Riveting-Tool-Made-In-Taiwan-2-4-4-8mm.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Tippkvaliteediga Taiwani 2,4–4,8 mm niidukiga 220V elektrienergiaga neetimisriista neetimisriist</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/05227642823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"10tk DNMG150404 R VF CT3000 välised treimisriistad Cermet klassi karbiidist sisetükk Treipingi lõikuri tööriist Tokarnyy treipink\" src=\"https://ae01.alicdn.com/kf/Heaceef83bd574914a9418ccfd09d5ec8X/10PCS-DNMG150404-R-VF-CT3000-External-Turning-Tools-Cermet-Grade-Carbide-insert-Lathe-cutter-Tool-Tokarnyy.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">10tk DNMG150404 R VF CT3000 välised treimisriistad Cermet klassi karbiidist sisetükk Treipingi lõikuri tööriist Tokarnyy treipink</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">59%</span>\n\t</a>\n\t</div>\n</div>\n</div>\n</section>\n<section class=\"section-specials padding-y border-bottom bg\">\n<div class=\"container\">\t\n<div class=\"row\">\n<div class=\"col-md-4\">\t\n\t\t<article class=\"card card-body\">\n\t\t\t<figure class=\"itemside\">\n\t\t\t\t<div class=\"aside\">\n\t\t\t\t\t<span class=\"icon-sm rounded-circle bg-primary\">\n\t\t\t\t\t\t<i class=\"fa fa-money-bill-alt white\"/>\n\t\t\t\t\t</span>\n\t\t\t\t</div>\n\t\t\t\t<figcaption class=\"info\">\n\t\t\t\t\t<h5 class=\"title\">Hea hind</h5>\n\t\t\t\t\t<p>Soodustused ja madalad hinnad iga päev. Lai valik tooteid parima hinnaga.</p>\n\t\t\t\t</figcaption>\n\t\t\t</figure>\n\t\t</article>\n\t</div>\n\t<div class=\"col-md-4\">\n\t\t<article class=\"card card-body\">\n\t\t\t<figure class=\"itemside\">\n\t\t\t\t<div class=\"aside\">\n\t\t\t\t\t<span class=\"icon-sm rounded-circle bg-secondary\">\n\t\t\t\t\t\t<i class=\"fa fa-comment-dots white\"/>\n\t\t\t\t\t</span>\n\t\t\t\t</div>\n\t\t\t\t<figcaption class=\"info\">\n\t\t\t\t\t<h5 class=\"title\">Klienditugi 24/7</h5>\n\t\t\t\t\t<p>24-tunnine klienditugi. Võite saada vastuse igale küsimusele.</p>\n\t\t\t\t</figcaption>\n\t\t\t</figure>\n\t\t</article>\n\t</div>\n\t<div class=\"col-md-4\">\n\t\t<article class=\"card card-body\">\n\t\t\t<figure class=\"itemside\">\n\t\t\t\t<div class=\"aside\">\n\t\t\t\t\t<span class=\"icon-sm rounded-circle bg-success\">\n\t\t\t\t\t\t<i class=\"fa fa-truck white\"/>\n\t\t\t\t\t</span>\n\t\t\t\t</div>\n\t\t\t\t<figcaption class=\"info\">\n\t\t\t\t\t<h5 class=\"title\">Mugav kohaletoimetamine</h5>\n\t\t\t\t\t<p>Tarneaeg kõikjal. Saadetiste jälgimine. Saadaval on tasuta saatmine.</p>\n\t\t\t\t</figcaption>\n\t\t\t</figure>\n\t\t</article>\n\t</div>\n</div>\n</div>\n</section>\n<footer class=\"section-footer border-top\">\n\t<div class=\"container\">\n\t\t<section class=\"footer-bottom border-top row\">\n\t\t\t<div class=\"col-md-3\">\n\t\t\t\t<p class=\"text-muted\"> © 2020 www.dummy.org </p>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-7 text-md-center\">\n\t\t\t</div>\n\t\t\t<div class=\"col-md-2 text-md-right text-muted\">\n\t\t\t\t<i class=\"fab fa-lg fa-cc-visa\"/>\n\t\t\t\t<i class=\"fab fa-lg fa-cc-paypal\"/>\n\t\t\t\t<i class=\"fab fa-lg fa-cc-mastercard\"/>\n\t\t\t</div>\n\t\t</section>\n\t</div>\n</footer>\n\n</body></html>",
+        "firstSeen": 1591595881794,
+        "lastSeen": 1591595881794,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE html><html lang=\"et\"><head>\n<meta charset=\"utf-8\"/>\n<meta content=\"IE=edge\" http-equiv=\"X-UA-Compatible\"/>\n<meta content=\"width=device-width, initial-scale=1, shrink-to-fit=no\" name=\"viewport\"/>\n<meta content=\"et\" name=\"language\"/>\n<meta content=\"index,follow\" name=\"robots\"/>\n<link href=\"http://www.dummy.org/\" rel=\"canonical\"/>\n<title>Tööriistad ja tarvikud - e-pood</title>\n<meta content=\"Lai valik tööriistu ja seadmeid proffidele ning kodusesse. Uute tööriistadega saab töö lihtsalt ja kiirelt tehtud. Hea hind ja valik.\" name=\"description\"/>\n<link href=\"/apple-touch-icon.png\" rel=\"apple-touch-icon\" sizes=\"180x180\"/>\n<link href=\"/favicon-32x32.png\" rel=\"icon\" sizes=\"32x32\" type=\"image/png\"/>\n<link href=\"/favicon-16x16.png\" rel=\"icon\" sizes=\"16x16\" type=\"image/png\"/>\n<link href=\"/site.webmanifest\" rel=\"manifest\"/>\n<link color=\"#1e4886\" href=\"/safari-pinned-tab.svg\" rel=\"mask-icon\"/>\n<meta content=\"#1e4886\" name=\"msapplication-TileColor\"/>\n<meta content=\"#ffffff\" name=\"theme-color\"/><meta content=\"website\" property=\"og:type\"/>\n<meta content=\"http://www.dummy.org/\" property=\"og:url\"/>\n<meta content=\"Tööriistad ja tarvikud - e-pood\" property=\"og:title\"/>\n<meta content=\"Tööriistad ja tarvikud\" property=\"og:site_name\"/>\n<meta content=\"Lai valik tööriistu ja seadmeid proffidele ning kodusesse. Uute tööriistadega saab töö lihtsalt ja kiirelt tehtud. Hea hind ja valik.\" property=\"og:description\"/>\n<meta content=\"http://www.dummy.org/apple-touch-icon.png\" property=\"og:image\"/>\n<script src=\"https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.min.js\"/>\n<script src=\"/js/bootstrap.bundle.min.js\"/>\n<link href=\"/css/bootstrap.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/fonts/fontawesome/css/all.min.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/css/ui.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/css/responsive.css\" media=\"only screen and (max-width: 1200px)\" rel=\"stylesheet\"/>\n<link href=\"/plugins/slickslider/slick.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<link href=\"/plugins/slickslider/slick-theme.css\" rel=\"stylesheet\" type=\"text/css\"/>\n<script src=\"/plugins/slickslider/slick.min.js\"/>\n\n<script>\n$(document).ready(function() {\n    if ($('.slider-items-slick').length &gt; 0) {\n        $('.slider-items-slick').slick({\n\t\t                infinite: true,\n            swipeToSlide: true,\n            slidesToShow: 4,\n            dots: true,\n            slidesToScroll: 1,\n            prevArrow: '&lt;button type=\"button\" class=\"slick-prev\"&gt;&lt;i class=\"fa fa-chevron-left\"&gt;&lt;/i&gt;&lt;/button&gt;',\n           \tnextArrow: '&lt;button type=\"button\" class=\"slick-next\"&gt;&lt;i class=\"fa fa-chevron-right\"&gt;&lt;/i&gt;&lt;/button&gt;',\n            responsive: [\n                {\n                    breakpoint: 768,\n                    settings: {\n                        slidesToShow: 2\n                    }\n                },\n                {\n                    breakpoint: 640,\n                    settings: {\n                        slidesToShow: 1\n                    }\n                }\n            ]\n        });\n    }\n}); \n</script>\n\n</head><body>\n<header class=\"section-header\">\n<nav class=\"navbar navbar-main navbar-expand-lg navbar-light border-bottom\">\n  <div class=\"container\">\n \t<div class=\"col-lg-6 col-sm-12\">\n\t\t<nav class=\"flex-fill\"> \n\t\t<ol class=\"breadcrumb\">\n\t\t\t<li class=\"breadcrumb-item\"><a href=\"http://www.dummy.org/\">Pealeht</a></li>\n\t\t</ol>  \n\t\t</nav>\n\t</div>\n\t<div class=\"col-lg-6 col-sm-12\">\n\t\t<form class=\"search\" id=\"searchform\" method=\"get\" onsubmit=\"document.getElementById('searchform').action='/search/'+document.getElementById('formcontrol').value.split(' ').join(' ').toLowerCase()+'/';\" role=\"search\" target=\"_blank\">\n\t\t\t<div class=\"input-group w-100\">\n\t\t\t    <input class=\"form-control\" id=\"formcontrol\" placeholder=\"Otsing\" type=\"text\"/>\n\t\t\t    <div class=\"input-group-append\">\n\t\t\t      <button class=\"btn btn-primary\" type=\"submit\">\n\t\t\t        <i class=\"fa fa-search\"/>\n\t\t\t      </button>\n\t\t\t    </div>\n\t\t    </div>\n\t\t</form>\n\t</div>\n  </div>\n</nav>\n</header>\n<section class=\"section-name padding-y-sm bg\">\n<div class=\"container\">\n<header class=\"section-heading\">\n\t<h3 class=\"section-title\">Kõik kategooriad</h3>\n</header>\n<div class=\"row\">\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/abrasiivtooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Abrasiivtööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1qjiClTXYBeNkHFrdq6AiuVXaq/25pcs-6-150mm-6-Holes-Sanding-Disc-Hook-Loop-Abrasive-Sandpaper-for-Orbital-Sander.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Abrasiivtööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/aiatooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Aiatööriistad\" src=\"https://ae01.alicdn.com/kf/H74809c168bdc4eac8f272d96972cb9f1X/180-mm-long-handle-scissors-standard-quality-level-3Cr13-Stainless-Steel-bonsai-tools-made-by-TianBonsai.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Aiatööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/ehitustooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Ehitustööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1p2CFNXXXXXXeXXXXq6xXFXXXo/New-Professional-Caulk-Away-Remover-and-Finisher-Made-by-Builders-Choice-Tools-Limited-Bulider-Tools-Tile.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Ehitustööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/elektrilised-tooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Elektrilised tööriistad\" src=\"https://ae01.alicdn.com/kf/Hff5f159e273f4190bb52c28c4dd1ddbaw/WOSAI-Cordless-leaf-Blower-Cordless-String-Blower-20V-Electric-Air-Blower-Cordless-Sweeper-Garden-Tools.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Elektrilised tööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/elektritooriistade-tarvikud/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Elektritööriistade tarvikud\" src=\"https://ae01.alicdn.com/kf/HTB1_fJPIVXXXXcvapXXq6xXFXXXJ/Free-Shipping-11-Pieces-Brass-Dremel-Collet-Mini-Drill-Chucks-Including-0-5-0-8-1.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Elektritööriistade tarvikud</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/kasitooriistad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Käsitööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1.qwsXU_rK1Rjy0Fcq6zEvVXaI/DUAN-FA-Tactical-Knife-Survival-Paratroopers-Knife-Blade-Stainless-Steel-Diving-Straight-Knife-Outdoor-Camping-Pocket.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Käsitööriistad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/keevitusseadmed/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Keevitusseadmed\" src=\"https://ae01.alicdn.com/kf/HTB1XNvLneuSBuNjSsziq6zq8pXar/EU-US-Plug-220V-60W-Electrical-Soldering-Iron-Adjustable-Temperature-Soldering-Gun-Welding-Rework-Repair-Tool.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Keevitusseadmed</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/mootevahendid/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Mõõtevahendid\" src=\"https://ae01.alicdn.com/kf/HTB1ZzuCKmzqK1RjSZFjq6zlCFXas/NEW-South-Galaxy-1-GPS-RTK.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Mõõtevahendid</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/puidutootlemismasinate-varuosad/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Puidutöötlemismasinate varuosad\" src=\"https://ae01.alicdn.com/kf/H7b2d164551c54fee8e9da231aa16d061T/TASP-319mm-HSS-Thickness-Planer-Blade-319x18-2x3-2mm-Wood-Planer-Knife-For-Ryobi-ETP1531AK-JET.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Puidutöötlemismasinate varuosad</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/puidutootlemisseadmed/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Puidutöötlemisseadmed\" src=\"https://ae01.alicdn.com/kf/H7b64e24710af4493a62a2621cee8d2008/CNC3018Pro-withER11-diy-mini-cnc-engraving-machine-laser-engraving-Pcb-PVC-Milling-Machine-wood-router-cnc.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Puidutöötlemisseadmed</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/puur/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Puur\" src=\"https://ae01.alicdn.com/kf/Hfbc1c644bcd14e5885d1a2156adf9475R/XCAN-0-9mm-10pcs-set-Carbide-PCB-Drill-Bits-Print-Circuit-Board-Mini-CNC-Engraving-Drilling.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Puur</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/saelehed/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Saelehed\" src=\"https://ae01.alicdn.com/kf/Hd49df41812c548ad9b7ce31be2f94d89k/Free-shipping-of-1PC-125-22-23-30-40T-tct-saw-blade-wood-cutting-blades-cutting.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Saelehed</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Tööpingid ja tarvikud\" src=\"https://ae01.alicdn.com/kf/HTB1ECYcQVXXXXblXpXXq6xXFXXXB/HUHAO-1pc-6mm-Flat-Bottom-Engraving-Bits-45-50mm-Lengthened-CNC-Router-Tools-V-Carbide-Carving.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Tööpingid ja tarvikud</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/tooriistade-hoiustamine/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Tööriistade hoiustamine\" src=\"https://ae01.alicdn.com/kf/HTB1gyX.UwHqK1RjSZFgq6y7JXXa3/AideTek-SMD-storage-SMT-resistor-capacitor-Electronics-Storage-Cases-Organizers-transparent-toolbox-storage-box-plastic-BOXALL.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Tööriistade hoiustamine</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n\t<div class=\"col-md-3\">\n\t\t<a class=\"card card-product-grid\" href=\"http://www.dummy.org/tooriistakomplektid/\" target=\"_blank\">\n\t\t\t<div class=\"img-wrap\"><img alt=\"Tööriistakomplektid\" src=\"https://ae01.alicdn.com/kf/HTB1SEDrLpXXXXa9XFXXq6xXFXXXs/Bird-patterned-roller-7inch-3d-wallpaper-decoration-toll-wall-painting-roller-rubber-roller-without-handle-grip.jpg\"/></div>\n\t\t\t<div class=\"info-wrap\">\n\t\t\t\t<p class=\"title\">Tööriistakomplektid</p>\n\t\t\t</div>\n\t\t</a>\n\t</div>\n</div>\n</div>\n</section>\n<section class=\"section-content padding-y bg\">\n<div class=\"container\">\n<header class=\"section-heading\">\n\t<h4 class=\"section-title\">Esiletõstetud tooted</h4>\n</header>\n<div class=\"slider-items-slick row\" data-slick=\"{&quot;slidesToShow&quot;: 4, &quot;slidesToScroll&quot;: 1}\">\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/50959993723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"RM101 digitaalne multimeeter 6000 loeb taustvalgustusega vahelduv- / alalisvoolu ampermeetri voltmeeter Ohmi kaasaskantavat pingemõõturit RICHMETERS 098/100/109/111\" src=\"https://ae01.alicdn.com/kf/Ha569bf8a19c24534803f979a64939e3bk/RM101-Digital-Multimeter-6000-counts-Backlight-AC-DC-Ammeter-Voltmeter-Ohm-Portable-Voltage-meter-RICHMETERS-098.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">RM101 digitaalne multimeeter 6000 loeb taustvalgustusega vahelduv- / alalisvoolu ampermeetri voltmeeter Ohmi kaasaskantavat pingemõõturit RICHMETERS 098/100/109/111</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">30%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/tooriistakomplektid/70173351623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO tööriistakomplekti käsitööriistad autoremondi jaoks - mutrivõtme mutrivõtme komplekt - professionaalsete jalgratta autoremonditööriistade komplektid\" src=\"https://ae01.alicdn.com/kf/H685d1f84598e4018a8ca0ed1f97b4b83C/WORKPRO-Tool-Set-Hand-Tools-for-Car-Repair-Ratchet-Spanner-Wrench-Socket-Set-Professional-Bicycle-Car.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO tööriistakomplekti käsitööriistad autoremondi jaoks - mutrivõtme mutrivõtme komplekt - professionaalsete jalgratta autoremonditööriistade komplektid</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">45%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/90721517523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"USB 5 V 9 V 12 V 20 V QC 2.0 3.0 LCD voolu pinge laadija mahtuvuse testija USB laadija arsti voolumõõtur Tekst voltmeeter 15% soodsam\" src=\"https://ae01.alicdn.com/kf/HTB1ieolSpXXXXbpXXXXq6xXFXXXu/USB-5V-9V-12V-20V-QC-2-0-3-0-LCD-Current-Voltage-Charger-Capacity-Tester.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">USB 5 V 9 V 12 V 20 V QC 2.0 3.0 LCD voolu pinge laadija mahtuvuse testija USB laadija arsti voolumõõtur Tekst voltmeeter 15% soodsam</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">15%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/9077200571.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Digitaalse termomeetri külmiku sügavkülma temperatuurimõõtur 26% soodsam\" src=\"https://ae01.alicdn.com/kf/HTB1Nd1xXYY1gK0jSZTEq6xDQVXaP/Digital-Thermometer-Fridge-Freezer-Temperature-Meter-26-off.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Digitaalse termomeetri külmiku sügavkülma temperatuurimõõtur 26% soodsam</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">26%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/27967871823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"TASP 230V 2-ühes elektriline naelutaja ja klammerdajaga mööbli klambripüstol klambrite ja naeltega puusepatööstuses kasutatavate tööriistade raami jaoks\" src=\"https://ae01.alicdn.com/kf/Hed65e103b02246559e2316b23436a238D/TASP-230V-2-in-1-Electric-Nailer-and-Stapler-Furniture-Staple-Gun-for-Frame-with-Staples.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">TASP 230V 2-ühes elektriline naelutaja ja klammerdajaga mööbli klambripüstol klambrite ja naeltega puusepatööstuses kasutatavate tööriistade raami jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">39%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektritooriistade-tarvikud/2838405502.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"HILDA 6tk HSS ketassae tera pöörlev tööriist Dremeli metallilõikuri elektriliste tööriistade komplekti puulõikeketaste jaoks - puurvarda lõikamine\" src=\"https://ae01.alicdn.com/kf/HTB1wozjKXXXXXXNXpXXq6xXFXXXF/HILDA-6pcs-HSS-Circular-Saw-Blade-Rotary-Tool-For-Dremel-Metal-Cutter-Power-Tool-Set-Wood.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">HILDA 6tk HSS ketassae tera pöörlev tööriist Dremeli metallilõikuri elektriliste tööriistade komplekti puulõikeketaste jaoks - puurvarda lõikamine</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">43%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/abrasiivtooriistad/01634916323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"DRELD 36tk dremeli lisatarvikud 24mm Abrasiivkettad lõikekettad tugevdatud lõikega lihvkettad pöörleva lõiketera tööriistad\" src=\"https://ae01.alicdn.com/kf/H2c51a2fffc944b6884c4b2b8049f32e2j/DRELD-36pcs-dremel-accessories-24mm-Abrasive-Disc-Cutting-Discs-Reinforced-Cut-Off-Grinding-Wheels-Rotary-Blade.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">DRELD 36tk dremeli lisatarvikud 24mm Abrasiivkettad lõikekettad tugevdatud lõikega lihvkettad pöörleva lõiketera tööriistad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">15%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/83456052523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks\" src=\"https://ae01.alicdn.com/kf/HTB11MXDPxTpK1RjSZFMq6zG_VXaD/GOXAWEE-110V-220V-Power-Tools-Electric-Mini-Drill-with-0-3-3-2mm-Universal-Chuck-Shiled.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">63%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/puur/05495448323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"XCAN 10 tk / komplekt 0,3–1,2 mm PCB minipuur Bitum volframterasest karbiid trükkplaadi jaoks cnc puurmasinad\" src=\"https://ae01.alicdn.com/kf/Hc29df52f2b884170b8d1596fb00714eey/XCAN-10pcs-set-0-3mm-to-1-2mm-PCB-mini-drill-Bit-tungsten-steel-carbide-for.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">XCAN 10 tk / komplekt 0,3–1,2 mm PCB minipuur Bitum volframterasest karbiid trükkplaadi jaoks cnc puurmasinad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">5%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/01080118323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"HILDA muutuva kiirusega pöörlemistööriistade elektrilised tööriistad, 400W minipuur, Dremel Rotary Tools mini-lihvimismasina jaoks 6-asendis\" src=\"https://ae01.alicdn.com/kf/HTB1djpBjTXYBeNkHFrdq6AiuVXax/HILDA-Variable-Speed-Rotary-Tool-Electric-Tools-400W-Mini-Drill-6-position-for-Dremel-Rotary-Tools.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">HILDA muutuva kiirusega pöörlemistööriistade elektrilised tööriistad, 400W minipuur, Dremel Rotary Tools mini-lihvimismasina jaoks 6-asendis</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">48%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/53453721823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"12/13 in usb tester alalisvoolu arvesti digitaalne voltmeeter voltimetro voltmeeter võimsuse pank vattmeeter pinge tester arsti detektor\" src=\"https://ae01.alicdn.com/kf/H090529be93654eb6807751da136486766/12-13-in-1-usb-tester-dc-power-meter-digital-voltmeter-voltimetro-volt-meter-power-bank.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">12/13 in usb tester alalisvoolu arvesti digitaalne voltmeeter voltimetro voltmeeter võimsuse pank vattmeeter pinge tester arsti detektor</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">19%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/7503299871.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"TASP 230V 130W pöörlevate tööriistade komplekt Elektriliste mini-puurgraveeride komplekt koos manuste ja tarvikutega käsitööprojektide elektrilised tööriistad\" src=\"https://ae01.alicdn.com/kf/HTB1p2wiBH1YBuNjSszeq6yblFXaW/TASP-230V-130W-Rotary-Tool-Set-Electric-Mini-Drill-Engraver-Kit-with-Attachments-and-Accessories-Power.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">TASP 230V 130W pöörlevate tööriistade komplekt Elektriliste mini-puurgraveeride komplekt koos manuste ja tarvikutega käsitööprojektide elektrilised tööriistad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">39%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/53017578723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"HTC-1 siseruumides kasutatav LCD-digitaalne elektrooniline termomeeter hügromeeter, mis mõõdab temperatuuri niiskuse arvesti äratuskella ilmajaama\" src=\"https://ae01.alicdn.com/kf/HTB1xtFpgRDH8KJjy1zeq6xjepXad/HTC-1-Indoor-Room-LCD-Digital-Electronic-Thermometer-Hygrometer-Measuring-Temperature-Humidity-Meter-Alarm-Clock-Weather.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">HTC-1 siseruumides kasutatav LCD-digitaalne elektrooniline termomeeter hügromeeter, mis mõõdab temperatuuri niiskuse arvesti äratuskella ilmajaama</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">20%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/32539410723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Roostevabast terasest grilltarvikud Grill Liha Termomeeter Dial Temperatuuri mõõtur Gage Cooking Toitesond Kodumajapidamises kasutatavad köögiriistad\" src=\"https://ae01.alicdn.com/kf/HTB1Yu3aQpXXXXcSXpXXq6xXFXXXg/Stainless-steel-BBQ-Accessories-Grill-Meat-Thermometer-Dial-Temperature-Gauge-Gage-Cooking-Food-Probe-Household-Kitchen.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Roostevabast terasest grilltarvikud Grill Liha Termomeeter Dial Temperatuuri mõõtur Gage Cooking Toitesond Kodumajapidamises kasutatavad köögiriistad</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">25%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/tooriistakomplektid/77404019623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO kodutööriistade komplekt majapidamistööriistade komplektid pistikupesade komplekti kruvikeerajate komplekt kodu remonditööriistad DIY käsitööriistadele\" src=\"https://ae01.alicdn.com/kf/H109881bcfefe48efbdf8ff84037b2b5fo/WORKPRO-Home-Tool-Set-Household-Tool-Kits-Socket-Set-Screwdriver-Set-Home-Repair-Tools-for-DIY.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO kodutööriistade komplekt majapidamistööriistade komplektid pistikupesade komplekti kruvikeerajate komplekt kodu remonditööriistad DIY käsitööriistadele</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:94%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">58%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/87637782623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Uus saabub -50 ~ 110 ° c LED Temperatuuri arvesti anduri andur Probe 12V digitaalse termomeetri monitori tester 15% OFF\" src=\"https://ae01.alicdn.com/kf/HTB1Md.6X2fsK1RjSszgq6yXzpXaF/New-arrive-50-110-c-LED-Temperature-meter-Detector-Sensor-Probe-12V-Digital-Thermometer-Monitor-tester.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Uus saabub -50 ~ 110 ° c LED Temperatuuri arvesti anduri andur Probe 12V digitaalse termomeetri monitori tester 15% OFF</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">15%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/55118219723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO 3PC kokkuklapitava kasuliku noa komplekt roostevabast terasest noaga karbipaberi lõikamiseks kiirtera nuga\" src=\"https://ae01.alicdn.com/kf/Ha640c7f6a49c4b24a9e992d5211a7218r/WORKPRO-3PC-Folding-Utility-Knife-Set-Stainless-steel-Knife-for-Cutting-Box-Paper-Quick-change-Blade.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO 3PC kokkuklapitava kasuliku noa komplekt roostevabast terasest noaga karbipaberi lõikamiseks kiirtera nuga</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">50%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/puur/98001049723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"BINOAX 5 tk karbiidotsik HSS puurvarda saega komplekt metallpuidust puurimisava lõiketööriist lukkude paigaldamiseks 16 / 18,5 / 20/25 / 30mm\" src=\"https://ae01.alicdn.com/kf/HTB16TisTjDpK1RjSZFrq6y78VXao/BINOAX-5-Pcs-Carbide-Tip-HSS-Drill-Bit-Saw-Set-Metal-Wood-Drilling-Hole-Cut-Tool.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">BINOAX 5 tk karbiidotsik HSS puurvarda saega komplekt metallpuidust puurimisava lõiketööriist lukkude paigaldamiseks 16 / 18,5 / 20/25 / 30mm</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">10%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/85772585623.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"SNDWAY lasermõõtur 40M 60M 80M 100M kaugusmõõtja trena laserlint vahemiku leidja ehitada mõõtmise seade joonlaud test tööriist\" src=\"https://ae01.alicdn.com/kf/HTB1B4RMSpXXXXa0XXXXq6xXFXXXS/SNDWAY-laser-distance-meter-40M-60M-80M-100M-rangefinder-trena-laser-tape-range-finder-build-measure.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">SNDWAY lasermõõtur 40M 60M 80M 100M kaugusmõõtja trena laserlint vahemiku leidja ehitada mõõtmise seade joonlaud test tööriist</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">26%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/25920980823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"WORKPRO raskeveokite kokkuklapitav nuga torulõikuri tasku nuga puitkäepidemega nuga 10PCS labadega\" src=\"https://ae01.alicdn.com/kf/Hb61ab2bd06854993b74291c220f3b5b8A/WORKPRO-Heavy-Duty-Folding-Knife-Pipe-Cutter-Pocket-Knife-Wood-Handle-Knife-with-10PCS-Blades.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">WORKPRO raskeveokite kokkuklapitav nuga torulõikuri tasku nuga puitkäepidemega nuga 10PCS labadega</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">50%</span>\n\t</a>\n\t</div>\n</div>\n</div>\n</section>\n<section class=\"section-content padding-y bg\">\n<div class=\"container\">\n<header class=\"section-heading\">\n\t<h4 class=\"section-title\">Maksimaalsed allahindlused</h4>\n</header>\n<div class=\"slider-items-slick row\" data-slick=\"{&quot;slidesToShow&quot;: 4, &quot;slidesToScroll&quot;: 1}\">\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/78860942323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"all-sun EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 Aku tühjenemise indikaator ülekoormuskaitse MULTIMETER Automotive Tester\" src=\"https://ae01.alicdn.com/kf/HTB1jGTKX4_rK1RkHFqDq6yJAFXam/all-sun-EM3081-EM3082-Digital-Multimeter-3-1-2-1999-Low-Battery-Indication-Overload-Protection-MULTIMETER.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">all-sun EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 Aku tühjenemise indikaator ülekoormuskaitse MULTIMETER Automotive Tester</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">84%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/72881919723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"DAOMACHENi kaasaskantav multifunktsionaalne tööriista nuga Survival Bowie enesekaitse mini puuviljatera jahinuga tasuta kohaletoimetamine\" src=\"https://ae01.alicdn.com/kf/HTB1_LaSRFXXXXb.aXXXq6xXFXXXq/DAOMACHEN-Portable-Multifunctional-Tool-Knife-Outdoor-Survival-Bowie-self-defense-Mini-Fruit-blade-Hunting-Knife-Free.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">DAOMACHENi kaasaskantav multifunktsionaalne tööriista nuga Survival Bowie enesekaitse mini puuviljatera jahinuga tasuta kohaletoimetamine</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:94%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">78%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/06421329723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"DAOMACHENi taktikaline jahinõu õues telkimine ellujäämiseks mõeldud noad mitme sukeldumisega tööriist ja kivipesutera Tasuta kiire saatmine\" src=\"https://ae01.alicdn.com/kf/HTB1RCWYQpXXXXbeXFXXq6xXFXXXb/DAOMACHEN-tactical-hunting-knife-outdoors-camping-survive-knives-multi-diving-tool-Stone-wash-blade-Free-fast.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">DAOMACHENi taktikaline jahinõu õues telkimine ellujäämiseks mõeldud noad mitme sukeldumisega tööriist ja kivipesutera Tasuta kiire saatmine</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">78%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/66154056723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Puutetundlik lüliti 2100mAh Homekit seinalaadija adapter EU pistikupesa toitenupp topelt USB-porti pistikupesa paneeli katkestaja\" src=\"https://ae01.alicdn.com/kf/HTB182ElOXXXXXbgXXXXq6xXFXXXX/Touch-Switch-2100mAh-Homekit-Wall-Charger-Adapter-EU-Plug-Socket-Power-Push-Button-Dual-USB-Port.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Puutetundlik lüliti 2100mAh Homekit seinalaadija adapter EU pistikupesa toitenupp topelt USB-porti pistikupesa paneeli katkestaja</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">75%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/2298249791.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"KÕIK PÄEV kogu päike EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 vahelduvvoolu / alalisvoolu ampermeeter Voltmeeter Ohm kaasaskantav meeter pingemõõtur\" src=\"https://ae01.alicdn.com/kf/H70a1bb759fe4470a836ffa5263dcee1fL/ALL-SUN-all-sun-EM3081-EM3082-Digital-Multimeter-3-1-2-1999-AC-DC-Ammeter-Voltmeter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">KÕIK PÄEV kogu päike EM3081 EM3082 Digitaalne multimeeter 3 1/2 1999 vahelduvvoolu / alalisvoolu ampermeeter Voltmeeter Ohm kaasaskantav meeter pingemõõtur</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">72%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/85518119723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Täis-Tang uus välistingimustes kasutatav taktikaline nuga ellujäämise matkatööriistade kollektsioon Jahinoad imporditud K-kestaga kinnitatud teraga nuga\" src=\"https://ae01.alicdn.com/kf/HTB1rvioQpXXXXXnaVXXq6xXFXXXC/Full-Tang-New-Outdoor-Tactical-Knife-Survival-Camping-Tools-Collection-Hunting-Knives-With-Imported-K-sheath.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Täis-Tang uus välistingimustes kasutatav taktikaline nuga ellujäämise matkatööriistade kollektsioon Jahinoad imporditud K-kestaga kinnitatud teraga nuga</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">65%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/31250331823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"GM320 laser-LCD-digitaalse infrapunatermomeetri temperatuurimõõturi püstoli punkt -50 ~ 380 kraadi mittekontaktset termomeetrit\" src=\"https://ae01.alicdn.com/kf/HTB13tNgfpTM8KJjSZFlq6yO8FXaA/GM320-Laser-LCD-Digital-IR-Infrared-Thermometer-Temperature-Meter-Gun-Point-50-380-Degree-Non-Contact.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">GM320 laser-LCD-digitaalse infrapunatermomeetri temperatuurimõõturi püstoli punkt -50 ~ 380 kraadi mittekontaktset termomeetrit</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:98%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">64%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/83456052523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks\" src=\"https://ae01.alicdn.com/kf/HTB11MXDPxTpK1RjSZFMq6zG_VXaD/GOXAWEE-110V-220V-Power-Tools-Electric-Mini-Drill-with-0-3-3-2mm-Universal-Chuck-Shiled.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">GOXAWEE 110V 220V elektrilised tööriistad Elektriline minipuur koos 0,3-3,2 mm universaalse padruniga ja Shieldiga pöörlevate tööriistade komplekt Dremel 3000 4000 jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">63%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/kasitooriistad/17626919723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"2017 Full Tang uusim taktikaline nuga ellujäämise kämping välitööriistade kollektsioon Jahinoad imporditud K-kestaga kui gife\" src=\"https://ae01.alicdn.com/kf/HTB1nvPhQVXXXXbfaFXXq6xXFXXXw/2017-Full-Tang-Newest-Tactical-Knife-Survival-Camping-Outdoor-Tools-Collection-Hunting-Knives-With-Imported-K.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">2017 Full Tang uusim taktikaline nuga ellujäämise kämping välitööriistade kollektsioon Jahinoad imporditud K-kestaga kui gife</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:96%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">62%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/16830989723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"1PC arhitektuurne vormimisruuter, 1/2-osaline varrejoa nuga Puidutöötlemislõikur Puidutöötlemisriistade lõikurlõikur\" src=\"https://ae01.alicdn.com/kf/HTB1vBfEPVXXXXXEXFXXq6xXFXXXC/1PC-Architectural-Molding-Router-Bit-1-2-Shank-Line-knife-Woodworking-cutter-Tenon-Cutter-for-Woodworking.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">1PC arhitektuurne vormimisruuter, 1/2-osaline varrejoa nuga Puidutöötlemislõikur Puidutöötlemisriistade lõikurlõikur</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/25926159723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"2-bitine käsipuu ruuteri bitikomplekt - pisipilt / flööt - 1/2 &quot;varre puidutöötleja Lõikur puidutöötlemise tööriistade jaoks\" src=\"https://ae01.alicdn.com/kf/HTB1vSdaPVXXXXXQaXXXq6xXFXXXT/2-Bit-Handrail-Router-Bit-Set-Thumbnail-Bead-Flute-1-2-Shank-Woodworking-cutter-Tenon-Cutter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">2-bitine käsipuu ruuteri bitikomplekt - pisipilt / flööt - 1/2 \"varre puidutöötleja Lõikur puidutöötlemise tööriistade jaoks</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/27667159723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"3tk 1/4 ümmarguse rööpa ja ruudukujulise ruuteri bitti komplekt lameda tõstetud paneeli tööriistad Puitlõikamine kvaliteetsest puidust CNC otsmilli\" src=\"https://ae01.alicdn.com/kf/HTB1zNMQPFXXXXaWXVXXq6xXFXXXf/3pcs-1-4-Round-Rail-Stile-Router-Bits-Set-Cove-Raised-Panel-Tools-Wood-Cutting-High.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">3tk 1/4 ümmarguse rööpa ja ruudukujulise ruuteri bitti komplekt lameda tõstetud paneeli tööriistad Puitlõikamine kvaliteetsest puidust CNC otsmilli</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/52809549723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Rööpa- ja õmblukk vertikaalse paneeliga tõsteseade 3-bitine komplekt Ogee 1/4 &quot;varre puidutöötleja Lõikur puidutöötlemise tööriistadele\" src=\"https://ae01.alicdn.com/kf/HTB1AsQ_PFXXXXbcXFXXq6xXFXXXD/Rail-and-Stile-w-Vertical-Panel-Raiser-3-Bit-Set-Ogee-1-4-Shank-Woodworking-cutter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Rööpa- ja õmblukk vertikaalse paneeliga tõsteseade 3-bitine komplekt Ogee 1/4 \"varre puidutöötleja Lõikur puidutöötlemise tööriistadele</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/13982159723.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Vutlar, 2-bitine ruuteri bitikomplekt, 1/2-osaline varrejoone nuga, puidutöötlemislõikur\" src=\"https://ae01.alicdn.com/kf/HTB10IUIPFXXXXXKapXXq6xXFXXXF/Mitered-Door-Drawer-Molding-2-Bit-Router-Bit-Set-1-2-Shank-Line-knife-Woodworking-cutter.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Vutlar, 2-bitine ruuteri bitikomplekt, 1/2-osaline varrejoone nuga, puidutöötlemislõikur</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">61%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/58333588523.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Kvaliteetne YSM10 M4 / M5 / M6 / M8 / M10 220 V elektriline needi mutrirelv Elektriline neetimisriist Elektriline neetimispüstol\" src=\"https://ae01.alicdn.com/kf/HTB1mmK5QFXXXXXTXVXXq6xXFXXXN/High-Quality-YSM10-M4-M5-M6-M8-M10-220V-Electrical-Rivet-Nut-Gun-Electrical-Riveting-Tool.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Kvaliteetne YSM10 M4 / M5 / M6 / M8 / M10 220 V elektriline needi mutrirelv Elektriline neetimisriist Elektriline neetimispüstol</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/61359422323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Tippkvaliteediga 220V 3,2-4,0-4,8-6,4 mm niidipüstoli elektriline neetimisrihm Taiwanis\" src=\"https://ae01.alicdn.com/kf/HTB1ny6kQFXXXXayXpXXq6xXFXXXV/Top-Quality-220V-3-2-4-0-4-8-6-4mm-Riveter-Gun-Electrical-Riveting-Tool.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Tippkvaliteediga 220V 3,2-4,0-4,8-6,4 mm niidipüstoli elektriline neetimisrihm Taiwanis</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/0989899202.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"KÕIK PÄEVA Digitaalse multimeetri dioodiga transistoride aku tester AC / DC ampermeeter Voltmeeter Ohm kaasaskantav arvesti pingemõõtur EM420B\" src=\"https://ae01.alicdn.com/kf/HTB1yIpnSyrpK1RjSZFhq6xSdXXaz/ALL-SUN-Digital-Multimeter-Diode-Transistor-Battery-Tester-AC-DC-Ammeter-Voltmeter-Ohm-Portable-Meter-voltage.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">KÕIK PÄEVA Digitaalse multimeetri dioodiga transistoride aku tester AC / DC ampermeeter Voltmeeter Ohm kaasaskantav arvesti pingemõõtur EM420B</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/mootevahendid/32924602823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Suur allahindlus Geigeri loendurituumakiirguse detektor beeta gamma röntgenikiirguse isiklik dosimeeter Marmortester Radioaktiivne detektor\" src=\"https://ae01.alicdn.com/kf/HTB1wihbdazB9uJjSZFMq6xq4XXa1/Big-Discount-Geiger-Counter-Nuclear-Radiation-Detector-Beta-Gamma-X-ray-Personal-Dosimeter-Marble-Tester-Radioactive.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Suur allahindlus Geigeri loendurituumakiirguse detektor beeta gamma röntgenikiirguse isiklik dosimeeter Marmortester Radioaktiivne detektor</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:86%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/elektrilised-tooriistad/87299422323.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"Tippkvaliteediga Taiwani 2,4–4,8 mm niidukiga 220V elektrienergiaga neetimisriista neetimisriist\" src=\"https://ae01.alicdn.com/kf/HTB1C8KJQFXXXXaPapXXq6xXFXXXk/Top-Quality-220V-Electricity-Power-Riveter-Gun-Riveting-Tool-Made-In-Taiwan-2-4-4-8mm.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">Tippkvaliteediga Taiwani 2,4–4,8 mm niidukiga 220V elektrienergiaga neetimisriista neetimisriist</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:0%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">60%</span>\n\t</a>\n\t</div>\n\t<div class=\"item-slide p-2\">\n<a class=\"card card-product-grid mb-0\" href=\"http://www.dummy.org/toopingid-ja-tarvikud/05227642823.html\" target=\"_blank\">\n\t<div class=\"img-wrap\">\n\t\t\t<img alt=\"10tk DNMG150404 R VF CT3000 välised treimisriistad Cermet klassi karbiidist sisetükk Treipingi lõikuri tööriist Tokarnyy treipink\" src=\"https://ae01.alicdn.com/kf/Heaceef83bd574914a9418ccfd09d5ec8X/10PCS-DNMG150404-R-VF-CT3000-External-Turning-Tools-Cermet-Grade-Carbide-insert-Lathe-cutter-Tool-Tokarnyy.jpg\"/>\n\t</div>\n\t<div class=\"info-wrap text-center\">\n\t\t<p class=\"title text-truncate\">10tk DNMG150404 R VF CT3000 välised treimisriistad Cermet klassi karbiidist sisetükk Treipingi lõikuri tööriist Tokarnyy treipink</p>\n\t</div>\n\t<ul class=\"rating-stars\">\n\t\t<li class=\"stars-active\" style=\"width:100%\">\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t\t<li>\n\t\t\t<i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/><i class=\"fa fa-star\"/>\n\t\t</li>\n\t</ul>\n\t\t<span class=\"product-new-label\">Allahindlus</span>\n    <span class=\"product-discount-label\">59%</span>\n\t</a>\n\t</div>\n</div>\n</div>\n</section>\n<section class=\"section-specials padding-y border-bottom bg\">\n<div class=\"container\">\t\n<div class=\"row\">\n<div class=\"col-md-4\">\t\n\t\t<article class=\"card card-body\">\n\t\t\t<figure class=\"itemside\">\n\t\t\t\t<div class=\"aside\">\n\t\t\t\t\t<span class=\"icon-sm rounded-circle bg-primary\">\n\t\t\t\t\t\t<i class=\"fa fa-money-bill-alt white\"/>\n\t\t\t\t\t</span>\n\t\t\t\t</div>\n\t\t\t\t<figcaption class=\"info\">\n\t\t\t\t\t<h5 class=\"title\">Hea hind</h5>\n\t\t\t\t\t<p>Soodustused ja madalad hinnad iga päev. Lai valik tooteid parima hinnaga.</p>\n\t\t\t\t</figcaption>\n\t\t\t</figure>\n\t\t</article>\n\t</div>\n\t<div class=\"col-md-4\">\n\t\t<article class=\"card card-body\">\n\t\t\t<figure class=\"itemside\">\n\t\t\t\t<div class=\"aside\">\n\t\t\t\t\t<span class=\"icon-sm rounded-circle bg-secondary\">\n\t\t\t\t\t\t<i class=\"fa fa-comment-dots white\"/>\n\t\t\t\t\t</span>\n\t\t\t\t</div>\n\t\t\t\t<figcaption class=\"info\">\n\t\t\t\t\t<h5 class=\"title\">Klienditugi 24/7</h5>\n\t\t\t\t\t<p>24-tunnine klienditugi. Võite saada vastuse igale küsimusele.</p>\n\t\t\t\t</figcaption>\n\t\t\t</figure>\n\t\t</article>\n\t</div>\n\t<div class=\"col-md-4\">\n\t\t<article class=\"card card-body\">\n\t\t\t<figure class=\"itemside\">\n\t\t\t\t<div class=\"aside\">\n\t\t\t\t\t<span class=\"icon-sm rounded-circle bg-success\">\n\t\t\t\t\t\t<i class=\"fa fa-truck white\"/>\n\t\t\t\t\t</span>\n\t\t\t\t</div>\n\t\t\t\t<figcaption class=\"info\">\n\t\t\t\t\t<h5 class=\"title\">Mugav kohaletoimetamine</h5>\n\t\t\t\t\t<p>Tarneaeg kõikjal. Saadetiste jälgimine. Saadaval on tasuta saatmine.</p>\n\t\t\t\t</figcaption>\n\t\t\t</figure>\n\t\t</article>\n\t</div>\n</div>\n</div>\n</section>\n<footer class=\"section-footer border-top\">\n\t<div class=\"container\">\n\t\t<section class=\"footer-bottom border-top row\">\n\t\t\t<div class=\"col-md-3\">\n\t\t\t\t<p class=\"text-muted\"> © 2020 www.dummy.org </p>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-7 text-md-center\">\n\t\t\t</div>\n\t\t\t<div class=\"col-md-2 text-md-right text-muted\">\n\t\t\t\t<i class=\"fab fa-lg fa-cc-visa\"/>\n\t\t\t\t<i class=\"fab fa-lg fa-cc-paypal\"/>\n\t\t\t\t<i class=\"fab fa-lg fa-cc-mastercard\"/>\n\t\t\t</div>\n\t\t</section>\n\t</div>\n</footer>\n\n</body></html>",
+        "firstSeen": 1591580985105,
+        "lastSeen": 1591580985105,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "isRootUrl": true,
+    "location": [
+      {
+        "value": {
+          "countrycode": "US",
+          "countryname": "United States",
+          "latitude": 37.750999450683594,
+          "longitude": -97.8219985961914
+        },
+        "firstSeen": 1591415062622,
+        "lastSeen": 1591595881794
+      }
+    ],
+    "asnNumbers": [
+      {
+        "value": 13335,
+        "firstSeen": 1591007889526,
+        "lastSeen": 1591007889526,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "mailServers": [
+      {
+        "value": "dummy.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy1.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy2.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy3.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      },
+      {
+        "value": "dummy4.mailserver.com",
+        "firstSeen": 1322692530000,
+        "lastSeen": 1591530037000,
+        "recent": true,
+        "current": true
+      }
+    ],
+    "whois": {
+      "createdAt": 1591402147858,
+      "updatedAt": 1591402147858,
+      "status": "ACTIVE",
+      "whoisID": 6674824394369493291,
+      "domain": "dummydomain.com",
+      "domainMd5": "9b4f498908b61ea0887cdfdca9f47542",
+      "domainUnicode": "dummydomain.com",
+      "tld": "com",
+      "nameservers": [
+        "dummy.nameserver.com",
+        "dummy1.nameserver.com",
+        "dummy2.nameserver.com",
+        "dummy3.nameserver.com"
+      ],
+      "whoisServer": "dummy.com",
+      "registrarIanaID": 146,
+      "registrarName": "Dummy, LLC",
+      "registrarEmail": "abuse@dummydomain.com",
+      "registrarCreatedAt": 1137076406000,
+      "registrarUpdatedAt": 1483618972000,
+      "registrarExpiresAt": 1768228406000,
+      "registrant": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "state": "cyprus",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "admin": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "technical": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "billing": {
+        "whoisContactID": 0,
+        "email": "dummy@whoisdummydomain.com",
+        "name": "DUMMY, LLC",
+        "organization": "DUMMY, LLC.",
+        "street": "157, Dummy street, office 1",
+        "city": "limassol",
+        "zip": "3026",
+        "country": "cyprus",
+        "phone": "12345678901",
+        "fax": "12345678901",
+        "address": "157, Dummy street, office 1\nlimassol\n3026\ncyprus\n",
+        "id": 0
+      },
+      "domainStatus": "delete prohibited,transfer prohibited,renew prohibited,update prohibited",
+      "auditCreatedAt": 1591402147834,
+      "auditUpdatedAt": 1591402147834,
+      "registrarParseCode": 36643,
+      "noRecord": false,
+      "domainAvailable": false,
+      "contactEmails": [
+        "dummy@dummy.com"
+      ],
+      "expired": false,
+      "contacts": [
+        {
+          "whoisContactID": 0,
+          "organization": "Dummy Organization",
+          "state": "california",
+          "country": "united states",
+          "address": "california\nunited states\n",
+          "id": 0
+        }
+      ],
+      "contactNames": [
+        "Dummy"
+      ],
+      "contactOrganizations": [
+        "Dummy Organization"
+      ],
+      "contactCountries": [
+        "united states"
+      ],
+      "compositeParseCode": 36643,
+      "id": 6674824394369493291,
+      "raw": "Registrar: \n  Handle: 314061295_DOMAIN_COM-VRSN\n  LDH Name: dummydomain.com\n  Nameserver: \n    LDH Name: NS-1502.AWSDNS-59.ORG\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.743Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-295.AWSDNS-36.COM\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:06.84Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-625.AWSDNS-14.NET\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.107Z\n      Status: active\n  Nameserver: \n    LDH Name: NS-1837.AWSDNS-37.CO.UK\n    Event: \n      Action: last changed\n      Date: 2016-10-07T10:56:07.163Z\n      Status: active\n  SecureDNS: \n    Delegation Signed: false\n  Event: \n    Action: last update of RDAP database\n    Date: 2020-06-06T00:09:07.492949419Z\n  Event: \n    Action: expiration\n    Date: 2026-01-12T14:33:26Z\n  Event: \n    Action: registration\n    Date: 2006-01-12T14:33:26Z\n  Event: \n    Action: last update\n    Date: 2017-01-05T12:22:52Z\n  Status: \n    delete prohibited\n    transfer prohibited\n    renew prohibited\n    update prohibited\n  Entity: \n    Handle: 1\n    Role: \n      REGISTRANT\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 2\n    Role: \n      ADMINISTRATIVE\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 3\n    Role: \n      TECHNICAL\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 4\n    Role: \n      BILLING\n    VCard: \n      Kind: individual\n          Organization: Dummy Organization\n          TYPE: work\n      Address: \n          Region: California\n          Country: United States\n    Event: \n      Action: last update\n      Date: 2016-11-10T10:43:30Z\n    Remark: \n      Title: REDACTED FOR PRIVACY\n      Type: object truncated due to authorization\n        Description: Some of the data in this object has been removed.\n  Entity: \n    Handle: 146\n    Role: \n      REGISTRAR\n    VCard: \n      Formatted Name: Dummy, LLC\n      Address: \n          Street: 14455 N Hayden Suite 226\n          Locale: Scottsdale\n          Region: AZ\n          Postal Code: 85260\n          Country: US\n      Email: abuse@dummydomain.com\n          TYPE: work\n    Entity: \n      Handle: \n      Role: \n        ABUSE\n      VCard: \n            TYPE: voice\n        Email: abuse@dummydomain.com\n            TYPE: work\n    RDAP Conformance: \n      rdap_level_0\n      icann_rdap_response_profile_0\n      icann_rdap_technical_implementation_guide_0\n  Link: \n    Rel: self\n    Value: https://rdap.dummy.com/v1/domain/dummydomain.com\n    Type: application/rdap+json\n    Href: https://rdap.dummy.com/v1/domain/dummydomain.com\n  Notice: \n    Title: Epp Status Codes\n      Description: For more information on domain status codes, please visit https://icann.org/epp.\n      Link: \n        Rel: related\n        Value: https://icann.org/epp\n        Type: text/html\n        Href: https://icann.org/epp\n  Notice: \n    Title: Whois Inaccuracy Complaint Form\n      Description: URL of the ICANN Whois Inaccuracy Complaint Form: https://www.icann.org/wicf.\n      Link: \n        Rel: related\n        Value: https://www.icann.org/wicf\n        Type: text/html\n        Href: https://www.icann.org/wicf\n  Notice: \n    Title: Terms of Use\n    Description: \n      By submitting an inquiry, you agree to these Universal Terms of Service\n      and limitations of warranty. In particular, you agree not to use this\n      data to allow, enable, or otherwise make possible, dissemination or\n      collection of this data, in part or in its entirety, for any purpose,\n      such as the transmission of unsolicited advertising and solicitations of\n      any kind, including spam. You further agree not to use this data to enable\n      high volume, automated or robotic electronic processes designed to collect\n      or compile this data for any purpose, including mining this data for your\n      own personal or commercial purposes, or use this data in any way that violates\n      applicable laws and regulations.\n      Link: \n        Rel: related\n        Value: https://www.dummy.com/agreements/showdoc?pageid=5403\n        Type: text/html\n        Href: https://www.dummy.com/agreements/showdoc?pageid=5403\n  RDAP Conformance: \n    rdap_level_0\n    icann_rdap_response_profile_0\n    icann_rdap_technical_implementation_guide_0\n\n\n  Registry: \n    Handle: 314061295_DOMAIN_COM-VRSN\n    LDH Name: dummydomain.com\n    Nameserver: \n      LDH Name: NS-1502.AWSDNS-59.ORG\n    Nameserver: \n      LDH Name: NS-1837.AWSDNS-37.CO.UK\n    Nameserver: \n      LDH Name: NS-295.AWSDNS-36.COM\n    Nameserver: \n      LDH Name: NS-625.AWSDNS-14.NET\n    SecureDNS: \n      Delegation Signed: false\n    Event: \n      Action: registration\n      Date: 2006-01-12T19:33:26Z\n    Event: \n      Action: expiration\n      Date: 2026-01-12T19:33:26Z\n    Event: \n      Action: last update of RDAP database\n      Date: 2020-06-05T17:49:42Z\n    Status: \n      client delete prohibited\n      client renew prohibited\n      client transfer prohibited\n      client update prohibited\n    Entity: \n      Handle: 146\n      Role: \n        REGISTRAR\n      VCard: \n        Formatted Name: Dummy, LLC\n      Entity: \n        Role: \n          ABUSE\n        VCard: \n          Formatted Name: \n              TYPE: voice\n          Email: abuse@dummydomain.com\n    Link: \n      Rel: self\n      Value: https://rdap.verisign.com/com/v1/domain/dummydomain.com\n      Type: application/rdap+json\n      Href: https://rdap.verisign.com/com/v1/domain/dummydomain.com\n    Link: \n      Rel: related\n      Value: https://rdap.dummy.com/v1/domain/dummydomain.com\n      Type: application/rdap+json\n      Href: https://rdap.dummy.com/v1/domain/dummydomain.com\n    Notice: \n      Title: Terms of Use\n        Description: Service subject to Terms of Use.\n        Link: \n          Type: text/html\n          Href: https://www.verisign.com/domain-names/registration-data-access-protocol/terms-service/index.xhtml\n    Notice: \n      Title: Status Codes\n        Description: For more information on domain status codes, please visit https://icann.org/epp\n        Link: \n          Type: text/html\n          Href: https://icann.org/epp\n    Notice: \n      Title: RDDS Inaccuracy Complaint Form\n        Description: URL of the ICANN RDDS Inaccuracy Complaint Form: https://icann.org/wicf\n        Link: \n          Type: text/html\n          Href: https://icann.org/wicf\n    RDAP Conformance: \n      rdap_level_0\n      icann_rdap_technical_implementation_guide_0\n      icann_rdap_response_profile_0\n"
+    },
+    "sslCerts": [
+      {
+        "sha1": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+        "serialNumber": "4f219e40599f0dfad05ad0ec72c55fc",
+        "subjectAlternativeNames": [
+          "dsars.dummy.org",
+          "test.dsars.dummy.org",
+          "train.dsars.dummy.org"
+        ],
+        "issuerAlternativeNames": [],
+        "firstSeen": 1563888637711,
+        "lastSeen": 1591473937119,
+        "keySize": 2048,
+        "version": 3,
+        "certificateAuthority": false,
+        "selfSigned": false,
+        "recent": true,
+        "signatureAlgorithm": "SHA256withRSA",
+        "signatureAlgorithmOid": "1.2.840.113549.1.1.11",
+        "notBefore": 1561939200000,
+        "notAfter": 1593604800000,
+        "publicKeyAlgorithm": "RSA",
+        "id": "a33fc7ab5ab26b33dd23fce194dc47a9904c6e70",
+        "issuer": {
+          "country": "US",
+          "organization": "DigiCert Inc",
+          "common name": "DigiCert SHA2 Secure Server CA"
+        },
+        "subject": {
+          "country": "US",
+          "unit": "IT Infrastructure Service Delivery",
+          "organization": "American Red Cross",
+          "common name": "dsars.dummy.org",
+          "state": "District of Columbia",
+          "locale": "Washington"
+        },
+        "current": true
+      }
+    ],
+    "attributes": [
+      {
+        "attributeType": "address",
+        "attributeValue": "162.6.217.33",
+        "firstSeen": 1563583176558,
+        "lastSeen": 1591539554297,
+        "recent": true,
+        "current": true
+      },
+      {
+        "attributeType": "address",
+        "attributeValue": "unknown",
+        "firstSeen": 1586044395500,
+        "lastSeen": 1591191958789,
+        "recent": true,
+        "current": true
+      }
+    ]
+  },
+  "data": {
+    "hostPairs": {
+      "content": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 5071,
+          "id": "www.dummy.org$ae01.alicdn.com$parentPage",
+          "childHostname": "ae01.alicdn.com",
+          "parentHostname": "www.dummy.org",
+          "cause": "parentPage",
+          "childCount": 136290652,
+          "parentCount": 507584,
+          "childScore": 3.720724635059014E-5,
+          "parentScore": 0.009990464895963669,
+          "pairScore": 7.413838466163725E-5
+        },
+        {
+          "firstSeen": 1587278424091,
+          "lastSeen": 1591555747171,
+          "count": 474022,
+          "id": "www.dummy.org$ae01.alicdn.com$img.src",
+          "childHostname": "ae01.alicdn.com",
+          "parentHostname": "www.dummy.org",
+          "cause": "img.src",
+          "childCount": 136290652,
+          "parentCount": 507584,
+          "childScore": 0.0034780227579176426,
+          "parentScore": 0.9338788986206055,
+          "pairScore": 0.006930235773324966
+        }
+      ],
+      "totalElements": 11,
+      "totalPages": 6,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "attributes": {
+      "content": [
+        {
+          "firstSeen": 1588571785721,
+          "lastSeen": 1590537939334,
+          "count": 401,
+          "id": "org.dummy.www$GoogleAnalyticsAccountNumber$ua-908",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "attributeValue": "ua-908",
+          "attributeType": "GoogleAnalyticsAccountNumber"
+        },
+        {
+          "firstSeen": 1587332054055,
+          "lastSeen": 1590399084776,
+          "count": 19,
+          "id": "org.dummy.www$GoogleAnalyticsAccountNumber$ua-853",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "attributeValue": "ua-853",
+          "attributeType": "GoogleAnalyticsAccountNumber"
+        }
+      ],
+      "totalElements": 11,
+      "totalPages": 6,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "webComponents": {
+      "content": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 359218,
+          "id": "org.dummy.www$CloudFlare$DDOS Protection$",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "webComponentName": "CloudFlare",
+          "webComponentCategory": "DDOS Protection",
+          "cves": [],
+          "ports": [
+            {
+              "firstSeen": 1587240988037,
+              "lastSeen": 1591682405138,
+              "count": 188302,
+              "portNumber": 80
+            },
+            {
+              "firstSeen": 1587240574392,
+              "lastSeen": 1591624309886,
+              "count": 170916,
+              "portNumber": 443
+            }
+          ]
+        },
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 62864,
+          "id": "org.dummy.www$CloudFlare$Server$",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "webComponentName": "CloudFlare",
+          "webComponentCategory": "Server",
+          "cves": [],
+          "ports": [
+            {
+              "firstSeen": 1587240988037,
+              "lastSeen": 1591682405138,
+              "count": 33014,
+              "portNumber": 80
+            },
+            {
+              "firstSeen": 1587240574392,
+              "lastSeen": 1591624309886,
+              "count": 29850,
+              "portNumber": 443
+            }
+          ]
+        }
+      ],
+      "totalElements": 13,
+      "totalPages": 7,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "sslCerts": {
+      "content": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591682405138,
+          "count": 5822,
+          "id": "e965281f19845533ea1eeb4708ea214bbc916975",
+          "sha1": "e965281f19845533ea1eeb4708ea214bbc916975",
+          "version": 3,
+          "serialNumber": "119138148879edf7f27212d34971093",
+          "signatureAlgorithm": "SHA256withECDSA",
+          "signatureAlgorithmOid": "1.2.840.10045.4.3.2",
+          "issuer": {
+            "country": "US",
+            "organization": "CloudFlare, Inc.",
+            "common name": "CloudFlare Inc ECC CA-2",
+            "state": "CA",
+            "locale": "San Francisco"
+          },
+          "issuerAlternativeNames": [],
+          "notBefore": 1587168000000,
+          "notAfter": 1602244800000,
+          "subject": {
+            "country": "US",
+            "organization": "Cloudflare, Inc.",
+            "common name": "sni.cloudflaressl.com",
+            "state": "CA",
+            "locale": "San Francisco"
+          },
+          "subjectAlternativeNames": [
+            "dummy.org",
+            "*.dummy.org",
+            "sni.cloudflaressl.com"
+          ],
+          "publicKeyAlgorithm": "EC",
+          "certificateAuthority": false,
+          "selfSigned": false
+        }
+      ],
+      "totalElements": 1,
+      "totalPages": 1,
+      "last": true,
+      "numberOfElements": 1,
+      "first": true,
+      "size": 2,
+      "number": 0
+    },
+    "cookies": {
+      "content": [
+        {
+          "firstSeen": 1587240574392,
+          "lastSeen": 1591595881794,
+          "count": 64122,
+          "id": "org.dummy.www$.dummy.org$9f13ed63618f434b8389cd737292c591",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "cookieDomain": ".dummy.org",
+          "cookieName": "__cfduid"
+        },
+        {
+          "firstSeen": 1587278381401,
+          "lastSeen": 1591555686897,
+          "count": 940,
+          "id": "org.dummy.www$.rsms.me$9f13ed63618f434b8389cd737292c591",
+          "hostname": "www.dummy.org",
+          "domain": "dummy.org",
+          "cookieDomain": ".rsms.me",
+          "cookieName": "__cfduid"
+        }
+      ],
+      "totalElements": 3,
+      "totalPages": 2,
+      "last": false,
+      "numberOfElements": 2,
+      "first": true,
+      "size": 2,
+      "number": 0
+    }
+  }
+}

@@ -1,0 +1,6 @@
+[file:classifier-mapper-incoming-TOPdesk.json]
+ignore=BA101
+
+[known_words]
+processingStatus
+defaultclassifier

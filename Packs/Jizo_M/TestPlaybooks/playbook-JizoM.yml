@@ -1,0 +1,87 @@
+id: JizoM
+version: -1
+name: JizoM
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9f7ec177-e585-4441-888e-cc91b1dd579f
+    type: start
+    task:
+      id: 9f7ec177-e585-4441-888e-cc91b1dd579f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 828e4275-706e-4873-8ff2-112c23035e9b
+    type: regular
+    task:
+      id: 828e4275-706e-4873-8ff2-112c23035e9b
+      version: -1
+      name: jizo-query-records-get
+      description: Get jizo query records
+      script: JizoM|||jizo-query-records-get
+      type: regular
+      iscommand: true
+      brand: JizoM
+    scriptarguments:
+      datetime_from:
+        simple: first_fetch
+      limit:
+        keyvalue:
+        - value: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 305,
+        "width": 380,
+        "x": 440,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 5.0.0
+description: This playbook aims to retrieve all available incidents

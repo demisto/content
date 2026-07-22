@@ -1,0 +1,496 @@
+id: VMRay-Test-URL
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: VMRay-Test-URL
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f2c4550d-aa6c-4065-8c2a-53347b31e156
+    type: start
+    task:
+      id: f2c4550d-aa6c-4065-8c2a-53347b31e156
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 28898bde-4b1c-4867-85d1-c2674eb96863
+    type: regular
+    task:
+      id: 28898bde-4b1c-4867-85d1-c2674eb96863
+      version: -1
+      name: Get analysis by sample
+      description: Get all analysis details about a specific sample.
+      script: '|||vmray-get-analysis-by-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "10"
+      - "13"
+      - "14"
+    scriptarguments:
+      limit:
+        simple: "1"
+      sample_id:
+        complex:
+          root: VMRay.Sample
+          accessor: SampleID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 28cb3f4b-93e0-41b9-8c34-eb87c5c80037
+    type: regular
+    task:
+      id: 28cb3f4b-93e0-41b9-8c34-eb87c5c80037
+      version: -1
+      name: get-threat-indicators
+      description: Get threat indicators (VTI)
+      script: '|||vmray-get-threat-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      sample_id:
+        complex:
+          root: VMRay.Sample
+          accessor: SampleID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7c120dfd-6d44-4932-8c0c-652463706f66
+    type: regular
+    task:
+      id: 7c120dfd-6d44-4932-8c0c-652463706f66
+      version: -1
+      name: Get IOCs
+      description: getting iocs of given sample
+      script: '|||vmray-get-iocs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all_artifacts:
+        simple: "true"
+      sample_id:
+        complex:
+          root: VMRay.Sample
+          accessor: SampleID
+          transformers:
+          - operator: uniq
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cadb2a22-fd38-4f5e-868b-d7ab4a9c2a26
+    type: regular
+    task:
+      id: cadb2a22-fd38-4f5e-868b-d7ab4a9c2a26
+      version: -1
+      name: Add tag
+      description: Adds a tag to analysis and/or submission
+      script: '|||vmray-add-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: VMRay.Analysis
+          accessor: AnalysisID
+          transformers:
+          - operator: uniq
+      submission_id:
+        complex:
+          root: VMRay.Submission
+          accessor: SubmissionID
+          transformers:
+          - operator: uniq
+      tag:
+        simple: test_task
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 10a1247c-a4bb-4cb4-87fe-fe168f0e3862
+    type: title
+    task:
+      id: 10a1247c-a4bb-4cb4-87fe-fe168f0e3862
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a5cf16e6-0dc1-4730-82d9-01b2001ae24a
+    type: regular
+    task:
+      id: a5cf16e6-0dc1-4730-82d9-01b2001ae24a
+      version: -1
+      name: Remove tag
+      description: Delete tags from analysis and/or submission
+      script: '|||vmray-delete-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: VMRay.Analysis
+          accessor: AnalysisID
+          transformers:
+          - operator: uniq
+      submission_id:
+        complex:
+          root: VMRay.Submission
+          accessor: SubmissionID
+          transformers:
+          - operator: uniq
+      tag:
+        simple: test_task
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2b1be4bd-5dbf-4d71-8bfc-3c43f0607268
+    type: regular
+    task:
+      id: 2b1be4bd-5dbf-4d71-8bfc-3c43f0607268
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2b9db127-893b-43f1-80ed-0fc63340ee54
+    type: regular
+    task:
+      id: 2b9db127-893b-43f1-80ed-0fc63340ee54
+      version: -1
+      name: Get Summary V2
+      description: Retrieves the Summary JSON v2 for a specific analysis.
+      script: vmray|||vmray-get-summary
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: VMRay.Analysis
+          accessor: AnalysisID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e06c96d9-f341-4e68-8634-1805fd6ec67d
+    type: playbook
+    task:
+      id: e06c96d9-f341-4e68-8634-1805fd6ec67d
+      version: -1
+      name: Detonate URL - VMRay
+      description: Detonates a URL using the VMRay sandbox integration.
+      playbookName: Detonate URL - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "5"
+      - "4"
+    scriptarguments:
+      URL:
+        simple: https://secure.eicar.org/eicar.com
+      interval:
+        simple: "1"
+      timeout:
+        simple: "10"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 02d34ddf-cd66-44df-8b4c-30b785693706
+    type: regular
+    task:
+      id: 02d34ddf-cd66-44df-8b4c-30b785693706
+      version: -1
+      name: Get sample by hash
+      description: Retrieves sample information by hash.
+      script: vmray|||vmray-get-sample-by-hash
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hash:
+        complex:
+          root: VMRay.Analysis
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 23a4ff0e-fc1a-42ec-8e80-8a30027387a5
+    type: regular
+    task:
+      id: 23a4ff0e-fc1a-42ec-8e80-8a30027387a5
+      version: -1
+      name: Get screenshots
+      description: |
+        Retrieves screenshots taken during a specific dynamic analysis. The screenshots are stored with file names like 'analysis_5_screenshot_2.png'. In this example, '5' represents the analysis ID from which the screenshot came, and '2' indicates that it's the third screenshot taken during the analysis, in chronological order.
+      script: vmray|||vmray-get-screenshots
+      type: regular
+      iscommand: true
+      brand: vmray
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      analysis_id:
+        complex:
+          root: VMRay.Analysis
+          accessor: AnalysisID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1360,
+        "width": 2510,
+        "x": 70,
+        "y": 130
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: ''

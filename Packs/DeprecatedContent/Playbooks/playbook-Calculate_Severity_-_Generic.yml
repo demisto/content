@@ -1,0 +1,758 @@
+id: Calculate Severity - Generic
+version: -1
+name: Calculate Severity - Generic
+fromversion: 5.0.0
+description: |-
+  Deprecated. Use "Calculate Severity - Generic v2" playbook instead. Calculates and assign the incident severity based on the highest returned severity level from the following severity calculations:
+
+  * Indicators DBotScore - Calculates the incident severity level according to the highest indicator DBotScore.
+  * Critical assets - Determines if a critical assest is associated with the invesigation.
+  * 3rd-party integrations - Calculates the incident severity level according to the methodology of a 3rd-party integration.
+
+  NOTE: the new severity level overwrites the previous severity level even if the previous severity level was more severe.
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 3eded69b-617e-4212-86b7-2537474285f3
+    type: start
+    task:
+      id: 3eded69b-617e-4212-86b7-2537474285f3
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "13"
+      - "16"
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "4":
+    id: "4"
+    taskid: faa9ae4a-e658-4ab7-8d99-07994fba39a1
+    type: regular
+    task:
+      id: faa9ae4a-e658-4ab7-8d99-07994fba39a1
+      version: -1
+      name: Assign the incident severity level  to "Low"
+      description: Assign the incident severity level  to "Low".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      killchain: {}
+      labels: {}
+      lob: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      queues: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: low
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+      vendorid: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1535,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 7d9b6b23-3401-47f9-843d-cfa2a9679ef7
+    type: regular
+    task:
+      id: 7d9b6b23-3401-47f9-843d-cfa2a9679ef7
+      version: -1
+      name: Assign the incident severity level  to "Medium"
+      description: Assign the incident severity level  to "Medium".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      killchain: {}
+      labels: {}
+      lob: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      queues: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: medium
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+      vendorid: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1116,
+          "y": 545
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 26d70778-7064-49a2-880b-e167ae80b3ab
+    type: regular
+    task:
+      id: 26d70778-7064-49a2-880b-e167ae80b3ab
+      version: -1
+      name: Assign the incident severity level  to "High"
+      description: Assign the incident severity level  to "High".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      killchain: {}
+      labels: {}
+      lob: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      queues: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: high
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+      vendorid: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 703,
+          "y": 545
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 483350d5-ab17-44cd-87b3-0e2360ce3577
+    type: title
+    task:
+      id: 483350d5-ab17-44cd-87b3-0e2360ce3577
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+  "11":
+    id: "11"
+    taskid: d932e9f2-4ac2-4b27-8f83-8b0c71c398e1
+    type: regular
+    task:
+      id: d932e9f2-4ac2-4b27-8f83-8b0c71c398e1
+      version: -1
+      name: Assign the incident severity level  to "Critical"
+      description: Assign the incident severity level  to "Critical".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      addLabels: {}
+      arcsightcaseid: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentitem: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      backupowner: {}
+      blah: {}
+      booltest: {}
+      bugtraq: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      daysbetweenreportcreation: {}
+      details: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      eventid: {}
+      falses: {}
+      fetchid: {}
+      fetchtype: {}
+      id: {}
+      important: {}
+      importantfield: {}
+      labels: {}
+      mdtest: {}
+      myfield: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      replacePlaybook: {}
+      reporteduser: {}
+      roles: {}
+      screenshot: {}
+      screenshot2: {}
+      selector: {}
+      severity:
+        simple: critical
+      signature: {}
+      single: {}
+      single2: {}
+      sla: {}
+      source: {}
+      systems: {}
+      team: {}
+      test: {}
+      test2: {}
+      testfield: {}
+      timeassignedtolevel2: {}
+      timefield1: {}
+      timelevel1: {}
+      type: {}
+      username: {}
+      vendorid: {}
+      vulnerabilitycategory: {}
+    reputationcalc: 0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 292,
+          "y": 545
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 1850d92e-938e-4f29-827a-ff8dd4d1da40
+    type: playbook
+    task:
+      id: 1850d92e-938e-4f29-827a-ff8dd4d1da40
+      version: -1
+      name: Calculate Severity - Critical assets
+      description: "Determines if a critical assest is associated with the invesigation. The playbook returns a severity level of \"Critical\" if a critical asset is associated with the investigation.\n\nThis playbook verifies if a User Account or an Endpoint is part of a critical list or a critical AD group. "
+      playbookName: Calculate Severity - Critical assets
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      Account:
+        complex:
+          root: inputs.Account
+      CriticalEndpoints: {}
+      CriticalGroups: {}
+      CriticalUsers: {}
+      Endpoint:
+        complex:
+          root: inputs.Endpoint
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 195
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 09ef8f5b-0c54-4f0d-8d15-44daa61c60d5
+    type: playbook
+    task:
+      id: 09ef8f5b-0c54-4f0d-8d15-44daa61c60d5
+      version: -1
+      name: Calculate Severity - DBotScore
+      description: |-
+        Calculate incident severity by indicators reputation and user/endpoint membership in critical groups.
+
+        Note - current severity will be overwritten and new severity may be lower than the current one.
+
+        Playbook inputs:
+        * CriticalUsers - Comma separated array with usernames of critical users
+        * CriticalEndpoints - Comma separated array with hostnames of critical endpoints
+        * CriticalGroups - Comma separated array with DN of critical Active Directory groups
+        * QualysSeverity - A Qualys severity score (1-5) to calculate severity from
+      playbookName: Calculate Severity - Indicators DBotScore
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      DBotScore:
+        complex:
+          root: inputs.DBotScore
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 9cb71dfd-3f18-403f-8351-c370d5a58987
+    type: condition
+    task:
+      id: 9cb71dfd-3f18-403f-8351-c370d5a58987
+      version: -1
+      name: Set severity based on the highest returned severity level
+      description: Determines the severity level based on the highest result of all severity calculations.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      Critical:
+      - "11"
+      High:
+      - "6"
+      Low:
+      - "4"
+      Medium:
+      - "5"
+    reputationcalc: 0
+    separatecontext: false
+    conditions:
+    - label: Critical
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Severity
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: Severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: critical
+                    ignorecase: true
+            iscontext: true
+    - label: High
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Severity
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: Severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: high
+                    ignorecase: true
+            iscontext: true
+    - label: Medium
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Severity
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: Severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: medium
+                    ignorecase: true
+            iscontext: true
+          ignorecase: true
+    - label: Low
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: Severity
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: Severity
+                      iscontext: true
+                    right:
+                      value:
+                        simple: low
+                    ignorecase: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    taskid: e628aa74-143a-4068-8a75-3abd96479000
+    type: playbook
+    task:
+      id: e628aa74-143a-4068-8a75-3abd96479000
+      version: -1
+      name: Calculate Severity - 3rd-party integrations
+      description: Calculates the incident severity level according to the methodology of a 3rd-party integration.
+      playbookName: Calculate Severity - 3rd-party integrations
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      NexposeSeverity:
+        complex:
+          root: inputs.NexposeSeverity
+      QualysSeverity:
+        complex:
+          root: inputs.QualysSeverity
+    reputationcalc: 0
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1258.5,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 1623,
+        "x": 292,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: QualysSeverity
+  value:
+    complex:
+      root: Qualys
+      accessor: Severity
+  required: false
+  description: Qualys Vulnerability Severity score (1-5)
+- key: DBotScore
+  value:
+    complex:
+      root: DBotScore
+  required: false
+  description: 'Array of all indicators associated with the incident. '
+- key: Endpoint
+  value:
+    complex:
+      root: Endpoint
+  required: false
+  description: A Endpoint to check against the critical lists.
+- key: Account
+  value:
+    complex:
+      root: Account
+  required: false
+  description: A User account to check against the critical lists.
+- key: NexposeSeverity
+  value:
+    complex:
+      root: Nexpose
+      accessor: Asset.Vulnerability.Severity
+  required: false
+  description: Nexpose Vulnerability Severity score (Moderate, Severe, Critical)
+outputs: []
+tests:
+- no test
+deprecated: true

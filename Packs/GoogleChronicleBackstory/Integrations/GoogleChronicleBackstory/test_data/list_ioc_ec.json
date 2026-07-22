@@ -1,0 +1,79 @@
+{
+  "Domain(val.Name && val.Name == obj.Name)": [
+    {
+      "Name": "test.com"
+    },
+    {
+      "Name": "secondtest.com"
+    }
+  ],
+  "GoogleChronicleBackstory.Iocs(val.Artifact && val.Artifact == obj.Artifact)": [
+    {
+      "Artifact": "test.com",
+      "IocIngestTime": "2019-03-31T18:00:00Z",
+      "FirstAccessedTime": "2020-01-20T12:10:26Z",
+      "LastAccessedTime": "2020-03-21T12:10:26Z",
+      "Sources": [
+        {
+          "Category": "Not Known",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "Low",
+          "RawSeverity": "Low",
+          "Source": "3rd Party"
+        },
+        {
+          "Category": "Not Known",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "Low",
+          "RawSeverity": "Low",
+          "Source": "External"
+        }
+      ]
+    },
+    {
+      "Artifact": "secondtest.com",
+      "IocIngestTime": "2019-03-30T18:00:00Z",
+      "FirstAccessedTime": "2020-01-21T12:10:26Z",
+      "LastAccessedTime": "2020-01-21T12:10:26Z",
+      "Sources": [
+        {
+          "Category": "Not Known",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "Low",
+          "RawSeverity": "Low",
+          "Source": "3rd Party"
+        }
+      ]
+    },
+    {
+      "Artifact": "0.0.0.1",
+      "IocIngestTime": "2023-11-30T19:26:41.266555Z",
+      "FirstAccessedTime": "2023-01-17T09:54:19Z",
+      "LastAccessedTime": "2023-01-17T09:54:19Z",
+      "Sources": [
+        {
+          "Category": "Unwanted",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "Medium",
+          "RawSeverity": "Medium",
+          "Source": "Threat Intelligence"
+        }
+      ]
+    },
+    {
+      "Artifact": "0000000000000000000000000000000000000000000000000000000000000001",
+      "IocIngestTime": "2023-11-03T19:30:34.254760Z",
+      "FirstAccessedTime": "2023-05-05T09:52:57.409114Z",
+      "LastAccessedTime": "2023-05-05T09:53:25.558Z",
+      "Sources": [
+        {
+          "Category": "",
+          "IntRawConfidenceScore": 0,
+          "NormalizedConfidenceScore": "unknown",
+          "RawSeverity": "",
+          "Source": "Open Source Intel"
+        }
+      ]
+    }
+  ]
+}

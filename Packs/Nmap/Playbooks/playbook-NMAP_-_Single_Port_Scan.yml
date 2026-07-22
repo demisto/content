@@ -1,0 +1,464 @@
+description: Sub-playbook that conducts a single port Nmap scan and returns the results to the parent playbook.
+id: NMAP - Single Port Scan
+inputs:
+- description: Remote IP address in an incident/alert.
+  key: RemoteIP
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Remote port number in an incident/alert.
+  key: RemotePort
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Options to be used for the Nmap scan. (We do "-p<RemotePort>" by default and recommend using "-Pn" to skip a ping check.)
+  key: NMAPOptions
+  playbookInputQuery:
+  required: false
+  value: {}
+name: NMAP - Single Port Scan
+outputs:
+- contextPath: ScanResult
+  description: The result of the scan (if done).
+  type: unknown
+- contextPath: ScanDone
+  description: Whether a scan was actually performed (based on subtypes).
+  type: unknown
+- contextPath: NMAP
+  description: NMAP scan data
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de6300b9-0f6f-4bd8-8be6-a1f2461d605a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: de6300b9-0f6f-4bd8-8be6-a1f2461d605a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      options:
+        complex:
+          root: inputs.NMAPOptions
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' -p'
+            operator: concat
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: inputs.RemotePort
+            operator: concat
+      targets:
+        complex:
+          root: inputs.RemoteIP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Nmap scan on a single port using -p<inputs.RemotePort> options and allows the addition of other options as well.
+      id: 9ab4b93e-038e-4298-8b74-adddcc062bf1
+      iscommand: true
+      name: NMAP port scan
+      script: '|||nmap-scan'
+      type: regular
+      version: -1
+    taskid: 9ab4b93e-038e-4298-8b74-adddcc062bf1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 700
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanDone
+      value:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanDone to False to be passed back to the parent playbook to notify that no Nmap scan took place.
+      id: 9aab9e3d-80aa-4c26-81ca-0d8e79be3374
+      iscommand: false
+      name: No scan done
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9aab9e3d-80aa-4c26-81ca-0d8e79be3374
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 480
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a48b40b6-dda8-4b90-8a7b-2fdbaf35162d
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+      description: ''
+    taskid: a48b40b6-dda8-4b90-8a7b-2fdbaf35162d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1530
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: nmap
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the NMAP integration instance is configured to continue with scanning.
+      id: ffe28617-8b50-41d3-86bf-c9c64380388d
+      iscommand: false
+      name: Is NMAP enabled?
+      type: condition
+      version: -1
+    taskid: ffe28617-8b50-41d3-86bf-c9c64380388d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanDone
+      value:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanDone to True to be passed back to the parent playbook to notify that an Nmap scan was attempted.
+      id: 25b081b6-9480-4e29-8b6f-ab2c69e1fa76
+      iscommand: false
+      name: Scan done
+      script: Set
+      type: regular
+      version: -1
+    taskid: 25b081b6-9480-4e29-8b6f-ab2c69e1fa76
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 480
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Status
+                root: NMAP.Scan.Hosts
+          operator: isEqualString
+          right:
+            value:
+              simple: down
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: State
+                root: NMAP.Scan.Hosts.Services
+          operator: isEqualString
+          right:
+            value:
+              simple: closed
+      label: down/closed
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: State
+                root: NMAP.Scan.Hosts.Services
+          operator: isEqualString
+          right:
+            value:
+              simple: open
+      label: open
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      down/closed:
+      - "8"
+      open:
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the results of the scan to determine the outcome to pass back to the parent playbook.
+      id: 519d0e3f-0a82-4ef2-84e9-e3a502252bef
+      iscommand: false
+      name: What is the result of the scan?
+      type: condition
+      version: -1
+    taskid: 519d0e3f-0a82-4ef2-84e9-e3a502252bef
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 880
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanResult
+      value:
+        simple: Closed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanResult to Closed when the result of the Nma[] scan is closed or host down.  This value is passed back to the parent playbook to provide the results of the NMAP scan.
+      id: 7326a7c1-8b32-4d6b-8a76-628d48cf18fd
+      iscommand: false
+      name: Closed scan result
+      script: Set
+      type: regular
+      version: -1
+    taskid: 7326a7c1-8b32-4d6b-8a76-628d48cf18fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1230
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanResult
+      value:
+        simple: Open
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanResult to Open when the result of the Nmap scan is open. This value is passed back to the parent playbook to provide the results of the Nmap scan.
+      id: 94b92dc7-cfd8-4f76-8f31-ad94792ecef6
+      iscommand: false
+      name: Open scan result
+      script: Set
+      type: regular
+      version: -1
+    taskid: 94b92dc7-cfd8-4f76-8f31-ad94792ecef6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1230
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: ScanResult
+      value:
+        simple: Undetermined
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sets ScanResult to Undetermined when the result of the Nmap scan isn't open/close/host down. This includes filtered results as it could mean different things. This value is passed back to the parent playbook to provide results of the Nmap scan.
+      id: 455bd83f-f2f4-4910-8100-6717625b7edb
+      iscommand: false
+      name: Undetermined scan result
+      script: Set
+      type: regular
+      version: -1
+    taskid: 455bd83f-f2f4-4910-8100-6717625b7edb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 1230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1545,
+        "width": 1510,
+        "x": 100,
+        "y": 50
+      }
+    }
+  }
+tests:
+- Nmap - Test
+fromversion: 6.5.0

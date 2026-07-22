@@ -1,0 +1,579 @@
+{
+ "id": "lateIncidentsReport",
+ "name": "Late Incidents",
+ "description": "All the incidents that passed their SLA due date and the incidents that are at risk to soon pass their SLA.",
+ "fromVersion": "5.0.0",
+ "tags": [
+
+ ],
+ "createdBy": "DBot",
+ "type": "pdf",
+ "orientation": "portrait",
+ "recipients": [
+
+ ],
+ "system": true,
+ "decoder": {
+  "incident.status.0": {
+   "type": "string",
+   "value": "Pending"
+  },
+  "incident.status.1": {
+   "type": "string",
+   "value": "Active"
+  },
+  "incident.status.2": {
+   "type": "string",
+   "value": "Closed"
+  },
+  "incident.status.3": {
+   "type": "string",
+   "value": "Closed"
+  },
+  "incident.status.4": {
+   "type": "string",
+   "value": "On Hold"
+  },
+  "incident.severity.0": {
+   "type": "string",
+   "value": "Unknown"
+  },
+  "incident.severity.0.5": {
+   "type": "string",
+   "value": "Informational"
+  },
+  "incident.severity.1": {
+   "type": "string",
+   "value": "Low"
+  },
+  "incident.severity.2": {
+   "type": "string",
+   "value": "Medium"
+  },
+  "incident.severity.3": {
+   "type": "string",
+   "value": "High"
+  },
+  "incident.severity.4": {
+   "type": "string",
+   "value": "Critical"
+  },
+  "incident.created": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.occurred": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.closed": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.activated": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.dueDate": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "incident.reminder": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "investigation.status.0": {
+   "type": "string",
+   "value": "Active"
+  },
+  "investigation.status.1": {
+   "type": "string",
+   "value": "Done"
+  },
+  "investigation.type.0": {
+   "type": "string",
+   "value": "Standard"
+  },
+  "investigation.type.1": {
+   "type": "string",
+   "value": "Restricted"
+  },
+  "investigation.type.9": {
+   "type": "string",
+   "value": "Playground"
+  },
+  "investigation.created": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "investigation.closed": {
+   "type": "date",
+   "value": "Mon, 02 Jan 2006 15:04:05 MST"
+  },
+  "investigation.openDuration": {
+   "type": "duration"
+  },
+  "incident.openDuration": {
+   "type": "duration"
+  }
+ },
+ "sections": [
+  {
+   "type": "header",
+   "data": "Late Incidents",
+   "layout": {
+    "rowPos": 1,
+    "columnPos": 1,
+    "style": {
+     "textAlign": "left",
+     "fontSize": 28
+    }
+   }
+  },
+  {
+   "type": "date",
+   "layout": {
+    "rowPos": 2,
+    "columnPos": 1,
+    "style": {
+     "textAlign": "left",
+     "color": "gray",
+     "fontSize": 13,
+     "fontStyle": "italic",
+     "marginBottom:": 12
+    },
+    "format": "MMMM Do YYYY, h:mm:ss a z",
+    "useCurrentTime": true
+   }
+  },
+  {
+   "type": "placeholder",
+   "query": {
+    "type": "incident",
+    "filter": {
+     "notStatus": [
+      2,
+      3
+     ],
+     "andOp": true,
+     "totalOnly": true,
+     "period": {
+      "by": "day",
+      "toValue": 0,
+      "field": "dueDate"
+     }
+    }
+   },
+   "data": "Total late incidents: {0}",
+   "layout": {
+    "rowPos": 3,
+    "columnPos": 1,
+    "style": {
+     "textAlign": "left",
+     "fontSize": 18
+    }
+   }
+  },
+  {
+   "type": "divider",
+   "layout": {
+    "rowPos": 4,
+    "style": {
+
+    }
+   }
+  },
+  {
+   "type": "text",
+   "data": "Severity",
+   "layout": {
+    "rowPos": 5,
+    "columnPos": 1,
+    "style": {
+     "textAlign": "left",
+     "fontSize": 16,
+     "fontWeight": "bold"
+    }
+   }
+  },
+  {
+   "type": "text",
+   "data": "Type",
+   "layout": {
+    "rowPos": 5,
+    "columnPos": 2,
+    "style": {
+     "textAlign": "left",
+     "fontSize": 16,
+     "fontWeight": "bold"
+    }
+   }
+  },
+  {
+   "type": "chart",
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "severity"
+    ],
+    "filter": {
+     "notStatus": [
+      2,
+      3
+     ],
+     "andOp": true,
+     "totalOnly": false,
+     "period": {
+      "by": "day",
+      "toValue": 0,
+      "field": "dueDate"
+     }
+    }
+   },
+   "layout": {
+    "rowPos": 6,
+    "columnPos": 1,
+    "chartType": "pie",
+    "style": {
+     "textAlign": "left",
+     "fontSize": 12,
+     "marginTop": -10
+    },
+    "dimensions": {
+     "width": 300,
+     "height": 220
+    },
+    "chartProperties": {
+     "cy": 75,
+     "cx": 155,
+     "startAngle": 90,
+     "endAngle": -270,
+     "outerRadius": 60,
+     "innerRadius": 40,
+     "labelLine": false,
+     "label": {
+      "offsetRadius": 10
+     }
+    },
+    "legendStyle": {
+     "align": "left",
+     "layout": "vertical",
+     "verticalAlign": "top",
+     "iconSize": 10
+    },
+    "legend": [
+     {
+      "name": "Critical",
+      "fill": "#8d070a"
+     },
+     {
+      "name": "High",
+      "fill": "#D00a00"
+     },
+     {
+      "name": "Medium",
+      "fill": "#cb4a00"
+     },
+     {
+      "name": "Low",
+      "fill": "#267634"
+     },
+     {
+      "name": "Informational",
+      "fill": "#4357b8"
+     },
+     {
+      "name": "Unknown",
+      "fill": "#999999"
+     }
+    ]
+   }
+  },
+  {
+   "type": "chart",
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "type"
+    ],
+    "filter": {
+     "notStatus": [
+      2,
+      3
+     ],
+     "andOp": true,
+     "totalOnly": false,
+     "period": {
+      "by": "day",
+      "toValue": 0,
+      "field": "dueDate"
+     }
+    }
+   },
+   "layout": {
+    "rowPos": 6,
+    "columnPos": 2,
+    "chartType": "pie",
+    "style": {
+     "textAlign": "left",
+     "fontSize": 12
+    },
+    "dimensions": {
+     "width": 300,
+     "height": 220
+    },
+    "chartProperties": {
+     "cy": 75,
+     "startAngle": 90,
+     "endAngle": -270,
+     "outerRadius": 60,
+     "innerRadius": 40,
+     "labelLine": false,
+     "label": {
+      "offsetRadius": 10
+     }
+    },
+    "legendStyle": {
+     "align": "left",
+     "layout": "vertical",
+     "verticalAlign": "top",
+     "iconSize": 10
+    },
+    "sortBy": {
+     "values": [
+      "value",
+      "name"
+     ],
+     "orders": [
+      "desc",
+      "asc"
+     ]
+    },
+    "legend": [
+     {
+      "name": "C2Communication",
+      "fill": "#853732"
+     },
+     {
+      "name": "Unclassified",
+      "fill": "#3aabe8"
+     },
+     {
+      "name": "DeviceLost",
+      "fill": "#5fa54a"
+     },
+     {
+      "name": "Malware",
+      "fill": "#4f8aab"
+     },
+     {
+      "name": "Phishing",
+      "fill": "#4f854a"
+     },
+     {
+      "name": "Ransomware",
+      "fill": "#5b4185"
+     },
+     {
+      "name": "UnknownBinary",
+      "fill": "#4faa5b"
+     }
+    ]
+   }
+  },
+  {
+   "type": "text",
+   "data": "SLA",
+   "layout": {
+    "rowPos": 7,
+    "columnPos": 1,
+    "style": {
+     "textAlign": "left",
+     "fontSize": 16,
+     "fontWeight": "bold"
+    }
+   }
+  },
+  {
+   "type": "text",
+   "data": "Analyst",
+   "layout": {
+    "rowPos": 7,
+    "columnPos": 2,
+    "style": {
+     "textAlign": "left",
+     "fontSize": 16,
+     "fontWeight": "bold"
+    }
+   }
+  },
+  {
+   "type": "chart",
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "dueDate"
+    ],
+    "filter": {
+     "notStatus": [
+      2,
+      3
+     ],
+     "andOp": true,
+     "totalOnly": false,
+     "period": {
+      "by": "day",
+      "toValue": 0,
+      "field": "dueDate"
+     }
+    }
+   },
+   "layout": {
+    "rowPos": 8,
+    "columnPos": 1,
+    "chartType": "pie",
+    "style": {
+     "textAlign": "left",
+     "fontSize": 12
+    },
+    "dimensions": {
+     "width": 300,
+     "height": 180
+    },
+    "chartProperties": {
+     "cy": 75,
+     "cx": 155,
+     "startAngle": 90,
+     "endAngle": -270,
+     "outerRadius": 60,
+     "innerRadius": 40,
+     "labelLine": false,
+     "label": {
+      "offsetRadius": 10
+     }
+    },
+    "legendStyle": {
+     "align": "left",
+     "layout": "vertical",
+     "verticalAlign": "top",
+     "iconSize": 10
+    },
+    "legend": [
+     {
+      "name": "late",
+      "fill": "red"
+     },
+     {
+      "name": "risk",
+      "fill": "orange"
+     },
+     {
+      "name": "within",
+      "fill": "green"
+     }
+    ]
+   }
+  },
+  {
+   "type": "chart",
+   "query": {
+    "type": "incident",
+    "groupBy": [
+     "owner"
+    ],
+    "filter": {
+     "notStatus": [
+      2,
+      3
+     ],
+     "andOp": true,
+     "totalOnly": false,
+     "period": {
+      "by": "day",
+      "toValue": 0,
+      "field": "dueDate"
+     }
+    }
+   },
+   "layout": {
+    "rowPos": 8,
+    "columnPos": 2,
+    "chartType": "bar",
+    "style": {
+     "textAlign": "left",
+     "fontSize": 10,
+     "marginLeft": -15
+    },
+    "chartProperties": {
+     "layout": "vertical",
+     "strokeDasharray": "3 300",
+     "barSize": 13
+    },
+    "dimensions": {
+     "width": 300,
+     "height": 200
+    },
+    "legend": [
+     {
+      "name": "Busy Analyst",
+      "fill": "#2884d1",
+      "bar": 1
+     }
+    ]
+   }
+  },
+  {
+   "type": "header",
+   "data": "Late incidents",
+   "layout": {
+    "rowPos": 9,
+    "columnPos": 1,
+    "style": {
+     "textAlign": "left",
+     "fontSize": 18
+    }
+   }
+  },
+  {
+   "type": "table",
+   "query": {
+    "type": "incident",
+    "filter": {
+     "notStatus": [
+      2,
+      3
+     ],
+     "andOp": true,
+     "period": {
+      "by": "day",
+      "toValue": 0,
+      "field": "dueDate"
+     }
+    }
+   },
+   "layout": {
+    "rowPos": 10,
+    "columnPos": 1,
+    "tableColumns": [
+     "Name",
+     "Occurred",
+     "Type",
+     "Owner",
+     "Severity",
+     "Status",
+     "Due date"
+    ],
+    "readableHeaders": {
+     "name": "Name",
+     "occurred": "Occurred",
+     "type": "Type",
+     "owner": "Owner",
+     "severity": "Severity",
+     "status": "Status",
+     "dueDate": "Due date"
+    },
+    "classes": "striped stackable small very compact"
+   }
+  }
+ ]
+}

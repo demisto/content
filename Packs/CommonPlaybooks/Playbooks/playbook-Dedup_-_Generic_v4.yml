@@ -1,0 +1,921 @@
+id: Dedup - Generic v4
+version: -1
+name: Dedup - Generic v4
+description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you *must* properly define the playbook inputs. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22f878be-bfc2-427b-8b5b-91007d4a900e
+    type: start
+    task:
+      id: 22f878be-bfc2-427b-8b5b-91007d4a900e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "1":
+    id: "1"
+    taskid: 8ae01464-47e0-4cb7-8909-12a9f7511bd0
+    type: regular
+    task:
+      id: 8ae01464-47e0-4cb7-8909-12a9f7511bd0
+      version: -1
+      name: Find Similar Incidents By Fields
+      description: Find past similar incidents based on similar incident fields. Includes an option to also display indicator similarity.
+      scriptName: DBotFindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      fieldExactMatch:
+        complex:
+          root: inputs.fieldExactMatch
+      fieldsToDisplay:
+        complex:
+          root: inputs.fieldsToDisplay
+      fromDate:
+        complex:
+          root: inputs.fromDate
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+      maxIncidentsToDisplay:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+      minimunIncidentSimilarity:
+        complex:
+          root: inputs.minimunIncidentSimilarity
+      query:
+        complex:
+          root: inputs.query
+      showIncidentSimilarityForAllFields:
+        complex:
+          root: inputs.showIncidentSimilarityForAllFields
+      similarTextField:
+        complex:
+          root: inputs.similarTextField
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "2":
+    id: "2"
+    taskid: 1591f2e3-2350-41da-8875-fb215cf515b9
+    type: condition
+    task:
+      id: 1591f2e3-2350-41da-8875-fb215cf515b9
+      version: -1
+      name: Are There Any Similar Incidents?
+      description: Determines whether any similar incidents were detected by examining the 'DBotFindSimilarIncidents' context key value.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DBotFindSimilarIncidents
+                accessor: isSimilarIncidentFound
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value: {}
+        - operator: isTrue
+          left:
+            value:
+              complex:
+                root: DBotFindSimilarIncidentsByIndicators
+                accessor: isSimilarIncidentFound
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "5":
+    id: "5"
+    taskid: 39686d08-69d9-4ad6-8cf2-3321238e2593
+    type: title
+    task:
+      id: 39686d08-69d9-4ad6-8cf2-3321238e2593
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "11":
+    id: "11"
+    taskid: da373d63-9d89-4c9f-86d0-3cd179ec992f
+    type: regular
+    task:
+      id: da373d63-9d89-4c9f-86d0-3cd179ec992f
+      version: -1
+      name: Link similar incident
+      description: commands.local.cmd.linkIncidents
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      action:
+        simple: link
+      incidentId:
+        complex:
+          root: incident
+          accessor: id
+      linkedIncidentIDs:
+        complex:
+          root: DBotFindSimilarIncidents.similarIncident
+          accessor: id
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: DBotFindSimilarIncidentsByIndicators.similarIncident.id
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "15":
+    id: "15"
+    taskid: 5949e8c1-88b2-4e34-828c-9a0851e7e9dd
+    type: title
+    task:
+      id: 5949e8c1-88b2-4e34-828c-9a0851e7e9dd
+      version: -1
+      name: Similar Incident Found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "18":
+    id: "18"
+    taskid: acf0ab32-99fc-452e-8d13-acab2bd38e8b
+    type: regular
+    task:
+      id: acf0ab32-99fc-452e-8d13-acab2bd38e8b
+      version: -1
+      name: 'Close similar incidents'
+      description: 'Close similar incidents with a similarity score greater than or equal to the ''CloseSimilar'' playbook input value.'
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      closeNotes:
+        simple: |-
+          Closed due to a similarity percentage.
+          ${inputs.closeReason}
+      closeReason:
+        simple: Duplicate
+      id:
+        complex:
+          root: DBotFindSimilarIncidents.similarIncident
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotFindSimilarIncidents.similarIncident.similarity incident
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CloseSimilar
+                iscontext: true
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "22":
+    id: "22"
+    taskid: c2f95783-d177-4e43-86f5-ef60a7412109
+    type: condition
+    task:
+      id: c2f95783-d177-4e43-86f5-ef60a7412109
+      version: -1
+      name: Handle Similar Incident
+      description: Define how to handle a similar incident.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Close:
+      - "46"
+      link:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Close
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.handleSimilar
+            iscontext: true
+          right:
+            value:
+              simple: Close
+          ignorecase: true
+    - label: link
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: inputs.handleSimilar
+            iscontext: true
+          right:
+            value:
+              simple: Link
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "26":
+    id: "26"
+    taskid: 5c7df599-b786-4f8e-89cd-1c6d92aa3dcf
+    type: condition
+    task:
+      id: 5c7df599-b786-4f8e-89cd-1c6d92aa3dcf
+      version: -1
+      name: Close Incident?
+      description: Checks whether similar incidents should be closed by examining the 'handleSimilar' playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: inputs.handleSimilar
+            iscontext: true
+          right:
+            value:
+              simple: Close
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "27":
+    id: "27"
+    taskid: 2dfa4802-38ee-4588-8d51-988f2512e1a9
+    type: regular
+    task:
+      id: 2dfa4802-38ee-4588-8d51-988f2512e1a9
+      version: -1
+      name: Find Similar Incidents by Indicators
+      description: Finds similar incidents based on indicator similarity.
+      scriptName: DBotFindSimilarIncidentsByIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      fieldsIncidentToDisplay:
+        complex:
+          root: inputs.fieldsToDisplay
+      fromDate:
+        complex:
+          root: inputs.fromDate
+      maxIncidentsToDisplay:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+      query:
+        complex:
+          root: inputs.query
+      threshold:
+        complex:
+          root: inputs.minimunIncidentSimilarity
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "42":
+    id: "42"
+    taskid: 58e5ce1f-26c3-474d-8b7d-36b743736721
+    type: condition
+    task:
+      id: 58e5ce1f-26c3-474d-8b7d-36b743736721
+      version: -1
+      name: Find Similar Incidents By Indicators or Fields?
+      description: Define how you prefer to identify similarity by examining the 'method' playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Indicators:
+      - "27"
+      fields:
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: Indicators
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.method
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: indicators
+          ignorecase: true
+    - label: fields
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: inputs.method
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: fields
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "45":
+    id: "45"
+    taskid: 5142238c-74af-45ce-8de0-dd6b7241bbf1
+    type: condition
+    task:
+      id: 5142238c-74af-45ce-8de0-dd6b7241bbf1
+      version: -1
+      name: Also Find Similarity By Indicators?
+      description: Examine the 'method' playbook input to determine whether similar incidents should also be identified by indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: inputs.method
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: indicators
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "46":
+    id: "46"
+    taskid: bde1754f-efad-4b06-8d21-19125fd30e8d
+    type: condition
+    task:
+      id: bde1754f-efad-4b06-8d21-19125fd30e8d
+      version: -1
+      name: A closer percentage was provided?
+      description: Checks if the 'CloseSimilar' playbook input was defined.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "47"
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CloseSimilar
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "47":
+    id: "47"
+    taskid: 01458395-b327-41eb-874c-d49278eaf6cd
+    type: condition
+    task:
+      id: 01458395-b327-41eb-874c-d49278eaf6cd
+      version: -1
+      name: Are There Similar Incidents by Fields?
+      description: Checks if there are similar incidents by fields.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotFindSimilarIncidents.similarIncident
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: DBotFindSimilarIncidents.similarIncident.similarity incident
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.CloseSimilar
+                      iscontext: true
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "48":
+    id: "48"
+    taskid: 7b5d22be-8a02-4a3c-841d-83f387c5cbb9
+    type: regular
+    task:
+      id: 7b5d22be-8a02-4a3c-841d-83f387c5cbb9
+      version: -1
+      name: 'Close similar incidents '
+      description: 'Close similar incidents with a similarity score greater than or equal to the ''CloseSimilar'' playbook input value.'
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      closeNotes:
+        simple: |-
+          Closed due to a similarity percentage.
+          ${inputs.closeReason}
+      closeReason:
+        simple: Duplicate
+      id:
+        complex:
+          root: DBotFindSimilarIncidentsByIndicators.similarIncident
+          filters:
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotFindSimilarIncidentsByIndicators.similarIncident.similarity indicators
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CloseSimilar
+                iscontext: true
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "49":
+    id: "49"
+    taskid: 6b523612-d988-4a8a-87fb-cf9baa94f9e8
+    type: condition
+    task:
+      id: 6b523612-d988-4a8a-87fb-cf9baa94f9e8
+      version: -1
+      name: Are There Similar Incidents by Indicators?
+      description: Checks if there are similar incidents by indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotFindSimilarIncidentsByIndicators.similarIncident
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: DBotFindSimilarIncidentsByIndicators.similarIncident.similarity indicators
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.CloseSimilar
+                      iscontext: true
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_5_#default#": 0.2,
+      "26_46_yes": 0.34,
+      "26_5_#default#": 0.12,
+      "2_15_yes": 0.37,
+      "2_5_#default#": 0.16,
+      "42_27_Indicators": 0.49,
+      "42_5_#default#": 0.1,
+      "46_49_yes": 0.42,
+      "46_5_#default#": 0.46,
+      "47_18_yes": 0.63,
+      "47_5_#default#": 0.16,
+      "49_48_yes": 0.61,
+      "49_5_#default#": 0.45
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2275,
+        "width": 1180,
+        "x": 460,
+        "y": -440
+      }
+    }
+  }
+inputs:
+- key: method
+  value:
+    simple: Fields and Indicators
+  required: true
+  description: Choose the way you want to identify similar incidents. Choose between "Indicators" / "Fields" / "Fields and Indicators".
+  playbookInputQuery:
+- key: handleSimilar
+  value:
+    simple: Link
+  required: true
+  description: "This input defines how to handle similar incidents. \nPossible values: \"Link \" (default), \"Close\", and \"Link and Close\".\nNote: Close incidents requires you to define the \"CloseSimilar\" input as well.\nAlso, the incidents found by similar indicators or fields will be closed if their similarity score is above the CloseSimilar value."
+  playbookInputQuery:
+- key: fieldExactMatch
+  value: {}
+  required: false
+  description: "Select the incident field name you want the script to query.  \nFor example, if you select <Type>, the playbook will query against the database for all incidents with the same type as your current incident.\n Note: If you use comma-separated values, the operator between them will be *AND*."
+  playbookInputQuery:
+- key: fieldsToDisplay
+  value: {}
+  required: false
+  description: |-
+    A comma-separated list of additional incident fields to display in the context output. These fields can be used later on for layouts or other states if needed.
+    (Those which will not be taken into account when computing similarity)
+  playbookInputQuery:
+- key: fromDate
+  value:
+    simple: 1 months ago
+  required: false
+  description: The start date to filter incidents. Date format is the same as in the incidents query page, for example, "3 days ago", "1 month ago", "2019-01-01T00:00:00 +0200").
+  playbookInputQuery:
+- key: limit
+  value:
+    simple: "200"
+  required: false
+  description: |-
+    The maximum number of incidents to query and set to context data.
+    Default is: 200
+  playbookInputQuery:
+- key: minimunIncidentSimilarity
+  value:
+    simple: "0.2"
+  required: true
+  description: |-
+    Retain incidents with a similarity score greater than the MinimunIncidentSimilarity.
+    Default: 0.2
+    Value should be between 0 to 1 [0=low similarity, 1=identical]
+  playbookInputQuery:
+- key: similarTextField
+  value: {}
+  required: true
+  description: A comma-separated list of incident text fields to take into account when computing similarity. For example commandline, URL
+  playbookInputQuery:
+- key: CloseSimilar
+  value: {}
+  required: false
+  description: |-
+    Defines the threshold of similarity to close a similar incident. All similar incidents with similarity above this value will be closed.
+    For example, if CloseSimilar is set to .8 and an incident has a similarity score of .9, the incident will be closed.
+    The value should be between 0 and 1 [0=low similarity , 1=identical].
+  playbookInputQuery:
+- key: showIncidentSimilarityForAllFields
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Whether to display the similarity score for each of the incident fields that were entered in the "similarTextField".
+    Default: True
+  playbookInputQuery:
+- key: query
+  value:
+    simple: -status:closed -category:job
+  required: false
+  description: |-
+    The argument for dedicated query on incidents. This helps reduce the query size.
+    Default (same is in the Incident tab): "-status:closed -category:job "
+  playbookInputQuery:
+- key: closeReason
+  value:
+    simple: Closed by Dedup Playbook within inc ${incident.id}
+  required: false
+  description: Specify the reason for closing the incident. This information will be added as a note/comment to the closed incident.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotFindSimilarIncidents
+  description: Return all the results from the "DBotFindSimilarIncidents" script.
+  type: unknown
+- contextPath: DBotFindSimilarIncidentsByIndicators
+  description: Return all the results from the "DBotFindSimilarIncidentsByIndicators" script.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+contentitemexportablefields:
+  contentitemfields: {}

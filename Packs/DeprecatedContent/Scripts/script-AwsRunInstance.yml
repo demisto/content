@@ -1,0 +1,49 @@
+commonfields:
+  id: AwsRunInstance
+  version: -1
+name: AwsRunInstance
+script: >2
+
+  resp = demisto.executeCommand("run-instance", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.RunInstancesResponse")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+tags:
+- Amazon Web Services
+comment: Deprecated. This script is deprecated. Use the AWS-EC2 integration instead.
+system: true
+args:
+- default: true
+  description: The ID of the AMI
+  name: imageId
+  required: true
+- description: 'The instance type. For more information, see Instance Types in the Amazon Elastic Compute Cloud User Guide.  Default: m1.small'
+  name: instanceType
+- description: The name of the key pair. You can create a key pair using CreateKeyPair or ImportKeyPair.
+  name: keyName
+- description: '[EC2-VPC] The ID of the subnet to launch the instance into.'
+  name: subnetId
+- description: '[EC2-VPC] The primary IP address. You must specify a value from the IP address range of the subnet.  Only one private IP address can be designated as primary. Therefore, you can''t specify this parameter if PrivateIpAddresses.n.Primary is set to true and PrivateIpAddresses.n.PrivateIpAddress is set to an IP address.'
+  name: privateIpAddress
+- description: The Availability Zone of the instance.
+  name: availabilityZone
+- description: 'Security group name, Default: Amazon EC2 uses the default security group.'
+  name: securityGroup
+scripttarget: 0
+timeout: 0s
+deprecated: true
+dependson:
+  must:
+  - run-instance
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

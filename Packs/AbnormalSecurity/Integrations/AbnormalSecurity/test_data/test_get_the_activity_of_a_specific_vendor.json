@@ -1,0 +1,12 @@
+{
+    "eventTimeline": [
+        {
+            "eventTimestamp": "2023-07-28T16:20:05Z",
+            "eventType": "Federated Signal",
+            "suspiciousDomain": "test@test-domain.com",
+            "domainIp": null,
+            "ipGeolocation": null,
+            "attackGoal": "Spam"
+        }
+    ]
+}

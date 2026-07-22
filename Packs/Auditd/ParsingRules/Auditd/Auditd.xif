@@ -1,0 +1,8 @@
+[INGEST:vendor="unix", product="auditd", target_dataset="unix_auditd_raw" , no_hit = keep]
+filter _raw_log ~= "[A-Za-z]+\s+\d+\s+\d+\:\d+\:\d+\s"
+//supported format - May 24 13:03:25
+| alter tmp_event_time = arrayindex(regextract(_raw_log ,"\<\d+\>([A-Za-z]+\s\d+\s\d+\:\d+\:\d+)\s"),0),
+    tmp_year = to_string(format_timestamp("%Y",_insert_time ))
+| alter tmp_full_event_time = concat(tmp_event_time , " ", tmp_year )
+| alter _time = parse_timestamp("%b %d %H:%M:%S %Y" , tmp_full_event_time)
+| fields - tmp_event_time , tmp_year , tmp_full_event_time;

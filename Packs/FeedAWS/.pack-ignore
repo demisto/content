@@ -1,0 +1,15 @@
+[file:README.md]
+ignore=RM104
+
+[file:playbook-TIM_-_Process_AWS_indicators.yml]
+ignore=PB115
+
+[file:classifier-mapper-incoming-FeedAWS.json]
+ignore=BA101
+
+[file:classifier-FeedAWS.json]
+ignore=BA101
+
+[file:FeedAWS.yml]
+ignore=BA124
+

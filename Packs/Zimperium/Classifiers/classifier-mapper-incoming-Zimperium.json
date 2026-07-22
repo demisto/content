@@ -1,0 +1,88 @@
+{
+	"id": "Zimperium-mapper",
+	"name": "Zimperium - Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0",
+	"description": "Maps incoming Zimperium incident fields.",
+	"defaultIncidentType": "",
+	"mapping": {
+		"Zimperium Event": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"App": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "appName",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Device Hash": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "deviceHash",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"First Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "firstName",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Last Name": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "lastName",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Mobile Device Model": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "deviceModel",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"OS Version": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "osVersion",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"OS": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "osType",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Phone Number": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "userPhoneNumber",
+						"transformers": []
+					},
+					"simple": ""
+				}
+			}
+		}
+	}
+}

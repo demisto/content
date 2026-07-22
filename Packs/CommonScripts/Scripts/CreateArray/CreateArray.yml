@@ -1,0 +1,23 @@
+commonfields:
+  id: CreateArray
+  version: -1
+name: CreateArray
+script: ''
+type: javascript
+tags:
+- Utility
+comment: 'Will create an array object in context from given string input '
+enabled: true
+args:
+- name: arrayData
+  default: true
+  description: 'This is the array data to create array from, should be in the format
+    of comma separator by default: val1,val2,val3'
+- name: separator
+  description: Separator to use to split arrayData, by default will be comma ',' .
+- name: contextKey
+  description: The key to place result array in context, by default will be "array".
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

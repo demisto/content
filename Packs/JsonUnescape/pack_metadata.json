@@ -1,0 +1,24 @@
+{
+    "name": "JsonUnescape (Deprecated)",
+    "description": "Deprecated. JsonUnescape script moved to CommonScripts pack.",
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Clay Curtis",
+    "url": "",
+    "email": "",
+    "hidden": true,
+    "created": "2021-08-12T20:35:02Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "clay584"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

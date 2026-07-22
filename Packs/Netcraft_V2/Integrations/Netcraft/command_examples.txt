@@ -1,0 +1,33 @@
+!netcraft-attack-type-list all_results="false" automated=true
+!netcraft-attack-report attack="https://www.example.com/random" attack_type="dropsite" comment="Test report" customer_label="Test Playbook run" inactive="true" tags="coronavirus"
+!netcraft-takedown-list attack_types="coronavirus" date_from="last week" date_to="yesterday" statuses=unverified escalated="No" limit="3"
+!netcraft-takedown-escalate takedown_id=45470682
+!netcraft-takedown-update add_tags="smishing,fake-shop-logo" remove_tags="coronavirus" takedown_id=45492113
+
+!netcraft-takedown-note-create note_text="important not" notify="false" takedown_id=45470682
+!netcraft-takedown-note-list all_results="true" takedown_id=45470682
+
+!netcraft-submission-list date_end="3 days ago" date_start="2 days ago" limit="20" source_name="Palo Alto Networks" state="no threats"
+!netcraft-submission-list submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70
+
+!netcraft-url-report-submit reason="The urls are probably malicious because of reasons" reporter_email="reporter@demistodev.com" interval_in_seconds="30" polling="true" timeout="900" urls="https://www.google.com/,https://example.com/,https://xsoar.pan.dev/"
+!netcraft-submission-url-list limit="50" page="2" page_size="2" submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT
+!netcraft-url-screenshot-get screenshot_hash="06f8715ba1b1ca5dee4af05e98bbc63a" submission_uuid="0qQt98P04o0qk46UXveNsCHhUN7zLopY" url_uuid="BZqSBm5i4KIoCq6TItXLWKZwGAm3nN08"
+
+!netcraft-file-report-submit entry_id=892@402 interval_in_seconds="15" polling="true" reason="the file may be malicious" reporter_email="reporter@demistodev.com"
+!netcraft-file-report-submit file_content="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" file_name="malicious.txt" interval_in_seconds="15" polling="true" reason="test" reporter_email="reporter@demistodev.com"
+!netcraft-submission-file-list limit="50" submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70
+!netcraft-file-screenshot-get file_hash=77fb7e37d57adddf4071f946cbd2a3dc submission_uuid=RUxOzbo2OGfEAaq5G3vsAsdUqDh7wa70 
+
+!netcraft-email-report-submit message="""From: fraudster@example.com
+To: example@netcraft.com
+Subject: Example mail
+Date: Tue, 01 Jan 2019 00:00:00 +0000
+MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF8"
+Content-Transfer-Encoding: 8bit
+
+Example mail body with http://example.com URL.
+""" reporter_email="reporter@demistodev.com"
+!netcraft-submission-mail-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT
+!netcraft-mail-screenshot-get submission_uuid=bavSyjpYf4HpO7KlYzu6Z32FkHcXbZpT

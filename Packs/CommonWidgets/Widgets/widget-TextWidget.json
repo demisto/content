@@ -1,0 +1,21 @@
+{
+ "id": "text-placeholder",
+ "dataType": "scripts",
+ "name": "Text Widget",
+ "dateRange": {
+  "period": {
+   "byFrom": "days",
+   "fromValue": null
+  }
+ },
+ "isPredefined": true,
+ "version": -1,
+ "category": "utilities",
+ "widgetType": "text",
+ "query": "WidgetNoOp",
+ "params": {
+  "text": "Place your text here.."
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

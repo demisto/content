@@ -1,0 +1,9 @@
+[file:AzureCompute_v2.yml]
+ignore=BA108,BA109,DS107
+
+[file:README.md]
+ignore=RM106
+
+
+[file:AzureCompute_v2_image.png]
+ignore=IM111

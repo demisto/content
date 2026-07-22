@@ -1,0 +1,15 @@
+{
+    "raw_response": {
+        "streamId": 12345,
+        "streamVersion": 2,
+        "status": "ACTIVE"
+    },
+    "human_readable": "### Akamai WAF - Patch datastream command\n|status|streamId|streamVersion|\n|---|---|---|\n| ACTIVE | 12345 | 2 |\n",
+    "context_entry": {
+        "Akamai.Datastream": {
+        "streamId": 12345,
+        "streamVersion": 2,
+        "status": "ACTIVE"
+    }
+    }
+}

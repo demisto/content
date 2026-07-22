@@ -1,0 +1,815 @@
+id: SalesforceTestPlaybook
+version: -1
+name: SalesforceTestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a47502cd-d095-4a04-86f4-e943772d544b
+    type: start
+    task:
+      id: a47502cd-d095-4a04-86f4-e943772d544b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f16481da-6fd9-4a36-8385-652fb6bf9b42
+    type: regular
+    task:
+      id: f16481da-6fd9-4a36-8385-652fb6bf9b42
+      version: -1
+      name: Search for string
+      script: Salesforce|||salesforce-search
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      pattern:
+        simple: asdf
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1d3c4558-5332-4ca8-8277-e226e25ef15b
+    type: regular
+    task:
+      id: 1d3c4558-5332-4ca8-8277-e226e25ef15b
+      version: -1
+      name: Query User
+      script: Salesforce|||salesforce-query
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      query:
+        simple: SELECT ID,Name FROM User WHERE Email LIKE '%@demisto%'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3c83f7d6-4698-4b45-8bec-3806b8d1d98a
+    type: regular
+    task:
+      id: 3c83f7d6-4698-4b45-8bec-3806b8d1d98a
+      version: -1
+      name: Add a new case
+      script: Salesforce|||salesforce-create-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    scriptarguments:
+      origin:
+        simple: Email
+      status:
+        simple: New
+      subject:
+        simple: Integration case
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 28bfd440-500f-440b-8000-bcd53ce87519
+    type: regular
+    task:
+      id: 28bfd440-500f-440b-8000-bcd53ce87519
+      version: -1
+      name: Get an object Item
+      script: Salesforce|||salesforce-get-object
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      path:
+        simple: Case/${SalesForce.Case.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9f9874b9-3135-490c-861b-ca18723bdeca
+    type: regular
+    task:
+      id: 9f9874b9-3135-490c-861b-ca18723bdeca
+      version: -1
+      name: Get Case
+      script: Salesforce|||salesforce-get-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      caseNumber:
+        simple: ${SalesForce.Case.CaseNumber}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8abb80e8-076d-406a-8ab5-6ab3b59ccade
+    type: regular
+    task:
+      id: 8abb80e8-076d-406a-8ab5-6ab3b59ccade
+      version: -1
+      name: Update a case item
+      script: Salesforce|||salesforce-update-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      description:
+        simple: ${SalesForce.Case.Subject}
+      oid:
+        simple: ${SalesForce.Case.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b2e006c1-1557-495f-8e25-9d8e1f9d822b
+    type: condition
+    task:
+      id: b2e006c1-1557-495f-8e25-9d8e1f9d822b
+      version: -1
+      name: Verify case update
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesForce.Case.Subject
+            iscontext: true
+          right:
+            value:
+              simple: SalesForce.Case.Description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 82799eb6-87b2-4cd6-83ba-5d5b2df944fa
+    type: regular
+    task:
+      id: 82799eb6-87b2-4cd6-83ba-5d5b2df944fa
+      version: -1
+      name: Update user data as object
+      script: Salesforce|||salesforce-update-object
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      json:
+        complex:
+          root: SalesForce.Case
+          accessor: CaseNumber
+          transformers:
+          - operator: substring
+            args:
+              from:
+                value:
+                  simple: "4"
+              to:
+                value:
+                  simple: "9"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{"Phone":"'
+              suffix:
+                value:
+                  simple: '"}'
+      path:
+        simple: User/${SalesForce.GetUsers.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: de7cb6d6-6a3d-4481-879b-5530377d3ab1
+    type: condition
+    task:
+      id: de7cb6d6-6a3d-4481-879b-5530377d3ab1
+      version: -1
+      name: Verify update object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SalesForce.GetUsers.Phone
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: SalesForce
+                accessor: Case.CaseNumber
+                transformers:
+                - operator: substring
+                  args:
+                    from:
+                      value:
+                        simple: "4"
+                    to:
+                      value:
+                        simple: "9"
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d7495e32-d1c6-459b-8768-223d4306300f
+    type: regular
+    task:
+      id: d7495e32-d1c6-459b-8768-223d4306300f
+      version: -1
+      name: Chattar Message (2)
+      script: Salesforce|||salesforce-push-comment
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "22"
+      - "24"
+    scriptarguments:
+      link:
+        simple: google.com
+      oid:
+        simple: ${SalesForce.Case.ID}
+      text:
+        simple: 'new chatter message with link: '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 03d45bfd-4631-4657-8729-613de322ccc2
+    type: regular
+    task:
+      id: 03d45bfd-4631-4657-8729-613de322ccc2
+      version: -1
+      name: Error!!!
+      scriptName: ContextContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      path:
+        simple: "21423"
+      value:
+        simple: "12342341234"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ee4eb891-9337-456a-8f7e-8d6b52c44c6b
+    type: regular
+    task:
+      id: ee4eb891-9337-456a-8f7e-8d6b52c44c6b
+      version: -1
+      name: Clear Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "1"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: df819ec4-0ca4-4e16-8db8-f9f38c45f804
+    type: regular
+    task:
+      id: df819ec4-0ca4-4e16-8db8-f9f38c45f804
+      version: -1
+      name: Close Case
+      script: Salesforce|||salesforce-close-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      oid:
+        simple: ${SalesForce.Case.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b6cb4eb3-6bb3-40dd-8b81-593c5addfa64
+    type: regular
+    task:
+      id: b6cb4eb3-6bb3-40dd-8b81-593c5addfa64
+      version: -1
+      name: Delete the test cases
+      script: Salesforce|||salesforce-delete-case
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      caseNumber:
+        complex:
+          root: SalesForce
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: SalesForce.Case.Subject
+                iscontext: true
+              right:
+                value:
+                  simple: Integration case
+          accessor: Case
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: CaseNumber
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 612b3d49-b814-457c-819e-bebbdd39ad84
+    type: regular
+    task:
+      id: 612b3d49-b814-457c-819e-bebbdd39ad84
+      version: -1
+      name: Get User
+      description: Returns the UserName through the case number.
+      script: Salesforce|||salesforce-get-user
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      caseNumber:
+        simple: ${SalesForce.Case.CaseNumber}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fe103084-a736-4d18-8081-e112637ca975
+    type: regular
+    task:
+      id: fe103084-a736-4d18-8081-e112637ca975
+      version: -1
+      name: Create Object
+      description: Creates a new object.
+      script: Salesforce|||salesforce-create-object
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      json:
+        simple: '{"subject":"test","status":"New"}'
+      path:
+        simple: Case
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c85a7954-9c8c-4224-82b7-9d9b5b34a2d7
+    type: regular
+    task:
+      id: c85a7954-9c8c-4224-82b7-9d9b5b34a2d7
+      version: -1
+      name: Get Casecomment
+      description: Returns a comment through the case number.
+      script: Salesforce|||salesforce-get-casecomment
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      caseNumber:
+        simple: ${SalesForce.Case.CaseNumber}
+      oid:
+        simple: ${SalesForce.Case.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 7efd050a-f99b-4c71-86a8-3fda96bbb6a3
+    type: regular
+    task:
+      id: 7efd050a-f99b-4c71-86a8-3fda96bbb6a3
+      version: -1
+      name: Get Cases
+      description: Returns all cases.
+      script: '|||salesforce-get-cases'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3b88e8e5-8e6b-4173-891a-18b5c7f23bce
+    type: regular
+    task:
+      id: 3b88e8e5-8e6b-4173-891a-18b5c7f23bce
+      version: -1
+      name: Post CaseComment
+      description: The post comment through the case number.
+      script: Salesforce|||salesforce-post-casecomment
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      caseNumber:
+        simple: ${SalesForce.Case.ID}
+      text:
+        simple: '"Hello"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 80d09f23-0602-46fe-84bc-46a3a94d0394
+    type: regular
+    task:
+      id: 80d09f23-0602-46fe-84bc-46a3a94d0394
+      version: -1
+      name: Post Threads
+      description: Add the comment to the chatter thread. Use this command only after
+        salesforce-push-comment
+      script: Salesforce|||salesforce-push-comment-threads
+      type: regular
+      iscommand: true
+      brand: Salesforce
+    scriptarguments:
+      id:
+        complex:
+          root: SalesForce.Comment
+          accessor: URL
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: /
+          - operator: LastArrayElement
+      text:
+        simple: hello final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2690,
+        "width": 1455,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

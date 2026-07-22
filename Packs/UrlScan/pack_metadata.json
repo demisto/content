@@ -1,0 +1,32 @@
+{
+    "name": "URLScan.io",
+    "description": "urlscan.io Web Threat Intelligence",
+    "support": "partner",
+    "currentVersion": "1.2.22",
+    "author": "urlscan GmbH",
+    "url": "https://urlscan.io",
+    "email": "support@urlscan.io",
+    "created": "2020-10-15T16:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Free Enricher"
+    ],
+    "useCases": [],
+    "keywords": [
+        "phishing",
+        "web",
+        "brand impersonation"
+    ],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

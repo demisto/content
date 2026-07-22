@@ -1,0 +1,54 @@
+{
+	"next": null,
+	"page_size": 10,
+	"previous": null,
+	"results": [
+		{
+			"custom_attributes": [],
+			"ctix_modified": 1651648700,
+			"created": 1644335851,
+			"pattern_type": "stix",
+			"modified": 1651648700,
+			"ctix_created": 1651648700,
+			"pattern_version": "2.1",
+			"confidence": "LOW",
+			"valid_from": 1644335851,
+			"pattern": "[ipv4-addr:value = '8.8.8.8']",
+			"fang_description": null,
+			"defang_description": null,
+			"spec_version": "2.1",
+			"tags": [
+				{
+					"colour_code": null,
+					"id": "e2139fd5-fe05-48c5-8aaf-a5dfce900919",
+					"name": "test crowd"
+				},
+				{
+					"colour_code": null,
+					"id": "fb22e904-ad74-4b6e-987e-46e81caec9ed",
+					"name": "MaliciousConfidence/Low"
+				}
+			],
+			"received_id": "indicator--16a66ac2-3524-44a6-9b9d-5bec6bc80d91",
+			"types": [
+				"anomalous-activity"
+			],
+			"source": {
+				"id": "e941f6fb-387b-452c-b77d-b5b05c5e9df2",
+				"name": "CrowdStrike",
+				"source_type": "API_FEEDS"
+			},
+			"id": "0a11d417-3501-4230-8454-c70e700cf1b8",
+			"valid_until": null,
+			"sco_object_id": "20067ec2-8ad1-470e-b0bb-3c4a72b15883",
+			"unique_hash": "babea09af794cc5ae1403302e9ec5c2d",
+			"description": "None",
+			"granular_markings": [],
+			"collection": {
+				"id": "3d7df0f3-8c88-43d2-8742-deee21eb6ee0",
+				"name": "test-crowd-ip"
+			}
+		}
+	],
+	"total": 1
+}

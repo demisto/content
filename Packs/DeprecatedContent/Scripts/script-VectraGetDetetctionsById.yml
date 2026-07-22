@@ -1,0 +1,36 @@
+commonfields:
+  id: VectraGetDetetctionsById
+  version: -1
+name: VectraGetDetetctionsById
+script: >2
+
+  resp = demisto.executeCommand("vec-get-detetctions-by-id", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- Vectra
+comment: Deprecated. Get detections by host id
+system: true
+args:
+- description: The id of the required detection
+  name: detection_id
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - vec-get-detetctions-by-id
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,106 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Darktrace AI Analyst",
+    "mapping": {
+        "Darktrace AI Analyst Event": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Darktrace AI Analyst Associated Devices": {
+                    "complex": {
+                        "filters": [],
+                        "root": "devices",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Darktrace AI Analyst Category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "Darktrace AI Analyst Event Id": {
+                    "complex": {
+                        "filters": [],
+                        "root": "eventId",
+                        "transformers": []
+                    }
+                },
+                "Darktrace AI Analyst Group Id": {
+                    "complex": {
+                        "filters": [],
+                        "root": "groupId",
+                        "transformers": []
+                    }
+                },
+                "Darktrace AI Analyst Mitre Tactics": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mitreTactics",
+                        "transformers": []
+                    }
+                },
+                "Darktrace AI Analyst Related Model Breaches": {
+					"complex": {
+						"accessor": "0",
+						"filters": [],
+						"root": "modelBreaches",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+                "Darktrace AI Analyst Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "score",
+                        "transformers": []
+                    }
+                },
+                "Darktrace AI Analyst Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Darktrace AI Analyst Title": {
+                    "complex": {
+                        "filters": [],
+                        "root": "title",
+                        "transformers": []
+                    }
+                },
+                "External Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "link",
+                        "transformers": []
+                    }
+                },
+                "Source Create time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdAt",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Darktrace AI Analyst",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.6.0"
+}

@@ -1,0 +1,30 @@
+{
+ "id": "incident_googlecloudsccrecommendation",
+ "version": -1,
+ "modified": "2021-01-22T15:22:26.856249791+05:30",
+ "name": "GoogleCloudSCC Recommendation",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccrecommendation",
+ "type": "longText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

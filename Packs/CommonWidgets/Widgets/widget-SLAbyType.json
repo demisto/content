@@ -1,0 +1,29 @@
+{
+ "id": "sla-by-incident-type",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "SLA by Incident Type",
+ "dataType": "incidents",
+ "widgetType": "bar",
+ "size": 5,
+ "query": "-category:job and -status:closed and -status:archived",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "rawType",
+   "dbotDueDate"
+  ]
+ },
+ "description": ""
+}

@@ -1,0 +1,33 @@
+{
+	"id": "incident_cybelangelkeywords",
+	"version": -1,
+	"name": "CybelAngel Keywords",
+	"ownerOnly": false,
+	"type": "shortText",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"useAsKpi": false,
+	"caseInsensitive": true,
+	"sla": 0,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": true,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"openEnded": false,
+	"description": "Keywords matched in the detection of the incident",
+	"cliName": "cybelangelkeywords",
+	"threshold": 72,
+	"placeholder": "",
+	"selectValues": [],
+	"columns": null,
+	"defaultRows": null,
+	"fromVersion": "6.2.0"
+}

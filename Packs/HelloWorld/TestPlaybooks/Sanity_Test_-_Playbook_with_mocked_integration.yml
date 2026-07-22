@@ -1,0 +1,218 @@
+id: Sanity Test - Playbook with mocked integration
+version: -1
+name: Sanity Test - Playbook with mocked integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15dbb592-93ab-49c1-8c6e-89c3721b6c4a
+    type: start
+    task:
+      id: 15dbb592-93ab-49c1-8c6e-89c3721b6c4a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 3eec3730-1440-4206-8044-0d9a417ad659
+    type: regular
+    task:
+      id: 3eec3730-1440-4206-8044-0d9a417ad659
+      version: -1
+      name: helloworld-search-alerts
+      description: Search HelloWorld Alerts.
+      script: HelloWorld|||helloworld-search-alerts
+      type: regular
+      iscommand: true
+      brand: HelloWorld
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_type:
+        simple: Bug
+      max_results:
+        simple: "1"
+      severity:
+        simple: Critical
+      start_time:
+        simple: "1587717640"
+      status:
+        simple: ACTIVE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f7528197-ca02-4cd3-86fa-0887c5faed98
+    type: regular
+    task:
+      id: f7528197-ca02-4cd3-86fa-0887c5faed98
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: be306dac-9119-4343-8e86-c80ec8798ca0
+    type: condition
+    task:
+      id: be306dac-9119-4343-8e86-c80ec8798ca0
+      version: -1
+      name: Check ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: HelloWorld.Alert
+                accessor: alert_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 12a6b9ef-021e-4583-841f-3215fdf49113
+    type: title
+    task:
+      id: 12a6b9ef-021e-4583-841f-3215fdf49113
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: c8a6ad18-2946-46a6-818c-4c2565d92293
+    type: regular
+    task:
+      id: c8a6ad18-2946-46a6-818c-4c2565d92293
+      version: -1
+      name: Goals of this test
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      value:
+        simple: '* Making sure that the MITMProxy mechanism is working.'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Tests MITMProxy (mocks)

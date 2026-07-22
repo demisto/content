@@ -1,0 +1,100 @@
+{
+    "operationResult": {
+        "isSuccess": true,
+        "errors": [],
+        "userId": "XXX",
+        "result": {
+            "id": "XXX",
+            "user": {
+                "subjectKind": "user",
+                "directoryAlias": "test",
+                "domain": "ed363dfd-16fd-4038-8e58-9237411a84e5",
+                "principalName": "test@xsoar.co",
+                "mailAddress": "test@xsoar.co",
+                "origin": "aad",
+                "originId": "2c7514ff-41d0-4eb0-ac82-35b8671de094",
+                "displayName": "test test",
+                "_links": {
+                    "self": {
+                        "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/Users/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "memberships": {
+                        "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/Memberships/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "membershipState": {
+                        "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/MembershipStates/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "storageKey": {
+                        "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/StorageKeys/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    },
+                    "avatar": {
+                        "href": "https://dev.azure.com/xsoar/_apis/GraphProfile/MemberAvatars/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                    }
+                },
+                "url": "https://vssps.dev.azure.com/xsoar/_apis/Graph/Users/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3",
+                "descriptor": "aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+            },
+            "accessLevel": {
+                "licensingSource": "account",
+                "accountLicenseType": "express",
+                "msdnLicenseType": "none",
+                "licenseDisplayName": "Basic",
+                "status": "pending",
+                "statusMessage": "",
+                "assignmentSource": "unknown"
+            },
+            "lastAccessedDate": "0001-01-01T00:00:00Z",
+            "dateCreated": "2021-10-17T11:36:13.578521Z",
+            "projectEntitlements": [],
+            "extensions": [],
+            "groupAssignments": []
+        }
+    },
+    "isSuccess": true,
+    "userEntitlement": {
+        "id": "XXX",
+        "user": {
+            "subjectKind": "user",
+            "directoryAlias": "test",
+            "domain": "ed363dfd-16fd-4038-8e58-9237411a84e5",
+            "principalName": "test@xsoar.co",
+            "mailAddress": "test@xsoar.co",
+            "origin": "aad",
+            "originId": "2c7514ff-41d0-4eb0-ac82-35b8671de094",
+            "displayName": "test test",
+            "_links": {
+                "self": {
+                    "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/Users/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                },
+                "memberships": {
+                    "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/Memberships/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                },
+                "membershipState": {
+                    "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/MembershipStates/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                },
+                "storageKey": {
+                    "href": "https://vssps.dev.azure.com/xsoar/_apis/Graph/StorageKeys/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                },
+                "avatar": {
+                    "href": "https://dev.azure.com/xsoar/_apis/GraphProfile/MemberAvatars/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+                }
+            },
+            "url": "https://vssps.dev.azure.com/xsoar/_apis/Graph/Users/aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3",
+            "descriptor": "aad.NWYyZWMzNTctMjgzMS03M2I4LTk1NWYtMmRkZGM2OWVmMzg3"
+        },
+        "accessLevel": {
+            "licensingSource": "account",
+            "accountLicenseType": "express",
+            "msdnLicenseType": "none",
+            "licenseDisplayName": "Basic",
+            "status": "pending",
+            "statusMessage": "",
+            "assignmentSource": "unknown"
+        },
+        "lastAccessedDate": "0001-01-01T00:00:00Z",
+        "dateCreated": "2021-10-17T11:36:13.578521Z",
+        "projectEntitlements": [],
+        "extensions": [],
+        "groupAssignments": []
+    }
+}

@@ -1,0 +1,21 @@
+{
+    "name": "MergeDictArray (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
+    "support": "community",
+    "currentVersion": "1.0.3",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-07-27T09:35:11Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

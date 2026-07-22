@@ -1,0 +1,21 @@
+{
+    "outputs": {
+        "successful_delete_just_name": {
+            "data": {
+                "id": 59,
+                "name": "acme1234",
+                "description": "description",
+                "accountId": 1234567890,
+                "createdBy": 123456789000002,
+                "updatedAt": "2023-09-09T15:10:26.592Z",
+                "createdAt": "2023-09-09T15:10:26.592Z",
+                "lastUsed": "2023-09-19T15:10:26.592Z",
+                "deletedAt": "2023-10-09T15:10:26.592Z",
+                "key": "805eb656-0ead-4167-9245-15a7d400baa4",
+                "roles": "{\"administrator\":true,\"read\":true}",
+                "role": "administrator"
+            }
+        },
+        "failed_deletion_due_to_no_name": {}
+    }
+}

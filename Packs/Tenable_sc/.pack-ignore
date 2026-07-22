@@ -1,0 +1,14 @@
+[file:playbook-tenable.sc-scan.yml]
+ignore=BA101
+
+[file:Tenable_sc.yml]
+ignore=IN126,BA108,BA109,BA124
+
+[file:README.md]
+ignore=RM104
+
+[known_words]
+tenable-sc-get-scan-report
+tenable
+sc
+

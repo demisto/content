@@ -1,0 +1,10 @@
+{
+    "Discovery": true,
+    "Remediation": true,
+    "IOC": true,
+    "VirtualAppliance": true,
+    "InvestigationPage": true,
+    "ThreatLibrary": true,
+    "IntelliFind": true,
+    "Cve": true
+}

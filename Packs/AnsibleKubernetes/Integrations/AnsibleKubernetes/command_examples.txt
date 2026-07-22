@@ -1,0 +1,4 @@
+!k8s-k8s name="testing" kind="Namespace" state="present" 
+!k8s-info kind="namespace" name="testing"
+!k8s-scale kind="Deployment" name="nginx-deployment" namespace="testing" replicas="2" wait_timeout="60"
+!k8s-service state="present" name="test-https" namespace="testing" ports="{{ [{'port': 443, 'protocol': 'TCP'}] }}" selector="{'app': 'nginx'}" 

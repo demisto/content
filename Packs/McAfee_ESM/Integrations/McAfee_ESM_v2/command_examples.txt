@@ -1,0 +1,25 @@
+!esm-fetch-fields
+!esm-search timeRange="CURRENT_YEAR" filters="[{\"type\":\"EsmFieldFilter\",\"field\":{\"name\":\"SrcIP\"},\"operator\":\"IN\"}]" limit="3"
+!esm-fetch-alarms timeRange=CURRENT_MONTH
+!esm-get-case-list since="1 month"
+!esm-add-case summary="McAfee ESM v2 add case"
+!esm-edit-case id="33266" summary="McAfee ESM v2 edit case"
+!esm-get-case-statuses
+!esm-get-case-detail id="33264"
+!esm-get-case-event-list ids="42687"
+!esm-add-case-status name=test_add_case
+!esm-edit-case-status original_name=test_edit_case new_name=edited_case
+!esm-delete-case-status name=test_delete_case
+!esm-get-organization-list
+!esm-get-user-list
+!esm-acknowledge-alarms alarmIds="42710"
+!esm-unacknowledge-alarms alarmIds="42687"
+!esm-delete-alarms alarmIds="42709"
+!esm-get-alarm-event-details eventId=144115188075855872|802641
+!esm-list-alarm-events alarmId=42687
+!esm-create-watchlist name=test_watchlist type=IPAddress
+!esm-get-watchlists
+!esm-watchlist-add-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2
+!esm-watchlist-list-entries watchlist_name=test_watchlist
+!esm-watchlist-delete-entry watchlist_name=test_watchlist values=1.1.1.1,2.2.2.2
+!esm-delete-watchlist names=test_watchlist

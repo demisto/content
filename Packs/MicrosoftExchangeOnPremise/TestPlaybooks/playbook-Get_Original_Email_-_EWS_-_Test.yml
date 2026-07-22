@@ -1,0 +1,158 @@
+id: get_original_email_-_ews-_test
+version: -1
+name: Get Original Email - EWS - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d7920fee-8ada-4d48-8197-2e08d19a54dc
+    type: start
+    task:
+      id: d7920fee-8ada-4d48-8197-2e08d19a54dc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 17e0dd57-f2a9-499e-833c-523e800ae647
+    type: playbook
+    task:
+      id: 17e0dd57-f2a9-499e-833c-523e800ae647
+      version: -1
+      name: Get Original Email - EWS
+      description: |-
+        Use this playbook to retrieve the original email in the thread, including headers and attahcments, when the reporting user forwarded the original email not as an attachment.
+
+        You must have the necessary permissions in the EWS integration to execute global search: eDiscovery
+      playbookName: Get Original Email - EWS
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      InReplyTo:
+        simple: <1623747438069.65340@demisto.int>
+      Mailbox:
+        simple: demistoadmin@demisto.int
+      ThreadTopic:
+        simple: do not delete used for a test
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: b52aade3-aa90-4343-8417-d4aa26803d62
+    type: title
+    task:
+      id: b52aade3-aa90-4343-8417-d4aa26803d62
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 83e29dbb-bf5e-41a3-82a4-f406d154aa14
+    type: regular
+    task:
+      id: 83e29dbb-bf5e-41a3-82a4-f406d154aa14
+      version: -1
+      name: Verify context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: a914023b-01b2-4eb4-8f58-b38639725928
+    type: regular
+    task:
+      id: a914023b-01b2-4eb4-8f58-b38639725928
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

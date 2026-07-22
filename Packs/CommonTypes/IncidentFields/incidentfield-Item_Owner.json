@@ -1,0 +1,40 @@
+{
+    "id": "incident_itemowner",
+    "version": -1,
+    "name": "Item Owner",
+    "ownerOnly": false,
+    "cliName": "itemowner",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Saas Security Incident",
+        "Symantec DLP Discover Incident",
+        "Symantec DLP Endpoint Incident",
+        "Symantec DLP Network Incident",
+        "ThreatConnect",
+        "Exabeam Incident"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0",
+    "systemAssociatedTypes": [
+        "Symantec DLP Discover Incident",
+        "Symantec DLP Endpoint Incident",
+        "Symantec DLP Network Incident"
+    ]
+}

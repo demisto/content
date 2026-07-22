@@ -1,0 +1,44 @@
+{
+    "name": "Office 365",
+    "description": "The product family of productivity and collaboration cloud based softwares owned by Microsoft.",
+    "support": "xsoar",
+    "currentVersion": "1.0.23",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM",
+        "Cloud Services",
+        "Cloud Security"
+    ],
+    "tags": [
+        "Network",
+        "Security",
+        "Email",
+        "Compliance"
+    ],
+    "useCases": [
+        "Network Security",
+        "Compliance"
+    ],
+    "keywords": [
+        "office",
+        "365",
+        "Audit",
+        "msft",
+        "ms"
+    ],
+    "dependencies": {
+        "CloudIncidentResponse": {
+            "mandatory": false,
+            "display_name": "Cloud Incident Response"
+        }
+    },
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ]
+}

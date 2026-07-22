@@ -1,0 +1,16 @@
+[file:RSANetWitnessSecurityAnalytics.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM106
+
+[file:script-NetwitnessSACreateIncident_README.md]
+ignore=RM106
+
+
+[file:RSANetWitnessSecurityAnalytics_image.png]
+ignore=IM111
+
+[known_words]
+nw
+assignees

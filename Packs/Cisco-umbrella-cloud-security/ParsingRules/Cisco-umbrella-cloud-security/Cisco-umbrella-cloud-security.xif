@@ -1,0 +1,8 @@
+[INGEST:vendor = "cisco", product = "umbrella", target_dataset = "cisco_umbrella_raw", no_hit = keep]
+alter Log_Fields = split(_raw_log, "\",")
+| alter Log_Fields = arraymap(Log_Fields, trim("@element", "\""))
+| alter logType = if(_log_source_file_path contains "dnslogs", "DNS", _log_source_file_path contains "proxylogs", "Proxy", _log_source_file_path contains "auditlogs", "Admin Audit")
+| filter logType = "DNS" or logType = "Proxy" or (logType = "Admin Audit" and array_length(Log_Fields) > 8)
+| alter tmp_time = if(logType = "DNS", arrayindex(Log_Fields, 0), logType = "Proxy", arrayindex(Log_Fields, 0), logType = "Admin Audit", arrayindex(Log_Fields, 1), null)
+| alter _time = parse_timestamp("%Y-%m-%d %T", tmp_time)
+| fields -tmp_time;

@@ -1,0 +1,200 @@
+elasticcommonfields: {}
+id: Elasticsearch_Fetch_Custom_Indicators_Test
+version: -1
+name: Elasticsearch_Fetch_Custom_Indicators_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9aa22a36-973d-4c51-8881-89c0e4d8f649
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 9aa22a36-973d-4c51-8881-89c0e4d8f649
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 13beb241-ef42-49a5-8b1e-0b0f7dcb87f9
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 13beb241-ef42-49a5-8b1e-0b0f7dcb87f9
+      version: -1
+      name: Get Shared Indicators
+      description: Get indicators shared with this tenant (MT only).
+      script: '|||es-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: value=value
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a4389279-5923-4b07-8742-dda092bb9a47
+    type: condition
+    task:
+      elasticcommonfields: {}
+      id: a4389279-5923-4b07-8742-dda092bb9a47
+      version: -1
+      name: Assert Indicators was fetched
+      description: Assert results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: value
+            iscontext: true
+          right:
+            value:
+              simple: 7.7.7.7
+      - - operator: isEqualString
+          left:
+            value:
+              simple: value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.8
+      - - operator: isEqualString
+          left:
+            value:
+              simple: value
+            iscontext: true
+          right:
+            value:
+              simple: 9.9.9.9
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 70f4d0a6-3059-4f8a-83bb-479777174a92
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: 70f4d0a6-3059-4f8a-83bb-479777174a92
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: dbc5d997-49be-4ad7-80c1-b22babd530b2
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: dbc5d997-49be-4ad7-80c1-b22babd530b2
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

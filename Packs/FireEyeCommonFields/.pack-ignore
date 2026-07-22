@@ -1,0 +1,15 @@
+
+[file:incidentfield-FireEye_Alert_Infection_ID.json]
+ignore=IF100
+
+[file:incidentfield-FireEye_Alert_Malicious.json]
+ignore=IF100
+
+[file:incidentfield-FireEye_Alert_Vlan.json]
+ignore=IF100
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:incidentfield-FireEye_Malware_Information.json]
+ignore=IF115

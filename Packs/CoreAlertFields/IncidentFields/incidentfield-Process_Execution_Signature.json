@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "processexecutionsignature",
+    "closeForm": false,
+    "content": true,
+    "description": "Signature status of the process that triggered the alert: Unsigned, Signed, Invalid Signature, Unknown.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_processexecutionsignature",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Process execution signature",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": true,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "action_process_signature_status"
+}

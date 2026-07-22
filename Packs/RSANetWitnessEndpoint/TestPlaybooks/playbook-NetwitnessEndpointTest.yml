@@ -1,0 +1,360 @@
+id: NetWitness Endpoint Test
+version: -1
+name: NetWitness Endpoint Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c83f5d74-1218-49db-8ec6-22e7693c4a57
+    type: start
+    task:
+      id: c83f5d74-1218-49db-8ec6-22e7693c4a57
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 072d28c0-3f93-442f-8145-756cff17c6f1
+    type: regular
+    task:
+      id: 072d28c0-3f93-442f-8145-756cff17c6f1
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "7"
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 1d6b1343-e12c-4c46-8fa0-ae02cb15ceb3
+    type: regular
+    task:
+      id: 1d6b1343-e12c-4c46-8fa0-ae02cb15ceb3
+      version: -1
+      name: Get all machine data
+      script: RSA NetWitness Endpoint|||netwitness-get-machines
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Endpoint
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+    scriptarguments:
+      includeMachineData:
+        simple: "yes"
+      includeMachineIOCs:
+        simple: "yes"
+      includeMachineModules:
+        simple: "yes"
+      iocScoreGreaterThan: {}
+      iocScoreLessThan: {}
+      ipAdress: {}
+      limit: {}
+      macAddress: {}
+      machineName:
+        simple: NWE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 6b8a6f41-31c8-4a55-8ab6-96cbfbc1eb6a
+    type: regular
+    task:
+      id: 6b8a6f41-31c8-4a55-8ab6-96cbfbc1eb6a
+      version: -1
+      name: Get module
+      script: RSA NetWitness Endpoint|||netwitness-get-machine-module
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Endpoint
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      machineGUID:
+        simple: ${NetWitness.Machines.MachineGUID}
+      moduleID:
+        simple: ${NetWitness.Modules.[0].ModuleID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 0cb6cdbc-d32c-492c-8a12-c610f44d0233
+    type: condition
+    task:
+      id: 0cb6cdbc-d32c-492c-8a12-c610f44d0233
+      version: -1
+      name: Verify machine ID matches expected value
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      verified:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: verified
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NetWitness.Machines.MachineGUID
+            iscontext: true
+          right:
+            value:
+              simple: ea946082-0563-c15e-8128-c5b6e8b2fea9
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 09c86891-ac16-458e-829d-5cadc2624c00
+    type: title
+    task:
+      id: 09c86891-ac16-458e-829d-5cadc2624c00
+      version: -1
+      name: 'successful validation '
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: b4e1b1c9-2b05-4dde-8b08-e7152b474e21
+    type: condition
+    task:
+      id: b4e1b1c9-2b05-4dde-8b08-e7152b474e21
+      version: -1
+      name: Sample Outputs - Verify Existence Only
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      output exists:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: output exists
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: NetWitness.Modules.FullPath
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: NetWitness.Modules.RiskScore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: 4d4df12a-ff53-43d5-82f1-40a32e11446b
+    type: regular
+    task:
+      id: 4d4df12a-ff53-43d5-82f1-40a32e11446b
+      version: -1
+      name: BlackList IPs
+      script: RSA NetWitness Endpoint|||netwitness-blacklist-ips
+      type: regular
+      iscommand: true
+      brand: RSA NetWitness Endpoint
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ips:
+        simple: 1.2.3.4
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 79d03966-980c-434c-8fd8-15de576fa3e7
+    type: condition
+    task:
+      id: 79d03966-980c-434c-8fd8-15de576fa3e7
+      version: -1
+      name: Verify IP block listed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NetWitness.Blacklist.IPs
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 2bac8bf3-219e-4972-80f7-02c9a452cf59
+    type: regular
+    task:
+      id: 2bac8bf3-219e-4972-80f7-02c9a452cf59
+      version: -1
+      name: Blacklist Domains
+      script: '|||netwitness-blacklist-domains'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      domains:
+        simple: www.example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 25a4eb7a-dc38-4857-8845-7e7ce71406a5
+    type: condition
+    task:
+      id: 25a4eb7a-dc38-4857-8845-7e7ce71406a5
+      version: -1
+      name: Verify domain block listed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NetWitness.Blacklist.Domains
+            iscontext: true
+          right:
+            value:
+              simple: www.example.com
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

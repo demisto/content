@@ -1,0 +1,495 @@
+id: VerifyOOBV2Predictions-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: VerifyOOBV2Predictions-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6fcc58b6-9f89-4623-8a3f-89ab8680f5b5
+    type: start
+    task:
+      id: 6fcc58b6-9f89-4623-8a3f-89ab8680f5b5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 29403387-7e26-47ba-818f-5278e1fbb477
+    type: regular
+    task:
+      id: 29403387-7e26-47ba-818f-5278e1fbb477
+      version: -1
+      name: |
+        Create Incidents
+      scriptName: CreateIncidentsOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 12528078-9d43-4848-8612-c515ba65f749
+    type: regular
+    task:
+      id: 12528078-9d43-4848-8612-c515ba65f749
+      version: -1
+      name: 'Load predict OOB docker '
+      description: Predict phishing incidents using the out-of-the-box pre-trained
+        model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      emailBody:
+        simple: test
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 180c3156-15d5-49dd-885a-712359256390
+    type: regular
+    task:
+      id: 180c3156-15d5-49dd-885a-712359256390
+      version: -1
+      name: Predict incidents batch
+      description: Apply a trained ML model on multiple incidents at once, to compare
+        incidents how the incidents were labeled by analysts, to the predictions of
+        the model. This script is aimed to help evaluate a trained model using past
+        incidents.
+      scriptName: DBotPredictIncidentsBatch
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incidentTypes:
+        simple: Simulation
+      modelName:
+        simple: demisto_out_of_the_box_model_v2
+      tagField:
+        simple: name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1e66d49d-c1c0-4542-85e9-4eb0f9197909
+    type: regular
+    task:
+      id: 1e66d49d-c1c0-4542-85e9-4eb0f9197909
+      version: -1
+      name: Compare predictions
+      scriptName: CompareEnvPredictionsToExpectedPredictions
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      input:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f6485f23-57d8-42a2-82a1-363e3987d5aa
+    type: condition
+    task:
+      id: f6485f23-57d8-42a2-82a1-363e3987d5aa
+      version: -1
+      name: Are all predictions matched?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: CompareEnvPredictionsToExpectedPredictions .allPredictionsMatched
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: da10273f-5f96-4983-8340-028586369eea
+    type: title
+    task:
+      id: da10273f-5f96-4983-8340-028586369eea
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 68c274b7-3f64-4d1e-8d44-3756a382c773
+    type: regular
+    task:
+      id: 68c274b7-3f64-4d1e-8d44-3756a382c773
+      version: -1
+      name: Load prediction docker
+      description: Predict text label using a pre-trained machine learning phishing
+        model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      modelName:
+        simple: dummy
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e840b1db-2da7-49dd-8ec1-9d13d1abe9e1
+    type: regular
+    task:
+      id: e840b1db-2da7-49dd-8ec1-9d13d1abe9e1
+      version: -1
+      name: Load evaluation docker
+      description: Finds a threshold for ML model, and performs an evaluation based
+        on it
+      scriptName: GetMLModelEvaluation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      yPred:
+        simple: dummy
+      yTrue:
+        simple: dummy
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1c84461e-9ef3-478d-8b3f-fb31dc7cbed6
+    type: regular
+    task:
+      id: 1c84461e-9ef3-478d-8b3f-fb31dc7cbed6
+      version: -1
+      name: Load Preprocessing Docker
+      description: Pre-process text data for the machine learning text classifier.
+      scriptName: DBotPreProcessTextData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      input:
+        simple: dummy input
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1135,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: aebde98b-f95a-499b-87f7-d1dc46883626
+    type: regular
+    task:
+      id: aebde98b-f95a-499b-87f7-d1dc46883626
+      version: -1
+      name: Wait for docker download
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ac052602-145c-4a9a-8178-4ca43162a13c
+    type: title
+    task:
+      id: ac052602-145c-4a9a-8178-4ca43162a13c
+      version: -1
+      name: Begin tests
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c703f270-40ff-4b41-8e2e-7b56c3cd4d33
+    type: title
+    task:
+      id: c703f270-40ff-4b41-8e2e-7b56c3cd4d33
+      version: -1
+      name: Load all dockers
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "9"
+      - "8"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ebf019c2-4e56-4257-8001-ae63b5712d78
+    type: regular
+    task:
+      id: ebf019c2-4e56-4257-8001-ae63b5712d78
+      version: -1
+      name: Load OOB V2 model
+      description: Predict phishing incidents using the out-of-the-box pre-trained
+        model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      emailBody:
+        simple: dummy
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1032.5,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1550,
+        "width": 1895,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0

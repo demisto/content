@@ -1,0 +1,311 @@
+id: McAfeeWebGatewayTest
+version: -1
+name: McAfeeWebGatewayTest
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 69bd377e-ef65-427b-814a-e2633ad0e673
+    type: start
+    task:
+      id: 69bd377e-ef65-427b-814a-e2633ad0e673
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+  '1':
+    id: '1'
+    taskid: 21895ba1-e23f-4372-873f-8c6a1fef55f6
+    type: regular
+    task:
+      id: 21895ba1-e23f-4372-873f-8c6a1fef55f6
+      version: -1
+      name: Start clean
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    taskid: e8d297c4-1422-4482-8b89-fece1edaa98e
+    type: regular
+    task:
+      id: e8d297c4-1422-4482-8b89-fece1edaa98e
+      version: -1
+      name: 'Get list: first'
+      script: McAfee Web Gateway|||mwg-get-list
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      list_id:
+        simple: ${MWG.Lists.[0].McAfeeID}
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+  '5':
+    id: '5'
+    taskid: 617f4b82-2a0f-45c4-8e86-2b98d6009c23
+    type: regular
+    task:
+      id: 617f4b82-2a0f-45c4-8e86-2b98d6009c23
+      version: -1
+      name: Print context
+      scriptName: PrintContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      outputformat:
+        simple: json
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+  '6':
+    id: '6'
+    taskid: 54f280cb-b7d0-436d-86a6-f0c75d221f89
+    type: regular
+    task:
+      id: 54f280cb-b7d0-436d-86a6-f0c75d221f89
+      version: -1
+      name: check context
+      scriptName: ContextContains
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      all: {}
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      desc: {}
+      description: {}
+      dn: {}
+      entryIDs: {}
+      headers: {}
+      key: {}
+      name: {}
+      nestedSearch: {}
+      path:
+        simple: MWG.ListEntries.ListID
+      value:
+        simple: ${MWG.Lists.[0].Name}
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+  '7':
+    id: '7'
+    taskid: cebe844b-50f1-4616-85b2-ad9d584c7e37
+    type: regular
+    task:
+      id: cebe844b-50f1-4616-85b2-ad9d584c7e37
+      version: -1
+      name: Get all available lists
+      script: McAfee Web Gateway|||mwg-get-available-lists
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      list_id: {}
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+  '9':
+    id: '9'
+    taskid: f11f2910-87e6-4e99-8617-29ee939383bc
+    type: regular
+    task:
+      id: f11f2910-87e6-4e99-8617-29ee939383bc
+      version: -1
+      name: 'Get list: second'
+      script: McAfee Web Gateway|||mwg-get-list
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      list_id:
+        simple: ${MWG.Lists.[5].McAfeeID}
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+  '10':
+    id: '10'
+    taskid: 5f768160-2263-4a50-887a-072c07a1bbb6
+    type: regular
+    task:
+      id: 5f768160-2263-4a50-887a-072c07a1bbb6
+      version: -1
+      name: 'Get entry to pre-defined list: "PlaybookTestList" '
+      description: 'list contains two entries: "Zenno" and "Yahoo Mail"'
+      script: McAfee Web Gateway|||mwg-get-list-entry
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      entry_pos:
+        simple: '0'
+      list_id:
+        simple: com.scur.type.applcontrol.261
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+  '11':
+    id: '11'
+    taskid: dde0ac15-c085-46bd-8361-5179fa198d62
+    type: regular
+    task:
+      id: dde0ac15-c085-46bd-8361-5179fa198d62
+      version: -1
+      name: check context
+      scriptName: ContextContains
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      key: {}
+      path:
+        simple: MWG.ListEntries.Name
+      value:
+        simple: Zenno
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+  '13':
+    id: '13'
+    taskid: 7a538336-2c85-4474-8170-dedf4368485f
+    type: regular
+    task:
+      id: 7a538336-2c85-4474-8170-dedf4368485f
+      version: -1
+      name: Insert a new entry
+      script: McAfee Web Gateway|||mwg-insert-entry
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+      description: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      description: {}
+      entry_pos:
+        simple: '0'
+      list_id:
+        simple: com.scur.type.string.263
+      name:
+        simple: escaping <, > and & worked on ${incident.created}
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+  '14':
+    id: '14'
+    taskid: 99e59d82-d9ea-4694-89af-ff442d255dad
+    type: regular
+    task:
+      id: 99e59d82-d9ea-4694-89af-ff442d255dad
+      version: -1
+      name: Delete the new entry
+      script: McAfee Web Gateway|||mwg-delete-entry
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+      description: ''
+    scriptarguments:
+      entry_pos:
+        simple: '0'
+      list_id:
+        simple: com.scur.type.string.263
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+  '15':
+    id: '15'
+    taskid: 04bd808c-7137-42bb-80b0-0bf12458b44b
+    type: regular
+    task:
+      id: 04bd808c-7137-42bb-80b0-0bf12458b44b
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+  '16':
+    id: '16'
+    taskid: 95ca16b8-5aa0-4f1c-8bed-c80e27ed9121
+    type: regular
+    task:
+      id: 95ca16b8-5aa0-4f1c-8bed-c80e27ed9121
+      version: -1
+      name: 'Get pre-defined list: "PlaybookTestList" '
+      script: McAfee Web Gateway|||mwg-get-list
+      type: regular
+      iscommand: true
+      brand: McAfee Web Gateway
+      description: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      list_id:
+        simple: com.scur.type.string.263
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+  '17':
+    id: '17'
+    taskid: 56286803-2f67-4929-81c0-efce2885c718
+    type: regular
+    task:
+      id: 56286803-2f67-4929-81c0-efce2885c718
+      version: -1
+      name: Wait a couple of seconds
+      description: let the "insert" command sync and fully release the mutex on the
+        list entry before removing it.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2340,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+fromversion: 5.0.0
+description: ''

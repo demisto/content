@@ -1,0 +1,4 @@
+[
+    {"@id": "a","@timestamp": 1669987037563, "@ingesttimestamp": 1669987037560, "foo": "bar1"},
+    {"@id": "b","@timestamp": 1669987038563, "@ingesttimestamp": 1669987038560, "foo": "bar2"}
+]

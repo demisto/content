@@ -1,0 +1,30 @@
+{
+ "id": "mttr-by-type-occurred",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "MTTR Occurred by Type",
+ "dataType": "incidents",
+ "widgetType": "bar",
+ "query": "-category:job and status:closed",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "keys": [
+   "avg|(closed - occurred) / 3600"
+  ],
+  "groupBy": [
+   "rawType"
+  ]
+ },
+ "description": ""
+}

@@ -1,0 +1,69 @@
+commonfields:
+  id: ADGetUserGroups
+  version: -1
+name: ADGetUserGroups
+script: >-
+  # Optional arguments and default values
+
+  attrs = 'name'
+
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+  resp = ''
+
+  nested_search = ':1.2.840.113556.1.4.1941:' if demisto.get(demisto.args(), 'nestedSearch') else ''
+
+  memberDN = ''
+
+  if demisto.get(demisto.args(), 'dn'):
+      memberDN = demisto.args()['dn']
+  elif demisto.get(demisto.args(), 'name'):
+      resp = demisto.executeCommand( 'AdSearch', { 'filter' : "(&(objectCategory=User)(name=" + demisto.args()['name'] + "))" } )
+  elif demisto.get(demisto.args(), 'email'):
+      resp = demisto.executeCommand( 'ADGetUsersByEmail', { 'email' : demisto.args()['email'] } )
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'You must provide either dn, name or email as argument!' } )
+      sys.exit(0)
+  if type(resp)==list and len( [ r for r in resp if isError(r) ] ) > 0 :
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error returned by ad command: ' + r['Contents'] } )
+      sys.exit(0)
+  if not memberDN:
+      if type(resp)==list and len(resp)==1 and type(resp[0])==dict and 'Contents' in resp[0] and type(resp[0]['Contents'])==list and len(resp[0]['Contents'])==1 and type(resp[0]['Contents'][0])==dict and 'dn' in resp[0]['Contents'][0]:
+          memberDN = resp[0]['Contents'][0]['dn']
+      else:
+          if resp[0]['Contents'] == 'No results':
+              demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'User not found.' } )
+          else:
+              demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Unexpected output from ad command.' } )
+          sys.exit(0)
+  if memberDN:
+      filterstr = r"(&(member{0}=".format(nested_search) + memberDN + ")(objectcategory=group))"
+      demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } ) )
+  else:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Received empty DN or cannot locate DN for the specified arguments.' } )
+type: python
+subtype: python2
+tags:
+- active directory
+comment: Deprecated. Use Active Directory to retrieve the groups in which the specified user is a member. The user can be specified by name, email or as an Active Directory Distinguished Name (DN).
+system: true
+args:
+- name: dn
+  default: true
+  description: Active Directory Distinguished Name of the desired user
+- name: name
+  description: Name of the desired user
+- name: email
+  description: Email address of the desired user
+- name: attributes
+  description: Include these AD attributes of the resulting objects in addition to the default ones
+- name: nestedSearch
+  description: Enter any value to allow nested groups search as well
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - ad-search
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,10 @@
+[
+    {
+        "id": "plainTextList",
+        "data": "This is the content of an example plaintext list"
+    },
+    {
+        "id": "exampleJsonList",
+        "data": "{\n\t\"UserID\": \"123-456-789\",\n\t\"UserName\": \"Example User\"\n\t}"
+    }
+]

@@ -1,0 +1,740 @@
+id: Update Or Remove Assets - RiskIQ Digital Footprint
+version: -1
+name: Update Or Remove Assets - RiskIQ Digital Footprint
+description: |-
+ Using various user inputs, this playbook checks if the user wants to update or remove an asset, and performs the respective actions.
+  Supported integration:
+  - RiskIQ Digital Footprint
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 33b57c2b-451c-4ae8-8fa7-ae2f0c048a9e
+    type: start
+    task:
+      id: 33b57c2b-451c-4ae8-8fa7-ae2f0c048a9e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7b66aee1-278c-44e8-8ca2-fc4ddb5bd26e
+    type: collection
+    task:
+      id: 7b66aee1-278c-44e8-8ca2-fc4ddb5bd26e
+      version: -1
+      name: Which operation you want to perform on the asset?
+      description: Asks the user which operation to perform on the asset.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.support_email_address
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.support_email_address
+                iscontext: true
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Regarding the operation to perform
+          on the asset ${inputs.asset_name} of type ${inputs.asset_type}'
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the operation to perform on the asset from the given options.
+            ${inputs.asset_name} of type ${inputs.asset_type}.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - Update
+        - Remove
+        - None
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the option "Update" to update the asset properties,
+          "Remove" to remove the asset from inventory, or "None" in case you do not
+          want to perform any action.
+        readonly: false
+      title: Operation to perform on the asset
+      description: Select the option "Update" to update the asset properties,
+        "Remove" to remove the asset from inventory or "None" in case you do not want
+        to perform any action.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 55687e9c-c22e-4b35-8cc3-20a63626eec5
+    type: condition
+    task:
+      id: 55687e9c-c22e-4b35-8cc3-20a63626eec5
+      version: -1
+      name: Is the operation to be performed Update or Remove?
+      description: Checks if the operation to be performed is Update or Remove.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      Remove:
+      - "11"
+      Update:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Update
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Operation to perform on the asset
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Operation to perform on the asset.Answers.0
+                      iscontext: true
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Update
+    - label: Remove
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Operation to perform on the asset
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Operation to perform on the asset.Answers.0
+                      iscontext: true
+                accessor: Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Remove
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d826fc6c-2586-4aa0-82f7-756f6d41db8b
+    type: collection
+    task:
+      id: d826fc6c-2586-4aa0-82f7-756f6d41db8b
+      version: -1
+      name: Provide the asset properties to update
+      description: Gets asset properties to update in the RiskIQ Digital Footprint inventory.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.support_email_address
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.support_email_address
+                iscontext: true
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Regarding updating the properties
+          of the asset ${inputs.asset_name} of type ${inputs.asset_type}'
+      body: {}
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Action to be performed while updating the asset ${inputs.asset_name}
+            of type ${inputs.asset_type}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - Add
+        - Update
+        - Remove
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select an action to be performed on the selected properties.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: State of the asset
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - Candidate
+        - Approved Inventory
+        - Requires Investigation
+        - Dependencies
+        - Monitor Only
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the state of the asset.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Priority of the asset.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - Medium
+        - High
+        - Low
+        - None
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select the priority of the asset.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Is the asset an enterprise asset?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - ""
+        - "true"
+        - "false"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select "true" if the asset is an enterprise asset, "false" otherwise.
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Brand(s) of the asset
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Brand(s) to apply on the asset.
+        tooltip: Name or numeric id of a brand to be applied to the asset. Provide
+          comma separated values to update multiple brand values.
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Organization(s) of the asset
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Organization(s) to apply on the asset.
+        tooltip: Name or numeric id of an organization to be applied to the asset.
+          Provide comma separated values to update multiple organization values.
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: Tag(s) of the asset
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Tag(s) to apply on the asset.
+        tooltip: Name or numeric id of a tag to be applied to the asset. Provide comma
+          separated values to update multiple tag values.
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: Affected target asset types
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        fieldassociated: ""
+        placeholder: Target asset types of the asset that needs to be updated while
+          updating the asset in the inventory.
+        tooltip: An array of related asset types which will also be updated. (e.g.
+          an asset identifier for a PAGE can cascade the properties to all known IPs
+          for that PAGE).
+        readonly: false
+      title: List of properties to update in the asset
+      description: Enter the values of any/all of the following properties.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b28997b8-a888-491c-85d6-6aa737326dcd
+    type: title
+    task:
+      id: b28997b8-a888-491c-85d6-6aa737326dcd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6a7f35e8-8100-4faf-8a76-c8a4951205db
+    type: condition
+    task:
+      id: 6a7f35e8-8100-4faf-8a76-c8a4951205db
+      version: -1
+      name: Is RiskIQ Digital Footprint integration enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 74e41d87-ab7e-4fd1-8b42-531eab77a7ab
+    type: regular
+    task:
+      id: 74e41d87-ab7e-4fd1-8b42-531eab77a7ab
+      version: -1
+      name: Clean "List of properties to update the asset" key from context
+      description: Delete "List of properties to update the asset" field from
+        context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: List of properties to update in the asset
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 0a3379c7-fbdc-480e-8013-5cbee8275fa5
+    type: regular
+    task:
+      id: 0a3379c7-fbdc-480e-8013-5cbee8275fa5
+      version: -1
+      name: Update the asset in inventory
+      description: Updates the asset in the RiskIQ Digital Footprint inventory with
+        the provided set of properties.
+      script: '|||df-update-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      action:
+        complex:
+          root: List of properties to update in the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.0
+                iscontext: true
+          accessor: Answers.0
+      asset_json: {}
+      brand:
+        complex:
+          root: List of properties to update in the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.4
+                iscontext: true
+          accessor: Answers.4
+      enterprise:
+        complex:
+          root: List of properties to update the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.3
+                iscontext: true
+          accessor: Answers.3
+      fail_on_error: {}
+      name:
+        complex:
+          root: inputs.asset_name
+      organization:
+        complex:
+          root: List of properties to update in the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.5
+                iscontext: true
+          accessor: Answers.5
+      priority:
+        complex:
+          root: List of properties to update in the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.2
+                iscontext: true
+          accessor: Answers.2
+      removed_state: {}
+      state:
+        complex:
+          root: List of properties to update in the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.1
+                iscontext: true
+          accessor: Answers.1
+      tag:
+        complex:
+          root: List of properties to update in the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.6
+                iscontext: true
+          accessor: Answers.6
+      target_asset_types:
+        complex:
+          root: List of properties to update in the asset
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: List of properties to update in the asset.Answers.7
+                iscontext: true
+          accessor: Answers.7
+      type:
+        complex:
+          root: inputs.asset_type
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 6f6933e9-b356-491d-81c1-fbb546da74e0
+    type: regular
+    task:
+      id: 6f6933e9-b356-491d-81c1-fbb546da74e0
+      version: -1
+      name: Remove the asset from inventory
+      description: Removes the asset from the RiskIQ Digital Footprint inventory.
+      script: '|||df-update-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      action: {}
+      asset_json: {}
+      brand: {}
+      enterprise: {}
+      fail_on_error: {}
+      name:
+        complex:
+          root: inputs.asset_name
+      organization: {}
+      priority: {}
+      removed_state:
+        simple: Dismissed
+      state: {}
+      tag: {}
+      target_asset_types: {}
+      type:
+        complex:
+          root: inputs.asset_type
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 26b16a87-82ca-4686-861c-31deeafa1813
+    type: regular
+    task:
+      id: 26b16a87-82ca-4686-861c-31deeafa1813
+      version: -1
+      name: Clean "Operation to perform on the asset" key from context
+      description: Delete "Operation to perform on the asset" field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: Operation to perform on the asset
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_6_#default#": 0.4,
+      "7_6_#default#": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1345,
+        "width": 1040,
+        "x": 60,
+        "y": -410
+      }
+    }
+  }
+inputs:
+- key: asset_name
+  value: {}
+  required: true
+  description: Name of the asset.
+  playbookInputQuery:
+- key: asset_type
+  value: {}
+  required: true
+  description: 'Type of the asset. Possible values are: Domain, Host, IP Address, IP Block,
+    ASN, Page, SSL Cert, Contact.'
+  playbookInputQuery:
+- key: support_email_address
+  value: {}
+  required: false
+  description: The contact email address of the support team from which manual inputs
+    should be fetched.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

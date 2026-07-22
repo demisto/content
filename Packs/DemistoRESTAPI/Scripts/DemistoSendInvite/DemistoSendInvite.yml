@@ -1,0 +1,27 @@
+commonfields:
+  id: DemistoSendInvite
+  version: -1
+name: DemistoSendInvite
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Deprecated. No available replacement.
+enabled: true
+args:
+- name: email
+  required: true
+  default: true
+  description: Email of user being invited.
+- name: roles
+  required: true
+  description: Roles of invited user.
+scripttarget: 0
+dependson:
+  must:
+  - core-api-post
+  - core-api-get
+fromversion: 5.0.0
+tests:
+- no test
+deprecated: true

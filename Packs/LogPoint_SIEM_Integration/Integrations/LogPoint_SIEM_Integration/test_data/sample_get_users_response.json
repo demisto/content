@@ -1,0 +1,35 @@
+{
+  "users": [
+    {
+      "usergroups": [
+        {
+          "id": "5bebd9fdd8aaa42840edc84f",
+          "name": "LogPoint Administrator"
+        }
+      ],
+      "id": "5bebd9fdd8aaa42840edc853",
+      "name": "admin"
+    },
+    {
+      "usergroups": [
+        {
+          "id": "5bebd9fdd8aaa42840edc84f",
+          "name": "LogPoint Administrator"
+        }
+      ],
+      "id": "5e15969ff5f33401e60fe757",
+      "name": "testadmin"
+    },
+    {
+      "usergroups": [
+        {
+          "id": "5bebd9fdd8aaa42840edc850",
+          "name": "User Account Administrator"
+        }
+      ],
+      "id": "5e1bef95f5f33436dd3a9f07",
+      "name": "test"
+    }
+  ],
+  "success": true
+}

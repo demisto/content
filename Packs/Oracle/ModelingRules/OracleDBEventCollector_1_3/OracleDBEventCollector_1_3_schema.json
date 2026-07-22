@@ -1,0 +1,36 @@
+{
+    "oracle_db_raw": {
+      "ACTION_NAME": {
+          "type": "string",
+          "is_array": false
+      },
+      "OS_USERNAME": {
+          "type": "string",
+          "is_array": false
+      },
+      "SQL_TEXT": {
+          "type": "string",
+          "is_array": false
+      },
+      "USERHOST": {
+          "type": "string",
+          "is_array": false
+      },
+      "AUTHENTICATION_TYPE": {
+          "type": "string",
+          "is_array": false
+      },
+      "CLIENT_PROGRAM_NAME": {
+          "type": "string",
+          "is_array": false
+      },
+      "SESSIONID": {
+          "type": "string",
+          "is_array": false
+      },
+      "EVENT_TIMESTAMP_UTC": {
+          "type": "datetime",
+          "is_array": false
+      }
+    }
+  }

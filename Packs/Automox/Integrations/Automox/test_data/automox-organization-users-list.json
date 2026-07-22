@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "firstname": "string",
+        "lastname": "string",
+        "email": "string",
+        "features": {
+            "mo": true
+        },
+        "prefs": [
+            {
+                "user_id": 1,
+                "pref_name": "string",
+                "value": "string"
+            }
+        ],
+        "orgs": [
+            {
+                "id": 1,
+                "name": "string",
+                "trial_end_time": "2019-08-24T14:15:22Z",
+                "trial_expired": true,
+                "access_key": "string"
+            }
+        ],
+        "tags": [
+            "string"
+        ],
+        "saml_enabled": true,
+        "rbac_roles": [
+            {
+                "id": 0,
+                "name": "string",
+                "organization_id": 1
+            }
+        ]
+    }
+]

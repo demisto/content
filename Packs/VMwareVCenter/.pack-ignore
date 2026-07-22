@@ -1,0 +1,11 @@
+[file:VMwareVcenterParsingRules.yml]
+ignore=PR101
+
+[file:VMwareVCenterModelingRules.yml]
+ignore=MR108
+
+[file:VMwareVcenter_1_3.yml]
+ignore=MR108
+
+[known_words]
+mappings

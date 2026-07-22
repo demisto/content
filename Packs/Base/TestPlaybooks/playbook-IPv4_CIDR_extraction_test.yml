@@ -1,0 +1,462 @@
+id: IPv4 CIDR extraction test
+version: -1
+name: IPv4 CIDR extraction test
+description: Test the extraction flow of an IPv4 CIDR in XSOAR
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: def7640e-da15-498b-8e70-6498f009d81c
+    type: start
+    task:
+      id: def7640e-da15-498b-8e70-6498f009d81c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: fb706760-78dc-492f-8275-13c5f2a76ed7
+    type: regular
+    task:
+      id: fb706760-78dc-492f-8275-13c5f2a76ed7
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 12c6cff8-f6dd-4e94-85a8-15ca1a08f119
+    type: title
+    task:
+      id: 12c6cff8-f6dd-4e94-85a8-15ca1a08f119
+      version: -1
+      name: IPv4 CIDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 9143df02-23b3-47e9-8c9d-6c120a9978b1
+    type: regular
+    task:
+      id: 9143df02-23b3-47e9-8c9d-6c120a9978b1
+      version: -1
+      name: Set valid IPv4s CIDR
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: valid_ipv4s_cidr
+      value:
+        simple: '"13.106.4.128/25"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 7bbb70e8-a8fa-4d7f-8c9d-30f3d5475e07
+    type: regular
+    task:
+      id: 7bbb70e8-a8fa-4d7f-8c9d-30f3d5475e07
+      version: -1
+      name: Print valid IPv4s CIDR
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      value:
+        simple: ${valid_ipv4s_cidr}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 99c9c8ab-fdcb-4377-8c49-e02d3633b3fa
+    type: condition
+    task:
+      id: 99c9c8ab-fdcb-4377-8c49-e02d3633b3fa
+      version: -1
+      name: Check auto-extract of 13.106.4.128/25
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: CIDR.Address
+            iscontext: true
+          right:
+            value:
+              simple: 13.106.4.128/25
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: bad9a67d-a570-48a3-8e71-2b19d5a56c4e
+    type: regular
+    task:
+      id: bad9a67d-a570-48a3-8e71-2b19d5a56c4e
+      version: -1
+      name: Set invalid IPv4s CIDR
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      key:
+        simple: invalid_ipv4s_cidr
+      value:
+        simple: '"13.306.56.0/25", "20.190.128.0/40", "192.168.1.1/24"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: d96db960-f5cc-4943-87d7-fceb9917f8a2
+    type: regular
+    task:
+      id: d96db960-f5cc-4943-87d7-fceb9917f8a2
+      version: -1
+      name: Print invalid IPv4s CIDR
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+      - "81"
+      - "80"
+    scriptarguments:
+      value:
+        simple: ${invalid_ipv4s_cidr}
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 8c4bb016-8f1d-4a62-899f-9f698358d628
+    type: condition
+    task:
+      id: 8c4bb016-8f1d-4a62-899f-9f698358d628
+      version: -1
+      name: Check non extraction of invalid 13.306.56.0/25
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: CIDR.Address
+            iscontext: true
+          right:
+            value:
+              simple: 13.306.56.0/25
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 47a17923-f56a-478c-8bd0-510965cf8103
+    type: regular
+    task:
+      id: 47a17923-f56a-478c-8bd0-510965cf8103
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 62930f61-46d3-4359-8212-12a230244019
+    type: condition
+    task:
+      id: 62930f61-46d3-4359-8212-12a230244019
+      version: -1
+      name: Check non extraction of invalid IPv4s CIDR - 192.168.1.1/24
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: CIDR.Address
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.1.1/24
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: ec766dac-7d26-4e83-8ffb-bf1573dc27ff
+    type: condition
+    task:
+      id: ec766dac-7d26-4e83-8ffb-bf1573dc27ff
+      version: -1
+      name: Check non extraction of invalid IPv4s CIDR - 20.190.128.0/40
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "79"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: CIDR.Address
+            iscontext: true
+          right:
+            value:
+              simple: 20.190.128.0/40
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Indicators reputation-.json Test
+fromversion: 6.5.0

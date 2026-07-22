@@ -1,0 +1,93 @@
+{
+    "action": "script",
+    "enabled": false,
+    "id": "gib_rule",
+    "index": 0,
+    "itemVersion": "",
+    "linkTo": "oldest",
+    "locked": false,
+    "name": "GIB Rule",
+    "newEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ],
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "type"
+                    }
+                },
+                "operator": "isNotEqualString",
+                "right": {
+                    "value": {
+                        "simple": "GIB Data Breach"
+                    }
+                },
+                "type": "singleSelect"
+            }
+        ]
+    ],
+    "packID": "",
+    "period": {
+        "by": "days",
+        "fromValue": 30
+    },
+    "readyNewEventFilters": [
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "gibid"
+                    }
+                },
+                "operator": "isNotEmpty",
+                "right": {
+                    "value": {}
+                },
+                "type": "shortText"
+            }
+        ],
+        [
+            {
+                "left": {
+                    "isContext": true,
+                    "value": {
+                        "simple": "type"
+                    }
+                },
+                "operator": "isNotEqualString",
+                "right": {
+                    "value": {
+                        "simple": "GIB Data Breach"
+                    }
+                },
+                "type": "singleSelect"
+            }
+        ]
+    ],
+    "scriptName": "GIBIncidentUpdate",
+    "searchClosed": false,
+    "system": false,
+    "toServerVersion": "",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

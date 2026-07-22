@@ -1,0 +1,35 @@
+commonfields:
+  id: LCMResolveHost
+  version: -1
+name: LCMResolveHost
+script: >
+  args = demisto.args()
+
+  resp = demisto.executeCommand("lcm-resolve-host", args)
+
+
+  if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':
+      demisto.results(resp)
+  else:
+      demisto.results('Done')
+type: python
+subtype: python2
+tags:
+- lightcyber
+comment: Deprecated. This script is deprecated. LightCyber Magna is no longer available.
+args:
+- name: id
+  required: true
+  default: true
+  description: The host's ID
+- name: reason
+  description: Reason for resolving the host
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - lcm-resolve-host
+timeout: 0s
+system: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

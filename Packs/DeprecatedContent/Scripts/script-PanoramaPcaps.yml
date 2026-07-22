@@ -1,0 +1,75 @@
+commonfields:
+  id: PanoramaPcaps
+  version: -1
+name: PanoramaPcaps
+script: >-
+  function AddArgument(arg, argName,req) {
+      if (arg) {
+          req[argName] = arg;
+      }
+      return req;
+  }
+
+  var reqArgs = {
+          type: 'export',
+          category: args.pcapType,
+      };
+  if (args.password) {
+      reqArgs['dlp-password'] = args.password;
+  } else if (args.pcapType === 'dlp-pcap') {
+      return 'can not provide dlp-pcap without password';
+  }
+
+  AddArgument(args.from, 'from', reqArgs);
+
+  AddArgument(args.to, 'to', reqArgs);
+
+  AddArgument(args.serialNo, 'serialno', reqArgs);
+
+  AddArgument(args.searchTime, 'search-time', reqArgs);
+
+  AddArgument(args.pcapID, 'pcap-id', reqArgs);
+
+  raw = executeCommand('panorama', reqArgs);
+
+  if (raw[0].ContentsFormat === 'json') {
+      var content = raw[0].Contents.response;
+      if (content['-status'] === 'success') {
+          return content.result;
+      } else {
+          return content['-status'];
+      }
+  } else {
+      return raw;
+  }
+type: javascript
+tags:
+- panorama
+- firewall
+comment: Deprecated. Use the "panorama-get-pcap" command instead.
+system: true
+args:
+- name: pcapType
+  required: true
+  description: Type of Packet Capture
+- name: from
+  description: '"From" value for the rule'
+- name: to
+  description: '"To" value for the rule'
+- name: serialNo
+  description: Serial number for the request. For further information, see the Panorama XML API Documentation.
+- name: searchTime
+  description: Search time for the request. For further information, see the Panorama XML API Documentation.
+- name: pcapID
+  description: ID of the Pcap for the request. For further information, see the Panorama XML API Documentation.
+- name: password
+  description: Password for Panorama.
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - panorama
+timeout: 0s
+tests:
+- No tests
+fromversion: 5.0.0

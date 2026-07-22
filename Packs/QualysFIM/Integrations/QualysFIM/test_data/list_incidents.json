@@ -1,0 +1,94 @@
+[
+  {
+    "sortValues": [
+      1613378492427
+    ],
+    "data": {
+      "approvalStatus": "APPROVED",
+      "marked": "False",
+      "lastUpdatedBy": {
+        "date": 1613378492427,
+        "user": {
+          "name": "Gregori Nazarovsky",
+          "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e"
+        }
+      },
+      "filterToDate": "2021-02-15T08:41:31.896+0000",
+      "approvalDate": "2021-02-15T08:41:56.706+0000",
+      "assignDate": "2021-02-15T08:41:32.427+0000",
+      "approvalType": "MANUAL",
+      "changeType": "AUTOMATED",
+      "markupStatus": "None",
+      "filters": [
+        "dateTime: ['2021-02-14T08:41:31.896780+0000'..'2021-02-15T08:41:31.896808+0000']"
+      ],
+      "type": "DEFAULT",
+      "reviewers": [
+        "qmast5gn1"
+      ],
+      "deleted": "False",
+      "filterFromDate": "2021-02-14T08:41:31.896+0000",
+      "createdBy": {
+        "date": 1613378492427,
+        "user": {
+          "name": "Gregori Nazarovsky",
+          "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e"
+        }
+      },
+      "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+      "name": "test1",
+      "ruleName": "None",
+      "comment": "d",
+      "dispositionCategory": "CHANGE_CONTROL_VIOLATION",
+      "id": "75539bfc-c0e7-4bcb-b55a-48065ef89ebe",
+      "ruleId": "None",
+      "status": "CLOSED"
+    }
+  },
+  {
+    "sortValues": [
+      1613301719855
+    ],
+    "data": {
+      "approvalStatus": "APPROVED",
+      "marked": "False",
+      "lastUpdatedBy": {
+        "date": 1613301719855,
+        "user": {
+          "name": "Gregori Nazarovsky",
+          "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e"
+        }
+      },
+      "filterToDate": "2021-02-02T00:00:00.000+0000",
+      "approvalDate": "2021-02-14T11:23:19.989+0000",
+      "assignDate": "2021-02-14T11:21:59.855+0000",
+      "approvalType": "MANUAL",
+      "changeType": "AUTOMATED",
+      "markupStatus": "None",
+      "filters": [
+        "dateTime: ['2021-01-01'..'2021-02-02']"
+      ],
+      "type": "DEFAULT",
+      "reviewers": [
+        "qmast5gn1"
+      ],
+      "deleted": "False",
+      "filterFromDate": "2021-01-01T00:00:00.000+0000",
+      "createdBy": {
+        "date": 1613301719855,
+        "user": {
+          "name": "Gregori Nazarovsky",
+          "id": "1a7f00bd-cbde-7d97-831f-ba25de45c44e"
+        }
+      },
+      "customerId": "dd00a419-42fc-cbe5-8205-9cba35e3b647",
+      "name": "test",
+      "ruleName": "None",
+      "comment": "Approved Today",
+      "dispositionCategory": "MALWARE",
+      "id": "5a6d0462-1c2e-4e36-a13b-6264bd3c222f",
+      "ruleId": "None",
+      "status": "CLOSED"
+    }
+  }
+]

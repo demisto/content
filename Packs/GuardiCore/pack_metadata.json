@@ -1,0 +1,39 @@
+{
+    "name": "Akamai GuardiCore",
+    "description": "Data center breach detection",
+    "support": "xsoar",
+    "currentVersion": "2.0.23",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Cloud Security",
+        "Deception & Breach Simulation",
+        "Network Security"
+    ],
+    "tags": [
+        "Network",
+        "Security",
+        "Breach",
+        "Breach Simulation",
+        "Malware"
+    ],
+    "useCases": [
+        "Breach and Attack Simulation",
+        "Malware",
+        "Network Security"
+    ],
+    "keywords": [
+        "Guardicore Centra"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,41 @@
+commonfields:
+  id: NessusShowEditorTemplates
+  version: -1
+name: NessusShowEditorTemplates
+script: >
+  from time import ctime
+
+  res = []
+
+  dArgs = demisto.args()
+
+  resCmd = demisto.executeCommand("nessus-get-scans-editors", dArgs)
+
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              info = demisto.get(entry, 'Contents.templates')
+              info = [{k: formatCell(row[k]) for k in row} for row in info]
+              res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': info})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- nessus
+comment: Deprecated. Show templates of the scan editor including the UUIDs needed to create a new scan.
+system: true
+scripttarget: 0
+args: []
+dependson:
+  must:
+  - nessus-get-scans-editors
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

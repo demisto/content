@@ -1,0 +1,16 @@
+{
+    "msft_azure_firewall_raw": {
+        "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "properties": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

@@ -1,0 +1,1381 @@
+import itertools
+import json
+import re
+from types import SimpleNamespace
+from unittest.mock import MagicMock
+
+import demistomock as demisto
+import pytest
+from CommonServerPython import DemistoException, CommandResults, PollResult
+from MicrosoftGraphSecurity import (
+    MANAGED_IDENTITIES_TOKEN_URL,
+    MsGraphClient,
+    Resources,
+    activate_ediscovery_custodian_command,
+    advanced_hunting_command,
+    capitalize_dict_keys_first_letter,
+    close_ediscovery_case_command,
+    create_alert_comment_command,
+    create_data_to_update,
+    create_ediscovery_non_custodial_data_source_command,
+    create_email_file_request_command,
+    create_file_assessment_request_command,
+    create_filter_query,
+    create_mail_assessment_request_command,
+    create_search_alerts_filters,
+    create_url_assessment_request_command,
+    created_by_fields_to_hr,
+    fetch_incidents,
+    get_alert_details_command,
+    get_list_security_incident_command,
+    get_message_user,
+    get_users_command,
+    list_ediscovery_case_command,
+    list_ediscovery_custodian_command,
+    list_ediscovery_custodian_site_sources_command,
+    list_ediscovery_non_custodial_data_source_command,
+    list_ediscovery_search_command,
+    list_threat_assessment_requests_command,
+    main,
+    purge_ediscovery_data_command,
+    release_ediscovery_custodian_command,
+    reopen_ediscovery_case_command,
+    search_alerts_command,
+    to_msg_command_results,
+    update_ediscovery_case_command,
+    update_ediscovery_search_command,
+    update_incident_command,
+    create_ediscovery_case_hold_policy_command,
+    delete_ediscovery_case_hold_policy_command,
+    update_ediscovery_case_policy_command,
+    list_ediscovery_case_hold_policy_command,
+    list_case_operation_command,
+    _extract_export_download_url,
+    _extract_filename_from_headers,
+    _download_operation_export_file,
+    export_result_ediscovery_data_command,
+)
+
+client_mocker = MsGraphClient(
+    tenant_id="tenant_id",
+    auth_id="auth_id",
+    enc_key="enc_key",
+    app_name="app_name",
+    base_url="url",
+    verify="use_ssl",
+    proxy="proxy",
+    self_deployed="self_deployed",
+)
+
+
+def load_json(path):
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+@pytest.mark.parametrize(
+    "api_response, keys_to_replace, expected_output",
+    [
+        (
+            {"keyOne": {"keyTwo": {"keyThree": "a"}, "keyFour": {"keyFive": "b"}}},
+            {},
+            {"KeyOne": {"KeyFour": {"KeyFive": "b"}, "KeyTwo": {"KeyThree": "a"}}},
+        ),
+        (
+            {"keyOne": {"keyTwo": "a"}, "customOverride": "a"},
+            {"customOverride": "SOMETHING"},
+            {"KeyOne": {"KeyTwo": "a"}, "SOMETHING": "a"},
+        ),
+    ],
+)
+def test_capitalize_dict_keys_first_letter(api_response, keys_to_replace, expected_output):
+    """
+    Given
+        a response from the api
+    When
+        calling capitalize_dict_keys_first_letter with optional keys_to_replace
+    Then
+        Results are recursively formatted, manual keys are replaces
+
+    """
+    assert capitalize_dict_keys_first_letter(api_response, keys_to_replace) == expected_output
+
+
+def test_get_users_command(mocker):
+    test_data = load_json("./test_data/test_get_users_command.json")
+    mocker.patch.object(client_mocker, "get_users", return_value=test_data.get("raw_user_data"))
+    hr, ec, _ = get_users_command(client_mocker, {})
+    assert hr == test_data.get("expected_hr")
+    assert ec == test_data.get("expected_ec")
+
+
+def mock_request(method, url_suffix, params):
+    return params
+
+
+@pytest.mark.parametrize("test_case", ["test_case_3"])
+def test_get_alert_details_command(mocker, test_case):
+    """
+    Given:
+    - test case that point to the relevant test case in the json test data which include:
+      args including alert_id, response mock, expected hr and ec outputs.
+    - Case 3: args with alert_id, response of an Alerts v2 alert.
+
+    When:
+    - Running get_alert_details_command.
+
+    Then:
+    - Ensure that the alert was parsed correctly and right HR and EC outputs are returned.
+    - Case 3: Should parse all the response information into the HR,
+              and all fields from the response into the ec.
+    """
+    test_data = load_json("./test_data/test_get_alert_details_command.json").get(test_case)
+    mocker.patch.object(client_mocker, "get_alert_details", return_value=test_data.get("mock_response"))
+    hr, ec, _ = get_alert_details_command(client_mocker, test_data.get("args"))
+    assert hr == test_data.get("expected_hr")
+    assert ec == test_data.get("expected_ec")
+
+
+@pytest.mark.parametrize(
+    "test_case",
+    [
+        "test_case_2",
+    ],
+)
+def test_search_alerts_command(mocker, test_case):
+    """
+    Given:
+    - test case that point to the relevant test case in the json test data which include:
+      args, response mock, expected hr and ec outputs.
+    - Case 2: args with limit of 1 incident, response of a search_alert command results with 2 alerts.
+
+    When:
+    - Running search_alerts_command.
+
+    Then:
+    - Ensure that the response was parsed correctly and right HR and EC outputs are returned.
+    - Case 2: Should concat the second incident from the response,
+              parse all only the first incident response information into the HR,
+              and all fields from the first incident response into the ec.
+    """
+    test_data = load_json("./test_data/test_search_alerts_command.json").get(test_case)
+    mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
+    hr, ec, _ = search_alerts_command(client_mocker, test_data.get("args"))
+    assert hr == test_data.get("expected_hr")
+    assert ec == test_data.get("expected_ec")
+
+
+@pytest.mark.parametrize(
+    "test_case",
+    [
+        "test_case_1",
+    ],
+)
+def test_fetch_incidents_command(mocker, test_case):
+    """
+    Given:
+    - test case that point to the relevant test case in the json test data which include a response mock.
+    - Case 1: Response of a search_alert command results.
+
+    When:
+    - Running fetch_incidents.
+
+    Then:
+    - Ensure that the length of the results and the different fields of the fetched incidents are returned correctly.
+    - Case 1: Ensure that the len of the incidents returned in the first iteration is 3, then 1 and then 0.
+    """
+    mocker.patch("MicrosoftGraphSecurity.parse_date_range", return_value=("2020-04-19 08:14:21", "never mind"))
+    test_data = load_json("./test_data/test_fetch_incidents_command.json").get(test_case)
+    mocker.patch.object(client_mocker, "search_alerts", return_value=test_data.get("mock_response"))
+    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=10, filter="", service_sources="")
+    assert len(incidents) == 3
+    assert incidents[0].get("severity") == 2
+    assert incidents[2].get("occurred") == "2020-04-20T16:54:50.2722072Z"
+
+    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=1, filter="", service_sources="")
+    assert len(incidents) == 1
+    assert incidents[0].get("name") == "test alert - da637218501473413212_-1554891308"
+
+    incidents = fetch_incidents(client_mocker, fetch_time="1 hour", fetch_limit=0, filter="", service_sources="")
+    assert len(incidents) == 0
+
+
+@pytest.mark.parametrize(
+    "args, expected_params, is_fetch",
+    [
+        (
+            {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
+            {"$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
+            True,
+        ),
+        (
+            {"filter": "Category eq 'Malware' and Severity eq 'High'", "status": "resolved"},
+            {"$top": "50", "$filter": "Category eq 'Malware' and Severity eq 'High' and status eq 'resolved'"},
+            False,
+        ),
+        ({"page": "2"}, {"$top": "50", "$skip": 100, "$filter": ""}, False),
+    ],
+)
+def test_create_search_alerts_filters(args, expected_params, is_fetch):
+    """
+    Given:
+    - args, expected_params results, and is_fetch flag.
+    - Case 1: args with filter and status fields, is_fetch is True.
+    - Case 2: args with filter and status fields, is_fetch is False.
+    - Case 3: args with only page field, is_fetch is False.
+
+    When:
+    - Running create_search_alerts_filters.
+
+    Then:
+    - Ensure that the right fields were parsed into the query.
+    - Case 1: Should include both the value of the filter field from the args and the status.
+    - Case 2: Should include the filter and status in the $filter field, and 50 in the $top field.
+    - Case 3: Should return a params dict with empty $filter field, 50 in the $top field, and 100 in the $skip field.
+    """
+    params = create_search_alerts_filters(args, is_fetch=is_fetch)
+    assert params == expected_params
+
+
+@pytest.mark.parametrize(
+    "args, expected_error",
+    [
+        ({"page_size": "2001"}, "Please note that the page size limit is 2000"),
+    ],
+)
+def test_create_search_alerts_filters_errors(args, expected_error):
+    """
+    Given:
+    - args and expected_error.
+    - Case 1: Args with page_size = 2001.
+
+    When:
+    - Running create_search_alerts_filters.
+
+    Then:
+    - Ensure that the right error was thrown.
+    - Case 1: Should throw an error for page_size too big.
+    """
+    with pytest.raises(DemistoException) as e:
+        create_search_alerts_filters(args, is_fetch=False)
+    assert str(e.value.message) == expected_error
+
+
+@pytest.mark.parametrize(argnames="client_id", argvalues=["test_client_id", None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+    Given:
+        - Managed Identities client id for authentication.
+    When:
+        - Calling test_module.
+    Then:
+        - Ensure the output are as expected.
+    """
+    mock_token = {"access_token": "test_token", "expires_in": "86400"}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile(f"^{Resources.graph}.*"), json={"value": []})
+
+    params = {
+        "managed_identities_client_id": {"password": client_id},
+        "use_managed_identities": "True",
+        "resource_group": "test_resource_group",
+        "host": Resources.graph,
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "results")
+    mocker.patch("MicrosoftApiModule.get_integration_context", return_value={})
+
+    main()
+
+    assert "ok" in demisto.results.call_args[0][0]["Contents"]
+    qs = get_mock.last_request.qs
+    assert qs["resource"] == [Resources.graph]
+    assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
+
+
+@pytest.mark.parametrize(
+    "args, expected_results",
+    [
+        ({"status": "new"}, {"status": "new"}),
+        ({"assigned_to": "someone", "status": "inProgress"}, {"assignedTo": "someone", "status": "inProgress"}),
+        (
+            {"determination": "malware", "classification": "truePositive"},
+            {"determination": "malware", "classification": "truePositive"},
+        ),
+    ],
+)
+def test_create_data_to_update(args, expected_results):
+    """
+    Given:
+    - args and expected_results.
+    - Case 1: args with status field.
+    - Case 2: args with assigned_to and status fields.
+    - Case 3: args with determination and classification fields.
+
+    When:
+    - Running create_data_to_update.
+
+    Then:
+    - Ensure that the right fields were parsed into the data dict.
+    - Case 1: Should parse only status into the data dict.
+    - Case 2: Should parse assigned_to as assignedTo and status into the data dict.
+    - Case 3: Should parse determination and classification into the data dict.
+    """
+    data = create_data_to_update(args)
+    assert data == expected_results
+
+
+@pytest.mark.parametrize(
+    "args, expected_error",
+    [
+        (
+            {"closed_date_time": "now"},
+            "No data to update was provided, please provide at least one of the "
+            "following: assigned_to, determination, classification, status.",
+        ),
+    ],
+)
+def test_create_data_to_update_errors(args, expected_error):
+    """
+    Given:
+    - args and expected_error.
+    - Case 1: Args with only 'closed_date_time' field (not a valid update field).
+
+    When:
+    - Running create_data_to_update.
+
+    Then:
+    - Ensure that the right error was thrown.
+    - Case 1: Should throw an error for missing relevant data to update.
+    """
+    with pytest.raises(DemistoException) as e:
+        create_data_to_update(args)
+    assert str(e.value.message) == expected_error
+
+
+@pytest.mark.parametrize("test_case", ["test_case_1", "test_case_2"])
+def test_create_alert_comment_command(mocker, test_case):
+    """
+    Given:
+    - test case that point to the relevant test case in the json test data which include:
+      args including alert_id and comment to add, response mock, and expected hr and ec outputs
+    - Case 1: Mock response of a comment with only one comment (the one that just got added).
+    - Case 2: Mock response of a comment with two comments.
+    When:
+    - Running create_alert_comment_command.
+
+    Then:
+    - Ensure that the alert was parsed correctly and right HR and EC outputs are returned.
+    - Case 1: Should return a table with one entry.
+    - Case 2: Should return a table with two entries, one for each comment.
+    """
+    test_data = load_json("./test_data/test_create_alert_comment_command.json").get(test_case)
+    mocker.patch.object(client_mocker, "create_alert_comment", return_value=test_data.get("mock_response"))
+    hr, ec, _ = create_alert_comment_command(client_mocker, test_data.get("args"))
+    assert hr == test_data.get("expected_hr")
+    assert ec == test_data.get("expected_ec")
+
+
+@pytest.mark.parametrize(
+    "param, service_sources_param, expected_results",
+    [
+        ("param", "service_sources_param", "param"),
+        ("", "service_sources_param", "serviceSource in ('service_sources_param')"),
+        (
+            "",
+            "service_source1,service_source2",
+            "serviceSource in ('service_source1','service_source2')",
+        ),
+        ("", "", ""),
+    ],
+)
+def test_create_filter_query(param, service_sources_param, expected_results):
+    """
+    Given:
+    - param and service_sources_param function arguments, and expected_results.
+    - Case 1: param and service_sources_param function arguments filled.
+    - Case 2: Only service_sources_param function argument filled.
+    - Case 3: Multiple service sources are provided.
+    - Case 4: All arguments empty.
+
+    When:
+    - Running create_filter_query.
+
+    Then:
+    - Ensure that the right option was returned.
+    - Case 1: Should return param.
+    - Case 2: Should return service_sources_param as query.
+    - Case 3: Should return service_sources_param as query operator $in.
+    - Case 4: Should return an empty string.
+    """
+    filter_query = create_filter_query(param, service_sources_param)
+    assert filter_query == expected_results
+
+
+def test_to_msg_command_results():
+    """
+    Given: An example msg edsicvoery response
+    When: calling to_msg_command_results
+    Then:
+        1. Outputs are replaced properly
+        2. data.context is stripped out
+        3. none is removed
+
+    """
+    res = load_json("./test_data/list_cases_response.json")
+
+    results = to_msg_command_results(
+        raw_object_list=res.get("value"),
+        raw_res=res,
+        outputs_prefix="MsGraph.SomePrefix",
+        output_key_field="SomeId",
+        raw_keys_to_replace={"status": "SomeStatus", "id": "SomeId"},
+    )
+
+    assert all("@odata.context" not in o for o in results.outputs)
+    assert all("SomeId" in o for o in results.outputs)
+    assert all("SomeId" in o for o in results.outputs)
+    assert all(None not in o.values() for o in results.outputs)
+
+
+def test_create_ediscovery_custodian_site_source_command(mocker):
+    """
+    Given: An example msg edsicvoery list site source response
+    When: calling list_ediscovery_custodian_site_sources_command
+    Then:
+        1. The proper URL is used in the request
+        2. @odata.id is stripped out of context
+        3. The proper ids and output prefixes are used
+
+    """
+    mock = mocker.patch.object(
+        client_mocker.ms_client, "http_request", return_value=load_json("./test_data/list_site_source_single.json")
+    )
+
+    results = list_ediscovery_custodian_site_sources_command(
+        client_mocker, {"case_id": "case_id", "custodian_id": "custodian_id"}
+    )
+    assert mock.call_args.kwargs["url_suffix"] == "security/cases/ediscoveryCases/case_id/custodians/custodian_id/siteSources"
+    assert not any("@odata.id" in o for o in results.outputs)
+    assert results.outputs_prefix == "MsGraph.CustodianSiteSource"
+    assert results.outputs_key_field == "SiteSourceId"
+    assert all("SiteSourceId" in o for o in results.outputs)
+    assert "Created By Name" in results.readable_output
+
+
+@pytest.mark.parametrize(
+    "command_function, description, external_id",
+    list(
+        itertools.product(
+            [update_ediscovery_case_command, update_ediscovery_search_command], ["value", "", None], ["value", "", None]
+        )
+    ),
+)
+def test_update_ediscovery_case_command(mocker, command_function, description, external_id):
+    """
+    Given:
+        update ediscovery commands
+    When:
+        an empty value is recieved as an argument
+    Then:
+        the argument shouldnt be sent to the api (dont want to override a real value with an update)
+    """
+    mock = mocker.patch.object(client_mocker.ms_client, "http_request")
+
+    some_id = "some_id"
+    command_function(
+        client_mocker, {"display_name": "name", "description": description, "external_id": external_id, "case_id": some_id}
+    )
+    assert not set(mock.call_args.kwargs["json_data"].values()) & {None, ""}
+
+
+def test_created_by_fields_to_hr():
+    """
+    Given
+        A context dictionary
+    When
+        Calling created_by_fields_to_hr
+    Then
+        get the created fields flattened onto main dict
+    """
+    assert created_by_fields_to_hr(
+        {"Field1": "val1", "CreatedBy": {"User": {"DisplayName": "Bob", "UserPrincipalName": "Frank"}}}
+    ) == {"CreatedByAppName": None, "CreatedByName": "Bob", "CreatedByUPN": "Frank", "Field1": "val1"}
+
+
+def test_list_ediscovery_search_command(mocker):
+    """
+
+    Given:
+        A raw response with one result
+    When:
+        calling list search command
+    Then:
+    Prefixes are correct, nested value is in the readable output
+    """
+    raw_response = load_json("./test_data/list_search_single_response.json")
+    mocker.patch.object(client_mocker, "list_ediscovery_search", return_value=raw_response)
+
+    results = list_ediscovery_search_command(client_mocker, {})
+
+    assert results.raw_response == raw_response
+    assert results.outputs_key_field == "SearchId"
+    assert results.outputs_key_field == "SearchId"
+    assert results.outputs_prefix == "MsGraph.eDiscoverySearch"
+    assert results.outputs[0]["CreatedBy"]["User"]["DisplayName"] in results.readable_output
+
+
+@pytest.mark.parametrize("command_to_check", ["all", "ediscovery", "alerts"])
+def test_test_auth_code_command(mocker, command_to_check):
+    """
+    Given
+        a permission set to test
+    When
+        Calling test_auth_code_command
+
+    Then
+        The proper permissions are called
+
+    """
+    from MicrosoftGraphSecurity import test_auth_code_command
+
+    mock_ediscovery = mocker.patch.object(
+        client_mocker, "list_ediscovery_cases", return_value=load_json("./test_data/list_cases_response.json")
+    )
+    mock_alerts = mocker.patch("MicrosoftGraphSecurity.test_function")
+    mock_threat_assessment = mocker.patch.object(
+        client_mocker, "list_threat_assessment_requests", return_value=load_json("./test_data/list_threat_assessment.json")
+    )
+    test_auth_code_command(client_mocker, {"permission_type": command_to_check})
+
+    if command_to_check == "alerts":
+        assert not mock_ediscovery.called
+        assert not mock_threat_assessment.called
+        assert mock_alerts.called
+    elif command_to_check == "any":
+        assert mock_ediscovery.called
+        assert mock_alerts.called
+        assert mock_threat_assessment.called
+    elif command_to_check == "ediscovery":
+        assert mock_ediscovery.called
+        assert not mock_alerts.called
+        assert not mock_threat_assessment.called
+    elif command_to_check == "threat assessment":
+        assert not mock_ediscovery.called
+        assert not mock_alerts.called
+        assert mock_threat_assessment.called
+
+
+def test_purge_ediscovery_data_command(mocker):
+    """
+    Given:
+        A purge response with no Location header.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the status is success and the null Operation ID is removed from the
+        context outputs.
+    """
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={}))
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.readable_output == "eDiscovery purge status is success.\n- Operation ID: None"
+    assert result.outputs == {"Status": "success"}
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Purge"
+
+
+def test_purge_ediscovery_data_command_with_operation_id(mocker):
+    """
+    Given:
+        A purge response that includes a Location header with an operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the Operation ID is extracted and returned to the context outputs.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_456"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"OperationID": "op_456", "Status": "succeeded"}
+    assert "op_456" in result.readable_output
+
+
+def test_purge_ediscovery_data_command_with_malformed_location(mocker):
+    """
+    Given:
+        A purge response that includes a Location header without a parseable operation ID.
+    When:
+        Calling purge_ediscovery_data_command.
+    Then:
+        Ensure the null Operation ID is removed from the context outputs and the
+        readable output shows None.
+    """
+    location = "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/"
+    mocker.patch.object(client_mocker, "purge_ediscovery_data", return_value=SimpleNamespace(headers={"Location": location}))
+    mocker.patch.object(client_mocker, "get", return_value={"status": "succeeded"})
+    result = purge_ediscovery_data_command(client_mocker, {})
+    assert result.outputs == {"Status": "succeeded"}
+    assert result.readable_output == "eDiscovery purge status is succeeded.\n- Operation ID: None"
+
+
+def test_list_ediscovery_non_custodial_data_source_command_empty_output(mocker):
+    mocker.patch.object(client_mocker, "list_ediscovery_noncustodial_datasources", return_value={"value": []})
+    assert (
+        list_ediscovery_non_custodial_data_source_command(client_mocker, {}).readable_output == "### Results:\n**No entries.**\n"
+    )
+
+
+def test_list_ediscovery_case_command(mocker):
+    raw_response = load_json("./test_data/list_cases_response.json")
+    mocker.patch.object(client_mocker, "list_ediscovery_cases", return_value=raw_response)
+    results = list_ediscovery_case_command(client_mocker, {})
+    assert len(raw_response["value"]) == len(results.outputs)
+    assert all(output["CreatedDateTime"] in results.readable_output for output in results.outputs)
+
+
+def test_activate_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, "activate_edsicovery_custodian", return_value=None)
+    assert (
+        activate_ediscovery_custodian_command(
+            client_mocker, {"case_id": "caseid", "custodian_id": "custodian_id"}
+        ).readable_output
+        == "Custodian with id custodian_id Case was reactivated on case with id caseid successfully."
+    )
+
+
+def test_release_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, "release_edsicovery_custodian", return_value=None)
+    assert (
+        release_ediscovery_custodian_command(client_mocker, {"case_id": "caseid", "custodian_id": "custodian_id"}).readable_output
+        == "Custodian with id custodian_id was released from case with id caseid successfully."
+    )
+
+
+def test_close_ediscovery_case_command(mocker):
+    mocker.patch.object(client_mocker, "close_edsicovery_case", return_value=None)
+    assert (
+        close_ediscovery_case_command(client_mocker, {"case_id": "caseid"}).readable_output
+        == "Case with id caseid was closed successfully."
+    )
+
+
+def test_reopen_ediscovery_case_command(mocker):
+    mocker.patch.object(client_mocker, "reopen_edsicovery_case", return_value=None)
+    assert (
+        reopen_ediscovery_case_command(client_mocker, {"case_id": "caseid"}).readable_output
+        == "Case with id caseid was reopened successfully."
+    )
+
+
+@pytest.mark.parametrize(
+    "site, email, should_error",
+    [("exists", None, False), ("", "Exists", False), ("exists", "also exists", True), (None, None, True)],
+)
+def test_create_ediscovery_non_custodial_data_source_command_invalid_args(mocker, site, email, should_error):
+    """
+    Given:
+        Arguments that arent valid for this command
+    When:
+        Calling the command
+    Then
+        An exception is raised
+
+    """
+    mocker.patch.object(client_mocker, "create_ediscovery_non_custodial_data_source", return_value=None)
+    try:
+        create_ediscovery_non_custodial_data_source_command(client_mocker, {"site": site, "email": email})
+        assert not should_error
+    except ValueError:
+        assert should_error
+
+
+def test_empty_list_ediscovery_custodian_command(mocker):
+    mocker.patch.object(client_mocker, "list_ediscovery_custodians", return_value={})
+    assert list_ediscovery_custodian_command(client_mocker, {}).readable_output == "### Results:\n**No entries.**\n"
+
+
+THREAT_ASSESSMENT_COMMANDS = {
+    "mail_assessment_request": create_mail_assessment_request_command,
+    "email_file_assessment_request": create_email_file_request_command,
+    "file_assessment_request": create_file_assessment_request_command,
+    "url_assessment_request": create_url_assessment_request_command,
+    "list_assessment_requests": list_threat_assessment_requests_command,
+}
+
+
+@pytest.mark.parametrize(
+    "mock_func, command_name, expected_result",
+    [
+        ("create_mail_assessment_request", "mail_assessment_request", "mail_assessment_request.json"),
+        ("create_email_file_assessment_request", "email_file_assessment_request", "email_file_assessment_request.json"),
+        ("create_file_assessment_request", "file_assessment_request", "file_assessment_request.json"),
+        ("create_url_assessment_request", "url_assessment_request", "url_assessment_request.json"),
+    ],
+)
+def test_create_mail_assessment_request_command(mocker, mock_func, command_name, expected_result):
+    """
+
+    Given:
+        A raw response with one result
+    When:
+        calling list search command
+    Then:
+        Nested value is in the readable output
+    """
+    raw_response = load_json(f"./test_data/{expected_result}")
+    mocker.patch.object(client_mocker, mock_func, return_value={"request_id": "123"})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request_status", return_value={"status": "completed"})
+    mocker.patch.object(client_mocker, "get_threat_assessment_request", return_value=raw_response)
+    mocker.patch("MicrosoftGraphSecurity.get_content_data", return_value="content_data")
+    mocker.patch("MicrosoftGraphSecurity.get_message_user", return_value="user_mail")
+    mocker.patch("CommonServerPython.is_demisto_version_ge", return_value=True)
+    results = THREAT_ASSESSMENT_COMMANDS[command_name]({}, client_mocker)
+
+    assert results.raw_response == raw_response
+    assert results.outputs.get("ID") == raw_response.get("id")
+    assert results.outputs.get("Content Type") == raw_response.get("contentType")
+
+
+def test_list_threat_assessment_requests_command(mocker):
+    raw_response = load_json("./test_data/list_threat_assessment.json")
+    mocker.patch.object(client_mocker, "list_threat_assessment_requests", return_value=raw_response)
+
+    result = list_threat_assessment_requests_command(client_mocker, {})
+    assert len(result) == 2
+    assert result[0].outputs_prefix == "MSGraphMail.AssessmentRequest"
+    assert len(result[0].outputs) == 4
+    assert result[1].outputs_prefix == "MsGraph.AssessmentRequestNextToken"
+    assert result[1].outputs == {"next_token": "test_token"}
+
+
+@pytest.mark.parametrize("user, expected_result", [("testuser@test.com", "test user id"), ("test user id", "test user id")])
+def test_get_message_user(mocker, user, expected_result):
+    mocker.patch.object(client_mocker, "get_user_id", return_value={"value": [{"id": "test user id"}]})
+    message_user = get_message_user(client_mocker, user)
+    assert message_user == expected_result
+
+
+def test_advanced_hunting_command(mocker):
+    response = load_json("./test_data/advanced_hunting_response.json")
+    mocker.patch.object(client_mocker, "advanced_hunting_request", return_value=response)
+    args = {"query": "AlertInfo", "limit": 2, "timeout": 50}
+
+    results = advanced_hunting_command(client_mocker, args)
+
+    expected_results = load_json("./test_data/advanced_hunting_results.json")
+    assert results.outputs_prefix == expected_results["outputs_prefix"]
+    assert results.outputs_key_field == expected_results["outputs_key_field"]
+    assert results.outputs == expected_results["outputs"]
+    assert results.readable_output == expected_results["readable_output"]
+
+    mocker.patch.object(demisto, "params", return_value={"microsoft_365_defender_context": True})
+    results = advanced_hunting_command(client_mocker, args)
+
+    expected_results = load_json("./test_data/advanced_hunting_results_365_defenfer.json")
+    assert results[1].outputs_prefix == expected_results["outputs_prefix"]
+    assert results[1].outputs_key_field == expected_results["outputs_key_field"]
+    assert results[1].outputs == expected_results["outputs"]
+    assert results[1].readable_output == expected_results["readable_output"]
+
+
+def test_get_list_security_incident_command_single_case(mocker):
+    response = load_json("./test_data/incidents_single_response.json")
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
+    args = {"incident_id": 12345, "limit": 1, "timeout": 50}
+    results = get_list_security_incident_command(client_mocker, args)
+    expected_results = load_json("./test_data/incidents_single_results.json")
+    assert results.outputs_prefix == expected_results["outputs_prefix"]
+    assert results.outputs_key_field == expected_results["outputs_key_field"]
+    assert results.outputs == expected_results["outputs"]
+    assert results.readable_output == expected_results["readable_output"]
+
+
+def test_get_list_security_incident_command_list_case(mocker):
+    response = load_json("./test_data/incidents_list_response.json")
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
+    args = {"limit": 2, "timeout": 50}
+    results = get_list_security_incident_command(client_mocker, args)
+    expected_results = load_json("./test_data/incidents_list_results.json")
+    assert results.outputs_prefix == expected_results["outputs_prefix"]
+    assert results.outputs_key_field == expected_results["outputs_key_field"]
+    assert results.outputs == expected_results["outputs"]
+    assert results.readable_output == expected_results["readable_output"]
+
+
+def test_update_incident_command(mocker):
+    response = load_json("./test_data/incident_update_response.json")
+    mocker.patch.object(client_mocker, "update_incident_request", return_value=response)
+    args = {
+        "incident_id": "12345",
+        "custom_tags": "test1,test2",
+        "status": "active",
+        "classification": "unknown",
+        "determination": "unknown",
+        "assigned_to": "",
+        "severity": "unknown",
+        "resolving_comment": "resolve_test",
+        "timeout": 50,
+    }
+
+    results = update_incident_command(client_mocker, args)
+
+    expected_results = load_json("./test_data/incident_update_results.json")
+
+    assert results.outputs_prefix == expected_results["outputs_prefix"]
+    assert results.outputs_key_field == expected_results["outputs_key_field"]
+    assert results.outputs == expected_results["outputs"]
+    assert results.readable_output == expected_results["readable_output"]
+
+
+from MicrosoftGraphSecurity import (
+    run_estimate_statistics_command,
+    _get_last_estimate_statistics_command,
+)
+
+
+# ==============================
+# Dummy Client
+# ==============================
+class DummyEstimateClient:
+    """Dummy client simulating Microsoft Graph eDiscovery estimate statistics operations."""
+
+    def __init__(self):
+        # Store operations by (case_id, search_id)
+        self.operations = {}
+
+    def start_estimate_statistics_request(self, case_id, search_id, statistics_options=None):
+        """
+        Simulate starting an estimate statistics request.
+        """
+        self.operations[(case_id, search_id)] = {
+            "id": "OP123",
+            "status": "running",
+            "percentProgress": 0,
+            "createdDateTime": "2025-11-16T10:00:00Z",
+            "lastActionDateTime": "2025-11-16T10:00:00Z",
+            "indexedItemCount": 100,
+            "indexedItemsSize": 50000,
+            "unindexedItemCount": 2,
+            "unindexedItemsSize": 1024,
+            "totalItemCount": 102,
+            "totalItemsSize": 51024,
+            "mailboxCount": 3,
+            "siteCount": 2,
+            "call_count": 0,  # track how many times get_last was called
+        }
+
+    def get_last_estimate_statistics_operation(self, case_id, search_id):
+        """
+        Simulate polling: first call returns running, second call returns succeeded.
+        """
+        op = self.operations.get((case_id, search_id))
+        if not op:
+            raise KeyError(f"No estimate operation found for case {case_id}, search {search_id}")
+
+        # Increment call count
+        op["call_count"] += 1
+
+        # First call: still running
+        if op["call_count"] == 1:
+            op["status"] = "running"
+            op["percentProgress"] = 50
+        else:
+            op["status"] = "succeeded"
+            op["percentProgress"] = 100
+
+        return op
+
+
+# ==============================
+# Tests
+# ==============================
+def test_run_estimate_statistics_command():
+    """
+    Given:
+        A case_id and search_id
+    When:
+        Calling run_estimate_statistics_command
+    Then:
+        The estimate request is started and confirmation CommandResults is returned
+    """
+    client = DummyEstimateClient()
+    args = {"case_id": "CASE1", "search_id": "SEARCH1"}
+
+    result = run_estimate_statistics_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert "initiated" in result.readable_output
+    assert ("CASE1", "SEARCH1") in client.operations
+
+
+def test_get_last_estimate_statistics_command_missing_operation():
+    """
+    Given:
+        A case_id and search_id with no started operation
+    When:
+        Calling get_last_estimate_statistics_command
+    Then:
+        Raises KeyError indicating no operation found
+    """
+    client = DummyEstimateClient()
+    args = {"case_id": "CASE_UNKNOWN", "search_id": "SEARCH_UNKNOWN"}
+
+    with pytest.raises(KeyError) as e:
+        _get_last_estimate_statistics_command(args, client)
+
+    assert "No estimate operation found" in str(e.value)
+
+
+def test_get_last_estimate_statistics_command_pending():
+    args = {"case_id": "case-123", "search_id": "search-456"}
+    mock_client = MagicMock()
+    mock_client.get_last_estimate_statistics_operation.return_value = {
+        "status": "running",
+        "id": "op-123",
+        "percentProgress": 50,
+    }
+
+    result = _get_last_estimate_statistics_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is True
+    assert result.args_for_next_run == args
+    assert result.response is None
+    assert isinstance(result.partial_result, CommandResults)
+    assert "still running" in result.partial_result.readable_output.lower()
+
+
+def test_get_last_estimate_statistics_command_completed():
+    # Arrange
+    args = {"case_id": "case-123", "search_id": "search-456"}
+    mock_client = MagicMock()
+    # Simulate a completed operation
+    response_data = {
+        "id": "op-789",
+        "status": "Succeeded",
+        "percentProgress": 100,
+        "createdDateTime": "2025-11-16T00:00:00Z",
+        "lastActionDateTime": "2025-11-16T01:00:00Z",
+        "indexedItemCount": 50,
+        "indexedItemsSize": 1024,
+        "unindexedItemCount": 5,
+        "unindexedItemsSize": 512,
+        "totalItemCount": 55,
+        "totalItemsSize": 1536,
+        "mailboxCount": 3,
+        "siteCount": 2,
+    }
+    mock_client.get_last_estimate_statistics_operation.return_value = response_data
+
+    result = _get_last_estimate_statistics_command(args, mock_client)
+
+    assert isinstance(result, PollResult)
+    assert result.continue_to_poll is False or result.continue_to_poll is None  # completed
+    assert isinstance(result.response, CommandResults)
+    assert result.partial_result is None
+    assert result.response.outputs_prefix == "MsGraph.eDiscovery.EstimateStatistics"
+    assert result.response.raw_response == response_data
+    assert "eDiscovery Estimate Statistics" in result.response.readable_output
+
+
+def test_create_ediscovery_case_hold_policy_command(mocker):
+    """
+    Given:
+        Case ID, display name, description, and content query.
+    When:
+        Calling create_ediscovery_case_hold_policy_command.
+    Then:
+        Ensure the command returns the expected CommandResults with the created hold policy.
+    """
+    args = {
+        "case_id": "case_123",
+        "display_name": "Hold Policy 1",
+        "description": "Test Hold Policy",
+        "content_query": "size>100",
+    }
+    mock_response = {
+        "id": "hold_123",
+        "displayName": "Hold Policy 1",
+        "status": "enabled",
+        "description": "Test Hold Policy",
+        "contentQuery": "size>100",
+    }
+    mocker.patch.object(client_mocker, "create_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = create_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert result.outputs["ID"] == "hold_123"
+    assert result.outputs["DisplayName"] == "Hold Policy 1"
+    assert "Hold Policy 1" in result.readable_output
+
+
+def test_delete_ediscovery_case_hold_policy_command(mocker):
+    """
+    Given:
+        Case ID and hold policy ID.
+    When:
+        Calling delete_ediscovery_case_hold_policy_command.
+    Then:
+        Ensure the command returns a success message.
+    """
+    args = {"case_id": "case_123", "hold_policy_id": "hold_123"}
+    mocker.patch.object(client_mocker, "delete_ediscovery_case_hold_policy", return_value=None)
+
+    result = delete_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert "was sent successfully" in result.readable_output
+    assert "hold_123" in result.readable_output
+
+
+def test_update_ediscovery_case_policy_command(mocker):
+    """
+    Given:
+        Case ID, hold policy ID, and fields to update.
+    When:
+        Calling update_ediscovery_case_policy_command.
+    Then:
+        Ensure the command returns a success message.
+    """
+    args = {"case_id": "case_123", "hold_policy_id": "hold_123", "description": "Updated Description"}
+    mocker.patch.object(client_mocker, "update_ediscovery_case_policy", return_value=None)
+
+    result = update_ediscovery_case_policy_command(client_mocker, args)
+
+    assert "updated successfully" in result.readable_output
+    assert "hold_123" in result.readable_output
+
+
+def test_list_ediscovery_case_hold_policy_command_list(mocker):
+    """
+    Given:
+        Case ID.
+    When:
+        Calling list_ediscovery_case_hold_policy_command (listing all).
+    Then:
+        Ensure the command returns the list of hold policies.
+    """
+    args = {"case_id": "case_123", "all_results": "true"}
+    mock_response = {
+        "value": [
+            {"id": "hold_1", "displayName": "Hold 1", "status": "enabled"},
+            {"id": "hold_2", "displayName": "Hold 2", "status": "disabled"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "list_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = list_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ID"] == "hold_1"
+    assert result.outputs[1]["ID"] == "hold_2"
+    assert "Hold 1" in result.readable_output
+    assert "Hold 2" in result.readable_output
+
+
+def test_list_ediscovery_case_hold_policy_command_get(mocker):
+    """
+    Given:
+        Case ID and hold policy ID.
+    When:
+        Calling list_ediscovery_case_hold_policy_command (getting one).
+    Then:
+        Ensure the command returns the specific hold policy.
+    """
+    args = {"case_id": "case_123", "hold_policy_id": "hold_1", "all_results": "true"}
+    mock_response = {"id": "hold_1", "displayName": "Hold 1", "status": "enabled"}
+    mocker.patch.object(client_mocker, "get_ediscovery_case_hold_policy", return_value=mock_response)
+
+    result = list_ediscovery_case_hold_policy_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.HoldPolicy"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ID"] == "hold_1"
+    assert "Hold 1" in result.readable_output
+
+
+def test_list_case_operation_command_list(mocker):
+    """
+    Given:
+        Case ID.
+    When:
+        Calling list_case_operation_command (listing all).
+    Then:
+        Ensure the command returns the list of operations.
+    """
+    args = {"case_id": "case_123", "all_results": "true"}
+    mock_response = {
+        "value": [
+            {"id": "op_1", "action": "AddToReviewSet", "status": "Succeeded"},
+            {"id": "op_2", "action": "Export", "status": "InProgress"},
+        ]
+    }
+    mocker.patch.object(client_mocker, "list_case_operation", return_value=mock_response)
+
+    result = list_case_operation_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Operation"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["ID"] == "op_1"
+    assert result.outputs[1]["ID"] == "op_2"
+    assert "AddToReviewSet" in result.readable_output
+    assert "Export" in result.readable_output
+
+
+def test_list_case_operation_command_get(mocker):
+    """
+    Given:
+        Case ID and operation ID.
+    When:
+        Calling list_case_operation_command (getting one).
+    Then:
+        Ensure the command returns the specific operation.
+    """
+    args = {"case_id": "case_123", "operation_id": "op_1", "all_results": "true"}
+    mock_response = {"id": "op_1", "action": "AddToReviewSet", "status": "Succeeded"}
+    mocker.patch.object(client_mocker, "get_case_operation", return_value=mock_response)
+
+    result = list_case_operation_command(client_mocker, args)
+
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Operation"
+    assert result.outputs_key_field == "ID"
+    assert len(result.outputs) == 1
+    assert result.outputs[0]["ID"] == "op_1"
+    assert "AddToReviewSet" in result.readable_output
+
+
+def test_list_case_operation_command_with_download(mocker):
+    """
+    Given:
+        Arguments requesting a specific operation ID with download_file='true'.
+    When:
+        Calling list_case_operation_command.
+    Then:
+        1. The operation details are fetched.
+        2. The download helper is called.
+        3. A list containing [FileResult, CommandResult] is returned.
+    """
+    args = {"case_id": "case_1", "operation_id": "op_1", "download_file": "true"}
+
+    op_data = {
+        "id": "op_1",
+        "action": "Export",
+        "status": "Succeeded",
+        "exportFileMetadata": {"downloadUrl": "https://download.me"},
+    }
+    mocker.patch.object(client_mocker, "get_case_operation", return_value=op_data)
+
+    mock_file_result = {"Type": 3, "File": "export.zip", "Contents": b"data"}
+    mocker.patch("MicrosoftGraphSecurity._download_operation_export_file", return_value=mock_file_result)
+
+    results = list_case_operation_command(client_mocker, args)
+
+    assert isinstance(results, list)
+    assert len(results) == 2
+
+    assert results[0] == mock_file_result
+
+    assert isinstance(results[1], CommandResults)
+    assert results[1].outputs[0]["ID"] == "op_1"
+
+
+def test_export_result_ediscovery_data_command(mocker):
+    """
+    Given:
+        Case ID, search ID, and export parameters.
+    When:
+        Calling export_result_ediscovery_data_command.
+    Then:
+        Ensure the command returns the export location.
+    """
+    args = {"case_id": "case_123", "search_id": "search_123", "export_criteria": "searchHits", "export_format": "standard"}
+    mock_response = MagicMock()
+    mock_response.headers = {
+        "Location": "https://graph.microsoft.com/v1.0/security/cases/ediscoveryCases/case_123/operations/op_123"
+    }
+    mocker.patch.object(client_mocker, "export_result_ediscovery_data", return_value=mock_response)
+
+    result = export_result_ediscovery_data_command(client_mocker, args)
+
+    assert "eDiscovery export request was submitted successfully" in result.readable_output
+    assert "op_123" in result.readable_output
+    assert result.outputs_prefix == "MsGraph.eDiscoveryCase.Export"
+    assert result.outputs["OperationID"] == "op_123"
+    assert result.outputs["CaseID"] == "case_123"
+    assert result.outputs["Location"] == mock_response.headers["Location"]
+
+
+# ==========================================
+# Helper Function Tests
+# ==========================================
+
+
+@pytest.mark.parametrize(
+    "operation_data, expected_url",
+    [
+        # Case 1: exportFileMetadata is a dictionary
+        (
+            {"exportFileMetadata": {"downloadUrl": "https://example.com/file1.zip"}},
+            "https://example.com/file1.zip",
+        ),
+        # Case 2: exportFileMetadata is a list of dictionaries
+        (
+            {"exportFileMetadata": [{"downloadUrl": "https://example.com/file2.zip"}]},
+            "https://example.com/file2.zip",
+        ),
+        # Case 3: No exportFileMetadata
+        ({"id": "op1"}, None),
+        # Case 4: exportFileMetadata exists but has no downloadUrl
+        ({"exportFileMetadata": {}}, None),
+    ],
+)
+def test_extract_export_download_url(operation_data, expected_url):
+    """
+    Given:
+        An operation dictionary with varying structures for 'exportFileMetadata'.
+    When:
+        Calling _extract_export_download_url.
+    Then:
+        The correct download URL is extracted or None is returned.
+    """
+    assert _extract_export_download_url(operation_data) == expected_url
+
+
+@pytest.mark.parametrize(
+    "headers, default, expected_filename",
+    [
+        # Case 1: Standard double-quoted filename
+        ({"Content-Disposition": 'attachment; filename="export_123.zip"'}, "def.zip", "export_123.zip"),
+        # Case 2: Unquoted filename
+        ({"Content-Disposition": "attachment; filename=plain.csv"}, "def.zip", "plain.csv"),
+        # Case 3: Case insensitive header key
+        ({"content-disposition": 'attachment; filename="lower.zip"'}, "def.zip", "lower.zip"),
+        # Case 4: Header missing
+        ({}, "default.zip", "default.zip"),
+        # Case 5: Header exists but no filename parameter
+        ({"Content-Disposition": "attachment; size=100"}, "fallback.zip", "fallback.zip"),
+    ],
+)
+def test_extract_filename_from_headers(headers, default, expected_filename):
+    """
+    Given:
+        Response headers and a default filename.
+    When:
+        Calling _extract_filename_from_headers.
+    Then:
+        The filename is correctly parsed from the Content-Disposition header,
+        or the default is returned if missing.
+    """
+    assert _extract_filename_from_headers(headers, default) == expected_filename
+
+
+# ==========================================
+# Download Logic Tests
+# ==========================================
+
+
+def test_download_operation_export_file_success(mocker):
+    """
+    Given:
+        An operation with a valid download URL.
+    When:
+        Calling _download_operation_export_file.
+    Then:
+        The client downloads the file, and a fileResult dict is returned with the correct content and name.
+    """
+    operation = {"exportFileMetadata": {"downloadUrl": "https://fake-url.com/data"}}
+
+    mock_response = MagicMock()
+    mock_response.ok = True
+    mock_response.content = b"file_content_bytes"
+    mock_response.headers = {"Content-Disposition": 'attachment; filename="results.csv"'}
+
+    mocker.patch.object(client_mocker, "download_export_file", return_value=mock_response)
+
+    result = _download_operation_export_file(client_mocker, operation)
+
+    assert result["File"] == "results.csv"
+
+
+@pytest.mark.parametrize(
+    "mock_attrs, expected_error_msg",
+    [
+        # Case 1: HTTP Error (ok=False)
+        (
+            {"ok": False, "status_code": 404, "text": "Not Found", "content": b""},
+            "Failed to download export file. HTTP 404. Not Found",
+        ),
+        # Case 2: Empty content (ok=True but content is empty)
+        (
+            {"ok": True, "status_code": 200, "content": b"", "headers": {}},
+            "Downloaded export file is empty. HTTP 200.",
+        ),
+    ],
+)
+def test_download_operation_export_file_errors(mocker, mock_attrs, expected_error_msg):
+    """
+    Given:
+        A client response that indicates failure (404 error or empty body).
+    When:
+        Calling _download_operation_export_file.
+    Then:
+        A DemistoException is raised with the specific error message.
+    """
+    operation = {"exportFileMetadata": {"downloadUrl": "https://fake-url.com/data"}}
+
+    mock_response = MagicMock()
+    for key, value in mock_attrs.items():
+        setattr(mock_response, key, value)
+
+    mocker.patch.object(client_mocker, "download_export_file", return_value=mock_response)
+
+    with pytest.raises(DemistoException) as e:
+        _download_operation_export_file(client_mocker, operation)
+
+    assert expected_error_msg in str(e.value)
+
+
+def test_download_export_file_resets_token_to_default_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file (which uses a non-default Purview scope).
+    When:
+        Calling download_export_file.
+    Then:
+        The download uses the Purview scope, and afterwards a default-scope token is fetched
+        to reset the shared refresh token and avoid token-scope drift (XSUP-71559).
+    """
+    mock_response = MagicMock()
+    http_request = mocker.patch.object(client_mocker.ms_client, "http_request", return_value=mock_response)
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    result = client_mocker.download_export_file("https://fake-url.com/data")
+
+    assert result is mock_response
+    assert http_request.call_args.kwargs["scope"] == "b26e684c-5068-4120-a679-64a5d2c909d9/.default"
+    get_access_token.assert_called_once_with(scope=client_mocker.ms_client.scope)
+
+
+def test_download_export_file_reset_uses_default_not_purview_scope(mocker):
+    """
+    Given:
+        A client downloading an eDiscovery export file.
+    When:
+        Calling download_export_file.
+    Then:
+        The post-download token reset requests the client's default scope, not the Purview scope.
+    """
+    mocker.patch.object(client_mocker.ms_client, "http_request", return_value=MagicMock())
+    get_access_token = mocker.patch.object(client_mocker.ms_client, "get_access_token")
+
+    client_mocker.download_export_file("https://fake-url.com/data")
+
+    reset_scope = get_access_token.call_args.kwargs["scope"]
+    assert reset_scope == client_mocker.ms_client.scope
+    assert reset_scope != "b26e684c-5068-4120-a679-64a5d2c909d9/.default"

@@ -1,0 +1,84 @@
+args:
+- description: Additional text by which to query incidents.
+  name: query
+- defaultValue: Phishing,*phish*
+  description: A comma-separatetd list of incident types by which to filter.
+  name: incidentTypes
+- description: The start date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  name: fromDate
+- description: The end date by which to filter incidents. Date format is the same as in the incidents query page. For example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  name: toDate
+- defaultValue: '3000'
+  description: The maximum number of incidents to fetch. The default value is 3000.
+  name: limit
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: 'Whether to query and fetch incident context. Can be: "true" or "false". The default is "false".'
+  name: includeContext
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: created
+  description: 'The incident field to specify for the date range. Can be: "created" or "modified". The default is "created".'
+  name: timeField
+  predefined:
+  - created
+  - modified
+- description: A comma-separated list of non-empty value incident field names by which to filter incidents.
+  name: NonEmptyFields
+- description: A comma-separated list of fields to populate in the object.
+  name: populateFields
+- description: The field name with the label
+  name: tagField
+- auto: PREDEFINED
+  defaultValue: emailsubject
+  description: Subject of the email.
+  name: emailSubject
+  predefined:
+  - Subject of the email.
+- defaultValue: emailbody
+  description: Body of the email.
+  name: emailBody
+  predefined:
+  - ''
+- defaultValue: emailbodyhtml
+  description: HTML body of the email.
+  name: emailBodyHTML
+- defaultValue: emailheaders
+  description: Headers of the email.
+  name: emailHeaders
+- defaultValue: attachment
+  description: Attachments of the email.
+  name: emailAttachments
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: Whether to compress the fetched data. Default is True
+  name: compress
+  predefined:
+  - 'True'
+  - 'False'
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Wheter to return a file entry. Default is "False".
+  name: toFile
+  predefined:
+  - 'True'
+  - 'False'
+comment: Deprecated. No available replacement. Collect telemetry data from the environment.
+commonfields:
+  id: DBotMLFetchData
+  version: -1
+name: DBotMLFetchData
+script: '-'
+subtype: python3
+tags:
+- ml
+timeout: 1000µs
+type: python
+dockerimage: demisto/fetch-data:1.0.0.22177
+tests:
+- No tests
+deprecated: true
+fromversion: 5.0.0
+runonce: true

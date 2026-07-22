@@ -1,0 +1,5624 @@
+id: Cisco Firepower - Test
+version: 9
+vcShouldKeepItemLegacyProdMachine: false
+name: TestFirePowerPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd8ea7f8-66c6-450b-84aa-e01c606c20d7
+    type: start
+    task:
+      id: fd8ea7f8-66c6-450b-84aa-e01c606c20d7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1483c6d4-7046-4acd-85d9-3249e02b45a5
+    type: regular
+    task:
+      id: 1483c6d4-7046-4acd-85d9-3249e02b45a5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5eabbb8f-55a3-4c4e-8e00-38d79e36a695
+    type: regular
+    task:
+      id: 5eabbb8f-55a3-4c4e-8e00-38d79e36a695
+      version: -1
+      name: ciscofp-list-zones
+      script: '|||ciscofp-list-zones'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+      - "40"
+      - "74"
+      - "75"
+      - "41"
+      - "76"
+      - "77"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8c5aed8d-dd0f-4a3e-8bc4-52278bd83c9a
+    type: regular
+    task:
+      id: 8c5aed8d-dd0f-4a3e-8bc4-52278bd83c9a
+      version: -1
+      name: ciscofp-list-ports
+      script: '|||ciscofp-list-ports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 866f2c13-9cc2-4d22-8f7e-0a4e462de202
+    type: regular
+    task:
+      id: 866f2c13-9cc2-4d22-8f7e-0a4e462de202
+      version: -1
+      name: ciscofp-list-url-categories
+      script: '|||ciscofp-list-url-categories'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c4216374-441e-454f-8cdf-bb59d9d8d042
+    type: regular
+    task:
+      id: c4216374-441e-454f-8cdf-bb59d9d8d042
+      version: -1
+      name: ciscofp-get-network-object
+      script: '|||ciscofp-get-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      object_id:
+        simple: ${CiscoFP.Network(val.Name == "playbookTestUpdate").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 33bbadcc-38c6-49d6-870e-25733fd54844
+    type: regular
+    task:
+      id: 33bbadcc-38c6-49d6-870e-25733fd54844
+      version: -1
+      name: ciscofp-create-network-object
+      script: '|||ciscofp-create-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      name:
+        simple: playbookTest
+      overridable:
+        simple: "false"
+      value:
+        simple: 10.0.0.0/22
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5fc63b66-8f41-48fa-85ab-bf58a86460bb
+    type: regular
+    task:
+      id: 5fc63b66-8f41-48fa-85ab-bf58a86460bb
+      version: -1
+      name: ciscofp-update-network-object
+      script: '|||ciscofp-update-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      description:
+        simple: ${CiscoFP.Network(val.Name == "playbookTest").Description}
+      id:
+        simple: ${CiscoFP.Network(val.Name == "playbookTest").ID}
+      name:
+        simple: playbookTestUpdate
+      overridable:
+        simple: "true"
+      value:
+        simple: 10.0.0.0/23
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b7d1bcfa-0e1c-4498-874a-187628b1717d
+    type: regular
+    task:
+      id: b7d1bcfa-0e1c-4498-874a-187628b1717d
+      version: -1
+      name: ciscofp-get-network-groups-object
+      script: '|||ciscofp-get-network-groups-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.NetworkGroups(val.Name == "playbookTest3").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 6ca44fdb-a66d-4ade-8bed-51f906ed5a8a
+    type: regular
+    task:
+      id: 6ca44fdb-a66d-4ade-8bed-51f906ed5a8a
+      version: -1
+      name: ciscofp-create-network-groups-objects
+      script: '|||ciscofp-create-network-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      name:
+        simple: playbookTest3
+      network_address_list:
+        simple: 8.8.8.8,4.4.4.4
+      network_objects_id_list:
+        simple: ${CiscoFP.Network(val.Name == "playbookTestUpdate").ID}
+      overridable:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f2d60fc1-f607-4a7a-8e1b-87a5279d73c7
+    type: regular
+    task:
+      id: f2d60fc1-f607-4a7a-8e1b-87a5279d73c7
+      version: -1
+      name: ciscofp-update-network-groups-objects
+      script: '|||ciscofp-update-network-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      id:
+        simple: ${CiscoFP.NetworkGroups(val.Name == "playbookTest3").ID}
+      name:
+        simple: playbookTestUpdate3
+      network_address_list:
+        simple: 1.2.3.4,1.2.3.5
+      network_objects_id_list:
+        simple: ${CiscoFP.Host(val.Name == "playbookTestUpdate2").ID}
+      overridable:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 7135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3f0ff289-a706-47c4-8db5-4ab9e59e9e2a
+    type: regular
+    task:
+      id: 3f0ff289-a706-47c4-8db5-4ab9e59e9e2a
+      version: -1
+      name: ciscofp-get-host-object
+      script: '|||ciscofp-get-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      object_id:
+        simple: ${CiscoFP.Host(val.Name == "playbookTestUpdate2").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6085
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c64f9abf-0973-4234-8464-fa7a6b1e8412
+    type: regular
+    task:
+      id: c64f9abf-0973-4234-8464-fa7a6b1e8412
+      version: -1
+      name: ciscofp-create-host-object
+      script: '|||ciscofp-create-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      description:
+        simple: my playbook test
+      name:
+        simple: playbookTest2
+      overridable:
+        simple: "false"
+      value:
+        simple: 1.2.3.4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 740a7e39-14be-415d-823c-27ecf3297b26
+    type: regular
+    task:
+      id: 740a7e39-14be-415d-823c-27ecf3297b26
+      version: -1
+      name: ciscofp-update-host-object
+      script: '|||ciscofp-update-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      description:
+        complex:
+          root: CiscoFP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoFP.Host.Name
+                iscontext: true
+              right:
+                value:
+                  simple: playbookTest2
+          accessor: Host.Description
+      id:
+        simple: ${CiscoFP.Host(val.Name == "playbookTest2").ID}
+      name:
+        simple: playbookTestUpdate2
+      overridable:
+        simple: "true"
+      value:
+        simple: 1.2.3.5
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 37ad758e-cfe7-47a4-8f45-b19835f222e7
+    type: regular
+    task:
+      id: 37ad758e-cfe7-47a4-8f45-b19835f222e7
+      version: -1
+      name: ciscofp-get-access-policy
+      script: '|||ciscofp-get-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 7835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 285f79f7-e76a-4791-85ff-563401057113
+    type: regular
+    task:
+      id: 285f79f7-e76a-4791-85ff-563401057113
+      version: -1
+      name: ciscofp-create-access-policy
+      script: '|||ciscofp-create-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      action:
+        simple: BLOCK
+      name:
+        simple: playbookTest4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 7490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0741e2d8-6229-4e17-8d58-e33df79c2257
+    type: regular
+    task:
+      id: 0741e2d8-6229-4e17-8d58-e33df79c2257
+      version: -1
+      name: ciscofp-update-access-policy
+      script: '|||ciscofp-update-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      action:
+        simple: PERMIT
+      default_action_id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTest4").DefaultActionID}
+      id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTest4").ID}
+      name:
+        simple: playbookTestUpdate4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 8185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: fe3405be-a929-402a-83f3-b17dc89887b1
+    type: regular
+    task:
+      id: fe3405be-a929-402a-83f3-b17dc89887b1
+      version: -1
+      name: ciscofp-list-security-group-tags
+      script: '|||ciscofp-list-security-group-tags'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 7b0c9874-7d94-4f97-8a87-25550073ac52
+    type: regular
+    task:
+      id: 7b0c9874-7d94-4f97-8a87-25550073ac52
+      version: -1
+      name: ciscofp-list-vlan-tags
+      script: '|||ciscofp-list-vlan-tags'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: af2f75e9-d348-457b-8363-c5e08974c675
+    type: regular
+    task:
+      id: af2f75e9-d348-457b-8363-c5e08974c675
+      version: -1
+      name: ciscofp-list-vlan-tags-group
+      script: '|||ciscofp-list-vlan-tags-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4be13b3b-c99f-4399-8332-dffcd5fdbe78
+    type: regular
+    task:
+      id: 4be13b3b-c99f-4399-8332-dffcd5fdbe78
+      version: -1
+      name: ciscofp-list-applications
+      script: '|||ciscofp-list-applications'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 885b0133-181b-454e-8d37-eb97283a1faf
+    type: regular
+    task:
+      id: 885b0133-181b-454e-8d37-eb97283a1faf
+      version: -1
+      name: ciscofp-get-access-rules
+      script: '|||ciscofp-get-access-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      policy_id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTestUpdate4").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 8885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 402a71ad-11fd-4383-8f02-01d81e86a494
+    type: regular
+    task:
+      id: 402a71ad-11fd-4383-8f02-01d81e86a494
+      version: -1
+      name: ciscofp-create-access-rules
+      script: '|||ciscofp-create-access-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      action:
+        simple: ALLOW
+      destination_network_addresses:
+        simple: 1.2.3.5
+      destination_network_object_ids:
+        simple: ${CiscoFP.Host(val.Name == "playbookTestUpdate2").ID}
+      enabled:
+        simple: "true"
+      policy_id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTestUpdate4").ID}
+      rule_name:
+        simple: playbookTest5
+      source_network_addresses:
+        simple: 1.2.3.4
+      source_network_object_ids:
+        simple: ${CiscoFP.NetworkGroups(val.Name == "playbookTestUpdate3").ID}
+      url_addresses:
+        simple: www.google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 8535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d94a08ce-544c-462e-86b7-b96ba9624636
+    type: regular
+    task:
+      id: d94a08ce-544c-462e-86b7-b96ba9624636
+      version: -1
+      name: ciscofp-update-access-rules
+      script: '|||ciscofp-update-access-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      action:
+        simple: BLOCK
+      destination_network_addresses:
+        simple: 8.8.8.6
+      enabled:
+        simple: "true"
+      policy_id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTestUpdate4").ID}
+      rule_id:
+        simple: ${CiscoFP.Rule(val.Name == "playbookTest5").ID}
+      rule_name:
+        simple: playbookTestUpdate5
+      source_network_object_ids:
+        simple: ${CiscoFP.Network(val.Name == "playbookTestUpdate").ID}
+      update_strategy:
+        simple: merge
+      url_addresses:
+        simple: www.google.co.il
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 9235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: ded08260-9468-440e-87f1-bc4828f575e2
+    type: regular
+    task:
+      id: ded08260-9468-440e-87f1-bc4828f575e2
+      version: -1
+      name: ciscofp-list-policy-assignments
+      script: '|||ciscofp-list-policy-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 10285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: bf833a0f-cee1-420a-8cb4-106ab318ec3b
+    type: regular
+    task:
+      id: bf833a0f-cee1-420a-8cb4-106ab318ec3b
+      version: -1
+      name: ciscofp-create-policy-assignments
+      script: '|||ciscofp-create-policy-assignments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      policy_id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTestUpdate4").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 9935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 2c5467b2-3a7a-45c6-8ca8-ba75685e6b0c
+    type: title
+    task:
+      id: 2c5467b2-3a7a-45c6-8ca8-ba75685e6b0c
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 18480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 99903f18-d1d4-4356-8e20-ec035678128f
+    type: condition
+    task:
+      id: 99903f18-d1d4-4356-8e20-ec035678128f
+      version: -1
+      name: verify create network object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Value
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/22
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.Network.Overridable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c3bd8b8e-f2fe-43df-848a-755f4afa1799
+    type: condition
+    task:
+      id: c3bd8b8e-f2fe-43df-848a-755f4afa1799
+      version: -1
+      name: verify list zones
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Zone.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Zone.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Zone.InterfaceMode
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 79511c86-76e1-42d1-885d-30a0ef038ede
+    type: condition
+    task:
+      id: 79511c86-76e1-42d1-885d-30a0ef038ede
+      version: -1
+      name: verify list ports
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.Protocol
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Port.Port
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 6a6fc197-854f-463d-88db-770ed67a8400
+    type: condition
+    task:
+      id: 6a6fc197-854f-463d-88db-770ed67a8400
+      version: -1
+      name: verify llist url categories
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Category.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Category.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 8089f7ba-894e-439d-8c2d-fa2b1ef7aff0
+    type: condition
+    task:
+      id: 8089f7ba-894e-439d-8c2d-fa2b1ef7aff0
+      version: -1
+      name: verify update network object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Value
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/23
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isTrue
+          left:
+            value:
+              simple: CiscoFP.Network.Overridable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 357f31cc-2e07-4940-8b19-c11240dc45a6
+    type: condition
+    task:
+      id: 357f31cc-2e07-4940-8b19-c11240dc45a6
+      version: -1
+      name: verify get network object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Value
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.0/23
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Network.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isTrue
+          left:
+            value:
+              simple: CiscoFP.Network.Overridable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 340e1821-71d4-4c35-828a-121656105cb7
+    type: condition
+    task:
+      id: 340e1821-71d4-4c35-828a-121656105cb7
+      version: -1
+      name: verify create-host-object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.Host.Overridable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: cc16809f-475c-4836-80bc-cc1d047dc0c7
+    type: condition
+    task:
+      id: cc16809f-475c-4836-80bc-cc1d047dc0c7
+      version: -1
+      name: verify-update-host-object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isTrue
+          left:
+            value:
+              simple: CiscoFP.Host.Overridable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 5731a332-34cf-48ed-8832-62dcc5bc1735
+    type: condition
+    task:
+      id: 5731a332-34cf-48ed-8832-62dcc5bc1735
+      version: -1
+      name: verify-get-host-object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Host.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+      - - operator: isTrue
+          left:
+            value:
+              simple: CiscoFP.Host.Overridable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 07f466ee-a41c-4353-85a3-71b0dce676b4
+    type: regular
+    task:
+      id: 07f466ee-a41c-4353-85a3-71b0dce676b4
+      version: -1
+      name: ciscofp-delete-access-policy
+      description: Delete access control policy
+      script: '|||ciscofp-delete-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTestUpdate4").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 10810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 999a49bc-2406-42d5-864d-40d9a503c98c
+    type: regular
+    task:
+      id: 999a49bc-2406-42d5-864d-40d9a503c98c
+      version: -1
+      name: ciscofp-delete-network-groups-objects
+      description: Delete group of network objects
+      script: '|||ciscofp-delete-network-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.NetworkGroups(val.Name == "playbookTestUpdate3").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 10985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 26ba1fa7-d936-4edc-8329-186b6a4ba115
+    type: regular
+    task:
+      id: 26ba1fa7-d936-4edc-8329-186b6a4ba115
+      version: -1
+      name: ciscofp-delete-network-object
+      description: delete network object
+      script: '|||ciscofp-delete-network-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.Network(val.Name == "playbookTestUpdate").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 11160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 0c99ea9a-301e-49b7-829c-801109330d94
+    type: regular
+    task:
+      id: 0c99ea9a-301e-49b7-829c-801109330d94
+      version: -1
+      name: ciscofp-delete-host-object
+      description: Delete host object
+      script: '|||ciscofp-delete-host-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.Host(val.Name == "playbookTestUpdate2").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 11335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: dfb55fba-1bb8-42c3-87f7-435fb009c752
+    type: condition
+    task:
+      id: dfb55fba-1bb8-42c3-87f7-435fb009c752
+      version: -1
+      name: verify-create-network-groups-objects
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 4.4.4.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Network.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: a40cfc99-91fd-444b-8fc8-9b40b326810d
+    type: condition
+    task:
+      id: a40cfc99-91fd-444b-8fc8-9b40b326810d
+      version: -1
+      name: verify-get-network-groups-object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 4.4.4.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Network.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: e41f540d-edd9-492d-86a4-15585f9525fc
+    type: condition
+    task:
+      id: e41f540d-edd9-492d-86a4-15585f9525fc
+      version: -1
+      name: verify-update-network-groups-object
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.NetworkGroups.Description
+            iscontext: true
+          right:
+            value:
+              simple: my playbook test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 7310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 06dac606-ae6d-4454-8cf8-e447b1da6c7c
+    type: condition
+    task:
+      id: 06dac606-ae6d-4454-8cf8-e447b1da6c7c
+      version: -1
+      name: verify create access policy
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest4
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.DefaultActionID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 7660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 9c77db28-4fc5-4ad8-8aa9-5c76b614ba43
+    type: condition
+    task:
+      id: 9c77db28-4fc5-4ad8-8aa9-5c76b614ba43
+      version: -1
+      name: verify get access policy
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest4
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.DefaultActionID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 8010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: bb064978-d1b2-49e7-8286-45e7beb66a57
+    type: condition
+    task:
+      id: bb064978-d1b2-49e7-8286-45e7beb66a57
+      version: -1
+      name: verify update access policy
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate4
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Policy.DefaultActionID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 8360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 4b20424c-678d-4abf-8e15-44b2b653d2b5
+    type: condition
+    task:
+      id: 4b20424c-678d-4abf-8e15-44b2b653d2b5
+      version: -1
+      name: verify SecurityGroupTags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.SecurityGroupTags.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.SecurityGroupTags.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.SecurityGroupTags.Tag
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: d3b0c08f-0dd3-4e61-81f8-211c3d21bf4e
+    type: condition
+    task:
+      id: d3b0c08f-0dd3-4e61-81f8-211c3d21bf4e
+      version: -1
+      name: verify VlanTags
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.Overridable
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.StartTag
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTags.EndTag
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 7aba5e3f-a22a-4806-8f44-3f7fc39224fd
+    type: condition
+    task:
+      id: 7aba5e3f-a22a-4806-8f44-3f7fc39224fd
+      version: -1
+      name: verify VlanTagsGroup.ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTagsGroup.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.VlanTagsGroup.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: ab2925db-b02d-4367-8658-4338dca1d0ef
+    type: condition
+    task:
+      id: ab2925db-b02d-4367-8658-4338dca1d0ef
+      version: -1
+      name: verify Applications
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.Risk
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.AppProductivity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.ApplicationTypes
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Applications.AppCategories.ID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 3b6cbe6d-ca93-479d-8eae-a9381442ace3
+    type: condition
+    task:
+      id: 3b6cbe6d-ca93-479d-8eae-a9381442ace3
+      version: -1
+      name: verify create access rule
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Rule.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Action
+            iscontext: true
+          right:
+            value:
+              simple: ALLOW
+      - - operator: isTrue
+          left:
+            value:
+              simple: CiscoFP.Rule.Enabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.NetworkGroups.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Urls.Addresses.URL
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 8710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: c35a5ade-c197-48a5-806e-0cba4e874303
+    type: condition
+    task:
+      id: c35a5ade-c197-48a5-806e-0cba4e874303
+      version: -1
+      name: verify get access rule
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Rule.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Action
+            iscontext: true
+          right:
+            value:
+              simple: ALLOW
+      - - operator: isTrue
+          left:
+            value:
+              simple: CiscoFP.Rule.Enabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.NetworkGroups.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Urls.Addresses.URL
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 9060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 9ccf4be5-7702-4205-81e1-2357f53ca4aa
+    type: condition
+    task:
+      id: 9ccf4be5-7702-4205-81e1-2357f53ca4aa
+      version: -1
+      name: verify update access rule
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.Rule.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestUpdate5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Action
+            iscontext: true
+          right:
+            value:
+              simple: BLOCK
+      - - operator: isTrue
+          left:
+            value:
+              simple: CiscoFP.Rule.Enabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.4
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.NetworkGroups.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: NetworkGroups.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 1.2.3.5
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Host.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Host.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.Urls.Addresses.URL
+            iscontext: true
+          right:
+            value:
+              simple: www.google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.SourceNetworks.Objects.ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CiscoFP
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: CiscoFP.Network.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: playbook
+                accessor: Network.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoFP.Rule.DestinationNetworks.Addresses.Value
+            iscontext: true
+          right:
+            value:
+              simple: 8.8.8.6
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 9410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: e1290022-bc45-456d-8fc8-64ec3d6e3939
+    type: condition
+    task:
+      id: e1290022-bc45-456d-8fc8-64ec3d6e3939
+      version: -1
+      name: verify-create-policy-assignments
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.PolicyAssignments.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.PolicyAssignments.PolicyID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 10110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 8b1c17d4-2e6a-467a-8ba3-4bf9213557c2
+    type: regular
+    task:
+      id: 8b1c17d4-2e6a-467a-8ba3-4bf9213557c2
+      version: -1
+      name: ciscofp-delete-access-policy
+      description: Delete access control policy
+      script: Cisco Firepower|||ciscofp-delete-access-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.Policy(val.Name == "playbookTest4" || val.Name == "playbookTestUpdate4").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 6555582e-83ed-495a-8871-95b29468f7bc
+    type: regular
+    task:
+      id: 6555582e-83ed-495a-8871-95b29468f7bc
+      version: -1
+      name: ciscofp-delete-network-object
+      description: delete network object
+      script: Cisco Firepower|||ciscofp-delete-network-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.Network(val.Name == "playbookTest" || val.Name == "playbookTestUpdate").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 5e7caa0b-e52c-45a2-8962-9027e8622c4d
+    type: regular
+    task:
+      id: 5e7caa0b-e52c-45a2-8962-9027e8622c4d
+      version: -1
+      name: ciscofp-delete-host-object
+      description: Delete host object
+      script: Cisco Firepower|||ciscofp-delete-host-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.Host(val.Name == "playbookTest2" || val.Name == "playbookTestUpdate2").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 5f2cd261-2f62-495a-8b17-13b2ed3af526
+    type: regular
+    task:
+      id: 5f2cd261-2f62-495a-8b17-13b2ed3af526
+      version: -1
+      name: ciscofp-get-host-object
+      description: Retrieves the groups of host objects associated with the specified
+        ID. If not input ID retrieves list of all network objects.
+      script: Cisco Firepower|||ciscofp-get-host-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 0d4fdb45-6e8e-4ba9-88a0-268865bb16a5
+    type: regular
+    task:
+      id: 0d4fdb45-6e8e-4ba9-88a0-268865bb16a5
+      version: -1
+      name: ciscofp-get-network-groups-object
+      description: Retrieves the groups of network objects and addresses associated
+        with the specified ID. If not input ID retrieves list of all network objects.
+      script: Cisco Firepower|||ciscofp-get-network-groups-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "86"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 26b20087-7079-4c0b-82fb-420068d0e381
+    type: regular
+    task:
+      id: 26b20087-7079-4c0b-82fb-420068d0e381
+      version: -1
+      name: ciscofp-get-network-object
+      description: Retrieves the network objects associated with the specified ID.
+        If not input ID retrieves list of all network objects.
+      script: Cisco Firepower|||ciscofp-get-network-object
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: cd12825e-958d-4b4b-8a0f-a9b384473e7b
+    type: regular
+    task:
+      id: cd12825e-958d-4b4b-8a0f-a9b384473e7b
+      version: -1
+      name: ciscofp-get-access-policy
+      description: Retrieves the access control policy associated with the specified
+        ID. Also, retrieves list of all access control policies
+      script: Cisco Firepower|||ciscofp-get-access-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: d9549e87-855b-44b1-8c89-da94b039bff1
+    type: regular
+    task:
+      id: d9549e87-855b-44b1-8c89-da94b039bff1
+      version: -1
+      name: ciscofp-delete-network-groups-objects
+      description: Delete group of network objects
+      script: Cisco Firepower|||ciscofp-delete-network-groups-objects
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      id:
+        simple: ${CiscoFP.NetworkGroups(val.Name == "playbookTest3" || val.Name ==
+          "playbookTestUpdate3").ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 308d26da-88d1-4a2e-8222-0f85bbb5fe74
+    type: condition
+    task:
+      id: 308d26da-88d1-4a2e-8222-0f85bbb5fe74
+      version: -1
+      name: 'Checks if there access policy With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "96"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 230f4d2c-c6d9-41b4-84bd-344a22e3accd
+    type: condition
+    task:
+      id: 230f4d2c-c6d9-41b4-84bd-344a22e3accd
+      version: -1
+      name: 'Checks if there NetworkGroups With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "97"
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: NetworkGroups.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 2835916f-9d7a-4e9f-8665-38593b729064
+    type: condition
+    task:
+      id: 2835916f-9d7a-4e9f-8665-38593b729064
+      version: -1
+      name: 'Checks if there Network With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "98"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Network.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 579f90e9-2336-45ac-8f0d-6cfbf6a423b3
+    type: condition
+    task:
+      id: 579f90e9-2336-45ac-8f0d-6cfbf6a423b3
+      version: -1
+      name: 'Checks if there Host  With the name playbookTest '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: CiscoFP
+                accessor: Host.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTest
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: a919d87d-5a80-4bca-805d-12fecadca79b
+    type: regular
+    task:
+      id: a919d87d-5a80-4bca-805d-12fecadca79b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 26772554-ef36-475d-8767-38be6116ee0d
+    type: title
+    task:
+      id: 26772554-ef36-475d-8767-38be6116ee0d
+      version: -1
+      name: start test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 91ee22dd-dea6-4716-878a-3999c19e41f4
+    type: title
+    task:
+      id: 91ee22dd-dea6-4716-878a-3999c19e41f4
+      version: -1
+      name: Clears previous task scraps
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 671c7463-9a26-43d8-842b-4f7d7e1752a0
+    type: regular
+    task:
+      id: 671c7463-9a26-43d8-842b-4f7d7e1752a0
+      version: -1
+      name: ciscofp-get-url-groups-object
+      description: Retrieves the groups of url objects and addresses associated with
+        the specified ID. If not supplied, retrieves a list of all url objects.
+      script: '|||ciscofp-get-url-groups-object'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 11510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: d94b0507-579d-4ad6-8549-462b929df03c
+    type: regular
+    task:
+      id: d94b0507-579d-4ad6-8549-462b929df03c
+      version: -1
+      name: ciscofp-update-url-groups-objects
+      description: Updates the ID of a group of url objects.
+      script: '|||ciscofp-update-url-groups-objects'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "133"
+    scriptarguments:
+      id:
+        complex:
+          root: CiscoFP.URLGroups
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+      name:
+        complex:
+          root: CiscoFP.URLGroups
+          accessor: Name
+          transformers:
+          - operator: FirstArrayElement
+      url_list:
+        simple: www.example.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 11670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 0e7b4565-57b2-4c0c-82da-a5e37369138c
+    type: regular
+    task:
+      id: 0e7b4565-57b2-4c0c-82da-a5e37369138c
+      version: -1
+      name: ciscofp-get-intrusion-policy
+      script: Cisco Firepower|||ciscofp-get-intrusion-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      intrusion_policy_id:
+        simple: ${CiscoFP.IntrusionPolicy.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 16420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 13cf6e87-5992-476f-8d22-012e317796d4
+    type: condition
+    task:
+      id: 13cf6e87-5992-476f-8d22-012e317796d4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.inlineDrop
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.inspectionMode
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 16570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 152bd138-5408-432a-8098-07f49c7a8d0d
+    type: regular
+    task:
+      id: 152bd138-5408-432a-8098-07f49c7a8d0d
+      version: -1
+      name: ciscofp-update-intrusion-policy
+      script: Cisco Firepower|||ciscofp-update-intrusion-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      intrusion_policy_id:
+        simple: ${CiscoFP.IntrusionPolicy.id}
+      name:
+        simple: ${CiscoFP.IntrusionPolicy.name}Updated
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 16030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: de7b53eb-dc33-4ef6-87fe-74476716b1ec
+    type: condition
+    task:
+      id: de7b53eb-dc33-4ef6-87fe-74476716b1ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "105"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.inlineDrop
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.inspectionMode
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 16230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 32da316a-8b4a-4bcd-8adf-4c7e21fc629e
+    type: regular
+    task:
+      id: 32da316a-8b4a-4bcd-8adf-4c7e21fc629e
+      version: -1
+      name: ciscofp-delete-intrusion-policy
+      script: Cisco Firepower|||ciscofp-delete-intrusion-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      intrusion_policy_id:
+        simple: ${CiscoFP.IntrusionPolicy.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 16735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 2d56d9d0-c13b-4190-8aa8-7206bd486fb4
+    type: regular
+    task:
+      id: 2d56d9d0-c13b-4190-8aa8-7206bd486fb4
+      version: -1
+      name: ciscofp-create-network-analysis-policy
+      script: Cisco Firepower|||ciscofp-create-network-analysis-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      basepolicy_id:
+        simple: db7dc865-16b5-5eab-8b5a-c85f3a61690b
+      description:
+        simple: Test playbook Network analysis policy
+      inspection_mode:
+        simple: PREVENTION
+      name:
+        simple: TestPlaybookNetworkAnalysisPolicy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 17060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 88454a3e-e17a-4faf-8bec-01427d378dcf
+    type: condition
+    task:
+      id: 88454a3e-e17a-4faf-8bec-01427d378dcf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "134"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectionMode
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 17240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 63c317ea-fe3a-4e56-8970-f0dfe9648c77
+    type: regular
+    task:
+      id: 63c317ea-fe3a-4e56-8970-f0dfe9648c77
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 16900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 7e3ecb36-f9a3-40dc-8507-c2ffa03d074e
+    type: condition
+    task:
+      id: 7e3ecb36-f9a3-40dc-8507-c2ffa03d074e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "107"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.inlineDrop
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.inspectionMode
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.metadata.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionPolicy.basePolicy.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 15830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 29ea6f2c-43ea-46db-8f92-75d60bc15a25
+    type: regular
+    task:
+      id: 29ea6f2c-43ea-46db-8f92-75d60bc15a25
+      version: -1
+      name: ciscofp-create-intrusion-policy
+      script: Cisco Firepower|||ciscofp-create-intrusion-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "113"
+    scriptarguments:
+      basepolicy_id:
+        simple: 3c7d3f87-c264-504e-9a16-4a9cd5fc502c
+      description:
+        simple: Policy for test playbook
+      inspection_mode:
+        simple: PREVENTION
+      name:
+        simple: TestPlaybookPolicy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 15630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 820e79c4-cb68-4153-83cd-25f181611c6b
+    type: regular
+    task:
+      id: 820e79c4-cb68-4153-83cd-25f181611c6b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 15450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 750ad8ab-fdc1-40d2-8365-405ce171dd72
+    type: regular
+    task:
+      id: 750ad8ab-fdc1-40d2-8365-405ce171dd72
+      version: -1
+      name: ciscofp-delete-intrusion-rule-group
+      script: Cisco Firepower|||ciscofp-delete-intrusion-rule-group
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      delete_related_rules:
+        simple: "True"
+      intrusion_rule_group_id:
+        simple: ${CiscoFP.IntrusionRuleGroup.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 15260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 88fdbd58-a2a4-470d-8226-2ed4e4b064c2
+    type: regular
+    task:
+      id: 88fdbd58-a2a4-470d-8226-2ed4e4b064c2
+      version: -1
+      name: ciscofp-delete-intrusion-rule
+      script: Cisco Firepower|||ciscofp-delete-intrusion-rule
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      intrusion_rule_id:
+        simple: ${CiscoFP.IntrusionRule.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 15080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: c79eb7b1-fef7-4f4a-8c1f-07acc8ff26f7
+    type: condition
+    task:
+      id: c79eb7b1-fef7-4f4a-8c1f-07acc8ff26f7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "117"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.type
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.gid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.revision
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.msg
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleAction.defaultState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleAction.policy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleAction.policy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleAction.policy.type
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 14880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 792359c6-4743-41cb-8547-0ec935a1354c
+    type: regular
+    task:
+      id: 792359c6-4743-41cb-8547-0ec935a1354c
+      version: -1
+      name: ciscofp-get-intrusion-rule
+      script: Cisco Firepower|||ciscofp-get-intrusion-rule
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      intrusion_rule_id:
+        simple: ${CiscoFP.IntrusionRule.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 14680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: e33c7ee0-8dbc-4001-830a-593926d4488a
+    type: condition
+    task:
+      id: e33c7ee0-8dbc-4001-830a-593926d4488a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "119"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.type
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.gid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.revision
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.msg
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 14490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: cfef4ead-2b58-4752-8dbf-add3df826299
+    type: regular
+    task:
+      id: cfef4ead-2b58-4752-8dbf-add3df826299
+      version: -1
+      name: ciscofp-update-intrusion-rule
+      script: Cisco Firepower|||ciscofp-update-intrusion-rule
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "120"
+    scriptarguments:
+      intrusion_rule_id:
+        simple: ${CiscoFP.IntrusionRule.id}
+      rule_group_ids:
+        simple: ${CiscoFP.IntrusionRuleGroup.id}
+      update_strategy:
+        simple: OVERRIDE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 14290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 73b36d5e-a6c1-4885-81bb-6ed77727ef15
+    type: condition
+    task:
+      id: 73b36d5e-a6c1-4885-81bb-6ed77727ef15
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "121"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.type
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.gid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.revision
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.msg
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleData
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRule.ruleGroups.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 14100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: 8d6c99e6-adf7-4106-8f9e-d9fd050ef067
+    type: regular
+    task:
+      id: 8d6c99e6-adf7-4106-8f9e-d9fd050ef067
+      version: -1
+      name: ciscofp-create-intrusion-rule
+      script: Cisco Firepower|||ciscofp-create-intrusion-rule
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "122"
+    scriptarguments:
+      rule_data:
+        simple: alert ( gid:1; sid:1945173; rev:1; msg:"Test playbook rule";)
+      rule_group_ids:
+        simple: ${CiscoFP.IntrusionRuleGroup.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 13900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: fc83d0bc-a61f-4fc1-839a-441a073d240e
+    type: condition
+    task:
+      id: fc83d0bc-a61f-4fc1-839a-441a073d240e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "123"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.type
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.deleted.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.deleted.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.added.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.added.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.added.rules
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.unassociated.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.unassociated.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.updated.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.updated.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.skipped.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.summary.skipped.count
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.validateOnly
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.ruleImportMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.files.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.files.attrib
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.ruleGroups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.ruleGroups.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleUpload.ruleGroups.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 13680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 751d0f66-d79e-4cb2-8077-33da6f4eb8ba
+    type: regular
+    task:
+      id: 751d0f66-d79e-4cb2-8077-33da6f4eb8ba
+      version: -1
+      name: ciscofp-upload-intrusion-rule-file
+      script: Cisco Firepower|||ciscofp-upload-intrusion-rule-file
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      rule_group_ids:
+        simple: ${CiscoFP.IntrusionRuleGroup.id}
+      rule_import_mode:
+        simple: MERGE
+      validate_only:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 13490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: cce07bae-a609-4207-8c93-73c16ee08dae
+    type: regular
+    task:
+      id: cce07bae-a609-4207-8c93-73c16ee08dae
+      version: -1
+      name: FileCreateAndUploadV2
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      data:
+        simple: |-
+          alert ( gid:1; sid:1945174; rev:1; msg:"Test playbook rule file";)
+          alert ( gid:1; sid:1945175; rev:1; msg:"Test playbook rule file";)
+      filename:
+        simple: TestPlaybookIntrusionRules.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 13310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: b5eb46f2-22f5-440d-8e76-c011417bbe51
+    type: condition
+    task:
+      id: b5eb46f2-22f5-440d-8e76-c011417bbe51
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "126"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.metadata.domain.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 13110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 41b52ecc-8588-4128-8cc4-ce901ec17d61
+    type: regular
+    task:
+      id: 41b52ecc-8588-4128-8cc4-ce901ec17d61
+      version: -1
+      name: ciscofp-get-intrusion-rule-group
+      script: Cisco Firepower|||ciscofp-get-intrusion-rule-group
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "127"
+    scriptarguments:
+      intrusion_rule_group_id:
+        simple: ${CiscoFP.IntrusionRuleGroup.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 12910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 37111f75-6186-4b83-8b3c-84155f29d09e
+    type: condition
+    task:
+      id: 37111f75-6186-4b83-8b3c-84155f29d09e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "128"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 12720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 77a105e8-e7ae-40b6-829d-7ce8c852f5fd
+    type: regular
+    task:
+      id: 77a105e8-e7ae-40b6-829d-7ce8c852f5fd
+      version: -1
+      name: ciscofp-update-intrusion-rule-group
+      script: Cisco Firepower|||ciscofp-update-intrusion-rule-group
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      intrusion_rule_group_id:
+        simple: ${CiscoFP.IntrusionRuleGroup.id}
+      name:
+        simple: ${CiscoFP.IntrusionRuleGroup.name}Updated
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 12520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: 3961f367-a9b3-424d-8bfc-f7ca02c05372
+    type: condition
+    task:
+      id: 3961f367-a9b3-424d-8bfc-f7ca02c05372
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "130"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.IntrusionRuleGroup.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 12320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: a14fdf43-e0bb-44de-84b6-a9afa49c2b9a
+    type: regular
+    task:
+      id: a14fdf43-e0bb-44de-84b6-a9afa49c2b9a
+      version: -1
+      name: ciscofp-create-intrusion-rule-group
+      script: Cisco Firepower|||ciscofp-create-intrusion-rule-group
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      description:
+        simple: This is a test playbook rule group
+      name:
+        simple: TestPlayBookGroup
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 12120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 8f605557-5094-4508-8a6c-195ac7dc8952
+    type: regular
+    task:
+      id: 8f605557-5094-4508-8a6c-195ac7dc8952
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 11940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: fccaba9f-aae5-4c41-8cd0-94ecf3804a92
+    type: regular
+    task:
+      id: fccaba9f-aae5-4c41-8cd0-94ecf3804a92
+      version: -1
+      name: ciscofp-update-network-analysis-policy
+      script: Cisco Firepower|||ciscofp-update-network-analysis-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "135"
+    scriptarguments:
+      name:
+        simple: ${CiscoFP.NetworkAnalysisPolicy.name}Updated
+      network_analysis_policy_id:
+        simple: ${CiscoFP.NetworkAnalysisPolicy.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 17440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: 523229f0-bee5-48c8-8ec3-3814856a30f0
+    type: condition
+    task:
+      id: 523229f0-bee5-48c8-8ec3-3814856a30f0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectionMode
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 17640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 12b99368-0422-431a-8c6e-0fcf9aa9835b
+    type: regular
+    task:
+      id: 12b99368-0422-431a-8c6e-0fcf9aa9835b
+      version: -1
+      name: ciscofp-get-network-analysis-policy
+      script: Cisco Firepower|||ciscofp-get-network-analysis-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "137"
+    scriptarguments:
+      network_analysis_policy_id:
+        simple: ${CiscoFP.NetworkAnalysisPolicy.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 17800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: e10f759e-ad34-4186-8b20-3eaf68749400
+    type: condition
+    task:
+      id: e10f759e-ad34-4186-8b20-3eaf68749400
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "138"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectionMode
+            iscontext: true
+      - - operator: isFalse
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.isSystemDefined
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.usage.accesspolicy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.usage.devices
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.domain.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 17990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 4ee0bfb3-75bb-48b0-8408-48de9864cc13
+    type: regular
+    task:
+      id: 4ee0bfb3-75bb-48b0-8408-48de9864cc13
+      version: -1
+      name: ciscofp-delete-network-analysis-policy
+      script: Cisco Firepower|||ciscofp-delete-network-analysis-policy
+      type: regular
+      iscommand: true
+      brand: Cisco Firepower
+    nexttasks:
+      '#none#':
+      - "139"
+    scriptarguments:
+      network_analysis_policy_id:
+        simple: ${CiscoFP.NetworkAnalysisPolicy.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 18150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 2798520a-36fe-4f80-8248-3c4d59d5e183
+    type: regular
+    task:
+      id: 2798520a-36fe-4f80-8248-3c4d59d5e183
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 18310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 18495,
+        "width": 2960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: TestFirePowerPlaybook
+fromversion: 5.0.0

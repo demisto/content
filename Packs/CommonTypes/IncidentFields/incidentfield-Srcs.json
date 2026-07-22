@@ -1,0 +1,35 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "srcs",
+    "closeForm": false,
+    "content": true,
+    "description": "The source values.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_srcs",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Srcs",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "openEnded": true,
+    "marketplaces": [
+        "xsoar"
+    ]
+}

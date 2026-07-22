@@ -1,0 +1,37 @@
+{
+    "id": "incident_awssecurityhubverificationstate",
+    "version": -1,
+    "modified": "2023-01-30T14:25:01.363233+02:00",
+    "name": "AWS Security Hub Verification State",
+    "ownerOnly": false,
+    "cliName": "awssecurityhubverificationstate",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "UNKNOWN",
+        "TRUE_POSITIVE",
+        "FALSE_POSITIVE",
+        "BENIGN_POSITIVE"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "AWS Security Hub Finding"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

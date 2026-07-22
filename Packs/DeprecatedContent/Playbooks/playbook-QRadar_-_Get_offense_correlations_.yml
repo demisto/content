@@ -1,0 +1,268 @@
+id: 'QRadar - Get offense correlations '
+version: -1
+name: QRadar - Get offense correlations
+fromversion: 5.0.0
+description: Deprecated. Use the `QRadar - Get offense correlations v2` instead.\"\nRun on a QRadar offense to get more information\n\n* Get all correlations relevant to the offense\n* Get all logs relevant to the correlations (not done by default, set "GetCorrelationLogs\" to \"True\")\n\nInputs-\n* GetCorrelationLogs (default - False)\n* MaxLogsCount (default - 20)
+hidden: true
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 608f0ec1-4001-4e68-8ead-e160f7802b35
+    type: start
+    task:
+      id: 608f0ec1-4001-4e68-8ead-e160f7802b35
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 51\n  }\n}"
+  '1':
+    id: '1'
+    taskid: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
+    type: condition
+    task:
+      id: e403a36f-c0fd-4ef0-8ec7-8a6683a5b0a5
+      version: -1
+      name: Is this a QRadar offense?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: QRadar
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+  '2':
+    id: '2'
+    taskid: edc69a27-88bc-4edb-8fca-8a111d2b6785
+    type: title
+    task:
+      id: edc69a27-88bc-4edb-8fca-8a111d2b6785
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1040\n  }\n}"
+  '3':
+    id: '3'
+    taskid: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
+    type: regular
+    task:
+      id: bbe06f8f-78a7-4de5-81ff-ff16aa98f5b6
+      version: -1
+      name: Get Offense correlations
+      description: Query QRadar for the offense correlations using the QRadar API
+      scriptName: QRadarGetOffenseCorrelations
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      fields: {}
+      headers: {}
+      interval: {}
+      offenseID:
+        complex:
+          root: inputs.ID
+      range: {}
+      startTime:
+        complex:
+          root: inputs.StartTime
+      timeout: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 515\n  }\n}"
+  '4':
+    id: '4'
+    taskid: 324f9756-1ddb-4d58-8d45-26f892ba6759
+    type: regular
+    task:
+      id: 324f9756-1ddb-4d58-8d45-26f892ba6759
+      version: -1
+      name: Get correlations' logs
+      description: ''
+      scriptName: QRadarGetCorrelationLogs
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      additionalQueryFields: {}
+      fields: {}
+      headers: {}
+      interval: {}
+      offenseID:
+        complex:
+          root: inputs.ID
+      qid:
+        complex:
+          root: QRadar
+          accessor: Correlation.QID
+      range:
+        simple: 0-${inputs.MaxLogsCount}
+      startTime:
+        complex:
+          root: inputs.StartTime
+      timeout: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 275,\n    \"y\": 865\n  }\n}"
+  '5':
+    id: '5'
+    taskid: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
+    type: title
+    task:
+      id: d05103bc-af8a-4d0b-80e2-a1637c45aa9c
+      version: -1
+      name: Get offense information
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+  '6':
+    id: '6'
+    taskid: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
+    type: condition
+    task:
+      id: 8dfe1ea9-0c27-4ff9-8892-ae66f014ec4b
+      version: -1
+      name: Should query for the correlations' logs?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '2'
+      'yes':
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetCorrelationLogs
+            iscontext: true
+          right:
+            value:
+              simple: 'True'
+          ignorecase: true
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 690\n  }\n}"
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 1054,\n      \"width\": 605,\n      \"x\": 50,\n      \"y\": 51\n    }\n  }\n}"
+inputs:
+- key: GetCorrelationLogs
+  value:
+    simple: 'False'
+  required: false
+  description: If "True" will get all of the offense's correlations logs
+- key: MaxLogsCount
+  value:
+    simple: '20'
+  required: false
+  description: 'Maximum number of log entires to query from QRadar (default: 20)'
+- key: ID
+  value:
+    complex:
+      root: incident
+      accessor: labels.id
+  required: true
+  description: 'The QRadar offense ID '
+- key: StartTime
+  value:
+    complex:
+      root: incident
+      accessor: labels.start_time
+  required: true
+  description: The QRadar offense start time
+outputs:
+- contextPath: QRadar.Correlation.StartTime
+  description: The correlation start time
+- contextPath: QRadar.Correlation.CategoryID
+  description: 'The correlation category id '
+- contextPath: QRadar.Correlation.QID
+  description: The correlation QID identifier
+- contextPath: QRadar.Correlation.CREName
+  description: The correlation name
+- contextPath: QRadar.Correlation.CREDescription
+  description: The correlation description
+- contextPath: QRadar.Correlation
+  description: The QRadar offense correlations
+- contextPath: QRadar.Correlation.SourceIP
+  description: The correlation source IP
+- contextPath: QRadar
+  description: QRadar context output
+- contextPath: QRadar.Correlation.DestinationIP
+  description: The correlation destination IP
+- contextPath: QRadar.Correlation.Category
+  description: The correlation high level category
+- contextPath: QRadar.Correlation.Username
+  description: The correlation username
+- contextPath: QRadar.Log
+  description: The QRadar offense correlation logs
+- contextPath: QRadar.Log.QID
+  description: The log's correlation ID
+- contextPath: QRadar.Log.SourceIP
+  description: The log's source IP
+- contextPath: QRadar.Log.DestinationPort
+  description: The log's destination port
+- contextPath: QRadar.Log.SourcePort
+  description: The log's source port
+- contextPath: QRadar.Log.DestinationIP
+  description: The log's destination IP
+- contextPath: QRadar.Log.Category
+  description: The log's category
+- contextPath: QRadar.Log.IdentityIP
+  description: The log's identity IP
+- contextPath: QRadar.Log.Username
+  description: The log's username
+- contextPath: QRadar.Log.StartTime
+  description: The log's start time
+- contextPath: QRadar.Log.Magnitude
+  description: The log's magnitude
+- contextPath: QRadar.Log.ProtocolName
+  description: The log's protocol name
+tests:
+- no tests
+deprecated: true

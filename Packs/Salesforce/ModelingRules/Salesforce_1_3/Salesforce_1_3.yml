@@ -1,0 +1,9 @@
+fromversion: 8.3.0
+toversion: 8.13.0
+id: Salesforce_ModelingRule
+name: Salesforce Modeling Rule
+rules: ''
+schema: ''
+tags: salesforce
+supportedModules:
+- xsiam

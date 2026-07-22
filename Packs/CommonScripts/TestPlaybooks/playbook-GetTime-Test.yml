@@ -1,0 +1,2195 @@
+id: GetTime-Test
+version: -1
+name: GetTime-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3e7d192d-4398-4d03-85ac-85276489833c
+    type: start
+    task:
+      id: 3e7d192d-4398-4d03-85ac-85276489833c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c0851df6-fe45-44fb-84c6-5ed1fdab987e
+    type: regular
+    task:
+      id: c0851df6-fe45-44fb-84c6-5ed1fdab987e
+      version: -1
+      name: Get UTC
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      dateFormat:
+        simple: utc
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9d0c8b7a-cea9-4faa-8f2b-219f2b6d5d21
+    type: regular
+    task:
+      id: 9d0c8b7a-cea9-4faa-8f2b-219f2b6d5d21
+      version: -1
+      name: Check regex new format
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z][a-z]), ([0-3]?[0-9] [A-Z][a-z][a-z] [\d]{4}) (\d\d:\d\d:\d\d GMT)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1f2ebd3a-c665-4b9a-81cc-37ae71f955f8
+    type: regular
+    task:
+      id: 1f2ebd3a-c665-4b9a-81cc-37ae71f955f8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3de4d907-56e7-4626-82a3-c69a430957eb
+    type: condition
+    task:
+      id: 3de4d907-56e7-4626-82a3-c69a430957eb
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8a8cbc9d-6c1e-4c33-8687-f391fa77d255
+    type: regular
+    task:
+      id: 8a8cbc9d-6c1e-4c33-8687-f391fa77d255
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 10cbc72d-686b-4870-8498-6c9e9f0eaeea
+    type: regular
+    task:
+      id: 10cbc72d-686b-4870-8498-6c9e9f0eaeea
+      version: -1
+      name: Get ISO
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 75951868-edde-4b51-8922-e1a9e81147a4
+    type: regular
+    task:
+      id: 75951868-edde-4b51-8922-e1a9e81147a4
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9](:[0-5][0-9]){2}.[0-9]{3}Z$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9e9b0157-877b-4bcd-8ead-8ccb8237387b
+    type: condition
+    task:
+      id: 9e9b0157-877b-4bcd-8ead-8ccb8237387b
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 95884b1d-33e1-4c85-89d5-26b7f20a811f
+    type: regular
+    task:
+      id: 95884b1d-33e1-4c85-89d5-26b7f20a811f
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 901a105b-614c-489a-81cf-7e01029a25b8
+    type: regular
+    task:
+      id: 901a105b-614c-489a-81cf-7e01029a25b8
+      version: -1
+      name: Get Locale
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      dateFormat:
+        simple: locale
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 70c5d814-793c-4889-84cd-cd0f40e324f4
+    type: regular
+    task:
+      id: 70c5d814-793c-4889-84cd-cd0f40e324f4
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^[0-1][0-9]/[0-3][0-9]/[0-9]{4}, [0-2][0-9](:[0-5][0-9]){2}$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3355cc7f-282d-43ec-8d2a-5c5b101f0776
+    type: condition
+    task:
+      id: 3355cc7f-282d-43ec-8d2a-5c5b101f0776
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f3892b58-c2c7-4008-8d53-8ce671700927
+    type: regular
+    task:
+      id: f3892b58-c2c7-4008-8d53-8ce671700927
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c16f123f-88fa-48b0-837c-976f571df773
+    type: regular
+    task:
+      id: c16f123f-88fa-48b0-837c-976f571df773
+      version: -1
+      name: Get Date
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      dateFormat:
+        simple: date
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3ac92882-bbb9-4df4-8707-5c8230471a39
+    type: regular
+    task:
+      id: 3ac92882-bbb9-4df4-8707-5c8230471a39
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4}$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7ea18651-30b6-4ca4-830e-671becddae3a
+    type: condition
+    task:
+      id: 7ea18651-30b6-4ca4-830e-671becddae3a
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 70df47fb-2b9b-424e-8c2d-95e1a01125c8
+    type: regular
+    task:
+      id: 70df47fb-2b9b-424e-8c2d-95e1a01125c8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 965ce695-eb9f-49a3-8f85-5d4704309e43
+    type: regular
+    task:
+      id: 965ce695-eb9f-49a3-8f85-5d4704309e43
+      version: -1
+      name: Get Day
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      dateFormat:
+        simple: day
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6d14a008-cb63-4553-82a1-16a38f5747b4
+    type: regular
+    task:
+      id: 6d14a008-cb63-4553-82a1-16a38f5747b4
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([1-9]|[12][0-9]|3[01])$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9ea274ba-bfc0-4ed0-84d6-b9ca952e0841
+    type: condition
+    task:
+      id: 9ea274ba-bfc0-4ed0-84d6-b9ca952e0841
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b8bf7818-47b0-4601-856a-e330550bd416
+    type: regular
+    task:
+      id: b8bf7818-47b0-4601-856a-e330550bd416
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 589e75fb-94f5-4162-840d-550e20bf693e
+    type: regular
+    task:
+      id: 589e75fb-94f5-4162-840d-550e20bf693e
+      version: -1
+      name: Get Month
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      dateFormat:
+        simple: month
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4e0c6137-23ee-4c00-8767-9d59cee1b254
+    type: regular
+    task:
+      id: 4e0c6137-23ee-4c00-8767-9d59cee1b254
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^[0-1]{0,1}[0-9]$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bb4188f1-6ceb-4bf6-89a6-f25ca69ffa48
+    type: condition
+    task:
+      id: bb4188f1-6ceb-4bf6-89a6-f25ca69ffa48
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 0380ca19-5c29-49a5-8d47-770bdc01b666
+    type: regular
+    task:
+      id: 0380ca19-5c29-49a5-8d47-770bdc01b666
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 199297f8-a1fb-47d0-8609-480dfd198196
+    type: regular
+    task:
+      id: 199297f8-a1fb-47d0-8609-480dfd198196
+      version: -1
+      name: Get Year
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      dateFormat:
+        simple: year
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 85696d05-42ec-4441-8fdd-fd3b5166540f
+    type: regular
+    task:
+      id: 85696d05-42ec-4441-8fdd-fd3b5166540f
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^[0-9]{4}$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 9ae07ad3-5304-4274-8a2d-1aca98f9e0b4
+    type: condition
+    task:
+      id: 9ae07ad3-5304-4274-8a2d-1aca98f9e0b4
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 2660,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8c4c9a2f-6b6c-478e-88b4-4b45d47cd8d8
+    type: regular
+    task:
+      id: 8c4c9a2f-6b6c-478e-88b4-4b45d47cd8d8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 0511abd8-a8be-4f3a-8d54-067fa62f41b9
+    type: regular
+    task:
+      id: 0511abd8-a8be-4f3a-8d54-067fa62f41b9
+      version: -1
+      name: Get DayInWeek
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      dateFormat:
+        simple: dayinweek
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 1cf3216c-8e60-4a37-86a2-c6bfe952d2ed
+    type: regular
+    task:
+      id: 1cf3216c-8e60-4a37-86a2-c6bfe952d2ed
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^[0-6]$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: aa72b0f7-5a54-4415-8faf-12f6d8da59b4
+    type: condition
+    task:
+      id: aa72b0f7-5a54-4415-8faf-12f6d8da59b4
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 3090,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 18351776-63c4-4398-8199-eaf71ce1bef7
+    type: regular
+    task:
+      id: 18351776-63c4-4398-8199-eaf71ce1bef7
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 42dd5acf-a1e9-499c-8f66-89157033cef4
+    type: regular
+    task:
+      id: 42dd5acf-a1e9-499c-8f66-89157033cef4
+      version: -1
+      name: Get MonthsAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      monthsAgo:
+        simple: "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 01f65f52-259c-44ca-8a78-60c616eaab2e
+    type: regular
+    task:
+      id: 01f65f52-259c-44ca-8a78-60c616eaab2e
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 3a8ce11b-9745-43e5-8da7-37e811ad2ada
+    type: condition
+    task:
+      id: 3a8ce11b-9745-43e5-8da7-37e811ad2ada
+      version: -1
+      name: ' Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 0bf303b0-498e-4225-8614-0144df97c93d
+    type: regular
+    task:
+      id: 0bf303b0-498e-4225-8614-0144df97c93d
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 62524094-080d-4d40-80d8-0edfa99bb8e8
+    type: regular
+    task:
+      id: 62524094-080d-4d40-80d8-0edfa99bb8e8
+      version: -1
+      name: Get MinutesAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      minutesAgo:
+        simple: "260"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: f66edfe3-08a6-42b9-8ce7-63a65dcff721
+    type: regular
+    task:
+      id: f66edfe3-08a6-42b9-8ce7-63a65dcff721
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 84464414-db4c-42bc-89c0-fe6c542bfcb5
+    type: condition
+    task:
+      id: 84464414-db4c-42bc-89c0-fe6c542bfcb5
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 4060,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: d2a6d660-dd22-41c6-84c3-25fe05721ca8
+    type: regular
+    task:
+      id: d2a6d660-dd22-41c6-84c3-25fe05721ca8
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 00974413-372d-4a08-88d4-427b0db43ba9
+    type: regular
+    task:
+      id: 00974413-372d-4a08-88d4-427b0db43ba9
+      version: -1
+      name: Get HoursAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      hoursAgo:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: f7c15534-1c7b-42b3-8117-601866e562ce
+    type: regular
+    task:
+      id: f7c15534-1c7b-42b3-8117-601866e562ce
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 0ff47a33-e41f-4f8e-82c0-9b4208a72059
+    type: condition
+    task:
+      id: 0ff47a33-e41f-4f8e-82c0-9b4208a72059
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 4500,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: a2bab24a-0357-41d5-8cce-17ed12076420
+    type: title
+    task:
+      id: a2bab24a-0357-41d5-8cce-17ed12076420
+      version: -1
+      name: Test end
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5800,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 93852967-bf85-48ee-801e-d1cfbad0ad5b
+    type: regular
+    task:
+      id: 93852967-bf85-48ee-801e-d1cfbad0ad5b
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4930,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 49043ae6-3e0a-4d0c-8bc3-ae2071ef751e
+    type: regular
+    task:
+      id: 49043ae6-3e0a-4d0c-8bc3-ae2071ef751e
+      version: -1
+      name: Get DaysAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      daysAgo:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4930,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: c367c80e-a469-4394-8cb4-107ab7aa7271
+    type: regular
+    task:
+      id: c367c80e-a469-4394-8cb4-107ab7aa7271
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4930,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 20343ad9-d7ee-445b-8f85-29e26c1d46c3
+    type: condition
+    task:
+      id: 20343ad9-d7ee-445b-8f85-29e26c1d46c3
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 4930,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 2bc5495b-eb72-44af-8f70-5141448a008e
+    type: regular
+    task:
+      id: 2bc5495b-eb72-44af-8f70-5141448a008e
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5360,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: af4985a7-308a-42ea-88d4-35df500a03a5
+    type: regular
+    task:
+      id: af4985a7-308a-42ea-88d4-35df500a03a5
+      version: -1
+      name: Get YearsAgo
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      yearsAgo:
+        simple: "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5360,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 67dfafda-b953-4945-8d3f-2c6e122d39d3
+    type: regular
+    task:
+      id: 67dfafda-b953-4945-8d3f-2c6e122d39d3
+      version: -1
+      name: Check regex
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5360,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: f125cff5-a2f8-401a-8947-db1c2df12a0e
+    type: condition
+    task:
+      id: f125cff5-a2f8-401a-8947-db1c2df12a0e
+      version: -1
+      name: 'Check if no error occurred '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Regex does not match
+    view: |-
+      {
+        "position": {
+          "x": 5360,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: b37f53db-b8b3-4bca-8c7b-b65cba04151d
+    type: regular
+    task:
+      id: b37f53db-b8b3-4bca-8c7b-b65cba04151d
+      version: -1
+      name: Get Demisto version
+      description: Return the Demisto server version.
+      scriptName: DemistoVersion
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 774ca14e-116d-48a1-89b7-35cf12f57cd4
+    type: condition
+    task:
+      id: 774ca14e-116d-48a1-89b7-35cf12f57cd4
+      version: -1
+      name: Is Demisto Version 8.1.0+ or 6.11.0+
+      description: Sleep for X seconds
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      newFormat:
+      - "2"
+      newFormat2:
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: newFormat
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "8"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: newFormat2
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "6"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DemistoVersion
+                accessor: version
+                transformers:
+                - operator: split
+                  args:
+                    delimiter:
+                      value:
+                        simple: .
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
+          right:
+            value:
+              simple: "11"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -690,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 4430157a-4ec1-4223-84bc-ced15b0c9b48
+    type: regular
+    task:
+      id: 4430157a-4ec1-4223-84bc-ced15b0c9b48
+      version: -1
+      name: Check regex old format
+      description: Deprecated. Use the **MatchRegexV2** script instead.
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z]{2} ){2}[0-3][0-9] [0-9]{4} [0-2][0-9](:[0-5][0-9]){2} [A-Z]{3}\+[0-9]{4} \([A-Z]{3}\)$
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1080,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 61aa9868-ca78-4714-8c49-a5a105dd7fd9
+    type: regular
+    task:
+      id: 61aa9868-ca78-4714-8c49-a5a105dd7fd9
+      version: -1
+      name: Check regex new format
+      scriptName: MatchRegex
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      data:
+        simple: ${TimeNow}
+      regex:
+        simple: ^([A-Z][a-z][a-z]), ([0-3]?[0-9] [A-Z][a-z][a-z] [\d]{4}) (\d\d:\d\d:\d\d GMT)$
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 965,
+        "width": 7260,
+        "x": -1080,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+marketplaces:
+- xsoar
+description: ''

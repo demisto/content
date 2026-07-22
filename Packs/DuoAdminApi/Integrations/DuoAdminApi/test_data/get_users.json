@@ -1,0 +1,51 @@
+{
+  "alias1": "test.1",
+  "alias2": "active-user",
+  "alias3": "",
+  "alias4": null,
+  "aliases": {
+    "alias1": "test.1",
+    "alias2": "test.2",
+    "alias3": ""
+  },
+  "created": 1545605961,
+  "desktoptokens": [],
+  "email": "test.1@test.com",
+  "firstname": null,
+  "groups": [],
+  "is_enrolled": true,
+  "last_directory_sync": null,
+  "last_login": 1582620826,
+  "lastname": null,
+  "notes": "",
+  "phones": [
+    {
+      "activated": true,
+      "capabilities": [
+        "auto",
+        "push",
+        "sms",
+        "phone",
+        "mobile_otp"
+      ],
+      "extension": "",
+      "last_seen": "2020-02-25T09:13:50",
+      "model": "Oneplus ONEPLUS A5010",
+      "name": "",
+      "number": "+97211111111",
+      "phone_id": "1",
+      "platform": "Google Android",
+      "postdelay": "0",
+      "predelay": "0",
+      "sms_passcodes_sent": true,
+      "type": "Mobile"
+    }
+  ],
+  "realname": "test",
+  "status": "active",
+  "tokens": [],
+  "u2ftokens": [],
+  "user_id": "1",
+  "username": "test1",
+  "webauthncredentials": []
+}

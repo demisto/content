@@ -1,0 +1,6 @@
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:1_0_4.md]
+ignore=RN113,RN114

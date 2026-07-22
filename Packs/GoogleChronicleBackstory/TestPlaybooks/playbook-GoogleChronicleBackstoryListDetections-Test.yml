@@ -1,0 +1,351 @@
+id: Google Chronicle Backstory List Detections - Test
+version: -1
+name: Google Chronicle Backstory List Detections - Test
+description: This playbook uses the Google Chronicle Backstory integration and tests the various scenarios of the "gcb-list-detections" command.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 11b8ba07-ffa2-48d0-804f-ea85e87d74a7
+    type: start
+    task:
+      id: 11b8ba07-ffa2-48d0-804f-ea85e87d74a7
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 2a09202a-6a04-431c-8085-43460e419a0b
+    type: regular
+    task:
+      id: 2a09202a-6a04-431c-8085-43460e419a0b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 6684efc9-3d2e-420a-803a-678a692c37a9
+    type: regular
+    task:
+      id: 6684efc9-3d2e-420a-803a-678a692c37a9
+      version: -1
+      name: gcb-list-detections
+      script: '|||gcb-list-detections'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      id:
+        complex:
+          root: GoogleChronicleBackstory.Rules
+          accessor: ruleId
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: '0'
+      page_size:
+        simple: '3'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: b6199a16-c7cb-48b3-81b8-8dc908b8b119
+    type: condition
+    task:
+      id: b6199a16-c7cb-48b3-81b8-8dc908b8b119
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleVersion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.timeWindowStartTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.timeWindowEndTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.alertState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.urlBackToProduct
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.createdTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.detectionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections.ruleType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 92154586-d315-433b-81d2-8e327d36fa3f
+    type: title
+    task:
+      id: 92154586-d315-433b-81d2-8e327d36fa3f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: eed27bf3-174c-4b47-86c1-2fda1dab62d8
+    type: condition
+    task:
+      id: eed27bf3-174c-4b47-86c1-2fda1dab62d8
+      version: -1
+      name: Is response received from chronicle?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: GoogleChronicleBackstory.Detections
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 3d0c0178-b51d-48f2-87bb-c361b61d67cf
+    type: regular
+    task:
+      id: 3d0c0178-b51d-48f2-87bb-c361b61d67cf
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 42b61a73-dded-4fcc-811e-840066ea902f
+    type: regular
+    task:
+      id: 42b61a73-dded-4fcc-811e-840066ea902f
+      version: -1
+      name: gcb-list-rules
+      description: List the latest versions of all Rules.
+      script: '|||gcb-list-rules'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      live_rule:
+        simple: 'true'
+      page_size:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

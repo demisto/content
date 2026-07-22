@@ -1,0 +1,1 @@
+!github-get-indicators since="30 days ago" until="now" limit=50

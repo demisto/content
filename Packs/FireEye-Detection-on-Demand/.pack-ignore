@@ -1,0 +1,3 @@
+[file:FireEye-Detection-on-Demand.yml]
+ignore=BA108,BA109,BA124
+

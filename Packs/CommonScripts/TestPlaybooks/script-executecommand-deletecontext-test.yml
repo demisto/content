@@ -1,0 +1,18 @@
+commonfields:
+  id: test-executecommand-deletecontext
+  version: -1
+name: test-executecommand-deletecontext
+script: |-
+  res = demisto.executeCommand('DeleteContext', {'key': 'key1'})
+  print(res)
+  if is_error(res):
+    error_message = get_error(res)
+    demisto.results(error_message)
+type: python
+tags: []
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 5.0.0

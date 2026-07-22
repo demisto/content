@@ -1,0 +1,30 @@
+{
+    "id": "incident_devsecopsdevelopername",
+    "version": -1,
+    "modified": "2020-06-08T07:52:33.64511316+04:00",
+    "name": "DevSecOps Developer Name",
+    "ownerOnly": false,
+    "cliName": "devsecopsdevelopername",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "DevSecOps New Git PR"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

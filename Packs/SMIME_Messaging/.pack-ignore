@@ -1,0 +1,5 @@
+[file:SMIME_Messaging.yml]
+ignore=BA108,BA109
+
+[known_words]
+SMIME

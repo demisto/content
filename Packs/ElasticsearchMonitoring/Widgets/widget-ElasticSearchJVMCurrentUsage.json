@@ -1,0 +1,31 @@
+{
+    "id": "es-jvm-memory-current",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "modified": "2021-01-10T13:24:20.812147Z",
+    "name": "Elasticsearch JVM Memory Current Usage",
+    "dataType": "system",
+    "widgetType": "number",
+    "query": "es-jvm-memory.usedPercent",
+    "isPredefined": true,
+    "description": "Elasticsearch JVM Memory Current Usage %",
+    "params": {
+        "colors": {
+            "isEnabled": true,
+            "items": {
+                "#00CD33": {
+                    "value": -1
+                },
+                "#FAC100": {
+                    "value": 70
+                },
+                "#FF1B15": {
+                    "value": 90
+                }
+            },
+            "type": "above"
+        },
+        "currencySign": "%",
+        "signAlignment": "right"
+    }
+}

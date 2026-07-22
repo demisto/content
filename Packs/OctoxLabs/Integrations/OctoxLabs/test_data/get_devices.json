@@ -1,0 +1,28 @@
+{
+  "count": 1,
+  "results": [
+    {
+      "Category": [
+        "Server"
+      ],
+      "FirstFetchTime": [
+        "2024-05-03T17:15:30.761Z"
+      ],
+      "Adapters": [
+        "carbon-black"
+      ],
+      "Hostname": [
+        "dev-1"
+      ],
+      "OS.Type": [
+        "Windows"
+      ],
+      "Domain": [
+        "octoxlabs.com"
+      ],
+      "LastSeen": [
+        "2024-12-05T00:00:00.000Z"
+      ]
+    }
+  ]
+}

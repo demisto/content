@@ -1,0 +1,593 @@
+id: AWS-securityhub Test
+version: -1
+name: AWS-securityhub Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fea062ed-f034-4eb7-843b-8b34888e36bf
+    type: start
+    task:
+      id: fea062ed-f034-4eb7-843b-8b34888e36bf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 756d614f-be18-4684-8fa1-65dc5a1b5158
+    type: regular
+    task:
+      id: 756d614f-be18-4684-8fa1-65dc5a1b5158
+      version: -1
+      name: GetFindings
+      description: Returns a list of findings that match the specified criteria.
+      script: '|||aws-securityhub-get-findings'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      aws_account_id_comparison: {}
+      aws_account_id_value: {}
+      company_name_comparison: {}
+      company_name_value: {}
+      compliance_status_comparison: {}
+      compliance_status_value: {}
+      created_at_end: {}
+      created_at_start: {}
+      date_range_unit: {}
+      description_comparison: {}
+      description_value: {}
+      first_observed_at_end: {}
+      first_observed_at_start: {}
+      generator_id_comparison: {}
+      generator_id_value: {}
+      id_comparison: {}
+      id_value: {}
+      keyword_value: {}
+      last_observed_at_end: {}
+      last_observed_at_start: {}
+      malware_name_comparison: {}
+      malware_name_value: {}
+      malware_path_comparison: {}
+      malware_path_value: {}
+      malware_state_comparison: {}
+      malware_state_value: {}
+      malware_type_comparison: {}
+      malware_type_value: {}
+      network_destination_domain_comparison: {}
+      network_destination_domain_value: {}
+      network_destination_ip_v4_cidr: {}
+      network_destination_ip_v6_cidr: {}
+      network_direction_comparison: {}
+      network_direction_value: {}
+      network_protocol_comparison: {}
+      network_protocol_value: {}
+      network_source_domain_comparison: {}
+      network_source_domain_value: {}
+      network_source_ip_v4_cidr: {}
+      network_source_ip_v6_cidr: {}
+      network_source_mac_comparison: {}
+      network_source_mac_value: {}
+      next_token: {}
+      note_text_comparison: {}
+      note_text_value: {}
+      note_updated_at_end: {}
+      note_updated_at_start: {}
+      note_updated_by_comparison: {}
+      note_updated_by_value: {}
+      process_launched_at_end: {}
+      process_launched_at_start: {}
+      process_name_comparison: {}
+      process_name_value: {}
+      process_path_comparison: {}
+      process_path_value: {}
+      process_terminated_at_end: {}
+      process_terminated_at_start: {}
+      product_arn_comparison: {}
+      product_arn_value: {}
+      product_fields_comparison: {}
+      product_fields_key: {}
+      product_fields_value: {}
+      product_name_comparison: {}
+      product_name_value: {}
+      raw_json: {}
+      recommendation_text_comparison: {}
+      recommendation_text_value: {}
+      record_state_comparison: {}
+      record_state_value: {}
+      region: {}
+      related_findings_id_comparison: {}
+      related_findings_id_value: {}
+      related_findings_product_arn_comparison: {}
+      related_findings_product_arn_value: {}
+      resource_aws_ec2_instance_iam_instance_profile_arn_comparison: {}
+      resource_aws_ec2_instance_iam_instance_profile_arn_value: {}
+      resource_aws_ec2_instance_image_id_comparison: {}
+      resource_aws_ec2_instance_image_id_value: {}
+      resource_aws_ec2_instance_ip_v4_addresses_cidr: {}
+      resource_aws_ec2_instance_ip_v6_addresses_cidr: {}
+      resource_aws_ec2_instance_key_name_comparison: {}
+      resource_aws_ec2_instance_key_name_value: {}
+      resource_aws_ec2_instance_launched_at_end: {}
+      resource_aws_ec2_instance_launched_at_start: {}
+      resource_aws_ec2_instance_subnet_id_comparison: {}
+      resource_aws_ec2_instance_subnet_id_value: {}
+      resource_aws_ec2_instance_type_comparison: {}
+      resource_aws_ec2_instance_type_value: {}
+      resource_aws_ec2_instance_vpc_id_comparison: {}
+      resource_aws_ec2_instance_vpc_id_value: {}
+      resource_aws_iam_access_key_created_at_end: {}
+      resource_aws_iam_access_key_created_at_start: {}
+      resource_aws_iam_access_key_status_comparison: {}
+      resource_aws_iam_access_key_status_value: {}
+      resource_aws_iam_access_key_user_name_comparison: {}
+      resource_aws_iam_access_key_user_name_value: {}
+      resource_aws_s3_bucket_owner_id_comparison: {}
+      resource_aws_s3_bucket_owner_id_value: {}
+      resource_aws_s3_bucket_owner_name_comparison: {}
+      resource_aws_s3_bucket_owner_name_value: {}
+      resource_container_image_id_comparison: {}
+      resource_container_image_id_value: {}
+      resource_container_image_name_comparison: {}
+      resource_container_image_name_value: {}
+      resource_container_launched_at_end: {}
+      resource_container_launched_at_start: {}
+      resource_container_name_comparison: {}
+      resource_container_name_value: {}
+      resource_details_other_comparison: {}
+      resource_details_other_key: {}
+      resource_details_other_value: {}
+      resource_id_comparison: {}
+      resource_id_value: {}
+      resource_partition_comparison: {}
+      resource_partition_value: {}
+      resource_region_comparison: {}
+      resource_region_value: {}
+      resource_tags_comparison: {}
+      resource_tags_key: {}
+      resource_tags_value: {}
+      resource_type_comparison: {}
+      resource_type_value: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      severity_label_comparison: {}
+      severity_label_value: {}
+      sort_criteria_field: {}
+      sort_criteria_sort_order: {}
+      source_url_comparison: {}
+      source_url_value: {}
+      threat_intel_indicator_category_comparison: {}
+      threat_intel_indicator_category_value: {}
+      threat_intel_indicator_last_observed_at_end: {}
+      threat_intel_indicator_last_observed_at_start: {}
+      threat_intel_indicator_source_comparison: {}
+      threat_intel_indicator_source_url_comparison: {}
+      threat_intel_indicator_source_url_value: {}
+      threat_intel_indicator_source_value: {}
+      threat_intel_indicator_type_comparison: {}
+      threat_intel_indicator_type_value: {}
+      threat_intel_indicator_value_comparison: {}
+      threat_intel_indicator_value_value: {}
+      title_comparison: {}
+      title_value: {}
+      type_comparison: {}
+      type_value: {}
+      updated_at_end: {}
+      updated_at_start: {}
+      user_defined_fields_comparison: {}
+      user_defined_fields_key: {}
+      user_defined_fields_value: {}
+      verification_state_comparison: {}
+      verification_state_value: {}
+      workflow_state_comparison: {}
+      workflow_state_value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3d84ef2a-936a-4a64-8a62-ab0f1a16fb49
+    type: regular
+    task:
+      id: 3d84ef2a-936a-4a64-8a62-ab0f1a16fb49
+      version: -1
+      name: Update findings
+      description: ""
+      script: '|||aws-securityhub-batch-update-findings'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      finding_identifiers_id:
+        complex:
+          root: AWS-SecurityHub.Findings
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+      finding_identifiers_product_arn:
+        complex:
+          root: AWS-SecurityHub.Findings
+          accessor: ProductArn
+          transformers:
+          - operator: FirstArrayElement
+      note_text:
+        simple: Test
+      note_updated_by:
+        simple: Demisto
+      raw_json: {}
+      region: {}
+      related_findings_id: {}
+      related_findings_product_arn: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      severity_label: {}
+      types: {}
+      user_defined_fields: {}
+      verification_state: {}
+      workflow_status: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3440ab85-889a-4138-818a-29dd41e68108
+    type: regular
+    task:
+      id: 3440ab85-889a-4138-818a-29dd41e68108
+      version: -1
+      name: Get updated finding
+      description: Returns a list of findings that match the specified criteria.
+      script: '|||aws-securityhub-get-findings'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      aws_account_id_comparison: {}
+      aws_account_id_value: {}
+      company_name_comparison: {}
+      company_name_value: {}
+      compliance_status_comparison: {}
+      compliance_status_value: {}
+      created_at_end: {}
+      created_at_start: {}
+      date_range_unit: {}
+      description_comparison: {}
+      description_value: {}
+      first_observed_at_end: {}
+      first_observed_at_start: {}
+      generator_id_comparison: {}
+      generator_id_value: {}
+      id_comparison:
+        simple: EQUALS
+      id_value:
+        complex:
+          root: AWS-SecurityHub.Findings
+          accessor: Id
+          transformers:
+          - operator: FirstArrayElement
+      keyword_value: {}
+      last_observed_at_end: {}
+      last_observed_at_start: {}
+      malware_name_comparison: {}
+      malware_name_value: {}
+      malware_path_comparison: {}
+      malware_path_value: {}
+      malware_state_comparison: {}
+      malware_state_value: {}
+      malware_type_comparison: {}
+      malware_type_value: {}
+      network_destination_domain_comparison: {}
+      network_destination_domain_value: {}
+      network_destination_ip_v4_cidr: {}
+      network_destination_ip_v6_cidr: {}
+      network_direction_comparison: {}
+      network_direction_value: {}
+      network_protocol_comparison: {}
+      network_protocol_value: {}
+      network_source_domain_comparison: {}
+      network_source_domain_value: {}
+      network_source_ip_v4_cidr: {}
+      network_source_ip_v6_cidr: {}
+      network_source_mac_comparison: {}
+      network_source_mac_value: {}
+      next_token: {}
+      note_text_comparison: {}
+      note_text_value: {}
+      note_updated_at_end: {}
+      note_updated_at_start: {}
+      note_updated_by_comparison: {}
+      note_updated_by_value: {}
+      process_launched_at_end: {}
+      process_launched_at_start: {}
+      process_name_comparison: {}
+      process_name_value: {}
+      process_path_comparison: {}
+      process_path_value: {}
+      process_terminated_at_end: {}
+      process_terminated_at_start: {}
+      product_arn_comparison:
+        simple: EQUALS
+      product_arn_value:
+        complex:
+          root: AWS-SecurityHub.Findings
+          accessor: ProductArn
+          transformers:
+          - operator: FirstArrayElement
+      product_fields_comparison: {}
+      product_fields_key: {}
+      product_fields_value: {}
+      product_name_comparison: {}
+      product_name_value: {}
+      raw_json: {}
+      recommendation_text_comparison: {}
+      recommendation_text_value: {}
+      record_state_comparison: {}
+      record_state_value: {}
+      region: {}
+      related_findings_id_comparison: {}
+      related_findings_id_value: {}
+      related_findings_product_arn_comparison: {}
+      related_findings_product_arn_value: {}
+      resource_aws_ec2_instance_iam_instance_profile_arn_comparison: {}
+      resource_aws_ec2_instance_iam_instance_profile_arn_value: {}
+      resource_aws_ec2_instance_image_id_comparison: {}
+      resource_aws_ec2_instance_image_id_value: {}
+      resource_aws_ec2_instance_ip_v4_addresses_cidr: {}
+      resource_aws_ec2_instance_ip_v6_addresses_cidr: {}
+      resource_aws_ec2_instance_key_name_comparison: {}
+      resource_aws_ec2_instance_key_name_value: {}
+      resource_aws_ec2_instance_launched_at_end: {}
+      resource_aws_ec2_instance_launched_at_start: {}
+      resource_aws_ec2_instance_subnet_id_comparison: {}
+      resource_aws_ec2_instance_subnet_id_value: {}
+      resource_aws_ec2_instance_type_comparison: {}
+      resource_aws_ec2_instance_type_value: {}
+      resource_aws_ec2_instance_vpc_id_comparison: {}
+      resource_aws_ec2_instance_vpc_id_value: {}
+      resource_aws_iam_access_key_created_at_end: {}
+      resource_aws_iam_access_key_created_at_start: {}
+      resource_aws_iam_access_key_status_comparison: {}
+      resource_aws_iam_access_key_status_value: {}
+      resource_aws_iam_access_key_user_name_comparison: {}
+      resource_aws_iam_access_key_user_name_value: {}
+      resource_aws_s3_bucket_owner_id_comparison: {}
+      resource_aws_s3_bucket_owner_id_value: {}
+      resource_aws_s3_bucket_owner_name_comparison: {}
+      resource_aws_s3_bucket_owner_name_value: {}
+      resource_container_image_id_comparison: {}
+      resource_container_image_id_value: {}
+      resource_container_image_name_comparison: {}
+      resource_container_image_name_value: {}
+      resource_container_launched_at_end: {}
+      resource_container_launched_at_start: {}
+      resource_container_name_comparison: {}
+      resource_container_name_value: {}
+      resource_details_other_comparison: {}
+      resource_details_other_key: {}
+      resource_details_other_value: {}
+      resource_id_comparison: {}
+      resource_id_value: {}
+      resource_partition_comparison: {}
+      resource_partition_value: {}
+      resource_region_comparison: {}
+      resource_region_value: {}
+      resource_tags_comparison: {}
+      resource_tags_key: {}
+      resource_tags_value: {}
+      resource_type_comparison: {}
+      resource_type_value: {}
+      roleArn: {}
+      roleSessionDuration: {}
+      roleSessionName: {}
+      severity_label_comparison: {}
+      severity_label_value: {}
+      sort_criteria_field: {}
+      sort_criteria_sort_order: {}
+      source_url_comparison: {}
+      source_url_value: {}
+      threat_intel_indicator_category_comparison: {}
+      threat_intel_indicator_category_value: {}
+      threat_intel_indicator_last_observed_at_end: {}
+      threat_intel_indicator_last_observed_at_start: {}
+      threat_intel_indicator_source_comparison: {}
+      threat_intel_indicator_source_url_comparison: {}
+      threat_intel_indicator_source_url_value: {}
+      threat_intel_indicator_source_value: {}
+      threat_intel_indicator_type_comparison: {}
+      threat_intel_indicator_type_value: {}
+      threat_intel_indicator_value_comparison: {}
+      threat_intel_indicator_value_value: {}
+      title_comparison: {}
+      title_value: {}
+      type_comparison: {}
+      type_value: {}
+      updated_at_end: {}
+      updated_at_start: {}
+      user_defined_fields_comparison: {}
+      user_defined_fields_key: {}
+      user_defined_fields_value: {}
+      verification_state_comparison: {}
+      verification_state_value: {}
+      workflow_state_comparison: {}
+      workflow_state_value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 06ef1bd1-ca82-45f9-82e8-5264f6d89c50
+    type: condition
+    task:
+      id: 06ef1bd1-ca82-45f9-82e8-5264f6d89c50
+      version: -1
+      name: Verify updated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AWS-SecurityHub
+                accessor: Findings.Note.UpdatedBy
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: Demisto
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 52a200bc-1582-4b09-853c-07ced0e4a427
+    type: title
+    task:
+      id: 52a200bc-1582-4b09-853c-07ced0e4a427
+      version: -1
+      name: Finished
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1eef5bd6-a80d-4b12-8b25-6f66d26b9f5c
+    type: regular
+    task:
+      id: 1eef5bd6-a80d-4b12-8b25-6f66d26b9f5c
+      version: -1
+      name: Clear context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

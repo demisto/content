@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "caseInsensitive": true,
+ "cliName": "logrhythmassociatedcases",
+ "closeForm": false,
+ "content": true,
+ "description": "LogRhythm Alarm Associated Cases",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_logrhythmassociatedcases",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "LogRhythm Associated Cases",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "associatedTypes": [
+  "Logrhythm Alarm"
+ ],
+ "version": -1,
+ "fromVersion": "5.5.0"
+}

@@ -1,0 +1,23 @@
+commonfields:
+  id: cveReputation
+  version: -1
+name: cveReputation
+script: ''
+type: javascript
+tags:
+- cve
+- reputation
+comment: Deprecated. Use CveReputationV2 (in CommonScripts) instead.
+enabled: true
+args:
+- name: input
+  required: true
+  default: true
+  description: CVE ID
+scripttarget: 0
+dependson:
+  must:
+  - cve
+timeout: 2.4µs
+fromversion: 5.0.0
+deprecated: true

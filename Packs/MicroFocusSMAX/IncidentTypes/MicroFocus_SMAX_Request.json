@@ -1,0 +1,23 @@
+{
+	"id": "MicroFocus SMAX Request",
+	"version": -1,
+	"vcShouldIgnore": false,
+	"locked": false,
+	"name": "MicroFocus SMAX Request",
+	"prevName": "MicroFocus SMAX Request",
+	"color": "#F8B7EC",
+	"hours": 0,
+	"days": 0,
+	"weeks": 0,
+	"hoursR": 0,
+	"daysR": 0,
+	"weeksR": 0,
+	"system": false,
+	"readonly": false,
+	"default": false,
+	"autorun": true,
+	"disabled": false,
+	"layout": "",
+	"reputationCalc": 0,
+	"fromVersion": "6.0.0"
+}

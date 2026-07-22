@@ -1,0 +1,1 @@
+Use the Lastline pack to provide threat analysts and incident response teams with the advanced malware isolation and inspection environment needed to safely execute advanced malware samples, and understand their behavior. You can use the pack's playbooks to detonate both files and URLs.

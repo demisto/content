@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#32d296",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "NCSC CAF Assessment",
+ "layout": "16efc0b7-517f-4492-8104-0896262ebe54",
+ "locked": false,
+ "name": "NCSC CAF Assessment",
+ "playbookId": "NCSC CAF Assessment",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "6.0.0"
+}

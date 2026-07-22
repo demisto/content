@@ -1,0 +1,3 @@
+!f5-silverline-ip-objects-list list_type=denylist
+!f5-silverline-ip-object-add cidr_range=2.5.3.4 list_type=denylist
+!f5-silverline-ip-object-delete list_type=denylist object_id=66202ba3-04f1-4f7c-b1a8-9a49776a96a4

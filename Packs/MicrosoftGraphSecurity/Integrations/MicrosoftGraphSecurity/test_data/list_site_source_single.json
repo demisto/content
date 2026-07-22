@@ -1,0 +1,24 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/cases/ediscoveryCases('df033c01-4a13-4ab8-a30c-a2651ba3f4bf')/custodians('0af7ca2b84bc4cff930d5d301cc4caf3')/siteSources",
+    "value": [
+        {
+            "@odata.id": "https://graph.microsoft.com/v1.0/sites/862f0a64-000-0000-0000-9156b4f693ee",
+            "createdBy": {
+                "application": null,
+                "user": {
+                    "displayName": "somename",
+                    "id": "38c41451-94b8-44cc-8c02-649208c43b6b"
+                }
+            },
+            "createdDateTime": "2023-06-26T09:48:12.762321Z",
+            "displayName": "site_test_1",
+            "holdStatus": "notApplied",
+            "id": "862f0a64-e7db-46e0-a97f-9156b4f693ee",
+            "site": {
+                "createdDateTime": "2023-06-26T09:48:12.762321Z",
+                "id": "862f0a64-e7db-46e0-a97f-9156b4f693ee",
+                "webUrl": "https://exampleurl.sharepoint.com/sites/site_test_1"
+            }
+        }
+    ]
+}

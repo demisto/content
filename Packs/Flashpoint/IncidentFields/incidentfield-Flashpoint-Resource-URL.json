@@ -1,0 +1,32 @@
+{
+    "id": "incident_flashpointresourceurl",
+    "version": -1,
+    "modified": "2024-06-18T18:35:36.390016996+05:30",
+    "name": "Flashpoint Resource URL",
+    "ownerOnly": false,
+    "description": "URL of Flashpoint Alert.",
+    "cliName": "flashpointresourceurl",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Ignite Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

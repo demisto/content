@@ -1,0 +1,424 @@
+{
+    "id": "Metrics Test Cases Validation",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "days",
+        "byFrom": "minutes",
+        "toValue": 0,
+        "fromValue": 5,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Metrics Test Cases Validation",
+    "layout": [
+        {
+            "id": "f83bb3d0-b0ee-11ec-8e48-ad8d35c0aac3",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "f83bb3d0-b0ee-11ec-8e48-ad8d35c0aac3",
+            "w": 2,
+            "h": 2,
+            "widget": {
+                "id": "5192a1a7-74b5-4201-8a21-9f43bbba6308",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-03-31T12:34:48.041327163Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Test Scenario One",
+                "prevName": "Test Scenario One",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration instance:MetricsValidator_instance_1 and command:\"test-scenario-one\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "minutes",
+                        "toValue": 0,
+                        "fromValue": 15,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 11
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            }
+                        },
+                        "type": "below"
+                    },
+                    "keys": [
+                        "sum|errorCount+executionCount"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "63900d20-b0ef-11ec-8e48-ad8d35c0aac3",
+            "forceRange": false,
+            "x": 2,
+            "y": 0,
+            "i": "63900d20-b0ef-11ec-8e48-ad8d35c0aac3",
+            "w": 2,
+            "h": 2,
+            "widget": {
+                "id": "5192a1a7-74b5-4201-8a21-9f43bbba6308",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-03-31T12:34:48.041327163Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Test Scenario Two",
+                "prevName": "Test Scenario One",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration instance:MetricsValidator_instance_1 and command:\"test-scenario-two\" -",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "hours",
+                        "byFrom": "minutes",
+                        "toValue": 0,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 12
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            }
+                        },
+                        "type": "below"
+                    },
+                    "keys": [
+                        "sum|errorCount+executionCount"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "ba7bca70-b0ef-11ec-8e48-ad8d35c0aac3",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "ba7bca70-b0ef-11ec-8e48-ad8d35c0aac3",
+            "w": 2,
+            "h": 2,
+            "widget": {
+                "id": "5192a1a7-74b5-4201-8a21-9f43bbba6308",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-03-31T12:34:48.041327163Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Test Scenario Three",
+                "prevName": "Test Scenario One",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration instance:MetricsValidator_instance_1 and command:\"test-scenario-three\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "minutes",
+                        "toValue": 0,
+                        "fromValue": 5,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 2
+                            },
+                            "#D13C3C": {
+                                "value": 1
+                            }
+                        },
+                        "type": "below"
+                    },
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showOthers": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "a0660240-b1cb-11ec-8888-1f4200cb0b9b",
+            "forceRange": false,
+            "x": 6,
+            "y": 0,
+            "i": "a0660240-b1cb-11ec-8888-1f4200cb0b9b",
+            "w": 2,
+            "h": 2,
+            "widget": {
+                "id": "5192a1a7-74b5-4201-8a21-9f43bbba6308",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-03-31T12:34:48.041327163Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Test Scenario Four",
+                "prevName": "Test Scenario One",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration instance:MetricsValidator_instance_1 and command:\"test-scenario-four\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "minutes",
+                        "toValue": 0,
+                        "fromValue": 5,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 4
+                            },
+                            "#D13C3C": {
+                                "value": 3
+                            }
+                        },
+                        "type": "below"
+                    },
+                    "keys": [
+                        "sum|errorCount+executionCount"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "e4f212f0-b1cb-11ec-8888-1f4200cb0b9b",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "e4f212f0-b1cb-11ec-8888-1f4200cb0b9b",
+            "w": 2,
+            "h": 2,
+            "widget": {
+                "id": "5192a1a7-74b5-4201-8a21-9f43bbba6308",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-03-31T12:34:48.041327163Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Test Scenario Five",
+                "prevName": "Test Scenario One",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration instance:MetricsValidator_instance_1 and command:\"test-scenario-five\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "minutes",
+                        "toValue": 0,
+                        "fromValue": 15,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 2
+                            },
+                            "#D13C3C": {
+                                "value": 1
+                            }
+                        },
+                        "type": "below"
+                    },
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "25370410-b1cc-11ec-8888-1f4200cb0b9b",
+            "forceRange": false,
+            "x": 0,
+            "y": 2,
+            "i": "25370410-b1cc-11ec-8888-1f4200cb0b9b",
+            "w": 2,
+            "h": 2,
+            "widget": {
+                "id": "5192a1a7-74b5-4201-8a21-9f43bbba6308",
+                "version": 1,
+                "cacheVersn": 0,
+                "modified": "2022-03-31T12:34:48.041327163Z",
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Test Scenario Six",
+                "prevName": "Test Scenario One",
+                "dataType": "metrics",
+                "widgetType": "number",
+                "query": "type:integration instance:MetricsValidator_instance_1 and command:\"test-scenario-six\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "minutes",
+                        "toValue": 0,
+                        "fromValue": 15,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 2
+                            },
+                            "#D13C3C": {
+                                "value": 1
+                            }
+                        },
+                        "type": "below"
+                    },
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        }
+    ],
+    "fromVersion": "6.8.0",
+    "description": "",
+    "isPredefined": true
+}

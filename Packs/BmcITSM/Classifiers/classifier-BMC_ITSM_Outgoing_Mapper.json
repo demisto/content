@@ -1,0 +1,172 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "BMC ITSM Outgoing Mapper",
+    "mapping": {
+        "BMC Change-Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcitsmimpact"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "RiskLevel": {
+                    "simple": "bmcitsmrisklevel"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcitsmstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcitsmimpact"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcitsmstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Problem Investigation incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcitsmimpact"
+                },
+                "Priority": {
+                    "simple": "labels.Priority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcitsmstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Problem – Known Error": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcitsmimpact"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcitsmstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Service Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcitsmimpact"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcitsmstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Task": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Details": {
+                    "simple": "details"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcitsmstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
+                }
+            }
+        }
+    },
+    "name": "BMC ITSM Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

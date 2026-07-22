@@ -1,0 +1,201 @@
+{
+    "totalResults": 5,
+    "startIndex": 1,
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "Resources": [
+        {
+            "owner": {
+                "displayName": "Mary.Johnson",
+                "value": "7f000001705911b4817059d30994033b",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30994033b"
+            },
+            "entitleAuth": "None",
+            "aggregated": true,
+            "reviewer": {},
+            "type": "group",
+            "descriptions": [
+                {
+                    "locale": "en_GB",
+                    "value": "<strong><em>ｪT dﾼsktㅇp sนppㅇrt</em></strong>"
+                },
+                {
+                    "locale": "en_US",
+                    "value": "<strong><em>IT desktop support</em></strong>"
+                }
+            ],
+            "application": {
+                "displayName": "ADDirectDemodata",
+                "value": "7f000001705911b4817059d354020625",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Applications/7f000001705911b4817059d354020625"
+            },
+            "meta": {
+                "created": "2020-02-18T13:43:07.140-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Entitlements/7f000001705911b4817059d355840657",
+                "version": "W/\"1582054987140\"",
+                "resourceType": "Entitlement"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Entitlement"
+            ],
+            "displayableName": "HelpDesk_AD",
+            "id": "7f000001705911b4817059d355840657",
+            "requestable": true,
+            "attribute": "memberOf",
+            "value": "CN=HelpDesk_AD,OU=demoGroups,OU=DemoData,DC=test,DC=sailpoint,DC=com"
+        },
+        {
+            "owner": {
+                "displayName": "Mary.Johnson",
+                "value": "7f000001705911b4817059d30994033b",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30994033b"
+            },
+            "entitleAuth": "None",
+            "aggregated": true,
+            "reviewer": {},
+            "type": "group",
+            "descriptions": [
+                {
+                    "locale": "en_GB",
+                    "value": "<strong><em>дccﾼss tㅇ thﾼ phΫsｪcдl cдmpนs</em></strong>"
+                },
+                {
+                    "locale": "en_US",
+                    "value": "<strong><em>Access to the physical campus</em></strong>"
+                }
+            ],
+            "application": {
+                "displayName": "ADDirectDemodata",
+                "value": "7f000001705911b4817059d354020625",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Applications/7f000001705911b4817059d354020625"
+            },
+            "meta": {
+                "created": "2020-02-18T13:43:07.146-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Entitlements/7f000001705911b4817059d3558a0658",
+                "version": "W/\"1582054987146\"",
+                "resourceType": "Entitlement"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Entitlement"
+            ],
+            "displayableName": "campusAccess_AD",
+            "id": "7f000001705911b4817059d3558a0658",
+            "requestable": true,
+            "attribute": "memberOf",
+            "value": "CN=campusAccess_AD,OU=demoGroups,OU=DemoData,DC=test,DC=sailpoint,DC=com"
+        },
+        {
+            "owner": {
+                "displayName": "Mary.Johnson",
+                "value": "7f000001705911b4817059d30994033b",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d30994033b"
+            },
+            "entitleAuth": "None",
+            "aggregated": true,
+            "reviewer": {},
+            "type": "group",
+            "descriptions": [
+                {
+                    "locale": "en_GB",
+                    "value": "<strong><em>Grдnts дbｪlｪtΫ tㅇ rﾼдd дrchｪvﾼd dдtд</em></strong>"
+                },
+                {
+                    "locale": "en_US",
+                    "value": "<strong><em>Grants ability to read archived data</em></strong>"
+                }
+            ],
+            "application": {
+                "displayName": "ADDirectDemodata",
+                "value": "7f000001705911b4817059d354020625",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Applications/7f000001705911b4817059d354020625"
+            },
+            "meta": {
+                "created": "2020-02-18T13:43:07.154-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Entitlements/7f000001705911b4817059d355920659",
+                "version": "W/\"1582054987154\"",
+                "resourceType": "Entitlement"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Entitlement"
+            ],
+            "displayableName": "DataArchive_AD",
+            "id": "7f000001705911b4817059d355920659",
+            "requestable": true,
+            "attribute": "memberOf",
+            "value": "CN=DataArchive_AD,OU=demoGroups,OU=DemoData,DC=test,DC=sailpoint,DC=com"
+        },
+        {
+            "owner": {
+                "displayName": "The Administrator",
+                "value": "7f000001705911b4817059d1ed0600e3",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d1ed0600e3"
+            },
+            "lastRefresh": "2020-08-31T09:54:56.615-05:00",
+            "active": false,
+            "aggregated": true,
+            "reviewer": {},
+            "type": "group",
+            "descriptions": [
+                {
+                    "locale": "en_US"
+                }
+            ],
+            "application": {
+                "displayName": "SCIM SDK",
+                "value": "7f00000174361533817436281cbe0013",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Applications/7f00000174361533817436281cbe0013"
+            },
+            "meta": {
+                "created": "2020-08-31T09:08:28.949-05:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Entitlements/7f00000174441779817444d90b150041",
+                "lastModified": "2020-08-31T09:54:56.616-05:00",
+                "version": "W/\"1598885696616\"",
+                "resourceType": "Entitlement"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Entitlement"
+            ],
+            "displayableName": "Engineering",
+            "id": "7f00000174441779817444d90b150041",
+            "requestable": false,
+            "value": "Engineering"
+        },
+        {
+            "owner": {
+                "displayName": "The Administrator",
+                "value": "7f000001705911b4817059d1ed0600e3",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Users/7f000001705911b4817059d1ed0600e3"
+            },
+            "lastRefresh": "2020-08-31T09:54:56.630-05:00",
+            "active": false,
+            "aggregated": true,
+            "reviewer": {},
+            "type": "group",
+            "descriptions": [
+                {
+                    "locale": "en_US"
+                }
+            ],
+            "application": {
+                "displayName": "SCIM SDK",
+                "value": "7f00000174361533817436281cbe0013",
+                "$ref": "http://localhost:8088/iiq/scim/v2/Applications/7f00000174361533817436281cbe0013"
+            },
+            "meta": {
+                "created": "2020-08-31T09:08:28.971-05:00",
+                "location": "http://localhost:8088/iiq/scim/v2/Entitlements/7f00000174441779817444d90b2b0042",
+                "lastModified": "2020-08-31T09:54:56.631-05:00",
+                "version": "W/\"1598885696631\"",
+                "resourceType": "Entitlement"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:Entitlement"
+            ],
+            "displayableName": "Admins",
+            "id": "7f00000174441779817444d90b2b0042",
+            "requestable": false,
+            "value": "Admins"
+        }
+    ]
+}

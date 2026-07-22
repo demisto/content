@@ -1,0 +1,12 @@
+[file:playbook-Arcanna-Generic-Investigation-V2-With-Feedback.yml]
+ignore=PB105
+
+[file:ArcannaAI_image.png]
+ignore=IM111
+
+[file:PrepareArcannaRawJson.yml]
+ignore=BA124
+
+[file:ArcannaFeedbackPostProcessingScript.yml]
+ignore=BA124
+

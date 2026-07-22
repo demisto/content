@@ -1,0 +1,27 @@
+!aws-org-root-list
+!aws-org-parent-list child_id="ou-lf12-xzacq1nu"
+!aws-org-children-list parent_id="r-lf12" child_type="OrganizationalUnit"
+!aws-org-account-list account_id=890404229245
+!aws-org-account-list
+!aws-org-organization-get
+
+!aws-org-account-remove account_id=390841405342
+!aws-org-account-move source_parent_id=r-lf12 account_id=390841405342 destination_parent_id=ou-lf12-v3w8fmn8
+!aws-org-account-create account_name=test email="dev@demisto.com" tags="new=true,test=yes" iam_user_access_to_billing=Deny
+!aws-org-account-close account_id=390841405342
+
+!aws-org-organization-unit-create name=test parent_id=r-lf12 tags="new=true,key=value"
+!aws-org-organization-unit-get organization_unit_id=ou-lf12-xzacq1nu
+!aws-org-organization-unit-rename name=renamed organizational_unit_id=ou-lf12-7odud8d8
+
+!aws-org-policy-list policy_type="Service Control Policy"
+!aws-org-policy-get policy_id=p-1234abcd
+!aws-org-policy-attach policy_id=p-1234abcd target_id=ou-lf12-az02g5ld
+!aws-org-policy-target-list policy_id=p-1234abcd
+!aws-org-target-policy-list target_id=ou-lf12-az02g5ld policy_type="Service Control Policy"
+
+!aws-org-resource-tag-add resource_id=ou-lf12-7odud8d8 tags="test=true,key=value"
+!aws-org-resource-tag-list resource_id=ou-lf12-7odud8d8
+
+!aws-org-organization-unit-delete organizational_unit_id=ou-lf12-rffyhfhm
+!aws-org-policy-delete policy_id=p-1234abcd

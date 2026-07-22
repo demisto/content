@@ -1,0 +1,5 @@
+[known_words]
+msgraph
+
+[file:incidentfield-Alert_Type.json]
+ignore=IF100

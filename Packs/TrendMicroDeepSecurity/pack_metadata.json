@@ -1,0 +1,25 @@
+{
+    "name": "TrendAI™ Deep Security™",
+    "description": "TrendAI™ Deep Security™ provides runtime security for workloads (physical, virtual, cloud, and containers).",
+    "support": "xsoar",
+    "currentVersion": "1.1.8",
+    "author": "Cortex XSOAR",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

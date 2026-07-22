@@ -1,0 +1,1107 @@
+id: RSANetWitnessv115-Test
+version: -1
+name: RSANetWitnessv115-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8bb8b32b-e4f9-4d14-890e-18a3a5582c95
+    type: start
+    task:
+      id: 8bb8b32b-e4f9-4d14-890e-18a3a5582c95
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "1":
+    id: "1"
+    taskid: 2a16155d-76ff-4dae-89ae-f811a27a20ae
+    type: regular
+    task:
+      id: 2a16155d-76ff-4dae-89ae-f811a27a20ae
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "2":
+    id: "2"
+    taskid: cfedeeff-329b-447a-86bb-8ca9615cba3f
+    type: regular
+    task:
+      id: cfedeeff-329b-447a-86bb-8ca9615cba3f
+      version: -1
+      name: rsa-nw-list-incidents
+      script: '|||rsa-nw-list-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "3":
+    id: "3"
+    taskid: 2d7408a2-d68e-488b-883a-8ed5f88ff67c
+    type: condition
+    task:
+      id: 2d7408a2-d68e-488b-883a-8ed5f88ff67c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RSANetWitness115
+                accessor: Incidents
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "4":
+    id: "4"
+    taskid: 95ffbc8b-c20e-4afe-814f-4216feb726c8
+    type: regular
+    task:
+      id: 95ffbc8b-c20e-4afe-814f-4216feb726c8
+      version: -1
+      name: rsa-nw-update-incident
+      script: RSANetWitnessv115|||rsa-nw-update-incident
+      type: regular
+      iscommand: true
+      brand: RSANetWitnessv115
+      description: Updates incident status and assignee.
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        complex:
+          root: RSANetWitness115.Incidents
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: RSANetWitness115.Incidents.status
+                iscontext: true
+              right:
+                value:
+                  simple: New
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "5":
+    id: "5"
+    taskid: a6d62256-57e9-4dd8-80f5-4af2d06f0e2f
+    type: condition
+    task:
+      id: a6d62256-57e9-4dd8-80f5-4af2d06f0e2f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: RSANetWitness115.Incidents
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: Closed
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "7":
+    id: "7"
+    taskid: 0b2f73d0-962a-4c89-8c26-cc39bb604ee5
+    type: regular
+    task:
+      id: 0b2f73d0-962a-4c89-8c26-cc39bb604ee5
+      version: -1
+      name: rsa-nw-incident-add-journal-entry
+      script: '|||rsa-nw-incident-add-journal-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Add a journal entry to an existing incident.
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        simple: ${RSANetWitness115.Incidents.id}
+      notes:
+        simple: Testing
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "8":
+    id: "8"
+    taskid: 1252eab9-265c-44a7-8722-fea0f8b8dc5e
+    type: regular
+    task:
+      id: 1252eab9-265c-44a7-8722-fea0f8b8dc5e
+      version: -1
+      name: rsa-nw-incident-list-alerts
+      script: '|||rsa-nw-incident-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Retrieves all the alerts that are associated with an incident based on the incident ID. you can limit the results using the limit argument or the page size argument.
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      id:
+        simple: ${RSANetWitness115.Incidents.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "9":
+    id: "9"
+    taskid: b9595f60-90a9-4a47-8c8e-3bf2a19abfcf
+    type: condition
+    task:
+      id: b9595f60-90a9-4a47-8c8e-3bf2a19abfcf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.IncidentAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "10":
+    id: "10"
+    taskid: 08e8d3a4-cd5f-4336-8d25-81e5d479c42d
+    type: regular
+    task:
+      id: 08e8d3a4-cd5f-4336-8d25-81e5d479c42d
+      version: -1
+      name: rsa-nw-services-list
+      script: '|||rsa-nw-services-list'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Retrieves a list of all services, or filter by name.
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "11":
+    id: "11"
+    taskid: 10219324-a6e9-4e49-8f37-ac394ba3a258
+    type: condition
+    task:
+      id: 10219324-a6e9-4e49-8f37-ac394ba3a258
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.ServicesList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "12":
+    id: "12"
+    taskid: ba20b42f-71ad-41ef-8186-28d957bda5ae
+    type: regular
+    task:
+      id: ba20b42f-71ad-41ef-8186-28d957bda5ae
+      version: -1
+      name: rsa-nw-hosts-list
+      script: '|||rsa-nw-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Lists all host information from a specific endpoint server. Filter the results using the supplied arguments (can be a list) or use the 'filter' argument. You can limit the results using the limit argument or the page size argument.
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "13":
+    id: "13"
+    taskid: 4f6506ee-78ca-4066-86a4-02438701fe05
+    type: condition
+    task:
+      id: 4f6506ee-78ca-4066-86a4-02438701fe05
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.HostsList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "14":
+    id: "14"
+    taskid: 5dd23b3a-59e7-4d7e-88b2-dbc7f672bec4
+    type: regular
+    task:
+      id: 5dd23b3a-59e7-4d7e-88b2-dbc7f672bec4
+      version: -1
+      name: endpoint
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Returns information about an endpoint.
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "15":
+    id: "15"
+    taskid: 4b5f4461-2166-4f70-8474-4dd4ac959bf3
+    type: condition
+    task:
+      id: 4b5f4461-2166-4f70-8474-4dd4ac959bf3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "16":
+    id: "16"
+    taskid: a2204883-cf63-491a-874d-fbf45b164df9
+    type: regular
+    task:
+      id: a2204883-cf63-491a-874d-fbf45b164df9
+      version: -1
+      name: rsa-nw-snapshots-list-for-host
+      script: '|||rsa-nw-snapshots-list-for-host'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Retrieve a list os snapshot IDs for a given host.
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      agent_id:
+        simple: ${Endpoint.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "17":
+    id: "17"
+    taskid: 22e7859a-de43-4859-8e37-4eea25690f5a
+    type: condition
+    task:
+      id: 22e7859a-de43-4859-8e37-4eea25690f5a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.SnapshotsListForHost
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "18":
+    id: "18"
+    taskid: 150d7c8c-6a50-46aa-88e5-5eef9ec71016
+    type: regular
+    task:
+      id: 150d7c8c-6a50-46aa-88e5-5eef9ec71016
+      version: -1
+      name: rsa-nw-snapshot-details-get
+      script: '|||rsa-nw-snapshot-details-get'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Provides snapshot details of the given host for the specified snapshot time. It is recommended to use categories to filter the results since this command returns a large amount of data.
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      agent_id:
+        simple: ${Endpoint.ID}
+      categories:
+        simple: PROCESSES
+      limit:
+        simple: "1"
+      snapshot_timestamp:
+        simple: ${RSANetWitness115.SnapshotsListForHost.[0]}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "19":
+    id: "19"
+    taskid: 417fa999-855c-4749-82cf-c4a5b18b855d
+    type: condition
+    task:
+      id: 417fa999-855c-4749-82cf-c4a5b18b855d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.SnapshotDetailsGet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "20":
+    id: "20"
+    taskid: 54d15f78-dda7-4a41-85ac-171cae107afa
+    type: regular
+    task:
+      id: 54d15f78-dda7-4a41-85ac-171cae107afa
+      version: -1
+      name: rsa-nw-files-list
+      script: '|||rsa-nw-files-list'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Lists all related file information from a specific endpoint server. You can limit the results using the limit argument or the page size argument.
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "21":
+    id: "21"
+    taskid: a73ef93b-77f4-4b86-82ca-7ab92c43442d
+    type: condition
+    task:
+      id: a73ef93b-77f4-4b86-82ca-7ab92c43442d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.FilesList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "24":
+    id: "24"
+    taskid: 99b690b1-db22-4b1b-8a8e-6a76333080fc
+    type: regular
+    task:
+      id: 99b690b1-db22-4b1b-8a8e-6a76333080fc
+      version: -1
+      name: rsa-nw-host-alerts-list
+      script: '|||rsa-nw-host-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Gets all alerts triggered for a given host.
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      agent_id:
+        simple: ${RSANetWitness115.HostsList.agentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "25":
+    id: "25"
+    taskid: 22f3570d-01cd-43cf-88ec-1a0050fc6354
+    type: condition
+    task:
+      id: 22f3570d-01cd-43cf-88ec-1a0050fc6354
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.HostAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "26":
+    id: "26"
+    taskid: 6d96937a-eb0f-49e3-8aea-3da311857279
+    type: regular
+    task:
+      id: 6d96937a-eb0f-49e3-8aea-3da311857279
+      version: -1
+      name: rsa-nw-file-alerts-list
+      script: '|||rsa-nw-file-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+      description: Gets all alerts triggered for a given file.
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      check_sum:
+        simple: ${RSANetWitness115.FilesList.checksumSha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "27":
+    id: "27"
+    taskid: be553f89-872f-48a5-88aa-c2bf4d191e38
+    type: condition
+    task:
+      id: be553f89-872f-48a5-88aa-c2bf4d191e38
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "Yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: RSANetWitness115.FileAlerts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "35":
+    id: "35"
+    taskid: 389cca83-7ed6-4761-8d53-5741f1983505
+    type: title
+    task:
+      id: 389cca83-7ed6-4761-8d53-5741f1983505
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "37":
+    id: "37"
+    taskid: f8cb1a78-c2c2-459d-8b8f-99ba4192596f
+    type: condition
+    task:
+      id: f8cb1a78-c2c2-459d-8b8f-99ba4192596f
+      version: -1
+      name: is there new incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RSANetWitness115.Incidents
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: RSANetWitness115.Incidents.status
+                      iscontext: true
+                    right:
+                      value:
+                        simple: New
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 1a45599e-95a5-4249-8e8d-9c6f31dc270d
+    type: regular
+    task:
+      id: 1a45599e-95a5-4249-8e8d-9c6f31dc270d
+      version: -1
+      name: get all incidents
+      description: Retrieves a single incident by ID or multiple incidents by the date and time they were created using the start time ('since') or end time ('until'). You can limit the results using the limit argument or the page size argument. If no arguments are entered the last 50 results are returned.
+      script: '|||rsa-nw-list-incidents'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 28c49d88-d832-462a-8697-df0d4650522e
+    type: regular
+    task:
+      id: 28c49d88-d832-462a-8697-df0d4650522e
+      version: -1
+      name: delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4935,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

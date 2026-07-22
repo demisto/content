@@ -1,0 +1,498 @@
+id: File Enrichment - VMRay - Test
+version: -1
+name: File Enrichment - VMRay - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b3e07aeb-6572-4e4f-8a05-c2df5913cae5
+    type: start
+    task:
+      id: b3e07aeb-6572-4e4f-8a05-c2df5913cae5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+      - "19"
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 566fdba9-a9b2-43fd-8a63-d3760139027a
+    type: title
+    task:
+      id: 566fdba9-a9b2-43fd-8a63-d3760139027a
+      version: -1
+      name: End of test
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f460de52-2b6f-4e1c-82b2-7a5df117436d
+    type: playbook
+    task:
+      id: f460de52-2b6f-4e1c-82b2-7a5df117436d
+      version: -1
+      name: Valid MD5
+      description: Test file enrichment with a valid MD5 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5a0f5737-e7ef-41de-808c-5abc69c5ca82
+    type: playbook
+    task:
+      id: 5a0f5737-e7ef-41de-808c-5abc69c5ca82
+      version: -1
+      name: Invalid MD5
+      description: Test file enrichment with an invalid MD5 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 3784f3c2-79ec-4234-8be6-cbb2128d600d
+    type: playbook
+    task:
+      id: 3784f3c2-79ec-4234-8be6-cbb2128d600d
+      version: -1
+      name: Unknown MD5
+      description: Test file enrichment with an unknown MD5 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 36f34626-ee74-471a-8a5e-246ebe307101
+    type: playbook
+    task:
+      id: 36f34626-ee74-471a-8a5e-246ebe307101
+      version: -1
+      name: Valid SHA1
+      description: Test file enrichment with a valid SHA1 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: b3b711ba-592e-4c08-8247-1abbddae1008
+    type: playbook
+    task:
+      id: b3b711ba-592e-4c08-8247-1abbddae1008
+      version: -1
+      name: Unknown SHA1
+      description: Test file enrichment with an unknown SHA1 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: cc61427b-41ef-4924-88fe-4c4097ccede7
+    type: playbook
+    task:
+      id: cc61427b-41ef-4924-88fe-4c4097ccede7
+      version: -1
+      name: Invalid SHA1
+      description: Test file enrichment with an invalid SHA1 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: a6c49ec1-43a1-42d5-8a86-cb443e867b13
+    type: playbook
+    task:
+      id: a6c49ec1-43a1-42d5-8a86-cb443e867b13
+      version: -1
+      name: Valid SHA256
+      description: Test file enrichment with a valid SHA256 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: f05cadf1-2f04-4f69-8402-ab2b91218f67
+    type: playbook
+    task:
+      id: f05cadf1-2f04-4f69-8402-ab2b91218f67
+      version: -1
+      name: Unknown SHA256
+      description: Test file enrichment with an unknown SHA256 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 9b100dcd-026d-4014-8eaf-74afff2085b1
+    type: playbook
+    task:
+      id: 9b100dcd-026d-4014-8eaf-74afff2085b1
+      version: -1
+      name: Invalid SHA256
+      description: Test file enrichment with an invalid SHA256 hash
+      playbookName: File Enrichment - VMRay
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 1340,
+        "x": 0,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Test the VMRay File Enrichment playbook

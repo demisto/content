@@ -1,0 +1,21 @@
+{
+  "bucketInfo": {
+    "dailyBucketStart": "2020-01-01 00:00:00",
+    "dailyPoints": 999,
+    "dailyPointsRemaining": 999,
+    "minuteBucketStart": "2020-01-01 00:00:00",
+    "minutePoints": 999,
+    "minutePointsRemaining": 999,
+    "waitInSeconds": 0
+  },
+  "indicator": {
+    "firstSeenTsGlobal": 1569300000000,
+    "indicatorType": "FILEHASH",
+    "indicatorValue": "1234567890123456789012345678901234567890",
+    "lastSeenTsGlobal": 1569300000000,
+    "latestPanVerdicts": { "WF_SAMPLE": "MALWARE" },
+    "seenByDataSourceIds": ["WF_SAMPLE"],
+    "summaryGenerationTs": 1569300000000
+  },
+  "tags": []
+}

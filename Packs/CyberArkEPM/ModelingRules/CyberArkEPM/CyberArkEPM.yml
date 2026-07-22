@@ -1,0 +1,8 @@
+fromversion: 8.3.0
+id: CyberArk_EPM_ModelingRule
+name: CyberArk EPM Modeling Rule
+rules: ''
+schema: ''
+tags: CyberArk
+supportedModules:
+- xsiam

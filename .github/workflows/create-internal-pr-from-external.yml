@@ -1,0 +1,57 @@
+name: Create Internal PR from Merged External PR
+on:
+  pull_request_target:
+    types: [closed]
+    branches:
+      - contrib/**
+
+permissions:
+  pull-requests: write
+
+jobs:
+  create_internal_pr:
+    runs-on: ubuntu-latest
+    if: github.repository == 'demisto/content' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.fork == true
+    steps:
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+      - name: Print Context
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+
+      - name: Install Python Dependencies
+        run: |
+          poetry install --with github-actions
+      - name: Create Internal PR
+        env:
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          EVENT_PAYLOAD: ${{ toJson(github.event) }}
+        run: |
+          echo "Creating an internal PR from original merged external PR ${{ github.event.pull_request.html_url }}"
+          cd .github/github_workflow_scripts
+          poetry run ./create_internal_pr.py
+          echo "Finished Creating Internal PR"
+
+      - name: Notify External PR Merge
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          echo "Add a comment"
+          gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in one or more internal PRs for further review.
+          > [!NOTE]
+          > Contributions containing XSIAM content (Modeling Rules, Parsing Rules, Correlation Rules, or Dashboards) are subject to an additional review process and may take longer to be merged to master."
+          

@@ -1,0 +1,11 @@
+rule demoRuleCreatedFromAPIVersion2 {
+    meta:
+    author = \"securityuser2\"
+    description = \"double event rule that should generate detections\""
+
+    events:
+    $e.metadata.event_type = \"NETWORK_DNS\"
+
+    condition:
+    $e
+}

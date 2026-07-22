@@ -1,0 +1,258 @@
+id: AD v2 - debug-mode - Test
+version: -1
+name: AD v2 - debug-mode - Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4ee0d7f1-401a-4a67-8b02-0996fb347a75
+    type: start
+    task:
+      id: 4ee0d7f1-401a-4a67-8b02-0996fb347a75
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 039da81b-f874-4db4-802b-8ecbc15f440b
+    type: regular
+    task:
+      id: 039da81b-f874-4db4-802b-8ecbc15f440b
+      version: -1
+      name: ad-search with debug-mode
+      description: Run executeCommand in a generic manner. Can be used to dynamically
+        execute a command and also for cases when there is need to pass arguments
+        not defined in the command's configuration.
+      scriptName: ExecuteCommandGeneric
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      argName1:
+        simple: filter
+      argName2:
+        simple: debug-mode
+      argName3: {}
+      argName4: {}
+      argName5: {}
+      argVal1:
+        simple: (&(objectCategory=person)(objectClass=user)(!(cn=test)))
+      argVal2:
+        simple: "true"
+      argVal3: {}
+      argVal4: {}
+      argVal5: {}
+      commandName:
+        simple: ad-search
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a32b0bf6-fcd0-460d-850c-d009b3ad8c5e
+    type: regular
+    task:
+      id: a32b0bf6-fcd0-460d-850c-d009b3ad8c5e
+      version: -1
+      name: Load Debug file to context
+      description: Load the contents of a file into context.
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      encoding: {}
+      entryID:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      maxFileSize:
+        simple: "20000"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: d72b6fb7-a929-45a0-8d33-426cfd22af4d
+    type: condition
+    task:
+      id: d72b6fb7-a929-45a0-8d33-426cfd22af4d
+      version: -1
+      name: Verify Debug data
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: FileData
+            iscontext: true
+          right:
+            value:
+              simple: BASIC:performing automatic bind
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 053fc976-1624-4d78-8c2e-ecd7cfedb29b
+    type: regular
+    task:
+      id: 053fc976-1624-4d78-8c2e-ecd7cfedb29b
+      version: -1
+      name: Failed verifying debug file
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: Builtin
+    scriptarguments:
+      message:
+        simple: 'Debug file doesn''t contain: BASIC:instantiated Connection'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: cc51e173-d258-4c8c-8f98-8bd19600b9af
+    type: regular
+    task:
+      id: cc51e173-d258-4c8c-8f98-8bd19600b9af
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 98357504-5625-4b98-893b-a0aee09fbd38
+    type: regular
+    task:
+      id: 98357504-5625-4b98-893b-a0aee09fbd38
+      version: -1
+      name: All is good
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: All is good
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 975,
+        "width": 880,
+        "x": 220,
+        "y": -50
+      }
+    }
+  }
+inputs: []
+outputs: []

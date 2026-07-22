@@ -1,0 +1,142 @@
+commonfields:
+  id: Secdo
+  version: -1
+name: Secdo
+display: Secdo (Deprecated)
+deprecated: true
+category: Endpoint
+image: data:image/png;base64,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
+description: Deprecated. Secdo's automated incident response platform hunts threats in real time and delivers an endpoint detection and response solution.
+configuration:
+- display: Secdo Server
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Secdo API Key
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Company name
+  name: company
+  defaultvalue: ""
+  type: 0
+  required: true
+script:
+  script: >+
+    var sendRequest = function() {
+        if (params.server.indexOf('https://') === -1) {
+            params.server = 'https://' + params.server;
+        }
+
+        var requestUrl = 'https://' + params.server + '/publicapi/v2/load_ioc/';
+        var data = {
+            company: params.company,
+            apikey: params.key,
+            severity: args.severity,
+            ioc_data: args.data,
+            source: 'Demisto',
+            response_plan: args.response,
+            artifacts_type: args.artifact,
+            comment: args.comment
+        };
+
+        var res = http(
+            requestUrl,
+            {
+                Method: 'POST',
+                Headers: {
+                    Accept: ['application/json'],
+                    'Content-Type': ['application/json']
+                },
+                Body: JSON.stringify(data)
+            },
+            params.insecure,
+            params.proxy
+        );
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res;
+    };
+
+
+
+    var addIocs = function() {
+        var md = "## Secdo\n";
+        var res =  sendRequest();
+        if (res.StatusCode === 200) {
+            md += 'IOCs have been successfully added to Secdo.\n';
+        }
+
+        return {ContentsFormat: formats.json, Type: entryTypes.note, Contents: {}, HumanReadable: md};
+    };
+
+
+    switch (command) {
+        case 'test-module':
+        // Don't check it because Secdo api always return's true.
+            return 'ok';
+        case 'secdo-add-IOCs':
+            return addIocs();
+        default:
+    }
+
+  type: javascript
+  commands:
+  - name: secdo-add-IOCs
+    deprecated: true
+    arguments:
+    - name: artifact
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - mixed
+      - md5hash
+      - filename
+      - fullpath
+      - dest_ip
+      - hostname
+      description: Type of artifacts
+      defaultValue: mixed
+    - name: response
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - REPORT
+      - SYSLOG
+      - CASE
+      - WHITELIST
+      - SILENT_REPORT
+      description: The Secdo response after the IOCs were added
+      defaultValue: REPORT
+    - name: severity
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - LOW
+      - MEDIUM
+      - HIGH
+      description: Severity
+      defaultValue: LOW
+    - name: comment
+      required: true
+      description: Comment to the added IOCs
+    - name: data
+      required: true
+      description: The IOCs data in text (Each IOCs in separated a with new line - \n)
+    description: Add IOCs to Secdo
+tests:
+- No test
+fromversion: 5.0.0

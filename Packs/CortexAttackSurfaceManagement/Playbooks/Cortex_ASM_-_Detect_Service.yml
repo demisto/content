@@ -1,0 +1,193 @@
+id: Cortex ASM - Detect Service
+version: -1
+name: Cortex ASM - Detect Service
+description: Playbook that looks to see if a service ID exists and chooses to start a Remediation Confirmation Scan.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a84d8c8c-5937-4da3-86aa-bf8c30e4adc7
+    type: start
+    task:
+      id: a84d8c8c-5937-4da3-86aa-bf8c30e4adc7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4b9d0bb7-dd62-4ef4-8d94-7b18f53e7e11
+    type: title
+    task:
+      id: 4b9d0bb7-dd62-4ef4-8d94-7b18f53e7e11
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4656b3de-e239-4651-8cd3-734e37a83017
+    type: title
+    task:
+      id: 4656b3de-e239-4651-8cd3-734e37a83017
+      version: -1
+      name: Non-Service Based Alert
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: bb84f3c8-ee66-4569-89df-e1066a0d0b86
+    type: condition
+    task:
+      id: bb84f3c8-ee66-4569-89df-e1066a0d0b86
+      version: -1
+      name: Is there a ASM service ID?
+      description: Conditional task to check for an existing ASM service ID. The Remediation Confirmation Scan can only be used to scan existing service IDs found by Cortex Xpanse.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmserviceid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
+    type: playbook
+    task:
+      id: 84ce4c7f-8ad9-4ca5-81a8-b585ed855d70
+      version: -1
+      name: Cortex ASM - Remediation Confirmation Scan
+      playbookName: Cortex ASM - Remediation Confirmation Scan
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "43_44_yes": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 665,
+        "width": 900,
+        "x": 290,
+        "y": -210
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

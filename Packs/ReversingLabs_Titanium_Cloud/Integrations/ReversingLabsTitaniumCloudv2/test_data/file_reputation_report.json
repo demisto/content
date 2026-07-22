@@ -1,0 +1,28 @@
+{
+    "rl": {
+        "malware_presence": {
+            "status": "MALICIOUS",
+            "sha1": "21841b32c6165b27dddbd4d6eb3a672defe54271",
+            "threat_level": 5,
+            "classification": {
+                "platform": "Win32",
+                "type": "Ransomware",
+                "is_generic": false,
+                "family_name": "Tox"
+            },
+            "scanner_percent": 93.61701965332031,
+            "threat_name": "Win32.Ransomware.Tox",
+            "scanner_match": 44,
+            "last_seen": "2021-04-19T11:10:35",
+            "reason": "antivirus",
+            "scanner_count": 47,
+            "query_hash": {
+                "sha1": "21841b32c6165b27dddbd4d6eb3a672defe54271"
+            },
+            "first_seen": "2015-05-30T22:04:00",
+            "sha256": "2f6edf41016e97c58f9de01aa4cc66c9c7fe7dae23fe72e50a69cbd221f55346",
+            "trust_factor": 5,
+            "md5": "3133c2231fcee5d6b0b4c988a5201da1"
+        }
+    }
+}

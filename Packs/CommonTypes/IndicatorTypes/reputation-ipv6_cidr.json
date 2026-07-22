@@ -1,0 +1,200 @@
+{
+    "id": "IPv6CIDR",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "modified": "2019-07-18T07:17:53.843554502Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldPublish": false,
+    "shouldCommit": false,
+    "regex": "\\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\\b",
+    "details": "IPv6CIDR",
+    "prevDetails": "IPv6CIDR",
+    "reputationScriptName": "",
+    "reputationCommand": "",
+    "enhancementScriptNames": [],
+    "system": true,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "",
+    "contextPath": "IPv6CIDR(val.Address \u0026\u0026 val.Address === obj.Address)",
+    "contextValue": "Address",
+    "excludedBrands": [],
+    "expiration": 10080,
+    "defaultMapping": {
+        "asn": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "ASN",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "blocked": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "Blocked",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "detectionengines": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "DetectionEngines",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geocountry": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "Geo.Country",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geolocation": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "Geo.Location",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "internal": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "Internal",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "positivedetections": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "PositiveDetections",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "region": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "Region",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "simple": "",
+            "complex": {
+                "root": "IPv6CIDR",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        }
+    },
+    "manualMapping": null,
+    "fileHashesPriority": null,
+    "layout": "ipRep"
+}

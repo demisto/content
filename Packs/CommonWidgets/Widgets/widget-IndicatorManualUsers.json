@@ -1,0 +1,28 @@
+{
+ "id": "indicators-manual-user",
+ "version": -1,
+ "name": "Manual Verdict Indicators by User",
+ "dataType": "indicators",
+ "widgetType": "bar",
+ "size": 10,
+ "query": "manualScore:T",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "setBy"
+  ]
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

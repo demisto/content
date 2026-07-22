@@ -1,0 +1,43 @@
+[
+  "######### No templates found",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {}
+    },
+    "errors": {
+      "messages": "*No templates were found*"
+    }
+  },
+
+  "######### earliest_time > latest_time",
+  {
+    "args": {
+      "templates_type": "raw",
+      "template_name": "test",
+      "templates": {
+        "test": {
+          "query": {
+            "xql": "Dummy XQL"
+          },
+          "entry": {
+            "type": "duration",
+            "duration": {
+              "field": "_duration"
+            }
+          }
+        }
+      },
+      "earliest_time": "2025-01-01T00:00:00.000+00:00",
+      "latest_time": "2024-12-31T23:59:59.000+00:00"
+    },
+    "xql": {
+      "responses": "./test_data/qr_duration.json"
+    },
+    "errors": {
+      "messages": "*latest_time (*) must be equal to or later than earliest_time*"
+    }
+  }
+
+]

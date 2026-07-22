@@ -1,0 +1,9 @@
+[file:README.md]
+ignore=RM102,RM104
+
+[file:SecurityAdvisor.yml]
+ignore=IN136
+
+[file:SecurityAdvisor_image.png]
+ignore=IM111
+

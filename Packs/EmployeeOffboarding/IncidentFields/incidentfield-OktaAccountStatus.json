@@ -1,0 +1,43 @@
+{
+	"id": "incident_oktaaccountstatus",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2019-12-17T17:29:50.727316685Z",
+	"name": "Okta Account Status",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "The activation status of the Okta account. Can be either \"Activated\" or \"Deactivated\".",
+	"cliName": "oktaaccountstatus",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Activated",
+		"Deactivated"
+	],
+	"validationRegex": "",
+	"useAsKpi": true,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

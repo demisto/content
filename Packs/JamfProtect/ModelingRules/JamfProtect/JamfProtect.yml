@@ -1,0 +1,8 @@
+fromversion: 8.5.0
+id: JamfProtect_ModelingRule
+name: JamfProtect Modeling Rule
+rules: ''
+schema: ''
+tags: Jamf
+supportedModules:
+- xsiam

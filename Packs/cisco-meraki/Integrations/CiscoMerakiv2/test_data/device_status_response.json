@@ -1,0 +1,36 @@
+[
+    {
+        "name": "My AP",
+        "serial": "0000-0000-0000",
+        "mac": "00:00:00:00:00:00",
+        "publicIp": "0.0.0.0",
+        "networkId": "N_24329156",
+        "status": "online",
+        "lastReportedAt": "2018-02-11T00:00:00.090210Z",
+        "lanIp": "0.0.0.0",
+        "gateway": "0.0.0.0",
+        "ipType": "dhcp",
+        "primaryDns": "0.0.0.0",
+        "secondaryDns": "0.0.0.0",
+        "productType": "wireless",
+        "components": {
+            "powerSupplies": [
+                {
+                    "slot": 1,
+                    "serial": "0000-0000-0000",
+                    "model": "PWR-MS320-1025WAC",
+                    "status": "powering",
+                    "poe": {
+                        "unit": "watts",
+                        "maximum": 740
+                    }
+                }
+            ]
+        },
+        "model": "MR34",
+        "tags": [
+            "tag1",
+            "tag2"
+        ]
+    }
+]

@@ -1,0 +1,106 @@
+commonfields:
+  id: DataDomainReputation
+  version: -1
+name: DataDomainReputation
+script: >2-
+
+  function calculateScore(scores) {
+    var score = -1;
+    for (var i = 0; scores && i < scores.length; i++) {
+        if (scores[i] && score < scores[i]) {
+          score = scores[i];
+        }
+    }
+    return score < 0 ? 0 : score;
+  }
+
+
+  function calculateReputation(value, cacheExpiration, forceCalc, command, argName, typeName) {
+    var cachedBrands = [];
+    var scores = [];
+    var res = executeCommand("getIndicator", {"value": value});
+    if (forceCalc != 'yes' && res[0] && res[0].Contents[0] && res[0].Contents[0].manualScore) {
+        return res[0].Contents[0].score;
+    }
+    // Get all indicator cached data
+    var cache = executeCommand("getIndicatorScoreCache", {value: value});
+    if (cache && cache.length > 0 && cache[0].Contents) {
+        var latestCacheTime = new Date().getTime() - (cacheExpiration * 60 * 1000);
+        var cachedScores = cache[0].Contents[0].scores;
+        if (cachedScores) {
+            // Iterate on cache according to different vendors
+            var scoreKeys = Object.keys(cachedScores);
+            scoreKeys.forEach(function (key) {
+                cachedTime = cachedScores[key].timestamp;
+                if (cachedTime && (new Date(cachedTime)).getTime() > latestCacheTime) {
+                    //We have a valid cache hit, we should capture the score and not query it again
+                    scores.push(cachedScores[key].score);
+                    cachedBrands.push(key);
+                }
+            });
+        }
+    }
+    var brands = {};
+    // Get all brands that were not in the cache
+    var allModules = getModulesForCommand(command);
+    if (allModules) {
+        var instanceKeys = Object.keys(allModules);
+        instanceKeys.forEach(function (key) {
+            if (allModules[key].state === 'active' && cachedBrands.indexOf(allModules[key].brand) === -1) {
+                brands[allModules[key].brand] = true;
+            }
+        });
+    }
+    var brandArr = Object.keys(brands);
+    if (brandArr.length > 0) {
+        // Run the other reputation scripts only if there are new brands that were not used
+        var brandStr = brandArr.join(',');
+        var cmdArgs = { 'using-brand': brandStr };
+        cmdArgs[argName] = value;
+        var rep = executeCommand(command, cmdArgs);
+        var newScores = dq(rep, 'EntryContext.DBotScore.Score');
+        scores = scores.concat(newScores);
+    }
+    return calculateScore(scores);
+  }
+
+
+  var score = calculateReputation(args.input, args.cacheExpiration, args.forceCalc, 'url', 'url', 'URL');
+
+  score = score < 0 ? 0 : score;
+
+  var domainRes = executeCommand('ExtractDomain', {text: args.input});
+
+  var domain = domainRes[0].Contents[0].Name;
+
+
+  var domainScore = calculateReputation(domain, args.cacheExpiration, args.forceCalc, 'domain', 'domain', 'Domain');
+
+
+  if (domainScore > score) {
+      score = domainScore;
+  }
+
+  return score;
+type: javascript
+tags:
+- reputation
+comment: Deprecated. Evaluate reputation of a URL and Domain and return a score between 0 and 3 (0 - unknown, 1 - known good, 2 - suspicious, 3 - known bad). If the indicator reputation was manually set, the manual value will be returned.
+enabled: true
+deprecated: true
+args:
+- name: input
+  required: true
+  default: true
+  description: URL to look up
+- name: cacheExpiration
+  description: Time in minutes that cache should be valid for
+- name: forceCalc
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Whether to calculate reputation even if it is manual set - yes/no
+  defaultValue: "no"
+scripttarget: 0
+fromversion: 5.0.0

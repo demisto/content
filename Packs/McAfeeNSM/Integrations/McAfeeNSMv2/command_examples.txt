@@ -1,0 +1,27 @@
+!nsm-get-alerts domain_id=0 time_period=CUSTOM start_time="12/17/2000 14:14:22" end_time="12/18/2022 00:26:45" limit=2
+!nsm-get-alert-details alert_id=6666666666666666666 sensor_id=1001
+!nsm-get-attacks attack_id=0x00000100
+!nsm-get-domains
+!nsm-get-sensors
+!nsm-get-ips-policies domain_id=0 limit=2
+!nsm-update-alerts state=Unacknowledged new_state=Acknowledged limit=2
+!nsm-list-domain-firewall-policy domain_id=0 limit=2
+!nsm-get-firewall-policy policy_id=147 include_rule_objects=true
+!nsm-create-firewall-policy domain=0 name=policy visible_to_child=yes description="a new policy" is_editable=yes policy_type=Advanced response=Scan rule_description="Test Member Rule" direction=Inbound destination_rule_object_id=111 destination_rule_object_type="Range IP V.4"
+!nsm-update-firewall-policy policy_id=147 description="update policy"
+!nsm-delete-firewall-policy policy_id=101
+!nsm-list-domain-rule-object domain_id=0 limit=2
+!nsm-get-rule-object rule_id=124
+!nsm-create-rule-object domain=0 rule_object_type="Range IP V.4" name="ruleo" visible_to_child=yes from_address_ip_v.4=1.1.1.1 to_address_ip_v.4=2.2.2.2
+!nsm-update-rule-object domain=0 rule_id=125 description="new desc"
+!nsm-delete-rule-object rule_id=125
+!nsm-list-pcap-file sensor_id=1001
+!nsm-export-pcap-file sensor_id=1003 file_name=Virtual_NSP_01-PacketCapture-2022-12-21_16-25-52.pcap
+!nsm-list-domain-device domain_id=0
+!nsm-list-device-interface device_id=1003 domain_id=0
+!nsm-list-device-policy domain_id=0
+!nsm-list-interface-policy domain_id=0
+!nsm-assign-device-policy device_id=1003 domain_id=0 pre_firewall_policy_name=Test
+!nsm-assign-interface-policy domain_id=0 interface_id=102 ips_policy_name=testing
+!nsm-get-device-configuration device_id=1003
+!nsm-deploy-device-configuration device_id=1003 push_configuration_signature_set="true" interval_in_seconds=10

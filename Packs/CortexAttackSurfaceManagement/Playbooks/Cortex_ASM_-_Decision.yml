@@ -1,0 +1,346 @@
+id: Cortex ASM - Decision
+version: -1
+name: Cortex ASM - Decision
+description: |-
+  Deprecated. No available replacement. This playbook returns "RemediationAction" options based on meeting "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) as well as whether ServiceNowV2 integration is set up.  Possible return values are:
+  - Prompt base - data collection task with only email/manual options.
+  - Prompt all options - data collection task with all options (meets Automated Remediation requirements and ServiceNow is enabled).
+  - Prompt no snow - all options except ServiceNow (Automated Remediation requirements are met).
+  - Prompt no ar - all options except Automated Remediation (ServiceNow is enabled).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cbe2007e-0f53-48b9-895a-449aadc5e39b
+    type: start
+    task:
+      id: cbe2007e-0f53-48b9-895a-449aadc5e39b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a6491b8e-4047-4d8d-86f0-766269ffc3bc
+    type: condition
+    task:
+      id: a6491b8e-4047-4d8d-86f0-766269ffc3bc
+      version: -1
+      name: Which option to return?
+      description: Checks playbook inputs to determine if "Automated Remediation Requirements" (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements) were met and if ServiceNowV2 integration is set up.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      Prompt all options:
+      - "2"
+      Prompt no ar:
+      - "4"
+      Prompt no snow:
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: Prompt all options
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ServiceNowv2Enabled
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediationRequirements
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    - label: Prompt no ar
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ServiceNowv2Enabled
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediationRequirements
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    - label: Prompt no snow
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ServiceNowv2Enabled
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRemediationRequirements
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3596fd61-45ee-4f8e-8e27-ad11e989f173
+    type: regular
+    task:
+      id: 3596fd61-45ee-4f8e-8e27-ad11e989f173
+      version: -1
+      name: Prompt all options
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: Prompt all options
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5dda8d22-4ff6-4682-8925-59f82bbeba3e
+    type: regular
+    task:
+      id: 5dda8d22-4ff6-4682-8925-59f82bbeba3e
+      version: -1
+      name: Prompt base
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: Prompt base
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: f4da0359-365f-474b-8ccf-75e90913c5b5
+    type: regular
+    task:
+      id: f4da0359-365f-474b-8ccf-75e90913c5b5
+      version: -1
+      name: Prompt no ar
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: Prompt no ar
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ea5ab030-a3e6-4316-8d1d-7449c7d15232
+    type: regular
+    task:
+      id: ea5ab030-a3e6-4316-8d1d-7449c7d15232
+      version: -1
+      name: Prompt no snow
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: RemediationAction
+      value:
+        simple: Prompt no snow
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: eb2d7591-48f4-4d8d-811e-cbb6a9757efb
+    type: title
+    task:
+      id: eb2d7591-48f4-4d8d-811e-cbb6a9757efb
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 715,
+        "width": 1720,
+        "x": -200,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ServiceNowv2Enabled
+  value: {}
+  required: true
+  description: ServiceNow v2 integration enabled.
+  playbookInputQuery:
+- key: AutoRemediationRequirements
+  value: {}
+  required: true
+  description: Meets automated remediation requirements (https://github.com/demisto/content/tree/master/Packs/CortexAttackSurfaceManagement#automated-remediation-requirements).
+  playbookInputQuery:
+outputs:
+- contextPath: RemediationAction
+  description: Follow up action to perform (variety of data collection tasks).
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+deprecated: true

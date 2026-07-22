@@ -1,0 +1,80 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [
+                    {
+                        "assignedToGroup": "Administrators",
+                        "assignedToGroupId": 0,
+                        "assignedToUser": null,
+                        "assignedToUserId": 0,
+                        "autoPromote": false,
+                        "comments": null,
+                        "createdByUser": "admin",
+                        "creationDate": "2022-01-05 16:28:55",
+                        "description": "Hello",
+                        "disposition": "CLOSED",
+                        "endDate": null,
+                        "events": null,
+                        "externalTicketNumber": null,
+                        "externalTicketType": null,
+                        "id": 126,
+                        "modificationDate": "2022-01-05 16:28:55",
+                        "modifiedByUser": "admin",
+                        "priority": 1,
+                        "requiresAcknowledgement": false,
+                        "requiresAssessment": false,
+                        "requiresConfirmation": false,
+                        "sentiment": null,
+                        "sentimenttypeid": null,
+                        "startDate": null,
+                        "tasks": null,
+                        "ticketNumber": "CT-00000126",
+                        "title": "Test"
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getTickets"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "assignedToGroup": "Administrators",
+                "assignedToGroupId": 0,
+                "assignedToUser": null,
+                "assignedToUserId": 0,
+                "autoPromote": false,
+                "comments": null,
+                "createdByUser": "admin",
+                "creationDate": "2022-01-05 16:28:55",
+                "description": "Hello",
+                "disposition": "CLOSED",
+                "endDate": null,
+                "events": null,
+                "externalTicketNumber": null,
+                "externalTicketType": null,
+                "id": 126,
+                "modificationDate": "2022-01-05 16:28:55",
+                "modifiedByUser": "admin",
+                "priority": 1,
+                "requiresAcknowledgement": false,
+                "requiresAssessment": false,
+                "requiresConfirmation": false,
+                "sentiment": null,
+                "sentimenttypeid": null,
+                "startDate": null,
+                "tasks": null,
+                "ticketNumber": "CT-00000126",
+                "title": "Test"
+            }
+        ],
+        "status": "success"
+    }
+}

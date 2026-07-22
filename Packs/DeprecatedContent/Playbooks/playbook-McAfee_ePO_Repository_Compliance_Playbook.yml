@@ -1,0 +1,437 @@
+id: playbook11
+version: -1
+system: true
+fromversion: 5.0.0
+name: McAfee ePO Repository Compliance Playbook
+description: Deprecated. Use "McAfee ePO Repository Compliance Playbook v2" playbook instead. Ensures that ePO servers are updated to the latest McAfee published AV signatures (DAT file version).
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: ee018e04-2610-4998-87d0-f5217127bbad
+    type: start
+    task:
+      id: ee018e04-2610-4998-87d0-f5217127bbad
+      version: -1
+      description: ""
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
+    type: regular
+    task:
+      id: 4d3e8911-2cd9-4f8c-89fa-1d1418bc3dfa
+      version: -1
+      description: ""
+      name: Retrieve DAT version and date from McAfee
+      script: epo|||epo-get-latest-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 186
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b7e28ac8-487e-4946-8316-7361f08ac1c5
+    type: regular
+    task:
+      id: b7e28ac8-487e-4946-8316-7361f08ac1c5
+      version: -1
+      description: ""
+      name: Initiate update task in each local repository
+      script: epo|||epo-update-repository
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      repos:
+        simple: ${olddatrepos}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 524
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 620023d1-63b0-4834-81a2-74dd20437dda
+    type: regular
+    task:
+      id: 620023d1-63b0-4834-81a2-74dd20437dda
+      version: -1
+      description: ""
+      name: Send report to admin with update results
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: ePO Update Successful.
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Demisto: ePO Update Results'
+      to:
+        simple: ${incident.labels.adminEmail}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 115,
+          "y": 1177
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: dccfaaf4-cca5-44d3-8818-6a5131b502ed
+    type: regular
+    task:
+      id: dccfaaf4-cca5-44d3-8818-6a5131b502ed
+      version: -1
+      description: ""
+      name: Send email alert with list of faulty repositories to admin
+      scriptName: SendEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      attachIDs: {}
+      bcc: {}
+      body:
+        simple: ePO Update Error. Please review status of Demisto incident ${incident.id} - ${incident.name}
+      cc: {}
+      htmlBody: {}
+      noteEntryID: {}
+      subject:
+        simple: 'Demisto: Faulty ePO Repositories Alert'
+      to:
+        simple: ${incident.labels.adminEmail}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1177
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+    type: regular
+    task:
+      id: 220a0d1d-b7cc-403f-8750-526d3bf55b51
+      version: -1
+      description: ""
+      name: Close the investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      notes: {}
+      reason:
+        simple: AuditCompleted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -204,
+          "y": 1356
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
+    type: regular
+    task:
+      id: dd5d9578-ca9e-4a3b-8088-940627f3fe9e
+      version: -1
+      name: epo-get-current-dat
+      description: check the existing DAT file version in ePO
+      script: epo|||epo-get-current-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -175,
+          "y": 186
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 4405829c-0e70-4c29-8a33-3c17a9644b00
+    type: condition
+    task:
+      id: 4405829c-0e70-4c29-8a33-3c17a9644b00
+      version: -1
+      name: Check if ePO has latest DAT from McAfee
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    scriptarguments:
+      left:
+        simple: ${mcafee.latestDAT}
+      right:
+        simple: ${mcafee.epoDAT=val.substr(0,val.indexOf('.'))}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
+    type: regular
+    task:
+      id: 8de9cf55-b3d6-46d0-8aa6-3de9bcd2a64b
+      version: -1
+      name: Wait for 5 minutes
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      seconds:
+        simple: "300"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 683
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b766e4a2-8988-46e1-84ab-d91d118d48a7
+    type: regular
+    task:
+      id: b766e4a2-8988-46e1-84ab-d91d118d48a7
+      version: -1
+      name: Get ePO current DAT version
+      description: check the existing DAT file version in ePO
+      script: epo|||epo-get-current-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: mcafee.newEpoDAT=productDetectionProductVersion
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 837
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
+    type: condition
+    task:
+      id: 5b82d2b7-4ac6-4759-8f19-4810dff0b0ad
+      version: -1
+      name: Check if ePO has latest DAT from McAfee
+      description: Check whether the values provided in arguments are equal.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      left:
+        simple: ${mcafee.latestDAT}
+      right:
+        simple: ${mcafee.newEpoDAT=val.substr(1,val.indexOf('.'))}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 284,
+          "y": 1003
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 5e480762-0617-4ad1-80e3-8bead4c6adf5
+    type: regular
+    task:
+      id: 5e480762-0617-4ad1-80e3-8bead4c6adf5
+      version: -1
+      name: Set incident to High severity
+      description: Modify incident info such as name, owner, type, etc.
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      addLabels: {}
+      customFieldName: {}
+      customFieldValue: {}
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity:
+        simple: High
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 603,
+          "y": 1356
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1401,
+        "width": 1187,
+        "x": -204,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No test - Deprecated playbook
+deprecated: true

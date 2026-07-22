@@ -1,0 +1,4 @@
+{
+	"breakingChanges": true,
+	"breakingChangesNotes": "The default value of Rate Limit Retry Count parameter and rate_limit_retry_count argument of !ip command changed from 3 to 0."
+}

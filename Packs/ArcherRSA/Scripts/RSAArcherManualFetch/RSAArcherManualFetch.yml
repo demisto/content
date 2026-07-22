@@ -1,0 +1,26 @@
+commonfields:
+  id: RSAArcherManualFetch
+  version: -1
+name: RSAArcherManualFetch
+script: ''
+type: python
+subtype: python2
+tags: []
+comment: Deprecated. No available replacement.
+enabled: true
+args:
+- name: applicationId
+  required: true
+  description: 'ID of the application to get the incident from. For example: applicationId="75"'
+- name: incidentIds
+  required: true
+  description: 'The Incident IDs to get details for, separated by commas. For example: IncidentIds="12345,67891" '
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - archer-manually-fetch-incident
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (auto formatted)

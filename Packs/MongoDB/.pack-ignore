@@ -1,0 +1,12 @@
+[file:README.md]
+ignore=RM106
+
+[known_words]
+upsert
+
+[file:MongoDBKeyValueStore.yml]
+ignore=BA124
+
+[file:MongoDBLog.yml]
+ignore=BA124
+

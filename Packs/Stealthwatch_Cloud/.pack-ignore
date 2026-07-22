@@ -1,0 +1,9 @@
+[file:Stealthwatch_Cloud.yml]
+ignore=IN126,BA108,BA109
+
+
+[file:Stealthwatch_Cloud_image.png]
+ignore=IM111
+
+[known_words]
+Stealthwatch

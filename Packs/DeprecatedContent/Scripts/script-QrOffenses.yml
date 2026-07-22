@@ -1,0 +1,40 @@
+commonfields:
+  id: QrOffenses
+  version: -1
+name: QrOffenses
+script: >2
+
+  resp = demisto.executeCommand("qr-offenses", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- QRadar
+comment: Deprecated. Gets offenses from qradar
+system: true
+deprecated: true
+args:
+- description: Query to filter offenses
+  name: filter
+- description: 'Fields to filter in '
+  name: fields
+- description: Number of results in return
+  name: range
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - qr-offenses
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

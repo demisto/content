@@ -1,0 +1,4 @@
+{
+	"breakingChanges": true,
+	"breakingChangesNotes": "As opposed to before when the Whois integration failed to finish analyzing a list of inputs if given one invalid domain/IP, the integration now returns a combination of both successful results and errors."
+}

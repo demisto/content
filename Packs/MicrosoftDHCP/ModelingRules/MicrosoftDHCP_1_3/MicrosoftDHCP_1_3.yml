@@ -1,0 +1,8 @@
+fromversion: 8.4.0
+id: Microsoft_DHCP_ModelingRule
+name: Microsoft DHCP Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

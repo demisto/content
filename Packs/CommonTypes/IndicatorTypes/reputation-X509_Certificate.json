@@ -1,0 +1,18 @@
+{
+    "id": "X509 Certificate",
+    "version": -1,
+    "modified": "2023-09-28T11:07:00.488622222Z",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "X509 Certificate",
+    "prevDetails": "X509 Certificate",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "expiration": 0,
+    "layout": "X509 Certificate",
+    "fromVersion": "6.0.0"
+}

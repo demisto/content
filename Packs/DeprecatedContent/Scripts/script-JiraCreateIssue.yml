@@ -1,0 +1,59 @@
+commonfields:
+  id: JiraCreateIssue
+  version: -1
+name: JiraCreateIssue
+deprecated: true
+script: >2
+
+  resp = demisto.executeCommand("jira-create-issue", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- jira
+comment: Deprecated. Create a new issue on Jira
+system: true
+args:
+- description: Issue object in json format
+  name: issueJson
+- description: Summary of the issue, a mandatory field
+  name: summary
+  required: true
+- description: Project key to associate the issue
+  name: projectKey
+- description: Issue type name, like - Incident
+  name: issueTypeName
+- description: Issue type id - format number
+  name: issueTypeId
+- description: Project name to associate the issue
+  name: projectName
+- description: Issue description
+  name: description
+- description: 'comma separated list of label '
+  name: labels
+- description: priorty name , like High/Medium
+  name: priority
+- description: DueDate for the issue, in format of 2018-03-11
+  name: dueDate
+- description: assignee name
+  name: assignee
+- description: reporter name
+  name: reporter
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - jira-create-issue
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

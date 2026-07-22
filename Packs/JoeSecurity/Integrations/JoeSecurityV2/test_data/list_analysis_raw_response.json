@@ -1,0 +1,140 @@
+[
+  {
+    "webid": "1",
+    "time": "2022-01-01T01:11:11+01:11",
+    "runs": [
+      {
+        "detection": "clean",
+        "error": null,
+        "system": "w7x64_office",
+        "yara": false,
+        "sigma": false,
+        "snort": false,
+        "score": 2
+      }
+    ],
+    "tags": [],
+    "encrypted": false,
+    "analysisid": "1",
+    "duration": 1,
+    "md5": "11111111111111111111111111111111",
+    "sha1": "1111111111111111111111111111111111111111",
+    "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "filename": "1.pdf",
+    "scriptname": "test_1.jbs",
+    "status": "finished",
+    "comments": "",
+    "classification": "",
+    "threatname": "Unknown",
+    "score": 2,
+    "detection": "clean"
+  },
+  {
+    "webid": "2",
+    "time": "2022-01-01T01:11:11+01:11",
+    "runs": [
+      {
+        "detection": "suspicious",
+        "error": null,
+        "system": "w10x64_21h1_office",
+        "yara": false,
+        "sigma": false,
+        "snort": false,
+        "score": 2
+      },
+      {
+        "detection": "clean",
+        "error": null,
+        "system": "w7x64_office",
+        "yara": false,
+        "sigma": false,
+        "snort": false,
+        "score": 1
+      }
+    ],
+    "tags": [],
+    "encrypted": false,
+    "analysisid": "2",
+    "duration": 1,
+    "md5": "22222222222222222222222222222222",
+    "sha1": "2222222222222222222222222222222222222222",
+    "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+    "filename": "2.png",
+    "scriptname": "test_2.jbs",
+    "status": "finished",
+    "comments": "",
+    "classification": "",
+    "threatname": "Unknown",
+    "score": 2,
+    "detection": "suspicious"
+  },
+  {
+    "webid": "3",
+    "time": "2022-01-01T01:11:11+01:11",
+    "runs": [
+      {
+        "detection": "malicious",
+        "error": null,
+        "system": "w7x64_office",
+        "yara": false,
+        "sigma": false,
+        "snort": false,
+        "score": 2
+      }
+    ],
+    "tags": [],
+    "encrypted": false,
+    "analysisid": "3",
+    "duration": 1,
+    "md5": "33333333333333333333333333333333",
+    "sha1": "3333333333333333333333333333333333333333",
+    "sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+    "filename": "3.pdf",
+    "scriptname": "test_3.jbs",
+    "status": "finished",
+    "comments": "",
+    "classification": "",
+    "threatname": "Unknown",
+    "score": 3,
+    "detection": "malicious"
+  },
+  {
+    "webid": "4",
+    "time": "2022-01-01T01:11:11+01:11",
+    "runs": [
+      {
+        "detection": "malicious",
+        "error": null,
+        "system": "w10x64_21h1_office",
+        "yara": false,
+        "sigma": false,
+        "snort": false,
+        "score": 1
+      },
+      {
+        "detection": "clean",
+        "error": null,
+        "system": "w7x64_office",
+        "yara": false,
+        "sigma": false,
+        "snort": false,
+        "score": 0
+      }
+    ],
+    "tags": [],
+    "encrypted": false,
+    "analysisid": "4",
+    "duration": 1,
+    "md5": "",
+    "sha1": "",
+    "sha256": "",
+    "filename": "test_url",
+    "scriptname": "test_4.jbs",
+    "status": "finished",
+    "comments": "()",
+    "classification": "",
+    "threatname": "Unknown",
+    "score": 3,
+    "detection": "malicious"
+  }
+]

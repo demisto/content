@@ -1,0 +1,17 @@
+!sent-notification channel=General message="hello world!" team=DemistoTeam
+!microsoft-teams-create-channel channel_name="example channel" team=DemistoTeam description="this is my new channel"
+!microsoft-teams-add-user-to-channel channel="example channel" member=itayadmin team=DemistoTeam
+!close-channel channel="example channel"
+!microsoft-teams-integration-health
+!microsoft-teams-ring-user username="Avishai Brandeis"
+!mirror-investigation team=DemistoTeam channel_name=General mirror_type=chat direction=ToDemisto
+!microsoft-teams-channel-user-list team=DemistoTeam channel_name="example channel"
+!microsoft-teams-user-remove-from-channel channel_name="example channel" member=itayadmin team=DemistoTeam
+!microsoft-teams-chat-create chat_type=group member="itayadmin, Bruce Willis" chat_name="example chat"
+!microsoft-teams-message-send-to-chat chat="example chat" content="Hello World"
+!microsoft-teams-chat-add-user chat="example chat" member="hellouser" share_history=false
+!microsoft-teams-chat-member-list chat="example chat"
+!microsoft-teams-chat-list filter="topic eq 'testing'"
+!microsoft-teams-chat-message-list chat="example chat" order_by=createdDateTime
+!microsoft-teams-chat-update chat="example chat" chat_name="update chat_name"
+!microsoft-teams-generate-login-url

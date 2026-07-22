@@ -1,0 +1,6 @@
+[file:AlienVault_USM_Anywhere.yml]
+ignore=IN126,BA108,BA109
+
+[file:AlienVault_USM_Anywhere_image.png]
+ignore=IM111
+

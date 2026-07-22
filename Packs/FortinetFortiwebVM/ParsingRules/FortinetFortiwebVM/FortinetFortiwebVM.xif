@@ -1,0 +1,12 @@
+[INGEST:vendor="fortinet", product="fortiweb", target_dataset="fortinet_fortiweb_raw", no_hit=keep]
+filter to_string(log_timestamp) ~= "\d{10,}" or to_string(rt) ~= "\d{10,}"
+| alter
+	tmp_get_epoch = coalesce(rt, log_timestamp)
+| alter	
+	tmp_len = len(to_string(tmp_get_epoch))
+| alter _time = if( 
+    tmp_len = 10, to_timestamp(tmp_get_epoch, "SECONDS"), 
+    tmp_len = 13, to_timestamp(tmp_get_epoch, "MILLIS"),  
+    tmp_len = 16, to_timestamp(tmp_get_epoch, "MICROS"),  
+    tmp_len = 19, to_timestamp(to_integer(divide(tmp_get_epoch, 1000)), "MICROS"))
+| fields -tmp*;

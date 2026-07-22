@@ -1,0 +1,14 @@
+[file:playbook-Vulnerability_Management__-_Qualys_(Job).yml]
+ignore=BA101
+
+[file:README.md]
+ignore=RM104,RM113
+
+[file:Qualys_image.png]
+ignore=IM111
+
+[file:QualysCreateIncidentFromReport.yml]
+ignore=SC105
+
+[file:Qualysv2.yml]
+ignore=IN150,IN161

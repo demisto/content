@@ -1,0 +1,1094 @@
+commonfields:
+  id: Cylance Protect
+  version: -1
+name: Cylance Protect
+deprecated: true
+display: Cylance Protect (Deprecated)
+category: Endpoint
+system: true
+fromversion: 5.0.0
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAiCAYAAACUcR1DAAADTUlEQVR4Ae3ZA+xcSxTH8fe3nm3bthU826ht27Zt/q3atqPGtW1Pv0kmyWRyseqmtzlJPovZc2dmz2+91ymlxDXMuCIkYCEBCwlYSMBCAhYSsJCAJeAqG95Pw614HEMwHz3xNB5GgjQygAHrAAdjMwbhJyhDWxzEanTDvdLQYAVcAqWNwzdQ2hm0gDJ0l4YGK+BFUNpol4DPQWljQlnwwQcfTEa6ixSzNsT5MoPYePadgXQtTUvREhzqUyLpm1fA86G0UfjWJ+CRIdypP1CIHAf56GjVf4kuSHCZrx76W2P18XwUjX8T2RiK2z3qbsEwFOEpl5pn0NgaexyTkYsc5KIA+cjGRDxqHVPBo28FaBZtwBPwJZR2Hs1x3g7YpyFL8AYewEMO7raOuQ3jkI8bjfFE9MV03G8dMw4fRhhuFhbhSzTDUI/a6hiAX7EC9zvUvINsa6wfmls9eEx7HI8h1ai/D0vxvEvfHsad0Qa8DU9hLRRWowdUGAE/jPwIG98ei/EwkpGPUUh1qB2O9yJcpwF66ctJmIO3XWrbopy+XAbzcbNV8xbGWmMj8VEYe3oGOf61EQZsmIgXsRU9sCvMgB/UwSRH2PxyWIlP8YdzXeQBc8xdWIR7jLGvke9S3wqVjeuNUIwUn4CH44sw9vUUJuE21ERdrQZujV3AQCt8gWNQcQzYbGpvfT3WAXdDfYfxbHzjF7Ae64FRcQz4llgGfB6r8APqQ8XpJdqcoyJ6+dSMxOthzvs0ZiPL4bbXMB2pfgHr8bHooi+/hPFX60v0YijDUJTiBF7GaCjD2BA+ZC32+ZB1l88cNdHfp2YI6nus8aD1MpqE0fjdY85+qGaNdUANh9o0lKIhymC0w1zN/PYX5oesOyIJuABK24T2UNpaPIN9UFrnWH9Ncjj+W1Txe0kzvn7kWHIxCQ8Z9Q9gMBI85nwEg63G/4OvXepvwkgU4BXrtscwyWN/2Q5fk8pfia9Jj2EWFEqRB2V4BWuhMB53xOGHjkh/SDClIcF6BieGMF8KEuKxv7j80KFDTkYzTMBcKMPbyEZZXS+C+nchId6EIVCGF5ER/CZIwObfhnUxF/8gMfgNkICFBCwkYCEBCwlYSMBCApaAhQQsAuMypEm2YIZjn78AAAAASUVORK5CYII=
+description: Deprecated. Manage Endpoints using Cylance protect
+detaileddescription: |-
+  For more information regarding the integration's specific fields and filters, please see Cylance API Guide for version 1.7.
+  Extended Filter example: {"Field":"last_found","Operator":"IsGreaterThan","Value":"2000-01-01T00:00:00Z"}.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API version
+  name: version
+  defaultvalue: v1
+  type: 0
+  required: true
+- display: Credentials
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Time Field
+  name: timeField
+  defaultvalue: first_found
+  type: 0
+  required: false
+- display: Extended Filter
+  name: extendedFilter
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: >-
+    var server = params.server.replace(/[\/]+$/, '') + '/' + params.version + '/';
+
+    var sendRequest = function(url, body, token) {
+        var httpParams = {
+                Method: 'POST',
+                Headers: {
+                    'Content-Type': ['application/json'],
+                    Authorization: ['Bearer ' + token]
+                }
+            };
+        if (!token) {
+            delete(httpParams.Headers.Authorization);
+        }
+        if (body) {
+            httpParams.Body = body;
+        }
+
+        var res = http(server + url, httpParams, params.insecure, params.proxy, undefined, true);
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request to Cylance protect Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res.Body) + '.';
+        }
+        // If we have a body, it should have application/json content type.
+        if (res.Body &&
+            (!res.Headers['Content-Type'] || !res.Headers['Content-Type'][0] || res.Headers['Content-Type'][0].indexOf('application/json') === -1)) {
+            throw 'Check your URL - got invalid content type, expected application/json. Response body: ' + res.Body;
+        }
+        return res.Body ? JSON.parse(res.Body) : 'empty';
+    };
+
+    var commandsThatTakeSha256AsArray = ['cylance-protect-update-device-threats', 'cylance-protect-delete-hash-from-lists', 'cylance-protect-update-hash-at-lists', 'cylance-protect-upload-threat','cp-update-device-threats', 'cp-delete-hash-from-lists', 'cp-update-hash-at-lists', 'cp-upload-threat'];
+
+    var buildBodyForCommand = function(command, args) {
+        if (!args) {
+            return undefined;
+        }
+        var body = {};
+        var keys = Object.keys(args);
+        var filterArgs = ['page_number', 'page_size', 'sorts', 'filters'];
+        var filterCompositeArgs = ['sorts', 'filters'];
+        for (var i=0; i < keys.length; i++) {
+            if (keys[i] === 'apply_policy_change_to_devices') {
+                args[keys[i]] = args[keys[i]].toLowerCase() === 'true';
+            }
+            if (filterArgs.indexOf(keys[i]) !== -1) {
+                if (!body['query_options']) {
+                    body['query_options'] = {};
+                }
+                if (filterCompositeArgs.indexOf(keys[i]) !== -1) {
+                    body['query_options'][keys[i]] = JSON.parse(args[keys[i]]);
+                } else {
+                    body['query_options'][keys[i]] = args[keys[i]];
+                }
+            } else {
+                body[keys[i]] = commandsThatTakeSha256AsArray.indexOf(command) !== -1
+                    && keys[i] === 'sha256'
+                    && typeof(JSON.stringify(args[keys[i]])) === 'string' ?
+                                [args[keys[i]]] :
+                                args[keys[i]];
+            }
+            delete(args[keys[i]]);
+        }
+        return JSON.stringify(body);
+    }
+
+    var runAndParseCommand = function(command, args, path, contextFunc) {
+        var headers = argToList(args.headers);
+        var context = {};
+        c_args = JSON.parse(JSON.stringify(args));
+        var body = sendRequest(
+            urlDictionary[command],
+            buildBodyForCommand(command, c_args),
+            auth['access_token']
+            );
+        if (typeof body === "string") {
+            return body;
+        }
+        if (path) {
+            body = jq(body,path);
+        }
+        if (Object.keys(body).length === 0) {
+            return "No results.";
+        }
+        if (contextFunc) {
+            context = contextFunc(body);
+        }
+        md = tblToMd(command, body, headers);
+        return {Type: entryTypes.note, Contents: body, ContentsFormat: formats.json, HumanReadable: md, ReadableContentsFormat: formats.markdown, EntryContext: context};
+    }
+
+
+    var parseEndpoint = function(body) {
+        var context = {};
+        context["Endpoint(val.Hostname == obj.Hostname)"] = [];
+        if (!(body instanceof Array)){
+            body = [body];
+        }
+        body.forEach(function(row){
+            var ep = {};
+            ep["OS"] = jq(row,'os_version');
+            ep["Hostname"] = jq(row,'device_name');
+            ep["SerialNumber"] = jq(row,'serial_number');
+            ep["IP"] = jq(row,'ip_addresses');
+            ep["MAC"] = jq(row,'mac_addresses');
+            ep["DNSName"] = jq(row,'dns_name');
+
+            if (row.file_paths){
+                ep.CylanceThreat = {};
+                ep.CylanceThreat.Abnormal = jq(row,'abnormal');
+                ep.CylanceThreat.Added = jq(row,'added');
+                ep.CylanceThreat.AgentVersion = jq(row,'agent_version');
+                ep.CylanceThreat.AutoRun = jq(row,'auto_run');
+                ep.CylanceThreat.BackgroundDetection = jq(row,'background_detection');
+                ep.CylanceThreat.DetectedBy = jq(row,'detected_by');
+                ep.CylanceThreat.ExploitAttempts = jq(row,'exploit_attempts');
+                ep.CylanceThreat.FilePaths = jq(row,'file_paths');
+                ep.CylanceThreat.FileQuarantineStatus = jq(row,'file_quarantine_status');
+                ep.CylanceThreat.FilesAnalyzed = jq(row,'files_analyzed');
+                ep.CylanceThreat.FirstFound = jq(row,'first_found');
+                ep.CylanceThreat.IsOffline = jq(row,'is_offline');
+                ep.CylanceThreat.LastReportedUsers = jq(row,'last_reported_users');
+                ep.CylanceThreat.OfflineDate = jq(row,'offline_date');
+                ep.CylanceThreat.Policy = jq(row,'policy');
+                ep.CylanceThreat.Quarantined = jq(row,'quarantined');
+                ep.CylanceThreat.Running = jq(row,'running');
+                ep.CylanceThreat.Unsafe = jq(row,'unsafe');
+                ep.CylanceThreat.Waived = jq(row,'waived');
+                ep.CylanceThreat.Zones = jq(row,'zones');
+            }
+
+            context["Endpoint(val.Hostname == obj.Hostname)"].push(ep);
+        });
+
+        return context;
+    }
+
+
+    var parsePolicy = function(body) {
+        var context = {};
+        context.Cylance = {};
+        context.Cylance.Policy = [];
+        if (!(body instanceof Array)){
+            body = [body];
+        }
+        body.forEach(function(row){
+            var l = {};
+            l["ID"] = jq(row,'policy_id');
+            l["Name"] = jq(row,'policy_name');
+
+            context.Cylance.Policy.push(l);
+        });
+
+        return context;
+    }
+
+
+    var parseGeneric = function(contextType) {
+        return function (body) {
+            var context = {};
+            context.Cylance = {};
+            context.Cylance[contextType] = [];
+
+            if (!Array.isArray(body)) {
+                body = [body];
+            }
+
+            body.forEach(function(row){
+                var l = {};
+                Object.keys(row).forEach(function(k){
+                    nKey = underscoreToCamelCase(k)
+                    l[nKey] = jq(row,k);
+                });
+                if(args.serial_number){
+                    l["SerialNumber"] = args.serial_number
+                }
+                context.Cylance[contextType].push(l);
+            });
+            return context;
+        }
+    }
+
+
+    var parseList = function(body) {
+        var context = {};
+        context.Cylance = {};
+        context.Cylance.List = [];
+        if (!(body instanceof Array)){
+            body = [body];
+        }
+        body.forEach(function(row){
+            var l = {};
+            l["Name"] = jq(row,'name');
+            l["Type"] = jq(row,'list_type');
+            l["SHA256"] = jq(row,'sha256');
+            l["MD5"] = jq(row,"md5");
+            l["RawScore"] = jq(row,'raw_score');
+            l["CylanceScore"] = jq(row,"cylance_score");
+            l["VirusTotalThreat"] = jq(row,"is_virus_total_threat");
+            l["Reason"] = jq(row,"reason");
+            l["Classification"] = jq(row,"classification");
+            l["category"] = jq(row,"category");
+            context.Cylance.List.push(l);
+        });
+
+        return context;
+    }
+
+
+    var parseZone = function(body) {
+        var context = {};
+        context.Cylance = {};
+        context.Cylance.Zone = [];
+        if (!(body instanceof Array)){
+            body = [body];
+        }
+        body.forEach(function(row){
+            var l = {};
+            l["ID"] = jq(row,'zone_id');
+            l["Name"] = jq(row,'zone_name');
+            l["DeviceCount"] = jq(row,'device_count');
+            l["ThreatCount"] = jq(row,"threat_count");
+            l["PolicyID"] = jq(row,'policy_id');
+            l["PolicyName"] = jq(row,"policy_name");
+            if(!l.Name && jq(args,"zone_name")) {
+                l["Name"] = jq(args,"zone_name");
+            }
+            context.Cylance.Zone.push(l);
+        });
+        return context;
+    }
+
+
+    var createIncidentFromThreat = function(threat) {
+        var incident = {
+            name: threat.priority + ' ' + threat.name,
+            labels: [],
+            rawJSON: JSON.stringify(threat)
+        };
+        delete(threat.name);
+        var keys = Object.keys(threat);
+        for (var i = 0; i<keys.length; i++) {
+            incident.labels.push({
+                type: keys[i],
+                value: String(threat[keys[i]]),
+            });
+        }
+        return incident;
+    }
+
+    var createFilters = function(lastCall, firstQuery) {
+        var retObject = {
+                        Field: params.timeField,
+                        Operator: 'IsGreaterThan',
+                        Value: lastCall[params.timeField]
+                    };
+        var userFilter;
+        if (params.extendedFilter) {
+            userFilter = JSON.parse(params.extendedFilter);
+        }
+        if (userFilter) {
+            retObject = {
+                LogicalOperator: 'And',
+                Group: [userFilter, retObject]
+            };
+        }
+        return JSON.stringify([retObject]);
+    }
+
+    var urlDictionary = {
+        'cylance-protect-get-list': 'globallist/get',
+        'cylance-protect-get-devices': 'device/get',
+        'cylance-protect-get-threats': 'threat/get',
+        'cylance-protect-download-threat': 'threat/download',
+        'cylance-protect-get-threat-details': 'threatdetail/get',
+        'cylance-protect-device-delete': 'device/delete',
+        'cylance-protect-get-device-threats': 'devicethreat/get',
+        'cylance-protect-update-device-threats': 'devicethreat/update',
+        'cylance-protect-delete-hash-from-lists': 'globallist/delete',
+        'cylance-protect-update-hash-at-lists': 'globallist/update',
+        'cylance-protect-upload-threat': 'threat/upload',
+        'cylance-protect-get-threated-devices': 'threatdevice/get',
+        'cylance-protect-get-zones': 'zone/get',
+        'cylance-protect-create-zone': 'zone/create',
+        'cylance-protect-update-zone': 'zone/update',
+        'cylance-protect-get-policies': 'policy/get',
+        'cylance-protect-get-policy-details': 'policydetail/get',
+        'cp-get-list': 'globallist/get',
+        'cp-get-devices': 'device/get',
+        'cp-get-threats': 'threat/get',
+        'cp-download-threat': 'threat/download',
+        'cp-get-threat-details': 'threatdetail/get',
+        'cp-device-delete': 'device/delete',
+        'cp-get-device-threats': 'devicethreat/get',
+        'cp-update-device-threats': 'devicethreat/update',
+        'cp-delete-hash-from-lists': 'globallist/delete',
+        'cp-update-hash-at-lists': 'globallist/update',
+        'cp-upload-threat': 'threat/upload',
+        'cp-get-threated-devices': 'threatdevice/get',
+        'cp-get-zones': 'zone/get',
+        'cp-create-zone': 'zone/create',
+        'cp-update-zone': 'zone/update',
+        'cp-get-policies': 'policy/get',
+        'cp-get-policy-details': 'policydetail/get'
+    };
+
+    var auth = sendRequest('token/get',
+                            JSON.stringify({
+                                Username: params.credentials.identifier, Password:
+                                params.credentials.password
+                            }));
+    switch (command) {
+        case 'test-module':
+            if (auth) {
+                if (params.extendedFilter) {
+                    try {
+                        JSON.parse(params.extendedFilter);
+                    }
+                    catch (ex) {
+                        return 'The filter you have provided is not in a JSON format';
+                    }
+                }
+                return 'ok';
+            }
+            return 'something is wrong';
+        case 'cp-get-list': //deprecated
+        case 'cylance-protect-get-list':
+            return runAndParseCommand(command,args,"",parseList);
+        case 'cp-delete-hash-from-lists': //deprecated
+        case 'cylance-protect-delete-hash-from-lists':
+            return runAndParseCommand(command,args,"");
+        case 'cp-update-hash-at-lists': //deprecated
+        case 'cylance-protect-update-hash-at-lists':
+            return runAndParseCommand(command,args,"");
+        case 'cp-get-devices': //deprecated
+        case 'cylance-protect-get-devices':
+            return runAndParseCommand(command,args,"data",parseEndpoint);
+        case 'cp-get-device-threats': //deprecated
+        case 'cylance-protect-get-device-threats':
+            return runAndParseCommand(command,args,"data",parseGeneric('Threat'));
+        case 'cp-get-threats': //deprecated
+        case 'cylance-protect-get-threats':
+            return runAndParseCommand(command,args,"data",parseGeneric('Threat'));
+        case 'cp-download-threat': //deprecated
+        case 'cylance-protect-download-threat':
+            return runAndParseCommand(command,args,"",parseGeneric('Threat'));
+        case 'cp-get-threat-details': //deprecated
+        case 'cylance-protect-get-threat-details':
+            return runAndParseCommand(command,args,"",parseGeneric('Threat'));
+        case 'cp-device-delete': //deprecated
+        case 'cylance-protect-device-delete':
+            return runAndParseCommand(command,args,"");
+        case 'cp-get-device-threats': //deprecated
+        case 'cylance-protect-get-device-threats':
+            return runAndParseCommand(command,args,"",parseEndpoint);
+        case 'cp-upload-threat':
+        case 'cylance-protect-upload-threat':
+            return runAndParseCommand(command,args,"");
+        case 'cp-get-threated-devices':
+        case 'cylance-protect-get-threated-devices':
+            return runAndParseCommand(command,args,"data",parseEndpoint);
+        case 'cp-get-zones':
+        case 'cylance-protect-get-zones':
+            return runAndParseCommand(command,args,"",parseZone);
+        case 'cp-create-zone':
+        case 'cylance-protect-create-zone':
+            return runAndParseCommand(command,args,"",parseZone);
+        case 'cp-update-zone':
+        case 'cylance-protect-update-zone':
+            return runAndParseCommand(command,args,"",parseZone);
+        case 'cp-get-policies':
+        case 'cylance-protect-get-policies':
+            return runAndParseCommand(command,args,"",parsePolicy);
+        case 'cp-get-policy-details':
+        case 'cylance-protect-get-policy-details':
+            return runAndParseCommand(command,args,"",parsePolicy);
+        case 'fetch-incidents':
+            var fetchCommand = 'cylance-protect-get-threats';
+            var lastCall = getLastRun();
+            var firstQuery = !lastCall || !lastCall[params.timeField];
+            if (firstQuery) {
+                lastCall[params.timeField] = '2000-01-01T00:00:00Z'
+            }
+            var newLastCall = lastCall;
+            var newIncidents = [];
+            var fetchArgs = {filters: createFilters(lastCall, firstQuery)};
+            var response = sendRequest(
+                urlDictionary[fetchCommand],
+                buildBodyForCommand(fetchCommand, fetchArgs),
+                auth['access_token']
+                );
+            for (var i = 0; response.data && i < response.data.length; i++) {
+                if (Date.parse(response.data[i]['first_found']) > Date.parse(newLastCall['first_found'])) {
+                    newLastCall = response.data[i];
+                    newIncidents.push(createIncidentFromThreat(response.data[i]));
+                }
+            }
+            setLastRun(newLastCall);
+            return JSON.stringify(newIncidents);
+        default:
+            return runAndParseCommand(command,args,"");
+    }
+  type: javascript
+  commands:
+  - name: cylance-protect-get-list
+    deprecated: true
+    arguments:
+    - name: list_type
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - GlobalQuarantine
+      - SafeList
+      description: The type of list the file belongs to
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    - name: headers
+      description: The headers columns to show by order
+    description: 'Gets one of two Global Lists: Safe List and Global Quarantine List'
+    outputs:
+    - contextPath: Cylance.List.Name
+      description: Name of list
+    - contextPath: Cylance.List.Type
+      description: Type of list
+    - contextPath: Cylance.List.SHA256
+      description: List SHA256
+    - contextPath: Cylance.List.MD5
+      description: List MD5
+    - contextPath: Cylance.List.RawScore
+      description: List raw score
+    - contextPath: Cylance.List.CylanceScore
+      description: List Cylance score
+    - contextPath: Cylance.List.VirusTotalThreat
+      description: List VirusTotal threat
+    - contextPath: Cylance.List.Reason
+      description: List iteam readon
+    - contextPath: Cylance.List.Classification
+      description: classification
+  - name: cylance-protect-get-devices
+    deprecated: true
+    arguments:
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    - name: headers
+      description: The headers columns to show by order
+    description: Gets information about all the devices with CylancePROTECT Agent installed
+    outputs:
+    - contextPath: Endpoint.OS
+      description: Endpoint OS
+    - contextPath: Endpoint.Hostname
+      description: Endpoint Hostname
+    - contextPath: Endpoint.SerialNumber
+      description: Endpoint serial number
+    - contextPath: Endpoint.IP
+      description: List of endpoint IP addresses
+    - contextPath: Endpoint.MAC
+      description: List of endpoint MAC addresses
+    - contextPath: Endpoint.DNSName
+      description: Endpoint DNS name
+  - name: cylance-protect-get-threats
+    deprecated: true
+    arguments:
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    - name: headers
+      description: The headers columns to show by order
+    description: Gets information about Cylance protect threats
+  - name: cylance-protect-download-threat
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: The required sha256
+    description: Download a file according to it's sha256
+    outputs:
+    - contextPath: Cylance.Threat.ThreatName
+      description: Threat Name
+    - contextPath: Cylance.Threat.Classification
+      description: Threat Classification
+    - contextPath: Cylance.Threat.Subclassification
+      description: Threat Subclassification
+    - contextPath: Cylance.Threat.Sha256
+      description: Threat Sha256
+    - contextPath: Cylance.Threat.CylanceScore
+      description: Threat CylanceScore
+    - contextPath: Cylance.Threat.Status
+      description: Threat Status
+    - contextPath: Cylance.Threat.FilePaths
+      description: Threat file paths
+    - contextPath: Cylance.Threat.FirstFound
+      description: Threat FirstFound
+    - contextPath: Cylance.Threat.DetectedBy
+      description: Threat Detected By
+    - contextPath: Cylance.Threat.AutoRun
+      description: Threat AutoRun
+    - contextPath: Cylance.Threat.SerialNumber
+      description: Threat SerialNumber
+    - contextPath: Cylance.Threat.Running
+      description: Threat Running
+  - name: cylance-protect-get-threat-details
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: The required sha256
+    - name: headers
+      description: The headers columns to show by order
+    description: Get details about a specific threat according to it's sha256
+  - name: cylance-protect-device-delete
+    deprecated: true
+    arguments:
+    - name: serial_number
+      required: true
+      default: true
+      description: The device serial number
+    description: Removes a device from Cylance protect
+  - name: cylance-protect-get-device-threats
+    deprecated: true
+    arguments:
+    - name: serial_number
+      required: true
+      default: true
+      description: The device serial number
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    - name: headers
+      description: The headers columns to show by order
+    description: Gets threats for a specific device
+    outputs:
+    - contextPath: Cylance.Threat.ThreatName
+      description: Threat Name
+    - contextPath: Cylance.Threat.Classification
+      description: Threat Classification
+    - contextPath: Cylance.Threat.SubClassification
+      description: Threat SubClassification
+    - contextPath: Cylance.Threat.Sha256
+      description: Threat Sha256
+    - contextPath: Cylance.Threat.Copyright
+      description: Threat Copyright
+    - contextPath: Cylance.Threat.CompanyName
+      description: Threat Company Name
+    - contextPath: Cylance.Threat.CertSubject
+      description: Threat Cert Subject
+    - contextPath: Cylance.Threat.SignatureStatus
+      description: Threat Signature Status
+    - contextPath: Cylance.Threat.Safelisted
+      description: Threat Safe listed
+    - contextPath: Cylance.Threat.LastFound
+      description: Threat Last Found
+    - contextPath: Cylance.Threat.CylanceScore
+      description: Threat Cylance Score
+    - contextPath: Cylance.Threat.PercentageFileStatusTenant
+      description: Threat Percentage File Status Tenant
+    - contextPath: Cylance.Threat.FirstFound
+      description: Threat First Found
+    - contextPath: Cylance.Threat.CertTimestamp
+      description: Threat Cert Timestamp
+    - contextPath: Cylance.Threat.GlobalQuarantined
+      description: Threat Global Quarantined
+    - contextPath: Cylance.Threat.PercentageFileStatusEveryone
+      description: Threat Percentage File Status Everyone
+    - contextPath: Cylance.Threat.CertPublisher
+      description: Threat Cert Publisher
+    - contextPath: Cylance.Threat.Version
+      description: Threat Version
+    - contextPath: Cylance.Threat.ProductName
+      description: Threat Product Name
+    - contextPath: Cylance.Threat.CertThumbprint
+      description: Threat Cert Thumbprint
+    - contextPath: Cylance.Threat.Signed
+      description: Threat Signed
+    - contextPath: Cylance.Threat.Description
+      description: Threat Description
+    - contextPath: Cylance.Threat.CertIssuer
+      description: Threat Cert Issuer
+    - contextPath: Cylance.Threat.FileSize
+      description: Threat File Size
+    - contextPath: Cylance.Threat.Md5
+      description: Threat Md5
+  - name: cylance-protect-update-device-threats
+    deprecated: true
+    arguments:
+    - name: serial_number
+      required: true
+      default: true
+      description: The device serial number
+    - name: quarantine_status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Quarantined
+      - Waived
+      description: The quarantine status
+    - name: sha256
+      required: true
+      description: The threat sha256
+    - name: headers
+      description: The headers columns to show by order
+    description: Updates threats of a device
+  - name: cylance-protect-delete-hash-from-lists
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      description: A list or single value of hash/es
+    description: Delete hashes from lists
+  - name: cylance-protect-update-hash-at-lists
+    deprecated: true
+    arguments:
+    - name: list_type
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - GlobalQuarantine
+      - SafeList
+      description: The type of list the file belongs to
+    - name: sha256
+      required: true
+      description: A list or single value of hash/es
+    - name: category
+      required: true
+      description: Category
+      auto: PREDEFINED
+      predefined:
+      - Admin Tool
+      - Internal Application
+      - Commercial Software
+      - Operating System
+      - Drivers
+      - Security Software
+      - None
+    - name: reason
+      required: true
+      description: The reason why the file is in the list (65 chars limited)
+    description: Update hash in the lists
+  - name: cylance-protect-upload-threat
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: A list or single value of hash/es
+    description: Allows to create an Upload request for a set of hashes that will be executed by endpoints eventually (not synced)
+  - name: cylance-protect-get-threated-devices
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: The sha256 value of the threat or file being queried
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    - name: headers
+      description: The headers columns to show by order
+    description: Given a threat, retrieve a list of all devices on which the threat was found
+    outputs:
+    - contextPath: Endpoint.OS
+      description: Endpoint OS
+    - contextPath: Endpoint.Hostname
+      description: Endpoint Hostname
+    - contextPath: Endpoint.SerialNumber
+      description: Endpoint serial number
+    - contextPath: Endpoint.IP
+      description: List of endpoint IP addresses
+    - contextPath: Endpoint.MAC
+      description: List of endpoint MAC addresses
+    - contextPath: Endpoint.DNSName
+      description: Endpoint DNS name
+    - contextPath: Endpoint.CylanceThreat.Abnormal
+      description: Endpoint CylanceThreat Abnormal
+    - contextPath: Endpoint.CylanceThreat.Added
+      description: Endpoint CylanceThreat Added
+    - contextPath: Endpoint.CylanceThreat.AgentVersion
+      description: Endpoint CylanceThreat Agent Version
+    - contextPath: Endpoint.CylanceThreat.AutoRun
+      description: Endpoint CylanceThreat Auto Run
+    - contextPath: Endpoint.CylanceThreat.BackgroundDetection
+      description: Endpoint CylanceThreat Background Detection
+    - contextPath: Endpoint.CylanceThreat.Detected By
+      description: Endpoint CylanceThreat Detected By
+    - contextPath: Endpoint.CylanceThreat.ExploitAttempts
+      description: Endpoint CylanceThreat Exploit Attempts
+    - contextPath: Endpoint.CylanceThreat.FilePaths
+      description: Endpoint CylanceThreat File Paths
+    - contextPath: Endpoint.CylanceThreat.FileQuarantineStatus
+      description: Endpoint CylanceThreat File QuarantineStatus
+    - contextPath: Endpoint.CylanceThreat.FilesAnalyzed
+      description: Endpoint CylanceThreat Files Analyzed
+    - contextPath: Endpoint.CylanceThreat.FirstFound
+      description: Endpoint CylanceThreat First Found
+    - contextPath: Endpoint.CylanceThreat.IsOffline
+      description: Endpoint CylanceThreat Is Offline
+    - contextPath: Endpoint.CylanceThreat.LastReportedUsers
+      description: Endpoint CylanceThreat Last Reported Users
+    - contextPath: Endpoint.CylanceThreat.OfflineDate
+      description: Endpoint CylanceThreat Offline Date
+    - contextPath: Endpoint.CylanceThreat.Policy
+      description: Endpoint CylanceThreat Policy
+    - contextPath: Endpoint.CylanceThreat.Quarantined
+      description: Endpoint CylanceThreat Quarantined
+    - contextPath: Endpoint.CylanceThreat.Running
+      description: Endpoint CylanceThreat Running
+    - contextPath: Endpoint.CylanceThreat.Unsafe
+      description: Endpoint CylanceThreat Unsafe
+    - contextPath: Endpoint.CylanceThreat.Waived
+      description: Endpoint CylanceThreat Waived
+    - contextPath: Endpoint.CylanceThreat.Zones
+      description: Endpoint CylanceThreat Zones
+  - name: cylance-protect-get-zones
+    deprecated: true
+    arguments:
+    - name: headers
+      description: The headers columns to show by order
+    description: Retrieves all zones
+    outputs:
+    - contextPath: Cylance.Zone.ID
+      description: Zone ID
+    - contextPath: Cylance.Zone.Name
+      description: Zone Name
+  - name: cylance-protect-create-zone
+    deprecated: true
+    arguments:
+    - name: zone_name
+      required: true
+      default: true
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
+    - name: policy_id
+      description: The Policy ID associated with this Zone. If omitted, it will default to the Default Policy
+    - name: zone_criticality
+      description: ￼ The name of the Zone Criticality, which can be Low, Normal or Field Name ￼￼￼ Type ￼￼ Description ￼￼ ￼￼￼￼￼String, UUID ￼￼￼￼￼ Field Name ￼￼￼ Type ￼￼￼ Description ￼ String, UUID High. If omitted, it will default to Normal
+    - name: headers
+      description: The headers columns to show by order
+    description: Create a zone
+    outputs:
+    - contextPath: Cylance.Zone.ID
+      description: Zone ID
+    - contextPath: Cylance.Zone.Name
+      description: Zone Name
+    - contextPath: DeviceCount
+      description: Zone Device Count
+    - contextPath: PolicyID
+      description: Zone Policy ID
+    - contextPath: PolicyName
+      description: Zone Policy Name
+    - contextPath: ThreatCount
+      description: Zone Threat Count
+  - name: cylance-protect-update-zone
+    deprecated: true
+    arguments:
+    - name: zone_name
+      required: true
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
+    - name: zone_id
+      required: true
+      default: true
+      description: The ID of the Zone to update
+    - name: policy_id
+      description: The Policy ID associated with this Zone. If omitted, will default to the Default Policy
+    - name: zone_criticality
+      description: The name of the Zone Criticality, which can be Low, Normal or High. If omitted, it will default to Normal
+    - name: apply_policy_change_to_devices
+      description: Defaults to False. Tells whether or not to update the Zone Devices to use the new policy. This will only apply if this field is True
+    - name: headers
+      description: The headers columns to show by order
+    description: Update a zone
+    outputs:
+    - contextPath: Cylance.Zone.ID
+      description: Zone ID
+    - contextPath: Cylance.Zone.Name
+      description: Zone Name
+  - name: cylance-protect-get-policies
+    deprecated: true
+    arguments: []
+    description: Get all policies
+    outputs:
+    - contextPath: Cylance.Policy.ID
+      description: Policy ID
+    - contextPath: Cylance.Policy.Name
+      description: Policy Name
+  - name: cylance-protect-get-policy-details
+    deprecated: true
+    arguments:
+    - name: policy_id
+      description: The Policy ID. This information supersedes the Policy Name, if both are included
+    - name: policy_name
+      description: The Policy Name
+    - name: headers
+      description: The headers columns to show by order
+    description: Get a specific policy details. If no args supplied, default policy is retrieved
+    outputs:
+    - contextPath: Cylance.Policy.ID
+      description: Policy ID
+    - contextPath: Cylance.Policy.Name
+      description: Policy Name
+  - name: cp-get-list
+    deprecated: true
+    arguments:
+    - name: list_type
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - GlobalQuarantine
+      - SafeList
+      description: The type of list the file belongs to
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    description: 'Gets one of two Global Lists: Safe List and Global Quarantine List'
+  - name: cp-get-devices
+    deprecated: true
+    arguments:
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    description: Gets information about all the devices with CylancePROTECT Agent installed
+  - name: cp-get-threats
+    deprecated: true
+    arguments:
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    description: Gets information about Cylance protect threats
+  - name: cp-download-threat
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: The required sha256
+    description: Download a file according to it's sha256
+  - name: cp-get-threat-details
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: The required sha256
+    description: Get details about a specific threat according to it's sha256
+  - name: cp-device-delete
+    deprecated: true
+    arguments:
+    - name: serial_number
+      required: true
+      default: true
+      description: The device serial number
+    description: Removes a device from Cylance protect
+  - name: cp-get-device-threats
+    deprecated: true
+    arguments:
+    - name: serial_number
+      required: true
+      default: true
+      description: The device serial number
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    description: Gets threats for a specific device
+  - name: cp-update-device-threats
+    deprecated: true
+    arguments:
+    - name: serial_number
+      required: true
+      default: true
+      description: The device serial number
+    - name: quarantine_status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Quarantined
+      - Waived
+      description: The quarantine status
+    - name: sha256
+      required: true
+      description: The threat sha256
+    description: Updates threats of a device
+  - name: cp-delete-hash-from-lists
+    deprecated: true
+    arguments:
+    - name: sha256
+      description: A list or single value of hash/es
+    description: Delete hashes from lists
+  - name: cp-update-hash-at-lists
+    deprecated: true
+    arguments:
+    - name: list_type
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - GlobalQuarantine
+      - SafeList
+      description: The type of list the file belongs to
+    - name: sha256
+      required: true
+      description: A list or single value of hash/es
+    - name: category
+      description: Category
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Admin Tool
+      - Internal Application
+      - Commercial Software
+      - Operating System
+      - Drivers
+      - Security Software
+      - None
+    - name: reason
+      required: true
+      description: The reason why the file is in the list (65 chars limited)
+    description: Update hash in the lists
+  - name: cp-upload-threat
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: A list or single value of hash/es
+    description: Allows to create an Upload request for a set of hashes that will be executed by endpoints eventually (not synced)
+  - name: cp-get-threated-devices
+    deprecated: true
+    arguments:
+    - name: sha256
+      required: true
+      default: true
+      description: The sha256 value of the threat or file being queried
+    - name: page_size
+      description: The page size
+    - name: page_number
+      description: The page number
+    - name: sorts
+      description: Array of the sore object (includes field name in Field, and Direction - either Ascending or Descending)
+    - name: filters
+      description: Array of filters - either simple or composite (more information on filter usage can be found in Cylance API documentation)
+    description: Given a threat, retrieve a list of all devices on which the threat was found
+  - name: cp-get-zones
+    deprecated: true
+    arguments: []
+    description: Retrieves all zones
+  - name: cp-create-zone
+    deprecated: true
+    arguments:
+    - name: zone_name
+      required: true
+      default: true
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
+    - name: policy_id
+      description: The Policy ID associated with this Zone. If omitted, it will default to the Default Policy
+    - name: zone_criticality
+      description: ￼ The name of the Zone Criticality, which can be Low, Normal or Field Name ￼￼￼ Type ￼￼ Description ￼￼ ￼￼￼￼￼String, UUID ￼￼￼￼￼ Field Name ￼￼￼ Type ￼￼￼ Description ￼ String, UUID High. If omitted, it will default to Normal
+    description: Create a zone
+  - name: cp-update-zone
+    deprecated: true
+    arguments:
+    - name: zone_name
+      required: true
+      description: ￼ Name of the Zone. Cannot be Unzoned or the name of an existing Zone. The maximum number of characters for a Zone Name is 32
+    - name: zone_id
+      required: true
+      default: true
+      description: The ID of the Zone to update
+    - name: policy_id
+      description: The Policy ID associated with this Zone. If omitted, will default to the Default Policy
+    - name: zone_criticality
+      description: The name of the Zone Criticality, which can be Low, Normal or High. If omitted, it will default to Normal
+    - name: apply_policy_change_to_devices
+      description: Defaults to False. Tells whether or not to update the Zone Devices to use the new policy. This will only apply if this field is True
+    description: Update a zone
+  - name: cp-get-policies
+    deprecated: true
+    arguments: []
+    description: Get all policies
+  - name: cp-get-policy-details
+    deprecated: true
+    arguments:
+    - name: policy_id
+      description: The Policy ID. This information supersedes the Policy Name, if both are included
+    - name: policy_name
+      description: The Policy Name
+    description: Get a specific policy details. If no args supplied, default policy is retrieved
+  isfetch: true

@@ -1,0 +1,168 @@
+{
+  "data": [
+    {
+      "review": {
+        "note": null,
+        "status_in_portal": "Pending",
+        "assignee": null,
+        "status": "pending"
+      },
+      "owner_organisation_details": {
+        "organisations": [
+          {
+            "organisation_id": "uhash:ABC1234567",
+            "organisation_name": "Palo Alto Networks - Partner"
+          }
+        ],
+        "enterprise_id": "uhash:123456789A",
+        "enterprise_name": "Palo Alto Networks - Partner"
+      },
+      "url": {
+        "api": "https://api.recordedfuture.com/v3/alerts/a12b-5",
+        "portal": "https://app.recordedfuture.com/live/sc/notification/?id=a12b-5"
+      },
+      "rule": {
+        "use_case_deprecation": null,
+        "name": "Domains on Code Repositories",
+        "id": "Abcdef",
+        "url": {
+          "portal": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?<query_params>"
+        }
+      },
+      "id": "a12b-5",
+      "hits": [
+        {
+          "entities": [
+            {
+              "id": "url:URL",
+              "name": "URL",
+              "type": "URL"
+            },
+            {
+              "id": "abcdef",
+              "name": "FileName",
+              "type": "FileName"
+            },
+            {
+              "id": "abcdef",
+              "name": "UUID",
+              "type": "IndustryTerm"
+            }
+          ],
+          "document": {
+            "source": {
+              "id": "source:abcdef",
+              "name": "Source",
+              "type": "Source"
+            },
+            "title": "title",
+            "url": "url",
+            "authors": [
+              {
+                "id": "Abcdef",
+                "name": "Username",
+                "type": "Username"
+              }
+            ]
+          },
+          "fragment": "Code change",
+          "id": "AB_12345678",
+          "language": "eng",
+          "primary_entity": null,
+          "analyst_note": null
+        }
+      ],
+      "ai_insights": {
+        "comment": "The Recorded Future AI requires more references in order to produce a summary.",
+        "text": null
+      },
+      "log": {
+        "note_author": null,
+        "note_date": null,
+        "status_date": "2023-12-23T00:00:10.000Z",
+        "triggered": "2023-12-23T00:00:10.000Z"
+      },
+      "title": "title",
+      "type": "EVENT"
+    },
+    {
+      "review": {
+        "note": null,
+        "status_in_portal": "Pending",
+        "assignee": null,
+        "status": "pending"
+      },
+      "owner_organisation_details": {
+        "organisations": [
+          {
+            "organisation_id": "uhash:ABC1234567",
+            "organisation_name": "Palo Alto Networks - Partner"
+          }
+        ],
+        "enterprise_id": "uhash:123456789A",
+        "enterprise_name": "Palo Alto Networks - Partner"
+      },
+      "url": {
+        "api": "https://api.recordedfuture.com/v3/alerts/a12b-6",
+        "portal": "https://app.recordedfuture.com/live/sc/notification/?id=a12b-6"
+      },
+      "rule": {
+        "use_case_deprecation": null,
+        "name": "My brands on Dark Web and closed sources",
+        "id": "aBcdef",
+        "url": {
+          "portal": "https://app.recordedfuture.com/live/sc/ViewIdkobra_view_report_item_alert_editor?<query_params>"
+        }
+      },
+      "id": "a12b-6",
+      "hits": [
+        {
+          "entities": [
+            {
+              "id": "A_123",
+              "name": "Palo Alto Networks Inc.",
+              "type": "Company"
+            }
+          ],
+          "document": {
+            "source": {
+              "id": "source:12345-",
+              "name": "Source",
+              "type": "Source"
+            },
+            "title": "title",
+            "url": "url",
+            "authors": [
+              {
+                "id": "12_345",
+                "name": "Username",
+                "type": "Username"
+              }
+            ]
+          },
+          "fragment": "fragment",
+          "id": "HE_1234567A",
+          "language": "rus",
+          "primary_entity": null,
+          "analyst_note": null
+        }
+      ],
+      "ai_insights": {
+        "comment": "The Recorded Future AI requires more references in order to produce a summary.",
+        "text": null
+      },
+      "log": {
+        "note_author": null,
+        "note_date": null,
+        "status_date": "2023-12-23T00:00:05.000Z",
+        "triggered": "2023-12-23T00:00:05.000Z"
+      },
+      "title": "title",
+      "type": "EVENT"
+    }
+  ],
+  "counts": {
+    "returned": 2,
+    "total": 3
+  }
+}

@@ -1,0 +1,19 @@
+[
+    {
+        "self": "http://www.example.com/jira/rest/api/2/user?username=fred",
+        "key": "JIRAUSER10100",
+        "name": "fred",
+        "emailAddress": "",
+        "avatarUrls": {
+            "48x48": "http://www.example.com/jira/secure/useravatar?size=large&ownerId=fred",
+            "24x24": "http://www.example.com/jira/secure/useravatar?size=small&ownerId=fred",
+            "16x16": "http://www.example.com/jira/secure/useravatar?size=xsmall&ownerId=fred",
+            "32x32": "http://www.example.com/jira/secure/useravatar?size=medium&ownerId=fred"
+        },
+        "displayName": "Fred F. User",
+        "active": true,
+        "deleted": false,
+        "timeZone": "Australia/Sydney",
+        "locale": "en_AU"
+    }
+]

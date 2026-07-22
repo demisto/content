@@ -1,0 +1,33 @@
+{
+    "is_success": true,
+    "message": "Requested entity: 3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792 has been successfully processed.",
+    "response_code": 200,
+    "data": {
+        "score": 360,
+        "value": "3b7b359ea17ac76341957573e332a2d6bcac363401ac71c8df94dac93df6d792",
+        "findings": [
+            {
+                "extra_info": {
+                    "content_date": "Tue, 20 Oct 2020 03:30:27 GMT"
+                },
+                "content_link": "Mock Content Link",
+                "content_preview": "",
+                "source_category": "mock source category",
+                "source_name": "mock source name",
+                "tags": [
+                    "surface web",
+                    "mock tag",
+                    "malware"
+                ]
+            }
+        ],
+        "score_details": {
+            "Mock Source": 360
+        },
+        "classification": "hash",
+        "is_whitelisted": false,
+        "remaining_credit": null,
+        "whitelist_sources": [],
+        "is_advance_investigation": false
+    }
+}

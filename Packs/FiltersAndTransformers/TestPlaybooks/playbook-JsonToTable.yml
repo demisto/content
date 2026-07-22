@@ -1,0 +1,460 @@
+id: JsonToTable - Test Playbook
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: JsonToTable - Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3ea5ae29-6902-4087-8251-abd44732d08a
+    type: start
+    task:
+      id: 3ea5ae29-6902-4087-8251-abd44732d08a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1ab4928c-2a6a-46bc-8ac0-38d0ad2e311a
+    type: regular
+    task:
+      id: 1ab4928c-2a6a-46bc-8ac0-38d0ad2e311a
+      version: -1
+      name: simple json transform
+      description: Accepts a json object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      title:
+        simple: tableToMarkdown test
+      value:
+        simple: '{"name": "test", "value": 2}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 886c4a1f-3a2a-4a8c-83a7-0a106f509426
+    type: regular
+    task:
+      id: 886c4a1f-3a2a-4a8c-83a7-0a106f509426
+      version: -1
+      name: verify simple
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: |-
+          ### tableToMarkdown test
+          |name|value|
+          |---|---|
+          | test | 2 |
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5e5f9cdf-6f70-4196-8d7f-97e15673d223
+    type: regular
+    task:
+      id: 5e5f9cdf-6f70-4196-8d7f-97e15673d223
+      version: -1
+      name: json choose headers
+      description: Accepts a json object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      headers:
+        simple: name
+      title:
+        simple: tableToMarkdown test
+      value:
+        simple: '{"name": "test", "value":2}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fb87c647-c17b-4dc2-8220-ea00b3ac3c58
+    type: regular
+    task:
+      id: fb87c647-c17b-4dc2-8220-ea00b3ac3c58
+      version: -1
+      name: verify choose headers
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: |-
+          ### tableToMarkdown test
+          |name|
+          |---|
+          | test |
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 06bdeb0e-d086-4252-8434-67c145562b82
+    type: regular
+    task:
+      id: 06bdeb0e-d086-4252-8434-67c145562b82
+      version: -1
+      name: json nested test
+      description: Accepts a json object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      title:
+        simple: tableToMarkdown test
+      value:
+        simple: '{"name":{"first": "test", "last": "here"} , "value": 2}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8b100b28-4577-42ce-8a30-55ebadc4c50d
+    type: regular
+    task:
+      id: 8b100b28-4577-42ce-8a30-55ebadc4c50d
+      version: -1
+      name: verify nested
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: |-
+          ### tableToMarkdown test
+          |name|value|
+          |---|---|
+          | first: test<br>last: here | 2 |
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a63fb5b2-faed-4460-8838-4754c98cdf23
+    type: regular
+    task:
+      id: a63fb5b2-faed-4460-8838-4754c98cdf23
+      version: -1
+      name: jsonToTable auto transform
+      description: Accepts a json object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      is_auto_json_transform:
+        simple: "true"
+      title:
+        simple: tableToMarkdown test
+      value:
+        simple: '{"name":{"first": {"item":"test", "hello":"world"}, "last": "here"}
+          , "value": 2}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3af318f5-cab4-401c-851d-473ce4cbe6ad
+    type: regular
+    task:
+      id: 3af318f5-cab4-401c-851d-473ce4cbe6ad
+      version: -1
+      name: verify auto transform
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: "### tableToMarkdown test\n|name|value|\n|---|---|\n| **first**:<br>\t***item***:
+          test<br>\t***hello***: world<br><br>***last***: here | 2 |\n"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 80c39749-bab5-4e12-87e0-14d3654bd0ae
+    type: regular
+    task:
+      id: 80c39749-bab5-4e12-87e0-14d3654bd0ae
+      version: -1
+      name: json properties
+      description: Accepts a json object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      json_transform_properties:
+        simple: '{"name":{"keys":["item", "last"]}}'
+      title:
+        simple: tableToMarkdown test
+      value:
+        simple: '{"name":{"first": {"item":"test", "hello":"world"}, "last": "here"}
+          , "value": 2}'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 290f8699-9812-4d89-8485-cadc216b225f
+    type: regular
+    task:
+      id: 290f8699-9812-4d89-8485-cadc216b225f
+      version: -1
+      name: verify json properties
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: |-
+          ### tableToMarkdown test
+          |name|value|
+          |---|---|
+          | <br>***last***: here | 2 |
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4193ae2a-1980-42cf-80b3-93214048e25e
+    type: title
+    task:
+      id: 4193ae2a-1980-42cf-80b3-93214048e25e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2335,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

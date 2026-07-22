@@ -1,0 +1,30 @@
+{
+ "id": "incident_googlecloudsccfindingsourcepropertiessite",
+ "version": -1,
+ "modified": "2021-01-22T00:46:34.806515069+05:30",
+ "name": "GoogleCloudSCC Finding SourceProperties Site",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccfindingsourcepropertiessite",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

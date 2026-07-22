@@ -1,0 +1,294 @@
+id: Detonate URL - Generic Test
+version: -1
+name: Detonate URL - Generic Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e09f4cc8-be55-4849-8b18-88a989b368f3
+    type: start
+    task:
+      id: e09f4cc8-be55-4849-8b18-88a989b368f3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 52d5d2b2-d68d-4796-893e-e0eebd3b2185
+    type: regular
+    task:
+      id: 52d5d2b2-d68d-4796-893e-e0eebd3b2185
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 805
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 291abd67-e52d-4349-8dde-7d34741deff5
+    type: playbook
+    task:
+      id: 291abd67-e52d-4349-8dde-7d34741deff5
+      version: -1
+      name: Detonate URL - Generic
+      description: Detonate file through active integrations that support file detonation
+      playbookName: Detonate URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      URL:
+        simple: ${URL}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 18451f39-82ea-4476-83c4-f020d0d1d33a
+    type: regular
+    task:
+      id: 18451f39-82ea-4476-83c4-f020d0d1d33a
+      version: -1
+      name: Set URL
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: URL.Data
+      value:
+        simple: https://www.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+    note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a8b79b07-9d05-4066-8fc5-a9be7e1e86ee
+    type: title
+    task:
+      id: a8b79b07-9d05-4066-8fc5-a9be7e1e86ee
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1dce1aca-ce1d-49f8-8e0f-da49d6ba3046
+    type: title
+    task:
+      id: 1dce1aca-ce1d-49f8-8e0f-da49d6ba3046
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cea88642-7db8-4fad-8a7f-e121af671607
+    type: regular
+    task:
+      id: cea88642-7db8-4fad-8a7f-e121af671607
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 01a54640-f41f-4c79-8bd3-513c9eacbdfd
+    type: playbook
+    task:
+      id: 01a54640-f41f-4c79-8bd3-513c9eacbdfd
+      version: -1
+      name: Detonate URL - Generic
+      description: Detonate URL through active integrations that support URL detonation.
+      playbookName: Detonate URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      URL:
+        simple: ${URL}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1200,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: This Playbook tests the validity of the Dtonate URL Generic Playbook, the test includes tests for Empty Inputs and a Test URL Inputs

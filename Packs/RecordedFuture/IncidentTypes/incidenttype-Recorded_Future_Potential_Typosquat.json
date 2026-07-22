@@ -1,0 +1,29 @@
+{
+    "id": "Recorded Future Potential Typosquat",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Recorded Future Potential Typosquat",
+    "prevName": "Recorded Future Potential Typosquat",
+    "color": "#0071cf",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 1,
+    "onChangeRepAlg": 1,
+    "layout": "Recorded Future Incident",
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.5.0"
+}

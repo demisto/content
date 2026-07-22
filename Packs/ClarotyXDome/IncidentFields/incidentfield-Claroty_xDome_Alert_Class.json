@@ -1,0 +1,32 @@
+{
+    "id": "incident_clarotyxdomealertclass",
+    "version": -1,
+    "modified": "2024-04-18T10:35:35.349053927Z",
+    "name": "Claroty xDome Alert Class",
+    "ownerOnly": false,
+    "description": "The alert class, such as “Pre-Defined Alerts” and “Custom Alerts”",
+    "cliName": "clarotyxdomealertclass",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Claroty xDome Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

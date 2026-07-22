@@ -1,0 +1,354 @@
+id: SafeBreach - Rerun Insights
+version: -1
+name: SafeBreach - Rerun Insights
+description: Deprecated. No available replacement.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+    type: start
+    task:
+      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 190ebdd0-4578-4f70-8c68-7423ca866436
+    type: playbook
+    task:
+      id: 190ebdd0-4578-4f70-8c68-7423ca866436
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: SafeBreach
+          accessor: Test.Id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: testId
+      PollingCommandName:
+        simple: safebreach-get-test-status
+      Timeout:
+        simple: "1440"
+      dt:
+        simple: SafeBreach.Test(val.Status == "PENDING" || val.Status == "RUNNING").Id
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
+    type: title
+    task:
+      id: b4d9deb2-20a0-41c6-8468-28a787ee6576
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 460d3b11-172a-4249-8ff6-678f6cbbeb0d
+    type: regular
+    task:
+      id: 460d3b11-172a-4249-8ff6-678f6cbbeb0d
+      version: -1
+      name: Sleep before starting the polling
+      description: Sleep for 30 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: cdefcbe4-b1f9-4b59-848a-e2805964e625
+    type: playbook
+    task:
+      id: cdefcbe4-b1f9-4b59-848a-e2805964e625
+      version: -1
+      name: SafeBreach - Rerun Single Insight
+      description: This is a sub-playbook that reruns a single insight using a specified Insight Id as input. It is used to run insights one by one iteratively as part of the main rerun playbook - "SafeBreach Rerun Insights".
+      playbookName: SafeBreach - Rerun Single Insight
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      InsightIds:
+        complex:
+          root: inputs.InsightIds
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 5
+      max: 0
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 1a7c8892-f3b2-4151-80c5-0eca0ac57930
+    type: condition
+    task:
+      id: 1a7c8892-f3b2-4151-80c5-0eca0ac57930
+      version: -1
+      name: Is there a test for polling?
+      description: Checks "SafeBreach.Test.Id" for existence to decide whether to proceed to the polling task or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      Test info exists:
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: Test info exists
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: SafeBreach
+                accessor: Test.Id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 8148e737-e35f-4dbc-8236-f2548cc48e77
+    type: regular
+    task:
+      id: 8148e737-e35f-4dbc-8236-f2548cc48e77
+      version: -1
+      name: Print notification if there are no tests to poll
+      description: Print a list of insight ids that no tests were generated for.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.InsightIds
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.InsightIds
+                iscontext: true
+              right:
+                value:
+                  simple: SafeBreach.Insight.Id
+                iscontext: true
+          - - operator: isNotExists
+              left:
+                value:
+                  simple: SafeBreach.Insight.Rerun
+                iscontext: true
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'No tests to poll for insights:  '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 860,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: InsightIds
+  value:
+    complex:
+      root: SafeBreach
+      accessor: Insight.Id
+  required: true
+  description: SafeBreach Insight Ids to rerun
+  playbookInputQuery:
+outputs:
+- contextPath: SafeBreach.Insight.Name
+  description: Insight name representing the action required to be taken
+  type: String
+- contextPath: SafeBreach.Insight.Id
+  description: Insight unique id
+  type: Number
+- contextPath: SafeBreach.Insight.DataType
+  description: 'Insight data type. Options: Hash, Domain, URI, Command, Port, Protocol'
+  type: Array
+- contextPath: SafeBreach.Insight.Category
+  description: Security control category name
+  type: String
+- contextPath: SafeBreach.Insight.LatestSimulation
+  description: Time of the latest simulation from the insight
+  type: String
+- contextPath: SafeBreach.Insight.SimulationsCount
+  description: Number of the related simulations
+  type: Number
+- contextPath: SafeBreach.Insight.RiskImpact
+  description: Risk impact of the insight on the environment total risk score
+  type: Number
+- contextPath: SafeBreach.Insight.AffectedTargetsCount
+  description: Number of the affected targets
+  type: Number
+- contextPath: SafeBreach.Insight.SeverityScore
+  description: Insight severity numeric value
+  type: Number
+- contextPath: SafeBreach.Insight.Severity
+  description: Insight severity mapped to low/medium/high
+  type: String
+- contextPath: SafeBreach.Insight.RemediationDataCount
+  description: Number of the remediation data points
+  type: Number
+- contextPath: SafeBreach.Insight.RemediationDataType
+  description: Type of the remediation data
+  type: String
+- contextPath: SafeBreach.Insight.ThreatGroups
+  description: Array of APT names that are mapped to the insight
+  type: Array
+- contextPath: SafeBreach.Insight.NetworkDirection
+  description: Communication direction of Insight, relative to the target (inbound/outbound)
+  type: String
+- contextPath: SafeBreach.Insight.AttacksCount
+  description: List of all insight related SafeBreach attack ids
+  type: Array
+quiet: true
+fromversion: 5.5.0
+tests:
+- No tests (deprecated)
+deprecated: true

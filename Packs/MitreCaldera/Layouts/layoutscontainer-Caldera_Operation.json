@@ -1,0 +1,420 @@
+{
+    "close": {
+        "sections": [
+            {
+                "description": "If you select 'Yes' under the 'Caldera Delete Operation', the Operation will be deleted from Caldera upon case closure.",
+                "fields": [
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderadeleteoperation",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Close Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "hmul3lqfgx",
+                "name": "Operation Details",
+                "sections": [
+                    {
+                        "displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "calderaoperationname",
+                                "height": 53,
+                                "id": "64fa48e0-e710-11ec-ae98-dd1c76a19ebd",
+                                "index": 0,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "calderaoperationadversaryid",
+                                "height": 53,
+                                "id": "7cd71220-e712-11ec-ae98-dd1c76a19ebd",
+                                "index": 1,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "calderaoperationplannerid",
+                                "height": 53,
+                                "id": "28948dc0-e710-11ec-ae98-dd1c76a19ebd",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "calderaoperationsourceid",
+                                "height": 53,
+                                "id": "2948c290-e710-11ec-ae98-dd1c76a19ebd",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "calderaoperationobjectiveid",
+                                "height": 53,
+                                "id": "07847dd0-e7f5-11ec-96e7-c1d04e1b1292",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "calderaoperationautoclose",
+                                "height": 53,
+                                "id": "56b8a360-e7e9-11ec-96e7-c1d04e1b1292",
+                                "index": 0,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "calderaoperationautonomy",
+                                "height": 53,
+                                "id": "3ace6830-e7e7-11ec-96e7-c1d04e1b1292",
+                                "index": 1,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "calderaoperationstate",
+                                "height": 53,
+                                "id": "25fc8310-e7e7-11ec-96e7-c1d04e1b1292",
+                                "index": 2,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "calderaoperationvisibility",
+                                "height": 53,
+                                "id": "6b647f60-e7e8-11ec-96e7-c1d04e1b1292",
+                                "index": 3,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "calderaoperationjitter",
+                                "height": 53,
+                                "id": "33e848e0-e7e9-11ec-96e7-c1d04e1b1292",
+                                "index": 4,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "calderaoperationobfuscator",
+                                "height": 53,
+                                "id": "0545d870-e7f5-11ec-96e7-c1d04e1b1292",
+                                "index": 0,
+                                "listId": "hmul3lqfgx-qujidgmj0y-86399890-e70f-11ec-ae98-dd1c76a19ebd",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "calderaoperationuselearningparsers",
+                                "height": 53,
+                                "id": "f3ee7510-e7e9-11ec-96e7-c1d04e1b1292",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "calderaoperationgroup",
+                                "height": 53,
+                                "id": "fc0ade90-e7f4-11ec-96e7-c1d04e1b1292",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "calderaoperationhostgroup",
+                                "height": 53,
+                                "id": "fd6405f0-e7f4-11ec-96e7-c1d04e1b1292",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Operation Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "nrx9mqnvqk",
+                "name": "Event Logs",
+                "sections": [
+                    {
+                        "h": 7,
+                        "hideName": true,
+                        "i": "hmul3lqfgx-995758b0-e749-11ec-931c-8761fa857a5e",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Event Logs",
+                        "query": "CalderaPopulateEventLogs",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "omgrwvhiot",
+                "name": "Operation Facts",
+                "sections": [
+                    {
+                        "h": 7,
+                        "hideName": true,
+                        "i": "hmul3lqfgx-33cb55d0-e74b-11ec-a727-29bd48656998",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Facts",
+                        "query": "CalderaGetOperationReport",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "qujidgmj0y",
+                "name": "Agents",
+                "sections": [
+                    {
+                        "h": 4,
+                        "hideName": true,
+                        "i": "hmul3lqfgx-870a37c0-e74b-11ec-a727-29bd48656998",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Agents",
+                        "query": "CalderaPopulateAgents",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "Please ensure you have an active instance of MITRE Caldera configured.",
+                "fields": [
+                    {
+                        "fieldId": "incident_calderaoperationname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationadversaryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationplannerid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationsourceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+						"fieldId": "incident_calderascheduleoperation",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderascheduledatetime",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "calderascheduleoperation"
+										}
+									},
+									"operator": "isTrue",
+									"type": "boolean"
+								}
+							]
+						],
+						"isVisible": true
+					}
+                ],
+                "isVisible": true,
+                "name": "Operation Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_calderaoperationobjectiveid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationstate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationobfuscator",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationautonomy",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationvisibility",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationjitter",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationautoclose",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationuselearningparsers",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationgroup",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_calderaoperationhostgroup",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Optional Values",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Caldera Operation",
+    "name": "Caldera Operation",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "",
+    "marketplaces": ["xsoar"]
+}

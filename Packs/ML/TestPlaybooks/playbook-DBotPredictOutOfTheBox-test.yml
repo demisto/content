@@ -1,0 +1,338 @@
+id: DbotPredictOufOfTheBoxTest
+version: -1
+name: DbotPredictOufOfTheBoxTest
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ae5d8fff-3436-4e05-8961-b42b53bd5821
+    type: start
+    task:
+      id: ae5d8fff-3436-4e05-8961-b42b53bd5821
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6429b7e5-d71b-4d73-8afb-f6c8fa03dd93
+    type: regular
+    task:
+      id: 6429b7e5-d71b-4d73-8afb-f6c8fa03dd93
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: a59bc19d-c6b3-4159-86c2-f3932d3b24f7
+    type: regular
+    task:
+      id: a59bc19d-c6b3-4159-86c2-f3932d3b24f7
+      version: -1
+      name: Predict Using Out Of The Box Model
+      scriptName: DBotPredictOutOfTheBox
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      emailBody: {}
+      emailBodyHTML: {}
+      emailSubject:
+        simple: want to lose weight? best diet click here for free
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f46b6fc1-6b99-4bc4-8b21-90807210bfae
+    type: condition
+    task:
+      id: f46b6fc1-6b99-4bc4-8b21-90807210bfae
+      version: -1
+      name: Check Prediction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: spam
+      - - operator: greaterThan
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.9"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6c7db9ac-0377-4cc1-8f0b-62e5ba136313
+    type: title
+    task:
+      id: 6c7db9ac-0377-4cc1-8f0b-62e5ba136313
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 33ae6a41-19ed-498e-887a-8bd1f5929437
+    type: regular
+    task:
+      id: 33ae6a41-19ed-498e-887a-8bd1f5929437
+      version: -1
+      name: Load Automation's Docker
+      description: Predict phishing incidents using the out-of-the-box pretrained
+        model.
+      scriptName: DBotPredictOutOfTheBox
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      emailBody:
+        simple: test
+      emailBodyHTML: {}
+      emailSubject: {}
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 4a26aadb-376e-451b-8cb0-a97abf64ae5a
+    type: regular
+    task:
+      id: 4a26aadb-376e-451b-8cb0-a97abf64ae5a
+      version: -1
+      name: Wait for automation
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bf5571cb-b2c2-46c5-8a85-49c3cbb4c841
+    type: regular
+    task:
+      id: bf5571cb-b2c2-46c5-8a85-49c3cbb4c841
+      version: -1
+      name: 'Load Automation''s Docker #2'
+      description: Predict phishing incidents using the out-of-the-box pretrained
+        model.
+      scriptName: DBotPredictOutOfTheBox
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      confidenceThreshold: {}
+      emailBody:
+        simple: test
+      emailBodyHTML: {}
+      emailSubject: {}
+      labelProbabilityThreshold: {}
+      minTextLength: {}
+      returnError: {}
+      setIncidentFields: {}
+      topWordsLimit: {}
+      wordThreshold: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: b06c64ee-8178-4d67-8995-e9de309463b4
+    type: regular
+    task:
+      id: b06c64ee-8178-4d67-8995-e9de309463b4
+      version: -1
+      name: 'Wait for automation #2'
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

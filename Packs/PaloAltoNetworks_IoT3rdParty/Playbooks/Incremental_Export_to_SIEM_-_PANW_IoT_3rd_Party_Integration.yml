@@ -1,0 +1,1254 @@
+description: This playbook should be run as a job at an interval of every 15 minutes. Each run will get incremental
+  updates for devices, alerts, and vulnerabilities and send CEF syslogs to the configured
+  SIEM server.
+id: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+inputs: []
+name: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 947df9ab-230c-47c4-85ea-9bd5d7c3d347
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 947df9ab-230c-47c4-85ea-9bd5d7c3d347
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": -120
+        }
+      }
+  "1":
+    continueonerror: true
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+      - "4"
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Syslog Sender
+      using:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if there is an active instance of a SIEM integration configured. Otherwise returns
+        'no'.
+      id: de4da0ad-6d3e-4068-8e32-bde287fc68fa
+      iscommand: false
+      name: Is Syslog Sender (SIEM) Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: de4da0ad-6d3e-4068-8e32-bde287fc68fa
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 40
+        }
+      }
+  "2":
+    continueonerror: true
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: device
+      integration_name:
+        simple: siem
+      message:
+        simple: Syslog Sender (SIEM) instance is not enabled
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: disabled
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: c7537de0-3367-41cc-82ad-57574d3cd775
+      iscommand: true
+      name: Send disabled status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: c7537de0-3367-41cc-82ad-57574d3cd775
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1260,
+          "y": 505
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: device
+      increment_time:
+        simple: "15"
+      offset: {}
+      page_length: {}
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of assets for the specified asset type.
+      id: 06a42741-16a3-4150-8b47-9f623544a629
+      iscommand: true
+      name: Get device updates from PANW IoT cloud
+      script: '|||panw-iot-3rd-party-get-asset-list'
+      type: regular
+      version: -1
+    taskid: 06a42741-16a3-4150-8b47-9f623544a629
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -740,
+          "y": 620
+        }
+      }
+  "4":
+    continueonerror: true
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: alert
+      increment_time:
+        simple: "15"
+      offset: {}
+      page_length: {}
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of assets for the specified asset type.
+      id: eaff43ae-8a27-42e5-8111-58898a331917
+      iscommand: true
+      name: Get alert updates from PANW IoT cloud
+      script: '|||panw-iot-3rd-party-get-asset-list'
+      type: regular
+      version: -1
+    taskid: eaff43ae-8a27-42e5-8111-58898a331917
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 590
+        }
+      }
+  "5":
+    continueonerror: true
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: vulnerability
+      increment_time:
+        simple: "15"
+      offset: {}
+      page_length: {}
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns a list of assets for the specified asset type.
+      id: 4590b35e-1912-4f7c-8035-b479541e943e
+      iscommand: true
+      name: Get vulnerability updates from PANW IoT cloud
+      script: '|||panw-iot-3rd-party-get-asset-list'
+      type: regular
+      version: -1
+    taskid: 4590b35e-1912-4f7c-8035-b479541e943e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 600
+        }
+      }
+  "6":
+    continueonerror: true
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
+        if one of the entries returned an error.
+      id: beed198d-0952-4645-8811-425d0d3732fd
+      iscommand: false
+      name: Was there an error getting vulnerabilities?
+      script: isError
+      type: condition
+      version: -1
+    taskid: beed198d-0952-4645-8811-425d0d3732fd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 790
+        }
+      }
+  "7":
+    continueonerror: true
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
+        if one of the entries returned an error.
+      id: 98773f0d-079c-4dee-8a5d-93d017835d6c
+      iscommand: false
+      name: Was there an error getting alerts?
+      script: isError
+      type: condition
+      version: -1
+    taskid: 98773f0d-079c-4dee-8a5d-93d017835d6c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 780
+        }
+      }
+  "8":
+    continueonerror: true
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "12"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
+        if one of the entries returned an error.
+      id: c02d47be-928a-4d2a-83ae-83053b4a43a1
+      iscommand: false
+      name: Was there an error getting devices?
+      script: isError
+      type: condition
+      version: -1
+    taskid: c02d47be-928a-4d2a-83ae-83053b4a43a1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -740,
+          "y": 780
+        }
+      }
+  "9":
+    continueonerror: true
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: device
+      integration_name:
+        simple: siem
+      message:
+        simple: Failed to get device list from IoT cloud.
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: error
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: 4ba58cd9-a8e9-4c19-8be6-e66635be228e
+      iscommand: true
+      name: Send error status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: 4ba58cd9-a8e9-4c19-8be6-e66635be228e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 970
+        }
+      }
+  "10":
+    continueonerror: true
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: alert
+      integration_name:
+        simple: siem
+      message:
+        simple: Failed to get alert list from IoT cloud.
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: error
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: a8a61a19-27f8-4d7a-8901-5fbbc3a2060a
+      iscommand: true
+      name: Send error status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: a8a61a19-27f8-4d7a-8901-5fbbc3a2060a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 970
+        }
+      }
+  "11":
+    continueonerror: true
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: vulnerability
+      integration_name:
+        simple: siem
+      message:
+        simple: Failed to get vulnerability list from IoT cloud.
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: error
+      type:
+        simple: vulnerability
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: a9010896-bab4-4805-8b4c-df5d8c20c0be
+      iscommand: true
+      name: Send error status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: a9010896-bab4-4805-8b4c-df5d8c20c0be
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 960
+        }
+      }
+  "12":
+    continueonerror: true
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "15"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PanwIot3rdParty.Devices}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      id: 89c21720-f1d5-44af-8169-f327519ac58d
+      iscommand: false
+      name: Are there any updates available?
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 89c21720-f1d5-44af-8169-f327519ac58d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -740,
+          "y": 1100
+        }
+      }
+  "13":
+    continueonerror: true
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "16"
+      "yes":
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PanwIot3rdParty.Alerts}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      id: 29000236-737e-41f1-8b5e-791444c9fa66
+      iscommand: false
+      name: Are there any updates available?
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 29000236-737e-41f1-8b5e-791444c9fa66
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1120
+        }
+      }
+  "14":
+    continueonerror: true
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "17"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${PanwIot3rdParty.Vulnerabilities}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if a given value exists in the context. Will return 'no'
+        for empty arrays. To be used mostly with DQ and selectors.
+      id: 9567a91f-2975-4cb7-86b3-7ba42b281387
+      iscommand: false
+      name: Are there any updates available?
+      script: Exists
+      type: condition
+      version: -1
+    taskid: 9567a91f-2975-4cb7-86b3-7ba42b281387
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 1110
+        }
+      }
+  "15":
+    continueonerror: true
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: device
+      integration_name:
+        simple: siem
+      message:
+        simple: No new devices available to send to the SIEM
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: success
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: 519a4b67-6047-4531-89f8-2e59baafbea2
+      iscommand: true
+      name: Send status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: 519a4b67-6047-4531-89f8-2e59baafbea2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1270
+        }
+      }
+  "16":
+    continueonerror: true
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: alert
+      integration_name:
+        simple: siem
+      message:
+        simple: No new alerts available to send to the SIEM
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: success
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IOT cloud.
+      id: e1ba1590-9ca3-43a6-8630-f7185a773ee6
+      iscommand: true
+      name: Send status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: e1ba1590-9ca3-43a6-8630-f7185a773ee6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1320
+        }
+      }
+  "17":
+    continueonerror: true
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: vulnerability
+      integration_name:
+        simple: siem
+      message:
+        simple: No new vulnerabilities available to send to the SIEM
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: success
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: 9bb8226c-93f6-421a-82da-8ec42fa5bb95
+      iscommand: true
+      name: Send status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: 9bb8226c-93f6-421a-82da-8ec42fa5bb95
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1530,
+          "y": 1280
+        }
+      }
+  "18":
+    continueonerror: true
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_list:
+        simple: ${PanwIot3rdParty.Devices}
+      asset_type:
+        simple: device
+      incident: {}
+      output_format:
+        simple: SIEM
+      servicenow_map: {}
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts the given asset (alert, device, or vuln) to the 3rd party
+        format.
+      id: 824b565d-33db-44bc-88da-6dcee3d270e0
+      iscommand: true
+      name: Convert devices to CEF format
+      script: '|||panw-iot-3rd-party-convert-assets-to-external-format'
+      type: regular
+      version: -1
+    taskid: 824b565d-33db-44bc-88da-6dcee3d270e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -740,
+          "y": 1450
+        }
+      }
+  "19":
+    continueonerror: true
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_list:
+        simple: ${PanwIot3rdParty.Alerts}
+      asset_type:
+        simple: alert
+      incident: {}
+      output_format:
+        simple: SIEM
+      servicenow_map: {}
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Converts the given asset (alert, device, or vuln) to the 3rd party
+        format.
+      id: f6019a87-b38c-466f-8c7a-952d9b549dc4
+      iscommand: true
+      name: Convert alerts to CEF format
+      script: '|||panw-iot-3rd-party-convert-assets-to-external-format'
+      type: regular
+      version: -1
+    taskid: f6019a87-b38c-466f-8c7a-952d9b549dc4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1480
+        }
+      }
+  "20":
+    continueonerror: true
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_list:
+        simple: ${PanwIot3rdParty.Vulnerabilities}
+      asset_type:
+        simple: vulnerability
+      incident: {}
+      output_format:
+        simple: SIEM
+      servicenow_map: {}
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Coinverts the given asset (alert, device, or vuln) to the 3rd party
+        format.
+      id: e4f841f5-fb89-4e55-871c-c1f7c6575225
+      iscommand: true
+      name: Convert vulnerabilities to CEF format
+      script: '|||panw-iot-3rd-party-convert-assets-to-external-format'
+      type: regular
+      version: -1
+    taskid: e4f841f5-fb89-4e55-871c-c1f7c6575225
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1890,
+          "y": 1385
+        }
+      }
+  "21":
+    continueonerror: true
+    id: "21"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "27"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whetherthe given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
+        if one of the entries returned an error.
+      id: f4ee5e29-5f6f-47c6-8df6-d6e1ac382832
+      iscommand: false
+      name: Was there any error converting device updates to CEF?
+      script: isError
+      type: condition
+      version: -1
+    taskid: f4ee5e29-5f6f-47c6-8df6-d6e1ac382832
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -740,
+          "y": 1640
+        }
+      }
+  "22":
+    continueonerror: true
+    id: "22"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "28"
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
+        if one of the entries returned an error.
+      id: cecf89af-24eb-48a2-879d-183b9136705a
+      iscommand: false
+      name: Was there any error converting alert updates to CEF?
+      script: isError
+      type: condition
+      version: -1
+    taskid: cecf89af-24eb-48a2-879d-183b9136705a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1650
+        }
+      }
+  "23":
+    continueonerror: true
+    id: "23"
+    ignoreworker: false
+    nexttasks:
+      "no":
+      - "29"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks whether the given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If an array is provided, will return yes
+        if one of the entries returned an error.
+      id: c359314a-19d7-463a-8670-90052c403550
+      iscommand: false
+      name: Was there any error converting vulnerability updates to CEF?
+      script: isError
+      type: condition
+      version: -1
+    taskid: c359314a-19d7-463a-8670-90052c403550
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1890,
+          "y": 1610
+        }
+      }
+  "24":
+    continueonerror: true
+    id: "24"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: device
+      integration_name:
+        simple: siem
+      message:
+        simple: Failed to convert devices to CEF format
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: error
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: 893732ba-793f-44c9-8a25-ad601fc25ca7
+      iscommand: true
+      name: Send error status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: 893732ba-793f-44c9-8a25-ad601fc25ca7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -440,
+          "y": 1810
+        }
+      }
+  "25":
+    continueonerror: true
+    id: "25"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: alert
+      integration_name:
+        simple: siem
+      message:
+        simple: Failed to convert alerts to CEF format
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: error
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: 3fb39bde-e7c2-49bd-8422-0e668bd6c7c3
+      iscommand: true
+      name: Send error status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: 3fb39bde-e7c2-49bd-8422-0e668bd6c7c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 1850
+        }
+      }
+  "26":
+    continueonerror: true
+    id: "26"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asset_type:
+        simple: vulnerability
+      integration_name:
+        simple: siem
+      message:
+        simple: Failed to convert vulnerabilities to CEF format
+      playbook_name:
+        simple: Incremental Export to SIEM - PANW IoT 3rd Party Integration
+      status:
+        simple: error
+      using:
+        simple: PANW IoT 3rd Party Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a status message back to PANW IoT cloud.
+      id: 748e77a4-22fd-4c25-8b15-eacc3bb06b23
+      iscommand: true
+      name: Send error status to PANW IoT cloud
+      script: '|||panw-iot-3rd-party-report-status-to-panw'
+      type: regular
+      version: -1
+    taskid: 748e77a4-22fd-4c25-8b15-eacc3bb06b23
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1520,
+          "y": 1790
+        }
+      }
+  "27":
+    continueonerror: true
+    id: "27"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address: {}
+      facility: {}
+      level: {}
+      message:
+        simple: ${PanwIot3rdParty.DeviceCEFSyslogs}
+      port: {}
+      protocol: {}
+      using:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to Syslog.
+      id: 468319e3-20fd-47d3-8cd1-085a8e3d5c66
+      iscommand: true
+      name: Send device Syslogs
+      script: '|||syslog-send'
+      type: regular
+      version: -1
+    taskid: 468319e3-20fd-47d3-8cd1-085a8e3d5c66
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -720,
+          "y": 2000
+        }
+      }
+  "28":
+    continueonerror: true
+    id: "28"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address: {}
+      facility: {}
+      level: {}
+      message:
+        simple: ${PanwIot3rdParty.AlertCEFSyslogs}
+      port: {}
+      protocol: {}
+      using:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to Syslog.
+      id: 2879c811-b247-4a15-86a8-7eedd4961ff7
+      iscommand: true
+      name: Send alert Syslogs
+      script: '|||syslog-send'
+      type: regular
+      version: -1
+    taskid: 2879c811-b247-4a15-86a8-7eedd4961ff7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 2000
+        }
+      }
+  "29":
+    continueonerror: true
+    id: "29"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      address: {}
+      facility: {}
+      level: {}
+      message:
+        simple: ${PanwIot3rdParty.Vulnerabilities}
+      port: {}
+      protocol: {}
+      using:
+        simple: PANW IoT 3rd Party SIEM Integration Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends a message to Syslog.
+      id: c22506f2-9e09-4f02-81ca-f22ee838455f
+      iscommand: true
+      name: Send vulnerability Syslogs
+      script: '|||syslog-send'
+      type: regular
+      version: -1
+    taskid: c22506f2-9e09-4f02-81ca-f22ee838455f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1890,
+          "y": 1970
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Closes the current incident.
+      id: 6ba73a5c-f55b-46c0-8eb3-5e5ef988a353
+      iscommand: true
+      name: closeInvestigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 6ba73a5c-f55b-46c0-8eb3-5e5ef988a353
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 3030
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_yes": 0.84,
+      "1_5_yes": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3245,
+        "width": 3540,
+        "x": -1260,
+        "y": -120
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

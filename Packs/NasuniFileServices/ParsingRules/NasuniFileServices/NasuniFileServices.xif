@@ -1,0 +1,4 @@
+[INGEST:vendor="nasuni", product="file_services", target_dataset="nasuni_file_services_raw" , no_hit=keep]
+  filter _raw_log ~= "\d{4}-\d{1,2}-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+[+|-]\d{2}:\d{2}"
+| alter _time = parse_timestamp("%FT%H:%M:%E*S", arrayindex(regextract(_raw_log, "(\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+)[+-]\d{2}:\d{2}"), 0), arrayindex(regextract(_raw_log, "\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2})"), 0))
+| alter parsed_fields = arrayindex(regextract(_raw_log, "\{.*\}$"),0);

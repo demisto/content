@@ -1,0 +1,244 @@
+description: This playbook sends email alerts to admins for Armorblox incidents that need review.
+id: Armorblox Needs Review
+inputs:
+- description: Receiver's mailing address.
+  key: recipient_mail_address
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Armorblox Needs Review
+outputs:
+- contextPath: Armorblox.Threat.remediation_actions
+  description: Remediation Action for the incident under inspection.
+  type: string
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 6f38882d-c3f9-4739-8aae-3226975468fd
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 6f38882d-c3f9-4739-8aae-3226975468fd
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  '1':
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      incident_id:
+        simple: ${incident.armorbloxincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Armorblox
+      description: 'Check the recommended remediation action for any incident '
+      id: 81858c3d-9ba7-4b81-8d22-d38593093271
+      iscommand: true
+      name: Get Remediation Action
+      script: Armorblox|||armorblox-check-remediation-action
+      type: regular
+      version: -1
+    taskid: 81858c3d-9ba7-4b81-8d22-d38593093271
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 190
+        }
+      }
+  '2':
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      htmlBody:
+        simple: <html><body>Hello, <br><p>Armorblox Incident Id - <b>${incident.armorbloxincidentid}</b><br>Remediation Action -  <b>${Armorblox.Threat.remediation_actions}</b></p>Thank you.</body></html>
+      subject:
+        simple: ${incident.armorbloxincidentid} - ${Armorblox.Threat.remediation_actions}
+      to:
+        simple: ${inputs.recipient_mail_address}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Send an email
+      id: 1b55a08e-bf26-44ee-8cb3-e42c90bcd7d9
+      iscommand: true
+      name: Send Email
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: 1b55a08e-bf26-44ee-8cb3-e42c90bcd7d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 570
+        }
+      }
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Armorblox.Threat.remediation_actions
+          operator: isEqualString
+          right:
+            value:
+              simple: NEEDS REVIEW
+        - operator: isEqualString
+          left:
+            value:
+              simple: Armorblox.Threat.remediation_actions
+            iscontext: true
+          right:
+            value:
+              simple: WILL_AUTO_REMEDIATE
+      label: YES
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '4'
+      YES:
+      - '2'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether a review is needed
+      id: b81094a7-a36f-4cd8-8791-c5a2c27846ce
+      iscommand: false
+      name: Is Review Needed?
+      type: condition
+      version: -1
+    taskid: b81094a7-a36f-4cd8-8791-c5a2c27846ce
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  '4':
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 5aa4df92-e0bb-4585-8369-8df289b54b3a
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 5aa4df92-e0bb-4585-8369-8df289b54b3a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 960
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: Mail Sent successfully to ${inputs.recipient_mail_address}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints text to war room (Markdown supported)
+      id: 5ed7008c-bfe0-4d52-8b9b-d8c42faf308b
+      iscommand: false
+      name: Mail Sent Successful
+      type: regular
+      version: -1
+      scriptName: Print
+    taskid: 5ed7008c-bfe0-4d52-8b9b-d8c42faf308b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 755
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 975,
+        "width": 680,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

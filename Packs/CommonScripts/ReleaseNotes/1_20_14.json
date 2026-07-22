@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The service argument of the ResolveShortenedURL script is deprecated. This script no longer uses online services, Only the 'Built-In' option is supported now."
+}

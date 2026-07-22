@@ -1,0 +1,133 @@
+commonfields:
+  id: ADGetGroupMembers
+  version: -1
+name: ADGetGroupMembers
+script: >+
+  def createEndpointEntities(t,attrs):
+      endpoints = []
+      for l in t:
+          endpoint = {}
+          endpoint['Type'] = 'AD'
+          endpoint['ID'] = demisto.get(l,'dn')
+          endpoint['Hostname'] = demisto.get(l,'name')
+          endpoint['Groups'] = None
+          if demisto.get(l,'memberOf'):
+              endpoint['Groups'] = demisto.get(l,'memberOf').split('<br>')
+          for attr in set(argToList(attrs)) - set(['dn','name','memberOf']):
+              endpoint[attr.title()] = demisto.get(l,attr)
+          endpoints.append(endpoint)
+
+      return endpoints
+
+  def createAccountEntities(t,attrs):
+      accounts = []
+      for l in t:
+          account = {}
+          account['Type'] = 'AD'
+          account['ID'] = demisto.get(l,'dn')
+          account['Email'] = demisto.get(l,'mail')
+          account['Username'] = demisto.get(l,'name')
+          account['DisplayName'] = demisto.get(l,'displayName')
+          account['Groups'] = None
+          if demisto.get(l,'memberOf'):
+              account['Groups'] = demisto.get(l,'memberOf').split('<br>')
+          for attr in set(argToList(attrs)) - set(['dn','mail','name','displayName','memberOf']):
+              account[attr.title()] = demisto.get(l,attr)
+          accounts.append(account)
+
+      return accounts
+
+  # Optional arguments and default values
+
+  attrs = 'name'
+
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+
+  memberType = demisto.get(demisto.args(), 'memberType')
+
+
+  filterstr = r"(&(objectCategory=" + memberType + ")(memberof=" + demisto.args()['groupdn'] + "))"
+
+  context = {}
+
+  resp = demisto.executeCommand( 'ad-search', { 'filter' : filterstr, 'attributes' : attrs } )
+
+  if isError(resp):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0],'Contents')
+      md = ""
+      if isinstance(data, str) or isinstance(data, unicode) :
+          md = data
+      else:
+          data = data if isinstance(data, list) else [data]
+          md = tableToMarkdown("Active Directory Group Members", data)
+
+          if memberType == 'computer':
+              context['Endpoint'] = createEndpointEntities(data,attrs)
+          elif memberType == 'user':
+              context['Account'] = createAccountEntities(data,attrs)
+
+      demisto.results({'Type' : entryTypes['note'],
+                      'Contents': data,
+                      'ContentsFormat' : formats['json'],
+                      'HumanReadable': md,
+                      'ReadableContentsFormat' : formats['markdown'],
+                      'EntryContext' : context})
+
+type: python
+subtype: python2
+tags:
+- active directory
+comment: Deprecated. Use Active Directory to retrieve the list of users or computers that are members of the specified group. Group must be given by its AD Distinguished Name. The attributes argument receives a comma-separated list of additional attributes you wish to be displayed in the results.nExample usage !ADGetGroupMembers memberType=user groupdn=CN=Administrators,CN=Builtin,DC=acme,DC=int attributes=name,email
+system: true
+args:
+- name: groupdn
+  required: true
+  default: true
+  description: Active Directory Distinguished Name for the desired group
+- name: attributes
+  description: Include these AD attributes of the resulting objects in addition to the default ones
+- name: memberType
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - user
+  - computer
+  description: 'Which members type to query '
+scripttarget: 0
+dependson:
+  must:
+  - ad-search
+timeout: 0s
+outputs:
+- contextPath: Endpoint
+  description: Active Directory Endpoint
+- contextPath: Endpoint.Type
+  description: Type of the Endpoint entity
+- contextPath: Endpoint.ID
+  description: The unique Endpoint DN (Distinguished Name)
+- contextPath: Endpoint.Hostname
+  description: The Endpoint hostname
+- contextPath: Endpoint.Groups
+  description: The groups the Endpoint is part of
+- contextPath: Account
+  description: Active Directory Account
+- contextPath: Account.Type
+  description: Type of the Account entity
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+- contextPath: Account.Username
+  description: The Account username
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+- contextPath: Account.DisplayName
+  description: The Account display name
+deprecated: true
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

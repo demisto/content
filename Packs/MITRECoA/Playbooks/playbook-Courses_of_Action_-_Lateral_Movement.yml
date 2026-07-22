@@ -1,0 +1,345 @@
+id: Courses of Action - Lateral Movement
+name: Courses of Action - Lateral Movement
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. It utilizes each of the sub-playbooks for specific techniques that belong to this phase (tactic) according to the MITRE ATT&CK kill chain. The sub-playbook called depends on the technique input.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTactic:\n- TA0008: Lateral Movement\n\nMITRE ATT&CK Description: \nThe adversary is trying to move through your environment.\n\nLateral Movement consists of techniques that adversaries use to enter and control remote systems on a network. Following through on their primary objective often requires exploring the network to find their target and subsequently gaining access to it. Reaching their objective often involves pivoting through multiple systems and accounts to gain. Adversaries might install their own remote access tools to accomplish Lateral Movement or use legitimate credentials with native network and operating system tools, which may be stealthier.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+inputs:
+- description: Mitre ATT&CK ID of a technique.
+  key: technique
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs:
+- contextPath: Handled.Techniques
+  description: The technique handled in this playbook
+  type: string
+- contextPath: LateralMovement.ProductList
+  description: Products used for remediation.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 56f85db2-5a8e-4286-8020-e62df079f1d8
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 56f85db2-5a8e-4286-8020-e62df079f1d8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1076
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+        - left:
+            value:
+              simple: T1021.001
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 20234932-4185-4c83-8de9-6d3c1e263165
+      iscommand: false
+      name: Remote Desktop Protocol
+      description: ""
+      type: condition
+      version: -1
+    taskid: 20234932-4185-4c83-8de9-6d3c1e263165
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5fb4c985-4271-43ba-8775-531daf1972e4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 5fb4c985-4271-43ba-8775-531daf1972e4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 335a6afb-7a0f-489a-88d1-db718407c224
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1021.001 - Remote Desktop Protocol
+      playbookId: MITRE ATT&CK CoA - T1021.001 - Remote Desktop Protocol
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 335a6afb-7a0f-489a-88d1-db718407c224
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 360
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: LateralMovement.Products
+      value:
+        simple: '["Cortex XDR","PAN-OS"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f80d65f9-4854-4cb7-8ace-24c7489eb17f
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: f80d65f9-4854-4cb7-8ace-24c7489eb17f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 520
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      lateralmovementremediationproducts:
+        complex:
+          root: LateralMovement
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 05668cd4-9467-4828-8e21-70563da1a613
+      iscommand: true
+      name: Set Lateral Movement Remediation products to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 05668cd4-9467-4828-8e21-70563da1a613
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 690
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 43770fc4-4290-471e-8d2d-21f37aa75252
+      iscommand: false
+      name: Set techniques information to the layout
+      description: ""
+      type: title
+      version: -1
+    taskid: 43770fc4-4290-471e-8d2d-21f37aa75252
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 870
+        }
+      }
+  "8":
+    fieldMapping:
+    - incidentfield: Remediated Techniques
+      output:
+        complex:
+          root: Handled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    - incidentfield: Techniques to Handle
+      output:
+        complex:
+          root: Unhandled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Unhandled.Techniques
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: 0c8754a0-cd0a-45a0-8aa8-52753789c9f8
+      iscommand: false
+      name: Set techniques information to the layout
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 0c8754a0-cd0a-45a0-8aa8-52753789c9f8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1010
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1195,
+        "width": 630,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

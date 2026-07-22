@@ -1,0 +1,63 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "asmalertsummary",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Link",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "link",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Mandatory: URL to display/download summary."
+        },
+        {
+            "displayName": "EntryID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "entryid",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150,
+            "_comment": "Mandatory: File entryID."
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "description": "Summary report of alert.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asmalertsummary",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "ASM - Alert Summary",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

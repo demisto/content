@@ -1,0 +1,2969 @@
+id: Test Playbook - Cortex XDR - Endpoint Investigation
+version: -1
+name: Test Playbook - Cortex XDR - Endpoint Investigation
+description: |-
+  This playbook tests the ‘Cortex XDR - Endpoint Investigation’ playbook which is part of the ‘Malware Investigation and Response’ pack.
+
+  The following tests are conducted in the playbook:
+  1- Verifies the presence of the incident evidence.
+  2- Ensures proper extraction of context data.
+  3- Validates the playbook outputs.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0e0b54d6-b8b0-423b-8a5a-999ec893b300
+    type: start
+    task:
+      id: 0e0b54d6-b8b0-423b-8a5a-999ec893b300
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -1625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 070df723-d62c-4a76-89c0-321a781ac5ba
+    type: regular
+    task:
+      id: 070df723-d62c-4a76-89c0-321a781ac5ba
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "149"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 141c6a09-7365-441a-868b-dd4988276a19
+    type: condition
+    task:
+      id: 141c6a09-7365-441a-868b-dd4988276a19
+      version: -1
+      name: Verify Internal ID
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.internal_id’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "117"
+      Verified:
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Alert
+                accessor: internal_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2380,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: bc8b907e-283f-4076-8112-b94536277cc9
+    type: condition
+    task:
+      id: bc8b907e-283f-4076-8112-b94536277cc9
+      version: -1
+      name: Verify Alerts
+      description: Verify that the ‘PaloAltoNetworksXDR.Incident.Alerts’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "116"
+      Verified:
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Alert
+                accessor: '[0]'
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1975,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 7953ac22-a003-4d48-8bd9-c2caba6011a7
+    type: condition
+    task:
+      id: 7953ac22-a003-4d48-8bd9-c2caba6011a7
+      version: -1
+      name: Verify Alert Name
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.alert_name’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "115"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3170,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 35b84fc9-006e-46cb-8d3d-3b67dbcfb215
+    type: condition
+    task:
+      id: 35b84fc9-006e-46cb-8d3d-3b67dbcfb215
+      version: -1
+      name: Verify Detection Timestamp
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.source_insert_ts’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "114"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.source_insert_ts
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2775,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: ef8e188d-b50e-4b58-8544-abc0f2e0944e
+    type: title
+    task:
+      id: ef8e188d-b50e-4b58-8544-abc0f2e0944e
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "132"
+      - "151"
+      - "335"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 9edb91b9-451d-42a8-8fe3-5c1d57f1a196
+    type: title
+    task:
+      id: 9edb91b9-451d-42a8-8fe3-5c1d57f1a196
+      version: -1
+      name: Done verifying 'PaloAltoNetworksXDR'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "365"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 08a76e10-b981-4ba5-8c74-3a546e67325d
+    type: regular
+    task:
+      id: 08a76e10-b981-4ba5-8c74-3a546e67325d
+      version: -1
+      name: Verify Context Error - Detection Timestamp
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.source_insert_ts' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.file_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2775,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 9b252a84-7125-42b0-88c1-3220caa14b73
+    type: regular
+    task:
+      id: 9b252a84-7125-42b0-88c1-3220caa14b73
+      version: -1
+      name: Verify Context Error - Alert Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.alert_name' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3170,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: e2cab238-6eb1-449c-805f-9be64c3cc9fe
+    type: regular
+    task:
+      id: e2cab238-6eb1-449c-805f-9be64c3cc9fe
+      version: -1
+      name: Verify Context Data Error - Alerts
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Incident.alerts' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.alerts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1975,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 0447489a-c244-4529-80d1-23a69aebaf2a
+    type: regular
+    task:
+      id: 0447489a-c244-4529-80d1-23a69aebaf2a
+      version: -1
+      name: Verify Context Data Error - Internal ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.internal_id' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2380,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 96dd1fb4-87c9-4d69-8dec-d79ab4550f23
+    type: title
+    task:
+      id: 96dd1fb4-87c9-4d69-8dec-d79ab4550f23
+      version: -1
+      name: Check Incident Evidences
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "331"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: 7cee0cc7-486c-4e0d-8991-13cb066ee82e
+    type: regular
+    task:
+      id: 7cee0cc7-486c-4e0d-8991-13cb066ee82e
+      version: -1
+      name: Set Incident Fields To Context
+      description: Add incident fields required for testing to the mock incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "293"
+    scriptarguments:
+      agentsid:
+        simple: aeec6a2cc92e46fab3b6f621722e9916
+      type:
+        simple: Malware Investigation and Response
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: fbf2684c-25be-48f3-8392-04305f32da7a
+    type: title
+    task:
+      id: fbf2684c-25be-48f3-8392-04305f32da7a
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "336"
+      - "220"
+      - "339"
+      - "341"
+      - "343"
+      - "345"
+      - "347"
+      - "349"
+      - "351"
+      - "353"
+      - "355"
+      - "357"
+      - "359"
+      - "361"
+      - "363"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "220":
+    id: "220"
+    taskid: 46b7ab88-40ce-48bb-8fa3-a9ec36d330ca
+    type: condition
+    task:
+      id: 46b7ab88-40ce-48bb-8fa3-a9ec36d330ca
+      version: -1
+      name: Verify MITRE Techniques Specific ID
+      description: Verify that the 'MITRE_Techniques_Specific_ID’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "221"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MITRE_Techniques_Specific_ID
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "221":
+    id: "221"
+    taskid: d98e35b0-b5b5-4250-8fe4-4fc15e53025a
+    type: regular
+    task:
+      id: d98e35b0-b5b5-4250-8fe4-4fc15e53025a
+      version: -1
+      name: Verify Context Error - MITRE Techniques Specific ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MITRE_Techniques_Specific_ID’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt by technique ID' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Hunt by host ID' task has been changed and no longer refers to 'MITRE_Techniques_Specific_ID'.
+          3- The 'Hunt by technique ID' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "292":
+    id: "292"
+    taskid: c1216f7b-2ff9-43e6-80ea-6f46e3007150
+    type: playbook
+    task:
+      id: c1216f7b-2ff9-43e6-80ea-6f46e3007150
+      version: -1
+      name: Cortex XDR - Endpoint Investigation
+      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      playbookName: Cortex XDR - Endpoint Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "366"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: File
+          accessor: SHA256
+      HuntAttacker:
+        simple: "True"
+      HuntByFile:
+        simple: "True"
+      HuntByHost:
+        simple: "True"
+      HuntByTechnique:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "True"
+      agentID:
+        complex:
+          root: incident
+          accessor: agentsid
+      attackerExternalHost:
+        simple: paloaltonetworks.com
+      attackerRemoteIP:
+        simple: 8.8.8.8
+      mitreTechniqueID:
+        simple: TA0003
+      timeRange:
+        simple: 2 hours ago
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "293":
+    id: "293"
+    taskid: c6f8e20b-bc2d-4e56-870b-bf026ce122b0
+    type: regular
+    task:
+      id: c6f8e20b-bc2d-4e56-870b-bf026ce122b0
+      version: -1
+      name: Set 'File.SHA256' to context
+      description: |-
+        Works the same as the 'Set' command, but can work across incidents by specifying 'id' as an argument.
+        Sets a value into the context with the given context key. Doesn't append by default.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetByIncidentId
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "292"
+    scriptarguments:
+      key:
+        simple: File.SHA256
+      value:
+        simple: 8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "294":
+    id: "294"
+    taskid: 89e126a4-862d-4639-8e11-2f557a9459ee
+    type: condition
+    task:
+      id: 89e126a4-862d-4639-8e11-2f557a9459ee
+      version: -1
+      name: Verify Alert Severity
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.severity’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "295"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.severity
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "295":
+    id: "295"
+    taskid: c3c02afd-627c-4e26-8fdf-4820339ccf5f
+    type: regular
+    task:
+      id: c3c02afd-627c-4e26-8fdf-4820339ccf5f
+      version: -1
+      name: Verify Context Error - Alert Severity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.severity' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3570,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "296":
+    id: "296"
+    taskid: b0f6293b-29db-4aaa-8fa8-0ba85027effc
+    type: condition
+    task:
+      id: b0f6293b-29db-4aaa-8fa8-0ba85027effc
+      version: -1
+      name: Verify Alert Category
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.alert_category’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "297"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_category
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3970,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "297":
+    id: "297"
+    taskid: 6f7f8088-61dd-45db-845c-b754501fd4e0
+    type: regular
+    task:
+      id: 6f7f8088-61dd-45db-845c-b754501fd4e0
+      version: -1
+      name: Verify Context Error - Alert Category
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.alert_category' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3970,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "298":
+    id: "298"
+    taskid: 48b6a0cd-0b8f-4b13-8f06-b58dff61ed1d
+    type: condition
+    task:
+      id: 48b6a0cd-0b8f-4b13-8f06-b58dff61ed1d
+      version: -1
+      name: Verify Alert Action Status
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.alert_action_status’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "299"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_action_status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4370,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "299":
+    id: "299"
+    taskid: 7b0c6575-f09b-4196-8bb0-e9665a3d82d3
+    type: regular
+    task:
+      id: 7b0c6575-f09b-4196-8bb0-e9665a3d82d3
+      version: -1
+      name: Verify Context Error - Alert Action Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.alert_action_status' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4370,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "300":
+    id: "300"
+    taskid: 0ca5ec2e-563e-4e99-8542-dd7ce225c178
+    type: condition
+    task:
+      id: 0ca5ec2e-563e-4e99-8542-dd7ce225c178
+      version: -1
+      name: Verify Alert Action Status Readable
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.alert_action_status_readable’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "301"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_action_status_readable
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4770,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "301":
+    id: "301"
+    taskid: 311ae564-3b0b-4e5a-8dce-70cad5d85ea3
+    type: regular
+    task:
+      id: 311ae564-3b0b-4e5a-8dce-70cad5d85ea3
+      version: -1
+      name: Verify Context Error - Alert Action Status Readable
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.alert_action_status_readable' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4770,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "302":
+    id: "302"
+    taskid: e1017c16-fda4-40a2-8c95-a497d3d2140f
+    type: condition
+    task:
+      id: e1017c16-fda4-40a2-8c95-a497d3d2140f
+      version: -1
+      name: Verify Alert Description
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.alert_description’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "303"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.alert_description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5170,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "303":
+    id: "303"
+    taskid: a0135392-68d7-4fdc-82b4-ddbede0a1220
+    type: regular
+    task:
+      id: a0135392-68d7-4fdc-82b4-ddbede0a1220
+      version: -1
+      name: Verify Context Error - Alert Description
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.alert_description' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5170,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "304":
+    id: "304"
+    taskid: fe34c69e-4f46-40e1-83ee-b02bbc39bf32
+    type: condition
+    task:
+      id: fe34c69e-4f46-40e1-83ee-b02bbc39bf32
+      version: -1
+      name: Verify Agent IP Address
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.agent_ip_addresses’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "305"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.agent_ip_addresses
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5570,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "305":
+    id: "305"
+    taskid: 77258ec7-42a2-4bec-88bd-f29f7f233402
+    type: regular
+    task:
+      id: 77258ec7-42a2-4bec-88bd-f29f7f233402
+      version: -1
+      name: Verify Context Error - Agent IP Address
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.agent_ip_addresses' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5570,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "306":
+    id: "306"
+    taskid: 826727e1-83c1-44a9-835e-4cb5f15489ef
+    type: condition
+    task:
+      id: 826727e1-83c1-44a9-835e-4cb5f15489ef
+      version: -1
+      name: Verify Agent Hostname
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.agent_hostname’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "307"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.agent_hostname
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5970,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "307":
+    id: "307"
+    taskid: d6f84916-ae61-4c52-80a5-d450e2da259a
+    type: regular
+    task:
+      id: d6f84916-ae61-4c52-80a5-d450e2da259a
+      version: -1
+      name: Verify Context Error - Agent Hostname
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.agent_hostname' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5970,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "312":
+    id: "312"
+    taskid: eb17e1b4-26d2-4c11-83be-fda79c65507a
+    type: condition
+    task:
+      id: eb17e1b4-26d2-4c11-83be-fda79c65507a
+      version: -1
+      name: Verify Starred
+      description: |
+        Verify that the ‘PaloAltoNetworksXDR.Alert.starred’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "313"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.starred
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6370,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "313":
+    id: "313"
+    taskid: ac9a8406-0e52-4237-8f57-dfeb97f4f5d5
+    type: regular
+    task:
+      id: ac9a8406-0e52-4237-8f57-dfeb97f4f5d5
+      version: -1
+      name: Verify Context Error - Starred
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'PaloAltoNetworksXDR.Alert.starred' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6370,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "331":
+    id: "331"
+    taskid: f45150ff-cc9f-43bb-8fb7-04cd6f21c515
+    type: regular
+    task:
+      id: f45150ff-cc9f-43bb-8fb7-04cd6f21c515
+      version: -1
+      name: Get Evidence Entries
+      description: Collect evidence entries.
+      scriptName: GetEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "332"
+    scriptarguments:
+      categories:
+        simple: evidence
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "332":
+    id: "332"
+    taskid: 75e7e92b-3c5c-4418-834a-8a62c7f91bcd
+    type: condition
+    task:
+      id: 75e7e92b-3c5c-4418-834a-8a62c7f91bcd
+      version: -1
+      name: Verify Evidence
+      description: 'Verify that the hunting results have been marked as evidence. Considering that each of the hunting tasks are the only that marks items as evidence, we can assume that the hunting results were classified as evidence if the ''Entry.ID'' context key is present and contains 21 items. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "333"
+      Verified:
+      - "334"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[0]'
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[1]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[2]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[3]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[4]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[5]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[6]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[7]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[8]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[9]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[10]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[11]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[12]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[13]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[14]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[15]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[16]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[17]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[18]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[19]'
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Entry
+                accessor: '[20]'
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "333":
+    id: "333"
+    taskid: 57029e43-5fa2-4fb4-830a-0f0e68cc6b74
+    type: regular
+    task:
+      id: 57029e43-5fa2-4fb4-830a-0f0e68cc6b74
+      version: -1
+      name: Verify Incident Evidence Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "Several of the hunting results were not marked as evidence, or all of them were not marked as evidence. As there are 21 tasks that mark items as evidence, we can assume that the 'Entry' context key should contain 21 items.\nThis may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:\n1- There have been modifications to some tasks that utilize the 'xdr-get-alerts' automation, which no longer marks the results as evidence.\n2- Several 'xdr-get-alerts' tasks failed to execute. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": -25
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "334":
+    id: "334"
+    taskid: ccb861f9-6a00-493c-8205-deffa9afee96
+    type: title
+    task:
+      id: ccb861f9-6a00-493c-8205-deffa9afee96
+      version: -1
+      name: Done verifying Incident Evidence
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "365"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "335":
+    id: "335"
+    taskid: 7e491fa8-343d-4f60-8afc-5eb5a897ca6e
+    type: title
+    task:
+      id: 7e491fa8-343d-4f60-8afc-5eb5a897ca6e
+      version: -1
+      name: Check Playbook Outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+      - "46"
+      - "75"
+      - "294"
+      - "74"
+      - "296"
+      - "298"
+      - "300"
+      - "302"
+      - "304"
+      - "306"
+      - "312"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1975,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "336":
+    id: "336"
+    taskid: 28b150cb-8b59-4b37-8739-09caabe9a9ff
+    type: condition
+    task:
+      id: 28b150cb-8b59-4b37-8739-09caabe9a9ff
+      version: -1
+      name: Verify Host Activity
+      description: Verify that the 'Host_Activity’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "337"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Host_Activity
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "337":
+    id: "337"
+    taskid: cd25053e-c04a-41b3-857d-0d2cf779b02a
+    type: regular
+    task:
+      id: cd25053e-c04a-41b3-857d-0d2cf779b02a
+      version: -1
+      name: Verify Context Error - Host Activity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Host_Activity’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt by host ID' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Hunt by host ID' task has been changed and no longer refers to 'Host_Activity'.
+          3- The 'Hunt by host ID' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -330,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "338":
+    id: "338"
+    taskid: 5971b384-b09c-4980-8ec7-1ceb4cbb6f78
+    type: title
+    task:
+      id: 5971b384-b09c-4980-8ec7-1ceb4cbb6f78
+      version: -1
+      name: Done verifying context data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "365"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "339":
+    id: "339"
+    taskid: 99ec7208-eb2b-40c1-8e52-c778c4666823
+    type: condition
+    task:
+      id: 99ec7208-eb2b-40c1-8e52-c778c4666823
+      version: -1
+      name: Verify Attacker Network Activity
+      description: Verify that the 'Attacker_Network_Activity’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "340"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Attacker_Network_Activity
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1130,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "340":
+    id: "340"
+    taskid: a718190c-ed16-4371-821d-8cd5ec70b60f
+    type: regular
+    task:
+      id: a718190c-ed16-4371-821d-8cd5ec70b60f
+      version: -1
+      name: Verify Context Error - Attacker Network Activity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Attacker_Network_Activity’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Attacker network activity' tasks configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Attacker network activity' tasks have been changed and no longer refers to 'Attacker_Network_Activity'.
+          3- The 'Attacker network activity' tasks failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1130,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "341":
+    id: "341"
+    taskid: 4ec267ac-6971-4506-8780-5119a9a22dc8
+    type: condition
+    task:
+      id: 4ec267ac-6971-4506-8780-5119a9a22dc8
+      version: -1
+      name: Verify Hunt File Hash
+      description: Verify that the 'Hunt_File_Hash’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "342"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Hunt_File_Hash
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1530,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "342":
+    id: "342"
+    taskid: 3d1983b0-83c8-457a-8651-dc5bcddda789
+    type: regular
+    task:
+      id: 3d1983b0-83c8-457a-8651-dc5bcddda789
+      version: -1
+      name: Verify Context Error - Hunt File Hash
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Hunt_File_Hash’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt File Hash' tasks configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Hunt File Hash' tasks have been changed and no longer refers to 'Hunt_File_Hash'.
+          3- The 'Hunt File Hash' tasks failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1530,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "343":
+    id: "343"
+    taskid: 143cdd57-6ca1-47e6-883f-6843c52f864a
+    type: condition
+    task:
+      id: 143cdd57-6ca1-47e6-883f-6843c52f864a
+      version: -1
+      name: Verify Reconnaissance
+      description: Verify that the 'Reconnaissance’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "344"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Reconnaissance
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1930,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "344":
+    id: "344"
+    taskid: 5b18790b-9c45-4e93-81bb-57c9f549017f
+    type: regular
+    task:
+      id: 5b18790b-9c45-4e93-81bb-57c9f549017f
+      version: -1
+      name: Verify Context Error - Reconnaissance
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Reconnaissance’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Reconnaissance techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Hunt Reconnaissance techniques' task has been changed and no longer refers to 'Reconnaissance'.
+          3- The 'Hunt Reconnaissance techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1930,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "345":
+    id: "345"
+    taskid: 9e6908ef-47f4-4377-8d82-35422c1ecbf4
+    type: condition
+    task:
+      id: 9e6908ef-47f4-4377-8d82-35422c1ecbf4
+      version: -1
+      name: Verify Initial Access
+      description: Verify that the 'Initial_Access’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "346"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Initial_Access
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "346":
+    id: "346"
+    taskid: 83ba8ff5-f87c-4b67-8a26-9e9538da8caf
+    type: regular
+    task:
+      id: 83ba8ff5-f87c-4b67-8a26-9e9538da8caf
+      version: -1
+      name: Verify Context Error - Initial Access
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Initial_Access’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Initial Access techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Hunt Initial Access techniques' task has been changed and no longer refers to 'Initial_Access'.
+          3- The 'Hunt Initial Access techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2330,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "347":
+    id: "347"
+    taskid: 342a2178-ea03-4c9b-8c4b-a8e69475b84b
+    type: condition
+    task:
+      id: 342a2178-ea03-4c9b-8c4b-a8e69475b84b
+      version: -1
+      name: Verify Execution
+      description: Verify that the 'Execution’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "348"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Execution
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2730,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "348":
+    id: "348"
+    taskid: 4ff0104d-a943-4c5f-84dc-b9fe556304a9
+    type: regular
+    task:
+      id: 4ff0104d-a943-4c5f-84dc-b9fe556304a9
+      version: -1
+      name: Verify Context Error - Execution
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Execution’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Execution techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Hunt Execution techniques' task has been changed and no longer refers to 'Execution'.
+          3- The 'Hunt Execution techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2730,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "349":
+    id: "349"
+    taskid: 43659daf-28d8-4c0b-8c49-4569e16953d5
+    type: condition
+    task:
+      id: 43659daf-28d8-4c0b-8c49-4569e16953d5
+      version: -1
+      name: Verify Persistence
+      description: Verify that the 'Persistence’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "350"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Persistence
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3130,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "350":
+    id: "350"
+    taskid: c12f07b1-95d6-41e3-8098-9d6343472f8f
+    type: regular
+    task:
+      id: c12f07b1-95d6-41e3-8098-9d6343472f8f
+      version: -1
+      name: Verify Context Error - Persistence
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Persistence’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Persistence techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Extend context' settings of the 'Hunt Persistence techniques' task has been changed and no longer refers to 'Persistence'.
+          3- The 'Hunt Persistence techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3130,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "351":
+    id: "351"
+    taskid: 398fd920-d7f5-45ef-8072-7696baf1499a
+    type: condition
+    task:
+      id: 398fd920-d7f5-45ef-8072-7696baf1499a
+      version: -1
+      name: Verify Privilege Escalation
+      description: Verify that the 'Privilege_Escalation’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "352"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Privilege_Escalation
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3530,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "352":
+    id: "352"
+    taskid: 9d660e74-d217-415a-863e-87b37a113adf
+    type: regular
+    task:
+      id: 9d660e74-d217-415a-863e-87b37a113adf
+      version: -1
+      name: Verify Context Error - Privilege Escalation
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Privilege_Escalation’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Privilege Escalation techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Hunt Privilege Escalation techniques' task has been changed and no longer refers to 'Privilege_Escalation'.
+          3- The 'Hunt Privilege Escalation techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3530,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "353":
+    id: "353"
+    taskid: 03c432f1-4ee0-4b83-8cb6-d779b932ef36
+    type: condition
+    task:
+      id: 03c432f1-4ee0-4b83-8cb6-d779b932ef36
+      version: -1
+      name: Verify Defense Evasion
+      description: Verify that the 'Defense_Evasion’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "354"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Defense_Evasion
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3930,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "354":
+    id: "354"
+    taskid: f9c27970-a7ad-44af-867a-d08e61429c35
+    type: regular
+    task:
+      id: f9c27970-a7ad-44af-867a-d08e61429c35
+      version: -1
+      name: Verify Context Error - Defense Evasion
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Defense_Evasion’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Defense Evasion techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Hunt Defense Evasion techniques' task has been changed and no longer refers to 'Defense_Evasion'.
+          3- The 'Hunt Defense Evasion techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3930,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "355":
+    id: "355"
+    taskid: 7fddcae5-c480-436e-8691-d57dee621725
+    type: condition
+    task:
+      id: 7fddcae5-c480-436e-8691-d57dee621725
+      version: -1
+      name: Verify Discovery
+      description: Verify that the 'Discovery’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "356"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Discovery
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4330,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "356":
+    id: "356"
+    taskid: ae6d6c06-9d83-404f-809a-8c95e478b4ab
+    type: regular
+    task:
+      id: ae6d6c06-9d83-404f-809a-8c95e478b4ab
+      version: -1
+      name: Verify Context Error - Discovery
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Discovery’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Discovery techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Hunt Discovery techniques' task has been changed and no longer refers to 'Discovery'.
+          3- The 'Hunt Discovery techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4330,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "357":
+    id: "357"
+    taskid: 71e6f2ea-012b-40f3-8eb1-b2a75339f83b
+    type: condition
+    task:
+      id: 71e6f2ea-012b-40f3-8eb1-b2a75339f83b
+      version: -1
+      name: Verify Lateral Movement
+      description: Verify that the 'Lateral_Movement’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "358"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Lateral_Movement
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4730,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "358":
+    id: "358"
+    taskid: 88562859-81c6-45f6-8fee-762811cb8090
+    type: regular
+    task:
+      id: 88562859-81c6-45f6-8fee-762811cb8090
+      version: -1
+      name: Verify Context Error - Lateral Movement
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Lateral_Movement’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Lateral Movement techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Hunt Lateral Movement techniques' task has been changed and no longer refers to 'Lateral_Movement'.
+          3- The 'Hunt Lateral Movement techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4730,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "359":
+    id: "359"
+    taskid: 7063a409-47b8-46e5-8201-260a2e738faa
+    type: condition
+    task:
+      id: 7063a409-47b8-46e5-8201-260a2e738faa
+      version: -1
+      name: Verify Collection
+      description: Verify that the 'Collection’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "360"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collection
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5130,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "360":
+    id: "360"
+    taskid: 22e3c82e-1ca2-42b5-8541-ff4ae9953522
+    type: regular
+    task:
+      id: 22e3c82e-1ca2-42b5-8541-ff4ae9953522
+      version: -1
+      name: Verify Context Error - Collection
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Collection’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Collection techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Hunt Collection techniques' task has been changed and no longer refers to 'Collection'.
+          3- The 'Hunt Collection techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5130,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "361":
+    id: "361"
+    taskid: 1de1d3c4-61de-4ff6-86b9-b3f836e16945
+    type: condition
+    task:
+      id: 1de1d3c4-61de-4ff6-86b9-b3f836e16945
+      version: -1
+      name: Verify Command And Control
+      description: Verify that the 'Command_And_Control’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "362"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Command_And_Control
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5530,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "362":
+    id: "362"
+    taskid: be37ade9-246c-4354-82b5-43b45d31ce99
+    type: regular
+    task:
+      id: be37ade9-246c-4354-82b5-43b45d31ce99
+      version: -1
+      name: Verify Context Error - Command And Control
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Command_And_Control’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Command and Control techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Hunt Command and Control techniques' task has been changed and no longer refers to 'Command_And_Control'.
+          3- The 'Hunt Command and Control techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5530,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "363":
+    id: "363"
+    taskid: f9b03b7b-fab8-4864-8a29-f81443b1f84e
+    type: condition
+    task:
+      id: f9b03b7b-fab8-4864-8a29-f81443b1f84e
+      version: -1
+      name: Verify Impact Techniques
+      description: Verify that the 'Impact_techniques’ context key was extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "364"
+      Verified:
+      - "338"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Impact_techniques
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5930,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "364":
+    id: "364"
+    taskid: e52d2539-d961-4f22-8dad-e206e833fb0d
+    type: regular
+    task:
+      id: e52d2539-d961-4f22-8dad-e206e833fb0d
+      version: -1
+      name: Verify Context Error - Impact Techniques
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Impact_techniques’ context key was not extracted. This may indicate that one or more of the following changes have been made to the 'Cortex XDR - Endpoint Investigation' playbook:
+          1- The 'Hunt Impact techniques' task configurations were changed and no longer append the automation results to the context data.
+          2- The context key name set within the 'Hunt Impact techniques' task has been changed and no longer refers to 'Impact_techniques'.
+          3- The 'Hunt Impact techniques' task failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5930,
+          "y": -15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "365":
+    id: "365"
+    taskid: d7726820-8235-4fff-8a7c-2f56d08c9e26
+    type: title
+    task:
+      id: d7726820-8235-4fff-8a7c-2f56d08c9e26
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "366":
+    id: "366"
+    taskid: 6513f3c7-2ebb-433b-8d24-e65d67ff1f17
+    type: condition
+    task:
+      id: 6513f3c7-2ebb-433b-8d24-e65d67ff1f17
+      version: -1
+      name: Are the PaloAltoNetworksXDR Alert and Mitre keys defined?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "365"
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": -850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "220_338_Verified": 0.16,
+      "306_113_ Verified": 0.73,
+      "312_113_ Verified": 0.72,
+      "336_338_Verified": 0.2,
+      "339_338_Verified": 0.1,
+      "341_338_Verified": 0.1,
+      "343_338_Verified": 0.1,
+      "345_338_Verified": 0.1,
+      "347_338_Verified": 0.1,
+      "349_338_Verified": 0.1,
+      "351_338_Verified": 0.11,
+      "353_338_Verified": 0.1,
+      "355_338_Verified": 0.11,
+      "357_338_Verified": 0.1,
+      "359_338_Verified": 0.1,
+      "361_338_Verified": 0.1,
+      "363_338_Verified": 0.1,
+      "366_365_#default#": 0.19,
+      "73_116_#default#": 0.7
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1830,
+        "width": 12680,
+        "x": -5930,
+        "y": -1625
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

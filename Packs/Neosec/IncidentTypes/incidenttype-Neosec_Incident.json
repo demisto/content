@@ -1,0 +1,40 @@
+{
+    "id": "Neosec Incident",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Neosec Incident",
+    "prevName": "Neosec Incident",
+    "color": "#F8E7A5",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 2,
+    "onChangeRepAlg": 0,
+    "layout": "Neosec Incident Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "neosecendpoints": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "neosecentities": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.5.0"
+}

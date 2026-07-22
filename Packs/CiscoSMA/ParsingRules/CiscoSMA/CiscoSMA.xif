@@ -1,0 +1,7 @@
+[INGEST:vendor="cisco", product="sma", target_dataset="cisco_sma_raw", no_hit = keep]
+// Support only date time of format: MMM dd hh:mm:ss. For example: "Jan 01 10:00:00".
+filter _raw_log ~= "\d+\>[a-zA-Z]+\s\d+\s\d+\:\d+\:\d+\s"
+| alter tmp_event_time = arrayindex(regextract(_raw_log ,"\d+\>([a-zA-Z]+\s\d+\s\d+\:\d+\:\d+)\s"),0),
+    tmp_year = format_timestamp("%Y", _insert_time)
+| alter _time = parse_timestamp("%b %d %H:%M:%S %Y",concat(tmp_event_time," ", tmp_year) )
+| fields - tmp_event_time, tmp_year;

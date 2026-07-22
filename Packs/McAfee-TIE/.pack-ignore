@@ -1,0 +1,11 @@
+[file:playbook-Search_Endpoints_By_Hash_-_TIE.yml]
+ignore=BA101
+
+[file:McAfee-TIE.yml]
+ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM104
+
+[file:McAfee-TIE_image.png]
+ignore=IM111

@@ -1,0 +1,27 @@
+{
+    "name": "DomainTools Enterprise (Deprecated)",
+    "description": "Deprecated. Use DomainTools Iris Pack instead.",
+    "support": "partner",
+    "currentVersion": "1.1.9",
+    "author": "DomainTools",
+    "url": "https://www.domaintools.com/support/",
+    "email": "memberservices@domaintools.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

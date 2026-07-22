@@ -1,0 +1,55 @@
+commonfields:
+  id: VectraSummary
+  version: -1
+name: VectraSummary
+script: >+
+  import json
+
+
+  res = []
+
+  ctx = demisto.context()
+
+  summary, details = None, None
+
+  try:
+      summary = demisto.get(ctx, "Label/summary")
+      if summary:
+          summary = json.loads(ctx["Label/summary"])
+          if summary:
+              summary = {k: formatCell(summary[k]) for k in summary}
+
+      details = demisto.get(ctx, "Label/detection_detail_set")
+      if details:
+          details = json.loads(ctx["Label/detection_detail_set"])
+          if details:
+              details = {k: formatCell(details[0][k]) for k in details[0]}
+
+      bad_ips = None
+      if details:
+          bad_ips = details["dst_ip"]
+
+      demisto.setContext('bad_ips', bad_ips)
+      demisto.setContext('hashes', "")
+
+      res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': summary})
+      res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': details})
+
+      demisto.results(res)
+  except Exception, ex:
+      demisto.results( { 'Type' : entryTypes['error'], 'ContentsFormat' : formats['text'], 'Contents' : 'Error occurred while parsing Vectra incident labels. Exception info:\n' + str(ex) } )
+
+type: python
+subtype: python2
+tags:
+- Vectra
+comment: Deprecated. Summarize a Vectra  incident (after incident was put into context)\nThe script extract malicious ip's and hashes if exists
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - vec-health
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

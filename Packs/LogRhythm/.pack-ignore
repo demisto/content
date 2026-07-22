@@ -1,0 +1,5 @@
+[file:LogRhythm.yml]
+ignore=IN126
+
+[file:LogRhythm_image.png]
+ignore=IM111

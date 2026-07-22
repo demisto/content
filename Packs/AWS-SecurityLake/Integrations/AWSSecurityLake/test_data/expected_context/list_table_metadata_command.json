@@ -1,0 +1,26 @@
+{
+    "AWS.SecurityLake.TableMetadata(val.Name && val.Name == obj.Name)": [
+        {
+            "Name": "test",
+            "TableType": "test",
+            "Columns": [
+                {
+                    "Name": "test",
+                    "Type": "test",
+                    "Comment": "test"
+                }
+            ],
+            "PartitionKeys": [
+                {
+                    "Name": "test",
+                    "Type": "test",
+                    "Comment": "test"
+                }
+            ],
+            "Parameters": {
+                "string": "test"
+            }
+        }
+    ],
+    "AWS.SecurityLake(true)" :{"TableMetadataNextToken": "test"}
+}

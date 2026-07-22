@@ -1,0 +1,18 @@
+comment: Data output script for populating the dashboard number graph widget with the number of checked integrations.
+commonfields:
+  id: IntegrationsCheck-Widget-NumberChecked
+  version: -1
+dockerimage: demisto/python3:3.12.8.3296088
+enabled: true
+name: IntegrationsCheck-Widget-NumberChecked
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- widget
+- failedInstances
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

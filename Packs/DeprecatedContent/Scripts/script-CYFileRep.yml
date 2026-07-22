@@ -1,0 +1,91 @@
+commonfields:
+  id: CYFileRep
+  version: -1
+name: CYFileRep
+script: >-
+  # Retrieve file entry reputation using Cylance
+
+  # First, get the file entry, check with Cylance if the file is known and if not, upload the file, wait 5 seconds and check again
+
+  import time
+
+  e = demisto.args()['entry']
+
+  fileEntry = demisto.executeCommand('getEntry', {'id': e})
+
+  if fileEntry and len(fileEntry) == 1 and fileEntry[0]['Type'] != entryTypes['error']:
+      fe = fileEntry[0]
+      if fe['File'] and demisto.get(fe, 'FileMetadata.md5'):
+          rep = demisto.executeCommand('file', {'file': demisto.get(fe, 'FileMetadata.md5'), 'using-brand': brands['cy']})
+          if rep and len(rep) == 1 and rep[0]['Type'] != entryTypes['error']:
+              contents = demisto.get(rep[0], 'Contents')
+              k = contents.keys()
+              if k and len(k) > 0:
+                  v = contents[k[0]]
+                  if demisto.get(v, 'status') == 'NEEDFILE' and demisto.get(v, 'confirmcode'):
+                      upload = demisto.executeCommand('cy-upload', {'entry': e, 'confirmCode': demisto.get(v, 'confirmcode')})
+                      if upload and len(upload) == 1 and upload[0]['Type'] != entryTypes['error']:
+                          contents = demisto.get(upload[0], 'Contents')
+                          k = contents.keys()
+                          if k and len(k) > 0:
+                              v1 = contents[k[0]]
+                              if demisto.get(v1, 'status') == 'ACCEPTED':
+                                  time.sleep(10)
+                                  rep = demisto.executeCommand('file', {'file': demisto.get(fe, 'FileMetadata.md5'), 'using-brand': brands['cy']})
+                                  demisto.results(rep)
+                              else:
+                                  demisto.results(upload)
+                      else:
+                          demisto.results(upload)
+                  else:
+                      demisto.results(rep)
+          else:
+              demisto.results(rep)
+      else:
+          demisto.results('Entry is not a file')
+  else:
+      demisto.results('Unable to retrieve entry')
+type: python
+subtype: python2
+tags:
+- server
+- threat-intel
+- cylance
+- file
+comment: Deprecated. This script is deprecated. Use the Cylance integration instead.
+system: true
+deprecated: true
+args:
+- name: entry
+  required: true
+  default: true
+  description: The ID of a file entry to upload
+outputs:
+- contextPath: File.MD5
+  description: Bad hash MD5
+- contextPath: File.SHA1
+  description: Bad hash SHA1
+- contextPath: File.SHA256
+  description: Bad hash SHA256
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+- contextPath: File.Malicious.Description
+  description: For malicious files, the reason for the vendor to make the decision
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+- contextPath: DBotScore.Score
+  description: The actual score
+scripttarget: 0
+dependson:
+  must:
+  - cylance|||file
+  - cy-upload
+timeout: 0s
+tests:
+- No test - no instance
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

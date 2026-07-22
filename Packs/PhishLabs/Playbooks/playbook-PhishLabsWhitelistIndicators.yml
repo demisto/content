@@ -1,0 +1,200 @@
+id: PhishLabs - Whitelist false positives
+version: -1
+name: PhishLabs - Whitelist false positives
+fromversion: 5.0.0
+description: This playbook can be used in a job to add to the allow list indicators from PhishLabs that were classified as false positives, according to a defined period of time.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6def49b7-29f8-4905-8db0-6448936126ad
+    type: start
+    task:
+      id: 6def49b7-29f8-4905-8db0-6448936126ad
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 5bf410a0-bb6f-4278-80a9-aaf0e6122344
+    type: regular
+    task:
+      id: 5bf410a0-bb6f-4278-80a9-aaf0e6122344
+      version: -1
+      name: Whitelist false positives
+      description: Populate indicators by the PhishLabs IOC global feed.
+      scriptName: PhishLabsPopulateIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      delete_false_positive:
+        simple: "true"
+      indicator_type: {}
+      limit: {}
+      remove_protocol: {}
+      remove_query: {}
+      since:
+        complex:
+          root: inputs.Since
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 58403bf5-5825-4058-8c42-6cbfdb6caac2
+    type: regular
+    task:
+      id: 58403bf5-5825-4058-8c42-6cbfdb6caac2
+      version: -1
+      name: Close investigation
+      description: Close the current incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: bf18488a-3da2-4074-84f4-71d023dbb313
+    type: condition
+    task:
+      id: bf18488a-3da2-4074-84f4-71d023dbb313
+      version: -1
+      name: Is PhishLabs IOC enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PhishLabs IOC
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 4682a8db-5f39-4d30-8385-3b1ead5d338b
+    type: title
+    task:
+      id: 4682a8db-5f39-4d30-8385-3b1ead5d338b
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Since
+  value:
+    simple: 1h
+  required: false
+  description: Whitelist indicators within this duration (from now).
+outputs: []
+tests:
+- PhishLabsTestPopulateIndicators

@@ -1,0 +1,37 @@
+commonfields:
+  id: 10cb3486-48f3-4d93-88af-b6be84ffd432
+  version: -1
+name: OktaGetGroups
+script: >2
+
+  resp = demisto.executeCommand("okta-get-groups", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- okta
+comment: Deprecated. Get all user groups
+enabled: true
+args:
+- name: username
+  required: true
+  default: true
+  description: Username in Okta to get groups for
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - okta-get-groups
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

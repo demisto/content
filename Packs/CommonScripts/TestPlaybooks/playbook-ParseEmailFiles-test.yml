@@ -1,0 +1,929 @@
+id: ParseEmailFiles-test
+version: -1
+name: ParseEmailFiles-test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: dccbe542-ee37-4cbf-8f2f-a493a7e9bc02
+    type: start
+    task:
+      id: dccbe542-ee37-4cbf-8f2f-a493a7e9bc02
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: f2978fe0-3cf2-48d4-840e-36710a9748c9
+    type: regular
+    task:
+      id: f2978fe0-3cf2-48d4-840e-36710a9748c9
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 942641eb-3629-4fb4-8d42-a646f8c2a0de
+    type: regular
+    task:
+      id: 942641eb-3629-4fb4-8d42-a646f8c2a0de
+      version: -1
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      filename:
+        simple: ParseEmailFiles_test_email.eml
+      method:
+        simple: GET
+      saveAsFile:
+        simple: yes
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ParseEmailFiles_test_email.eml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: ce78f9bf-039b-40ec-8103-b53bf9f804ba
+    type: regular
+    task:
+      id: ce78f9bf-039b-40ec-8103-b53bf9f804ba
+      version: -1
+      name: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+      - '8'
+      - '11'
+      - '13'
+      - '14'
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ParseEmailFiles_test_email.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: ca638548-ddfa-4752-8a92-66c7fa999386
+    type: condition
+    task:
+      id: ca638548-ddfa-4752-8a92-66c7fa999386
+      version: -1
+      name: VerifyContext - To
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.To
+            iscontext: true
+          right:
+            value:
+              simple: shachar@demisto.com, yaakovi@demisto.com
+    view: |-
+      {
+        "position": {
+          "x": 352,
+          "y": 769
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 186c4430-d133-4448-87a1-976657212fef
+    type: condition
+    task:
+      id: 186c4430-d133-4448-87a1-976657212fef
+      version: -1
+      name: VerifyContext - Subject
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.Subject
+            iscontext: true
+          right:
+            value:
+              simple: ParseEmail test email
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 769
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 2da41eb2-33ac-46f1-83b0-03cac1ef1178
+    type: condition
+    task:
+      id: 2da41eb2-33ac-46f1-83b0-03cac1ef1178
+      version: -1
+      name: AreValuesEqual - verify pdf attachment
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    scriptarguments:
+      left:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+          accessor: MD5
+      right:
+        simple: 9060c2d4f48745de19a5690d8e6cabe1
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1213,
+          "y": 769
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 78aae24f-67c9-42f9-89f6-9812a130643a
+    type: title
+    task:
+      id: 78aae24f-67c9-42f9-89f6-9812a130643a
+      version: -1
+      name: Validate Non-Unicode parsing
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+      - '16'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1107
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 2e2a96fc-e555-4bb7-87ae-2b92f0b9c99b
+    type: condition
+    task:
+      id: 2e2a96fc-e555-4bb7-87ae-2b92f0b9c99b
+      version: -1
+      name: AreValuesEqual - verify docx attachment
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    scriptarguments:
+      left:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: docx
+          accessor: MD5
+      right:
+        simple: b842aa8664f41a2dd7fe0d47a9fd4724
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 769
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 5edd2f14-6a9e-4fe2-8220-dbe6417c1e3c
+    type: condition
+    task:
+      id: 5edd2f14-6a9e-4fe2-8220-dbe6417c1e3c
+      version: -1
+      name: VerifyContext - From
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Email.From
+            iscontext: true
+          right:
+            value:
+              simple: shachar@demisto.com
+    view: |-
+      {
+        "position": {
+          "x": -558,
+          "y": 769
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: ffbb472b-bde2-4949-82d6-35fae8dbe609
+    type: regular
+    task:
+      id: ffbb472b-bde2-4949-82d6-35fae8dbe609
+      version: -1
+      name: Non Unicode Subject
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      filename:
+        simple: EmailWithNonAsciiSubject.eml
+      method:
+        simple: GET
+      saveAsFile:
+        simple: yes
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiSubject.eml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 5c884e25-7a4d-4e7d-8f1a-556f3d21bd0a
+    type: regular
+    task:
+      id: 5c884e25-7a4d-4e7d-8f1a-556f3d21bd0a
+      version: -1
+      name: Non Unicode Attachment Name
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      filename:
+        simple: EmailWithNonAsciiAttachmentName.eml
+      method:
+        simple: GET
+      saveAsFile:
+        simple: yes
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/EmailWithNonAsciiAttachmentName.eml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 071d0192-09e3-4d82-8aae-e12f8cdd1cbd
+    type: regular
+    task:
+      id: 071d0192-09e3-4d82-8aae-e12f8cdd1cbd
+      version: -1
+      name: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: EmailWithNonAsciiAttachmentName.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: f3b2570a-a447-42bf-8fa6-8c4332c9a965
+    type: regular
+    task:
+      id: f3b2570a-a447-42bf-8fa6-8c4332c9a965
+      version: -1
+      name: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: EmailWithNonAsciiSubject.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 08ba85be-9f8e-4491-8446-1a25af48e4ad
+    type: regular
+    task:
+      id: 08ba85be-9f8e-4491-8446-1a25af48e4ad
+      version: -1
+      name: http (No Content Type)
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      filename:
+        simple: ParseEmailFiles_test_email.eml
+      method:
+        simple: GET
+      saveAsFile:
+        simple: yes
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/no_content_type.eml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 8d8955d3-c383-4837-8d01-bcbc800639e4
+    type: regular
+    task:
+      id: 8d8955d3-c383-4837-8d01-bcbc800639e4
+      version: -1
+      name: ParseEmailFiles With No Content Type
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. Requires pip and access to python repository to install "olefile" package.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ParseEmailFiles_test_email.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 356d6938-e013-4aa0-8c5b-15afee7067cf
+    type: regular
+    task:
+      id: 356d6938-e013-4aa0-8c5b-15afee7067cf
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: ad2e3433-01e0-4dd4-8383-f8ae29f4e338
+    type: condition
+    task:
+      id: ad2e3433-01e0-4dd4-8383-f8ae29f4e338
+      version: -1
+      name: Verify Headers
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.value
+            iscontext: true
+          right:
+            value:
+              simple: '"woo@demisto.com" <woo@demisto.com>'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.value
+            iscontext: true
+          right:
+            value:
+              simple: '"Demisto Dbot" <woo@demisto.com>'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Email.Headers.value
+            iscontext: true
+          right:
+            value:
+              simple: from prod.outlook.com
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: 35ccc5dc-7b90-4827-852b-2614d9b32fef
+    type: title
+    task:
+      id: 35ccc5dc-7b90-4827-852b-2614d9b32fef
+      version: -1
+      name: Validate Error is not raised with special chars
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '25'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: ed99483a-6037-4b94-8da6-4796518f1fa2
+    type: regular
+    task:
+      id: ed99483a-6037-4b94-8da6-4796518f1fa2
+      version: -1
+      name: Organization header with MIME encoded-word
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      filename:
+        simple: EmailWithSpecialChars.eml
+      method:
+        simple: GET
+      saveAsFile:
+        simple: yes
+      url:
+        simple: https://github.com/demisto/content/raw/7fc44134eea661749600f14a26d9722a8fbe3ab8/Packs/CommonScripts/Scripts/ParseEmailFiles/test_data/test-subject-raised-error-on-log.eml
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 825b53dc-a2c1-44ff-86fd-ac014da8418d
+    type: regular
+    task:
+      id: 825b53dc-a2c1-44ff-86fd-ac014da8418d
+      version: -1
+      name: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      entryid:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: EmailWithSpecialChars.eml
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: EntryID
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2825,
+        "width": 2151,
+        "x": -558,
+        "y": -590
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

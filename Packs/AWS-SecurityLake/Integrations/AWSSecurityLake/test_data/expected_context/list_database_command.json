@@ -1,0 +1,12 @@
+{
+    "AWS.SecurityLake.Database(val.Name && val.Name == obj.Name)": [
+        {
+            "Name": "test",
+            "Description": "test",
+            "Parameters": {
+                "test_param": "test"
+            }
+        }
+    ],
+    "AWS.SecurityLake(true)": {"DatabaseNextToken": "test"}
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "type": "Domain",
+    "value": "mock_domain.com",
+    "rawJSON": {
+      "type": "Domain",
+      "value": "mock_domain.com"
+    },
+    "fields": {
+      "firstseenbysource": "1453-05-29T09:05:00Z",
+      "lastseenbysource": "1923-10-29T09:05:00Z",
+      "collection_maintainer_name": "MockMaintainerName",
+      "extra_info": {},
+      "tags": ["TEST"],
+      "trafficlightprotocol": "GREEN"
+    }
+  }
+]

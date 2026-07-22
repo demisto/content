@@ -1,0 +1,2 @@
+OK:
+[ { "groupId" : 2, "groupPath" : "My Organization" }, { "groupId" : 3, "groupPath" : "My Organization\\Lost&Found" }, { "groupId" : 4, "groupPath" : "My Organization\\Lost&Found\\local" }, { "groupId" : 5, "groupPath" : "My Organization\\Lost&Found\\(none)" }, { "groupId" : 6, "groupPath" : "My Organization\\Lost&Found\\WORKGROUP" } ]

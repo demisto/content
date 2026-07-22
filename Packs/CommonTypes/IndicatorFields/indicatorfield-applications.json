@@ -1,0 +1,30 @@
+{
+    "id": "indicator_applications",
+    "version": -1,
+    "modified": "2021-05-11T16:03:11.088685343Z",
+    "name": "Applications",
+    "ownerOnly": false,
+    "cliName": "applications",
+    "type": "markdown",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "User Profile"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

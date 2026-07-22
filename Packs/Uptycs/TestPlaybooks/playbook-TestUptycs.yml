@@ -1,0 +1,1012 @@
+id: TestUptycs
+version: -1
+name: TestUptycs
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0aea6eab-6243-459d-8469-cee492a09c50
+    type: start
+    task:
+      id: 0aea6eab-6243-459d-8469-cee492a09c50
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 2179207f-c4fd-4ca3-8ac7-49def7d88001
+    type: regular
+    task:
+      id: 2179207f-c4fd-4ca3-8ac7-49def7d88001
+      version: -1
+      name: uptycs-get-events
+      description: return events from Uptycs DB
+      script: '|||uptycs-get-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      asset_id: {}
+      code: {}
+      end_window: {}
+      host_name_is: {}
+      host_name_like: {}
+      limit: {}
+      start_window: {}
+      time_ago:
+        simple: 1 month
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: 3e5f12ec-68e6-436d-83b4-92cd29bc9f16
+    type: condition
+    task:
+      id: 3e5f12ec-68e6-436d-83b4-92cd29bc9f16
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Uptycs.Events
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Uptycs
+                accessor: Events.host_name
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Events.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Events.upt_asset_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Events.code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Events.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Events.key
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 0e948beb-5d95-41e2-8712-3933c391d987
+    type: regular
+    task:
+      id: 0e948beb-5d95-41e2-8712-3933c391d987
+      version: -1
+      name: uptycs-get-assets
+      description: return assets enrolled with Uptycs
+      script: '|||uptycs-get-assets'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      asset_group_id: {}
+      asset_id: {}
+      host_name_is:
+        complex:
+          root: Uptycs
+          accessor: Events.host_name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      host_name_like: {}
+      limit: {}
+      os: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: d844c052-6cfd-4a5d-882a-522bec28f62d
+    type: condition
+    task:
+      id: d844c052-6cfd-4a5d-882a-522bec28f62d
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Assets.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Assets.host_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Assets.osquery_version
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 6982e748-464b-4475-845c-775c50d8f171
+    type: regular
+    task:
+      id: 6982e748-464b-4475-845c-775c50d8f171
+      version: -1
+      name: uptycs-get-asset-tags
+      description: Retrieve a list of tags for a particular asset
+      script: '|||uptycs-get-asset-tags'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Assets.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 51478857-d76f-41da-8ced-8feea4e75878
+    type: playbook
+    task:
+      id: 51478857-d76f-41da-8ced-8feea4e75878
+      version: -1
+      name: Uptycs - Outbound Connection to Threat IOC Incident
+      description: Get information about processes which open connections to known Bad IP's
+      playbookName: Uptycs - Outbound Connection to Threat IOC Incident
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Uptycs
+          accessor: Alerts.id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: eb9ab91a-f09a-4529-818f-136ad6915a1b
+    type: regular
+    task:
+      id: eb9ab91a-f09a-4529-818f-136ad6915a1b
+      version: -1
+      name: uptycs-get-alerts
+      description: return alerts from Uptycs DB
+      script: '|||uptycs-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      alert_id: {}
+      asset_id:
+        complex:
+          root: Uptycs
+          accessor: Assets.id
+          transformers:
+          - operator: uniq
+      code:
+        simple: OUTBOUND_CONNECTION_TO_THREAT_IOC
+      end_window: {}
+      host_name_is: {}
+      host_name_like: {}
+      limit: {}
+      start_window: {}
+      time_ago:
+        simple: 90 days
+      value: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 670d6dd1-1a4f-4be5-8a41-e13e84090ccd
+    type: condition
+    task:
+      id: 670d6dd1-1a4f-4be5-8a41-e13e84090ccd
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.upt_asset_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.code
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.alert_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.key
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.pid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: 5a46f65f-1dba-4d88-8251-3ef93f1eb683
+    type: regular
+    task:
+      id: 5a46f65f-1dba-4d88-8251-3ef93f1eb683
+      version: -1
+      name: uptycs-get-saved-queries
+      script: '|||uptycs-get-saved-queries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      limit:
+        simple: "1"
+      name:
+        simple: ${Uptycs.PostedQuery.name}
+      query_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: 910ab9c3-cc14-480b-82c9-b480e6f2b113
+    type: regular
+    task:
+      id: 910ab9c3-cc14-480b-82c9-b480e6f2b113
+      version: -1
+      name: uptycs-run-saved-query
+      script: '|||uptycs-run-saved-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      asset_id: {}
+      host_name_is: {}
+      host_name_like: {}
+      name:
+        simple: ${Uptycs.SavedQueries.name}
+      query_id: {}
+      variable_arguments:
+        simple: '''{":name": "\''osqueryd\''"}'''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: 897535f8-f53f-4b9e-85ff-d1dbe8062fea
+    type: regular
+    task:
+      id: 897535f8-f53f-4b9e-85ff-d1dbe8062fea
+      version: -1
+      name: uptycs-post-saved-query
+      script: '|||uptycs-post-saved-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      description:
+        simple: this is a test saved query from demisto playbook
+      execution_type:
+        simple: global
+      grouping: {}
+      name:
+        simple: process_query
+      query:
+        simple: select * from processes where name = :name limit 10
+      type:
+        simple: default
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 08919ff4-5888-4ff9-8c8f-114a6e161c34
+    type: condition
+    task:
+      id: 08919ff4-5888-4ff9-8c8f-114a6e161c34
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.PostedQuery.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: 57192133-f578-4746-8e0d-3d1d2cf25976
+    type: condition
+    task:
+      id: 57192133-f578-4746-8e0d-3d1d2cf25976
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.SavedQueries.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.SavedQueries.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: 4c2ab15d-270e-4dae-8e44-d53b03ce01e0
+    type: condition
+    task:
+      id: 4c2ab15d-270e-4dae-8e44-d53b03ce01e0
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Uptycs.RunQuery
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: 2cf69bae-9fca-488d-8f4f-30150d244b68
+    type: title
+    task:
+      id: 2cf69bae-9fca-488d-8f4f-30150d244b68
+      version: -1
+      name: Test Success
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: 64103f1d-7aef-4247-81f5-4da1a7d6a4c9
+    type: condition
+    task:
+      id: 64103f1d-7aef-4247-81f5-4da1a7d6a4c9
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.ProcEvent.pid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.ProcEvent.upt_time
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: 4bc60a5d-c988-4363-8f4e-66624514b1c2
+    type: regular
+    task:
+      id: 4bc60a5d-c988-4363-8f4e-66624514b1c2
+      version: -1
+      name: uptycs-get-asset-groups
+      script: '|||uptycs-get-asset-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: e852366a-bce8-49fd-84d5-23d83a312507
+    type: condition
+    task:
+      id: e852366a-bce8-49fd-84d5-23d83a312507
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.AssetGroups.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.AssetGroups.createdAt
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 7b371f0c-d029-4722-80b3-81eac195daa8
+    type: regular
+    task:
+      id: 7b371f0c-d029-4722-80b3-81eac195daa8
+      version: -1
+      name: uptycs-get-process-open-files
+      script: '|||uptycs-get-process-open-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      asset_id:
+        simple: ${Uptycs.Assets.id}
+      end_window: {}
+      host_name_is: {}
+      host_name_like: {}
+      limit: {}
+      start_window: {}
+      time: {}
+      time_ago: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 40b8fb58-c0ed-42ca-89de-71580d3f23c6
+    type: condition
+    task:
+      id: 40b8fb58-c0ed-42ca-89de-71580d3f23c6
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Uptycs.Files
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Files.pid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Files.path
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+  "22":
+    id: "22"
+    taskid: 235783f1-c71c-4578-80eb-fe4e690e6af7
+    type: regular
+    task:
+      id: 235783f1-c71c-4578-80eb-fe4e690e6af7
+      version: -1
+      name: uptycs-get-threat-indicators
+      script: '|||uptycs-get-threat-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      indicator: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+  "23":
+    id: "23"
+    taskid: db842179-e616-49b9-8915-f6043c460434
+    type: regular
+    task:
+      id: db842179-e616-49b9-8915-f6043c460434
+      version: -1
+      name: uptycs-get-threat-sources
+      script: '|||uptycs-get-threat-sources'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+  "24":
+    id: "24"
+    taskid: d9f7ad86-372c-4eb5-8433-b9807f414a5d
+    type: regular
+    task:
+      id: d9f7ad86-372c-4eb5-8433-b9807f414a5d
+      version: -1
+      name: uptycs-get-threat-vendors
+      script: '|||uptycs-get-threat-vendors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+  "25":
+    id: "25"
+    taskid: 357c43cc-5adc-499f-89d9-3deeda6761b9
+    type: regular
+    task:
+      id: 357c43cc-5adc-499f-89d9-3deeda6761b9
+      version: -1
+      name: uptycs-get-user-asset-groups
+      script: '|||uptycs-get-user-asset-groups'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      asset_group_id:
+        simple: ${Uptycs.AssetGroups.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+  "26":
+    id: "26"
+    taskid: 055e4ed3-9061-4a88-8d7a-c8972b03ac55
+    type: regular
+    task:
+      id: 055e4ed3-9061-4a88-8d7a-c8972b03ac55
+      version: -1
+      name: uptycs-get-users
+      script: '|||uptycs-get-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+  "27":
+    id: "27"
+    taskid: 4ce6e75f-08db-4229-86c3-4534311691f9
+    type: regular
+    task:
+      id: 4ce6e75f-08db-4229-86c3-4534311691f9
+      version: -1
+      name: uptycs-get-user-information
+      script: '|||uptycs-get-user-information'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      user_id:
+        simple: ${Uptycs.Users.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+  "28":
+    id: "28"
+    taskid: a96366bd-b770-4038-8f38-c9c82db71903
+    type: condition
+    task:
+      id: a96366bd-b770-4038-8f38-c9c82db71903
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.UserInfo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.UserInfo.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+  "29":
+    id: "29"
+    taskid: 944bced6-d846-439b-8534-fb61eadf4828
+    type: condition
+    task:
+      id: 944bced6-d846-439b-8534-fb61eadf4828
+      version: -1
+      name: Check for pid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Uptycs.Alerts.pid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4935,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

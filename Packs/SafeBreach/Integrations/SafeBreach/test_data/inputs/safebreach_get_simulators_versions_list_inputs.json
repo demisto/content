@@ -1,0 +1,10 @@
+{
+    "success": {
+        "args": {},
+        "command": "safebreach-get-simulators-versions-list"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-simulators-versions-list"
+    }
+}

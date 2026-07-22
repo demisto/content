@@ -1,0 +1,46 @@
+commonfields:
+  id: NessusLaunchScan
+  version: -1
+name: NessusLaunchScan
+script: >
+  from time import ctime
+
+  res = []
+
+
+  dArgs = demisto.args()
+
+  resCmd = demisto.executeCommand("scan-launch", dArgs)
+
+  try:
+      for entry in resCmd:
+          if isError(entry):
+              res = resCmd
+              break
+          else:
+              res.append({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': entry['Contents']})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- nessus
+comment: Deprecated. Launch an existing scan.
+system: true
+args:
+- name: scanId
+  required: true
+  default: true
+  description: Scan ID as it appears in Scan List
+- name: targets
+  description: If specified, these targets will be scanned instead of the default. Value can be single host or of comma separated targets.
+scripttarget: 0
+dependson:
+  must:
+  - Nessus|||scan-launch
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,26 @@
+{
+    "notes": [],
+    "is_deprecated": false,
+    "is_revoked": false,
+    "ctix_created": 1651648700,
+    "is_false_positive": false,
+    "name": "8.8.8.8",
+    "is_reviewed": false,
+    "is_whitelisted": false,
+    "is_under_review": false,
+    "is_watchlist": false,
+    "tags": [
+        {
+            "colour_code": null,
+            "id": "e2139fd5-fe05-48c5-8aaf-a5dfce900919",
+            "name": "test crowd"
+        },
+        {
+            "colour_code": null,
+            "id": "fb22e904-ad74-4b6e-987e-46e81caec9ed",
+            "name": "MaliciousConfidence/Low"
+        }
+    ],
+    "sub_type": "ipv4-addr",
+    "type": "indicator"
+}

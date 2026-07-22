@@ -1,0 +1,21 @@
+commonfields:
+  id: PwshInvokeExpression
+  version: -1
+name: PwshInvokeExpression
+script: |
+  $expr = $demisto.Args().expression
+  Invoke-Expression $expr
+type: powershell
+tags:
+- Utility
+comment: Invoke a PowerShell Expression. Used for testing powershell.
+enabled: true
+args:
+- name: expression
+  required: true
+  description: Powershell expression to invoke
+scripttarget: 0
+runonce: false
+dockerimage: demisto/powershell:7.1.3.22028
+runas: DBotWeakRole
+fromversion: 5.5.0

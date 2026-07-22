@@ -1,0 +1,124 @@
+id: PAN-OS - Block IP and URL - External Dynamic List v2 Test
+version: -1
+fromversion: "6.1.0"
+name: PAN-OS - Block IP and URL - External Dynamic List v2 Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 3242738e-8fbe-4299-80ad-259827475cb8
+    type: start
+    task:
+      id: 3242738e-8fbe-4299-80ad-259827475cb8
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": -90\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: bfdb19a5-603d-4dbb-8f7a-e00c889b2f1a
+    type: title
+    task:
+      id: bfdb19a5-603d-4dbb-8f7a-e00c889b2f1a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 380\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 7e4fd3ee-35a8-4289-8792-a2c0b8f2054b
+    type: regular
+    task:
+      id: 7e4fd3ee-35a8-4289-8792-a2c0b8f2054b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 40\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: e2ba81af-d4c7-4278-86a1-3e002b82a766
+    type: playbook
+    task:
+      id: e2ba81af-d4c7-4278-86a1-3e002b82a766
+      version: -1
+      name: PAN-OS - Block IP and URL - External Dynamic List v2
+      description: "This playbook blocks IP addresses and URLs using Palo Alto Networks Panorama or Firewall External Dynamic Lists.\nIt checks if the EDL configuration is in place with the 'PAN-OS EDL Setup' sub-playbook (otherwise the list will be configured), and adds the input IPs and URLs to the relevant lists."
+      playbookName: PAN-OS - Block IP and URL - External Dynamic List v2
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      AutoCommit:
+        simple: Yes
+      'EDLManagementServerURL ':
+        simple: http://18.219.190.57/files/
+      IP:
+        simple: 1.1.1.1
+      IPListName:
+        simple: dont-del-ip-edl-test-elior
+      LogForwarding: {}
+      URL:
+        simple: http://www.testurl.com
+      URLListName:
+        simple: dont-del-url-edl-test-elior
+      device-group: {}
+      inbound-or-outbound-rule:
+        simple: outbound
+      ip-pre-post-rulebase:
+        simple: pre-rulebase
+      ip-rule-position:
+        simple: top
+      url-pre-post-rulebase:
+        simple: pre-rulebase
+      url-rule-position:
+        simple: top
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 535,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": -90\n    }\n  }\n}"
+inputs: []
+outputs: []
+description: ''

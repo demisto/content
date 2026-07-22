@@ -1,0 +1,42 @@
+[
+    {
+        "type": "ProcessId",
+        "value": 1
+    },
+    {
+        "type": "ProcessPath",
+        "value": "C:\\Process.exe"
+    },
+    {
+        "type": "Path",
+        "value": "C:\\Path.exe"
+    },
+    {
+        "type": "User",
+        "value": "SYSTEM"
+    },
+    {
+        "type": "CommandLine",
+        "value": "\"C:\\Path.exe\" --background"
+    },
+    {
+        "type": "MD5Hash",
+        "value": "AAAAAAAAAAA"
+    },
+    {
+        "type": "ProcessId",
+        "value": 2
+    },
+    {
+        "type": "ProcessPath",
+        "value": "System"
+    },
+    {
+        "type": "Path",
+        "value": "System"
+    },
+    {
+        "type": "CommandLine",
+        "value": "System"
+    }
+]

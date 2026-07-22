@@ -1,0 +1,2056 @@
+id: MongoDB - Test
+version: -1
+name: MongoDB - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8a6c8edd-e961-45c1-84fd-beb8cdc2e49a
+    type: start
+    task:
+      id: 8a6c8edd-e961-45c1-84fd-beb8cdc2e49a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3845f558-8bf3-4c26-8587-c6551d0a3554
+    type: regular
+    task:
+      id: 3845f558-8bf3-4c26-8587-c6551d0a3554
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 47f2348b-a416-43ca-8b92-2862c82161a8
+    type: regular
+    task:
+      id: 47f2348b-a416-43ca-8b92-2862c82161a8
+      version: -1
+      name: Lists all collections
+      description: Lists all collections in database
+      script: '|||mongodb-list-collections'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c74f116f-9fd1-4770-8e76-ccf5c3673159
+    type: condition
+    task:
+      id: c74f116f-9fd1-4770-8e76-ccf5c3673159
+      version: -1
+      name: Is the collection exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MongoDB
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MongoDB.Collection.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GeneratedUUID
+                      iscontext: true
+                accessor: Collection.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 658ce0fc-47d4-4606-8b6c-47bc0f855c14
+    type: regular
+    task:
+      id: 658ce0fc-47d4-4606-8b6c-47bc0f855c14
+      version: -1
+      name: Drop it
+      description: Drops a collection from the database
+      script: '|||mongodb-drop-collection'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1237.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 65167b0f-2784-4235-8338-711225aae131
+    type: regular
+    task:
+      id: 65167b0f-2784-4235-8338-711225aae131
+      version: -1
+      name: Create a collection
+      description: Creates a collection
+      script: '|||mongodb-create-collection'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d45aa2a6-bf93-4fc7-8965-66fb8c7bcaed
+    type: regular
+    task:
+      id: d45aa2a6-bf93-4fc7-8965-66fb8c7bcaed
+      version: -1
+      name: List all collections
+      description: Lists all collections in database
+      script: '|||mongodb-list-collections'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: dab4beed-2cc3-434c-8f91-f90298586275
+    type: title
+    task:
+      id: dab4beed-2cc3-434c-8f91-f90298586275
+      version: -1
+      name: Prepare environment
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: eba0b46e-573c-4f0a-804e-67de7071fe87
+    type: condition
+    task:
+      id: eba0b46e-573c-4f0a-804e-67de7071fe87
+      version: -1
+      name: Is collection exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MongoDB
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MongoDB.Collection.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GeneratedUUID
+                      iscontext: true
+                accessor: Collection.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e6cd6272-c6e6-464d-8385-2e30bea8fea3
+    type: regular
+    task:
+      id: e6cd6272-c6e6-464d-8385-2e30bea8fea3
+      version: -1
+      name: Insert an entry
+      description: Inserts an entry to the database
+      script: '|||mongodb-insert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      entry:
+        simple: '{"test" : "i am test", "field2": "i am a second field"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a66ee0ec-8dab-43ee-8eda-0953f804dc19
+    type: regular
+    task:
+      id: a66ee0ec-8dab-43ee-8eda-0953f804dc19
+      version: -1
+      name: Get entry by ID
+      description: Get an entry from database by ID
+      script: '|||mongodb-get-entry-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      object_id:
+        complex:
+          root: MongoDB
+          accessor: Entry._id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f53265ca-199b-4501-8897-113be53cc737
+    type: condition
+    task:
+      id: f53265ca-199b-4501-8897-113be53cc737
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MongoDB
+                accessor: Entry.test
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 72268c02-d29f-49a2-8606-2fb489ff69e7
+    type: regular
+    task:
+      id: 72268c02-d29f-49a2-8606-2fb489ff69e7
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: MongoDB.Entry
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 4df42d3c-808b-4218-8cd2-78a11d1c0176
+    type: regular
+    task:
+      id: 4df42d3c-808b-4218-8cd2-78a11d1c0176
+      version: -1
+      name: raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not get entry from the Mongo server
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 5b95330a-5912-4e4b-8d4f-3340343d36e3
+    type: regular
+    task:
+      id: 5b95330a-5912-4e4b-8d4f-3340343d36e3
+      version: -1
+      name: Raise Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not find created collection
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 18081e33-f978-4062-8f70-890974106b55
+    type: condition
+    task:
+      id: 18081e33-f978-4062-8f70-890974106b55
+      version: -1
+      name: Verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MongoDB
+                accessor: Entry._id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 4760107f-ffbd-40dd-860b-fdccc032005c
+    type: regular
+    task:
+      id: 4760107f-ffbd-40dd-860b-fdccc032005c
+      version: -1
+      name: raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not find inserted entry
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: cc0f62b6-fce0-4fa1-8cb7-2cb7c680d964
+    type: regular
+    task:
+      id: cc0f62b6-fce0-4fa1-8cb7-2cb7c680d964
+      version: -1
+      name: Send query
+      description: Searches items by query
+      script: '|||mongodb-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      fields:
+        simple: test
+      query:
+        simple: '{"test" : "i am test"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9cb87535-88f1-464c-857e-d1f7170b83c2
+    type: condition
+    task:
+      id: 9cb87535-88f1-464c-857e-d1f7170b83c2
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MongoDB
+                accessor: Entry._id
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${MongoDB.Entry.field2}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 5f65106e-56b4-447b-87c8-1a7863fc86a9
+    type: regular
+    task:
+      id: 5f65106e-56b4-447b-87c8-1a7863fc86a9
+      version: -1
+      name: raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not find queried entry
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: d573e495-1558-435e-8eb6-69685a0e696a
+    type: regular
+    task:
+      id: d573e495-1558-435e-8eb6-69685a0e696a
+      version: -1
+      name: Update entry
+      description: Updates an entry in a collection
+      script: '|||mongodb-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      filter:
+        simple: '{"test" : "i am test"}'
+      update:
+        simple: '{"$set": {"test": "still a test"}}'
+      upsert:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e2c6a9d4-c6c7-4eaa-87d0-7ef291dd08b5
+    type: regular
+    task:
+      id: e2c6a9d4-c6c7-4eaa-87d0-7ef291dd08b5
+      version: -1
+      name: Query updated entry
+      description: Searches items by query
+      script: '|||mongodb-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      query:
+        simple: '{"test": "still a test"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 0a97a8ff-1bd3-4295-8973-cc793e33fa54
+    type: condition
+    task:
+      id: 0a97a8ff-1bd3-4295-8973-cc793e33fa54
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MongoDB
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MongoDB.Entry.test
+                      iscontext: true
+                    right:
+                      value:
+                        simple: still a test
+                accessor: Entry._id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 05e6f13c-25b5-4005-8465-4f55fa7ab7f4
+    type: regular
+    task:
+      id: 05e6f13c-25b5-4005-8465-4f55fa7ab7f4
+      version: -1
+      name: Delete entry
+      description: Deletes an entry from the database
+      script: '|||mongodb-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      filter:
+        simple: '{"test": "still a test"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0e3144be-5ec6-48db-8c92-465500a57604
+    type: regular
+    task:
+      id: 0e3144be-5ec6-48db-8c92-465500a57604
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: MongoDB.Entry
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 174bed68-9cb1-4556-8198-b8de08e13747
+    type: regular
+    task:
+      id: 174bed68-9cb1-4556-8198-b8de08e13747
+      version: -1
+      name: Query for all data
+      description: Searches items by query
+      script: '|||mongodb-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      query:
+        simple: '{}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 417770b7-0a6e-4ee7-8552-26e6ba0f948c
+    type: condition
+    task:
+      id: 417770b7-0a6e-4ee7-8552-26e6ba0f948c
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: MongoDB
+                accessor: Entry._id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2f4985bc-3f6c-456c-8f73-765d5f9eacc6
+    type: regular
+    task:
+      id: 2f4985bc-3f6c-456c-8f73-765d5f9eacc6
+      version: -1
+      name: Delete collection
+      description: Drops a collection from the database
+      script: '|||mongodb-drop-collection'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 5fc698cc-624d-4168-88c2-82e563f248ee
+    type: title
+    task:
+      id: 5fc698cc-624d-4168-88c2-82e563f248ee
+      version: -1
+      name: FIN
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cfdede9d-b5d8-4a79-818b-80dcaf26305d
+    type: regular
+    task:
+      id: cfdede9d-b5d8-4a79-818b-80dcaf26305d
+      version: -1
+      name: Generate UUID as a new collection
+      description: Generates random UUID
+      scriptName: GenerateUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: a174b24b-7fbb-49d7-8497-a70d372d0e5b
+    type: regular
+    task:
+      id: a174b24b-7fbb-49d7-8497-a70d372d0e5b
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: MongoDB.Entry
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 968308d7-6dd7-48f9-8d49-eb4493278a4f
+    type: regular
+    task:
+      id: 968308d7-6dd7-48f9-8d49-eb4493278a4f
+      version: -1
+      name: raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not get any data from MongoDB
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 1131bd1c-f1b0-4bd6-88d3-133825a4ef84
+    type: title
+    task:
+      id: 1131bd1c-f1b0-4bd6-88d3-133825a4ef84
+      version: -1
+      name: Test Datetime
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 5a76118c-1873-4ca0-8f40-88e53eca2c4a
+    type: regular
+    task:
+      id: 5a76118c-1873-4ca0-8f40-88e53eca2c4a
+      version: -1
+      name: Insert Datetime object
+      description: Inserts an entry to the database.
+      script: '|||mongodb-insert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      entry:
+        simple: '{"date": "ISODate(''2020-06-12T08:23:07.000Z'')"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 466578c5-ae7b-46cd-8556-b086e4b43eae
+    type: title
+    task:
+      id: 466578c5-ae7b-46cd-8556-b086e4b43eae
+      version: -1
+      name: No error has raised
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 444a80dd-1093-41cd-89f7-2aabb5a66f41
+    type: regular
+    task:
+      id: 444a80dd-1093-41cd-89f7-2aabb5a66f41
+      version: -1
+      name: Query Datetime object
+      description: Searches for items by the specified JSON query.
+      script: '|||mongodb-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      query:
+        simple: '{"date": "2020-06-12T08:23:07.000Z"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 2f65065e-6f14-423c-88a3-de611174aa5e
+    type: condition
+    task:
+      id: 2f65065e-6f14-423c-88a3-de611174aa5e
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MongoDB
+                accessor: Entry.date
+            iscontext: true
+          right:
+            value:
+              simple: "2020-06-12T08:23:07.000Z"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 23198f51-7f50-44c8-8d8f-30d1e1859632
+    type: title
+    task:
+      id: 23198f51-7f50-44c8-8d8f-30d1e1859632
+      version: -1
+      name: Tear down
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: b9ecbcbf-08b0-40f9-8520-e14a9692ffa2
+    type: title
+    task:
+      id: b9ecbcbf-08b0-40f9-8520-e14a9692ffa2
+      version: -1
+      name: Bulk Update
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 1f4c3a2d-924a-4b58-817b-1b1445b98ecb
+    type: regular
+    task:
+      id: 1f4c3a2d-924a-4b58-817b-1b1445b98ecb
+      version: -1
+      name: Bulk update with upsert
+      description: Bulk updates entries in a collection.
+      script: '|||mongodb-bulk-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      filter:
+        complex:
+          root: filter
+      update:
+        complex:
+          root: update
+      update_one:
+        simple: "true"
+      upsert:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: ca95f4a4-d7a5-477e-816a-b9db2619897d
+    type: regular
+    task:
+      id: ca95f4a4-d7a5-477e-816a-b9db2619897d
+      version: -1
+      name: Delete entries
+      description: Deletes an entry from the database.
+      script: '|||mongodb-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      delete_one:
+        simple: "false"
+      filter:
+        simple: '{"test": true}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 79f8d931-68f9-4c12-8326-a1066df663e9
+    type: regular
+    task:
+      id: 79f8d931-68f9-4c12-8326-a1066df663e9
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: GeneratedUUID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 2bccece8-4443-4b16-87f7-fecc616f6a15
+    type: regular
+    task:
+      id: 2bccece8-4443-4b16-87f7-fecc616f6a15
+      version: -1
+      name: Set filter value in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      key:
+        simple: filter
+      value:
+        simple: '[{"Name": "test1"},{"Name": "test2"}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: ce1ac61f-2663-42c8-8497-54045d3e6697
+    type: regular
+    task:
+      id: ce1ac61f-2663-42c8-8497-54045d3e6697
+      version: -1
+      name: Set update value in context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      key:
+        simple: update
+      value:
+        simple: '[{"$set": {"test": true}},{"$set": {"test": true}}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 416839fa-a515-4945-8fe7-11d6eaa382fe
+    type: regular
+    task:
+      id: 416839fa-a515-4945-8fe7-11d6eaa382fe
+      version: -1
+      name: Query inserted entries
+      description: Searches for items by using the specified JSON query. Search by
+        regex is supported.
+      script: '|||mongodb-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      query:
+        simple: '{"test": true}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: c7f9e764-97b0-454e-8492-39493134cc62
+    type: condition
+    task:
+      id: c7f9e764-97b0-454e-8492-39493134cc62
+      version: -1
+      name: Verify inserted entries
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: MongoDB.Entry.[0]
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: test
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: MongoDB.Entry.[1]
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: test
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 3ed04038-010b-4002-85cd-bb152540582d
+    type: regular
+    task:
+      id: 3ed04038-010b-4002-85cd-bb152540582d
+      version: -1
+      name: Raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not validated inserted entries
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: efd4781a-b85c-40d2-8b88-7bc075a61f91
+    type: regular
+    task:
+      id: efd4781a-b85c-40d2-8b88-7bc075a61f91
+      version: -1
+      name: Update entry
+      description: Updates an entry in a collection
+      script: '|||mongodb-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      filter:
+        simple: '{"test" : "upsert"}'
+      update:
+        simple: '{"$set": {"value": "upsert"}}'
+      update_one:
+        simple: "true"
+      upsert:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: bede3285-13ab-41d4-8a1b-49b1c04cd49e
+    type: regular
+    task:
+      id: bede3285-13ab-41d4-8a1b-49b1c04cd49e
+      version: -1
+      name: Query updated entry
+      description: Searches items by query
+      script: '|||mongodb-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      query:
+        simple: '{"test": "upsert"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 265d3ef0-bdb1-4b50-8120-062daeae48e7
+    type: condition
+    task:
+      id: 265d3ef0-bdb1-4b50-8120-062daeae48e7
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MongoDB.Entry
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MongoDB.Entry.test
+                      iscontext: true
+                    right:
+                      value:
+                        simple: upsert
+                accessor: _id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: e5efcc91-1202-45c7-8acf-04e9e151ecf9
+    type: regular
+    task:
+      id: e5efcc91-1202-45c7-8acf-04e9e151ecf9
+      version: -1
+      name: Delete entry
+      description: Deletes an entry from the database
+      script: '|||mongodb-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      collection:
+        complex:
+          root: GeneratedUUID
+      filter:
+        simple: '{"test": "upsert"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: ce600023-fa8b-43f8-8fa2-c8e461b1938a
+    type: regular
+    task:
+      id: ce600023-fa8b-43f8-8fa2-c8e461b1938a
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: MongoDB.Entry
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 5fe129e7-a4dd-4021-8c67-27a7a373062d
+    type: title
+    task:
+      id: 5fe129e7-a4dd-4021-8c67-27a7a373062d
+      version: -1
+      name: Insert New Entry Using Upsert
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: fcc93b44-27da-4828-8b32-56167ce5f0f2
+    type: regular
+    task:
+      id: fcc93b44-27da-4828-8b32-56167ce5f0f2
+      version: -1
+      name: Raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Could not validated inserted entry
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 5035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7905,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

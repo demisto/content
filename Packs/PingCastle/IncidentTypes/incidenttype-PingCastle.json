@@ -1,0 +1,22 @@
+{
+    "autorun": true,
+    "color": "#3F51B5",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "PingCastle",
+    "layout": "Ping Castle Incident - Report",
+    "locked": false,
+    "name": "PingCastle",
+    "playbookId": "SX - PC - PingCastle Report",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.5.0"
+}

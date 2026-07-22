@@ -1,0 +1,5261 @@
+id: Test Playbook - MDE SIEM ingestion - Get Incident Data
+version: -1
+name: Test Playbook - MDE SIEM ingestion - Get Incident Data
+description: |-
+  This playbook tests the ‘MDE SIEM ingestion - Get Incident Data’ playbook which is part of the ‘Malware Investigation and Response’ pack.
+
+  The following tests are conducted in the playbook:
+  1- Confirm that incident fields were populated correctly by the custom output mapping rules.
+  3- Ensure that the context data was properly extracted.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: deac40b7-ef54-450a-8f81-cff18ca50a54
+    type: start
+    task:
+      id: deac40b7-ef54-450a-8f81-cff18ca50a54
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -1655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 7ce74e80-813c-44ae-82ce-6fe85dbabf55
+    type: regular
+    task:
+      id: 7ce74e80-813c-44ae-82ce-6fe85dbabf55
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "293"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -1525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 98abdbc7-28ca-4367-893e-188bf72cd81d
+    type: condition
+    task:
+      id: 98abdbc7-28ca-4367-893e-188bf72cd81d
+      version: -1
+      name: Verify Alert ID
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.ID’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "114"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: ID
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 712553ed-55a0-4052-85ba-b79b305d9b16
+    type: title
+    task:
+      id: 712553ed-55a0-4052-85ba-b79b305d9b16
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "132"
+      - "151"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: e242cb4e-a659-450b-88ef-89401764ba55
+    type: title
+    task:
+      id: e242cb4e-a659-450b-88ef-89401764ba55
+      version: -1
+      name: '''MicrosoftATP.Alert'' Context Data'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "75"
+      - "294"
+      - "296"
+      - "310"
+      - "316"
+      - "320"
+      - "324"
+      - "328"
+      - "334"
+      - "338"
+      - "346"
+      - "348"
+      - "473"
+      - "475"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 5166b2f6-8446-44b2-8965-1482065bc065
+    type: title
+    task:
+      id: 5166b2f6-8446-44b2-8965-1482065bc065
+      version: -1
+      name: Done verifying 'MicrosoftATP.Alert'
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "277"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6385,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: ca5fe462-929e-445b-85a1-125522e02171
+    type: regular
+    task:
+      id: ca5fe462-929e-445b-85a1-125522e02171
+      version: -1
+      name: Verify Context Error - Alert ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.ID' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.ID' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: bf8cabf8-1fcc-4753-8a94-78f60bebd3e8
+    type: title
+    task:
+      id: bf8cabf8-1fcc-4753-8a94-78f60bebd3e8
+      version: -1
+      name: Check Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "372"
+      - "375"
+      - "378"
+      - "381"
+      - "384"
+      - "387"
+      - "390"
+      - "393"
+      - "396"
+      - "399"
+      - "402"
+      - "405"
+      - "408"
+      - "411"
+      - "414"
+      - "417"
+      - "420"
+      - "423"
+      - "426"
+      - "429"
+      - "432"
+      - "435"
+      - "438"
+      - "447"
+      - "450"
+      - "453"
+      - "456"
+      - "439"
+      - "442"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: 28f4c33f-f30d-42c3-841f-29797a0e9b6d
+    type: title
+    task:
+      id: 28f4c33f-f30d-42c3-841f-29797a0e9b6d
+      version: -1
+      name: Done verifying Incident Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "277"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12740,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "149":
+    id: "149"
+    taskid: bf413d76-4ee8-4777-8eb1-f381ccc1e19c
+    type: regular
+    task:
+      id: bf413d76-4ee8-4777-8eb1-f381ccc1e19c
+      version: -1
+      name: Set Incident Fields To Context
+      description: Add incident fields required for testing to the mock incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "477"
+    scriptarguments:
+      externalendtime:
+        complex:
+          root: MicrosoftATP.Alert
+          accessor: LastUpdateTime
+      externalstarttime:
+        complex:
+          root: MicrosoftATP.Alert
+          accessor: FirstEventTime
+      externalsystemid:
+        complex:
+          root: MDE.Alert.value
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+      type:
+        simple: Malware Investigation and Response
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "151":
+    id: "151"
+    taskid: a55bba43-e13d-48f6-89fc-77d0e76b5927
+    type: title
+    task:
+      id: a55bba43-e13d-48f6-89fc-77d0e76b5927
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "112"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "277":
+    id: "277"
+    taskid: 67c29e5f-f02d-4bbd-8fc8-a30521f15b9f
+    type: title
+    task:
+      id: 67c29e5f-f02d-4bbd-8fc8-a30521f15b9f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12740,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "293":
+    id: "293"
+    taskid: 07083ad7-3739-4854-8fb9-fdbe57d8f67d
+    type: regular
+    task:
+      id: 07083ad7-3739-4854-8fb9-fdbe57d8f67d
+      version: -1
+      name: Get MDE Available Alerts
+      description: Gets a list of alerts present on the system. Filtering can be done only on a single argument.
+      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-list-alerts
+      type: regular
+      iscommand: true
+      brand: Microsoft Defender Advanced Threat Protection
+    nexttasks:
+      '#none#':
+      - "370"
+    scriptarguments:
+      extend-context:
+        simple: MDE.Alert=
+      ignore-outputs:
+        simple: "true"
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "294":
+    id: "294"
+    taskid: f4d7e4a7-e173-4a15-8d17-55a2755d1d06
+    type: condition
+    task:
+      id: f4d7e4a7-e173-4a15-8d17-55a2755d1d06
+      version: -1
+      name: Verify Incident ID
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.IncidentID’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "295"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: IncidentID
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "295":
+    id: "295"
+    taskid: 75e0b0e3-d778-43ac-8c10-4a5ee4a5fd56
+    type: regular
+    task:
+      id: 75e0b0e3-d778-43ac-8c10-4a5ee4a5fd56
+      version: -1
+      name: Verify Context Error - Incident ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.IncidentID' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.IncidentID' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "296":
+    id: "296"
+    taskid: a18235b2-2b73-4773-8618-51d354d62a51
+    type: condition
+    task:
+      id: a18235b2-2b73-4773-8618-51d354d62a51
+      version: -1
+      name: Verify Investigation ID
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.InvestigationID’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "297"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: InvestigationID
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "297":
+    id: "297"
+    taskid: 7a173579-722f-4e54-8ebf-8fac370c0715
+    type: regular
+    task:
+      id: 7a173579-722f-4e54-8ebf-8fac370c0715
+      version: -1
+      name: Verify Context Error - Investigation ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.InvestigationID' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.InvestigationID' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "310":
+    id: "310"
+    taskid: 8edc25ac-0815-48c5-8b23-70c388be8a2e
+    type: condition
+    task:
+      id: 8edc25ac-0815-48c5-8b23-70c388be8a2e
+      version: -1
+      name: Verify Detection Source
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.DetectionSource’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "311"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: DetectionSource
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2875,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "311":
+    id: "311"
+    taskid: 903cfc1d-9961-4678-8d5d-8aaf54b8089b
+    type: regular
+    task:
+      id: 903cfc1d-9961-4678-8d5d-8aaf54b8089b
+      version: -1
+      name: Verify Context Error - Detection Source
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.DetectionSource' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.DetectionSource' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2875,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "316":
+    id: "316"
+    taskid: cf8caf6f-02d6-48eb-8156-455909a2cb2d
+    type: condition
+    task:
+      id: cf8caf6f-02d6-48eb-8156-455909a2cb2d
+      version: -1
+      name: Verify Title
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.Title’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "317"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Title
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3265,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "317":
+    id: "317"
+    taskid: 74212738-cdd8-4caa-8039-08a7c26225ae
+    type: regular
+    task:
+      id: 74212738-cdd8-4caa-8039-08a7c26225ae
+      version: -1
+      name: Verify Context Error - Title
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.Title' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.Title' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3265,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "320":
+    id: "320"
+    taskid: aaf921fe-865a-4edb-89c7-60e831415edd
+    type: condition
+    task:
+      id: aaf921fe-865a-4edb-89c7-60e831415edd
+      version: -1
+      name: Verify Alert Creation Time
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.AlertCreationTime’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "321"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: AlertCreationTime
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3655,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "321":
+    id: "321"
+    taskid: 5f9c301a-6b85-4ca8-87fc-7f61e307a8c2
+    type: regular
+    task:
+      id: 5f9c301a-6b85-4ca8-87fc-7f61e307a8c2
+      version: -1
+      name: Verify Context Error - Alert Creation Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.AlertCreationTime' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.AlertCreationTime' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3655,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "324":
+    id: "324"
+    taskid: 38b39462-fbe4-48ac-8978-41e73f2c8cc4
+    type: condition
+    task:
+      id: 38b39462-fbe4-48ac-8978-41e73f2c8cc4
+      version: -1
+      name: Verify Last Event Time
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.LastEventTime’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "325"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: LastEventTime
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4045,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "325":
+    id: "325"
+    taskid: 1bfa6abf-eb03-4293-8a7f-5aadb0df4a6b
+    type: regular
+    task:
+      id: 1bfa6abf-eb03-4293-8a7f-5aadb0df4a6b
+      version: -1
+      name: Verify Context Error - Last Event Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.LastEventTime' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.LastEventTime' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4045,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "328":
+    id: "328"
+    taskid: d36824e1-cb1b-448c-88e9-819226d1b51f
+    type: condition
+    task:
+      id: d36824e1-cb1b-448c-88e9-819226d1b51f
+      version: -1
+      name: Verify Resolved Time
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.ResolvedTime’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "329"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: ResolvedTime
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4435,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "329":
+    id: "329"
+    taskid: 1a224d24-27c9-4d21-8219-5b2770b7b678
+    type: regular
+    task:
+      id: 1a224d24-27c9-4d21-8219-5b2770b7b678
+      version: -1
+      name: Verify Context Error - Resolved Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.ResolvedTime' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.ResolvedTime' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4435,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "334":
+    id: "334"
+    taskid: 86ff3a24-e88e-4d1a-8e89-aad062679bcf
+    type: condition
+    task:
+      id: 86ff3a24-e88e-4d1a-8e89-aad062679bcf
+      version: -1
+      name: Verify AAD Tenant ID
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.AADTenantID’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "335"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: AADTenantID
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4825,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "335":
+    id: "335"
+    taskid: 5bec2e70-c692-4fb2-870d-608080ffa174
+    type: regular
+    task:
+      id: 5bec2e70-c692-4fb2-870d-608080ffa174
+      version: -1
+      name: Verify Context Error - AAD Tenant ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.AADTenantID' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.AADTenantID' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4825,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "338":
+    id: "338"
+    taskid: b36723ef-ffa7-49ed-8cfc-d3eb9ccda4ec
+    type: condition
+    task:
+      id: b36723ef-ffa7-49ed-8cfc-d3eb9ccda4ec
+      version: -1
+      name: Verify Detector ID
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.DetectorID’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "339"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: DetectorID
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5215,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "339":
+    id: "339"
+    taskid: 0734aab3-a8c5-4af1-8189-70aebd674e08
+    type: regular
+    task:
+      id: 0734aab3-a8c5-4af1-8189-70aebd674e08
+      version: -1
+      name: Verify Context Error - Detector ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.DetectorID' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.DetectorID' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5215,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "346":
+    id: "346"
+    taskid: 0b77baa5-2e4e-457a-8634-df6757e04d88
+    type: condition
+    task:
+      id: 0b77baa5-2e4e-457a-8634-df6757e04d88
+      version: -1
+      name: Verify RBAC Group Name
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.RBACGroupName’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "347"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: RBACGroupName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5615,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "347":
+    id: "347"
+    taskid: 385fdfec-316d-4a57-8a42-360af38eb5e7
+    type: regular
+    task:
+      id: 385fdfec-316d-4a57-8a42-360af38eb5e7
+      version: -1
+      name: Verify Context Error - RBAC Group Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.RBACGroupName' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.RBACGroupName' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5615,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "348":
+    id: "348"
+    taskid: c329db27-ea04-486a-87fc-050cd5e66801
+    type: condition
+    task:
+      id: c329db27-ea04-486a-87fc-050cd5e66801
+      version: -1
+      name: Verify Comments
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.Comments.’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "113"
+      '#default#':
+      - "349"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Comments
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6005,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "349":
+    id: "349"
+    taskid: f10f3a11-379a-405e-8fba-deb7097417fd
+    type: regular
+    task:
+      id: f10f3a11-379a-405e-8fba-deb7097417fd
+      version: -1
+      name: Verify Context Error - Comments
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.Comments' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.Comments' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6005,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "368":
+    id: "368"
+    taskid: a3eb4224-112f-4d38-83f9-75fff60906f2
+    type: condition
+    task:
+      id: a3eb4224-112f-4d38-83f9-75fff60906f2
+      version: -1
+      name: Verify URLs
+      description: Verify that the ‘ URLs’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "369"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: urls
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: url
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "369":
+    id: "369"
+    taskid: 87592e49-d80e-4565-853b-25296172c337
+    type: regular
+    task:
+      id: 87592e49-d80e-4565-853b-25296172c337
+      version: -1
+      name: Verify Incident Field Error - URLs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'URLs' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'URLs' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "370":
+    id: "370"
+    taskid: e943ec83-9d2c-4df2-854f-2cab284e0728
+    type: condition
+    task:
+      id: e943ec83-9d2c-4df2-854f-2cab284e0728
+      version: -1
+      name: Check Microsoft Defender ATP Available Alerts
+      description: Checks if there are available alerts for testing processes.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "371"
+      "yes":
+      - "149"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MDE.Alert.value
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "371":
+    id: "371"
+    taskid: ab7c5cc7-36ce-448a-8948-1db585f10555
+    type: title
+    task:
+      id: ab7c5cc7-36ce-448a-8948-1db585f10555
+      version: -1
+      name: Tests cannot be performed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "277"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": -1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "372":
+    id: "372"
+    taskid: d484ffd5-1a9e-4855-8371-4e403a1d2fa8
+    type: condition
+    task:
+      id: d484ffd5-1a9e-4855-8371-4e403a1d2fa8
+      version: -1
+      name: Determine If There Is a URL Within The Alert
+      description: 'Checks for ''url'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "368"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: url
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "373":
+    id: "373"
+    taskid: 54c6c9f6-8eee-4d12-8f78-d54105c12348
+    type: condition
+    task:
+      id: 54c6c9f6-8eee-4d12-8f78-d54105c12348
+      version: -1
+      name: Verify Users
+      description: Verify that the ‘users’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "374"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: users
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: accountName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2105,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "374":
+    id: "374"
+    taskid: 36e9e9a1-fc1b-426b-8e2e-40ecda7fdcd7
+    type: regular
+    task:
+      id: 36e9e9a1-fc1b-426b-8e2e-40ecda7fdcd7
+      version: -1
+      name: Verify Incident Field Error - Users
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'users' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'users' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "375":
+    id: "375"
+    taskid: ab3fe6b7-a7da-4d87-8e8d-e205b8953265
+    type: condition
+    task:
+      id: ab3fe6b7-a7da-4d87-8e8d-e205b8953265
+      version: -1
+      name: Determine If There Is An Account Name Within The Alert
+      description: 'Checks for ''accountname'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "373"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: accountName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "376":
+    id: "376"
+    taskid: 6b309c79-24de-4103-8eee-2e137f8663b7
+    type: condition
+    task:
+      id: 6b309c79-24de-4103-8eee-2e137f8663b7
+      version: -1
+      name: Verify User SID
+      description: Verify that the ‘usersid’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "377"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: usersid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: userSid
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2495,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "377":
+    id: "377"
+    taskid: 4296ea50-5ca8-469c-8691-4f83d7dd0dcb
+    type: regular
+    task:
+      id: 4296ea50-5ca8-469c-8691-4f83d7dd0dcb
+      version: -1
+      name: Verify Incident Field Error - User SID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'usersid' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'usersid' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "378":
+    id: "378"
+    taskid: 2d11215b-012e-4015-8bcb-e8b897fdf098
+    type: condition
+    task:
+      id: 2d11215b-012e-4015-8bcb-e8b897fdf098
+      version: -1
+      name: Determine If There Is A User SID Within The Alert
+      description: 'Checks for ''userSid'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "376"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: userSid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "379":
+    id: "379"
+    taskid: 1c3a25d2-1e66-42e9-89bf-5dacc37ac136
+    type: condition
+    task:
+      id: 1c3a25d2-1e66-42e9-89bf-5dacc37ac136
+      version: -1
+      name: Verify CMD line
+      description: Verify that the ‘cmdline’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "380"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: cmdline
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: processCommandLine
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2885,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "380":
+    id: "380"
+    taskid: 1ad47c60-e949-4bf2-8e77-4dde2f07ccd6
+    type: regular
+    task:
+      id: 1ad47c60-e949-4bf2-8e77-4dde2f07ccd6
+      version: -1
+      name: Verify Incident Field Error - CMD line
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'cmdline' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'cmdline' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2880,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "381":
+    id: "381"
+    taskid: cde67bbc-4972-4c79-8e59-a6bcbd442b99
+    type: condition
+    task:
+      id: cde67bbc-4972-4c79-8e59-a6bcbd442b99
+      version: -1
+      name: Determine If There Is A Process Command Line Within The Alert
+      description: 'Checks for ''processCommandLine'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "379"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: processCommandLine
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2880,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "382":
+    id: "382"
+    taskid: 8ea197ad-9633-40ef-8935-87f42b47fddc
+    type: condition
+    task:
+      id: 8ea197ad-9633-40ef-8935-87f42b47fddc
+      version: -1
+      name: Verify Detected IPs
+      description: Verify that the ‘detectedips’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "383"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: detectedips
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: ipAddress
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3275,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "383":
+    id: "383"
+    taskid: bdf89ce2-282b-4e1d-8a31-c302f79972ea
+    type: regular
+    task:
+      id: bdf89ce2-282b-4e1d-8a31-c302f79972ea
+      version: -1
+      name: Verify Incident Field Error - Detected IPs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'detectedips' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'detectedips' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3270,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "384":
+    id: "384"
+    taskid: c2f22a7f-4c9d-4ab7-8350-f8508b268cf8
+    type: condition
+    task:
+      id: c2f22a7f-4c9d-4ab7-8350-f8508b268cf8
+      version: -1
+      name: Determine If There Is An IP Address Within The Alert
+      description: 'Checks for ''ipAddress'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "382"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: ipAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3270,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "385":
+    id: "385"
+    taskid: ca8123d0-52ba-4c2b-8d5e-c5d80d1dfbbe
+    type: condition
+    task:
+      id: ca8123d0-52ba-4c2b-8d5e-c5d80d1dfbbe
+      version: -1
+      name: Verify Domain Name
+      description: Verify that the ‘domainname’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "386"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: domainname
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: domainName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3665,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "386":
+    id: "386"
+    taskid: 20e991ef-49b1-4e3b-8216-6f7a1319c758
+    type: regular
+    task:
+      id: 20e991ef-49b1-4e3b-8216-6f7a1319c758
+      version: -1
+      name: Verify Incident Field Error - Domain Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'domainname' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'domainname' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3660,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "387":
+    id: "387"
+    taskid: cf8c9396-73e7-466e-8642-251a24a64dfe
+    type: condition
+    task:
+      id: cf8c9396-73e7-466e-8642-251a24a64dfe
+      version: -1
+      name: Determine If There Is A Domain Name Within The Alert
+      description: 'Checks for ''domainName'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "385"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: domainName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3660,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "388":
+    id: "388"
+    taskid: 223036ce-382c-41fc-8f84-9b4b98cafb7b
+    type: condition
+    task:
+      id: 223036ce-382c-41fc-8f84-9b4b98cafb7b
+      version: -1
+      name: Verify File Names
+      description: Verify that the ‘filenames’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "389"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: filenames
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: fileName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4055,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "389":
+    id: "389"
+    taskid: 89954762-7dd7-4146-8a1e-a8ead378b004
+    type: regular
+    task:
+      id: 89954762-7dd7-4146-8a1e-a8ead378b004
+      version: -1
+      name: Verify Incident Field Error - File Names
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'filenames' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'filenames' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4050,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "390":
+    id: "390"
+    taskid: a94966df-b17e-4dbc-80e2-7c8dd10468a2
+    type: condition
+    task:
+      id: a94966df-b17e-4dbc-80e2-7c8dd10468a2
+      version: -1
+      name: Determine If There Is A File Name Within The Alert
+      description: 'Checks for ''fileName'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "388"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: fileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4050,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "391":
+    id: "391"
+    taskid: 3d46d2fa-bbfd-41cf-8bab-55680c193950
+    type: condition
+    task:
+      id: 3d46d2fa-bbfd-41cf-8bab-55680c193950
+      version: -1
+      name: Verify File Paths
+      description: Verify that the ‘filepaths’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "392"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: filepaths
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: filePath
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4455,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "392":
+    id: "392"
+    taskid: 70ca9fae-b407-4d06-8f2e-c6deea1ed43a
+    type: regular
+    task:
+      id: 70ca9fae-b407-4d06-8f2e-c6deea1ed43a
+      version: -1
+      name: Verify Incident Field Error - File Paths
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'filepaths' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'filepaths' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4450,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "393":
+    id: "393"
+    taskid: 0d5561b1-add8-45a1-837d-e272eb239b02
+    type: condition
+    task:
+      id: 0d5561b1-add8-45a1-837d-e272eb239b02
+      version: -1
+      name: Determine If There Is A File Path Within The Alert
+      description: 'Checks for ''filePath'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "391"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: filePath
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4450,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "394":
+    id: "394"
+    taskid: 680ffb79-7947-44f0-877d-31998f6d46e9
+    type: condition
+    task:
+      id: 680ffb79-7947-44f0-877d-31998f6d46e9
+      version: -1
+      name: Verify File SHA1
+      description: Verify that the ‘filesha1’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "395"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: filesha1
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: sha1
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4840,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "395":
+    id: "395"
+    taskid: 3f1e89e2-108a-4386-8ffe-9aa63b9bf6ce
+    type: regular
+    task:
+      id: 3f1e89e2-108a-4386-8ffe-9aa63b9bf6ce
+      version: -1
+      name: Verify Incident Field Error - File SHA1
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'filesha1' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'filesha1' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4840,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "396":
+    id: "396"
+    taskid: 08f98d76-e1b7-4de6-815b-e626bdb8f6f8
+    type: condition
+    task:
+      id: 08f98d76-e1b7-4de6-815b-e626bdb8f6f8
+      version: -1
+      name: Determine If There Is A File SHA1 Within The Alert
+      description: 'Checks for ''sha1'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "394"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: sha1
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4840,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "397":
+    id: "397"
+    taskid: 7f85eccf-6035-4aad-85c3-c63485fd6aa0
+    type: condition
+    task:
+      id: 7f85eccf-6035-4aad-85c3-c63485fd6aa0
+      version: -1
+      name: Verify File SHA256
+      description: Verify that the ‘filesha256’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "398"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: filesha256
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: sha256
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5240,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "398":
+    id: "398"
+    taskid: 8745d2a8-0352-4f0a-8dc9-a85553f79936
+    type: regular
+    task:
+      id: 8745d2a8-0352-4f0a-8dc9-a85553f79936
+      version: -1
+      name: Verify Incident Field Error - File SHA256
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'filesha256' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'filesha256' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5240,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "399":
+    id: "399"
+    taskid: e666f9ee-5591-4300-8d02-91aa871b9ef1
+    type: condition
+    task:
+      id: e666f9ee-5591-4300-8d02-91aa871b9ef1
+      version: -1
+      name: Determine If There Is A File SHA256 Within The Alert
+      description: 'Checks for ''sha256'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "397"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: sha256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5240,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "400":
+    id: "400"
+    taskid: f23da97e-633e-4b20-83d7-0977ed085ae8
+    type: condition
+    task:
+      id: f23da97e-633e-4b20-83d7-0977ed085ae8
+      version: -1
+      name: Verify Microsoft Defender for Endpoint Evidence Type
+      description: Verify that the ‘microsoftdefenderforendpointevidencetype’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "401"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: microsoftdefenderforendpointevidencetype
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: entityType
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "401":
+    id: "401"
+    taskid: 01c0aa29-c135-4c6a-88ce-585f79e1c4d3
+    type: regular
+    task:
+      id: 01c0aa29-c135-4c6a-88ce-585f79e1c4d3
+      version: -1
+      name: Verify Incident Field Error - Microsoft Defender for Endpoint Evidence Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'microsoftdefenderforendpointevidencetype' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'microsoftdefenderforendpointevidencetype' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "402":
+    id: "402"
+    taskid: 1fcc483e-9b53-4deb-8c6c-e956383b09f2
+    type: condition
+    task:
+      id: 1fcc483e-9b53-4deb-8c6c-e956383b09f2
+      version: -1
+      name: Determine If There Is An Entity Type Within The Alert
+      description: 'Checks for ''entityType'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "400"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: entityType
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "403":
+    id: "403"
+    taskid: b379a894-ec7b-47ac-8d5c-b6c1786e74f3
+    type: condition
+    task:
+      id: b379a894-ec7b-47ac-8d5c-b6c1786e74f3
+      version: -1
+      name: Verify Parent Process File Path
+      description: Verify that the ‘parentprocessfilepath’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "404"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: parentprocessfilepath
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: parentProcessFileName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6030,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "404":
+    id: "404"
+    taskid: b6d4ea12-6e52-4af9-88eb-af92c878ff91
+    type: regular
+    task:
+      id: b6d4ea12-6e52-4af9-88eb-af92c878ff91
+      version: -1
+      name: Verify Incident Field Error - Parent Process File Path
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'parentprocessfilepath' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'parentprocessfilepath' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6030,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "405":
+    id: "405"
+    taskid: e8933d9a-59db-41e0-830b-cd0ae2db0a77
+    type: condition
+    task:
+      id: e8933d9a-59db-41e0-830b-cd0ae2db0a77
+      version: -1
+      name: Determine If There Is A Parent Process File Name Within The Alert
+      description: 'Checks for ''parentProcessFileName'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "403"
+      - "478"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: parentProcessFileName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6030,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "406":
+    id: "406"
+    taskid: 952c8367-4766-457d-897b-9ab1f832ebe8
+    type: condition
+    task:
+      id: 952c8367-4766-457d-897b-9ab1f832ebe8
+      version: -1
+      name: Verify Parent Process ID
+      description: Verify that the ‘parentprocessid’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "407"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: parentprocessid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: parentProcessId
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6820,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "407":
+    id: "407"
+    taskid: 424b4cad-bed5-48b7-8d2c-c2cebd365270
+    type: regular
+    task:
+      id: 424b4cad-bed5-48b7-8d2c-c2cebd365270
+      version: -1
+      name: Verify Incident Field Error - Parent Process ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'parentprocessid' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'parentprocessid' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6820,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "408":
+    id: "408"
+    taskid: d3b8164d-cd03-4c4c-8beb-ca8a8593e1b2
+    type: condition
+    task:
+      id: d3b8164d-cd03-4c4c-8beb-ca8a8593e1b2
+      version: -1
+      name: Determine If There Is A Parent Process ID Within The Alert
+      description: 'Checks for ''parentProcessId'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "406"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: parentProcessId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6820,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "409":
+    id: "409"
+    taskid: 6ebf0111-5886-4f57-8bc4-23ccde0db648
+    type: condition
+    task:
+      id: 6ebf0111-5886-4f57-8bc4-23ccde0db648
+      version: -1
+      name: Verify Process ID
+      description: Verify that the ‘processid’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "410"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: processid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: processId
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7220,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "410":
+    id: "410"
+    taskid: 95251bf6-cb43-4bfb-8537-27765dd80bf0
+    type: regular
+    task:
+      id: 95251bf6-cb43-4bfb-8537-27765dd80bf0
+      version: -1
+      name: Verify Incident Field Error - Process ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'processid' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'processid' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7220,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "411":
+    id: "411"
+    taskid: bf128393-6f21-45dd-8512-33908b1babbb
+    type: condition
+    task:
+      id: bf128393-6f21-45dd-8512-33908b1babbb
+      version: -1
+      name: Determine If There Is A Process ID Within The Alert
+      description: 'Checks for ''processId'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "409"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: processId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7220,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "412":
+    id: "412"
+    taskid: 4e842496-097d-4a9d-8371-a1f7e7a34fa3
+    type: condition
+    task:
+      id: 4e842496-097d-4a9d-8371-a1f7e7a34fa3
+      version: -1
+      name: Verify Registry Key
+      description: Verify that the ‘registrykey’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "413"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: registrykey
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: registryKey
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7610,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "413":
+    id: "413"
+    taskid: 41d78949-c252-4165-8f89-8392ac00f18b
+    type: regular
+    task:
+      id: 41d78949-c252-4165-8f89-8392ac00f18b
+      version: -1
+      name: Verify Incident Field Error - Registry Key
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'registrykey' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'registrykey' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7610,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "414":
+    id: "414"
+    taskid: 3ea7ffb3-11d0-4bc2-8f84-27e225904433
+    type: condition
+    task:
+      id: 3ea7ffb3-11d0-4bc2-8f84-27e225904433
+      version: -1
+      name: Determine If There Is A Registry Key Within The Alert
+      description: 'Checks for ''registryKey'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "412"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: registryKey
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 7610,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "415":
+    id: "415"
+    taskid: 6874fba6-8f1b-46f0-8d09-10e6a40adb57
+    type: condition
+    task:
+      id: 6874fba6-8f1b-46f0-8d09-10e6a40adb57
+      version: -1
+      name: Verify Registry Value
+      description: Verify that the ‘registryvalue’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "416"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: registryvalue
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: registryValue
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8010,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "416":
+    id: "416"
+    taskid: e6ef0f56-5c33-4e85-8b15-4fbab8fef99e
+    type: regular
+    task:
+      id: e6ef0f56-5c33-4e85-8b15-4fbab8fef99e
+      version: -1
+      name: Verify Incident Field Error - Registry Value
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'registryvalue' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'registryvalue' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8010,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "417":
+    id: "417"
+    taskid: 99fac325-eaba-4453-8062-72328a3c6cb9
+    type: condition
+    task:
+      id: 99fac325-eaba-4453-8062-72328a3c6cb9
+      version: -1
+      name: Determine If There Is A Registry Value Within The Alert
+      description: 'Checks for ''registryValue'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "415"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: registryValue
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8010,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "418":
+    id: "418"
+    taskid: ea3e4882-2348-4d23-87e2-e1e9d152c5c5
+    type: condition
+    task:
+      id: ea3e4882-2348-4d23-87e2-e1e9d152c5c5
+      version: -1
+      name: Verify Registry Value Type
+      description: Verify that the ‘registryvaluetype’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "419"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: registryvaluetype
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: registryValueType
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8410,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "419":
+    id: "419"
+    taskid: 04f16a46-587b-4c14-8799-f05db37a1545
+    type: regular
+    task:
+      id: 04f16a46-587b-4c14-8799-f05db37a1545
+      version: -1
+      name: Verify Incident Field Error - Registry Value Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'registryvaluetype' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'registryvaluetype' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8410,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "420":
+    id: "420"
+    taskid: f53343f4-1f84-47f7-85dc-678f9b5b267e
+    type: condition
+    task:
+      id: f53343f4-1f84-47f7-85dc-678f9b5b267e
+      version: -1
+      name: Determine If There Is A Registry Value Type Within The Alert
+      description: 'Checks for ''registryValueType'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "418"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: registryValueType
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8410,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "421":
+    id: "421"
+    taskid: d141c931-05fc-4882-8e98-5629fe3aa8e6
+    type: condition
+    task:
+      id: d141c931-05fc-4882-8e98-5629fe3aa8e6
+      version: -1
+      name: Verify Investigation Stage
+      description: Verify that the ‘investigationstage’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "422"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: investigationstage
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: InvestigationState
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8800,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "422":
+    id: "422"
+    taskid: 1593fb6a-0443-4649-81f1-655fb40c9919
+    type: regular
+    task:
+      id: 1593fb6a-0443-4649-81f1-655fb40c9919
+      version: -1
+      name: Verify Incident Field Error - Investigation Stage
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'investigationstage' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'investigationstage' incident field configured within the 'Get full alert details' task was changed.\n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.InvestigationState' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8800,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "423":
+    id: "423"
+    taskid: 4ba71e86-000f-472a-8303-5487ac0c4a37
+    type: condition
+    task:
+      id: 4ba71e86-000f-472a-8303-5487ac0c4a37
+      version: -1
+      name: Determine If There Is An Investigation State Within The Alert
+      description: 'Checks for ''InvestigationState'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "421"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: InvestigationState
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 8800,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "424":
+    id: "424"
+    taskid: 5532b72a-3c1a-4f0e-8431-a8cfffdbad7b
+    type: condition
+    task:
+      id: 5532b72a-3c1a-4f0e-8431-a8cfffdbad7b
+      version: -1
+      name: Verify Agents ID
+      description: Verify that the ‘agentsid’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "425"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: agentsid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: MachineID
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9200,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "425":
+    id: "425"
+    taskid: ca7c656e-487c-4ccd-8a30-ed95b0e915c1
+    type: regular
+    task:
+      id: ca7c656e-487c-4ccd-8a30-ed95b0e915c1
+      version: -1
+      name: Verify Incident Field Error - Agents ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'agentsid' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'agentsid' incident field configured within the 'Get full alert details' task was changed. \n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.MachineID' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9200,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "426":
+    id: "426"
+    taskid: 081118f1-c211-4833-8839-b6ee11e1c9c6
+    type: condition
+    task:
+      id: 081118f1-c211-4833-8839-b6ee11e1c9c6
+      version: -1
+      name: Determine If There Is A Machine ID Within The Alert
+      description: 'Checks for ''MachineID'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "424"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: MachineID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9200,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "427":
+    id: "427"
+    taskid: 12e54ffe-9db4-4ee8-8976-73269a76c226
+    type: condition
+    task:
+      id: 12e54ffe-9db4-4ee8-8976-73269a76c226
+      version: -1
+      name: Verify MITRE Technique ID
+      description: Verify that the ‘mitretechniqueid’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "428"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: mitretechniqueid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: MitreTechniques
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9600,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "428":
+    id: "428"
+    taskid: 91e81a4b-f6b2-4f2a-889c-996fe650975d
+    type: regular
+    task:
+      id: 91e81a4b-f6b2-4f2a-889c-996fe650975d
+      version: -1
+      name: Verify Incident Field Error - MITRE Technique ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'mitretechniqueid' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'mitretechniqueid' incident field configured within the 'Get full alert details' task was changed.\n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.MitreTechniques' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9600,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "429":
+    id: "429"
+    taskid: e419525f-2eb6-47e9-8148-09767439601c
+    type: condition
+    task:
+      id: e419525f-2eb6-47e9-8148-09767439601c
+      version: -1
+      name: Determine If There Is A Mitre Techniques Within The Alert
+      description: 'Checks for ''MitreTechniques'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "427"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: MitreTechniques
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9600,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "430":
+    id: "430"
+    taskid: 3bbb463e-affd-4674-89e2-981c1358f275
+    type: condition
+    task:
+      id: 3bbb463e-affd-4674-89e2-981c1358f275
+      version: -1
+      name: Verify Process CMD
+      description: Verify that the ‘processcmd’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "431"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: processcmd
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: processCommandLine
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9990,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "431":
+    id: "431"
+    taskid: 17adc973-9ccf-4649-8d7c-bd3db10fce49
+    type: regular
+    task:
+      id: 17adc973-9ccf-4649-8d7c-bd3db10fce49
+      version: -1
+      name: Verify Incident Field Error - Process CMD
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'processcmd' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'processcmd' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9990,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "432":
+    id: "432"
+    taskid: 836345e6-0278-488b-811c-13a9ce80cb91
+    type: condition
+    task:
+      id: 836345e6-0278-488b-811c-13a9ce80cb91
+      version: -1
+      name: Determine If There Is A Process Command Line Within The Alert
+      description: 'Checks for ''processCommandLine'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "430"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: processCommandLine
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 9990,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "433":
+    id: "433"
+    taskid: 124a8747-b81a-479c-8372-fbf1f54334a0
+    type: condition
+    task:
+      id: 124a8747-b81a-479c-8372-fbf1f54334a0
+      version: -1
+      name: Verify Process SHA256
+      description: Verify that the ‘processsha256’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "434"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: processsha256
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: sha256
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10380,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "434":
+    id: "434"
+    taskid: a519b476-e7cd-4df6-8305-4ee5545bcafa
+    type: regular
+    task:
+      id: a519b476-e7cd-4df6-8305-4ee5545bcafa
+      version: -1
+      name: Verify Incident Field Error - Process SHA256
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'processsha256' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'processsha256' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10380,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "435":
+    id: "435"
+    taskid: c5f89b4f-f316-4a8c-8e25-81d55445f5f7
+    type: condition
+    task:
+      id: c5f89b4f-f316-4a8c-8e25-81d55445f5f7
+      version: -1
+      name: Determine If There Is A File SHA256 Within The Alert
+      description: 'Checks for ''sha256'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "433"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: sha256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10380,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "436":
+    id: "436"
+    taskid: 8a60b8e8-2e9b-44d3-875b-58abd76a9dd0
+    type: condition
+    task:
+      id: 8a60b8e8-2e9b-44d3-875b-58abd76a9dd0
+      version: -1
+      name: Verify External Severity
+      description: Verify that the ‘externalseverity’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "437"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: externalseverity
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Severity
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10770,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "437":
+    id: "437"
+    taskid: eda05ff7-5fdd-4e5b-8bb7-3ea01ca297e6
+    type: regular
+    task:
+      id: eda05ff7-5fdd-4e5b-8bb7-3ea01ca297e6
+      version: -1
+      name: Verify Incident Field Error - External Severity
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'externalseverity' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'externalseverity' incident field configured within the 'Get full alert details' task was changed.\n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.Severity' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10770,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "438":
+    id: "438"
+    taskid: a775f962-d864-41b0-8879-a1cf8354592c
+    type: condition
+    task:
+      id: a775f962-d864-41b0-8879-a1cf8354592c
+      version: -1
+      name: Determine If There Is A Severity Within The Alert
+      description: 'Checks for ''Severity'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "436"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Severity
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10770,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "439":
+    id: "439"
+    taskid: e1579fe6-7315-4eea-8e54-a09097d09f2c
+    type: condition
+    task:
+      id: e1579fe6-7315-4eea-8e54-a09097d09f2c
+      version: -1
+      name: Verify External End Time
+      description: Verify that the ‘externalendtime’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "440"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: externalendtime
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "440":
+    id: "440"
+    taskid: 8fe9790a-1a95-42f5-8749-c3a049c6fe34
+    type: regular
+    task:
+      id: 8fe9790a-1a95-42f5-8749-c3a049c6fe34
+      version: -1
+      name: Verify Incident Field Error - External End Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'externalendtime' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'externalendtime' incident field configured within the 'Get full alert details' task was changed.\n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.LastUpdateTime' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "442":
+    id: "442"
+    taskid: c21569b9-e302-44ab-81af-578ab5405691
+    type: condition
+    task:
+      id: c21569b9-e302-44ab-81af-578ab5405691
+      version: -1
+      name: Verify External Start Time
+      description: Verify that the ‘externalstarttime’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "443"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: externalstarttime
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "443":
+    id: "443"
+    taskid: 49753d05-bb39-45ef-81c5-2d9de7df79c8
+    type: regular
+    task:
+      id: 49753d05-bb39-45ef-81c5-2d9de7df79c8
+      version: -1
+      name: Verify Incident Field Error - External Start Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'externalstarttime' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'externalstarttime' incident field configured within the 'Get full alert details' task was changed. \n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.FirstEventTime' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "445":
+    id: "445"
+    taskid: f631de7a-93be-4db1-8eaf-a09f269f5083
+    type: condition
+    task:
+      id: f631de7a-93be-4db1-8eaf-a09f269f5083
+      version: -1
+      name: Verify External Status
+      description: Verify that the ‘externalstatus’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "446"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: externalstatus
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Status
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11160,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "446":
+    id: "446"
+    taskid: 7b2927d6-6bce-438b-8acb-69b0be540595
+    type: regular
+    task:
+      id: 7b2927d6-6bce-438b-8acb-69b0be540595
+      version: -1
+      name: Verify Incident Field Error - External Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'externalstatus' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'externalstatus' incident field configured within the 'Get full alert details' task was changed.\n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.Status' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11160,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "447":
+    id: "447"
+    taskid: 37bd2cce-36b0-45c7-801c-e6e770d65792
+    type: condition
+    task:
+      id: 37bd2cce-36b0-45c7-801c-e6e770d65792
+      version: -1
+      name: Determine If There Is An Alert Status Within The Alert
+      description: 'Checks for ''Status'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "445"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Status
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11160,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "448":
+    id: "448"
+    taskid: 097214d8-cf7c-4f90-84f5-a0fde24920d9
+    type: condition
+    task:
+      id: 097214d8-cf7c-4f90-84f5-a0fde24920d9
+      version: -1
+      name: Verify Hostnames
+      description: Verify that the ‘hostnames’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "449"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: hostnames
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: ComputerDNSName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11550,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "449":
+    id: "449"
+    taskid: 27417713-37d0-442d-86b7-d00e6e0da39b
+    type: regular
+    task:
+      id: 27417713-37d0-442d-86b7-d00e6e0da39b
+      version: -1
+      name: Verify Incident Field Error - Hostnames
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'hostnames' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'hostnames' incident field configured within the 'Get full alert details' task was changed. \n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.ComputerDNSName' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11550,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "450":
+    id: "450"
+    taskid: 8bfe0ad4-6511-466b-8a8b-e7a9a42a60bf
+    type: condition
+    task:
+      id: 8bfe0ad4-6511-466b-8a8b-e7a9a42a60bf
+      version: -1
+      name: Determine If There Is A Computer DNS Name Within The Alert
+      description: 'Checks for ''ComputerDNSName'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "448"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: ComputerDNSName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11550,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "451":
+    id: "451"
+    taskid: 5a5a1abe-cf73-407a-8274-b6222c778b18
+    type: condition
+    task:
+      id: 5a5a1abe-cf73-407a-8274-b6222c778b18
+      version: -1
+      name: Verify External Category Name
+      description: Verify that the ‘categoryname’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "452"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: externalcategoryname
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Category
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11950,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "452":
+    id: "452"
+    taskid: 19e9385b-6b88-4d59-84cf-749141a5fe58
+    type: regular
+    task:
+      id: 19e9385b-6b88-4d59-84cf-749141a5fe58
+      version: -1
+      name: Verify Incident Field Error - External Category Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'externalcategoryname' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'externalcategoryname' incident field configured within the 'Get full alert details' task was changed. \n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.Category' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11950,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "453":
+    id: "453"
+    taskid: 7232b7be-a7a1-4a1e-8f9a-362613b42093
+    type: condition
+    task:
+      id: 7232b7be-a7a1-4a1e-8f9a-362613b42093
+      version: -1
+      name: Determine If There Is An Alert Category Within The Alert
+      description: 'Checks for ''Category'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "451"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Category
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 11950,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "454":
+    id: "454"
+    taskid: da162412-5bb2-4e63-8a56-2959b29056b3
+    type: condition
+    task:
+      id: da162412-5bb2-4e63-8a56-2959b29056b3
+      version: -1
+      name: Verify Description
+      description: Verify that the ‘description’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "455"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: description
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Description
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12350,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "455":
+    id: "455"
+    taskid: 407c4747-1080-42d9-86ca-d973eee0ddd4
+    type: regular
+    task:
+      id: 407c4747-1080-42d9-86ca-d973eee0ddd4
+      version: -1
+      name: Verify Incident Field Error - Description
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'description' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'description' incident field configured within the 'Get full alert details' task was changed. \n2- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.Description' context key. \n3- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12350,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "456":
+    id: "456"
+    taskid: f270ccb6-487a-471f-8090-84569633f4b2
+    type: condition
+    task:
+      id: f270ccb6-487a-471f-8090-84569633f4b2
+      version: -1
+      name: Determine If There Is An Alert Description Within The Alert
+      description: 'Checks for ''Description'' within the alert before testing the related incident field.  '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "136"
+      "yes":
+      - "454"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: Description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12350,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "473":
+    id: "473"
+    taskid: 50a085d3-1959-4137-8f48-36d3bee3e3b1
+    type: condition
+    task:
+      id: 50a085d3-1959-4137-8f48-36d3bee3e3b1
+      version: -1
+      name: Verify Last Update Time
+      description: Verify that the ‘MicrosoftATP.Alert.LastUpdateTime’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "474"
+      Verified:
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: LastUpdateTime
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "474":
+    id: "474"
+    taskid: 36f8477c-d084-4930-82e6-dd3727d66ca9
+    type: regular
+    task:
+      id: 36f8477c-d084-4930-82e6-dd3727d66ca9
+      version: -1
+      name: Verify Context Error - Last Update Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.LastUpdateTime' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.LastUpdateTime' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2105,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "475":
+    id: "475"
+    taskid: 934da5a0-e248-43b6-8805-cc5218dd9726
+    type: condition
+    task:
+      id: 934da5a0-e248-43b6-8805-cc5218dd9726
+      version: -1
+      name: Verify First Event Time
+      description: |
+        Verify that the ‘MicrosoftATP.Alert.FirstEventTime’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "476"
+      Verified:
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.Alert
+                accessor: FirstEventTime
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "476":
+    id: "476"
+    taskid: c022c8be-268d-4225-8c16-044d4cacb3a6
+    type: regular
+    task:
+      id: c022c8be-268d-4225-8c16-044d4cacb3a6
+      version: -1
+      name: Verify Context Error - First Event Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'MicrosoftATP.Alert.FirstEventTime' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Test Playbook - MDE Malware - Incident Enrichment' playbook:\n1- The 'microsoft-atp-get-alert-by-id' automation outputs have been modified and no longer contain the 'MicrosoftATP.Alert.FirstEventTime' context key. \n2- The 'alert_ids' input configuration was changed for the 'microsoft-atp-get-alert-by-id' automation used in the 'Get full alert details' task."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2490,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "477":
+    id: "477"
+    taskid: 48431462-a8c1-4160-86e2-1900b8a45bf1
+    type: playbook
+    task:
+      id: 48431462-a8c1-4160-86e2-1900b8a45bf1
+      version: -1
+      name: MDE SIEM ingestion - Get Incident Data
+      playbookName: MDE SIEM ingestion - Get Incident Data
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      OverrideSIEMSeverity:
+        simple: "False"
+      SIEMincidentFieldForID:
+        simple: ${incident.externalsystemid}
+      ScaleToSetSeverity:
+        simple: Informational,Low,Medium,High
+      SeverityValuesMapping:
+        simple: 0.5, 1, 2, 3
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "478":
+    id: "478"
+    taskid: b96ae50b-a957-436a-88fd-d46fa7b1984b
+    type: condition
+    task:
+      id: b96ae50b-a957-436a-88fd-d46fa7b1984b
+      version: -1
+      name: Verify Parent Process
+      description: Verify that the ‘parentprocess’ incident field was filled out correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "479"
+      Verified:
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: Verified
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: parentprocess
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.Alert.Evidence
+                accessor: parentProcessFileName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6420,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "479":
+    id: "479"
+    taskid: d69573f8-059b-41aa-8e7a-90713c705a97
+    type: regular
+    task:
+      id: d69573f8-059b-41aa-8e7a-90713c705a97
+      version: -1
+      name: Verify Incident Field Error - Parent Process
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "The 'parentprocess' incident field was not set correctly. This may indicate that the following change has been made to the 'MDE Malware - Incident Enrichment' playbook:\n1-  The custom output mapping rule for the 'parentprocess' incident field configured within the 'Get full alert details' task was changed. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6420,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "370_149_yes": 0.48,
+      "372_136_#default#": 0.1,
+      "372_368_yes": 0.5,
+      "75_113_ Verified": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2500,
+        "width": 12530,
+        "x": 590,
+        "y": -1655
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

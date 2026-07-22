@@ -1,0 +1,29 @@
+{
+    "autorun": true,
+    "color": "#5C6BC0",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "System Diagnostics and Health Check",
+    "layout": "System Diagnostics and Health Check",
+    "locked": false,
+    "name": "System Diagnostics and Health Check",
+    "onChangeRepAlg": 1,
+    "playbookId": "HealthCheck",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0",
+    "marketplaces": ["xsoar"]
+}

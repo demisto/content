@@ -1,0 +1,9 @@
+{
+  "id": "Tableau",
+  "name": "Tableau",
+  "os_type": "AGENT_OS_LINUX",
+  "profile_type": "STANDARD",
+  "content_global_id": "Tableau",
+  "from_xdr_version": "3.5.0",
+  "yaml_template": ""
+}

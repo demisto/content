@@ -1,0 +1,40 @@
+{
+    "test_case_1":{
+        "args": {
+            "scan_results_id": "test_id"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"agentScanContainerUUID":"","agentScanUUID":"",
+        "createdTime":"1684433697","dataFormat":"IPv4","description":"","details":"Plugin #12302","diagnosticAvailable":"false",
+        "downloadAvailable":"false","downloadFormat":"v2","errorDetails":"Scan IPs are not within your accessible range.",
+        "finishTime":"1684433702","id":"155","importDuration":"-1","importErrorDetails":"","importFinish":"-1","importStart":"-1",
+        "importStatus":"No Results","initiator":{"firstname":"Yuval","id":"39","lastname":"test","username":"yuv",
+        "uuid":"uuid"},"ioSyncDuration":"-1","ioSyncErrorDetails":null,"ioSyncFinish":"-1",
+        "ioSyncStart":"-1","ioSyncStatus":null,"name":"my_Scan_name","owner":{"firstname":"Yuval","id":"39","lastname":"test",
+        "username":"yuv","uuid":"uuid"},"ownerGroup":{"description":"Full Access group","id":"0",
+        "name":"Full Access"},"progress":[],"repository":{"description":"","id":"1","name":"Local","type":"Local",
+        "uuid":"uuid"},"resultSource":"internal","resultType":"active","resultsSyncID":"-1","running":"false",
+        "scan":{"description":"","id":-1,"name":"","type":""},"scanDuration":"-1","scannedIPs":"0","startTime":"-1","status":"Error",
+        "totalIPs":"-1"},"timestamp":1687085861,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan Status\n|ID|Name|Status|Error|\n|---|---|---|---|\n| 155 | my_Scan_name | Error | Scan IPs are not within your accessible range. |\n",
+        "expected_ec": [{"ID": "155", "Name": "my_Scan_name", "Status": "Error", "Error": "Scan IPs are not within your accessible range."}]
+    },
+    "test_case_2":{
+        "args": {
+            "scan_results_id": "test_id"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"agentScanContainerUUID":"","agentScanUUID":"",
+        "createdTime":"1684433697","dataFormat":"IPv4","description":"","details":"Plugin #12302","diagnosticAvailable":"false",
+        "downloadAvailable":"false","downloadFormat":"v2","errorDetails":"Scan IPs are not within your accessible range.",
+        "finishTime":"1684433702","id":"155","importDuration":"-1","importErrorDetails":"","importFinish":"-1","importStart":"-1",
+        "importStatus":"No Results","initiator":{"firstname":"Yuval","id":"39","lastname":"test","username":"yuv",
+        "uuid":"uuid"},"ioSyncDuration":"-1","ioSyncErrorDetails":null,"ioSyncFinish":"-1",
+        "ioSyncStart":"-1","ioSyncStatus":null,"name":"my_Scan_name","owner":{"firstname":"Yuval","id":"39","lastname":"test",
+        "username":"yuv","uuid":"uuid"},"ownerGroup":{"description":"Full Access group","id":"0",
+        "name":"Full Access"},"progress":[],"repository":{"description":"","id":"1","name":"Local","type":"Local",
+        "uuid":"uuid"},"resultSource":"internal","resultType":"active","resultsSyncID":"-1","running":"false",
+        "scan":{"description":"","id":-1,"name":"","type":""},"scanDuration":"-1","scannedIPs":"0","startTime":"-1","status":"In Progress",
+        "totalIPs":"-1"},"timestamp":1687085861,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Scan Status\n|ID|Name|Status|\n|---|---|---|\n| 155 | my_Scan_name | In Progress |\n",
+        "expected_ec": [{"ID": "155", "Name": "my_Scan_name", "Status": "In Progress"}]
+    }
+}

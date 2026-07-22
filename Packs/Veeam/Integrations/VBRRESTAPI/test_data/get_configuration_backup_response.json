@@ -1,0 +1,63 @@
+{
+    "isEnabled": true,
+    "backupRepositoryId": "88788f9e-d8f5-4eb4-bc4f-9b3f5403bcec",
+    "restorePointsToKeep": 10,
+    "notifications": {
+      "SNMPEnabled": true,
+      "SMTPSettings": {
+        "settingsType": "Custom",
+        "isEnabled": false,
+        "recipients": [],
+        "subject": "[%JobResult%] %JobName% (%Time%)",
+        "notifyOnSuccess": true,
+        "notifyOnWarning": true,
+        "notifyOnError": true
+      }
+    },
+    "schedule": {
+      "isEnabled": true,
+      "daily": {
+        "dailyKind": "Everyday",
+        "isEnabled": true,
+        "localTime": "10:00",
+        "days": [
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
+        ]
+      },
+      "monthly": {
+        "dayOfWeek": "saturday",
+        "dayNumberInMonth": "Fourth",
+        "isEnabled": false,
+        "localTime": "22:00",
+        "dayOfMonth": null,
+        "months": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ]
+      }
+    },
+    "lastSuccessfulBackup": {
+      "lastSuccessfulTime": "2024-05-13T10:00:51.018689-07:00",
+      "sessionId": "8465a7d4-6033-45db-b446-bb36fcf1eab5"
+    },
+    "encryption": {
+      "isEnabled": false,
+      "passwordId": "00000000-0000-0000-0000-000000000000"
+    }
+  }

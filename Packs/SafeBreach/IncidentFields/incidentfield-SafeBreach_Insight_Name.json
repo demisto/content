@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachinsightname",
+    "closeForm": false,
+    "content": true,
+    "description": "Insight name representing the security issue exposed",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachinsightname",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Insight Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

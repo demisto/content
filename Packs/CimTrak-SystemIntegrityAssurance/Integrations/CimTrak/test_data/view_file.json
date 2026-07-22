@@ -1,0 +1,28 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [
+                    {
+                        "contents": "c2Rmc2Rmc2RoZWxsbw=="
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.viewFile"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "contents": "c2Rmc2Rmc2RoZWxsbw=="
+            }
+        ],
+        "status": "success"
+    }
+}

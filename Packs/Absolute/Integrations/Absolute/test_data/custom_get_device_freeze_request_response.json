@@ -1,0 +1,25 @@
+[
+  {
+    "id": "1",
+    "requestUid": "e416f97e-dc43-4ed0-88c3-b33ea66c660f",
+    "deviceUid": "56be8d1f-2eb8-4e9b-bbd6-1aab032abcde",
+    "requestTitle": "On-demand Freeze request",
+    "statuses": [],
+    "configuration": {},
+    "requester": "example@test.com",
+    "requesterUid": "1abc2de3-fa45-67b8-9cde-0f12a34bc567",
+    "customAttributes": null,
+    "createdDateTimeUtc": "2021-11-03T07:33:56.004+00:00",
+    "changedDateTimeUtc": "2021-11-03T07:33:55.966+00:00",
+    "notificationEmails": [
+      "example1@test.com",
+      "example2@test.com"
+    ],
+    "eventHistoryId": "DeviceFreeze-0864",
+    "policyGroupUid": null,
+    "policyConfigurationVersion": 0,
+    "freezePolicyUid": null,
+    "isDownloaded": false,
+    "isCurrent": true
+  }
+]

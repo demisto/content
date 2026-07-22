@@ -1,0 +1,600 @@
+id: Cybereason Test
+version: -1
+name: Cybereason Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 49c7106f-21e0-45af-8f26-bcb28132fd71
+    type: start
+    task:
+      id: 49c7106f-21e0-45af-8f26-bcb28132fd71
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '1':
+    id: '1'
+    taskid: 8bb987ab-ee97-4bcb-82a9-a7ad9e2a2f84
+    type: regular
+    task:
+      id: 8bb987ab-ee97-4bcb-82a9-a7ad9e2a2f84
+      version: -1
+      name: cybereason-is-probe-connected
+      description: Checks if the machine is currently connected to the Cybereason
+        server
+      script: Cybereason|||cybereason-is-probe-connected
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      machine:
+        simple: marketing
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '2':
+    id: '2'
+    taskid: 00196429-becc-4a39-8431-044c6e7bceec
+    type: condition
+    task:
+      id: 00196429-becc-4a39-8431-044c6e7bceec
+      version: -1
+      name: VerifyContext
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: Cybereason.Machine.isConnected
+            iscontext: true
+          right:
+            value:
+              simple: true, false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: dc9e83ca-8118-45c8-8b7f-4d1390f706da
+    type: regular
+    task:
+      id: dc9e83ca-8118-45c8-8b7f-4d1390f706da
+      version: -1
+      name: cybereason-query-connections
+      description: Searches for connections.
+      script: Cybereason|||cybereason-query-connections
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      ip: {}
+      machine:
+        simple: ${Cybereason.Machine.Name}
+      saveToContext:
+        simple: 'true'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 50ff229a-56e4-46b9-8225-5995f761622d
+    type: condition
+    task:
+      id: 50ff229a-56e4-46b9-8225-5995f761622d
+      version: -1
+      name: VerifyContext
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Connection
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '5':
+    id: '5'
+    taskid: 8d17af47-e99e-4aec-8206-45f7d77cae2f
+    type: regular
+    task:
+      id: 8d17af47-e99e-4aec-8206-45f7d77cae2f
+      version: -1
+      name: cybereason-query-processes
+      description: Searches for processes with various filters.
+      script: Cybereason|||cybereason-query-processes
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      hasIncomingConnection: {}
+      hasOutgoingConnection: {}
+      limit:
+        simple: '5'
+      machine:
+        simple: ${Cybereason.Machine.Name}
+      onlySuspicious: {}
+      processName: {}
+      saveToContext:
+        simple: 'true'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: 6bf9e778-e955-4792-8cd7-e23b093cb911
+    type: condition
+    task:
+      id: 6bf9e778-e955-4792-8cd7-e23b093cb911
+      version: -1
+      name: VerifyContext
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Process
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: 687fbddc-f33c-48c5-83e8-aef8b5932f01
+    type: title
+    task:
+      id: 687fbddc-f33c-48c5-83e8-aef8b5932f01
+      version: -1
+      name: Success!
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3170\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: f752bb76-4135-48dd-8e7a-a6a1c28a5559
+    type: regular
+    task:
+      id: f752bb76-4135-48dd-8e7a-a6a1c28a5559
+      version: -1
+      name: cybereason-query-malops
+      description: Returns a list of all Malops and details on the Malops.
+      script: Cybereason|||cybereason-query-malops
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      filters: {}
+      malopGuid: {}
+      perGroupLimit: {}
+      templateContext: {}
+      totalResultLimit:
+        simple: '1'
+      withinLastDays:
+        simple: '1000'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1430\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 8b6eb2af-1ee2-4c77-866a-7a0a1553ca74
+    type: regular
+    task:
+      id: 8b6eb2af-1ee2-4c77-866a-7a0a1553ca74
+      version: -1
+      name: cybereason-malop-processes
+      description: Returns a list of malops
+      script: Cybereason|||cybereason-malop-processes
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      machineName: {}
+      malopGuids:
+        simple: 11.-1411563942095027781
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: 83ce5974-218e-4da9-8faa-1849bd4d8a64
+    type: condition
+    task:
+      id: 83ce5974-218e-4da9-8faa-1849bd4d8a64
+      version: -1
+      name: VerifyContext
+      description: "Verifies path in context:\n- Verifies path existence\n- If matching\
+        \ object is an array: verify fields exists in each of the objects in the array\n\
+        - If matching object is not an array: verify fields exists in matching object\n\
+        - if 'expectedValue' is given: ensure that the given value is equal to the\
+        \ context path"
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Process.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Process.User
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Process.CreationTime
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: d42bf80b-c470-42bd-8583-ae8728239842
+    type: regular
+    task:
+      id: d42bf80b-c470-42bd-8583-ae8728239842
+      version: -1
+      name: DeleteContext - Process
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      all: {}
+      key:
+        simple: Process
+      keysToKeep: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '12':
+    id: '12'
+    taskid: 855f08fb-328e-45aa-882c-861d5e04f7d1
+    type: regular
+    task:
+      id: 855f08fb-328e-45aa-882c-861d5e04f7d1
+      version: -1
+      name: Malops fetch test
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      instance_name:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Cybereason
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: name
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '13':
+    id: '13'
+    taskid: ca0d12d6-f047-4d89-8215-028439adb061
+    type: regular
+    task:
+      id: ca0d12d6-f047-4d89-8215-028439adb061
+      version: -1
+      name: Query File
+      description: Query files as part of investigation
+      script: Cybereason|||cybereason-query-file
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      file_hash:
+        simple: 605560ca0624aabf9f53675257b9be21
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: 2e905b2c-af88-40fe-8877-8cbeb5bf4fe5
+    type: condition
+    task:
+      id: 2e905b2c-af88-40fe-8877-8cbeb5bf4fe5
+      version: -1
+      name: Verify Query File Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '15'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.MD5
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.Malicious
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.File.SHA1
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: 65b71f7a-0f4c-4730-82e0-2972812f11ff
+    type: regular
+    task:
+      id: 65b71f7a-0f4c-4730-82e0-2972812f11ff
+      version: -1
+      name: Query Domain
+      script: '|||cybereason-query-domain'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      domain:
+        simple: analytics.twitter.com
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: 006a06da-17b8-4fae-8cb9-1483f71756d1
+    type: condition
+    task:
+      id: 006a06da-17b8-4fae-8cb9-1483f71756d1
+      version: -1
+      name: Verify Query Domain Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '17'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.Domain.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '17':
+    id: '17'
+    taskid: 298ec2bf-0c8e-4da1-82c9-8758b3ea33e2
+    type: regular
+    task:
+      id: 298ec2bf-0c8e-4da1-82c9-8758b3ea33e2
+      version: -1
+      name: Query User
+      script: '|||cybereason-query-user'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    scriptarguments:
+      username:
+        simple: marketing\safebreach
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2820\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '18':
+    id: '18'
+    taskid: 817cf635-9200-4fd9-8ac6-281e1eaaa09c
+    type: condition
+    task:
+      id: 817cf635-9200-4fd9-8ac6-281e1eaaa09c
+      version: -1
+      name: Verify Query User Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Cybereason.User.Domain
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2995\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 3185,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Test Playbook for Cybereason

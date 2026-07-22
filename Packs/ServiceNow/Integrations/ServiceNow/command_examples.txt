@@ -1,0 +1,22 @@
+!servicenow-get-ticket number=INC0000039
+!servicenow-update-ticket id={id} impact="3 - High"
+!servicenow-create-ticket active=true severity="2 - Medium"
+!servicenow-delete-ticket id={id}
+
+!servicenow-query-tickets limit="3" query="impact<2" ticket_type="incident"
+
+!servicenow-add-link id={id} link="http://www.demisto.com" text=demsito_link
+!servicenow-add-comment id={id} comment="Nice work!"
+!servicenow-upload-file id={id} file_id={file_id} file_name=test_file
+!servicenow-get-ticket-notes id={id}
+
+!servicenow-get-record table_name=alm_asset id={id} fields=asset_tag,sys_updated_by,display_name
+!servicenow-create-record table_name=alm_asset fields="asset_tag=P4325432"
+!servicenow-update-record table_name=alm_asset id={id}
+!servicenow-delete-record table_name=alm_asset id={id}
+
+!servicenow-list-table-fields table_name=alm_asset
+!servicenow-query-computers asset_tag=P1000503
+!servicenow-query-groups group_name=test1
+!servicenow-query-users user_name=sean.bonnet
+!servicenow-get-table-name label=ACE

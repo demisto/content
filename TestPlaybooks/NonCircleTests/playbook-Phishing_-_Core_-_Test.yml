@@ -1,0 +1,283 @@
+id: Phishing - Core - Test
+version: -1
+fromversion: 5.0.0
+name: Phishing - Core - Test
+description: A test for the Phishing - Core playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a156b5b4-d119-495a-8f3d-c82446e2f216
+    type: start
+    task:
+      id: a156b5b4-d119-495a-8f3d-c82446e2f216
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 215b2b58-1bab-4b78-89c3-bced5e33ac6f
+    type: title
+    task:
+      id: 215b2b58-1bab-4b78-89c3-bced5e33ac6f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 84e251e7-e1c3-4d66-8282-6055f33b72ba
+    type: regular
+    task:
+      id: 84e251e7-e1c3-4d66-8282-6055f33b72ba
+      version: -1
+      name: PhishingIncident - attachment
+      description: Creates a phishing incident.
+      scriptName: PhishingIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      malicious_location:
+        simple: attachment
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 312cbf88-1940-4449-8efa-692adda3c97e
+    type: regular
+    task:
+      id: 312cbf88-1940-4449-8efa-692adda3c97e
+      version: -1
+      name: Close manual review
+      description: Closes the manual task to pass the test successfully. The task
+        is tagged with the "manual" tag.
+      scriptName: ScheduleCommand
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      command:
+        simple: '!CompleteManualTask id=${incident.id}'
+      cron:
+        simple: '*/1 * * * *'
+      endDate: {}
+      times:
+        simple: "15"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 234ad372-b566-480e-8906-c908219efe33
+    type: regular
+    task:
+      id: 234ad372-b566-480e-8906-c908219efe33
+      version: -1
+      name: Delete context
+      description: Deletes the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: ab7f3c18-739b-4cd6-865e-5df952cb4371
+    type: regular
+    task:
+      id: ab7f3c18-739b-4cd6-865e-5df952cb4371
+      version: -1
+      name: Download EML file
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "27"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: attachment.eml
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Malicious_attachment_simple_phishing2.eml
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 637e30ed-9bbd-4b56-8739-b821f428ca3e
+    type: regular
+    task:
+      id: 637e30ed-9bbd-4b56-8739-b821f428ca3e
+      version: -1
+      name: minemeld-add-to-miner
+      description: Adds a malicious indicator to a Minemeld miner so that it is later
+        detected as malicious.
+      script: '|||minemeld-add-to-miner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      comment:
+        simple: Malicious MD5 for test
+      indicator:
+        simple: a790cf8ad94bdd47f4232d87fe7b25bdabaf66af
+      miner:
+        simple: Malicious
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: 1cb6933a-1d83-4f69-87de-e0e991a07e9c
+    type: playbook
+    task:
+      id: 1cb6933a-1d83-4f69-87de-e0e991a07e9c
+      version: -1
+      name: Phishing - Core
+      playbookName: Phishing - Core
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      GetURLScreenshots:
+        simple: "True"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1150,
+        "width": 820,
+        "x": 50,
+        "y": -190
+      }
+    }
+  }
+inputs: []
+outputs: []

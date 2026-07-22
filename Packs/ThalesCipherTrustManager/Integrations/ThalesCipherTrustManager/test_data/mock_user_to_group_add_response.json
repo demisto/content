@@ -1,0 +1,11 @@
+{
+
+    "name": "test_group",
+    "created_at": "2024-05-28T08:35:17.698148Z",
+    "updated_at": "2024-05-28T08:35:22.51795Z",
+    "description": "this is a test group",
+    "users_count": 1,
+    "user_metadata": {},
+	"client_metadata": {},
+    "app_metadata": {}
+}

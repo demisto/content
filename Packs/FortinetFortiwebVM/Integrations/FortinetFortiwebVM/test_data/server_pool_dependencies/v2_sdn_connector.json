@@ -1,0 +1,33 @@
+[
+    {
+      "id": 1,
+      "can_view": 0,
+      "q_ref": 0,
+      "can_clone": 1,
+      "q_type": 1,
+      "name": "asdasd",
+      "status": "enable",
+      "status_val": "1",
+      "type": "aws",
+      "type_val": "3",
+      "update-interval": 60,
+      "access-key": "asdas",
+      "secret-key": "ENC XXXX",
+      "region": "asdasd",
+      "tenant-id": "",
+      "subscription-id": "",
+      "client-id": "",
+      "client-secret": "ENC XXXX",
+      "resource-group": "",
+      "azure-region": "global",
+      "azure-region_val": "0",
+      "tenant-ocid": "",
+      "user-ocid": "",
+      "compartment-ocid": "",
+      "server-region": "",
+      "certificate": "",
+      "certificate_val": "0",
+      "server-region-type": "commercial",
+      "server-region-type_val": "0"
+    }
+  ]

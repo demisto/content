@@ -1,0 +1,733 @@
+id: DevSecOps - LGTM - Analysis - SubPB v2
+version: -1
+name: DevSecOps - LGTM - Analysis - SubPB v2
+description: A CodeQL Code Analysis Playbook
+contentitemexportablefields:
+  contentitemfields: {}
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9f6a3cdb-248b-4f04-8615-d43b471f721e
+    type: start
+    task:
+      id: 9f6a3cdb-248b-4f04-8615-d43b471f721e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: Start
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c5d3bb57-60d9-4f54-8b3a-1dba7760c9b4
+    type: condition
+    task:
+      id: c5d3bb57-60d9-4f54-8b3a-1dba7760c9b4
+      version: -1
+      name: Alerts Found?
+      description: Alerts Found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "8"
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: LGTM
+                accessor: code_review_result.languages.new
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9354f52e-d52d-48ac-8f89-51393189de3b
+    type: condition
+    task:
+      id: 9354f52e-d52d-48ac-8f89-51393189de3b
+      version: -1
+      name: SQL-Injection Discovered?
+      description: SQL-Injection Discovered?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: endWith
+          left:
+            value:
+              complex:
+                root: LGTM
+                accessor: alerts.alert.ruleId
+            iscontext: true
+          right:
+            value:
+              simple: sql-injection
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7ee1a566-2acd-4b8f-80c7-0da66f50408e
+    type: regular
+    task:
+      id: 7ee1a566-2acd-4b8f-80c7-0da66f50408e
+      version: -1
+      name: Run a SQL Injection CodeQL Query Across All Project
+      description: Run analysis of a specific commit
+      script: '|||lgtm-request-analysis'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      commit:
+        simple: ${LGTM.analysis_summary.commit-id}
+      language:
+        complex:
+          root: LGTM
+          accessor: project_details.languages.language
+      project-id:
+        simple: ${LGTM.project_details.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 622.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 69115a59-1ee3-498e-8fa1-61db95e5ecd1
+    type: regular
+    task:
+      id: 69115a59-1ee3-498e-8fa1-61db95e5ecd1
+      version: -1
+      name: Create SAST Alerts
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      type:
+        simple: DevSecOps SAST Alert
+      value:
+        simple: ${LGTM.code_review_result.languages.alerts.query.properties.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8c56e6e9-48a9-47b9-8c26-b5bc6d6b88ef
+    type: regular
+    task:
+      id: 8c56e6e9-48a9-47b9-8c26-b5bc6d6b88ef
+      version: -1
+      name: Get The Query Config
+      description: Get configuration for a project identified by numeric identifier
+      script: '|||lgtm-get-project-config'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      project-id:
+        simple: ${LGTM.project_details.id}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 31c7f00b-056b-43c4-89d8-c8a92788b4f5
+    type: regular
+    task:
+      id: 31c7f00b-056b-43c4-89d8-c8a92788b4f5
+      version: -1
+      name: Get LGTM Project ID
+      description: Get project by URL identifier
+      script: '|||lgtm-get-project-by-url-identifier'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+      - "26"
+    scriptarguments:
+      name:
+        simple: ${inputs.Repository}
+      org:
+        simple: ${inputs.Organization}
+      provider:
+        simple: g
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: dd3162d2-d49b-4a9d-8d06-ff739421f2fc
+    type: regular
+    task:
+      id: dd3162d2-d49b-4a9d-8d06-ff739421f2fc
+      version: -1
+      name: Parse LGTM Project Details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      devsecopslgtmanalysisstatus:
+        simple: ' '
+      devsecopslgtmprojectconfig:
+        complex:
+          root: LGTM
+          accessor: config
+      devsecopslgtmprojectgrade:
+        complex:
+          root: LGTM
+          accessor: project_details.languages.grade
+      devsecopslgtmprojectid:
+        simple: ${LGTM.project_details.id}
+      devsecopslgtmprojectlanguage:
+        complex:
+          root: LGTM
+          accessor: project_details.languages.language
+      devsecopslgtmprojectname:
+        simple: ${LGTM.project_details.name}
+      devsecopslgtmprojectstatus:
+        complex:
+          root: LGTM
+          accessor: project_details.languages.status
+      devsecopslgtmprojecturl:
+        simple: ${LGTM.project_details.url}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 86e3fdd7-3993-4524-8ebc-b79bead845ab
+    type: regular
+    task:
+      id: 86e3fdd7-3993-4524-8ebc-b79bead845ab
+      version: -1
+      name: Mirror Investigation to Slack
+      description: Mirrors the investigation between Slack and the Demisto War Room.
+      script: SlackV2|||mirror-investigation
+      type: regular
+      iscommand: true
+      brand: SlackV2
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      autoclose:
+        simple: "true"
+      direction:
+        simple: Both
+      type:
+        simple: all
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1275
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 8e0a022d-22ab-4ce2-8644-9fd339243e96
+    type: regular
+    task:
+      id: 8e0a022d-22ab-4ce2-8644-9fd339243e96
+      version: -1
+      name: Get LGTM Code Review Details
+      description: Get results of code review
+      script: '|||lgtm-get-code-review'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      review-id:
+        simple: ${inputs.LGTM Task ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f203fce9-aa3f-468e-8487-e4ac81317200
+    type: regular
+    task:
+      id: f203fce9-aa3f-468e-8487-e4ac81317200
+      version: -1
+      name: Parse LGTM Code Review Details
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      devsecopslgtmanalysisid:
+        simple: ${LGTM.code_review_result.id}
+      devsecopslgtmanalysislogsurl:
+        simple: ${LGTM.code_review_result.results-url}
+      devsecopslgtmanalysisprojectid:
+        simple: ${LGTM.project_details.id}
+      devsecopslgtmanalysisresultsurl:
+        simple: ${LGTM.code_review_result.results-url}
+      devsecopslgtmanalysisstatus:
+        simple: ${LGTM.code_review_result.status}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 211401da-8e1f-4387-810b-f0ee12b16992
+    type: title
+    task:
+      id: 211401da-8e1f-4387-810b-f0ee12b16992
+      version: -1
+      name: Playbook End
+      description: Playbook End
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: f07e5ebc-a7ab-4f94-86ab-7646ddf12596
+    type: playbook
+    task:
+      id: f07e5ebc-a7ab-4f94-86ab-7646ddf12596
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      Ids:
+        simple: ${LGTM.code_review_result.id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: review-id
+      PollingCommandName:
+        simple: lgtm-get-code-review
+      Timeout:
+        simple: "10"
+      dt:
+        simple: LGTM.code_review_result(val.status!=="success").id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: aaff7ba3-194e-4540-8b8c-3691c37e1dbd
+    type: regular
+    task:
+      id: aaff7ba3-194e-4540-8b8c-3691c37e1dbd
+      version: -1
+      name: Refresh LGTM Code Review Details
+      description: Get results of code review
+      script: '|||lgtm-get-code-review'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      review-id:
+        simple: ${inputs.LGTM Task ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 483d035a-a13f-478c-8097-3abc85642ee6
+    type: condition
+    task:
+      id: 483d035a-a13f-478c-8097-3abc85642ee6
+      version: -1
+      name: Slack Enabled?
+      description: Slack Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SlackV2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1040,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 23f2c20d-2f39-40b4-8540-1ca3efb36251
+    type: condition
+    task:
+      id: 23f2c20d-2f39-40b4-8540-1ca3efb36251
+      version: -1
+      name: LGTM Enabled?
+      description: LGTM Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: LGTM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2235,
+        "width": 1430,
+        "x": -10,
+        "y": -520
+      }
+    }
+  }
+inputs:
+- key: Platform
+  value:
+    simple: g
+  required: false
+  description: Git Platform
+  playbookInputQuery:
+- key: Organization
+  value: {}
+  required: false
+  description: Git Project Organization
+  playbookInputQuery:
+- key: Repository
+  value: {}
+  required: false
+  description: Git Repository
+  playbookInputQuery:
+- key: LGTM Task ID
+  value: {}
+  required: false
+  description: LGTM Task ID
+  playbookInputQuery:
+outputs:
+- contextPath: LGTM.project_details.languages.grade
+  description: The grade of the code for this language.
+- contextPath: LGTM.project_details.id
+  description: LGTM Project id
+- contextPath: LGTM.project_details.name
+  description: LGTM Project name
+- contextPath: CreatedIndicator
+  description: commands.local.cmd.new.indicator.output.indicator
+- contextPath: LGTM.code_review_result
+  description: LGTM Code Review Results
+- contextPath: LGTM.code_review_result.languages
+  description: LGTM Code Review Result Languages
+- contextPath: LGTM.code_review_result.languages.alerts
+  description: LGTM Code Review Result Languages Alerts
+- contextPath: LGTM.code_review_result.languages.alerts.query.properties
+  description: LGTM Code Review Results Alerts Query Properties
+tests:
+- GitLab-test-playbook
+- LGTM-test-playbook
+- playbook-MinIO-Test
+fromversion: 6.0.0

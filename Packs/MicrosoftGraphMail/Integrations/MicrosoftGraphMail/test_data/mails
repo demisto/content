@@ -1,0 +1,114 @@
+[
+    {
+        "@odata.context": "odata-context",
+        "@odata.nextLink": "odata-nextlink",
+        "value": [
+        {
+            "@odata.etag": "W/\"\"",
+            "id": "-qAAA=",
+            "createdDateTime": "2019-04-16T19:40:00Z",
+            "lastModifiedDateTime": "2019-04-16T19:40:02Z",
+            "changeKey": "",
+            "categories": ["Green category"],
+            "receivedDateTime": "2019-04-16T19:40:01Z",
+            "sentDateTime": "2019-04-16T19:40:01Z",
+            "hasAttachments": false,
+            "internetMessageId": "",
+            "subject": "Playbook has stopped on error for Legal Hold #` (#2231)",
+            "bodyPreview": "Incident playbook task \"Parse Legal Hold CSV File\" stopped on error.\nIncident Id: #2231\nIncident Name: Legal Hold #`\nIncident SLA: 26 Apr 19, 19:13 UTC\nIncident Severity: Unknown\n\nTask: #1\nTask Name: Parse Legal Hold CSV File\nTask SLA: N\\A\n\nView it on htt",
+            "importance": "normal",
+            "parentFolderId": "",
+            "conversationId": "",
+            "isDeliveryReceiptRequested": false,
+            "isReadReceiptRequested": false,
+            "isRead": true,
+            "isDraft": false,
+            "webLink": "",
+            "inferenceClassification": "focused",
+            "body": {
+              "contentType": "text",
+              "content": "Incident playbook task \"Parse Legal Hold CSV File\" stopped on error.\nIncident Id: #2231\nIncident Name: Legal Hold #`\nIncident SLA: 26 Apr 19, 19:13 UTC\nIncident Severity: Unknown\n\nTask: #1\nTask Name: Parse Legal Hold CSV File\nTask SLA: N\\A\n\nView it on Plan/2231/1"
+            },
+            "sender": {
+              "emailAddress": {
+                "name": "User Test",
+                "address": "user@example.com"
+              }
+            },
+            "from": {
+              "emailAddress": {
+                "name": "User Test",
+                "address": "user@example.com"
+              }
+            },
+            "toRecipients": [
+              {
+                "emailAddress": {
+                  "name": "mayb@queen.com",
+                  "address": "mayb@queen.com"
+                }
+              }
+            ],
+            "ccRecipients": [],
+            "bccRecipients": [],
+            "replyTo": [],
+            "flag": {
+              "flagStatus": "notFlagged"
+            }
+          },
+          {
+            "@odata.etag": "W/\"\"",
+            "id": "id_number",
+            "createdDateTime": "2019-04-16T19:36:06Z",
+            "lastModifiedDateTime": "2019-04-16T19:36:08Z",
+            "changeKey": "",
+            "categories": ["Green category"],
+            "receivedDateTime": "2019-04-16T19:36:07Z",
+            "sentDateTime": "2019-04-16T19:36:07Z",
+            "hasAttachments": false,
+            "internetMessageId": "",
+            "subject": "Message from Demisto Security Operations Server",
+            "bodyPreview": "DBot has updated an incident Legal Hold List.\nView it on233",
+            "importance": "normal",
+            "parentFolderId": "",
+            "conversationId": "",
+            "isDeliveryReceiptRequested": false,
+            "isReadReceiptRequested": false,
+            "isRead": true,
+            "isDraft": false,
+            "webLink": "",
+            "inferenceClassification": "focused",
+            "body": {
+              "contentType": "text",
+              "content": "DBot has updated an incident Legal Hold List.\nVie"
+            },
+            "sender": {
+              "emailAddress": {
+                "name": "User Test",
+                "address": "user@example.com"
+              }
+            },
+            "from": {
+              "emailAddress": {
+                "name": "User Test",
+                "address": "user@example.com"
+              }
+            },
+            "toRecipients": [
+              {
+                "emailAddress": {
+                  "name": "Fredy Mecrury",
+                  "address": "freddy@queen.com"
+                }
+              }
+            ],
+            "ccRecipients": [],
+            "bccRecipients": [],
+            "replyTo": [],
+            "flag": {
+              "flagStatus": "notFlagged"
+            }
+          }
+        ]
+    }
+]

@@ -1,0 +1,17 @@
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:incidentfield-Category.json]
+ignore=IF106
+
+[file:incidentfield-Event_Type.json]
+ignore=IF100
+
+[file:incidentfield-Host_Risk_level.json]
+ignore=IF115
+
+[file:incidentfield-User_Risk_level.json]
+ignore=IF115
+
+[file:incidentfield-Alert_Search_Results.json]
+ignore=IF100

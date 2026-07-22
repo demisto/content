@@ -1,0 +1,458 @@
+id: Cymulate V1 Test
+version: -1
+name: Cymulate V1 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4417af52-f61a-454b-8a18-bbe95a67e9f2
+    type: start
+    task:
+      id: 4417af52-f61a-454b-8a18-bbe95a67e9f2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 463812d0-1bf4-4ff1-8657-9b52687e16b6
+    type: regular
+    task:
+      id: 463812d0-1bf4-4ff1-8657-9b52687e16b6
+      version: -1
+      name: Push malicious hashes to Endpoint Security block list
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 5691fe4b-f8af-41aa-8415-aa1dcebee87c
+    type: regular
+    task:
+      id: 5691fe4b-f8af-41aa-8415-aa1dcebee87c
+      version: -1
+      name: Push malicious Emails to Email Gateway block list
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b16fdc41-4e70-474d-81df-90029415d017
+    type: regular
+    task:
+      id: b16fdc41-4e70-474d-81df-90029415d017
+      version: -1
+      name: Push malicious URL's to Web Gateway block list
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 0c30303a-837b-497f-8398-af396f6cef42
+    type: condition
+    task:
+      id: 0c30303a-837b-497f-8398-af396f6cef42
+      version: -1
+      name: Rerun Simulation
+      description: Extract user's response from EmailAskUser reply. Returns the first textual response line of the provided entry that contains the reply body. Use ${lastCompletedTaskEntries} to analyze the previous playbook task containing the user's reply.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Done:
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Please rerun simulation
+      body:
+        simple: Please rerun Immediate Threat simulation again
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Done
+  "6":
+    id: "6"
+    taskid: 23f90fa0-e382-4f74-87a6-a68adbb8aecc
+    type: condition
+    task:
+      id: 23f90fa0-e382-4f74-87a6-a68adbb8aecc
+      version: -1
+      name: Any payloads penetrated?
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Status
+            iscontext: true
+          right:
+            value:
+              simple: Penetrated
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 96bf9b4a-1857-447b-8e5d-1cc676b9aef2
+    type: condition
+    task:
+      id: 96bf9b4a-1857-447b-8e5d-1cc676b9aef2
+      version: -1
+      name: No payloads penetrated
+      description: Close ticket
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: incident.labels.Status
+            iscontext: true
+          right:
+            value:
+              simple: Penetrated
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 34b55b3e-e299-4190-8a13-fb93a7358f37
+    type: condition
+    task:
+      id: 34b55b3e-e299-4190-8a13-fb93a7358f37
+      version: -1
+      name: Any IOC's related to Endpoint Security?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Md5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Sha1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Sha256
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Attack_Vector
+            iscontext: true
+          right:
+            value:
+              simple: Endpoint Security
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: ee177476-2955-4e36-8b58-f9fb615c4ebf
+    type: condition
+    task:
+      id: ee177476-2955-4e36-8b58-f9fb615c4ebf
+      version: -1
+      name: Any IOC's related to Web Gateway?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Md5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Sha1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Sha256
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Attack_Vector
+            iscontext: true
+          right:
+            value:
+              simple: Web Gateway
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: e6201f27-4344-4c21-8db3-dff1998cef0d
+    type: condition
+    task:
+      id: e6201f27-4344-4c21-8db3-dff1998cef0d
+      version: -1
+      name: Is Cymulate integration enabled?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: ${modules(val.brand == 'Cymulate' && val.state == 'active')}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 1cb4b602-cd34-4bcb-8d9b-83c9b7445abe
+    type: condition
+    task:
+      id: 1cb4b602-cd34-4bcb-8d9b-83c9b7445abe
+      version: -1
+      name: Any IOC's related to Email Gateway?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Md5
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Sha1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.labels.Sha256
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.labels.Attack_Vector
+            iscontext: true
+          right:
+            value:
+              simple: Email Gateway
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: c40cf435-fbed-437b-8547-3c12de539797
+    type: title
+    task:
+      id: c40cf435-fbed-437b-8547-3c12de539797
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_5_#default#": 0.79,
+      "12_14_#default#": 0.9,
+      "13_3_yes": 0.46,
+      "7_14_yes": 0.19,
+      "8_13_#default#": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2345,
+        "width": 1650,
+        "x": 210,
+        "y": -590
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

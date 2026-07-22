@@ -1,0 +1,11 @@
+!lw-get-aws-compliance-assessment account_id=123456789012 report_type=SOC
+!lw-run-aws-compliance-assessment account_id=123456789012
+!lw-get-azure-compliance-assessment tenant_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx subscription_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx report_type=AZURE_CIS
+!lw-run-azure-compliance-assessment tenant_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+!lw-get-gcp-compliance-assessment organization_id=123456789 project_id=project-name report_type=GCP_PCI
+!lw-run-gcp-compliance-assessment project_id=project-name
+!lw-get-gcp-projects-by-organization organization_id=123456789
+!lw-get-alert-details alert_id=${incident.alertid}
+!lw-get-compliance-report primary_query_id=${incident.laceworkrecommendationaccountid} template_name=Default rec_id=${incident.laceworkrecommendationid}
+!lw-get-container-vulnerabilities filters="[{'field':'severity','expression':'in','values':['Critical','High']},{'field':'status','expression':'eq','value':'VULNERABLE'},{'field':'fixInfo.fix_available','expression':'eq','value':1}]" limit=5
+!lw-get-host-vulnerabilities filters="[{'field':'severity','expression':'in','values':['Critical','High']},{'field':'status','expression':'eq','value':'Active'},{'field':'fixInfo.fix_available','expression':'eq','value':1}]" limit=5

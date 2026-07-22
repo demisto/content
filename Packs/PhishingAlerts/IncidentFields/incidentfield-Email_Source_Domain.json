@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Phishing",
+        "FireEye EX Alert",
+        "Phishing Alerts"
+    ],
+    "caseInsensitive": true,
+    "cliName": "emailsourcedomain",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailsourcedomain",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email Source Domain",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

@@ -1,0 +1,210 @@
+id: TestProofpointFeed
+version: -1
+contentitemfields:
+  propagationLabels:
+  - all
+name: TestProofpointFeed
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 32374b87-da6e-47bb-876b-74e0b54edf8d
+    type: start
+    task:
+      id: 32374b87-da6e-47bb-876b-74e0b54edf8d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "1":
+    id: "1"
+    taskid: b9da1640-fffc-463f-8158-654927bad866
+    type: regular
+    task:
+      id: b9da1640-fffc-463f-8158-654927bad866
+      version: -1
+      name: all indicators
+      description: Gets indicators from the feed.
+      script: ProofpointFeed|||proofpoint-get-indicators
+      type: regular
+      iscommand: true
+      brand: ProofpointFeed
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      indicator_type:
+        simple: all
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "2":
+    id: "2"
+    taskid: 62e46271-5d05-4370-8933-87c931c8d454
+    type: regular
+    task:
+      id: 62e46271-5d05-4370-8933-87c931c8d454
+      version: -1
+      name: ips
+      description: Gets indicators from the feed.
+      script: ProofpointFeed|||proofpoint-get-indicators
+      type: regular
+      iscommand: true
+      brand: ProofpointFeed
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      indicator_type:
+        simple: ip
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "3":
+    id: "3"
+    taskid: 3d3c98aa-e819-413b-83ed-674e9b813d4b
+    type: regular
+    task:
+      id: 3d3c98aa-e819-413b-83ed-674e9b813d4b
+      version: -1
+      name: domains
+      description: Gets indicators from the feed.
+      script: ProofpointFeed|||proofpoint-get-indicators
+      type: regular
+      iscommand: true
+      brand: ProofpointFeed
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      indicator_type:
+        simple: domain
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "4":
+    id: "4"
+    taskid: 10b461e0-8c0c-461d-80d6-262f0e2a2af5
+    type: title
+    task:
+      id: 10b461e0-8c0c-461d-80d6-262f0e2a2af5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+  "5":
+    id: "5"
+    taskid: 7fa2464b-5ff4-4589-813e-898c9f47311a
+    type: regular
+    task:
+      id: 7fa2464b-5ff4-4589-813e-898c9f47311a
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quiet: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

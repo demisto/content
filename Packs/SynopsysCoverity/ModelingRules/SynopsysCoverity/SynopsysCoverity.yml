@@ -1,0 +1,8 @@
+fromversion: 8.5.0
+id: Synopsys_Coverity_ModelingRule
+name: Synopsys Coverity Modeling Rule
+rules: ''
+schema: ''
+tags: synopsys
+supportedModules:
+- xsiam

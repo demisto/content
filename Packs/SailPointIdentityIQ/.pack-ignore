@@ -1,0 +1,15 @@
+[file:incidentfield-SailPoint_IdentityIQ_Alert_Target_Id.json]
+ignore=IF100
+
+[file:incidentfield-SailPoint_IdentityIQ_Alert_Target_Type.json]
+ignore=IF100
+
+[file:incidentfield-SailPoint_IdentityIQ_Alert_Display_Name.json]
+ignore=IF100
+
+[file:incidentfield-SailPoint_IdentityIQ_Alert_Target_Display_Name.json]
+ignore=IF100
+
+[file:incidentfield-SailPoint_IdentityIQ_Alert_Type.json]
+ignore=IF100
+

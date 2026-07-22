@@ -1,0 +1,21 @@
+{
+    "success": {
+        "args": {
+            "details": "true",
+            "deleted": "true",
+            "secret": "true",
+            "hostname": "hostname",
+            "externalIp": "111.111.111.111",
+            "internalIp": "127.0.0.1",
+            "os": "LINUX",
+            "sortDirection": "asc",
+            "additionalDetails": "true",
+            "status": "ALL",
+            "shouldIncludeProxies": "true",
+            "isEnabled": "true",
+            "isConnected": "true",
+            "isCritical": "true"
+        },
+        "command": "safebreach-get-available-simulator-details"
+    }
+}

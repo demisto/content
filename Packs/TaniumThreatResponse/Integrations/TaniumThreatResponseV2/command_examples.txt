@@ -1,0 +1,55 @@
+!tanium-tr-list-alerts limit=2
+!tanium-tr-get-alert-by-id alert_id=1
+!tanium-tr-alert-update-state alert_ids=1 state=resolved
+!tanium-tr-create-snapshot connection_id=remote:ec2amaz-kgmro60:9065264:
+!tanium-tr-delete-snapshot snapshot_ids=eda5ddce-0f8c-48e8-8dd5-6aa18681d539,3893fa77-4829-4e48-9364-40a16ad6cc0f
+!tanium-tr-list-snapshots limit=2
+!tanium-tr-delete-local-snapshot connection_id=remote:ec2amaz-kgmro60:9065264:
+!tanium-tr-list-connections
+!tanium-tr-list-connections id="123"
+!tanium-tr-list-connections ip="1.1.1.1,2.2.2.2"
+!tanium-tr-list-connections ip="1.1.1.1,2.2.2.2" platform="Windows"
+!tanium-tr-list-connections status="timeout,waiting"
+!tanium-tr-create-connection client_id=123 ip=1.1.1.1 hostname=host1 platform=Windows
+!tanium-tr-close-connection connection_id=remote:host1:123:
+!tanium-tr-delete-connection connection_id=remote:host1:123:
+!tanium-tr-list-labels limit=2
+!tanium-tr-get-label-by-id label_id=1
+!tanium-tr-list-events-by-connection connection_id=remote:ec2amaz-kgmro60:9065264: type=File limit=3
+!tanium-tr-event-evidence-list limit=3
+!tanium-tr-event-evidence-list hostname="host1,host2"
+!tanium-tr-event-evidence-list type="file"
+!tanium-tr-event-evidence-get-properties
+!tanium-tr-list-file-downloads limit=2
+!tanium-tr-list-file-downloads hash="123"
+!tanium-tr-list-file-downloads hostname="host1,host2" hash="123"
+!tanium-tr-delete-file-download file_id=0367c8b2-eed9-4124-b173-1c83cbf3ba6f
+!tanium-tr-get-events-by-process connection_id=remote:ec2amaz-kgmro60:9065264: type=Process ptid=72057594038528485 limit=2
+!tanium-tr-delete-file-from-endpoint connection_id=remote:ec2amaz-kgmro60:9065264: path=`C:\Users\Administrator\Desktop\to_delete.txt`
+!tanium-tr-get-file-download-info file_id=c0531415-87a6-4d28-a226-b485784b1881
+!tanium-tr-get-process-children connection_id=remote:ec2amaz-kgmro60:9065264: ptid=72057594038528485
+!tanium-tr-get-parent-process connection_id=remote:ec2amaz-kgmro60:9065264: ptid=72057594038510321
+!tanium-tr-get-file-info connection_id=remote:ec2amaz-kgmro60:9065264: path="C:\\Program Files (x86)\\Tanium\\Tanium Client\\Logs\\log1.txt"
+!tanium-tr-request-file-download connection_id=remote:ec2amaz-kgmro60:9065264: path="C:\\Users\\Administrator\\Desktop\\testD.txt"
+!tanium-tr-list-files-in-directory connection_id=remote:ec2amaz-kgmro60:9065264: path=`C:\Users\Administrator\Desktop\` limit=2
+!tanium-tr-get-process-tree connection_id=remote:ec2amaz-kgmro60:9065264: ptid=72057594038528485
+!tanium-tr-get-downloaded-file file_id=c0531415-87a6-4d28-a226-b485784b1881
+!tanium-tr-get-process-info ptid=72057594038510321 connection_id=remote:ec2amaz-kgmro60:9065264:
+!tanium-tr-get-evidence-by-id evidence_id=b684f9be-80ee-483d-8dca-a4d5cd3aeaa6
+!tanium-tr-get-task-by-id task_id=833
+!tanium-tr-intel-docs-add-label intel_doc_id=509 label_id=1
+!tanium-tr-intel-docs-labels-list intel_doc_id=509
+!tanium-tr-intel-docs-remove-label intel_doc_id=509 label_id=1
+!tanium-tr-list-intel-docs
+!tanium-tr-get-intel-doc-by-id intel_doc_id=509
+!tanium-tr-intel-deploy
+!tanium-tr-delete-evidence evidence_ids=53630ca0-e55a-4f6d-9451-d1c2c277530b
+!tanium-tr-create-evidence ptid=72057594038510321 connection_id=remote:ec2amaz-kgmro60:9065264: hostname=ec2amaz-kgmro60 summary="Create Process"
+!tanium-tr-get-system-status
+!tanium-tr-get-system-status hostname="123"
+!tanium-tr-get-system-status ip_client="7.7.7.7"
+!tanium-tr-get-system-status ip_server="8.8.8.8" ip_client="7.7.7.7"
+!tanium-tr-get-system-status port="80"
+!tanium-tr-intel-doc-create entry_id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c file_extension=yara
+!tanium-tr-intel-deploy-status
+!tanium-tr-intel-doc-update entry_id=7173@e99f97d1-7225-4c75-896c-3c960febbe8c intel_doc_id=438 file_extension=yara

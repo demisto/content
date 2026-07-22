@@ -1,0 +1,433 @@
+id: PaloAltoNetworks_IoT-Test
+version: -1
+name: PaloAltoNetworks_IoT-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e0aa06fa-6a9b-4b68-8f06-df3f745906a8
+    type: start
+    task:
+      id: e0aa06fa-6a9b-4b68-8f06-df3f745906a8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2a4114d4-a0c2-4696-81af-c82188ee4784
+    type: regular
+    task:
+      id: 2a4114d4-a0c2-4696-81af-c82188ee4784
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e71a6f97-4359-48b3-8f35-3a9138010f87
+    type: regular
+    task:
+      id: e71a6f97-4359-48b3-8f35-3a9138010f87
+      version: -1
+      name: iot-security-get-device
+      script: '|||iot-security-get-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        simple: b8:27:eb:e1:38:23
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0470be71-9529-4cf8-813c-d4a490fb24d4
+    type: condition
+    task:
+      id: 0470be71-9529-4cf8-813c-d4a490fb24d4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksIoT.Device.hostname
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksIoT.Device.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksIoT.Device.profile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksIoT.Device.deviceid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7ec45a7e-6634-46ef-8a2d-d07b534cde33
+    type: regular
+    task:
+      id: 7ec45a7e-6634-46ef-8a2d-d07b534cde33
+      version: -1
+      name: iot-security-list-devices
+      script: '|||iot-security-list-devices'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2c603e98-eacc-4ff0-8a73-38522c09a9aa
+    type: condition
+    task:
+      id: 2c603e98-eacc-4ff0-8a73-38522c09a9aa
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksIoT.DeviceList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: ca25add8-7f2b-4b13-81bc-ba0f270463ec
+    type: regular
+    task:
+      id: ca25add8-7f2b-4b13-81bc-ba0f270463ec
+      version: -1
+      name: iot-security-list-alerts
+      script: '|||iot-security-list-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+      offset:
+        simple: "0"
+      start_time:
+        simple: "-1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 7ace4af9-c522-4063-8164-1992f5fd2b18
+    type: condition
+    task:
+      id: 7ace4af9-c522-4063-8164-1992f5fd2b18
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: PaloAltoNetworksIoT.Alerts
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f176bd0b-baba-421a-8aac-43059501a246
+    type: regular
+    task:
+      id: f176bd0b-baba-421a-8aac-43059501a246
+      version: -1
+      name: iot-security-list-vulns
+      script: '|||iot-security-list-vulns'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      limit:
+        simple: "10"
+      offset:
+        simple: "0"
+      start_time:
+        simple: "-1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 0c47f087-a212-42e2-888f-ff45c0efdbdd
+    type: regular
+    task:
+      id: 0c47f087-a212-42e2-888f-ff45c0efdbdd
+      version: -1
+      name: iot-security-resolve-alert
+      script: '|||iot-security-resolve-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: PaloAltoNetworksIoT.Alerts
+          accessor: id
+      reason:
+        simple: XSOAR nightly integration test
+      reason_type:
+        simple: No Action Needed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 841c8dd6-57e8-434f-8cc8-f893de069adc
+    type: regular
+    task:
+      id: 841c8dd6-57e8-434f-8cc8-f893de069adc
+      version: -1
+      name: iot-security-resolve-vuln
+      script: '|||iot-security-resolve-vuln'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      full_name:
+        complex:
+          root: PaloAltoNetworksIoT.Vulns
+          accessor: vulnerability_name
+          transformers:
+            - operator: FirstArrayElement
+      id:
+        complex:
+          root: PaloAltoNetworksIoT.Vulns
+          accessor: zb_ticketid
+          transformers:
+            - operator: FirstArrayElement
+      reason:
+        simple: XSOAR nightly integration test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: d42d85fe-5e95-4796-837f-b4a56aa28343
+    type: title
+    task:
+      id: d42d85fe-5e95-4796-837f-b4a56aa28343
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

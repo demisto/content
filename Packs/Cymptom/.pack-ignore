@@ -1,0 +1,6 @@
+[file:README.md]
+ignore=RM102
+
+[file:Cymptom_image.png]
+ignore=IM111
+

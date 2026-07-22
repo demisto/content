@@ -1,0 +1,32 @@
+{
+ "id": "mttr-by-type-minutes",
+ "version": -1,
+ "fromVersion": "5.0.0",
+ "name": "MTTR by Type (in minutes)",
+ "dataType": "incidents",
+ "widgetType": "line",
+ "query": "-category:job and status:closed",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "keys": [
+   "avg|openDuration / 60"
+  ],
+  "groupBy": [
+   "occurred(d)",
+   "rawType"
+  ],
+  "timeFrame": "minutes"
+ },
+ "description": "Shows changes in Mean Time to Resolution (in minutes), over time, while differentiating between incident types."
+}

@@ -1,0 +1,310 @@
+category: IT Services
+provider: ServiceNow
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ServiceNow CMDB
+  version: -1
+configuration:
+- display: ServiceNow URL, in the format https://company.service-now.com/
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- additionalinfo: Check this box to use OAuth 2.0 authentication. See (?) for more information.
+  display: Use OAuth Login
+  name: use_oauth
+  type: 8
+  required: false
+  section: Connect
+- additionalinfo: Select this checkbox to use JWT authentication. See (?) for more information.
+  display: Use JWT Authentication
+  name: use_jwt
+  type: 8
+  required: false
+  section: Connect
+- display: Client ID/JWT Audience (aud)
+  displaypassword: Client Secret
+  name: credentials
+  type: 9
+  required: false
+  section: Connect
+- display: Username
+  displaypassword: Password
+  name: basic_credentials
+  type: 9
+  required: false
+  section: Connect
+- displaypassword: Private key
+  name: private_key
+  hiddenusername: true
+  type: 9
+  required: false
+  section: Connect
+- display: Kid (Key Id)
+  name: kid
+  type: 0
+  required: false
+  section: Connect
+- display: Sub
+  name: sub
+  type: 0
+  required: false
+  section: Connect
+- additionalinfo: If not set, Client ID will be used.
+  display: Iss (Issuer)
+  name: iss
+  type: 0
+  required: false
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+description: ServiceNow CMDB is a service‑centric foundation that proactively analyzes service‑impacting changes, identifies issues, and eliminates outages.
+display: ServiceNow CMDB
+name: ServiceNow CMDB
+script:
+  commands:
+  - arguments:
+    - description: The name of the class to query.
+      name: class
+      required: true
+    - description: An encoded query string used to filter the results. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/paris-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html.
+      name: query
+    - defaultValue: '50'
+      description: 'The maximum number of results returned per page (default: 50).'
+      name: limit
+    - defaultValue: '0'
+      description: 'The number of records to exclude from the query (default: 0).'
+      name: offset
+    description: Query records for a CMDB class.
+    name: servicenow-cmdb-records-list
+    outputs:
+    - contextPath: ServiceNowCMDB.Class
+      description: The name of CMDB table that was queried.
+      type: String
+    - contextPath: ServiceNowCMDB.Records
+      description: A list of all the records that were found in the CMDB table.
+      type: Unknown
+  - arguments:
+    - description: The name of the class to query.
+      name: class
+      required: true
+    - description: The ID of the record that should be queried.
+      name: sys_id
+      required: true
+    - description: A comma-separated list of the fields to return for the queried record.
+      name: fields
+    - defaultValue: '50'
+      description: 'The maximum number of relations returned (default: 50).'
+      name: relation_limit
+    - defaultValue: '0'
+      description: 'The number of records to exclude from the relations query (default: 0).'
+      name: relation_offset
+    description: Query attributes and relationship information for a specific record.
+    name: servicenow-cmdb-record-get-by-id
+    outputs:
+    - contextPath: ServiceNowCMDB.Record.SysID
+      description: The sys_id of the record that was queried.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Class
+      description: The name of the class from which the record was queried.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Attributes
+      description: The attributes that were returned in the response for the queried record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.OutboundRelations
+      description: A list of all the outbound relations of the queried record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.InboundRelations
+      description: A list of all the inbound relations of the queried record.
+      type: Unknown
+  - arguments:
+    - description: The name of the class to add the record to.
+      name: class
+      required: true
+    - defaultValue: ServiceNow
+      description: 'The discovery source value. You can see all available values from the sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
+      name: source
+    - description: 'A comma-separated list of attributes that should be added to the created record. Input format: attribute=value pairs, e.g., "name=test, ram=1024".'
+      name: attributes
+      required: true
+    - description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
+      isArray: true
+      name: inbound_relations
+    - description: A comma-separated list of dictionaries. Each dictionary represents an outbound relation that should be added to the created record.
+      isArray: true
+      name: outbound_relations
+    - description: A comma-separated list of fields to return for the created record.
+      name: fields
+    - defaultValue: '50'
+      description: 'The maximum number of relations returned (default: 50).'
+      name: relation_limit
+    - defaultValue: '0'
+      description: 'The number of records to exclude from the relations query (default: 0).'
+      name: relation_offset
+    description: Create a record with associated relations and attributes.
+    name: servicenow-cmdb-record-create
+    outputs:
+    - contextPath: ServiceNowCMDB.Record.SysID
+      description: The sys_id of the record that was created.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Class
+      description: The name of the class from which the record was created.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Attributes
+      description: The attributes that were returned in the response for the created record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.OutboundRelations
+      description: A list of all the outbound relations of the created record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.InboundRelations
+      description: A list of all the inbound relations of the created record.
+      type: Unknown
+  - arguments:
+    - description: The class name of the record that should be updated.
+      name: class
+      required: true
+    - description: The ID of the record that should be updated.
+      name: sys_id
+      required: true
+    - defaultValue: ServiceNow
+      description: 'The discovery source value. You can see all available values from sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
+      name: source
+    - description: 'A comma-separated list of the attributes that should be updated in the record. Input format: attribute=value pairs, e.g., "name=test,ram=1024".'
+      name: attributes
+      required: true
+    - description: A comma-separated list of the fields to return for the updated record.
+      name: fields
+    - defaultValue: '50'
+      description: 'The maximum number of relations returned (default: 50).'
+      name: relation_limit
+    - defaultValue: '0'
+      description: 'The number of records to exclude from the relations query (default: 0).'
+      name: relation_offset
+    description: Update a record with the given attributes.
+    name: servicenow-cmdb-record-update
+    outputs:
+    - contextPath: ServiceNowCMDB.Record.SysID
+      description: The sys_id of the record that was updated.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Class
+      description: The class name of the updated record.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Attributes
+      description: The attributes that were returned in the response for the updated record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.OutboundRelations
+      description: A list of all the outbound relations of the updated record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.InboundRelations
+      description: A list of all the inbound relations of the updated record.
+      type: Unknown
+  - arguments:
+    - description: The class name of the record.
+      name: class
+      required: true
+    - description: The ID of the record to which the relations should be added.
+      name: sys_id
+      required: true
+    - defaultValue: ServiceNow
+      description: 'The discovery source value. You can see all available values from sys_choice table with query GOTOelementLIKEdiscovery_source^name=cmdb_ci. (default: "ServiceNow").'
+      name: source
+    - description: A comma-separated list of dictionaries. Each dictionary represents an inbound relation that should be added to the created record.
+      isArray: true
+      name: inbound_relations
+    - description: A comma-separated list of dictionaries. Each dictionary represents an outbound relation that should be added to the created record.
+      isArray: true
+      name: outbound_relations
+    - description: A comma-separated list of the fields to return for the record.
+      name: fields
+    - defaultValue: '50'
+      description: 'The maximum number of relations returned (default: 50).'
+      name: relation_limit
+    - defaultValue: '0'
+      description: 'The number of records to exclude from the relations query (default: 0).'
+      name: relation_offset
+    description: Add a new relation to an existing record.
+    name: servicenow-cmdb-record-add-relations
+    outputs:
+    - contextPath: ServiceNowCMDB.Record.SysID
+      description: The sys_id of the record that was updated.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Class
+      description: The class name of the record.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Attributes
+      description: The attributes that were returned in the response for the updated record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.OutboundRelations
+      description: A list of all the outbound relations of the record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.InboundRelations
+      description: A list of all the inbound relations of the record.
+      type: Unknown
+  - arguments:
+    - description: The class name of the record.
+      name: class
+      required: true
+    - description: The ID of the record from which a relation should be deleted.
+      name: sys_id
+      required: true
+    - description: The ID of the relation that should be deleted.
+      name: relation_sys_id
+      required: true
+    - description: A comma-separated list of the fields to return for the record.
+      name: fields
+    - defaultValue: '50'
+      description: 'The maximum number of relations returned (default: 50).'
+      name: relation_limit
+    - defaultValue: '0'
+      description: 'The number of records to exclude from the relations query (default: 0).'
+      name: relation_offset
+    description: Delete a relation of an existing record.
+    name: servicenow-cmdb-record-delete-relations
+    outputs:
+    - contextPath: ServiceNowCMDB.Record.SysID
+      description: The sys_id of the record that was updated.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Class
+      description: The class name of the record.
+      type: String
+    - contextPath: ServiceNowCMDB.Record.Attributes
+      description: The attributes that were returned in the response for the updated record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.OutboundRelations
+      description: A list of all the outbound relations of the record.
+      type: Unknown
+    - contextPath: ServiceNowCMDB.Record.InboundRelations
+      description: A list of all the inbound relations of the record.
+      type: Unknown
+  - arguments:
+    - description: The username that should be used for login.
+      name: username
+      required: true
+      secret: true
+    - description: The password that should be used for login.
+      name: password
+      required: true
+      secret: true
+    description: This function should be used once before running any command when using OAuth authorization.
+    name: servicenow-cmdb-oauth-login
+  - description: Test the instance configuration when using OAuth authorization.
+    name: servicenow-cmdb-oauth-test
+  dockerimage: demisto/auth-utils:1.0.0.10133006
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- ServiceNow_CMDB_Test
+- ServiceNow_CMDB_OAuth_Test
+fromversion: 5.0.0

@@ -1,0 +1,10 @@
+{
+  "reply": {
+    "alerts": [
+      {
+        "internal_id": 6536,
+        "original_alert_json": "{\"uuid\":\"1\", \"messageData\":{ \"dynamicAnalysis\":{\"causalityId\":\"AAA\"}}}"
+      }
+    ]
+  }
+}

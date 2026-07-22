@@ -1,0 +1,38 @@
+{
+    "id": "incident_configurationsetup_custompackssource",
+    "version": -1,
+    "name": "Custom Packs Source",
+    "ownerOnly": false,
+    "description": "The source of the custom packs.",
+    "cliName": "custompackssource",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Attachments",
+        "Google Cloud Storage",
+        "AWS S3",
+        "HTTP request",
+        "AzureDevOps",
+        "No Custom Packs"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Configuration Setup"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,38 @@
+{
+    "name": "PicusAutomation (Deprecated)",
+    "description": "Deprecated. Use PicusNGAutomation instead.",
+    "support": "partner",
+    "hidden": true,
+    "currentVersion": "1.1.9",
+    "author": "Picus Security",
+    "url": "http://support.picussecurity.com",
+    "email": "support@picussecurity.com",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Breach Simulation"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Attack",
+        "Breach",
+        "Network",
+        "Security",
+        "Simulation",
+        "Picus",
+        "Validation"
+    ],
+    "githubUser": [],
+    "dependencies": {},
+    "displayedImages": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

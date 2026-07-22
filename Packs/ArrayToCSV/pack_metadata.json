@@ -1,0 +1,24 @@
+{
+    "name": "ArrayToCSV (Deprecated)",
+    "description": "Deprecated. Use the CommonScripts pack instead.",
+    "hidden": true,
+    "support": "community",
+    "currentVersion": "1.0.1",
+    "author": "Omar Salim Ahmed",
+    "url": "",
+    "email": "",
+    "created": "2021-12-25T22:05:53Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "os-groot"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

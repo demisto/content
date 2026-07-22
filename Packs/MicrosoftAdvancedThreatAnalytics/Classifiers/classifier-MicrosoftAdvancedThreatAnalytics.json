@@ -1,0 +1,12 @@
+{
+    "id": "Microsoft Advanced Threat Analytics",
+    "name": "Microsoft Advanced Threat Analytics - Classification",
+    "type": "classification",
+    "description": "Classifies Microsoft Advanced Threat Analytics suspicious activities",
+    "fromVersion": "6.0.0",
+    "version": -1,
+    "defaultIncidentType": "Microsoft ATA Suspicious Activity",
+    "feed": false,
+    "keyTypeMap": {},
+    "transformer": {}
+}

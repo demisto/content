@@ -1,0 +1,42 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Traps"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "trapsid",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "Traps event ID",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_trapsid",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Traps ID",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"system": false,
+	"systemAssociatedTypes": null,
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validationRegex": "",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"marketplaces": [
+       "xsoar"
+    ]
+}

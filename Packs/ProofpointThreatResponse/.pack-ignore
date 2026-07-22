@@ -1,0 +1,16 @@
+[file:ProofpointThreatResponse.yml]
+ignore=IN126,PR101
+
+[file:README.md]
+ignore=RM104
+
+[known_words]
+proofpoint
+tr
+
+[file:ProofpointThreatResponseModelingRules_1_3.yml]
+ignore=MR108
+
+[file:ProofpointThreatResponseModelingRules.yml]
+ignore=MR108
+

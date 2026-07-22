@@ -1,0 +1,87 @@
+category: Database
+commonfields:
+  id: Database
+  version: -1
+configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- defaultvalue: https://example.net
+  display: Server URL (e.g. https://example.net)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: 3 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: fetch_time
+  required: false
+  type: 0
+- display: Name of table to fetch incidents from.
+  name: table_name
+  required: false
+  type: 0
+- display: Name of the column which contains date of incident.
+  name: date_name
+  required: false
+  type: 0
+- display: 'A comma-separated list of columns for the SELECT expression. The list must follow this order: ID, Date, Name, Urgency.'
+  name: columns
+  required: false
+  type: 0
+description: Integration Template
+display: Database
+name: Database
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The SQL query to perform.
+      isArray: true
+      name: query
+      required: true
+      secret: false
+    - default: false
+      description: The title of each column. If provided, a dict is addded to the context.
+      isArray: false
+      name: columns
+      predefined:
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return. Default is 10.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Executes a query on the database.
+    execution: false
+    name: database-query
+    outputs:
+    - contextPath: Database.Result
+      description: Query results (in a list).
+      type: String
+  dockerimage: demisto/python3:3.7.5.3066
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests

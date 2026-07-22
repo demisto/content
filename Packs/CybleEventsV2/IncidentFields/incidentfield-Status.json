@@ -1,0 +1,43 @@
+{
+    "id": "incident_cybleeventsv2status",
+    "version": -1,
+    "modified": "2023-11-09T11:30:26.880619423Z",
+    "name": "CybleEventsV2 Status",
+    "ownerOnly": false,
+    "description": "CybleEventsV2 Status",
+    "cliName": "cybleeventsv2status",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "Unreviewed",
+        "Viewed",
+        "False Positive",
+        "Confirmed Incident",
+        "Under Review",
+        "Informational",
+        "Resolved",
+        "Remediation in Progress",
+        "Remediation not Required"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Cyble Vision Alert V2"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": false,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

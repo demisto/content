@@ -1,0 +1,22 @@
+{
+  "displayName": "n2",
+  "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/AwZOnmx5HJKRiNtqbdELuYHtyMo\"",
+  "fields": [
+    {
+      "displayName": "f2",
+      "etag": "\"XVqXMfEoKXKeCEJHh6Z_d9s0pNqKA90jMskGKajpbM8/hukq0Ju98TLGY27QpNZguw1jLRU\"",
+      "fieldId": "nEnjNkZiS1KrngWHeMfBhg==",
+      "fieldName": "new1",
+      "fieldType": "INT64",
+      "kind": "admin#directory#schema#fieldspec",
+      "readAccessType": "ALL_DOMAIN_USERS",
+       "numericIndexingSpec": {
+        "minValue": 5,
+        "maxValue": 100
+      }
+    }
+  ],
+  "kind": "admin#directory#schema",
+  "schemaId": "jXSIPF7aQQa09_EcVRb0SA==",
+  "schemaName": "new1"
+}

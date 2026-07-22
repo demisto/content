@@ -1,0 +1,424 @@
+id: detonate_url_-_crowdstrike
+version: -1
+name: Detonate URL - CrowdStrike
+fromversion: 5.0.0
+description: Deprecated. Use the cs-falcon-sandbox-submit-url command with polling=true instead.
+starttaskid: "0"
+deprecated: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 7e5790ea-f1c7-4f11-8d48-429dd24f4891
+    type: start
+    task:
+      id: 7e5790ea-f1c7-4f11-8d48-429dd24f4891
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: be76ffb3-369b-4003-888f-59bc9b4ca113
+    type: condition
+    task:
+      id: be76ffb3-369b-4003-888f-59bc9b4ca113
+      version: -1
+      name: Is CrowdStrike enabled?
+      description: |
+        Verify there is a valid instance of CrowdStrike enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VxStream
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 755a05f3-fba3-45c7-87bb-fad3c2606f93
+    type: title
+    task:
+      id: 755a05f3-fba3-45c7-87bb-fad3c2606f93
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4a4fb455-3725-4948-8a5c-98028d2073cf
+    type: regular
+    task:
+      id: 4a4fb455-3725-4948-8a5c-98028d2073cf
+      version: -1
+      name: CrowdStrike Scan
+      description: Downloads the PDF report to the War Room.
+      script: VxStream|||crowdstrike-scan
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      file:
+        complex:
+          root: File
+          accessor: SHA256
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: db9e268a-d1ff-4aa9-83c7-2bb90fa1ccd8
+    type: regular
+    task:
+      id: db9e268a-d1ff-4aa9-83c7-2bb90fa1ccd8
+      version: -1
+      name: CrowdStrike Upload Sample
+      description: Uploads a sample to CrowdStrike.
+      script: VxStream|||crowdstrike-submit-url
+      type: regular
+      iscommand: true
+      brand: VxStream
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      dontThrowErrorOnFileDetonation:
+        complex:
+          root: inputs.dontThrowErrorOnFileDetonation
+      environmentID:
+        complex:
+          root: inputs.EnvironmentID
+      url:
+        complex:
+          root: inputs.URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 8e34e69c-6900-4586-8342-57dc35adee90
+    type: condition
+    task:
+      id: 8e34e69c-6900-4586-8342-57dc35adee90
+      version: -1
+      name: Is there a URL to detonate?
+      description: Checks whether there's a file to detonate.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: bda1000b-f890-47a5-8432-681b470ed1b0
+    type: playbook
+    task:
+      id: bda1000b-f890-47a5-8432-681b470ed1b0
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (Optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: File
+          accessor: SHA256
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: file
+      PollingCommandName:
+        simple: crowdstrike-scan
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: File(val.state === 'NO_CONTENT').hash
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 2f73943a-4e0e-4375-8c46-7ad0d607944f
+    type: condition
+    task:
+      id: 2f73943a-4e0e-4375-8c46-7ad0d607944f
+      version: -1
+      name: Was a job created ? (A job is not created if the file type is not supported.)
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CrowdStrike
+                accessor: JobID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+  required: false
+  description: URL to detonate.
+  playbookInputQuery:
+- key: EnvironmentID
+  value:
+    simple: "100"
+  required: false
+  description: The environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+    command.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "5"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes).
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "30"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes).
+  playbookInputQuery:
+- key: dontThrowErrorOnFileDetonation
+  value:
+    simple: "false"
+  required: false
+  description: |-
+    Should the playbook fail due to an unsupported file type?
+    use true or false.
+  playbookInputQuery:
+outputs:
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: string
+- contextPath: File.Malicious
+  description: The file malicious description.
+  type: unknown
+- contextPath: File.Type
+  description: File type, for example "PE".
+  type: string
+- contextPath: File.Size
+  description: The file size.
+  type: number
+- contextPath: File.MD5
+  description: The MD5 hash of the file.
+  type: string
+- contextPath: File.Name
+  description: The file name.
+  type: string
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+  type: string
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: The vendor that decided the file was malicious.
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object.
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The tested indicator.
+  type: string
+- contextPath: DBotScore.Type
+  description: The indicator type.
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score.
+  type: number
+tests:
+- No test - deprecated.

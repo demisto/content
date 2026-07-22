@@ -1,0 +1,95 @@
+commonfields:
+  id: PWObservations
+  version: -1
+name: PWObservations
+script: >
+  from datetime import datetime, timedelta
+
+  res = []
+
+  dArgs = demisto.args()
+
+  dArgs["using-brand"] = "ProtectWise"
+
+  if not demisto.get(dArgs, 'end'):
+      dArgs['end'] = FormatIso8601(datetime.now())
+  # Default to past 24 hrs if start datetime is not provided
+
+  if not demisto.get(dArgs, 'start'):
+      dArgs['start'] = FormatIso8601(datetime.now() - timedelta(hours=24))
+
+  sensorList = argToList(demisto.get(dArgs, 'sensorId'))
+
+  for sensorId in sensorList:
+      dArgs['sensorId'] = sensorId
+      resSearch = demisto.executeCommand("observation-search", dArgs)
+      try:
+          for entry in resSearch:
+              if isError(entry):
+                  res = resSearch
+                  break
+              else:
+                  if demisto.get(entry, 'Contents.count') == 0:
+                      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": "No results found."})
+                  else:
+                      myData = demisto.get(entry, 'Contents.observations')
+                      if myData:
+                          for row in myData:
+                              for k in row:
+                                  row[k] = formatCell(row[k])
+                          appendContext('pwobservations', [ob['id'] for ob in myData])
+                          res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
+                      else:
+                          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                      "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent = 4)})
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- protectwise
+comment: Deprecated. Query for ProtectWise observations. Supports a comma-separated list of sensor IDs - will query each sensor with the given parameters.
+system: true
+args:
+- name: start
+  default: true
+  description: 'Timestamp of the start time of the event end, Example: 1401451200000, or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+- name: end
+  description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+- name: sensorId
+  required: true
+  description: the sensor id or a comma-separated list of sensor ids
+- name: hasKillChain
+  description: Search for observations in every kill chain stage (true false)
+- name: killChainStage
+  description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon CnC Fortification Data_Theft)
+- name: minLimit
+  description: Try to return at least this many results per page
+- name: maxLimit
+  description: Do not return more than this many results
+- name: type
+  description: Filter by observation type (ids http iprep urlrep protocol file )
+- name: ip
+  description: Filter observations by IP address in the src/dst fields
+- name: threatLevel
+  description: Filter by Low, Medium, or High threats (NONE LOW MEDIUM HIGH)
+- name: threatCategory
+  description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
+- name: signatureId
+  description: 'Filter by threat signature (find observations of the same type of threat) - Example: 69020504'
+- name: expandDetails
+  description: Include observation records (true or false)
+- name: reverseOrder
+  description: Return results sorted by descending timestamp (default = true)
+- name: nextPage
+  description: An identifier to fetch the next page in the result set
+scripttarget: 0
+dependson:
+  must:
+  - ProtectWise|||observation-search
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

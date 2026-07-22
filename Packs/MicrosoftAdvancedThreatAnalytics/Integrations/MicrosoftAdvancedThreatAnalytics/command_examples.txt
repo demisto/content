@@ -1,0 +1,4 @@
+!ms-ata-suspicious-activities-list
+!ms-ata-suspicious-activity-status-set id="5f1fe6b383eaed101ce19b58" status="Closed"
+!ms-ata-monitoring-alerts-list
+!ms-ata-entity-get id="7a58c171-fa19-44f9-bf1e-81b544b318ad"

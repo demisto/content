@@ -1,0 +1,23 @@
+{
+  "result_count": 2,
+  "columns": [
+    "timestamp",
+    "event_count",
+    "sensor_id",
+    "event_type"
+  ],
+  "data": [
+    [
+      "2016-05-19T00:00:00.000Z",
+      15877,
+      null,
+      null
+    ],
+    [
+      "2016-05-19T01:00:00.000Z",
+      21463,
+      null,
+      null
+    ]
+  ]
+}

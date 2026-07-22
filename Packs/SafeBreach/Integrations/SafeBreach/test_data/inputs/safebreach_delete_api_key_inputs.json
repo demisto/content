@@ -1,0 +1,110 @@
+{
+    "successful_delete_just_name": {
+        "args": {
+            "key_name": "acme1234"
+        },
+        "command": "safebreach-delete-api-key",
+        "all_active_api_keys_data": {
+            "data": [
+                {
+                    "id": 13,
+                    "name": "acme",
+                    "accountId": 1234543,
+                    "description": null,
+                    "createdBy": 12345,
+                    "lastUsed": "2023-06-07T20:06:08.047Z",
+                    "createdAt": "2023-06-07T12:29:07.488Z",
+                    "updatedAt": "2023-06-07T20:06:08.050Z",
+                    "deletedAt": null
+                },
+                {
+                    "id": 14,
+                    "name": "acme1",
+                    "accountId": 1234543,
+                    "description": null,
+                    "createdBy": 12345,
+                    "lastUsed": "2023-09-09T15:07:56.012Z",
+                    "createdAt": "2023-06-19T10:41:13.136Z",
+                    "updatedAt": "2023-09-09T15:07:56.014Z",
+                    "deletedAt": null
+                },
+                {
+                    "id": 58,
+                    "name": "acme123",
+                    "accountId": 1234543,
+                    "description": "test",
+                    "createdBy": 1234,
+                    "lastUsed": "2023-09-08T10:20:43.655Z",
+                    "createdAt": "2023-09-08T10:20:25.249Z",
+                    "updatedAt": "2023-09-08T10:20:43.661Z",
+                    "deletedAt": null
+                },
+                {
+                    "id": 59,
+                    "name": "acme1234",
+                    "accountId": 1234543,
+                    "description": "test",
+                    "createdBy": 1234,
+                    "lastUsed": null,
+                    "createdAt": "2023-09-09T15:10:26.592Z",
+                    "updatedAt": "2023-09-09T15:10:26.592Z",
+                    "deletedAt": "2023-10-09T15:10:26.592Z"
+                }
+            ]
+        }
+    },
+    "failed_deletion_due_to_no_name": {
+        "args": {
+            "key_name": "acme1234"
+        },
+        "command": "safebreach-delete-api-key",
+        "all_active_api_keys_data": {
+            "data": [
+                {
+                    "id": 13,
+                    "name": "acme",
+                    "accountId": 1234543,
+                    "description": null,
+                    "createdBy": 12345,
+                    "lastUsed": "2023-06-07T20:06:08.047Z",
+                    "createdAt": "2023-06-07T12:29:07.488Z",
+                    "updatedAt": "2023-06-07T20:06:08.050Z",
+                    "deletedAt": null
+                },
+                {
+                    "id": 14,
+                    "name": "acme1",
+                    "accountId": 1234543,
+                    "description": null,
+                    "createdBy": 12345,
+                    "lastUsed": "2023-09-09T15:07:56.012Z",
+                    "createdAt": "2023-06-19T10:41:13.136Z",
+                    "updatedAt": "2023-09-09T15:07:56.014Z",
+                    "deletedAt": null
+                },
+                {
+                    "id": 58,
+                    "name": "acme123",
+                    "accountId": 1234543,
+                    "description": "test",
+                    "createdBy": 1234,
+                    "lastUsed": "2023-09-08T10:20:43.655Z",
+                    "createdAt": "2023-09-08T10:20:25.249Z",
+                    "updatedAt": "2023-09-08T10:20:43.661Z",
+                    "deletedAt": null
+                },
+                {
+                    "id": 59,
+                    "name": "acme12345",
+                    "accountId": 1234543,
+                    "description": "test",
+                    "createdBy": 1234,
+                    "lastUsed": null,
+                    "createdAt": "2023-09-09T15:10:26.592Z",
+                    "updatedAt": "2023-09-09T15:10:26.592Z",
+                    "deletedAt": null
+                }
+            ]
+        }
+    }
+}

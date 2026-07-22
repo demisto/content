@@ -1,0 +1,18 @@
+commonfields:
+  id: DemistoLogsBundle
+  version: -1
+name: DemistoLogsBundle
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Deprecated. No available replacement.
+enabled: true
+scripttarget: 0
+dependson:
+  must:
+  - core-api-download
+fromversion: 5.0.0
+tests:
+- no test
+deprecated: true

@@ -1,0 +1,10 @@
+{
+    "attacker_rep": "unknown",
+    "movement_type": "Lateral Movement",
+    "name": "Zerohack XDR Misc activity",
+    "occurred": "2022-09-02 12:14:59",
+    "platform": "aws",
+    "rawJSON": "\"{'tcp_port': 'nan', 'ip_rep': 'unknown', 'dl_threat_class': 'Detection of a Network Scan', 'ml_severity': 1, 'attacker_mac': 'ff:ff:ff:ff:ff:ff', 'geoip_region_name': None, 'target_mac_address': 'ff:ff:ff:ff:ff:ff', 'geoip_postal_code': None, 'timezone': 'UTC-0.0', 'dl_severity': 2, 'geoip_asn_number': None, 'platform': 'aws', 'attack_os': 'Linux 2.2.x-3.x', 'ids_threat_severity': 3.0, 'geoip_country_name': None, 'packet_id': 464715, 'attacker_ip': '8.8.8.8', 'geoip_location_properties': None, 'udp_port': 'nan', 'geoip_longitude': None, 'geoip_location_string': None, 'service_name': 'ICMP', 'geoip_latitude': None, 'ids_threat_type': 'GPL ICMP_INFO Destination Unreachable Port Unreachable', 'ml_accuracy': 95, 'attack_epoch_time': 1662120899000, 'type_of_threat': 'Lateral Movement', 'ml_threat_class': 'Attempted Administrator Privilege Gain', 'target_os': 'Not Available', '@timestamp': '2022-09-02 12:18:26.096390024', 'attack_timestamp': '2022-09-02 12:14:59', 'target_ip': '8.8.8.8', 'dl_accuracy': 80, 'geoip_city': None, 'geoip_region_code': None, 'ids_threat_class': 'Misc activity', 'icmp_port': '4789.0', 'geoip_location_array': None, 'geoip_country_code': None, 'geoip_asn_name': None}\"",
+    "severity": 2,
+    "type": "Misc activity"
+}

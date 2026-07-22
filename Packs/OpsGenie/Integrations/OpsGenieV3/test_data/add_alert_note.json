@@ -1,0 +1,14 @@
+{
+    "data": {
+        "action": "Add Note",
+        "alertId": "0000000000-0000-00000-00000-000000000000000",
+        "alias": "000000000-0000-0000-000-00000-0000000",
+        "integrationId": "44441111-1111-4601-bfab-00000000",
+        "isSuccess": true,
+        "processedAt": "2023-08-07T13:45:31.323Z",
+        "status": "Added note",
+        "success": true
+    },
+    "requestId": "4444444-444-4069-b0f5-444444",
+    "took": 0.003
+}

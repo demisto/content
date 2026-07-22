@@ -1,0 +1,446 @@
+id: AzureLogAnalyticsTest
+name: AzureLogAnalyticsTest
+version: -1
+fromversion: 5.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a5a449f6-11e4-49e1-b023-97e510605d78
+    type: start
+    task:
+      id: a5a449f6-11e4-49e1-b023-97e510605d78
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: 72f1e528-79d0-43fb-85ad-49af129086f5
+    type: regular
+    task:
+      id: 72f1e528-79d0-43fb-85ad-49af129086f5
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: 5fe4118a-838e-490d-91e2-cd8a932830e9
+    type: regular
+    task:
+      id: 5fe4118a-838e-490d-91e2-cd8a932830e9
+      version: -1
+      name: azure-log-analytics-execute-query
+      description: ''
+      script: '|||azure-log-analytics-execute-query'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: 3
+    taskid: 85cd0ee2-cee2-42c7-a9f9-92b24bfc15e4
+    type: regular
+    task:
+      id: 85cd0ee2-cee2-42c7-a9f9-92b24bfc15e4
+      version: -1
+      name: azure-log-analytics-test
+      description: ''
+      script: '|||azure-log-analytics-test'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: 2ce5b392-a6d4-40fd-a43b-95491ef74534
+    type: regular
+    task:
+      id: 2ce5b392-a6d4-40fd-a43b-95491ef74534
+      version: -1
+      name: azure-log-analytics-saved-search-list
+      description: ''
+      script: '|||azure-log-analytics-saved-search-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: d6f35c5d-e5f8-4c3c-859a-d584e5f6cc56
+    type: condition
+    task:
+      id: d6f35c5d-e5f8-4c3c-859a-d584e5f6cc56
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.etag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.functionAlias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.functionParameters
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.tags.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.tags.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: d335ded9-3581-47b6-b95d-81d757dede5b
+    type: regular
+    task:
+      id: d335ded9-3581-47b6-b95d-81d757dede5b
+      version: -1
+      name: azure-log-analytics-get-saved-search-by-id
+      description: ''
+      script: '|||azure-log-analytics-get-saved-search-by-id'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: 80bdb329-13b7-4426-9421-423997278f49
+    type: condition
+    task:
+      id: 80bdb329-13b7-4426-9421-423997278f49
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.etag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.functionAlias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.functionParameters
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.tags.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.tags.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: 8
+    taskid: e89ea71e-87d9-471c-9f42-7f15a45ba22e
+    type: regular
+    task:
+      id: e89ea71e-87d9-471c-9f42-7f15a45ba22e
+      version: -1
+      name: azure-log-analytics-saved-search-create-or-update
+      description: ''
+      script: '|||azure-log-analytics-saved-search-create-or-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '9':
+    id: '9'
+    taskid: 99196722-4df4-49e4-bed9-92c3ba6fc18c
+    type: condition
+    task:
+      id: 99196722-4df4-49e4-bed9-92c3ba6fc18c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.etag
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.displayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.functionAlias
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.functionParameters
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.query
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.tags.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.tags.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureLogAnalytics.SavedSearch.type
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '10':
+    id: 10
+    taskid: 503ec53d-8309-4033-bda4-ed0f43cdc815
+    type: regular
+    task:
+      id: 503ec53d-8309-4033-bda4-ed0f43cdc815
+      version: -1
+      name: azure-log-analytics-saved-search-delete
+      description: ''
+      script: '|||azure-log-analytics-saved-search-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '11':
+    id: '11'
+    taskid: 53c7381e-d0f7-4faf-8a0b-803fb1844af0
+    type: title
+    task:
+      id: 53c7381e-d0f7-4faf-8a0b-803fb1844af0
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width": 380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []

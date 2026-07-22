@@ -1,0 +1,20 @@
+comment: Extracts email addresses from the given value.
+commonfields:
+  id: ExtractEmailTransformer
+  version: -1
+name: ExtractEmailTransformer
+script: '-'
+enabled: true
+args:
+- name: value
+  required: true
+  description: the input value.
+  isArray: true
+tags:
+- transformer
+timeout: '0'
+isllm: false
+type: javascript
+fromversion: 6.11.0
+tests:
+- ExtractEmailTransformer_Test

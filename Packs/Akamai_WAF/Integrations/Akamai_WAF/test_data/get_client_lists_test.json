@@ -1,0 +1,19 @@
+{
+    "raw_response": [
+        {
+            "listId": 12345,
+            "listName": "Test Client List",
+            "listType": "IP"
+        }
+    ],
+    "human_readable": "### Akamai WAF - Get Client List command\n|listId|listName|listType|\n|---|---|---|\n| 12345 | Test Client List | IP |\n",
+    "context_entry": {
+        "Akamai.ClientList": [
+            {
+                "listId": 12345,
+                "listName": "Test Client List",
+                "listType": "IP"
+            }
+        ]
+    }
+}

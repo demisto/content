@@ -1,0 +1,527 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 4,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 4,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Campaign Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 5,
+                        "i": "caseinfoid-ff2c27f0-a2e0-11eb-9d37-c9986135a434",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-1030d876-a2e1-11eb-9d37-c9986135a434",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "1030b160-a2e1-11eb-9d37-c9986135a434",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "1030b161-a2e1-11eb-9d37-c9986135a434",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "threatactor",
+                                "height": 22,
+                                "id": "1030b162-a2e1-11eb-9d37-c9986135a434",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timcampaignthreatalias",
+                                "height": 22,
+                                "id": "1030d872-a2e1-11eb-9d37-c9986135a434",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timcampaignthreatgoals",
+                                "height": 22,
+                                "id": "1030d873-a2e1-11eb-9d37-c9986135a434",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "timcampaignthreatmotivation",
+                                "height": 22,
+                                "id": "1030d874-a2e1-11eb-9d37-c9986135a434",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "timcampaignthreatdetected",
+                                "height": 22,
+                                "id": "1030d875-a2e1-11eb-9d37-c9986135a434",
+                                "index": 6,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-30129e80-a2e1-11eb-9d37-c9986135a434",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "id",
+                                "width": 110
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "name",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "status",
+                                "width": 80
+                            }
+                        ],
+                        "h": 3,
+                        "i": "caseinfoid-cf8c0880-a2ea-11eb-83a2-bd91c11083f1",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Linked Incidents",
+                        "static": false,
+                        "type": "linkedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-a10844a0-a2eb-11eb-83a2-bd91c11083f1",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Just Found",
+                        "query": {
+                            "categories": [
+                                "justFound"
+                            ],
+                            "tags": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "qyimwiu96q",
+                "name": "Indicators",
+                "sections": [
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "value",
+                                "width": 132
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "relatedIncCount",
+                                "width": 202
+                            },
+                            {
+                                "displayed": true,
+                                "key": "MITRE Description",
+                                "width": 355
+                            }
+                        ],
+                        "description": "MITRE ATT\u0026CK Tactics and Techniques extracted from uploaded reports or manually derived Threat Intel.",
+                        "h": 3,
+                        "i": "qyimwiu96q-178d02e0-f6cc-11ea-9e92-bb306f8071e4",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "MITRE ATT\u0026CK TTP's",
+                        "query": "type:\"MITRE ATT\u0026CK\"",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "value",
+                                "width": 143
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "relatedIncCount",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "key": "CVE Description",
+                                "width": 200
+                            }
+                        ],
+                        "description": "CVE's extracted from uploaded reports or internally derived Threat Intel.",
+                        "h": 3,
+                        "i": "qyimwiu96q-41235210-f6ec-11ea-bfa7-bfcd288346c1",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "CVE's",
+                        "query": "type:CVE",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "indicator_type",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "value",
+                                "width": 266
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "score",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "lastSeen",
+                                "width": 275
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "relatedIncCount",
+                                "width": 150
+                            }
+                        ],
+                        "h": 4,
+                        "i": "qyimwiu96q-6dc197a0-f6ec-11ea-bfa7-bfcd288346c1",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 2,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Other Indicators",
+                        "query": "(-type:\"MITRE ATT\u0026CK\" and -type:CVE) and -reputation:Good and -value:\"\"",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 4,
+                        "i": "qyimwiu96q-700fcd60-f6ec-11ea-bfa7-bfcd288346c1",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 1,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Evidence",
+                        "static": false,
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            },
+            {
+                "hidden": false,
+                "id": "jzpmvzgzky",
+                "name": "Report",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "jzpmvzgzky-827fdbe0-3fb5-11eb-a857-95417a1deae0",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "War Room Entries",
+                        "query": {
+                            "tags": [
+                                "FUN"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "Details for the threat actor or campaign under investigation.",
+                "fields": [
+                    {
+                        "fieldId": "incident_threatactor",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_timcampaignthreatalias",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_timcampaignthreatgoals",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_timcampaignthreatmotivation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_timcampaignthreatdetected",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Intel Campaign",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "TIM - Campaign",
+    "name": "TIM - Campaign",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "marketplaces": ["xsoar"]
+}

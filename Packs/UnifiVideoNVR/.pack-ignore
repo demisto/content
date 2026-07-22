@@ -1,0 +1,15 @@
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-UnifiVideo.json]
+ignore=BA101
+
+[file:UnifiVideo.yml]
+ignore=RM110
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:UnifiVideo_image.png]
+ignore=IM111
+

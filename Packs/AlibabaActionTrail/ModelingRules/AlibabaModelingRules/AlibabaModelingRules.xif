@@ -1,0 +1,24 @@
+[MODEL: dataset=alibaba_action_trail_raw, model=Audit]
+filter event_eventtype in("ApiCall","ConsoleOperation","AliyunServiceEvent","PasswordReset")
+| alter XDM.Audit.event_timestamp=timestamp_seconds(to_integer(__time__)),
+        XDM.Audit.cloud_region=event_acsregion,
+        XDM.Audit.original_event_id = event_eventid,
+        XDM.Audit.original_event_sub_type = event_eventname,
+        XDM.Audit.operation_type = event_eventtype,
+        XDM.Audit.audited_resource.name = event_resourcename,
+        XDM.Audit.audited_resource.type = event_resourcetype,
+        XDM.Audit.TriggeredBy.ipv4 = event_sourceipaddress,
+        XDM.Audit.TriggeredBy.identity.type = event_useridentity_type,
+        XDM.Audit.TriggeredBy.identity.uuid = event_useridentity_principalid,
+        XDM.Audit.TriggeredBy.identity.name = event_useridentity_username;
+
+[MODEL: dataset=alibaba_action_trail_raw, model=Auth]
+filter event_eventtype in("ConsoleSignin","ConsoleSignout")
+| alter XDM.Auth.event_timestamp=timestamp_seconds(to_integer(__time__)),
+        XDM.Auth.Client.location.region = event_acsregion,
+        XDM.Auth.original_event_id = event_eventid,
+        XDM.Auth.original_event_sub_type = event_eventname,
+        XDM.Auth.Client.ipv4 = event_sourceipaddress,
+        XDM.Auth.Client.user.user_type = event_useridentity_type,
+        XDM.Auth.Client.user.identifier = event_useridentity_principalid,
+        XDM.Auth.Client.user.username = event_useridentity_username;

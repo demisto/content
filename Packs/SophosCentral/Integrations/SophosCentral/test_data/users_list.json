@@ -1,0 +1,51 @@
+{
+    "items": [
+        {
+            "id": "55570a08-0a38-41e6-b075-e0a7eb96571d",
+            "name": "Administrator",
+            "firstName": "Administrator",
+            "lastName": "",
+            "email": "z7fgv3b2fayq1ntc7518@lightning.example.com",
+            "groups": {
+                "total": 1,
+                "itemsCount": 1,
+                "items": [
+                    {
+                        "id": "id",
+                        "name": "name"
+                    }
+                ]
+            },
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "source": {
+                "type": "custom"
+            },
+            "createdAt": "2022-04-25T09:52:24.152Z",
+            "updatedAt": "2022-08-03T06:18:32.457Z"
+        },
+        {
+            "id": "8b74e953-8e4c-4c18-a4ca-10d0952e02e6",
+            "name": "GREEN\\testUser",
+            "groups": {
+                "total": 0,
+                "itemsCount": 0,
+                "items": []
+            },
+            "tenant": {
+                "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+            },
+            "source": {
+                "type": "custom"
+            },
+            "createdAt": "2022-08-03T06:01:06.807Z"
+        }
+    ],
+    "pages": {
+        "current": 1,
+        "total": 1,
+        "size": 50,
+        "maxSize": 100
+    }
+}

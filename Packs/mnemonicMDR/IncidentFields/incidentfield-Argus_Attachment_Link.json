@@ -1,0 +1,31 @@
+{
+    "id": "incident_arguscaselink",
+    "version": -1,
+    "modified": "2021-02-01T11:49:35.041843403+01:00",
+    "name": "Argus Case Link",
+    "ownerOnly": false,
+    "description": "Direct link to case in Argus",
+    "cliName": "arguscaselink",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Argus Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

@@ -1,0 +1,20 @@
+{
+    "description": "Classifies Chronicle incidents",
+    "feed": false,
+    "id": "Chronicle",
+    "keyTypeMap": {
+        "AssetAlert": "Chronicle Asset Alert",
+        "DetectionAlert": "Chronicle Rule Detection",
+        "CuratedRuleDetectionAlert": "Chronicle Curated Rule Detection",
+        "IocDomainMatches": "Chronicle IOC Domain Matches",
+        "UserAlert": "Chronicle User Alert"
+    },
+    "name": "Chronicle - Classifier",
+    "transformer": {
+        "complex": null,
+        "simple": "IncidentType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

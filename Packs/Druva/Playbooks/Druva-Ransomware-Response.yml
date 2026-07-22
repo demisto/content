@@ -1,0 +1,677 @@
+id: Druva-Ransomware-Response
+version: -1
+name: Druva-Ransomware-Response
+description: Use Druva-Ransomware-Response
+  to stop the spread of ransomware and avoid reinfection or contamination spread.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 63a4a3df-a4de-4433-8a96-9fdcce548815
+    type: start
+    task:
+      id: 63a4a3df-a4de-4433-8a96-9fdcce548815
+      version: -1
+      name: ""
+      description: Playbook starts
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e409e9d6-d16b-4e7a-841b-bc021be05303
+    type: condition
+    task:
+      id: e409e9d6-d16b-4e7a-841b-bc021be05303
+      version: -1
+      name: UserNameExist
+      description: Checks if user has given any input for username
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.UserName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f92e2edb-c452-4619-8981-0193e9ede0e8
+    type: condition
+    task:
+      id: f92e2edb-c452-4619-8981-0193e9ede0e8
+      version: -1
+      name: ResourceNameExist
+      description: Checks if user has given any input for Hostnames
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ResourceName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 4e37d489-d410-4165-8cf4-0470f140bd71
+    type: condition
+    task:
+      id: 4e37d489-d410-4165-8cf4-0470f140bd71
+      version: -1
+      description: Checks if user has given any input for URLs
+      name: SiteURLExist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SiteURL
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0fa01684-6599-427e-80e4-0aeef6f446d5
+    type: regular
+    task:
+      id: 0fa01684-6599-427e-80e4-0aeef6f446d5
+      version: -1
+      name: Find-User
+      description: Finds user information for a specific username.
+      script: Druva Ransomware Response|||druva-find-user
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      user_string:
+        simple: ${inputs.UserName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a9c33836-d307-44f0-859f-3da73628e6c7
+    type: regular
+    task:
+      id: a9c33836-d307-44f0-859f-3da73628e6c7
+      version: -1
+      name: Find-User-Device
+      description: Finds device information for a specific user.
+      script: Druva Ransomware Response|||druva-find-userDevice
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      userID:
+        simple: ${Druva.User.userID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 0398f114-9d4d-42fd-8ad1-a0ba8123b241
+    type: regular
+    task:
+      id: 0398f114-9d4d-42fd-8ad1-a0ba8123b241
+      version: -1
+      name: Quarantine-Device
+      description: Quarantines a resource.
+      script: Druva Ransomware Response|||druva-quarantine-resource
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      from_date:
+        simple: ${inputs.DateOfOccurrence}
+      org_id:
+        simple: ${Druva.Resource.orgID}
+      resource_id:
+        simple: ${Druva.Resource.resourceID}
+      resource_type:
+        simple: ${Druva.Resource.resourceType}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6096beb7-b264-42c2-8837-fb7f1a9d98a7
+    type: regular
+    task:
+      id: 6096beb7-b264-42c2-8837-fb7f1a9d98a7
+      version: -1
+      name: Find-Resources
+      description: Finds device information for a specific hostname.
+      script: Druva Ransomware Response|||druva-find-device
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      search_string:
+        simple: ${inputs.ResourceName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f3cb637d-475c-4f07-8230-6316f4e4ec57
+    type: regular
+    task:
+      id: f3cb637d-475c-4f07-8230-6316f4e4ec57
+      version: -1
+      name: Find-sharepoint
+      description: 'Find all share point resources with given user name '
+      script: Druva Ransomware Response|||druva-find-sharePointSites
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      search_string:
+        simple: ${inputs.SiteURL}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f16eafd9-fc08-49e2-8ff6-01d0c93adbd6
+    type: title
+    task:
+      id: f16eafd9-fc08-49e2-8ff6-01d0c93adbd6
+      version: -1
+      name: Done
+      description: Playbook ends
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0174c448-34d5-46a3-8214-001afb2eee1f
+    type: regular
+    task:
+      id: 0174c448-34d5-46a3-8214-001afb2eee1f
+      version: -1
+      name: Find-sharedrive
+      description: Finds shared drives resources specific to share drive name
+      script: Druva Ransomware Response|||druva-find-sharedDrives
+      type: regular
+      iscommand: true
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      search_string:
+        simple: ${inputs.SiteURL}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b481c125-7582-40e7-8e3f-05d752dac63d
+    type: condition
+    task:
+      id: b481c125-7582-40e7-8e3f-05d752dac63d
+      version: -1
+      name: Is User Present
+      type: condition
+      description: Checks if any user is present for given input
+      iscommand: false
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Druva.User.userID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 462e8628-1756-4a0b-8234-ddac526707ee
+    type: condition
+    task:
+      id: 462e8628-1756-4a0b-8234-ddac526707ee
+      version: -1
+      name: 'IsIntegrationAvailable '
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "1"
+      - "2"
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: Druva Ransomware Response
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e5c46203-a589-4edf-87e4-e754e5d90bf9
+    type: condition
+    task:
+      id: e5c46203-a589-4edf-87e4-e754e5d90bf9
+      version: -1
+      name: ResourceExist?
+      description: Checks if any resource are present for given input
+      type: condition
+      iscommand: false
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Druva.Resource.resourceID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 78976e9e-10f6-4e24-8bc5-df083581b05a
+    type: condition
+    task:
+      id: 78976e9e-10f6-4e24-8bc5-df083581b05a
+      version: -1
+      name: SharepointResourceExist?
+      description: Checks if any sharepoint sites are present for given input
+      type: condition
+      iscommand: false
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Druva.Resource.resourceID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 48467aee-e88b-4b72-8f9b-221c3e71b3d2
+    type: condition
+    task:
+      id: 48467aee-e88b-4b72-8f9b-221c3e71b3d2
+      version: -1
+      name: shareDriveResourceExist?
+      description: Checks if any share drive sites are present for given input
+      type: condition
+      iscommand: false
+      brand: Druva Ransomware Response
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Druva.Resource.resourceID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1745,
+        "width": 1660,
+        "x": 50,
+        "y": -210
+      }
+    }
+  }
+inputs:
+- key: UserName
+  value:
+    simple: ${incident.users}
+  required: false
+  description: UserName is used to search userID  of user
+  playbookInputQuery: null
+- key: ResourceName
+  value:
+    simple: ${incident.hostnames}
+  required: false
+  description: ResourceName is used to search resource of type FS,NAS and VMware
+  playbookInputQuery: null
+- key: SiteURL
+  value:
+    simple: ${incident.urls}
+  required: false
+  description: 'SiteURL is used to search sharedrive and sharepoint resources  '
+  playbookInputQuery: null
+- key: DateOfOccurrence
+  value:
+    complex:
+      root: incident
+      accessor: occurred
+      transformers:
+      - operator: TimeComponents
+        args:
+          key:
+            value:
+              simple: yyyy-mm-dd
+          time_zone:
+            value:
+              simple: "+09:00"
+  required: false
+  description: 'Date is used to quarantine device '
+  playbookInputQuery: null
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

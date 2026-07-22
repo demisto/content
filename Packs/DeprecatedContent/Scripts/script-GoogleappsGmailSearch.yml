@@ -1,0 +1,58 @@
+commonfields:
+  id: GoogleappsGmailSearch
+  version: -1
+name: GoogleappsGmailSearch
+script: >2
+
+  import re
+
+
+  args = demisto.args()
+
+  for key in args.keys():
+      args[re.sub(r'([A-Z])',lambda x:'-'+x.group(1).lower(),key)] = args.pop(key)
+  resp = demisto.executeCommand("googleapps-gmail-search", args)
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- google apps
+comment: Deprecated. Search the messages in the user's mailbox.
+system: true
+args:
+- name: userKey
+  required: true
+  default: true
+  description: userKey - Identifies the user in the API request. The value can be the user's primary email address, alias email address, or unique user ID.
+- name: query
+  description: 'Only return messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread" , see for syntex : "https://support.google.com/mail/answer/7190?hl=en"'
+- name: maxResults
+  description: Maximum number of results to return. Default is 100. Maximum is 500. Acceptable values are 1 to 500, inclusive.
+- name: fields
+  description: Fields allows partial responses to be retrieved. See https://developers.google.com/gdata/docs/2.0/basics#PartialResponse for more information. (comma separated list)
+- name: labelsIds
+  description: Only return messages with labels that match all of the specified label IDs. (comma separated list)
+- name: pageToken
+  description: Page token to retrieve a specific page of results in the list.
+- name: includeSpamTrash
+  auto: PREDEFINED
+  description: 'Include messages from SPAM and TRASH in the results. (Default: false)'
+scripttarget: 0
+dependson:
+  must:
+  - googleapps-gmail-search
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

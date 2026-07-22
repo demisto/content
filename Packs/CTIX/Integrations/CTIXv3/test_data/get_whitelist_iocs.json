@@ -1,0 +1,9 @@
+{"next": "whitelist/?page=2&page_size=1", "page_size": 1, "previous": null, 
+	"results": [{"created": 1652084983, "created_by": {"email": 
+	"dummy.email@test.com", "first_name": "hardipinder", "id":
+	"40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "singh"}, "follow":
+	true, "id": "2df4a0ad-b1dd-4a4c-bf71-dcdefce0dcf9", "include_emails": false,
+	"include_subdomains": false, "include_urls": false, "modified": 1652097309,
+	"modified_by": {"email": "dummy.email@test.com", "first_name": "", "id":
+	"4a5f744c-800a-4fcd-be06-53f4b1b8f966", "last_name": ""}, "type": 
+	"ipv4-addr", "value": "127.0.0.1"}], "total": 5}

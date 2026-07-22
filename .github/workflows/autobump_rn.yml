@@ -1,0 +1,48 @@
+name: Autobump Version
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  autobump_rn_version:
+    runs-on: ubuntu-latest
+    concurrency: autobump-version
+    if: github.repository == 'demisto/content' && startsWith(github.head_ref, 'contrib/') == false
+    steps:
+      - name: Print out context
+        run: |
+          echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"  # The Python version set here is the minimum supported by content, if you change it here, please change all the places containing this comment.
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@48b0f77c8c1b1b19cb962f0f00dff7b4be8f81ec # v9
+      - name: Install python dependencies
+        run: |
+          poetry install --with github-actions
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
+      - name: Check conflicts and add release notes
+        env:
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
+          XSOAR_BOT_TEST_CONTENT: ${{ secrets.XSOAR_BOT_TEST_CONTENT }}
+          RUN_ID: ${{github.run_id}}
+        run: |
+          git config --global user.email "bot@demisto.com"
+          git config --global user.name "Content Bot"
+          echo "Someone merged to master. Starting to check if conflicts in release notes created."
+          poetry run python .github/github_workflow_scripts/autobump_rn.py -g $CONTENTBOT_GH_ADMIN_TOKEN -r $RUN_ID

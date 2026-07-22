@@ -1,0 +1,31 @@
+{
+    "dataType": "incidents",
+    "params": {
+        "keys": [
+            "avg|containmentsla.totalDuration"
+        ],
+        "valuesFormat": "hours"
+    },
+    "query": "-category:job and containmentsla.runStatus:ended",
+    "modified": "2022-09-15T14:25:49.980444725Z",
+    "name": "Mean Time to Containment",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "13674026-3ba0-464c-89a0-46d0de27e201",
+    "widgetType": "duration",
+    "fromVersion": "6.5.0",
+    "description": ""
+}

@@ -1,0 +1,674 @@
+id: urlscan_malicious_Test
+version: -1
+name: urlscan_malicious_Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 1c928bb0-6316-467a-813b-81cc5186b3ed
+    type: start
+    task:
+      id: 1c928bb0-6316-467a-813b-81cc5186b3ed
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '3':
+    id: '3'
+    taskid: 8745de4e-9e1a-4c64-86e6-1cf34be41d2e
+    type: regular
+    task:
+      id: 8745de4e-9e1a-4c64-86e6-1cf34be41d2e
+      version: -1
+      name: Check Malicious url
+      description: Check if file MD5 is malicious
+      script: '|||urlscan-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      limit: {}
+      searchParameter:
+        simple: malware.wicar.org
+      url:
+        simple: http://malware.wicar.org/data/eicar.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '4':
+    id: '4'
+    taskid: 029cf1ef-c631-4664-8eac-b462700417ef
+    type: regular
+    task:
+      id: 029cf1ef-c631-4664-8eac-b462700417ef
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '7':
+    id: '7'
+    taskid: db2bf8ac-bae1-40a4-8deb-cb2b19095646
+    type: condition
+    task:
+      id: db2bf8ac-bae1-40a4-8deb-cb2b19095646
+      version: -1
+      name: Get result
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    scriptarguments:
+      additional: {}
+      data: {}
+      filter: {}
+      filterType: {}
+      out: {}
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLScan.Domain
+            iscontext: true
+          right:
+            value:
+              simple: malware.wicar.org
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: 30beddc3-eb2e-40fc-8dc9-a840c13a3bb3
+    type: title
+    task:
+      id: 30beddc3-eb2e-40fc-8dc9-a840c13a3bb3
+      version: -1
+      name: Not Malicious URLs
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: 60db32f7-734c-4ec0-8755-7bf995400bf9
+    type: regular
+    task:
+      id: 60db32f7-734c-4ec0-8755-7bf995400bf9
+      version: -1
+      name: Check non-malicious url
+      description: Check if file MD5 is malicious
+      script: '|||urlscan-search'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      limit: {}
+      searchParameter:
+        simple: shlepme.com
+      url:
+        simple: shlepme.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '11':
+    id: '11'
+    taskid: 3a48ef08-f223-4e05-847a-47a047aa37d5
+    type: condition
+    task:
+      id: 3a48ef08-f223-4e05-847a-47a047aa37d5
+      version: -1
+      name: Get result
+      description: Filter context keys by applying one of the various available manipulations and storing in a new context key. Please notice that the resulting context key will not be available automatically as an option but you can still specify it.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '12'
+    scriptarguments:
+      additional: {}
+      data: {}
+      filter: {}
+      filterType: {}
+      out: {}
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: URLScan.Domain
+            iscontext: true
+          right:
+            value:
+              simple: shlepme.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '12':
+    id: '12'
+    taskid: b70b5654-e4a3-47e7-84bf-86cebb05a60a
+    type: title
+    task:
+      id: b70b5654-e4a3-47e7-84bf-86cebb05a60a
+      version: -1
+      name: Rate Limiting Test
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '13':
+    id: '13'
+    taskid: ca1ded19-8aa8-4252-844b-0e6009e9a645
+    type: regular
+    task:
+      id: ca1ded19-8aa8-4252-844b-0e6009e9a645
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '10'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '14':
+    id: '14'
+    taskid: 879be1c7-fd7f-4663-8ee7-f7a474a9be60
+    type: regular
+    task:
+      id: 879be1c7-fd7f-4663-8ee7-f7a474a9be60
+      version: -1
+      name: Multiple url submission(rate limit test)
+      description: Submit a url to scan
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries:
+        simple: '3'
+      threshold: {}
+      timeout: {}
+      url:
+        simple: https://www.demisto.com
+      wait:
+        simple: '23'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '15':
+    id: '15'
+    taskid: ed3fa390-88e4-4ba1-8739-5f10da9624dc
+    type: regular
+    task:
+      id: ed3fa390-88e4-4ba1-8739-5f10da9624dc
+      version: -1
+      name: url
+      description: Submit a url to scan
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries:
+        simple: '2'
+      threshold: {}
+      timeout: {}
+      url:
+        simple: https://www.ebay.com
+      wait:
+        simple: '20'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '16':
+    id: '16'
+    taskid: ea18b359-90f7-44c7-8b8b-f30ddf4b96f7
+    type: regular
+    task:
+      id: ea18b359-90f7-44c7-8b8b-f30ddf4b96f7
+      version: -1
+      name: url
+      description: Submit a url to scan
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - '25'
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries:
+        simple: '2'
+      threshold: {}
+      timeout: {}
+      url:
+        simple: https://www.ynet.com
+      wait:
+        simple: '21'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '23':
+    id: '23'
+    taskid: ad53c55c-bf28-4d52-83c6-b5bb5ed22e8f
+    type: title
+    task:
+      id: ad53c55c-bf28-4d52-83c6-b5bb5ed22e8f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '24':
+    id: '24'
+    taskid: ef93a6c8-29b6-417d-8a33-4fed0885c1a4
+    type: title
+    task:
+      id: ef93a6c8-29b6-417d-8a33-4fed0885c1a4
+      version: -1
+      name: Malicious URLs
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '25':
+    id: '25'
+    taskid: 20532079-78a3-43cc-8355-1f1d2c42c060
+    type: title
+    task:
+      id: 20532079-78a3-43cc-8355-1f1d2c42c060
+      version: -1
+      name: Batch URLs Test
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '26':
+    id: '26'
+    taskid: e51fba09-fba3-466c-8b68-35adc8aa38c4
+    type: regular
+    task:
+      id: e51fba09-fba3-466c-8b68-35adc8aa38c4
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '27':
+    id: '27'
+    taskid: 262b51dd-45b4-4069-8215-c95f01eae889
+    type: regular
+    task:
+      id: 262b51dd-45b4-4069-8215-c95f01eae889
+      version: -1
+      name: Batch URL Submission
+      description: Submits a URL to scan.
+      script: urlscan.io|||url
+      type: regular
+      iscommand: true
+      brand: urlscan.io
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      limit: {}
+      long: {}
+      public: {}
+      retries:
+        simple: '5'
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      timeout: {}
+      url:
+        simple: http://urlscan.io,http://www.demisto.com
+      wait:
+        simple: '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '28':
+    id: '28'
+    taskid: d370690e-7862-410c-8635-1a14bd3f0e0e
+    type: condition
+    task:
+      id: d370690e-7862-410c-8635-1a14bd3f0e0e
+      version: -1
+      name: Validate Results
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '23'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: DBotScore
+            iscontext: true
+          right:
+            value:
+              simple: '2'
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://www.demisto.com
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

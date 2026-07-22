@@ -1,0 +1,8 @@
+[file:AlphaSOCNetworkBehaviorAnalytics.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM104
+
+[file:AlphaSOCNetworkBehaviorAnalytics_image.png]
+ignore=IM111

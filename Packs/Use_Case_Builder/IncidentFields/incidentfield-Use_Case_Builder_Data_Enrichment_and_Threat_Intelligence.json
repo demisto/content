@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuilderdataenrichmentandthreatintelligence",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuilderdataenrichmentandthreatintelligence",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Builder Data Enrichment and Threat Intelligence",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "template": "# Data Enrichment \u0026 Threat Intelligence\n## Top Use Cases:\n\n- Enriching information about different IOC types:\n- Upload object for scan and get the scan results. (If there’s a possibility to upload private/public, default should be set to private).\n- Search for former scan results about an object (This way you can get information about a sample without uploading it yourself).\n- Enrich information and scoring for the object.\n- Add/Search for indicators in the system.\n- Add indicators to allow list / block list.\n- Calculate DBot Score for indicators.\n\n## Data Enrichment \u0026 Threat Intelligence Integration Example: [VirusTotal](https://xsoar.pan.dev/docs/reference/integrations/virus-total)\n",
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

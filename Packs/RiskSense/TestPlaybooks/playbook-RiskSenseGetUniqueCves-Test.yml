@@ -1,0 +1,339 @@
+id: RiskSense Get Unique Cves - Test
+version: -1
+name: RiskSense Get Unique Cves - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-get-unique-cves" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3c9198c1-91f7-4558-8f0d-dfbefeb96f2d
+    type: start
+    task:
+      id: 3c9198c1-91f7-4558-8f0d-dfbefeb96f2d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c254c2a3-c5c1-4b9e-8225-c39e7398605b
+    type: regular
+    task:
+      id: c254c2a3-c5c1-4b9e-8225-c39e7398605b
+      version: -1
+      name: Delete Context
+      description: Delete fields from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 054ef71b-41ff-4afb-8edc-837237eebf9d
+    type: regular
+    task:
+      id: 054ef71b-41ff-4afb-8edc-837237eebf9d
+      version: -1
+      name: Execute Risksense-get-unique-cves command from Demisto
+      description: Lookup vulnerability details per host finding with its base score.
+      script: '|||risksense-get-unique-cves'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      hostFindingId:
+        simple: "115469552"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 38e322a1-71cf-455c-8e3f-3e4db30a8ef5
+    type: condition
+    task:
+      id: 38e322a1-71cf-455c-8e3f-3e4db30a8ef5
+      version: -1
+      name: Is context data matched?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.Cve
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.BaseScore
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.ThreatCount
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.AttackVector
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.AccessComplexity
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.Authentication
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.ConfidentialityImpact
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.Integrity
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.AvailabilityImpact
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.Trending
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.VulnLastTrendingOn
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueVulnerabilities.HostFindingID
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 6d1627e8-fac8-48dc-82ed-cf7157ab8f7e
+    type: regular
+    task:
+      id: 6d1627e8-fac8-48dc-82ed-cf7157ab8f7e
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: e085ab63-9e1f-415d-8856-3d0c770e6530
+    type: title
+    task:
+      id: e085ab63-9e1f-415d-8856-3d0c770e6530
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 072fdf90-ed8f-44af-8ef8-a91aafbf0182
+    type: regular
+    task:
+      id: 072fdf90-ed8f-44af-8ef8-a91aafbf0182
+      version: -1
+      name: Delete Context
+      description: Delete fields from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

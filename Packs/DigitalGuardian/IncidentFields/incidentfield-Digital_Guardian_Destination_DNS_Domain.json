@@ -1,0 +1,42 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Digital Guardian Security Event"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "digitalguardiandestinationdnsdomain",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "Digital Guardian Destination DNS Domain",
+    "editForm": true,
+    "fieldCalcScript": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_digitalguardiandestinationdnsdomain",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Digital Guardian Destination DNS Domain",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "required": false,
+    "script": "",
+    "selectValues": null,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

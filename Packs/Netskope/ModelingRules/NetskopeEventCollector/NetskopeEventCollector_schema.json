@@ -1,0 +1,136 @@
+{
+  "netskope_netskope_raw": {
+    "action": {
+      "type": "string",
+      "is_array": false
+    },
+    "device": {
+      "type": "string",
+      "is_array": false
+    },
+    "dsthost": {
+      "type": "string",
+      "is_array": false
+    },
+    "dstip": {
+      "type": "string",
+      "is_array": false
+    },
+    "dstport": {
+      "type": "string",
+      "is_array": false
+    },
+    "hostname": {
+      "type": "string",
+      "is_array": false
+    },
+    "ip_protocol": {
+      "type": "string",
+      "is_array": false
+    },
+    "os": {
+      "type": "string",
+      "is_array": false
+    },
+    "protocol": {
+      "type": "string",
+      "is_array": false
+    },
+    "session_duration": {
+      "type": "int",
+      "is_array": false
+    },
+    "srcip": {
+      "type": "string",
+      "is_array": false
+    },
+    "srcport": {
+      "type": "string",
+      "is_array": false
+    },
+    "timestamp": {
+      "type": "int",
+      "is_array": false
+    },
+    "total_packets": {
+      "type": "int",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "userkey": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity_level": {
+      "type": "int",
+      "is_array": false
+    },
+    "audit_log_event": {
+      "type": "string",
+      "is_array": false
+    },
+    "activity": {
+      "type": "string",
+      "is_array": false
+    },
+    "type": {
+      "type": "string",
+      "is_array": false
+    },
+    "alert": {
+      "type": "string",
+      "is_array": false
+    },
+    "incident_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_location": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_country": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_region": {
+      "type": "string",
+      "is_array": false
+    },
+    "access_method": {
+      "type": "string",
+      "is_array": false
+    },
+    "app": {
+      "type": "string",
+      "is_array": false
+    },
+    "file_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "managed_app": {
+      "type": "string",
+      "is_array": false
+    },
+    "md5": {
+      "type": "string",
+      "is_array": false
+    },
+    "useragent": {
+      "type": "string",
+      "is_array": false
+    },
+    "url": {
+      "type": "string",
+      "is_array": false
+    },
+    "sha256": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

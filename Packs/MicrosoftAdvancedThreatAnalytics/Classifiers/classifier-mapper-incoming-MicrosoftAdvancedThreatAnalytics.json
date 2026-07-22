@@ -1,0 +1,54 @@
+{
+	"id": "Microsoft Advanced Threat Analytics-mapper",
+	"name": "Microsoft Advanced Threat Analytics - Incoming Mapper",
+	"type": "mapping-incoming",
+	"description": "Maps Microsoft Advanced Threat Analytics suspicious activity fields.",
+	"fromVersion": "6.0.0",
+	"version": -1,
+	"defaultIncidentType": "Microsoft ATA Suspicious Activity",
+	"feed": false,
+	"mapping": {
+		"Microsoft ATA Suspicious Activity": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Src Hostname": {
+					"complex": null,
+					"simple": "SourceComputerIds"
+				},
+				"Suspicious Activity End Time": {
+					"complex": null,
+					"simple": "EndTime"
+				},
+				"Suspicious Activity ID": {
+					"complex": null,
+					"simple": "Id"
+				},
+				"Suspicious Activity Severity": {
+					"complex": null,
+					"simple": "Severity"
+				},
+				"Suspicious Activity Start Time": {
+					"complex": null,
+					"simple": "StartTime"
+				},
+				"Suspicious Activity Status": {
+					"complex": null,
+					"simple": "Status"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Event ID": {
+					"complex": null,
+					"simple": "WindowsEventId"
+				},
+				"details": {
+					"complex": null,
+					"simple": "DescriptionFormatKey"
+				}
+			}
+		}
+	}
+}

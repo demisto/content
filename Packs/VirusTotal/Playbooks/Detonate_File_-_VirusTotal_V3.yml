@@ -1,0 +1,377 @@
+id: Detonate File - VirusTotal (API v3)
+version: -1
+name: Detonate File - VirusTotal (API v3)
+description: Detonate a file through VirusTotal (API v3)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e88009b5-107c-4956-8d3c-f56337826296
+    type: start
+    task:
+      id: e88009b5-107c-4956-8d3c-f56337826296
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 19cc02a3-4cd2-4847-80fb-492f4f653092
+    type: condition
+    task:
+      description: Is VirusTotal (API v3) enabled?
+      id: 19cc02a3-4cd2-4847-80fb-492f4f653092
+      version: -1
+      name: Is VirusTotal (API v3) enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: VirusTotal (API v3)
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 283fbb8b-5132-4a4c-81d3-947ee7f3b20c
+    type: condition
+    task:
+      description: Is there a file to detonate?
+      id: 283fbb8b-5132-4a4c-81d3-947ee7f3b20c
+      version: -1
+      name: Is there a file to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4bff86d5-4513-4252-8ba3-a6dd17197646
+    type: regular
+    task:
+      id: 4bff86d5-4513-4252-8ba3-a6dd17197646
+      version: -1
+      name: Send file to VirusTotal
+      description: Submits a file for scanning. Use vt-analysis-get to get the scan
+        results.
+      script: VirusTotal (API v3)|||file-scan
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entryID:
+        complex:
+          root: inputs.File
+          accessor: EntryID
+      uploadURL: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d78e7bf7-9f19-417f-8e7a-6e89df877d67
+    type: playbook
+    task:
+      id: d78e7bf7-9f19-417f-8e7a-6e89df877d67
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: VirusTotal.Submission
+          accessor: id
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: vt-analysis-get
+      Timeout:
+        simple: "10"
+      dt:
+        simple: VirusTotal.Analysis.data(val.attributes.status != 'completed').id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 670b86df-5b33-4cbb-8250-1ce88d1c8312
+    type: regular
+    task:
+      id: 670b86df-5b33-4cbb-8250-1ce88d1c8312
+      version: -1
+      name: Get analysis from VirusTotal
+      description: Retrives resolutions of the given ip.
+      script: VirusTotal (API v3)|||vt-analysis-get
+      type: regular
+      iscommand: true
+      brand: VirusTotal (API v3)
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      extended_data: {}
+      id:
+        complex:
+          root: VirusTotal.Submission
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ae4abf66-7f04-4f3b-820e-9b149711fc86
+    type: title
+    task:
+      id: ae4abf66-7f04-4f3b-820e-9b149711fc86
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 199cfb50-cb4a-4c46-8519-e8df79a8a5bd
+    type: regular
+    task:
+      id: 199cfb50-cb4a-4c46-8519-e8df79a8a5bd
+      version: -1
+      name: Set File to File path
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      stringify: {}
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: true
+  description: Entry ID of the file to detonate
+  playbookInputQuery:
+outputs:
+- contextPath: VirusTotal.Analysis.data.attributes.stats.harmless
+  description: Number of engines found the indicator harmless.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.malicious
+  description: Number of engines found the indicator malicious.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.suspicious
+  description: Number of engines found the indicator suspicious.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.timeout
+  description: Number of engines found the indicator timeout.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.stats.undetected
+  description: Number of engines found the indicator undetected.
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.date
+  description: Date of the analysis in epoch
+  type: number
+- contextPath: VirusTotal.Analysis.data.attributes.status
+  description: Status of the analysis
+  type: string
+- contextPath: VirusTotal.Analysis.meta.file_info.sha256
+  description: SHA-256 of the file
+  type: string
+- contextPath: VirusTotal.Analysis.meta.file_info.sha1
+  description: SHA-1 of the file
+  type: string
+- contextPath: VirusTotal.Analysis.meta.file_info.md5
+  description: MD5 of the file
+  type: string
+- contextPath: VirusTotal.Analysis.meta.file_info.name
+  description: name of the file
+  type: string
+- contextPath: VirusTotal.Analysis.meta.file_info.size
+  description: Size of the file in bytes
+  type: number
+- contextPath: VirusTotal.Analysis.meta.url_info.id
+  description: ID of the url
+  type: string
+fromversion: "5.5.0"
+tests:
+- VirusTotal (API v3) Detonate Test

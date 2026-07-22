@@ -1,0 +1,14 @@
+[
+  {
+    "timestamp": "2016-05-19T00:00:00.000Z",
+    "event_count": 15877,
+    "sensor_id": null,
+    "event_type": null
+  },
+  {
+    "timestamp": "2016-05-19T01:00:00.000Z",
+    "event_count": 21463,
+    "sensor_id": null,
+    "event_type": null
+  }
+]

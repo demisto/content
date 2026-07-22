@@ -1,0 +1,4 @@
+Severity,ID,Service / Domain Name,Date / Time,Anomaly Type,Activity Type,Response,User Risk Level,User / IP Address,Anomaly Value,Threshold,DestinationHost,Valid
+High,34290314,Microsoft Exchange Online,10-Feb-2021 00:07:19,Data Transfer,Upload,Allowed,Medium,c1eeefb535697e4434adc4c9edd7d4f8788f6cbe053a60d12ad0cbf100c12345,199612833,90040000,outlook.office365.com,Yes
+High,34282854,Microsoft Exchange Online,10-Feb-2021 00:13:51,Data Transfer,Upload,Allowed,Medium,c1eeefb535697e4434adc4c9edd7d4f8788f6cbe053a60d12ad0cbf100c12345,117620817,90040000,outlook.office365.com,Yes
+High,34286704,Microsoft Exchange Online,10-Feb-2021 02:49:10,Data Transfer,Upload,Allowed,Medium,fc3628e13f19829e928e05fc15fa8cdf4a129dc43a322b7f7f3d968259c12345,100500807,90040000,outlook.office365.com,Yes

@@ -1,0 +1,23 @@
+args:
+- description: The CVE to get impacted images and hosts for
+  name: cve
+- description: The markdown field to set
+  name: markdownField
+comment: Deprecated. No available replacement.
+commonfields:
+  id: PrismaCloudComputeCreateImpactTableForCVE
+  version: -1
+dockerimage: demisto/python3:3.10.1.26972
+enabled: true
+name: PrismaCloudComputeCreateImpactTableForCVE
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- indicator-action-button
+type: python
+fromversion: 6.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)

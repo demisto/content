@@ -1,0 +1,618 @@
+id: Carbon Black Live Response Test
+version: -1
+name: Carbon Black Live Response Test
+description: Tests carbon black enterprise response selected use cases and commands
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 0eac19e5-d690-4df8-8192-7bd4feb6cde3
+    type: start
+    task:
+      id: 0eac19e5-d690-4df8-8192-7bd4feb6cde3
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 807f702f-4113-464f-8c42-046649752ce2
+    type: regular
+    task:
+      id: 807f702f-4113-464f-8c42-046649752ce2
+      version: -1
+      name: Close session
+      description: ''
+      script: carbonblackliveresponse|||cb-session-close
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    scriptarguments:
+      session:
+        complex:
+          root: CbLiveResponse
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CbLiveResponse.Sessions.CbSensorID
+                iscontext: true
+              right:
+                value:
+                  simple: '24'
+          accessor: Sessions.CbSessionID
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 1360\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '39':
+    id: '39'
+    taskid: a42684e5-6fa8-4155-80f2-77ca43f37022
+    type: regular
+    task:
+      id: a42684e5-6fa8-4155-80f2-77ca43f37022
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '76'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '41':
+    id: '41'
+    taskid: 7259aa98-9891-44e3-8c76-e39418eb0b4e
+    type: regular
+    task:
+      id: 7259aa98-9891-44e3-8c76-e39418eb0b4e
+      version: -1
+      name: 'Create a session for sensor #24'
+      description: ''
+      script: '|||cb-session-create-and-wait'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '70'
+    scriptarguments:
+      command-timeout:
+        simple: '200'
+      keepalive-timeout:
+        simple: '300'
+      sensor:
+        simple: '24'
+      wait-timeout:
+        simple: '300'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 1000\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '47':
+    id: '47'
+    taskid: 9a7ac63f-7a6c-44be-8c75-f92e08dfc033
+    type: regular
+    task:
+      id: 9a7ac63f-7a6c-44be-8c75-f92e08dfc033
+      version: -1
+      name: 'List open sessions for sensor #24'
+      description: ''
+      script: '|||cb-list-sessions'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '56'
+    scriptarguments:
+      sensor:
+        simple: '24'
+      status:
+        simple: active
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 807.5,\n    \"y\": 660\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '56':
+    id: '56'
+    taskid: e473a02a-b478-4d7d-82d3-af34eeb3c5cb
+    type: condition
+    task:
+      id: e473a02a-b478-4d7d-82d3-af34eeb3c5cb
+      version: -1
+      name: Check if there's an active session
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '41'
+      yes:
+      - '71'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CbLiveResponse.Sessions
+            iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions
+            iscontext: true
+          right:
+            value:
+              simple: 'null'
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: CbResponse.Sessions.CbSessionID
+            iscontext: true
+          right:
+            value:
+              simple: None
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions.CbSensorID
+            iscontext: true
+          right:
+            value:
+              simple: '24'
+    view: "{\n  \"position\": {\n    \"x\": 797.5,\n    \"y\": 835\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '57':
+    id: '57'
+    taskid: 87f0cebd-68f2-4612-8c4a-097e2e054d8d
+    type: regular
+    task:
+      id: 87f0cebd-68f2-4612-8c4a-097e2e054d8d
+      version: -1
+      name: Create test file
+      description: ''
+      scriptName: TestCreateWordFile
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '58'
+    scriptarguments:
+      name:
+        simple: test.docx
+      text:
+        simple: Test
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1535\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '58':
+    id: '58'
+    taskid: bbc76eb4-f5a1-49ac-8e75-a141a1415012
+    type: regular
+    task:
+      id: bbc76eb4-f5a1-49ac-8e75-a141a1415012
+      version: -1
+      name: 'Upload test file to sensor #15'
+      description: ''
+      script: '|||cb-push-file-to-endpoint'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '60'
+    scriptarguments:
+      entry-id:
+        simple: ${File.EntryID}
+      path:
+        simple: c:\Users\All Users\Desktop\test.docx
+      sensor:
+        simple: '15'
+      session: {}
+      wait-timeout:
+        simple: '300'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1710\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '60':
+    id: '60'
+    taskid: ec4acdc2-b7ab-47b1-82b0-126bf3a03d34
+    type: regular
+    task:
+      id: ec4acdc2-b7ab-47b1-82b0-126bf3a03d34
+      version: -1
+      name: Download uploaded file from the sensor
+      description: ''
+      script: '|||cb-get-file-from-endpoint'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '61'
+    scriptarguments:
+      path:
+        simple: c:\Users\All Users\Desktop\test.docx
+      sensor:
+        simple: '15'
+      session: {}
+      wait-timeout:
+        simple: '300'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1885\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '61':
+    id: '61'
+    taskid: dc8a0de2-4047-4d78-8f7e-a0750eb310d3
+    type: regular
+    task:
+      id: dc8a0de2-4047-4d78-8f7e-a0750eb310d3
+      version: -1
+      name: Delete uploaded file from the endpoint
+      description: ''
+      script: '|||cb-file-delete-from-endpoint'
+      type: regular
+      iscommand: true
+      brand: ''
+    scriptarguments:
+      cancel-on-timeout: {}
+      path:
+        simple: c:\Users\All Users\Desktop\test.docx
+      sensor:
+        simple: '15'
+      session: {}
+      wait-timeout:
+        simple: '60'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2060\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '64':
+    id: '64'
+    taskid: d7ba2a23-bd9f-40c4-807f-26eca7e2239b
+    type: title
+    task:
+      id: d7ba2a23-bd9f-40c4-807f-26eca7e2239b
+      version: -1
+      name: Test Uploading Files
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '67'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 675\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '65':
+    id: '65'
+    taskid: 7bd23665-6481-4ca4-82b8-d8914debdf3e
+    type: title
+    task:
+      id: 7bd23665-6481-4ca4-82b8-d8914debdf3e
+      version: -1
+      name: 'Open a new Session and Execute Command '
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 807.5,\n    \"y\": 515\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '66':
+    id: '66'
+    taskid: 599a9d53-a079-461b-8892-65c718c41d5b
+    type: title
+    task:
+      id: 599a9d53-a079-461b-8892-65c718c41d5b
+      version: -1
+      name: Execute Commands Without Session Managment
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '64'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 515\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '67':
+    id: '67'
+    taskid: f1472fbc-bca9-4ba7-8777-b9422d3b106c
+    type: regular
+    task:
+      id: f1472fbc-bca9-4ba7-8777-b9422d3b106c
+      version: -1
+      name: 'List active sessions for sensor #15 '
+      description: ''
+      script: '|||cb-list-sessions'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '74'
+    scriptarguments:
+      sensor:
+        simple: '15'
+      status:
+        simple: active
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 835\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '70':
+    id: '70'
+    taskid: 90b37bac-8378-4d06-84cc-4649434745a7
+    type: regular
+    task:
+      id: 90b37bac-8378-4d06-84cc-4649434745a7
+      version: -1
+      name: "List 'c:\\Users' Directory "
+      description: ''
+      script: carbonblackliveresponse|||cb-command-create-and-wait
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      compress: {}
+      get-count: {}
+      name:
+        simple: directory-list
+      object:
+        simple: c:\Users\
+      offset: {}
+      output-file: {}
+      overwrite: {}
+      session:
+        simple: ${CbResponse.Sessions.CbSessionID}
+      timeout: {}
+      value-data: {}
+      value-type: {}
+      wait-timeout:
+        simple: '100'
+      working-dir: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 592.5,\n    \"y\": 1185\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '71':
+    id: '71'
+    taskid: 78bfbd97-5c05-45ca-823b-bc57b48ae2d1
+    type: regular
+    task:
+      id: 78bfbd97-5c05-45ca-823b-bc57b48ae2d1
+      version: -1
+      name: Keep Session Alive
+      description: ''
+      script: carbonblackliveresponse|||cb-keepalive
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    nexttasks:
+      '#none#':
+      - '73'
+    scriptarguments:
+      session:
+        complex:
+          root: CbLiveResponse
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CbLiveResponse.Sessions.CbSensorID
+                iscontext: true
+              right:
+                value:
+                  simple: '15'
+          accessor: Sessions.CbSessionID
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1010\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '72':
+    id: '72'
+    taskid: dc049ea1-564a-44dd-815f-8965ff6ccf0b
+    type: regular
+    task:
+      id: dc049ea1-564a-44dd-815f-8965ff6ccf0b
+      version: -1
+      name: Wait
+      description: ''
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '75'
+    scriptarguments:
+      seconds:
+        simple: '120'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1185\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '73':
+    id: '73'
+    taskid: 3af8b828-d237-4358-8d6b-13e39c3968e9
+    type: regular
+    task:
+      id: 3af8b828-d237-4358-8d6b-13e39c3968e9
+      version: -1
+      name: "List 'c:\\Users' Directory "
+      description: ''
+      script: carbonblackliveresponse|||cb-command-create-and-wait
+      type: regular
+      iscommand: true
+      brand: carbonblackliveresponse
+    scriptarguments:
+      compress: {}
+      get-count: {}
+      name:
+        simple: directory-list
+      object:
+        simple: c:\Users\
+      offset: {}
+      output-file: {}
+      overwrite: {}
+      session:
+        simple: ${CbLiveResponse.Sessions.CbSessionID}
+      timeout: {}
+      value-data: {}
+      value-type: {}
+      wait-timeout:
+        simple: '100'
+      working-dir: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 1022.5,\n    \"y\": 1185\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '74':
+    id: '74'
+    taskid: 3eda3d1f-0c9c-436a-8ace-fe30c3d29d80
+    type: condition
+    task:
+      id: 3eda3d1f-0c9c-436a-8ace-fe30c3d29d80
+      version: -1
+      name: Check if there's an active session
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '57'
+      yes:
+      - '72'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CbLiveResponse.Sessions
+            iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions
+            iscontext: true
+          right:
+            value:
+              simple: 'null'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CbLiveResponse.Sessions.CbSensorID
+            iscontext: true
+          right:
+            value:
+              simple: '15'
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1010\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '75':
+    id: '75'
+    taskid: 39b88796-0653-4b07-884d-1e9dab314f96
+    type: title
+    task:
+      id: 39b88796-0653-4b07-884d-1e9dab314f96
+      version: -1
+      name: Try Executing Commands
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '57'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1375\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '76':
+    id: '76'
+    taskid: 242fd4b6-92ec-40dd-86e3-21f5d24ba52d
+    type: title
+    task:
+      id: 242fd4b6-92ec-40dd-86e3-21f5d24ba52d
+      version: -1
+      name: Test Using CB Response Instance
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '66'
+      - '65'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2105,\n      \"width\": 1352.5,\n      \"x\": 50,\n      \"y\"\
+  : 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0

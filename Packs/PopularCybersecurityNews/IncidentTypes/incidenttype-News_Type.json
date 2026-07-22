@@ -1,0 +1,29 @@
+{
+    "autorun": true,
+    "color": "#20B358",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "News Type",
+    "layout": "2909e937-83b4-4a49-86c4-1a14ccff5f34",
+    "locked": false,
+    "name": "News Type",
+    "onChangeRepAlg": 1,
+    "playbookId": "JOB - Popular News",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0",
+    "marketplaces": ["xsoar"]
+}

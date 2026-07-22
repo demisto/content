@@ -1,0 +1,68 @@
+{
+    "data": [
+        {
+            "host_name": "host1",
+            "computer_id": 1,
+            "ipaddress_client": "1.1.1.1",
+            "ipaddress_server": "1.1.1.1",
+            "port_number": 1,
+            "send_state": "None",
+            "receive_state": "None",
+            "status": "Leader",
+            "protocol_version": 1,
+            "full_version": "7",
+            "last_registration": "2021-09-14T07:54:50Z",
+            "public_key_valid": true,
+            "registered_with_tls": false
+        },
+        {
+            "host_name": "host2",
+            "computer_id": 2,
+            "ipaddress_client": "2.2.2.2",
+            "ipaddress_server": "2.2.2.2",
+            "port_number": 1,
+            "send_state": "None",
+            "receive_state": "None",
+            "status": "Leader",
+            "protocol_version": 1,
+            "full_version": "7",
+            "last_registration": "2021-09-14T07:54:48Z",
+            "public_key_valid": true,
+            "registered_with_tls": true
+        },
+        {
+            "send_forward_count": 0,
+            "send_backward_count": 0,
+            "send_none_count": 2,
+            "send_ok_count": 0,
+            "receive_forward_count": 0,
+            "receive_backward_count": 0,
+            "receive_none_count": 2,
+            "receive_ok_count": 0,
+            "slowlink_count": 0,
+            "blocked_count": 0,
+            "leader_count": 2,
+            "normal_count": 0,
+            "registered_with_tls_count": 1,
+            "versions": [
+                {
+                    "version_string": "7",
+                    "count": 1,
+                    "filtered": 1
+                },
+                {
+                    "version_string": "7",
+                    "count": 1,
+                    "filtered": 1
+                }
+            ]
+        },
+        {
+            "cache_id": 1,
+            "page_row_count": 2,
+            "filtered_row_count": 2,
+            "cache_row_count": 2,
+            "expiration": "2021-09-14T07:55:25Z"
+        }
+    ]
+}

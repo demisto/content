@@ -1,0 +1,102 @@
+args:
+- description: Comma-separated list of incident fields to take into account when training the clustering.
+  name: fieldsForClustering
+- description: Incident field that represents the family name for each cluster created. The model determines how many incidents in the cluster have the same value in the fieldForClusterName field. The largest numbers of incidents with the same value, determine the cluster name.
+  isArray: true
+  name: fieldForClusterName
+- defaultValue: 1 month ago
+  description: The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  name: fromDate
+- description: The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 +0200").
+  name: toDate
+- defaultValue: '3000'
+  description: The maximum number of incidents to query.
+  name: limit
+- description: Argument for the query.
+  name: query
+- defaultValue: '2'
+  description: Minimum number of incidents a cluster should contain for it to be retained.
+  name: minNumberofIncidentPerCluster
+- description: Name of the model.
+  name: modelName
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to store the model in the system.
+  name: storeModel
+  predefined:
+  - 'True'
+  - 'False'
+- defaultValue: '0.4'
+  description: Keep samples in the cluster when the family ratio is above this number. Will be effective only if fieldForClusterName is given.
+  name: minHomogeneityCluster
+- auto: PREDEFINED
+  description: Whether to override the existing model if a model with the same name exists. Default is "False".
+  name: overrideExistingModel
+  predefined:
+  - 'True'
+  - 'False'
+- description: Type of incident to train the model on. If empty, will consider all types.
+  name: type
+- defaultValue: '0.3'
+  description: If a field has a higher missing value than this ratio it will be removed.
+  name: maxRatioOfMissingValue
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to return more information about the clustering. Default is "False".
+  name: debug
+  predefined:
+  - 'False'
+  - 'True'
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Whether to re-train the model in any cases. Default is "False".
+  name: forceRetrain
+  predefined:
+  - 'True'
+  - 'False'
+- defaultValue: '24'
+  description: Period of time (in hours) before retraining the model. Default is "24".
+  name: modelExpiration
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: Whether to hide the model in the ML page.
+  name: modelHidden
+  predefined:
+  - 'True'
+  - 'False'
+- description: Search query input from the dashboard.
+  name: searchQuery
+- description: Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity.
+  name: fieldsToDisplay
+- defaultValue: '500'
+  description: Number of features per field.
+  name: numberOfFeaturesPerField
+- auto: PREDEFINED
+  defaultValue: char
+  description: 'Whether the feature should be made of word or character n-grams. Possible values: "char" and "word".'
+  name: analyzer
+  predefined:
+  - char
+  - word
+outputs:
+- contextPath: DBotTrainClustering
+  description: The clustering data in JSON format.
+  type: String
+comment: |
+  This script helps organizes and groups incidents based on their similarities using clustering algorithms.
+  Clustering is a technique used to group data points (in this case, incidents) that are similar to each other into clusters.
+  Used to automatically categorize a large number of incidents into meaningful groups.
+commonfields:
+  id: DBotTrainClustering
+  version: -1
+name: DBotTrainClustering
+script: '-'
+subtype: python3
+tags:
+- ml
+timeout: 3.6µs
+type: python
+dockerimage: demisto/mlclustering:1.0.0.9062583
+tests:
+- DBotTrainClustering-test
+fromversion: 6.2.0

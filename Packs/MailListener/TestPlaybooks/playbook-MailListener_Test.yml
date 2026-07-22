@@ -1,0 +1,505 @@
+id: Mail-Listener Test Playbook
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Mail-Listener Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 88774245-4a8d-4993-86cf-24bf54dc5b9c
+    type: start
+    task:
+      id: 88774245-4a8d-4993-86cf-24bf54dc5b9c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2e44804b-61d6-4293-80f8-7dd0f7afd34a
+    type: regular
+    task:
+      id: 2e44804b-61d6-4293-80f8-7dd0f7afd34a
+      version: -1
+      name: Generate Random subject
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "15"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1a6c69e0-e5ed-4996-873d-d65cbc972859
+    type: regular
+    task:
+      id: 1a6c69e0-e5ed-4996-873d-d65cbc972859
+      version: -1
+      name: Send mail with that subject
+      description: Send an email
+      script: 'Mail Sender (New)|||send-mail'
+      type: regular
+      iscommand: true
+      brand: "Mail Sender (New)"
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs: {}
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: The mail's body
+      cc: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: ${RandomString}
+      templateParams: {}
+      to:
+        simple: test@demistodev.com
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4042525f-7959-4358-876c-ce949b400842
+    type: regular
+    task:
+      id: 4042525f-7959-4358-876c-ce949b400842
+      version: -1
+      name: Sleep  for 30 seconds until the mail arrives
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 8bdfb1b8-252e-4028-8c7d-f5a3cea2c445
+    type: regular
+    task:
+      id: 8bdfb1b8-252e-4028-8c7d-f5a3cea2c445
+      version: -1
+      name: List Emails
+      description: Fetches mail according to the configuration
+      script: '|||mail-listener-list-emails'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8ff6dbb2-fd49-421b-8332-e8613493755f
+    type: condition
+    task:
+      id: 8ff6dbb2-fd49-421b-8332-e8613493755f
+      version: -1
+      name: Verify mail with random subject exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MailListener.EmailPreview.Subject
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MailListener.EmailPreview.Subject
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RandomString
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: bab1afb7-66a3-41e0-8ded-c346587558d6
+    type: regular
+    task:
+      id: bab1afb7-66a3-41e0-8ded-c346587558d6
+      version: -1
+      name: Get mail details
+      description: Fetches an email by email ID
+      script: Mail Listener v2|||mail-listener-get-email
+      type: regular
+      iscommand: true
+      brand: Mail Listener v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      message-id:
+        complex:
+          root: MailListener.EmailPreview
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MailListener.EmailPreview.Subject
+                iscontext: true
+              right:
+                value:
+                  simple: RandomString
+                iscontext: true
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 76c7bf9c-3526-4087-826f-c7aac4d7a249
+    type: condition
+    task:
+      id: 76c7bf9c-3526-4087-826f-c7aac4d7a249
+      version: -1
+      name: Verify email fetched correctly
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MailListener.Email.subject
+            iscontext: true
+          right:
+            value:
+              simple: RandomString
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: e75b53f6-1358-47cf-8f10-78a09ace9bf8
+    type: regular
+    task:
+      id: e75b53f6-1358-47cf-8f10-78a09ace9bf8
+      version: -1
+      name: Fetch eml file
+      description: Fetches an email by message ID and download it's eml file
+      script: '|||mail-listener-get-email-as-eml'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message-id:
+        complex:
+          root: MailListener.EmailPreview
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MailListener.EmailPreview.Subject
+                iscontext: true
+              right:
+                value:
+                  simple: RandomString
+                iscontext: true
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2e6a27f5-2a9d-452e-8365-7847f5e93d13
+    type: condition
+    task:
+      id: 2e6a27f5-2a9d-452e-8365-7847f5e93d13
+      version: -1
+      name: Verify file exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: original-email-file.eml
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3cd7c197-ff20-4984-8e82-d464cf27774f
+    type: regular
+    task:
+      id: 3cd7c197-ff20-4984-8e82-d464cf27774f
+      version: -1
+      name: Fetch incidents
+      description: Execute FetchIncident for a given instance
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      add_to_context:
+        simple: "false"
+      brand_name:
+        simple: Mail Listener v2
+      error_msg_in_incident: {}
+      expect_data: {}
+      instance_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 34898a47-cc30-48ab-84f7-b61c04e664e0
+    type: title
+    task:
+      id: 34898a47-cc30-48ab-84f7-b61c04e664e0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 4310cd74-62d3-4e2b-845d-3c3084cc621f
+    type: regular
+    task:
+      id: 4310cd74-62d3-4e2b-845d-3c3084cc621f
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

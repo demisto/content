@@ -1,0 +1,27 @@
+commonfields:
+  id: CBPApproveHash
+  version: -1
+name: CBPApproveHash
+script: ''
+type: python
+subtype: python2
+tags:
+- carbon-black-protection
+- bit9
+comment: Deprecated. Use the cbp-fileRule-createOrUpdate command instead.
+deprecated: true
+system: true
+args:
+- name: hash
+  required: true
+  default: true
+  description: The hash value to approve.
+scripttarget: 0
+dependson:
+  must:
+  - cbp-fileRule-createOrUpdate
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No test

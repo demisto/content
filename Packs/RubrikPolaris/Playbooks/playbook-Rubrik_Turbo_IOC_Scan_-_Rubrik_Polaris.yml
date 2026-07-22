@@ -1,0 +1,627 @@
+id: Rubrik Turbo IOC Scan - Rubrik Polaris
+version: -1
+name: Rubrik Turbo IOC Scan - Rubrik Polaris
+description: This playbook starts a Turbo IOC scan with the specified IOC values and shows the results upon completion.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eedae4eb-ba44-4693-88f5-739d46d4ddc0
+    type: start
+    task:
+      id: eedae4eb-ba44-4693-88f5-739d46d4ddc0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ebf52adf-0193-46cd-8971-b60c9f10fc23
+    type: collection
+    task:
+      id: ebf52adf-0193-46cd-8971-b60c9f10fc23
+      version: -1
+      name: Collect the IOC hash value and details to start Turbo IOC scan
+      description: Provide the IOC hash values and other details to start turbo IOC scan.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Provide the IOC hash values.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Enter comma-separated file hashes.
+        tooltip: Get the Md5, SHA1 or SHA256 by executing the "rubrik-threat-monitoring-matched-file-get" command.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Provide the name of scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The name for the new turbo threat hunt scan.
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Provide maximum value for snapshot to scan per object.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: If a snapshot value is not provided, all snapshots of all objects will be scanned.
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Provide the cluster IDs on which to perform a scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Enter comma-separated cluster IDs.
+        tooltip: If not provided, all the clusters will be scanned. Get the cluster IDs by executing the "rubrik-gps-cluster-list" command.
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Provide start time for snapshot to scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: date
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Provide end time for snapshot to scan.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: date
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.
+        readonly: false
+      title: Scan Inputs
+      description: Provide the IOC hash values and other details to start turbo IOC scan.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 8e7dd663-c140-4160-8d61-b4c7009448cd
+    type: condition
+    task:
+      id: 8e7dd663-c140-4160-8d61-b4c7009448cd
+      version: -1
+      name: Is IOC hash value provided?
+      description: Checks whether IOC values is provided or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ioc
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5aa6d448-bdd0-40fc-8220-c5a4e9afceaf
+    type: regular
+    task:
+      id: 5aa6d448-bdd0-40fc-8220-c5a4e9afceaf
+      version: -1
+      name: Start turbo IOC scan
+      description: Start a new turbo threat hunt.
+      script: '|||rubrik-turbo-ioc-scan'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      cluster_id:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.cluster_id
+                iscontext: true
+      end_time:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "5"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+      ioc:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.ioc
+                iscontext: true
+      max_snapshots_per_object:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "2"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.max_snapshots_per_object
+                iscontext: true
+      scan_name:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "1"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.scan_name
+                iscontext: true
+      start_time:
+        complex:
+          root: Scan Inputs.Answers
+          accessor: "4"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: faf92815-4b02-4d7f-8b22-84c629b00436
+    type: playbook
+    task:
+      id: faf92815-4b02-4d7f-8b22-84c629b00436
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+
+        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Ids:
+        complex:
+          root: RubrikPolaris.TurboIOCScan
+          accessor: huntId
+      Interval:
+        complex:
+          root: inputs.polling_interval
+      PollingCommandArgName:
+        simple: hunt_id
+      PollingCommandName:
+        simple: rubrik-ioc-scan-results-v2
+      Timeout:
+        complex:
+          root: inputs.polling_timeout
+      dt:
+        simple: RubrikPolaris.IOCScan(val.status !== 'SUCCEEDED' && val.status !== 'CANCELED' && val.status !== 'FAILED' && val.status !== 'ABORTED').hunt_id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e30fe604-20a2-4194-8f10-5afbc9c4ba94
+    type: regular
+    task:
+      id: e30fe604-20a2-4194-8f10-5afbc9c4ba94
+      version: -1
+      name: Get scan results
+      description: Retrieve details of the Turbo and Advance Threat Hunt.
+      script: '|||rubrik-ioc-scan-results-v2'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      hunt_id:
+        complex:
+          root: RubrikPolaris.TurboIOCScan
+          accessor: huntId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: bbe42fbf-7073-431e-8da7-dd148537e975
+    type: title
+    task:
+      id: bbe42fbf-7073-431e-8da7-dd148537e975
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 37aa65ec-6a3f-4e8e-8aae-ebb2f39adeec
+    type: regular
+    task:
+      id: 37aa65ec-6a3f-4e8e-8aae-ebb2f39adeec
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Scan Inputs,RubrikPolaris.TurboIOCScan,RubrikPolaris.IOCScan
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 8fab8e8f-f434-4a74-81e2-de9d258f470e
+    type: condition
+    task:
+      id: 8fab8e8f-f434-4a74-81e2-de9d258f470e
+      version: -1
+      name: Is Rubrik Polaris integration enabled?
+      description: Checks whether Rubrik Polaris integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_6_#default#": 0.42,
+      "2_1_#default#": 0.51,
+      "2_3_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 840,
+        "x": 220,
+        "y": -460
+      }
+    }
+  }
+inputs:
+- key: ioc
+  value: {}
+  required: false
+  description: |-
+    The value of the indicator to scan for. Supports comma separated values.
+
+    Note: Users can retrieve the Md5, SHA1 or SHA256 by executing the "rubrik-threat-monitoring-matched-file-get" command.
+  playbookInputQuery:
+- key: scan_name
+  value:
+    simple: PAXSOAR-1.6.0
+  required: false
+  description: Name of the new turbo threat hunt scan.
+  playbookInputQuery:
+- key: cluster_id
+  value: {}
+  required: false
+  description: |-
+    The ID of the cluster on which to perform a scan. If not provided, all the clusters will be scanned.
+
+    Note: Users can retrieve the list of the cluster IDs by executing the "rubrik-gps-cluster-list" command.
+  playbookInputQuery:
+- key: start_time
+  value: {}
+  required: false
+  description: |-
+    Filter the snapshots from the provided date. Any snapshots taken before the provided date-time will be excluded.
+
+    Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+  playbookInputQuery:
+- key: end_time
+  value: {}
+  required: false
+  description: |-
+    Filter the snapshots until the provided date. Any snapshots taken after the provided date-time will be excluded.
+
+    Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+  playbookInputQuery:
+- key: max_snapshots_per_object
+  value: {}
+  required: false
+  description: Maximum number of snapshots to scan per object.
+  playbookInputQuery:
+- key: polling_interval
+  value:
+    simple: "2"
+  required: false
+  description: Frequency that the IOC scan command will run (minutes).
+  playbookInputQuery:
+- key: polling_timeout
+  value:
+    simple: "60"
+  required: false
+  description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+  playbookInputQuery:
+outputs:
+- contextPath: RubrikPolaris.IOCScan
+  description: Result of the Turbo IOC scan.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

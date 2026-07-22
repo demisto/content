@@ -1,0 +1,9 @@
+domain domain=google.com
+file file=cb57e263ab51f8e9b40d6f292bb17512cec0aa701bde14df33dfc06c815be54c
+ip ip=8.8.8.8
+url url=https://www.test.com/
+threatexchange-query text=geektime type=URI limit=3
+threatexchange-members
+threatexchange-tags-search text=malware
+threatexchange-tagged-objects-list tag_id=1318516441499594
+threatexchange-object-get-by-id object_id=1318516441499594

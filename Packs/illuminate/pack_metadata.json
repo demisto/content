@@ -1,0 +1,26 @@
+{
+    "name": "Analyst1",
+    "description": "Enriches indicators with Analyst1 threat intelligence including actor, malware, and evidence data.",
+    "support": "partner",
+    "currentVersion": "1.1.17",
+    "author": "Analyst1",
+    "url": "",
+    "email": "support@analyst1.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Threat Intelligence Management"
+    ],
+    "useCases": [],
+    "keywords": ["Analyst1"],
+    "githubUser": ["mvforgione"],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

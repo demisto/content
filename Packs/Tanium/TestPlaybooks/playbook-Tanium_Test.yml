@@ -1,0 +1,266 @@
+id: Tanium Test Playbook
+version: -1
+name: Tanium Test Playbook
+description: This playbook shows how to use automation scripts to interact with Tanium.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8d0bb382-cc35-47b3-84b4-d8946f25df46
+    type: start
+    task:
+      id: 8d0bb382-cc35-47b3-84b4-d8946f25df46
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 54
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6ee0d97d-4d1b-4f4e-859f-d1cd26de7cc6
+    type: regular
+    task:
+      id: 6ee0d97d-4d1b-4f4e-859f-d1cd26de7cc6
+      version: -1
+      name: Ask questions
+      description: Ask the server to parse the question text and choose the first parsed result as the question to run
+      script: Tanium|||tn-ask-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      question:
+        simple: ${Tanium.SavedQuestions.query_text}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 669
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6d572b5b-be75-4397-84c2-b339dae456eb
+    type: regular
+    task:
+      id: 6d572b5b-be75-4397-84c2-b339dae456eb
+      version: -1
+      name: Run a complex Tanium query to find all machines with processes starting with "EC"
+      description: Ask the server to parse the question text and choose the first parsed result as the question to run
+      script: Tanium|||tn-ask-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      question:
+        simple: Get all machines with processes starting with "EC"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 53a46977-3e6f-4895-8fef-ca270beff338
+    type: regular
+    task:
+      id: 53a46977-3e6f-4895-8fef-ca270beff338
+      version: -1
+      name: Get saved question - Tanium Client Versions
+      description: Get a saved question by name or id
+      script: Tanium|||tn-get-saved-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      id: {}
+      name:
+        simple: Tanium Client Versions
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 338
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1e8532e9-03af-40e0-8587-5159f27eead4
+    type: regular
+    task:
+      id: 1e8532e9-03af-40e0-8587-5159f27eead4
+      version: -1
+      name: Get saved question - Running Applications
+      description: Get a saved question by name or id
+      script: Tanium|||tn-get-saved-question
+      type: regular
+      iscommand: true
+      brand: Tanium
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      id: {}
+      name:
+        simple: Running Applications
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 508
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 13f83e72-82f2-409d-8cdc-85ac078d9aca
+    type: title
+    task:
+      id: 13f83e72-82f2-409d-8cdc-85ac078d9aca
+      version: -1
+      name: Querying Tanium
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 198
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 9ee7b0e4-0aeb-4242-8cb2-27d16f7a2677
+    type: title
+    task:
+      id: 9ee7b0e4-0aeb-4242-8cb2-27d16f7a2677
+      version: -1
+      name: Deploying Actions
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 998
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 7a28ab72-3c54-4768-8d7f-b5127d705062
+    type: regular
+    task:
+      id: 7a28ab72-3c54-4768-8d7f-b5127d705062
+      version: -1
+      name: Deploy a Tanium action to enable USB write protect for all hosts
+      description: Deploy a package and get the results back
+      script: Tanium|||tn-deploy-package
+      type: regular
+      iscommand: true
+      brand: Tanium
+    scriptarguments:
+      action_filters: {}
+      action_group:
+        simple: Default
+      action_options: {}
+      get_results: {}
+      package:
+        simple: USB Write Protect - Set to On
+      package_args: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1152
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1193,
+        "width": 380,
+        "x": 450,
+        "y": 54
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

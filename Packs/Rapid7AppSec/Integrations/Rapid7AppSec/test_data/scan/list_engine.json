@@ -1,0 +1,40 @@
+{
+    "metadata": {
+      "size": 0,
+      "total_data": 0,
+      "page_token": "string",
+      "index": 0,
+      "sort": "string",
+      "total_pages": 0
+    },
+    "data": [
+      {
+        "latest_version": true,
+        "upgradeable": true,
+        "name": "string",
+        "links": [
+          {
+            "profile": "string",
+            "rel": "string",
+            "name": "string",
+            "href": "string"
+          }
+        ],
+        "id": "1111",
+        "failure_reason": "TERMINATION_FAILED",
+        "auto_upgrade": true,
+        "engine_group": {
+          "id": "1111"
+        },
+        "status": "INITIALIZING"
+      }
+    ],
+    "links": [
+      {
+        "profile": "string",
+        "rel": "string",
+        "name": "string",
+        "href": "string"
+      }
+    ]
+  }

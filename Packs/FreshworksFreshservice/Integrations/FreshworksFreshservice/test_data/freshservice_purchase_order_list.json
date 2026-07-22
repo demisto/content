@@ -1,0 +1,32 @@
+{
+    "purchase_orders": [
+        {
+            "id": 1,
+            "name": "Purchase Order for Dell laptops",
+            "po_number": "PO-1",
+            "total_cost": 11030,
+            "expected_delivery_date": "purchase_orders[0]_expected_delivery_date",
+            "created_at": "purchase_orders[0]_created_at",
+            "updated_at": "purchase_orders[0]_updated_at",
+            "vendor_id": 21000275401,
+            "department_id": null,
+            "created_by": 21001397559,
+            "status": 20,
+            "workspace_id": 2
+        },
+        {
+            "id": 1,
+            "name": "Purchase Order for Dell laptops",
+            "po_number": "PO-1",
+            "total_cost": 11030,
+            "expected_delivery_date": "purchase_orders[0]_expected_delivery_date",
+            "created_at": "purchase_orders[0]_created_at",
+            "updated_at": "purchase_orders[0]_updated_at",
+            "vendor_id": 21000275401,
+            "department_id": null,
+            "created_by": 21001397559,
+            "status": 20,
+            "workspace_id": 2
+        }
+    ]
+}

@@ -1,0 +1,283 @@
+{
+    "adjusting_time_interval": {
+        "matches": [
+            {
+                "artifactIndicator": {
+                    "destinationIpAddress": "0.0.0.0"
+                },
+                "sources": [
+                    "3rd Party"
+                ],
+                "categories": [
+                    "Unwanted"
+                ],
+                "assetIndicators": [
+                    {
+                        "assetIpAddress": "0.0.0.0"
+                    }
+                ],
+                "iocIngestTimestamp": "2022-09-16T04:22:03.276821Z",
+                "firstSeenTimestamp": "2023-01-19T05:48:21Z",
+                "lastSeenTimestamp": "2025-07-10T14:13:30Z",
+                "filterProperties": {
+                    "stringProperties": {
+                        "IOC FEED": {
+                            "values": [
+                                {
+                                    "rawValue": "3rd Party"
+                                }
+                            ]
+                        },
+                        "IOC/ALERT SEVERITY": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CONFIDENCE SCORE": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CATEGORIES": {
+                            "values": [
+                                {
+                                    "rawValue": "Unwanted"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "confidenceBucket": "Medium",
+                "rawSeverity": "Medium",
+                "logType": "ESET_IOC",
+                "globalCustomerId": "dummy_global_customer_id",
+                "ipAndPorts": {
+                    "ipAddress": "0.0.0.1"
+                },
+                "categorization": "Unwanted",
+                "domainAndPorts": {
+                    "domain": "test.com"
+                },
+                "feedName": "3rd Party",
+                "id": "dummy_id",
+                "fieldAndValue": {
+                    "value": "0.0.0.1",
+                    "valueType": "RESOLVED_IP_ADDRESS"
+                }
+            },
+            {
+                "artifactIndicator": {
+                    "destinationIpAddress": "0.0.0.1"
+                },
+                "sources": [
+                    "3rd Party"
+                ],
+                "categories": [
+                    "Unwanted"
+                ],
+                "assetIndicators": [
+                    {
+                        "assetIpAddress": "0.0.0.1"
+                    }
+                ],
+                "iocIngestTimestamp": "2022-09-16T04:22:03.276821Z",
+                "firstSeenTimestamp": "2023-01-19T05:48:21Z",
+                "lastSeenTimestamp": "2025-07-10T14:13:30Z",
+                "filterProperties": {
+                    "stringProperties": {
+                        "IOC FEED": {
+                            "values": [
+                                {
+                                    "rawValue": "3rd Party"
+                                }
+                            ]
+                        },
+                        "IOC/ALERT SEVERITY": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CONFIDENCE SCORE": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CATEGORIES": {
+                            "values": [
+                                {
+                                    "rawValue": "Unwanted"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "confidenceBucket": "Medium",
+                "rawSeverity": "Medium",
+                "logType": "ESET_IOC",
+                "globalCustomerId": "dummy_global_customer_id",
+                "ipAndPorts": {
+                    "ipAddress": "0.0.0.1"
+                },
+                "categorization": "Unwanted",
+                "domainAndPorts": {
+                    "domain": "test.com"
+                },
+                "feedName": "3rd Party",
+                "id": "dummy_id",
+                "fieldAndValue": {
+                    "value": "0.0.0.1",
+                    "valueType": "RESOLVED_IP_ADDRESS"
+                }
+            }
+        ],
+        "moreDataAvailable": false
+    },
+    "api_call": {
+        "matches": [
+            {
+                "artifactIndicator": {
+                    "destinationIpAddress": "0.0.0.0"
+                },
+                "sources": [
+                    "3rd Party"
+                ],
+                "categories": [
+                    "Unwanted"
+                ],
+                "assetIndicators": [
+                    {
+                        "assetIpAddress": "0.0.0.0"
+                    }
+                ],
+                "iocIngestTimestamp": "2022-09-16T04:22:03.276821Z",
+                "firstSeenTimestamp": "2023-01-19T05:48:21Z",
+                "lastSeenTimestamp": "2025-07-10T14:13:30Z",
+                "filterProperties": {
+                    "stringProperties": {
+                        "IOC FEED": {
+                            "values": [
+                                {
+                                    "rawValue": "3rd Party"
+                                }
+                            ]
+                        },
+                        "IOC/ALERT SEVERITY": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CONFIDENCE SCORE": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CATEGORIES": {
+                            "values": [
+                                {
+                                    "rawValue": "Unwanted"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "confidenceBucket": "Medium",
+                "rawSeverity": "Medium",
+                "logType": "ESET_IOC",
+                "globalCustomerId": "dummy_global_customer_id",
+                "ipAndPorts": {
+                    "ipAddress": "0.0.0.1"
+                },
+                "categorization": "Unwanted",
+                "domainAndPorts": {
+                    "domain": "test.com"
+                },
+                "feedName": "3rd Party",
+                "id": "dummy_id",
+                "fieldAndValue": {
+                    "value": "0.0.0.1",
+                    "valueType": "RESOLVED_IP_ADDRESS"
+                }
+            },
+            {
+                "artifactIndicator": {
+                    "destinationIpAddress": "0.0.0.1"
+                },
+                "sources": [
+                    "3rd Party"
+                ],
+                "categories": [
+                    "Unwanted"
+                ],
+                "assetIndicators": [
+                    {
+                        "assetIpAddress": "0.0.0.1"
+                    }
+                ],
+                "iocIngestTimestamp": "2022-09-16T04:22:03.276821Z",
+                "firstSeenTimestamp": "2023-01-19T05:48:21Z",
+                "lastSeenTimestamp": "2025-07-10T14:13:30Z",
+                "filterProperties": {
+                    "stringProperties": {
+                        "IOC FEED": {
+                            "values": [
+                                {
+                                    "rawValue": "3rd Party"
+                                }
+                            ]
+                        },
+                        "IOC/ALERT SEVERITY": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CONFIDENCE SCORE": {
+                            "values": [
+                                {
+                                    "rawValue": "Medium"
+                                }
+                            ]
+                        },
+                        "IOC CATEGORIES": {
+                            "values": [
+                                {
+                                    "rawValue": "Unwanted"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "confidenceBucket": "Medium",
+                "rawSeverity": "Medium",
+                "logType": "ESET_IOC",
+                "globalCustomerId": "dummy_global_customer_id",
+                "ipAndPorts": {
+                    "ipAddress": "0.0.0.1"
+                },
+                "categorization": "Unwanted",
+                "domainAndPorts": {
+                    "domain": "test.com"
+                },
+                "feedName": "3rd Party",
+                "id": "dummy_id",
+                "fieldAndValue": {
+                    "value": "0.0.0.1",
+                    "valueType": "RESOLVED_IP_ADDRESS"
+                }
+            }
+        ]
+    }
+}

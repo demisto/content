@@ -1,0 +1,76 @@
+[
+    {
+        "fields": {
+            "aliases": [
+                "AKA"
+            ],
+            "description": "test",
+            "geocountry": "country",
+            "goals": "Espionage",
+            "publications": [
+                {
+                    "link": "https://test.com",
+                    "source": "MISP Threat Actors Galaxy",
+                    "timestamp": "2025-01-07T13:28:28Z",
+                    "title": "TEST"
+                }
+            ],
+            "tags": [
+                "MISP_ID: some_uuid"
+            ],
+            "tlp_color": "WHITE"
+        },
+        "relationships": [
+            {
+                "entityA": "TEST",
+                "entityAFamily": "Indicator",
+                "entityAType": "Threat Actor",
+                "entityB": "AKA",
+                "entityBFamily": "Indicator",
+                "entityBType": "Threat Actor",
+                "fields": {},
+                "name": "is-also",
+                "reverseName": "is-also",
+                "type": "IndicatorToIndicator"
+            },
+            {
+                "entityA": "TEST",
+                "entityAFamily": "Indicator",
+                "entityAType": "Threat Actor",
+                "entityB": "victim",
+                "entityBFamily": "Indicator",
+                "entityBType": "Location",
+                "fields": {},
+                "name": "targets",
+                "reverseName": "targeted-by",
+                "type": "IndicatorToIndicator"
+            },
+            {
+                "entityA": "TEST",
+                "entityAFamily": "Indicator",
+                "entityAType": "Threat Actor",
+                "entityB": "sector",
+                "entityBFamily": "Indicator",
+                "entityBType": "Identity",
+                "fields": {},
+                "name": "targets",
+                "reverseName": "targeted-by",
+                "type": "IndicatorToIndicator"
+            },
+            {
+                "entityA": "TEST",
+                "entityAFamily": "Indicator",
+                "entityAType": "Threat Actor",
+                "entityB": "country",
+                "entityBFamily": "Indicator",
+                "entityBType": "Location",
+                "fields": {},
+                "name": "attributed-to",
+                "reverseName": "attributed-by",
+                "type": "IndicatorToIndicator"
+            }
+        ],
+        "type": "Threat Actor",
+        "value": "TEST"
+    }
+]

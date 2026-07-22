@@ -1,0 +1,30 @@
+{
+    "cursor": "qwerty9999",
+    "has_more": false,
+    "items": [
+        {
+            "uuid": "last event",
+            "timestamp": "2024-12-02T11:55:20.710457472Z",
+            "actor_details": {
+                "name": "Jenny Bee",
+                "email": "userB@example.com"
+            },
+            "action": "create",
+            "object_type": "device",
+            "aux_details": {
+                "name": "Jenny Bee",
+                "email": "userB@example.com"
+            },
+            "session": {
+                "login_time": "2024-12-02T11:55:20.693369325Z",
+                "ip": "7.7.7.7"
+            },
+            "location": {
+                "country": "United States",
+                "region": "California",
+                "city": "Santa Clara"
+            },
+            "actor_type": "user"
+        }
+    ]
+}

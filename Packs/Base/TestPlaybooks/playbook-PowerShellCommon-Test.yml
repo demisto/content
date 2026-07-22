@@ -1,0 +1,727 @@
+id: PowerShellCommon-Test
+inputs: []
+name: PowerShellCommon-Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e5c640b8-9b78-4a19-8425-0dbccd74e3e7
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e5c640b8-9b78-4a19-8425-0dbccd74e3e7
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      expression:
+        simple: ReturnOutputs 'test outputs'  @{OutputsTest='test'} | out-null
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invoke a PowerShell Expression. Used for testing powershell.
+      id: 50c30245-bbf8-4dac-8aeb-194efc1bbe8f
+      iscommand: false
+      name: RetrunOutputs
+      script: PwshInvokeExpression
+      type: regular
+      version: -1
+    taskid: 50c30245-bbf8-4dac-8aeb-194efc1bbe8f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: OutputsTest
+          operator: isEqualString
+          right:
+            value:
+              simple: test
+      label: "yes"
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 675b4dd9-d166-4869-852a-48b711615546
+      iscommand: false
+      name: Verify Context
+      type: condition
+      version: -1
+    taskid: 675b4dd9-d166-4869-852a-48b711615546
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+  "3":
+    continueonerror: true
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      expression:
+        simple: ReturnError 'this is an error' | out-null
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invoke a PowerShell Expression. Used for testing powershell.
+      id: 9c720413-2a02-4590-8e95-6b8fdb54b726
+      iscommand: false
+      name: ReturnError test
+      script: PwshInvokeExpression
+      type: regular
+      version: -1
+    taskid: 9c720413-2a02-4590-8e95-6b8fdb54b726
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Failed checking OutputsTest context key
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: d41a4314-c38f-4f8c-8632-361e9d386d3f
+      iscommand: false
+      name: Failed Context Verify
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: d41a4314-c38f-4f8c-8632-361e9d386d3f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 590
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "no":
+      - "6"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries}
+        to check the previous task entries. If array is provided, will return yes
+        if one of the entries returned an error.
+      id: 0184c90f-f257-425e-8f66-3fc1ce6f2cd5
+      iscommand: false
+      name: Verify Error
+      script: isError
+      type: condition
+      version: -1
+    taskid: 0184c90f-f257-425e-8f66-3fc1ce6f2cd5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Error not returned
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 2f6c49a1-9c55-4398-88f1-cef9c1ae0c6b
+      iscommand: false
+      name: Error not returned
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 2f6c49a1-9c55-4398-88f1-cef9c1ae0c6b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 960
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      expression:
+        simple: ReturnOutputs 'ArgToList length should be 4' @{ArgToListTest = $(ArgToList
+          '1,2,3,4').length}  | out-null
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invoke a PowerShell Expression. Used for testing powershell.
+      id: 18b7536e-3c06-4ba8-8930-80b6e515a4db
+      iscommand: false
+      name: ArgToList
+      script: PwshInvokeExpression
+      type: regular
+      version: -1
+    taskid: 18b7536e-3c06-4ba8-8930-80b6e515a4db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 990
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ArgToListTest
+          operator: isEqualString
+          right:
+            value:
+              simple: "4"
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3d53e984-ac56-43ea-8e77-0b1171321e48
+      iscommand: false
+      name: Verify Context
+      type: condition
+      version: -1
+    taskid: 3d53e984-ac56-43ea-8e77-0b1171321e48
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: All is good
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 23134b5b-1e56-42c6-8f36-6ed7be226e60
+      iscommand: false
+      name: All Good
+      script: Print
+      type: regular
+      version: -1
+    taskid: 23134b5b-1e56-42c6-8f36-6ed7be226e60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2680
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Failed ArgToListTest verify
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 4c5dc4a0-5400-45ae-8455-208665206985
+      iscommand: false
+      name: Failed context verify ArgToList
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 4c5dc4a0-5400-45ae-8455-208665206985
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1320
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: bc1f48ee-1d6d-4bb9-8ffc-95eb529015dc
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: bc1f48ee-1d6d-4bb9-8ffc-95eb529015dc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 45
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      expression:
+        simple: $obj = FileResult "test.txt" "test"; $demisto.results($obj)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invoke a PowerShell Expression. Used for testing powershell.
+      id: 7e7946ad-4b91-4b22-84d2-be0da79cda22
+      iscommand: false
+      name: File Result
+      script: PwshInvokeExpression
+      type: regular
+      version: -1
+    taskid: 7e7946ad-4b91-4b22-84d2-be0da79cda22
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1350
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          root: File
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Load the contents of a file into context.
+      id: ab202bdc-9cc2-4a9f-8ed6-f0bfc3e3ecc3
+      iscommand: false
+      name: Get File Content
+      script: ReadFile
+      type: regular
+      version: -1
+    taskid: ab202bdc-9cc2-4a9f-8ed6-f0bfc3e3ecc3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1550
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: FileData
+                transformers:
+                - operator: trim
+          operator: isEqualString
+          right:
+            value:
+              simple: test
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 204a4bf6-c2f1-452e-863e-97d49418cdbf
+      iscommand: false
+      name: Check File Content
+      type: condition
+      version: -1
+    taskid: 204a4bf6-c2f1-452e-863e-97d49418cdbf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1730
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Failed verifying file content
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: b6c698df-ba37-4002-8f0d-9adb6800389d
+      iscommand: false
+      name: Failed file content verify
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: b6c698df-ba37-4002-8f0d-9adb6800389d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 1890
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      expression:
+        simple: $obj = FileResult "test-info.txt" "test-info" $true; $demisto.results($obj)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Invoke a PowerShell Expression. Used for testing powershell.
+      id: 3aadb2c4-7487-4a68-87b3-1c25ae6caf6b
+      iscommand: false
+      name: File Info Result
+      script: PwshInvokeExpression
+      type: regular
+      version: -1
+    taskid: 3aadb2c4-7487-4a68-87b3-1c25ae6caf6b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1985
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entryID:
+        complex:
+          accessor: EntryID
+          root: InfoFile
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Load the contents of a file into context.
+      id: 612823ae-4d8d-47d7-8609-63ef627bb3d1
+      iscommand: false
+      name: Get File Content
+      script: ReadFile
+      type: regular
+      version: -1
+    taskid: 612823ae-4d8d-47d7-8609-63ef627bb3d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2170
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                accessor: '[1]'
+                root: FileData
+                transformers:
+                - operator: trim
+          operator: isEqualString
+          right:
+            value:
+              simple: test-info
+      label: "yes"
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7b1f235e-c209-42c0-8719-3edc7af68ee0
+      iscommand: false
+      name: Check File Content
+      type: condition
+      version: -1
+    taskid: 7b1f235e-c209-42c0-8719-3edc7af68ee0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2370
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Failed verifying file content (File Info)
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 2df27c7f-3e67-492e-8e10-10d044eb11f3
+      iscommand: false
+      name: Failed verifying file info entry
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 2df27c7f-3e67-492e-8e10-10d044eb11f3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 2520
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2865,
+        "width": 950,
+        "x": 450,
+        "y": -90
+      }
+    }
+  }
+fromversion: 5.5.0

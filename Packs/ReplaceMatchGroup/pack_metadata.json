@@ -1,0 +1,21 @@
+{
+    "name": "ReplaceMatchGroup (Deprecated)",
+    "description": "Deprecated. Use from CommonScripts instead.",
+    "support": "xsoar",
+    "currentVersion": "1.0.5",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-02-18T08:09:34Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

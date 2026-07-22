@@ -1,0 +1,412 @@
+id: DigitalGuardian-Test
+version: -1
+name: DigitalGuardian-Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 27e530d4-fa04-43f2-830c-103f2d84f4d1
+    type: start
+    task:
+      id: 27e530d4-fa04-43f2-830c-103f2d84f4d1
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: ddc84ba9-389c-42aa-831d-26b10808d12e
+    type: regular
+    task:
+      id: ddc84ba9-389c-42aa-831d-26b10808d12e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 71989797-7144-4d39-8eca-1bdd09f0cc56
+    type: regular
+    task:
+      id: 71989797-7144-4d39-8eca-1bdd09f0cc56
+      version: -1
+      name: digitalguardian-add-watchlist-entry
+      script: '|||digitalguardian-add-watchlist-entry'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      watchlist_entry:
+        simple: playbook_test_entry
+      watchlist_name:
+        simple: atac_test
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 4edce051-5ac3-4680-8206-c48629fb6852
+    type: regular
+    task:
+      id: 4edce051-5ac3-4680-8206-c48629fb6852
+      version: -1
+      name: digitalguardian-check-watchlist-entry
+      script: '|||digitalguardian-check-watchlist-entry'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      watchlist_entry:
+        simple: playbook_test_entry
+      watchlist_name:
+        simple: atac_test
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 2800e7a6-688d-4a63-82de-98953105e3c9
+    type: condition
+    task:
+      id: 2800e7a6-688d-4a63-82de-98953105e3c9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DigitalGuardian.Watchlist.Found
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 234ebc1d-3dec-4c56-88d2-c7fe171b2217
+    type: regular
+    task:
+      id: 234ebc1d-3dec-4c56-88d2-c7fe171b2217
+      version: -1
+      name: digitalguardian-remove-watchlist-entry
+      script: '|||digitalguardian-remove-watchlist-entry'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      watchlist_entry:
+        simple: playbook_test_entry
+      watchlist_name:
+        simple: atac_test
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: f77a9bc6-424a-4606-8718-60a9ba5c3842
+    type: regular
+    task:
+      id: f77a9bc6-424a-4606-8718-60a9ba5c3842
+      version: -1
+      name: digitalguardian-add-componentlist-entry
+      script: '|||digitalguardian-add-componentlist-entry'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      componentlist_entry:
+        simple: test_playlist@example.com
+      componentlist_name:
+        simple: Test - JLL - Email Address Blacklist
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '7':
+    id: '7'
+    taskid: 90165e91-278f-43a3-8dfc-23e470ce6e8e
+    type: regular
+    task:
+      id: 90165e91-278f-43a3-8dfc-23e470ce6e8e
+      version: -1
+      name: digitalguardian-check-componentlist-entry
+      script: '|||digitalguardian-check-componentlist-entry'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      componentlist_entry:
+        simple: test_playlist@example.com
+      componentlist_name:
+        simple: Test - JLL - Email Address Blacklist
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '8':
+    id: '8'
+    taskid: 87352baf-e436-4af7-8bb9-911edeb37c0b
+    type: condition
+    task:
+      id: 87352baf-e436-4af7-8bb9-911edeb37c0b
+      version: -1
+      name: Does componentlist entry exist after being added?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: DigitalGuardian.Componentlist.Found
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: 1a378c80-30cd-4f68-821c-be8e200da26b
+    type: regular
+    task:
+      id: 1a378c80-30cd-4f68-821c-be8e200da26b
+      version: -1
+      name: digitalguardian-remove-componentlist-entry
+      script: '|||digitalguardian-remove-componentlist-entry'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      componentlist_entry:
+        simple: test_playlist@example.com
+      componentlist_name:
+        simple: Test - JLL - Email Address Blacklist
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '10':
+    id: '10'
+    taskid: e2867764-7165-40d1-8119-1853a3382c3d
+    type: title
+    task:
+      id: e2867764-7165-40d1-8119-1853a3382c3d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2645\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '11':
+    id: '11'
+    taskid: 5b6bd613-3fcc-467c-85c9-575e1a11b094
+    type: regular
+    task:
+      id: 5b6bd613-3fcc-467c-85c9-575e1a11b094
+      version: -1
+      name: Sleep 60s
+      description: "Sleep for X seconds\n\nAdding an entry to a  component list takes\
+        \ time to apply as it is synchronized back to the DGMC."
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      seconds:
+        simple: '60'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: 47ae330e-9415-48a3-857b-55f5edb98f5f
+    type: regular
+    task:
+      id: 47ae330e-9415-48a3-857b-55f5edb98f5f
+      version: -1
+      name: Sleep 1s
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      seconds:
+        simple: '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 7cb59090-44c4-4900-895c-be8113165b74
+    type: regular
+    task:
+      id: 7cb59090-44c4-4900-895c-be8113165b74
+      version: -1
+      name: Sleep 60s
+      description: "Sleep for X seconds\n\nAdding an entry to a  component list takes\
+        \ time to apply as it is synchronized back to the DGMC."
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      seconds:
+        simple: '60'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2120\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: dfdfca38-49f7-419b-8374-ae2389551780
+    type: condition
+    task:
+      id: dfdfca38-49f7-419b-8374-ae2389551780
+      version: -1
+      name: Does componentlist entry exist after being deleted?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      no:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: no
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: DigitalGuardian.Componentlist.Found
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2470\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 31875d2f-8f17-44bd-8494-9f79f75821ce
+    type: regular
+    task:
+      id: 31875d2f-8f17-44bd-8494-9f79f75821ce
+      version: -1
+      name: digitalguardian-check-componentlist-entry
+      script: '|||digitalguardian-check-componentlist-entry'
+      type: regular
+      iscommand: true
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      componentlist_entry:
+        simple: test_playlist@example.com
+      componentlist_name:
+        simple: Test - JLL - Email Address Blacklist
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 2295\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 2660,\n      \"width\": 380,\n      \"x\": 50,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

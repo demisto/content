@@ -1,0 +1,41 @@
+{
+    "status": {
+        "code": 200,
+        "text": "OK"
+    },
+    "meta": {
+        "page": 2,
+        "limit": 100,
+        "total": 4
+    },
+    "data": [
+        {
+            "id": "555",
+            "destination": "www.LiorSB1.com",
+            "type": "domain",
+            "comment": "Pikachu",
+            "createdAt": "2023-07-06 04:42:55"
+        },
+        {
+            "id": "666",
+            "destination": "www.pokemon1.com",
+            "type": "domain",
+            "comment": "Choose",
+            "createdAt": "2023-07-06 04:42:55"
+        },
+        {
+            "id": "777",
+            "destination": "www.serebii1.com",
+            "type": "domain",
+            "comment": "I",
+            "createdAt": "2023-07-06 04:42:55"
+        },
+        {
+            "id": "8888",
+            "destination": "www.serebii1.com",
+            "type": "domain",
+            "comment": "You",
+            "createdAt": "2023-07-06 04:42:55"
+        }
+    ]
+}

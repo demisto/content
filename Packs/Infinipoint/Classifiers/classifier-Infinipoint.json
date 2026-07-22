@@ -1,0 +1,16 @@
+{
+ "id": "Infinipoint",
+ "name": "Infinipoint - Classifier",
+ "type": "classification",
+ "description": "Classifies Infinipoint incidents.",
+ "keyTypeMap": {
+  "1": "Infinipoint Compliant",
+  "2": "Infinipoint NotCompliant"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "complianceState"
+ },
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

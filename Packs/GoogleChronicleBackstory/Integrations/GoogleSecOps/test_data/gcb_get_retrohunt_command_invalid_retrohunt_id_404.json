@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 404,
+        "message": "retrohunt not found with ID dummy_retrohunt_id",
+        "status": "NOT_FOUND"
+    }
+}

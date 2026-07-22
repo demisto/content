@@ -1,0 +1,39 @@
+{
+    "raw_response": {
+        "listId": "12345",
+        "name": "Test Client List",
+        "type": "IP",
+        "contractId": "ctr_1-23456",
+        "groupId": 12345,
+        "notes": "Test notes",
+        "tags": ["tag1", "tag2"],
+        "items": [
+            {
+                "value": "1.2.3.4",
+                "description": "Test entry",
+                "expirationDate": null,
+                "tags": ["entry_tag"]
+            }
+        ]
+    },
+    "human_readable": "### Akamai WAF Client List Test Client List created successfully\n|contractId|groupId|items|listId|name|notes|tags|type|\n|---|---|---|---|---|---|---|---|\n| ctr_1-23456 | 12345 | {'value': '1.2.3.4', 'description': 'Test entry', 'expirationDate': None, 'tags': ['entry_tag']} | 12345 | Test Client List | Test notes | tag1,<br>tag2 | IP |\n",
+    "context_entry": {
+        "Akamai.ClientList": {
+            "listId": "12345",
+            "name": "Test Client List",
+            "type": "IP",
+            "contractId": "ctr_1-23456",
+            "groupId": 12345,
+            "notes": "Test notes",
+            "tags": ["tag1", "tag2"],
+            "items": [
+                {
+                    "value": "1.2.3.4",
+                    "description": "Test entry",
+                    "expirationDate": null,
+                    "tags": ["entry_tag"]
+                }
+            ]
+        }
+    }
+}

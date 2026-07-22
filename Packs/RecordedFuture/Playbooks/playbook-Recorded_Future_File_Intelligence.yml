@@ -1,0 +1,745 @@
+id: Recorded Future File Intelligence
+version: -1
+name: Recorded Future File Intelligence
+description: File enrichment using Recorded Future intelligence
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 588280ab-3d96-4e42-894a-5ce668f93975
+    type: start
+    task:
+      id: 588280ab-3d96-4e42-894a-5ce668f93975
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 0785a415-4790-411f-81cb-50c1af4d824a
+    type: title
+    task:
+      id: 0785a415-4790-411f-81cb-50c1af4d824a
+      version: -1
+      name: Enrich Using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 46717e9e-cbd6-4608-89f1-f9063ba12d18
+    type: regular
+    task:
+      id: 46717e9e-cbd6-4608-89f1-f9063ba12d18
+      version: -1
+      name: Get MD5 reputation
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entity:
+        simple: ${inputs.MD5}
+      entity_type:
+        simple: file
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 1f693d22-0d30-4759-8569-b52781f139d2
+    type: title
+    task:
+      id: 1f693d22-0d30-4759-8569-b52781f139d2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 1dce6482-686c-46ab-8d86-b3ca0591f4b5
+    type: condition
+    task:
+      id: 1dce6482-686c-46ab-8d86-b3ca0591f4b5
+      version: -1
+      name: Is there an MD5 hash?
+      description: Check if there is an MD5 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        simple: ${File.MD5}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 52e94cf9-0a92-473c-8eca-2435eeee8433
+    type: condition
+    task:
+      id: 52e94cf9-0a92-473c-8eca-2435eeee8433
+      version: -1
+      name: Is there a SHA-256 hash?
+      description: Check if there is a SHA-256 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "16"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: b962d2d8-b0bb-4f67-808e-22b37331dd63
+    type: regular
+    task:
+      id: b962d2d8-b0bb-4f67-808e-22b37331dd63
+      version: -1
+      name: Get SHA-256 reputation
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entity:
+        simple: ${inputs.SHA256}
+      entity_type:
+        simple: file
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 8aeac1b0-572f-49f2-831a-668e505524d8
+    type: condition
+    task:
+      id: 8aeac1b0-572f-49f2-831a-668e505524d8
+      version: -1
+      name: Is there a SHA-1 hash?
+      description: Check if there is a SHA-1 hash in context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "18"
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 24a11895-e064-426b-8d92-844ea6142077
+    type: regular
+    task:
+      id: 24a11895-e064-426b-8d92-844ea6142077
+      version: -1
+      name: Get SHA-1 reputation
+      description: Get threat intelligence for an IP, domain, CVE, URL or file.
+      script: Recorded Future v2|||recordedfuture-intelligence
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entity:
+        simple: ${inputs.SHA1}
+      entity_type:
+        simple: file
+      fetch_related_entities:
+        simple: "yes"
+      fetch_riskyCIDRips:
+        simple: "no"
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 962.5,
+          "y": 665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: e5527ed7-a775-4874-805f-9ac4403fda47
+    type: condition
+    task:
+      id: e5527ed7-a775-4874-805f-9ac4403fda47
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Check if a given value is true. Will return 'no' otherwise
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: a8b74507-3494-49e8-8154-23d55650d716
+    type: regular
+    task:
+      id: a8b74507-3494-49e8-8154-23d55650d716
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      recordedfutureriskrules:
+        simple: ${RecordedFuture.File.concatRules}
+      value:
+        simple: ${RecordedFuture.File.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_7_#default#": 0.52,
+      "15_7_#default#": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 1950,
+        "x": 50,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: File MD5 hash to enrich.
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: File SHA-256 hash to enrich.
+  playbookInputQuery:
+- key: SHA1
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: File SHA-1 hash to enrich.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: File.SHA256
+  description: File SHA-256
+  type: string
+- contextPath: File.SHA512
+  description: File SHA-512
+  type: string
+- contextPath: File.SHA1
+  description: File SHA-1
+  type: string
+- contextPath: File.MD5
+  description: File MD5
+  type: string
+- contextPath: File.CRC32
+  description: File CRC32
+  type: string
+- contextPath: File.CTPH
+  description: File CTPH
+  type: string
+- contextPath: RecordedFuture.File.criticality
+  description: Risk Criticality
+  type: number
+- contextPath: RecordedFuture.File.criticalityLabel
+  description: Risk Criticality Label
+  type: string
+- contextPath: RecordedFuture.File.riskString
+  description: Risk String
+  type: string
+- contextPath: RecordedFuture.File.riskSummary
+  description: Risk Summary
+  type: string
+- contextPath: RecordedFuture.File.rules
+  description: Risk Rules
+  type: string
+- contextPath: RecordedFuture.File.score
+  description: Risk Score
+  type: number
+- contextPath: RecordedFuture.File.firstSeen
+  description: Evidence First Seen
+  type: date
+- contextPath: RecordedFuture.File.lastSeen
+  description: Evidence Last Seen
+  type: date
+- contextPath: RecordedFuture.File.intelCard
+  description: Recorded Future Intelligence Card URL
+  type: string
+- contextPath: RecordedFuture.File.hashAlgorithm
+  description: Hash Algorithm
+  type: string
+- contextPath: RecordedFuture.File.type
+  description: Entity Type
+  type: string
+- contextPath: RecordedFuture.File.name
+  description: Entity
+  type: string
+- contextPath: RecordedFuture.File.id
+  description: Recorded Future Entity ID
+  type: string
+- contextPath: RecordedFuture.File.metrics.type
+  description: Recorded Future Metrics Type
+  type: string
+- contextPath: RecordedFuture.File.metrics.value
+  description: Recorded Future Metrics Value
+  type: number
+- contextPath: RecordedFuture.File.threatLists.description
+  description: Recorded Future Threat List Description
+  type: string
+- contextPath: RecordedFuture.File.threatLists.id
+  description: Recorded Future Threat List ID
+  type: string
+- contextPath: RecordedFuture.File.threatLists.name
+  description: Recorded Future Threat List Name
+  type: string
+- contextPath: RecordedFuture.File.threatLists.type
+  description: Recorded Future Threat List Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttacker.count
+  description: Recorded Future Related Attacker Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttacker.id
+  description: Recorded Future Related Attacker ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttacker.name
+  description: Recorded Future Related Attacker Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttacker.type
+  description: Recorded Future Related Attacker Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTarget.count
+  description: Recorded Future Related Target Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTarget.id
+  description: Recorded Future Related Target ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTarget.name
+  description: Recorded Future Related Target Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTarget.type
+  description: Recorded Future Related Target Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedThreatActor.count
+  description: Recorded Future Related Threat Actor Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedThreatActor.id
+  description: Recorded Future Related Threat Actor ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedThreatActor.name
+  description: Recorded Future Related Threat Actor Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedThreatActor.type
+  description: Recorded Future Related Threat Actor Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalware.count
+  description: Recorded Future Related Malware Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalware.id
+  description: Recorded Future Related Malware ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalware.name
+  description: Recorded Future Related Malware Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalware.type
+  description: Recorded Future Related Malware Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.count
+  description: Recorded Future Related Vulnerability Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.id
+  description: Recorded Future Related Vulnerability ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.name
+  description: Recorded Future Related Vulnerability Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCyberVulnerability.type
+  description: Recorded Future Related Vulnerability Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedIpAddress.count
+  description: Recorded Future Related IP Address Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedIpAddress.id
+  description: Recorded Future Related IP Address ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedIpAddress.name
+  description: Recorded Future Related IP Address Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedIpAddress.type
+  description: Recorded Future Related IP Address Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.count
+  description: Recorded Future Related Domain Name Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.id
+  description: Recorded Future Related Domain Name ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.name
+  description: Recorded Future Related Domain Name Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedInternetDomainName.type
+  description: Recorded Future Related Domain Name Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedProduct.count
+  description: Recorded Future Related Product Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedProduct.id
+  description: Recorded Future Related Product ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedProduct.name
+  description: Recorded Future Related Product Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedProduct.type
+  description: Recorded Future Related Product Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCountries.count
+  description: Recorded Future Related Countries Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCountries.id
+  description: Recorded Future Related Countries IDs
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCountries.name
+  description: Recorded Future Related Countries Names
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCountries.type
+  description: Recorded Future Related Countries Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedHash.count
+  description: Recorded Future Related Hash Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedHash.id
+  description: Recorded Future Related Hash ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedHash.name
+  description: Recorded Future Related Hash Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedHash.type
+  description: Recorded Future Related Hash Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.count
+  description: Recorded Future Related Technology Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.id
+  description: Recorded Future Related Technology ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.name
+  description: Recorded Future Related Technology Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedTechnology.type
+  description: Recorded Future Related Technology Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.count
+  description: Recorded Future Related Email Address Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.id
+  description: Recorded Future Related Email Address ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.name
+  description: Recorded Future Related Email Address Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedEmailAddress.type
+  description: Recorded Future Related Email Address Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.count
+  description: Recorded Future Related Attack Vector Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.id
+  description: Recorded Future Related Attack Vector ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.name
+  description: Recorded Future Related Attack Vector Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedAttackVector.type
+  description: Recorded Future Related Attack Vector Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.count
+  description: Recorded Future Related Malware Category Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.id
+  description: Recorded Future Related Malware Category ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.name
+  description: Recorded Future Related Malware Category Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedMalwareCategory.type
+  description: Recorded Future Related Malware Category Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.count
+  description: Recorded Future Related Operations Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.id
+  description: Recorded Future Related Operations ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.name
+  description: Recorded Future Related Operations Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedOperations.type
+  description: Recorded Future Related Operations Type
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.count
+  description: Recorded Future Related Company Count
+  type: number
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.id
+  description: Recorded Future Related Company ID
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.name
+  description: Recorded Future Related Company Name
+  type: string
+- contextPath: RecordedFuture.File.relatedEntities.RelatedCompany.type
+  description: Recorded Future Related Company Type
+  type: string
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

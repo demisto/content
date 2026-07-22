@@ -1,0 +1,685 @@
+id: Kaspersky Security Center - Test
+version: -1
+name: Kaspersky Security Center - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 98fbfa70-272a-43bc-882f-c62b27b57087
+    type: start
+    task:
+      id: 98fbfa70-272a-43bc-882f-c62b27b57087
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ' '
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 57bfc6b6-38cd-406d-8430-b12eae7c2462
+    type: regular
+    task:
+      id: 57bfc6b6-38cd-406d-8430-b12eae7c2462
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b78db3a7-88ea-4704-8257-cfc76b83a3a0
+    type: regular
+    task:
+      id: b78db3a7-88ea-4704-8257-cfc76b83a3a0
+      version: -1
+      name: List hosts
+      description: Returns a list of hosts.
+      script: '|||ksc-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c113261a-fd7d-4bf3-80ae-8b015a1661e9
+    type: condition
+    task:
+      id: c113261a-fd7d-4bf3-80ae-8b015a1661e9
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.KLHST_WKS_DN
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.KLHST_WKS_FQDN
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: c2bea5c9-4d43-4990-8255-a6e385d2da2a
+    type: regular
+    task:
+      id: c2bea5c9-4d43-4990-8255-a6e385d2da2a
+      version: -1
+      name: Get host
+      description: Returns details of a host
+      script: '|||ksc-host-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hostname:
+        complex:
+          root: KasperskySecurityCenter.Host
+          accessor: KLHST_WKS_HOSTNAME
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f09f8e63-b3fc-491f-83f6-796d90dd6f11
+    type: condition
+    task:
+      id: f09f8e63-b3fc-491f-83f6-796d90dd6f11
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.KLHST_WKS_NAG_VERSION
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.KLHST_WKS_STATUS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 32943e53-820a-4107-86f3-a93abdefb7ee
+    type: regular
+    task:
+      id: 32943e53-820a-4107-86f3-a93abdefb7ee
+      version: -1
+      name: Get host software applications
+      description: Retrieve software applications for a host.
+      script: '|||ksc-host-software-applications-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hostname:
+        complex:
+          root: KasperskySecurityCenter.Host
+          accessor: KLHST_WKS_HOSTNAME
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f705b6a8-ef01-499c-8cb2-515ab36961f5
+    type: condition
+    task:
+      id: f705b6a8-ef01-499c-8cb2-515ab36961f5
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.Software.ARPRegKey
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.Software.DisplayName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 8defe922-7495-456d-80a4-b9cc2478287c
+    type: regular
+    task:
+      id: 8defe922-7495-456d-80a4-b9cc2478287c
+      version: -1
+      name: Get host software patches
+      description: Retrieves patches for a host.
+      script: '|||ksc-host-software-patches-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      hostname:
+        complex:
+          root: KasperskySecurityCenter.Host
+          accessor: KLHST_WKS_HOSTNAME
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 1cea2f3e-6dca-405b-82a6-bbf7011845ab
+    type: condition
+    task:
+      id: 1cea2f3e-6dca-405b-82a6-bbf7011845ab
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.Patch.DisplayName
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Host.Patch.Publisher
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 18b467fd-afb4-494b-8569-b8520a9abf7f
+    type: regular
+    task:
+      id: 18b467fd-afb4-494b-8569-b8520a9abf7f
+      version: -1
+      name: List groups
+      description: Returns a list of groups.
+      script: '|||ksc-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 7f26d1f7-6c7c-4ca5-8312-6661fd41a21b
+    type: condition
+    task:
+      id: 7f26d1f7-6c7c-4ca5-8312-6661fd41a21b
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Group.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Group.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 209b1341-ae24-48f9-8394-0d3eff07ee73
+    type: regular
+    task:
+      id: 209b1341-ae24-48f9-8394-0d3eff07ee73
+      version: -1
+      name: List policies
+      description: Returns policies located in specified group.
+      script: '|||ksc-policies-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      group_id:
+        complex:
+          root: KasperskySecurityCenter.Group
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 5ecf8be0-b29d-4784-823f-70143232bb5b
+    type: condition
+    task:
+      id: 5ecf8be0-b29d-4784-823f-70143232bb5b
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Policy.KLPOL_GROUP_ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Policy.KLPOL_DN
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 33fdbe80-ebda-4fed-8463-7b980a4e26a9
+    type: regular
+    task:
+      id: 33fdbe80-ebda-4fed-8463-7b980a4e26a9
+      version: -1
+      name: List software applications
+      description: Returns limited attributes for all software applications.
+      script: '|||ksc-software-applications-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 1299fa7c-a249-4d13-832f-272946d01677
+    type: condition
+    task:
+      id: 1299fa7c-a249-4d13-832f-272946d01677
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Inventory.Software.ARPRegKey
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Inventory.Software.ProductID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: fb65ae10-8608-4a06-8639-1824fdcfc6e6
+    type: regular
+    task:
+      id: fb65ae10-8608-4a06-8639-1824fdcfc6e6
+      version: -1
+      name: List software patches
+      description: Returns limited attributes for all software application updates.
+      script: '|||ksc-software-patches-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: d1453111-b412-4cdd-82c2-ef074da87a22
+    type: condition
+    task:
+      id: d1453111-b412-4cdd-82c2-ef074da87a22
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Inventory.Patch.PatchID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: KasperskySecurityCenter.Inventory.Patch.DisplayVersion
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b475fa3a-a8f4-4b43-8007-ada8b8fc9a7a
+    type: title
+    task:
+      id: b475fa3a-a8f4-4b43-8007-ada8b8fc9a7a
+      version: -1
+      name: Success
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3185,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: ''

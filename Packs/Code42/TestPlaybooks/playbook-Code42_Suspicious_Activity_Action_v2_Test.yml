@@ -1,0 +1,439 @@
+id: Code42 Suspicious Activity Action v2 - Test
+version: -1
+name: Code42 Suspicious Activity Action v2 - Test
+description: Tests the Code42 Suspicious Activity Action v2 playbook by first making sure the user is unblocked, not on the Suspicious System Activity watchlist, and not in the test legal hold matter. Then, it calls the Code42 Suspicious Activity Action playbook, which should add the user to the Suspicious System Activity watchlist, add the user to the test legal hold matter, and block the user. Then, it undoes everything so that the test is in a fresh state.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10291a53-e966-47ff-8799-a29a1cccd782
+    type: start
+    task:
+      id: 10291a53-e966-47ff-8799-a29a1cccd782
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: The start task.
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4177c014-62fd-415c-88e7-5ac246e4aae7
+    type: playbook
+    task:
+      id: 4177c014-62fd-415c-88e7-5ac246e4aae7
+      version: -1
+      name: Code42 Suspicious Activity Action v2
+      description: Take corrective actions against a Code42 user found to be exposing file data.
+      playbookName: Code42 Suspicious Activity Action v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action:
+        simple: block,add-to-legal-hold,add-to-watchlist
+      mattername:
+        simple: Matter A
+      username:
+        simple: partner.demisto@example.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a3c5f877-7e99-4424-808e-cb59b2e3664d
+    type: title
+    task:
+      id: a3c5f877-7e99-4424-808e-cb59b2e3664d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: The end task.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c7cadaa4-4e61-46ca-86e1-ccbef0081e7f
+    type: regular
+    task:
+      id: c7cadaa4-4e61-46ca-86e1-ccbef0081e7f
+      version: -1
+      name: Unblock user
+      description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+      script: Code42|||code42-user-unblock
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      username:
+        simple: ${inputs.username}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8e8c3a47-97ed-484e-86d3-9fd90dfe7319
+    type: regular
+    task:
+      id: 8e8c3a47-97ed-484e-86d3-9fd90dfe7319
+      version: -1
+      name: Remove user from Watchlist
+      description: Remove a user from a watchlist.
+      script: '|||code42-watchlists-remove-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      username:
+        simple: ${inputs.username}
+      watchlist:
+        simple: SUSPICIOUS_SYSTEM_ACTIVITY
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e970221a-06ab-4c96-8924-947134881e70
+    type: regular
+    task:
+      id: e970221a-06ab-4c96-8924-947134881e70
+      version: -1
+      name: Remove from Legal Hold
+      description: Removes a Code42 user from a legal hold matter.
+      script: Code42|||code42-legalhold-remove-user
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      mattername:
+        simple: ${inputs.legal_hold_matter}
+      username:
+        simple: ${inputs.username}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 53da9be4-aef0-42ba-8923-5db8253cbe9a
+    type: title
+    task:
+      id: 53da9be4-aef0-42ba-8923-5db8253cbe9a
+      version: -1
+      name: Test Begin
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3a225c54-14f5-40db-88c9-da848db35878
+    type: title
+    task:
+      id: 3a225c54-14f5-40db-88c9-da848db35878
+      version: -1
+      name: Set up
+      type: title
+      iscommand: false
+      brand: ""
+      description: The following tasks set up the Code42 test state.
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: fedf06db-54ad-44ca-8371-ac9ec357ddf3
+    type: regular
+    task:
+      id: fedf06db-54ad-44ca-8371-ac9ec357ddf3
+      version: -1
+      name: Unblock user
+      description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+      script: Code42|||code42-user-unblock
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      username:
+        simple: ${inputs.username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7424be87-64a5-4eb2-8894-59e0735761c4
+    type: regular
+    task:
+      id: 7424be87-64a5-4eb2-8894-59e0735761c4
+      version: -1
+      name: Remove user from Watchlist
+      description: Remove a user from a watchlist.
+      script: '|||code42-watchlists-remove-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      username:
+        simple: ${inputs.username}
+      watchlist:
+        simple: SUSPICIOUS_SYSTEM_ACTIVITY
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 1a7f0fa0-60e9-4716-8c4e-96cc20e76a42
+    type: regular
+    task:
+      id: 1a7f0fa0-60e9-4716-8c4e-96cc20e76a42
+      version: -1
+      name: Remove from Legal Hold
+      description: Removes a Code42 user from a legal hold matter.
+      script: Code42|||code42-legalhold-remove-user
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      mattername:
+        simple: ${inputs.legal_hold_matter}
+      username:
+        simple: ${inputs.username}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 7e0a6c1d-d3d7-463b-8d34-3a82e7c008c5
+    type: title
+    task:
+      id: 7e0a6c1d-d3d7-463b-8d34-3a82e7c008c5
+      version: -1
+      name: Clean up
+      type: title
+      iscommand: false
+      brand: ""
+      description: The following tasks remove state changes from the test.
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1870,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: username
+  value:
+    simple: partner.demisto@example.com
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: legal_hold_matter
+  value:
+    simple: Matter A
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs: []
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,30 @@
+{
+    "test_case_1":{
+        "args": {
+            "manageable": "true"
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable":[{"action":[{"definition":{"assignee":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager"},
+        "description":"","name":"Ticket opened by Test Alert 1","notes":""},"id":"1","objectID":null,"status":"0","type":"ticket","users":[]}],"description":"","didTriggerLastEvaluation":"true","id":"1",
+        "lastEvaluated":"1687095001","lastTriggered":"1676531588","name":"Test Alert 1","owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"}}],"usable":[{"action":[{"definition":{"assignee":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager"},
+        "description":"","name":"Ticket opened by Test Alert 2","notes":""},"id":"2","objectID":null,"status":"0","type":"ticket","users":[]}],"description":"","didTriggerLastEvaluation":"true","id":"2",
+        "lastEvaluated":"1687095001","lastTriggered":"1676531588","name":"Test Alert 2","owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"}}]},"timestamp":1687157019,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Alerts\n|ID|Name|State|LastTriggered|LastEvaluated|Group|Owner|\n|---|---|---|---|---|---|---|\n| 1 | Test Alert 1 | Triggered | 2023-02-16T07:13:08Z | 2023-06-18T13:30:01Z | Full Access | lmanager |\n",
+        "expected_ec": [{"ID": "1", "Name": "Test Alert 1", "State": "Triggered", "LastTriggered": "2023-02-16T07:13:08Z", "LastEvaluated": "2023-06-18T13:30:01Z", "Group": "Full Access", "Owner": "lmanager"}]
+    },
+    "test_case_2":{
+        "args": {
+        },
+        "mock_response": {"error_code":0,"error_msg":"","response":{"manageable":[{"action":[{"definition":{"assignee":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager"},
+        "description":"","name":"Ticket opened by Test Alert 1","notes":""},"id":"1","objectID":null,"status":"0","type":"ticket","users":[]}],"description":"","didTriggerLastEvaluation":"true","id":"1",
+        "lastEvaluated":"1687095001","lastTriggered":"1676531588","name":"Test Alert 1","owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"}}],"usable":[{"action":[{"definition":{"assignee":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager"},
+        "description":"","name":"Ticket opened by Test Alert 2","notes":""},"id":"2","objectID":null,"status":"0","type":"ticket","users":[]}],"description":"","didTriggerLastEvaluation":"true","id":"2",
+        "lastEvaluated":"1687095001","lastTriggered":"1676531588","name":"Test Alert 2","owner":{"firstname":"Admin","id":"27","lastname":"User","username":"lmanager","uuid":"uuid"},
+        "ownerGroup":{"description":"Full Access group","id":"0","name":"Full Access"}}]},"timestamp":1687157019,"type":"regular","warnings":[]},
+        "expected_hr": "### Tenable.sc Alerts\n|ID|Name|State|LastTriggered|LastEvaluated|Group|Owner|\n|---|---|---|---|---|---|---|\n| 2 | Test Alert 2 | Triggered | 2023-02-16T07:13:08Z | 2023-06-18T13:30:01Z | Full Access | lmanager |\n",
+        "expected_ec": [{"ID": "2", "Name": "Test Alert 2", "State": "Triggered", "LastTriggered": "2023-02-16T07:13:08Z", "LastEvaluated": "2023-06-18T13:30:01Z", "Group": "Full Access", "Owner": "lmanager"}]
+    
+    }
+}

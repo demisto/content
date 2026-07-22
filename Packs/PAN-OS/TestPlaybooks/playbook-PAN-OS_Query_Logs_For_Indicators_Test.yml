@@ -1,0 +1,231 @@
+id: PAN-OS Query Logs For Indicators Test
+version: -1
+fromversion: "6.1.0"
+name: PAN-OS Query Logs For Indicators Test
+description: This is a test playbook for PAN-OS Query Logs For Indicators
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 841bb934-7a06-4551-8b87-1a6d8240f3de
+    type: start
+    task:
+      id: 841bb934-7a06-4551-8b87-1a6d8240f3de
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 27dc2a17-4f4c-4112-841d-d91d6cfc9070
+    type: title
+    task:
+      id: 27dc2a17-4f4c-4112-841d-d91d6cfc9070
+      version: -1
+      name: Done
+      description: Header
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a15bf512-b3e5-49f8-81a0-38a4ed4c6e4e
+    type: regular
+    task:
+      id: a15bf512-b3e5-49f8-81a0-38a4ed4c6e4e
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 95e13578-3697-422e-8142-aeeebe149b64
+    type: playbook
+    task:
+      id: 95e13578-3697-422e-8142-aeeebe149b64
+      version: -1
+      name: PAN-OS Query Logs For Indicators - URLs
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      url:
+        simple: microsoft.com,windowsupdate.com
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ffb15ea8-2787-40ed-846f-d350e7a0ffcd
+    type: playbook
+    task:
+      id: ffb15ea8-2787-40ed-846f-d350e7a0ffcd
+      version: -1
+      name: PAN-OS Query Logs For Indicators - Hashes
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      filedigest:
+        simple: 4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0,78745bbe69460b92369c1536408ff52a07465cd1300b648b27a991011cf576db
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c8a914b1-649a-4510-8d8e-98ad8a62b2f7
+    type: playbook
+    task:
+      id: c8a914b1-649a-4510-8d8e-98ad8a62b2f7
+      version: -1
+      name: PAN-OS Query Logs For Indicators - IPs
+      playbookName: PAN-OS Query Logs For Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8,192.168.1.12
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

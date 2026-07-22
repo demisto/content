@@ -1,0 +1,13 @@
+[
+    {
+        "id": "00000004",
+        "status": 200,
+        "createdDateTime": "{{now offset='-1 minutes'}}",
+        "lastActionDateTime": "{{now offset='-1 minutes'}}",
+        "description": "task description",
+        "action": "isolate",
+        "account": "test",
+        "agentGuid": "cb9c8412-1f64-4fa0-a36b-76bf41a07ede",
+        "endpointName": "trend-host-1"
+    }
+]

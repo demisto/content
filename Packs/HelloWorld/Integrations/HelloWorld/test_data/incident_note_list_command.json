@@ -1,0 +1,9 @@
+[
+    {
+        "id": 1,
+        "name": "XSOAR Test Item #1",
+        "severity": "low",
+        "date": "2023-09-14T11:30:39.882955",
+        "status": "Testing"
+    }
+]

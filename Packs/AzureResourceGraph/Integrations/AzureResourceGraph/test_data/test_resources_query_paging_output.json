@@ -1,0 +1,29 @@
+{
+    "totalRecords": 6,
+    "count": 3,
+    "data": [
+        {
+            "id": "/subscriptions/1abc234d-12a3-12a3-12a3-1234abcde123/resourceGroups/TEST-SSH-RESOURCE-GROUP-2/providers/Microsoft.Network/networkSecurityGroups/test-ssh-nsg",
+            "location": "eastus",
+            "name": "test-ssh-nsg-2",
+            "tags": "dev",
+            "type": "microsoft.network/networksecuritygroups"
+        },
+        {
+            "id": "/subscriptions/1abc234d-12a3-12a3-12a3-1234abcde123/resourceGroups/TEST-SSH-RESOURCE-GROUP-2/providers/Microsoft.Network/virtualNetworks/test-ssh-vnet-2",
+            "location": "eastus",
+            "name": "test-ssh-vnet-2",
+            "tags": "dev",
+            "type": "microsoft.network/virtualnetworks"
+        },
+        {
+            "id": "/subscriptions/1abc234d-12a3-12a3-12a3-1234abcde123/resourceGroups/TEST-SSH-RESOURCE-GROUP-2/providers/Microsoft.Compute/disks/ssh-3_disk3_123ab123a1a12b12345678912345ab123",
+            "location": "eastus",
+            "name": "ssh-3_disk3_123ab123a1a12b12345678912345ab123",
+            "tags": "dev",
+            "type": "microsoft.compute/disks"
+        }
+    ],
+    "facets": [],
+    "resultTruncated": "false"
+}

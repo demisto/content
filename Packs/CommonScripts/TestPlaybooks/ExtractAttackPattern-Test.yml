@@ -1,0 +1,290 @@
+id: ExtractAttackPattern-Test
+version: -1
+name: ExtractAttackPattern-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b74f3c8a-1740-4444-8079-1150af5539e4
+    type: start
+    task:
+      id: b74f3c8a-1740-4444-8079-1150af5539e4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 29fe68f0-5a16-4811-867f-3a4d8188c464
+    type: title
+    task:
+      id: 29fe68f0-5a16-4811-867f-3a4d8188c464
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b1f534f2-e2fd-48b1-848d-b164160ffffc
+    type: regular
+    task:
+      id: b1f534f2-e2fd-48b1-848d-b164160ffffc
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 95765b3f-e5de-4c90-8b0b-e66e94994afb
+    type: regular
+    task:
+      id: 95765b3f-e5de-4c90-8b0b-e66e94994afb
+      version: -1
+      name: Set Valid Attack Patterns
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: attack_pattern
+      value:
+        simple: T1595.001
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3eca441b-d1d4-4ed1-8cde-1e2b7199ac77
+    type: regular
+    task:
+      id: 3eca441b-d1d4-4ed1-8cde-1e2b7199ac77
+      version: -1
+      name: Print Valid Attack Patterns
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      value:
+        simple: ${attack_pattern}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3de9c14a-af1d-4c24-81ce-0ceb3980db2b
+    type: regular
+    task:
+      id: 3de9c14a-af1d-4c24-81ce-0ceb3980db2b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e40006d0-e174-416d-84d1-005bc0d8a8a9
+    type: regular
+    task:
+      id: e40006d0-e174-416d-84d1-005bc0d8a8a9
+      version: -1
+      name: GetIndicatorsByQuery
+      description: Gets a list of indicator objects and the associated indicator outputs
+        that match the specified query and filters. The results are returned in a
+        structured data file.
+      scriptName: GetIndicatorsByQuery
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      query:
+        simple: 'value:"Active Scanning: Scanning IP Blocks"'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 92c5b7d1-dd12-4b2f-8152-a6a281cdcd1b
+    type: condition
+    task:
+      id: 92c5b7d1-dd12-4b2f-8152-a6a281cdcd1b
+      version: -1
+      name: Check Is indicator created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: Extract Attack Pattern Threat Intel Object - Test

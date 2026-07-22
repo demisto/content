@@ -1,0 +1,38 @@
+{
+  "Name": "xxxx",
+  "Config": {
+    "MachineType": "xxxx",
+    "DiskSizeGb": 100,
+    "OauthScopes": [
+      "xxxx"
+    ],
+    "Metadata": {
+      "DisableLegacyEndpoints": "true"
+    },
+    "ImageType": "true",
+    "ServiceAccount": "true",
+    "DiskType": "true",
+    "ShieldedInstanceConfig": {
+      "EnableIntegrityMonitoring": true
+    }
+  },
+  "InitialNodeCount": 6,
+  "Autoscaling": {
+    "Enabled": true,
+    "MinNodeCount": 6,
+    "MaxNodeCount": 10
+  },
+  "Management": {
+    "AutoRepair": true
+  },
+  "MaxPodsConstraint": {
+    "MaxPodsPerNode": "110"
+  },
+  "PodIpv4CidrSize": 24,
+  "SelfLink": "true",
+  "Version": "true",
+  "InstanceGroupUrls": [
+    "true"
+  ],
+  "Status": "RUNNING"
+}

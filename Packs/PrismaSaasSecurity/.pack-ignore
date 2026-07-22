@@ -1,0 +1,14 @@
+[known_words]
+saas
+xdm
+saassecuritymodelingrules
+
+[file:SaasSecurityEventCollector.yml]
+ignore=MR108
+
+[file:SaasSecurityEventCollector_1_3.yml]
+ignore=MR108
+
+[file:PrismaSaasSecurity.yml]
+ignore=PR101
+

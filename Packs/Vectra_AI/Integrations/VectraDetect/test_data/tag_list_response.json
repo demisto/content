@@ -1,0 +1,9 @@
+{
+    "status": "success",
+    "tag_id": "2",
+    "tags": [
+        "note",
+        "tag_from_xsoar",
+        "tag_from_vectra"
+    ]
+}

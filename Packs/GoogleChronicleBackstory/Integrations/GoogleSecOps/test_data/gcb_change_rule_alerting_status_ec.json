@@ -1,0 +1,7 @@
+{
+    "GoogleChronicleBackstory.RuleAlertingChange(val.ruleId == obj.ruleId)": {
+        "ruleId": "dummy_rule_id",
+        "actionStatus": "SUCCESS",
+        "alertingStatus": "enable"
+    }
+}

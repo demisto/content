@@ -1,0 +1,483 @@
+commonfields:
+  id: AlienVault OTX
+  version: -1
+name: AlienVault OTX
+display: AlienVault OTX (Deprecated)
+deprecated: true
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Deprecated. We recommend using AlienVault OTX v2 instead. Query IOCs in AlienVault
+detaileddescription: |
+  To get Your API Key, go to [AlienVault OTX](https://otx.alienvault.com).
+  After you login (or sign in), under Your profile settings You will find a OTX Key section.
+  This section contain Your key.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://otx.alienvault.com
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: "443"
+  type: 0
+  required: true
+- display: API key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: >-
+    function getArgName(args) {
+        options = ['md5', 'sha1', 'sha256'];
+        for (var k in options) {
+            if (args[options[k]]) {
+                return options[k];
+            }
+        }
+        throw 'You must provide either sha1, sha256 or md5';
+    }
+
+
+    indicatorsCommands = {
+        'ip': {
+            type: 'IPv4',
+            argName: 'ip',
+            contextKey: outputPaths.ip,
+            translator: [
+                {to: 'Address', from: 'indicator'},
+                {to: 'ASN', from: 'asn'},
+                {to: 'Geo-Country', from: 'country_name'},
+                {to: 'Geo-Latitude', from: 'latitude'},
+                {to: 'Geo-Longitude', from: 'longitude'},
+                {to: 'AlienVaultOTX-Reputation', from: 'reputation'},
+            ],
+            tableTitle: 'AlienVault ip response %Address%',
+        },
+        'url': {
+            type: 'url',
+            argName: 'url',
+            contextKey: outputPaths.url,
+            translator: [
+                {to: 'Data', from: 'indicator'},
+            ],
+            tableTitle: 'AlienVault url response %Data%',
+        },
+        'ipv6': {
+            type: 'IPv6',
+            argName: 'ip',
+            contextKey: outputPaths.ip,
+            translator: [
+                {to: 'Address', from: 'indicator'},
+                {to: 'ASN', from: 'asn'},
+                {to: 'AlienVaultOTX-Reputation', from: 'reputation'},
+            ],
+            tableTitle: 'AlienVault ip response %Address%',
+        },
+        'domain': {
+            type: 'domain',
+            argName: 'domain',
+            contextKey: outputPaths.domain,
+            translator: [
+                {to: 'Name', from: 'indicator'},
+                {to: 'AlienVaultOTX-Alexa', from: 'alexa'},
+                {to: 'AlienVaultOTX-Whois', from: 'whois'},
+            ],
+            tableTitle: 'AlienVault domain response %Name%',
+        },
+        'hostname': {
+            type: 'hostname',
+            argName: 'hostname',
+            contextKey: 'Endpoint(val.Hostname==obj.Hostname)',
+            translator: [
+                {to: 'Hostname', from: 'indicator'},
+                {to: 'AlienVaultOTX-Alexa', from: 'alexa'},
+                {to: 'AlienVaultOTX-Whois', from: 'whois'},
+            ],
+            tableTitle: 'AlienVault hostname response %Hostname%',
+        },
+        'file': {
+            type: 'file',
+            argName: 'file',
+            contextKey: outputPaths.file,
+            translator: [
+                {to: 'MD5', from: 'indicator'},
+            ],
+            tableTitle: 'AlienVault file response %MD5%',
+        },
+        'alienvault-query-file': {
+            type: 'file',
+            argName: getArgName,
+            contextKey: outputPaths.file,
+            translator: function(args) {
+                return [
+                    {to: getArgName(args).toUpperCase(), from: 'indicator'},
+                ];
+            },
+            tableTitle: function(args) {
+                return 'AlienVault file response %' + getArgName(args).toUpperCase() + '%';
+            },
+        },
+    };
+
+
+    searchCommands = {
+        'alienvault-search-pulses': {
+            url: 'search/pulses',
+            contextKey: 'AlienVault.Pulses(val.ID==obj.ID)',
+            translator: [
+                {to: 'ID', from: 'id'},
+                {to: 'Author-ID', from: 'author.id'},
+                {to: 'Author-Username', from: 'author.username'},
+                {to: 'Count', from: 'indicator_count'},
+                {to: 'Modified', from: 'modified'},
+                {to: 'Name', from: 'name'},
+                {to: 'Source', from: 'pulse_source'},
+                {to: 'SubscriberCount', from: 'subscriber_count'},
+                {to: 'Tags', from: 'tags'},
+                {to: 'Description', from: 'description'},
+            ],
+            innerPath: 'results',
+            tableTitle: 'AlienVault pulses',
+        },
+        'alienvault-get-pulse-details': {
+            url: 'pulses/%pulse-id%',
+            contextKey: 'AlienVault.Pulses(val.ID==obj.ID)',
+            translator: [
+                {to: 'ID', from: 'id'},
+                {to: 'Created', from: 'created'},
+                {to: 'Author-Username', from: 'author_name'},
+                {to: 'Description', from: 'description'},
+                {to: 'Modified', from: 'modified'},
+                {to: 'Name', from: 'name'},
+                {to: 'Tags', from: 'tags'},
+                {to: 'TargetedCountries', from: 'targeted_countries'},
+            ],
+            tableTitle: 'AlienVault pulse %ID%',
+        },
+    }
+
+
+    var mapObjFunction = function(mapFields) {
+        var transformSingleObj= function(obj) {
+            var res = {};
+            mapFields.forEach(function(f) {
+               res[f.to] = dq(obj, f.from);
+            });
+            return res;
+        };
+        return function(obj) {
+            if (obj instanceof Array) {
+                var res = [];
+                for (var j=0; j < obj.length; j++) {
+                    res.push(transformSingleObj(obj[j]));
+                }
+                return res;
+            }
+            return transformSingleObj(obj);
+        }
+    }
+
+
+    var createContext = function(data) {
+        var createContextSingle = function(obj) {
+            var res = {};
+            var keys = Object.keys(obj);
+            keys.forEach(function(k) {
+                var values = k.split('-');
+                var current = res;
+                for (var j = 0; j<values.length - 1; j++) {
+                    if (!current[values[j]]) {
+                        current[values[j]] = {};
+                    }
+                    current = current[values[j]];
+                }
+                current[values[j]] = obj[k];
+            });
+            return res;
+        };
+        if (data instanceof Array) {
+            var res = [];
+            for (var j=0; j < data.length; j++) {
+                res.push(createContextSingle(data[j]));
+            }
+            return res;
+        }
+        return createContextSingle(data);
+    }
+
+
+    function domain_from_url(url) {
+        res = url.replace(/(.*:\/\/.*)[\?\/#].*/, '$1');
+        return res;
+    }
+
+
+
+    baseUrl = params.server.replace(/[\/]+$/, '') + ':' + params.port + '/api/v1/';
+
+    function sendRequest(url) {
+        res = http(
+                    baseUrl + url,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            'X-OTX-API-KEY': [params.apikey],
+                        },
+                    },
+                    params.insecure,
+                    params.proxy
+        );
+        if (res.StatusCode === 404) {
+            return 'Not found'
+        }
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request to ' + url + ' failed, request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+        }
+        // If we have a body, it should have application/json content type.
+        if (res.Body &&
+        (!res.Headers['Content-Type'] || !res.Headers['Content-Type'][0] || res.Headers['Content-Type'][0].indexOf('application/json') === -1) || res.Body.indexOf('Google Tag Manager') != -1) {
+            log('Response body: ' + res.Body);
+            throw 'Check your URL (excepting base URL) - got invalid content type, expected application/json.';
+        }
+        return res.Body ? JSON.parse(res.Body) : 'empty';
+    }
+
+
+    function queryIndicators(type, indicator, section) {
+        return sendRequest('indicators/' + type + '/' + domain_from_url(indicator) + '/general');
+    }
+
+
+    if (command === 'test-module') {
+        res = queryIndicators('IPv4', '8.8.8.8');
+        return res !== 'Not found' ? 'ok' : 'Not found';
+    }
+
+
+    currentCommand = indicatorsCommands[command] || searchCommands[command];
+
+    argName = currentCommand.argName instanceof Function ? currentCommand.argName(args) : currentCommand.argName;
+
+    var raw;
+
+    if (indicatorsCommands[command]) {
+        raw = queryIndicators(currentCommand.type, args[argName]);
+    } else {
+        raw = sendRequest(replaceInTemplatesAndRemove(currentCommand.url, args));
+    }
+
+    entry = {
+        Type: entryTypes.note,
+        Contents: raw,
+        ContentsFormat: formats.json,
+        ReadableContentsFormat: formats.markdown,
+    };
+
+
+    translator = currentCommand.translator instanceof Function ? currentCommand.translator(args) : currentCommand.translator;
+
+    tableTitle = currentCommand.tableTitle instanceof Function ? currentCommand.tableTitle(args) : currentCommand.tableTitle;
+
+    translated = mapObjFunction(translator)(currentCommand.innerPath ? raw[currentCommand.innerPath] : raw);
+
+    entry.HumanReadable = tableToMarkdown(replaceInTemplates(tableTitle, translated), translated);
+
+    if (currentCommand.contextKey) {
+        ec = {};
+        contextKey = currentCommand.getContextKey instanceof Function ? currentCommand.contextKey(args) : currentCommand.contextKey;
+        outputPath = outputPaths.file;
+        if (argName) {
+            switch (argName) {
+                case 'ip':
+                    outputPath = outputPaths.ip;
+                    break;
+                case 'domain':
+                    outputPath = outputPaths.domain;
+                    break;
+                case 'url':
+                    outputPath = outputPaths.url;
+                    break;
+            }
+
+            ec[contextKey] = createContext(translated);
+        }
+        entry.EntryContext = ec;
+        if (ec && ec[contextKey] && ec[contextKey].Geo && ec[contextKey].Geo.Latitude && ec[contextKey].Geo.Longitude) {
+            entry = [
+                entry,
+                {
+                    Type: entryTypes.map,
+                    Contents: {lat: parseFloat(ec[contextKey].Geo.Latitude),
+                    lng: parseFloat(ec[contextKey].Geo.Longitude)},
+                    ContentsFormat: formats.json
+                }
+            ];
+        }
+    }
+
+
+    return entry;
+  type: javascript
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: ip to query
+    outputs:
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.ASN
+      description: IP ASN
+    - contextPath: IP.Geo.Country
+      description: IP country
+    - contextPath: IP.Geo.Latitude
+      description: IP latitude
+    - contextPath: IP.Geo.Longitude
+      description: IP longitude
+    - contextPath: AlienVaultOTX.Reputation
+      description: IP reputation
+    description: Query IP in AlienVault OTX
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: domain to query
+    outputs:
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.AlienVaultOTX.Alexa
+      description: Alexa URL for domain data
+    - contextPath: Domain.AlienVaultOTX.Whois
+      description: Whois URL for domain data
+    description: Query domain in AlienVault OTX
+  - name: ipv6
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: ip to query
+    outputs:
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.ASN
+      description: IP ASN
+    - contextPath: IP.AlienVaultOTX.Reputation
+      description: AlienVault IP reputation
+    description: Query IP in AlienVault OTX
+  - name: hostname
+    arguments:
+    - name: hostname
+      required: true
+      default: true
+      description: hostname to query
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: Endpoint hostname
+    - contextPath: Endpoint.AlienVaultOTX.Alexa
+      description: Endpoint Alexa URL
+    - contextPath: Endpoint.AlienVaultOTX.Whois
+      description: Endpoint Whois URL
+    description: Query hostname in AlienVault OTX
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: md5 to query
+    outputs:
+    - contextPath: File.MD5
+      description: File md5
+    description: Query file in AlienVault OTX
+  - name: alienvault-query-file
+    arguments:
+    - name: md5
+      description: File md5
+    - name: sha1
+      description: File sha1
+    - name: sha256
+      description: File sha256
+    outputs:
+    - contextPath: File.MD5
+      description: File md5
+    - contextPath: File.SHA1
+      description: File sha1
+    - contextPath: File.SHA256
+      description: File sha256
+    description: Query file in AlienVault OTX
+  - name: alienvault-search-pulses
+    arguments:
+    - name: page
+      description: The page of pulses to get
+    outputs:
+    - contextPath: AlienVault.Pulses.ID
+      description: Pulse ID
+    - contextPath: AlienVault.Pulses.Author.ID
+      description: Author ID
+    - contextPath: AlienVault.Pulses.Author.Username
+      description: Author username
+    - contextPath: AlienVault.Pulses.Count
+      description: Pulse count
+    - contextPath: AlienVault.Pulses.Modified
+      description: Pulse modification date
+    - contextPath: AlienVault.Pulses.Name
+      description: Pulse name
+    - contextPath: AlienVault.Pulses.Source
+      description: Pulse source
+    - contextPath: AlienVault.Pulses.SubscriberCount
+      description: Pulse subscriber count
+    - contextPath: AlienVault.Pulses.Tags
+      description: Pulse tags
+    - contextPath: AlienVault.Pulses.Description
+      description: Pulse description
+    description: Search for pulses in AlienVault OTX
+  - name: alienvault-get-pulse-details
+    arguments:
+    - name: pulse-id
+      required: true
+      description: ID of desired pules"
+    outputs:
+    - contextPath: AlienVault.Pulses.Description
+      description: Pulse description
+    - contextPath: AlienVault.Pulses.Created
+      description: Pulse created
+    - contextPath: AlienVault.Pulses.Author.Username
+      description: Pulse author username
+    - contextPath: AlienVault.Pulses.ID
+      description: Pulse ID
+    - contextPath: AlienVault.Pulses.Name
+      description: Pulse name
+    - contextPath: AlienVault.Pulses.Tags
+      description: Pulse tags
+    - contextPath: AlienVault.Pulses.TargetedCountries
+      description: Pulse targeted countries
+    - contextPath: AlienVault.Pulses.Description
+      description: Pulse description
+    description: Get pulse details (pulse are alian vault's entities)
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      default: true
+      description: url to query
+    outputs:
+    - contextPath: URL.Data
+      description: 'URL '
+    description: Query url in AlienVault OTX
+fromversion: 5.0.0
+tests:
+- No tests

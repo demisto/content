@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In cases where no hostname is found, the script no longer returns the IP address. Instead, it provides a clear message indicating that no hostname is available."
+}

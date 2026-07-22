@@ -1,0 +1,30 @@
+{
+    "id": "Securonix Incident",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Securonix Incident",
+    "prevName": "Securonix Incident",
+    "layout": "Securonix Incident Information",
+    "color": "#3D8EB3",
+    "playbookId": "Update Incident Status And Fetch Attachments - Securonix",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "detached": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.5.0"
+}

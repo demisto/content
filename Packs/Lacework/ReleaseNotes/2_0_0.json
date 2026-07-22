@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Lacework API calls have been migrated to v2 and, as such, the command outputs may be different.  Also, Events have been migrated to Alerts."}

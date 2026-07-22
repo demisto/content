@@ -1,0 +1,52 @@
+{
+    "description": "Corporate asset",
+    "meta-category": "misc",
+    "name": "corporate-asset",
+    "required":
+    [
+        "asset-type",
+        "asset-id"
+    ],
+    "uuid": "1a99327a-bbe6-493d-97da-fce83965eccd",
+    "version": 20210317,
+    "attributes":
+    {
+        "asset-type":
+        {
+            "description": "Type of asset",
+            "disable_correlation": true,
+            "misp-attribute": "text",
+            "ui-priority": 3,
+            "values_list":
+            [
+                "Server",
+                "Workstation",
+                "Printer",
+                "Network",
+                "Mobile",
+                "Monitor"
+            ]
+        },
+        "asset-id":
+        {
+            "description": "Asset identification",
+            "disable_correlation": true,
+            "misp-attribute": "target-machine",
+            "ui-priority": 0
+        },
+        "business-unit":
+        {
+            "description": "Organizational business unit associated with the asset",
+            "disable_correlation": true,
+            "misp-attribute": "target-org",
+            "ui-priority": 2
+        },
+        "text":
+        {
+            "description": "A description of the asset.",
+            "disable_correlation": true,
+            "misp-attribute": "text",
+            "ui-priority": 1
+        }
+    }
+}

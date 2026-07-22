@@ -1,0 +1,24 @@
+{
+    "name": "ParseYAML (Deprecated)",
+    "description": "Deprecated. ParseYAML script moved to CommonScripts pack.",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "Clay Curtis",
+    "url": "",
+    "email": "",
+    "hidden": true,
+    "created": "2021-03-11T16:53:11Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "clay584"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

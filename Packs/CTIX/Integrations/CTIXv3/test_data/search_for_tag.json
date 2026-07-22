@@ -1,0 +1,8 @@
+{"next": "tags/?page=2&page_size=1", "page_size": 1, "previous": null, 
+	"results": [{"colour_code": null, "created": 1652113918, "created_by": 
+	{"email": "dummy.email@test.com", "first_name": "hardipinder", "id":
+	"40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": "singh"}, "id":
+	"68981db8-6deb-41f0-9727-74ad81cf47b2", "modified": 1652113918,
+	"modified_by": {"email": "dummy.email@test.com", "first_name":
+	"hardipinder", "id": "40ab0f84-fb39-4444-95b2-cd155f574aa2", "last_name": 
+	"singh"}, "name": "demisto_test", "type": "manual"}], "total": 39893}

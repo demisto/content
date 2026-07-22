@@ -1,0 +1,2791 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        }
+    },
+    "data": [
+        {
+            "connector_guid": "data[0]_connector_guid",
+            "bundle_id": "data[0]_bundle_id",
+            "group_guids": [
+                "data[0]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[0]_links_computer",
+                "trajectory": "data[0]_links_trajectory",
+                "group": "data[0]_links_group"
+            },
+            "cdhash": "data[0]_cdhash",
+            "timestamp": "data[0]_timestamp",
+            "timestamp_nanoseconds": "data[0]_timestamp_nanoseconds",
+            "date": "data[0]_date",
+            "query_type": "data[0]_query_type",
+            "network_info": {
+                "dirty_url": "data[0]_network_info_dirty_url",
+                "remote_ip": "data[0]_network_info_remote_ip",
+                "remote_port": "data[0]_network_info_remote_port",
+                "local_ip": "data[0]_network_info_local_ip",
+                "local_port": "data[0]_network_info_local_port",
+                "direction": "data[0]_network_info_direction",
+                "protocol": "data[0]_network_info_protocol"
+            },
+            "ver": "data[0]_ver"
+        },
+        {
+            "connector_guid": "data[1]_connector_guid",
+            "bundle_id": "data[1]_bundle_id",
+            "group_guids": [
+                "data[1]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[1]_links_computer",
+                "trajectory": "data[1]_links_trajectory",
+                "group": "data[1]_links_group"
+            },
+            "cdhash": "data[1]_cdhash",
+            "timestamp": "data[1]_timestamp",
+            "timestamp_nanoseconds": "data[1]_timestamp_nanoseconds",
+            "date": "data[1]_date",
+            "query_type": "data[1]_query_type",
+            "network_info": {
+                "dirty_url": "data[1]_network_info_dirty_url",
+                "remote_ip": "data[1]_network_info_remote_ip",
+                "remote_port": "data[1]_network_info_remote_port",
+                "local_ip": "data[1]_network_info_local_ip",
+                "local_port": "data[1]_network_info_local_port",
+                "direction": "data[1]_network_info_direction",
+                "protocol": "data[1]_network_info_protocol"
+            },
+            "ver": "data[1]_ver"
+        },
+        {
+            "connector_guid": "data[2]_connector_guid",
+            "bundle_id": "data[2]_bundle_id",
+            "group_guids": [
+                "data[2]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[2]_links_computer",
+                "trajectory": "data[2]_links_trajectory",
+                "group": "data[2]_links_group"
+            },
+            "cdhash": "data[2]_cdhash",
+            "timestamp": "data[2]_timestamp",
+            "timestamp_nanoseconds": "data[2]_timestamp_nanoseconds",
+            "date": "data[2]_date",
+            "query_type": "data[2]_query_type",
+            "network_info": {
+                "dirty_url": "data[2]_network_info_dirty_url",
+                "remote_ip": "data[2]_network_info_remote_ip",
+                "remote_port": "data[2]_network_info_remote_port",
+                "local_ip": "data[2]_network_info_local_ip",
+                "local_port": "data[2]_network_info_local_port",
+                "direction": "data[2]_network_info_direction",
+                "protocol": "data[2]_network_info_protocol"
+            },
+            "ver": "data[2]_ver"
+        },
+        {
+            "connector_guid": "data[3]_connector_guid",
+            "bundle_id": "data[3]_bundle_id",
+            "group_guids": [
+                "data[3]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[3]_links_computer",
+                "trajectory": "data[3]_links_trajectory",
+                "group": "data[3]_links_group"
+            },
+            "cdhash": "data[3]_cdhash",
+            "timestamp": "data[3]_timestamp",
+            "timestamp_nanoseconds": "data[3]_timestamp_nanoseconds",
+            "date": "data[3]_date",
+            "query_type": "data[3]_query_type",
+            "network_info": {
+                "dirty_url": "data[3]_network_info_dirty_url",
+                "remote_ip": "data[3]_network_info_remote_ip",
+                "remote_port": "data[3]_network_info_remote_port",
+                "local_ip": "data[3]_network_info_local_ip",
+                "local_port": "data[3]_network_info_local_port",
+                "direction": "data[3]_network_info_direction",
+                "protocol": "data[3]_network_info_protocol"
+            },
+            "ver": "data[3]_ver"
+        },
+        {
+            "connector_guid": "data[4]_connector_guid",
+            "bundle_id": "data[4]_bundle_id",
+            "group_guids": [
+                "data[4]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[4]_links_computer",
+                "trajectory": "data[4]_links_trajectory",
+                "group": "data[4]_links_group"
+            },
+            "cdhash": "data[4]_cdhash",
+            "timestamp": "data[4]_timestamp",
+            "timestamp_nanoseconds": "data[4]_timestamp_nanoseconds",
+            "date": "data[4]_date",
+            "query_type": "data[4]_query_type",
+            "network_info": {
+                "dirty_url": "data[4]_network_info_dirty_url",
+                "remote_ip": "data[4]_network_info_remote_ip",
+                "remote_port": "data[4]_network_info_remote_port",
+                "local_ip": "data[4]_network_info_local_ip",
+                "local_port": "data[4]_network_info_local_port",
+                "direction": "data[4]_network_info_direction",
+                "protocol": "data[4]_network_info_protocol"
+            },
+            "ver": "data[4]_ver"
+        },
+        {
+            "connector_guid": "data[5]_connector_guid",
+            "bundle_id": "data[5]_bundle_id",
+            "group_guids": [
+                "data[5]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[5]_links_computer",
+                "trajectory": "data[5]_links_trajectory",
+                "group": "data[5]_links_group"
+            },
+            "cdhash": "data[5]_cdhash",
+            "timestamp": "data[5]_timestamp",
+            "timestamp_nanoseconds": "data[5]_timestamp_nanoseconds",
+            "date": "data[5]_date",
+            "query_type": "data[5]_query_type",
+            "network_info": {
+                "dirty_url": "data[5]_network_info_dirty_url",
+                "remote_ip": "data[5]_network_info_remote_ip",
+                "remote_port": "data[5]_network_info_remote_port",
+                "local_ip": "data[5]_network_info_local_ip",
+                "local_port": "data[5]_network_info_local_port",
+                "direction": "data[5]_network_info_direction",
+                "protocol": "data[5]_network_info_protocol"
+            },
+            "ver": "data[5]_ver"
+        },
+        {
+            "connector_guid": "data[6]_connector_guid",
+            "bundle_id": "data[6]_bundle_id",
+            "group_guids": [
+                "data[6]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[6]_links_computer",
+                "trajectory": "data[6]_links_trajectory",
+                "group": "data[6]_links_group"
+            },
+            "cdhash": "data[6]_cdhash",
+            "timestamp": "data[6]_timestamp",
+            "timestamp_nanoseconds": "data[6]_timestamp_nanoseconds",
+            "date": "data[6]_date",
+            "query_type": "data[6]_query_type",
+            "network_info": {
+                "dirty_url": "data[6]_network_info_dirty_url",
+                "remote_ip": "data[6]_network_info_remote_ip",
+                "remote_port": "data[6]_network_info_remote_port",
+                "local_ip": "data[6]_network_info_local_ip",
+                "local_port": "data[6]_network_info_local_port",
+                "direction": "data[6]_network_info_direction",
+                "protocol": "data[6]_network_info_protocol"
+            },
+            "ver": "data[6]_ver"
+        },
+        {
+            "connector_guid": "data[7]_connector_guid",
+            "bundle_id": "data[7]_bundle_id",
+            "group_guids": [
+                "data[7]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[7]_links_computer",
+                "trajectory": "data[7]_links_trajectory",
+                "group": "data[7]_links_group"
+            },
+            "cdhash": "data[7]_cdhash",
+            "timestamp": "data[7]_timestamp",
+            "timestamp_nanoseconds": "data[7]_timestamp_nanoseconds",
+            "date": "data[7]_date",
+            "query_type": "data[7]_query_type",
+            "network_info": {
+                "dirty_url": "data[7]_network_info_dirty_url",
+                "remote_ip": "data[7]_network_info_remote_ip",
+                "remote_port": "data[7]_network_info_remote_port",
+                "local_ip": "data[7]_network_info_local_ip",
+                "local_port": "data[7]_network_info_local_port",
+                "direction": "data[7]_network_info_direction",
+                "protocol": "data[7]_network_info_protocol"
+            },
+            "ver": "data[7]_ver"
+        },
+        {
+            "connector_guid": "data[8]_connector_guid",
+            "bundle_id": "data[8]_bundle_id",
+            "group_guids": [
+                "data[8]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[8]_links_computer",
+                "trajectory": "data[8]_links_trajectory",
+                "group": "data[8]_links_group"
+            },
+            "cdhash": "data[8]_cdhash",
+            "timestamp": "data[8]_timestamp",
+            "timestamp_nanoseconds": "data[8]_timestamp_nanoseconds",
+            "date": "data[8]_date",
+            "query_type": "data[8]_query_type",
+            "network_info": {
+                "dirty_url": "data[8]_network_info_dirty_url",
+                "remote_ip": "data[8]_network_info_remote_ip",
+                "remote_port": "data[8]_network_info_remote_port",
+                "local_ip": "data[8]_network_info_local_ip",
+                "local_port": "data[8]_network_info_local_port",
+                "direction": "data[8]_network_info_direction",
+                "protocol": "data[8]_network_info_protocol"
+            },
+            "ver": "data[8]_ver"
+        },
+        {
+            "connector_guid": "data[9]_connector_guid",
+            "bundle_id": "data[9]_bundle_id",
+            "group_guids": [
+                "data[9]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[9]_links_computer",
+                "trajectory": "data[9]_links_trajectory",
+                "group": "data[9]_links_group"
+            },
+            "cdhash": "data[9]_cdhash",
+            "timestamp": "data[9]_timestamp",
+            "timestamp_nanoseconds": "data[9]_timestamp_nanoseconds",
+            "date": "data[9]_date",
+            "query_type": "data[9]_query_type",
+            "network_info": {
+                "dirty_url": "data[9]_network_info_dirty_url",
+                "remote_ip": "data[9]_network_info_remote_ip",
+                "remote_port": "data[9]_network_info_remote_port",
+                "local_ip": "data[9]_network_info_local_ip",
+                "local_port": "data[9]_network_info_local_port",
+                "direction": "data[9]_network_info_direction",
+                "protocol": "data[9]_network_info_protocol"
+            },
+            "ver": "data[9]_ver"
+        },
+        {
+            "connector_guid": "data[10]_connector_guid",
+            "bundle_id": "data[10]_bundle_id",
+            "group_guids": [
+                "data[10]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[10]_links_computer",
+                "trajectory": "data[10]_links_trajectory",
+                "group": "data[10]_links_group"
+            },
+            "cdhash": "data[10]_cdhash",
+            "timestamp": "data[10]_timestamp",
+            "timestamp_nanoseconds": "data[10]_timestamp_nanoseconds",
+            "date": "data[10]_date",
+            "query_type": "data[10]_query_type",
+            "network_info": {
+                "dirty_url": "data[10]_network_info_dirty_url",
+                "remote_ip": "data[10]_network_info_remote_ip",
+                "remote_port": "data[10]_network_info_remote_port",
+                "local_ip": "data[10]_network_info_local_ip",
+                "local_port": "data[10]_network_info_local_port",
+                "direction": "data[10]_network_info_direction",
+                "protocol": "data[10]_network_info_protocol"
+            },
+            "ver": "data[10]_ver"
+        },
+        {
+            "connector_guid": "data[11]_connector_guid",
+            "bundle_id": "data[11]_bundle_id",
+            "group_guids": [
+                "data[11]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[11]_links_computer",
+                "trajectory": "data[11]_links_trajectory",
+                "group": "data[11]_links_group"
+            },
+            "cdhash": "data[11]_cdhash",
+            "timestamp": "data[11]_timestamp",
+            "timestamp_nanoseconds": "data[11]_timestamp_nanoseconds",
+            "date": "data[11]_date",
+            "query_type": "data[11]_query_type",
+            "network_info": {
+                "dirty_url": "data[11]_network_info_dirty_url",
+                "remote_ip": "data[11]_network_info_remote_ip",
+                "remote_port": "data[11]_network_info_remote_port",
+                "local_ip": "data[11]_network_info_local_ip",
+                "local_port": "data[11]_network_info_local_port",
+                "direction": "data[11]_network_info_direction",
+                "protocol": "data[11]_network_info_protocol"
+            },
+            "ver": "data[11]_ver"
+        },
+        {
+            "connector_guid": "data[12]_connector_guid",
+            "bundle_id": "data[12]_bundle_id",
+            "group_guids": [
+                "data[12]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[12]_links_computer",
+                "trajectory": "data[12]_links_trajectory",
+                "group": "data[12]_links_group"
+            },
+            "cdhash": "data[12]_cdhash",
+            "timestamp": "data[12]_timestamp",
+            "timestamp_nanoseconds": "data[12]_timestamp_nanoseconds",
+            "date": "data[12]_date",
+            "query_type": "data[12]_query_type",
+            "network_info": {
+                "dirty_url": "data[12]_network_info_dirty_url",
+                "remote_ip": "data[12]_network_info_remote_ip",
+                "remote_port": "data[12]_network_info_remote_port",
+                "local_ip": "data[12]_network_info_local_ip",
+                "local_port": "data[12]_network_info_local_port",
+                "direction": "data[12]_network_info_direction",
+                "protocol": "data[12]_network_info_protocol"
+            },
+            "ver": "data[12]_ver"
+        },
+        {
+            "connector_guid": "data[13]_connector_guid",
+            "bundle_id": "data[13]_bundle_id",
+            "group_guids": [
+                "data[13]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[13]_links_computer",
+                "trajectory": "data[13]_links_trajectory",
+                "group": "data[13]_links_group"
+            },
+            "cdhash": "data[13]_cdhash",
+            "timestamp": "data[13]_timestamp",
+            "timestamp_nanoseconds": "data[13]_timestamp_nanoseconds",
+            "date": "data[13]_date",
+            "query_type": "data[13]_query_type",
+            "network_info": {
+                "dirty_url": "data[13]_network_info_dirty_url",
+                "remote_ip": "data[13]_network_info_remote_ip",
+                "remote_port": "data[13]_network_info_remote_port",
+                "local_ip": "data[13]_network_info_local_ip",
+                "local_port": "data[13]_network_info_local_port",
+                "direction": "data[13]_network_info_direction",
+                "protocol": "data[13]_network_info_protocol"
+            },
+            "ver": "data[13]_ver"
+        },
+        {
+            "connector_guid": "data[14]_connector_guid",
+            "bundle_id": "data[14]_bundle_id",
+            "group_guids": [
+                "data[14]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[14]_links_computer",
+                "trajectory": "data[14]_links_trajectory",
+                "group": "data[14]_links_group"
+            },
+            "cdhash": "data[14]_cdhash",
+            "timestamp": "data[14]_timestamp",
+            "timestamp_nanoseconds": "data[14]_timestamp_nanoseconds",
+            "date": "data[14]_date",
+            "query_type": "data[14]_query_type",
+            "network_info": {
+                "dirty_url": "data[14]_network_info_dirty_url",
+                "remote_ip": "data[14]_network_info_remote_ip",
+                "remote_port": "data[14]_network_info_remote_port",
+                "local_ip": "data[14]_network_info_local_ip",
+                "local_port": "data[14]_network_info_local_port",
+                "direction": "data[14]_network_info_direction",
+                "protocol": "data[14]_network_info_protocol"
+            },
+            "ver": "data[14]_ver"
+        },
+        {
+            "connector_guid": "data[15]_connector_guid",
+            "bundle_id": "data[15]_bundle_id",
+            "group_guids": [
+                "data[15]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[15]_links_computer",
+                "trajectory": "data[15]_links_trajectory",
+                "group": "data[15]_links_group"
+            },
+            "cdhash": "data[15]_cdhash",
+            "timestamp": "data[15]_timestamp",
+            "timestamp_nanoseconds": "data[15]_timestamp_nanoseconds",
+            "date": "data[15]_date",
+            "query_type": "data[15]_query_type",
+            "network_info": {
+                "dirty_url": "data[15]_network_info_dirty_url",
+                "remote_ip": "data[15]_network_info_remote_ip",
+                "remote_port": "data[15]_network_info_remote_port",
+                "local_ip": "data[15]_network_info_local_ip",
+                "local_port": "data[15]_network_info_local_port",
+                "direction": "data[15]_network_info_direction",
+                "protocol": "data[15]_network_info_protocol"
+            },
+            "ver": "data[15]_ver"
+        },
+        {
+            "connector_guid": "data[16]_connector_guid",
+            "bundle_id": "data[16]_bundle_id",
+            "group_guids": [
+                "data[16]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[16]_links_computer",
+                "trajectory": "data[16]_links_trajectory",
+                "group": "data[16]_links_group"
+            },
+            "cdhash": "data[16]_cdhash",
+            "timestamp": "data[16]_timestamp",
+            "timestamp_nanoseconds": "data[16]_timestamp_nanoseconds",
+            "date": "data[16]_date",
+            "query_type": "data[16]_query_type",
+            "network_info": {
+                "dirty_url": "data[16]_network_info_dirty_url",
+                "remote_ip": "data[16]_network_info_remote_ip",
+                "remote_port": "data[16]_network_info_remote_port",
+                "local_ip": "data[16]_network_info_local_ip",
+                "local_port": "data[16]_network_info_local_port",
+                "direction": "data[16]_network_info_direction",
+                "protocol": "data[16]_network_info_protocol"
+            },
+            "ver": "data[16]_ver"
+        },
+        {
+            "connector_guid": "data[17]_connector_guid",
+            "bundle_id": "data[17]_bundle_id",
+            "group_guids": [
+                "data[17]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[17]_links_computer",
+                "trajectory": "data[17]_links_trajectory",
+                "group": "data[17]_links_group"
+            },
+            "cdhash": "data[17]_cdhash",
+            "timestamp": "data[17]_timestamp",
+            "timestamp_nanoseconds": "data[17]_timestamp_nanoseconds",
+            "date": "data[17]_date",
+            "query_type": "data[17]_query_type",
+            "network_info": {
+                "dirty_url": "data[17]_network_info_dirty_url",
+                "remote_ip": "data[17]_network_info_remote_ip",
+                "remote_port": "data[17]_network_info_remote_port",
+                "local_ip": "data[17]_network_info_local_ip",
+                "local_port": "data[17]_network_info_local_port",
+                "direction": "data[17]_network_info_direction",
+                "protocol": "data[17]_network_info_protocol"
+            },
+            "ver": "data[17]_ver"
+        },
+        {
+            "connector_guid": "data[18]_connector_guid",
+            "bundle_id": "data[18]_bundle_id",
+            "group_guids": [
+                "data[18]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[18]_links_computer",
+                "trajectory": "data[18]_links_trajectory",
+                "group": "data[18]_links_group"
+            },
+            "cdhash": "data[18]_cdhash",
+            "timestamp": "data[18]_timestamp",
+            "timestamp_nanoseconds": "data[18]_timestamp_nanoseconds",
+            "date": "data[18]_date",
+            "query_type": "data[18]_query_type",
+            "network_info": {
+                "dirty_url": "data[18]_network_info_dirty_url",
+                "remote_ip": "data[18]_network_info_remote_ip",
+                "remote_port": "data[18]_network_info_remote_port",
+                "local_ip": "data[18]_network_info_local_ip",
+                "local_port": "data[18]_network_info_local_port",
+                "direction": "data[18]_network_info_direction",
+                "protocol": "data[18]_network_info_protocol"
+            },
+            "ver": "data[18]_ver"
+        },
+        {
+            "connector_guid": "data[19]_connector_guid",
+            "bundle_id": "data[19]_bundle_id",
+            "group_guids": [
+                "data[19]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[19]_links_computer",
+                "trajectory": "data[19]_links_trajectory",
+                "group": "data[19]_links_group"
+            },
+            "cdhash": "data[19]_cdhash",
+            "timestamp": "data[19]_timestamp",
+            "timestamp_nanoseconds": "data[19]_timestamp_nanoseconds",
+            "date": "data[19]_date",
+            "query_type": "data[19]_query_type",
+            "network_info": {
+                "dirty_url": "data[19]_network_info_dirty_url",
+                "remote_ip": "data[19]_network_info_remote_ip",
+                "remote_port": "data[19]_network_info_remote_port",
+                "local_ip": "data[19]_network_info_local_ip",
+                "local_port": "data[19]_network_info_local_port",
+                "direction": "data[19]_network_info_direction",
+                "protocol": "data[19]_network_info_protocol"
+            },
+            "ver": "data[19]_ver"
+        },
+        {
+            "connector_guid": "data[20]_connector_guid",
+            "bundle_id": "data[20]_bundle_id",
+            "group_guids": [
+                "data[20]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[20]_links_computer",
+                "trajectory": "data[20]_links_trajectory",
+                "group": "data[20]_links_group"
+            },
+            "cdhash": "data[20]_cdhash",
+            "timestamp": "data[20]_timestamp",
+            "timestamp_nanoseconds": "data[20]_timestamp_nanoseconds",
+            "date": "data[20]_date",
+            "query_type": "data[20]_query_type",
+            "network_info": {
+                "dirty_url": "data[20]_network_info_dirty_url",
+                "remote_ip": "data[20]_network_info_remote_ip",
+                "remote_port": "data[20]_network_info_remote_port",
+                "local_ip": "data[20]_network_info_local_ip",
+                "local_port": "data[20]_network_info_local_port",
+                "direction": "data[20]_network_info_direction",
+                "protocol": "data[20]_network_info_protocol"
+            },
+            "ver": "data[20]_ver"
+        },
+        {
+            "connector_guid": "data[21]_connector_guid",
+            "bundle_id": "data[21]_bundle_id",
+            "group_guids": [
+                "data[21]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[21]_links_computer",
+                "trajectory": "data[21]_links_trajectory",
+                "group": "data[21]_links_group"
+            },
+            "cdhash": "data[21]_cdhash",
+            "timestamp": "data[21]_timestamp",
+            "timestamp_nanoseconds": "data[21]_timestamp_nanoseconds",
+            "date": "data[21]_date",
+            "query_type": "data[21]_query_type",
+            "network_info": {
+                "dirty_url": "data[21]_network_info_dirty_url",
+                "remote_ip": "data[21]_network_info_remote_ip",
+                "remote_port": "data[21]_network_info_remote_port",
+                "local_ip": "data[21]_network_info_local_ip",
+                "local_port": "data[21]_network_info_local_port",
+                "direction": "data[21]_network_info_direction",
+                "protocol": "data[21]_network_info_protocol"
+            },
+            "ver": "data[21]_ver"
+        },
+        {
+            "connector_guid": "data[22]_connector_guid",
+            "bundle_id": "data[22]_bundle_id",
+            "group_guids": [
+                "data[22]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[22]_links_computer",
+                "trajectory": "data[22]_links_trajectory",
+                "group": "data[22]_links_group"
+            },
+            "cdhash": "data[22]_cdhash",
+            "timestamp": "data[22]_timestamp",
+            "timestamp_nanoseconds": "data[22]_timestamp_nanoseconds",
+            "date": "data[22]_date",
+            "query_type": "data[22]_query_type",
+            "network_info": {
+                "dirty_url": "data[22]_network_info_dirty_url",
+                "remote_ip": "data[22]_network_info_remote_ip",
+                "remote_port": "data[22]_network_info_remote_port",
+                "local_ip": "data[22]_network_info_local_ip",
+                "local_port": "data[22]_network_info_local_port",
+                "direction": "data[22]_network_info_direction",
+                "protocol": "data[22]_network_info_protocol"
+            },
+            "ver": "data[22]_ver"
+        },
+        {
+            "connector_guid": "data[23]_connector_guid",
+            "bundle_id": "data[23]_bundle_id",
+            "group_guids": [
+                "data[23]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[23]_links_computer",
+                "trajectory": "data[23]_links_trajectory",
+                "group": "data[23]_links_group"
+            },
+            "cdhash": "data[23]_cdhash",
+            "timestamp": "data[23]_timestamp",
+            "timestamp_nanoseconds": "data[23]_timestamp_nanoseconds",
+            "date": "data[23]_date",
+            "query_type": "data[23]_query_type",
+            "network_info": {
+                "dirty_url": "data[23]_network_info_dirty_url",
+                "remote_ip": "data[23]_network_info_remote_ip",
+                "remote_port": "data[23]_network_info_remote_port",
+                "local_ip": "data[23]_network_info_local_ip",
+                "local_port": "data[23]_network_info_local_port",
+                "direction": "data[23]_network_info_direction",
+                "protocol": "data[23]_network_info_protocol"
+            },
+            "ver": "data[23]_ver"
+        },
+        {
+            "connector_guid": "data[24]_connector_guid",
+            "bundle_id": "data[24]_bundle_id",
+            "group_guids": [
+                "data[24]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[24]_links_computer",
+                "trajectory": "data[24]_links_trajectory",
+                "group": "data[24]_links_group"
+            },
+            "cdhash": "data[24]_cdhash",
+            "timestamp": "data[24]_timestamp",
+            "timestamp_nanoseconds": "data[24]_timestamp_nanoseconds",
+            "date": "data[24]_date",
+            "query_type": "data[24]_query_type",
+            "network_info": {
+                "dirty_url": "data[24]_network_info_dirty_url",
+                "remote_ip": "data[24]_network_info_remote_ip",
+                "remote_port": "data[24]_network_info_remote_port",
+                "local_ip": "data[24]_network_info_local_ip",
+                "local_port": "data[24]_network_info_local_port",
+                "direction": "data[24]_network_info_direction",
+                "protocol": "data[24]_network_info_protocol"
+            },
+            "ver": "data[24]_ver"
+        },
+        {
+            "connector_guid": "data[25]_connector_guid",
+            "bundle_id": "data[25]_bundle_id",
+            "group_guids": [
+                "data[25]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[25]_links_computer",
+                "trajectory": "data[25]_links_trajectory",
+                "group": "data[25]_links_group"
+            },
+            "cdhash": "data[25]_cdhash",
+            "timestamp": "data[25]_timestamp",
+            "timestamp_nanoseconds": "data[25]_timestamp_nanoseconds",
+            "date": "data[25]_date",
+            "query_type": "data[25]_query_type",
+            "network_info": {
+                "dirty_url": "data[25]_network_info_dirty_url",
+                "remote_ip": "data[25]_network_info_remote_ip",
+                "remote_port": "data[25]_network_info_remote_port",
+                "local_ip": "data[25]_network_info_local_ip",
+                "local_port": "data[25]_network_info_local_port",
+                "direction": "data[25]_network_info_direction",
+                "protocol": "data[25]_network_info_protocol"
+            },
+            "ver": "data[25]_ver"
+        },
+        {
+            "connector_guid": "data[26]_connector_guid",
+            "bundle_id": "data[26]_bundle_id",
+            "group_guids": [
+                "data[26]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[26]_links_computer",
+                "trajectory": "data[26]_links_trajectory",
+                "group": "data[26]_links_group"
+            },
+            "cdhash": "data[26]_cdhash",
+            "timestamp": "data[26]_timestamp",
+            "timestamp_nanoseconds": "data[26]_timestamp_nanoseconds",
+            "date": "data[26]_date",
+            "query_type": "data[26]_query_type",
+            "network_info": {
+                "dirty_url": "data[26]_network_info_dirty_url",
+                "remote_ip": "data[26]_network_info_remote_ip",
+                "remote_port": "data[26]_network_info_remote_port",
+                "local_ip": "data[26]_network_info_local_ip",
+                "local_port": "data[26]_network_info_local_port",
+                "direction": "data[26]_network_info_direction",
+                "protocol": "data[26]_network_info_protocol"
+            },
+            "ver": "data[26]_ver"
+        },
+        {
+            "connector_guid": "data[27]_connector_guid",
+            "bundle_id": "data[27]_bundle_id",
+            "group_guids": [
+                "data[27]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[27]_links_computer",
+                "trajectory": "data[27]_links_trajectory",
+                "group": "data[27]_links_group"
+            },
+            "cdhash": "data[27]_cdhash",
+            "timestamp": "data[27]_timestamp",
+            "timestamp_nanoseconds": "data[27]_timestamp_nanoseconds",
+            "date": "data[27]_date",
+            "query_type": "data[27]_query_type",
+            "network_info": {
+                "dirty_url": "data[27]_network_info_dirty_url",
+                "remote_ip": "data[27]_network_info_remote_ip",
+                "remote_port": "data[27]_network_info_remote_port",
+                "local_ip": "data[27]_network_info_local_ip",
+                "local_port": "data[27]_network_info_local_port",
+                "direction": "data[27]_network_info_direction",
+                "protocol": "data[27]_network_info_protocol"
+            },
+            "ver": "data[27]_ver"
+        },
+        {
+            "connector_guid": "data[28]_connector_guid",
+            "bundle_id": "data[28]_bundle_id",
+            "group_guids": [
+                "data[28]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[28]_links_computer",
+                "trajectory": "data[28]_links_trajectory",
+                "group": "data[28]_links_group"
+            },
+            "cdhash": "data[28]_cdhash",
+            "timestamp": "data[28]_timestamp",
+            "timestamp_nanoseconds": "data[28]_timestamp_nanoseconds",
+            "date": "data[28]_date",
+            "query_type": "data[28]_query_type",
+            "network_info": {
+                "dirty_url": "data[28]_network_info_dirty_url",
+                "remote_ip": "data[28]_network_info_remote_ip",
+                "remote_port": "data[28]_network_info_remote_port",
+                "local_ip": "data[28]_network_info_local_ip",
+                "local_port": "data[28]_network_info_local_port",
+                "direction": "data[28]_network_info_direction",
+                "protocol": "data[28]_network_info_protocol"
+            },
+            "ver": "data[28]_ver"
+        },
+        {
+            "connector_guid": "data[29]_connector_guid",
+            "bundle_id": "data[29]_bundle_id",
+            "group_guids": [
+                "data[29]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[29]_links_computer",
+                "trajectory": "data[29]_links_trajectory",
+                "group": "data[29]_links_group"
+            },
+            "cdhash": "data[29]_cdhash",
+            "timestamp": "data[29]_timestamp",
+            "timestamp_nanoseconds": "data[29]_timestamp_nanoseconds",
+            "date": "data[29]_date",
+            "query_type": "data[29]_query_type",
+            "network_info": {
+                "dirty_url": "data[29]_network_info_dirty_url",
+                "remote_ip": "data[29]_network_info_remote_ip",
+                "remote_port": "data[29]_network_info_remote_port",
+                "local_ip": "data[29]_network_info_local_ip",
+                "local_port": "data[29]_network_info_local_port",
+                "direction": "data[29]_network_info_direction",
+                "protocol": "data[29]_network_info_protocol"
+            },
+            "ver": "data[29]_ver"
+        },
+        {
+            "connector_guid": "data[30]_connector_guid",
+            "bundle_id": "data[30]_bundle_id",
+            "group_guids": [
+                "data[30]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[30]_links_computer",
+                "trajectory": "data[30]_links_trajectory",
+                "group": "data[30]_links_group"
+            },
+            "cdhash": "data[30]_cdhash",
+            "timestamp": "data[30]_timestamp",
+            "timestamp_nanoseconds": "data[30]_timestamp_nanoseconds",
+            "date": "data[30]_date",
+            "query_type": "data[30]_query_type",
+            "network_info": {
+                "dirty_url": "data[30]_network_info_dirty_url",
+                "remote_ip": "data[30]_network_info_remote_ip",
+                "remote_port": "data[30]_network_info_remote_port",
+                "local_ip": "data[30]_network_info_local_ip",
+                "local_port": "data[30]_network_info_local_port",
+                "direction": "data[30]_network_info_direction",
+                "protocol": "data[30]_network_info_protocol"
+            },
+            "ver": "data[30]_ver"
+        },
+        {
+            "connector_guid": "data[31]_connector_guid",
+            "bundle_id": "data[31]_bundle_id",
+            "group_guids": [
+                "data[31]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[31]_links_computer",
+                "trajectory": "data[31]_links_trajectory",
+                "group": "data[31]_links_group"
+            },
+            "cdhash": "data[31]_cdhash",
+            "timestamp": "data[31]_timestamp",
+            "timestamp_nanoseconds": "data[31]_timestamp_nanoseconds",
+            "date": "data[31]_date",
+            "query_type": "data[31]_query_type",
+            "network_info": {
+                "dirty_url": "data[31]_network_info_dirty_url",
+                "remote_ip": "data[31]_network_info_remote_ip",
+                "remote_port": "data[31]_network_info_remote_port",
+                "local_ip": "data[31]_network_info_local_ip",
+                "local_port": "data[31]_network_info_local_port",
+                "direction": "data[31]_network_info_direction",
+                "protocol": "data[31]_network_info_protocol"
+            },
+            "ver": "data[31]_ver"
+        },
+        {
+            "connector_guid": "data[32]_connector_guid",
+            "bundle_id": "data[32]_bundle_id",
+            "group_guids": [
+                "data[32]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[32]_links_computer",
+                "trajectory": "data[32]_links_trajectory",
+                "group": "data[32]_links_group"
+            },
+            "cdhash": "data[32]_cdhash",
+            "timestamp": "data[32]_timestamp",
+            "timestamp_nanoseconds": "data[32]_timestamp_nanoseconds",
+            "date": "data[32]_date",
+            "query_type": "data[32]_query_type",
+            "network_info": {
+                "dirty_url": "data[32]_network_info_dirty_url",
+                "remote_ip": "data[32]_network_info_remote_ip",
+                "remote_port": "data[32]_network_info_remote_port",
+                "local_ip": "data[32]_network_info_local_ip",
+                "local_port": "data[32]_network_info_local_port",
+                "direction": "data[32]_network_info_direction",
+                "protocol": "data[32]_network_info_protocol"
+            },
+            "ver": "data[32]_ver"
+        },
+        {
+            "connector_guid": "data[33]_connector_guid",
+            "bundle_id": "data[33]_bundle_id",
+            "group_guids": [
+                "data[33]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[33]_links_computer",
+                "trajectory": "data[33]_links_trajectory",
+                "group": "data[33]_links_group"
+            },
+            "cdhash": "data[33]_cdhash",
+            "timestamp": "data[33]_timestamp",
+            "timestamp_nanoseconds": "data[33]_timestamp_nanoseconds",
+            "date": "data[33]_date",
+            "query_type": "data[33]_query_type",
+            "network_info": {
+                "dirty_url": "data[33]_network_info_dirty_url",
+                "remote_ip": "data[33]_network_info_remote_ip",
+                "remote_port": "data[33]_network_info_remote_port",
+                "local_ip": "data[33]_network_info_local_ip",
+                "local_port": "data[33]_network_info_local_port",
+                "direction": "data[33]_network_info_direction",
+                "protocol": "data[33]_network_info_protocol"
+            },
+            "ver": "data[33]_ver"
+        },
+        {
+            "connector_guid": "data[34]_connector_guid",
+            "bundle_id": "data[34]_bundle_id",
+            "group_guids": [
+                "data[34]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[34]_links_computer",
+                "trajectory": "data[34]_links_trajectory",
+                "group": "data[34]_links_group"
+            },
+            "cdhash": "data[34]_cdhash",
+            "timestamp": "data[34]_timestamp",
+            "timestamp_nanoseconds": "data[34]_timestamp_nanoseconds",
+            "date": "data[34]_date",
+            "query_type": "data[34]_query_type",
+            "network_info": {
+                "dirty_url": "data[34]_network_info_dirty_url",
+                "remote_ip": "data[34]_network_info_remote_ip",
+                "remote_port": "data[34]_network_info_remote_port",
+                "local_ip": "data[34]_network_info_local_ip",
+                "local_port": "data[34]_network_info_local_port",
+                "direction": "data[34]_network_info_direction",
+                "protocol": "data[34]_network_info_protocol"
+            },
+            "ver": "data[34]_ver"
+        },
+        {
+            "connector_guid": "data[35]_connector_guid",
+            "bundle_id": "data[35]_bundle_id",
+            "group_guids": [
+                "data[35]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[35]_links_computer",
+                "trajectory": "data[35]_links_trajectory",
+                "group": "data[35]_links_group"
+            },
+            "cdhash": "data[35]_cdhash",
+            "timestamp": "data[35]_timestamp",
+            "timestamp_nanoseconds": "data[35]_timestamp_nanoseconds",
+            "date": "data[35]_date",
+            "query_type": "data[35]_query_type",
+            "network_info": {
+                "dirty_url": "data[35]_network_info_dirty_url",
+                "remote_ip": "data[35]_network_info_remote_ip",
+                "remote_port": "data[35]_network_info_remote_port",
+                "local_ip": "data[35]_network_info_local_ip",
+                "local_port": "data[35]_network_info_local_port",
+                "direction": "data[35]_network_info_direction",
+                "protocol": "data[35]_network_info_protocol"
+            },
+            "ver": "data[35]_ver"
+        },
+        {
+            "connector_guid": "data[36]_connector_guid",
+            "bundle_id": "data[36]_bundle_id",
+            "group_guids": [
+                "data[36]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[36]_links_computer",
+                "trajectory": "data[36]_links_trajectory",
+                "group": "data[36]_links_group"
+            },
+            "cdhash": "data[36]_cdhash",
+            "timestamp": "data[36]_timestamp",
+            "timestamp_nanoseconds": "data[36]_timestamp_nanoseconds",
+            "date": "data[36]_date",
+            "query_type": "data[36]_query_type",
+            "network_info": {
+                "dirty_url": "data[36]_network_info_dirty_url",
+                "remote_ip": "data[36]_network_info_remote_ip",
+                "remote_port": "data[36]_network_info_remote_port",
+                "local_ip": "data[36]_network_info_local_ip",
+                "local_port": "data[36]_network_info_local_port",
+                "direction": "data[36]_network_info_direction",
+                "protocol": "data[36]_network_info_protocol"
+            },
+            "ver": "data[36]_ver"
+        },
+        {
+            "connector_guid": "data[37]_connector_guid",
+            "bundle_id": "data[37]_bundle_id",
+            "group_guids": [
+                "data[37]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[37]_links_computer",
+                "trajectory": "data[37]_links_trajectory",
+                "group": "data[37]_links_group"
+            },
+            "cdhash": "data[37]_cdhash",
+            "timestamp": "data[37]_timestamp",
+            "timestamp_nanoseconds": "data[37]_timestamp_nanoseconds",
+            "date": "data[37]_date",
+            "query_type": "data[37]_query_type",
+            "network_info": {
+                "dirty_url": "data[37]_network_info_dirty_url",
+                "remote_ip": "data[37]_network_info_remote_ip",
+                "remote_port": "data[37]_network_info_remote_port",
+                "local_ip": "data[37]_network_info_local_ip",
+                "local_port": "data[37]_network_info_local_port",
+                "direction": "data[37]_network_info_direction",
+                "protocol": "data[37]_network_info_protocol"
+            },
+            "ver": "data[37]_ver"
+        },
+        {
+            "connector_guid": "data[38]_connector_guid",
+            "bundle_id": "data[38]_bundle_id",
+            "group_guids": [
+                "data[38]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[38]_links_computer",
+                "trajectory": "data[38]_links_trajectory",
+                "group": "data[38]_links_group"
+            },
+            "cdhash": "data[38]_cdhash",
+            "timestamp": "data[38]_timestamp",
+            "timestamp_nanoseconds": "data[38]_timestamp_nanoseconds",
+            "date": "data[38]_date",
+            "query_type": "data[38]_query_type",
+            "network_info": {
+                "dirty_url": "data[38]_network_info_dirty_url",
+                "remote_ip": "data[38]_network_info_remote_ip",
+                "remote_port": "data[38]_network_info_remote_port",
+                "local_ip": "data[38]_network_info_local_ip",
+                "local_port": "data[38]_network_info_local_port",
+                "direction": "data[38]_network_info_direction",
+                "protocol": "data[38]_network_info_protocol"
+            },
+            "ver": "data[38]_ver"
+        },
+        {
+            "connector_guid": "data[39]_connector_guid",
+            "bundle_id": "data[39]_bundle_id",
+            "group_guids": [
+                "data[39]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[39]_links_computer",
+                "trajectory": "data[39]_links_trajectory",
+                "group": "data[39]_links_group"
+            },
+            "cdhash": "data[39]_cdhash",
+            "timestamp": "data[39]_timestamp",
+            "timestamp_nanoseconds": "data[39]_timestamp_nanoseconds",
+            "date": "data[39]_date",
+            "query_type": "data[39]_query_type",
+            "network_info": {
+                "dirty_url": "data[39]_network_info_dirty_url",
+                "remote_ip": "data[39]_network_info_remote_ip",
+                "remote_port": "data[39]_network_info_remote_port",
+                "local_ip": "data[39]_network_info_local_ip",
+                "local_port": "data[39]_network_info_local_port",
+                "direction": "data[39]_network_info_direction",
+                "protocol": "data[39]_network_info_protocol"
+            },
+            "ver": "data[39]_ver"
+        },
+        {
+            "connector_guid": "data[40]_connector_guid",
+            "bundle_id": "data[40]_bundle_id",
+            "group_guids": [
+                "data[40]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[40]_links_computer",
+                "trajectory": "data[40]_links_trajectory",
+                "group": "data[40]_links_group"
+            },
+            "cdhash": "data[40]_cdhash",
+            "timestamp": "data[40]_timestamp",
+            "timestamp_nanoseconds": "data[40]_timestamp_nanoseconds",
+            "date": "data[40]_date",
+            "query_type": "data[40]_query_type",
+            "network_info": {
+                "dirty_url": "data[40]_network_info_dirty_url",
+                "remote_ip": "data[40]_network_info_remote_ip",
+                "remote_port": "data[40]_network_info_remote_port",
+                "local_ip": "data[40]_network_info_local_ip",
+                "local_port": "data[40]_network_info_local_port",
+                "direction": "data[40]_network_info_direction",
+                "protocol": "data[40]_network_info_protocol"
+            },
+            "ver": "data[40]_ver"
+        },
+        {
+            "connector_guid": "data[41]_connector_guid",
+            "bundle_id": "data[41]_bundle_id",
+            "group_guids": [
+                "data[41]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[41]_links_computer",
+                "trajectory": "data[41]_links_trajectory",
+                "group": "data[41]_links_group"
+            },
+            "cdhash": "data[41]_cdhash",
+            "timestamp": "data[41]_timestamp",
+            "timestamp_nanoseconds": "data[41]_timestamp_nanoseconds",
+            "date": "data[41]_date",
+            "query_type": "data[41]_query_type",
+            "network_info": {
+                "dirty_url": "data[41]_network_info_dirty_url",
+                "remote_ip": "data[41]_network_info_remote_ip",
+                "remote_port": "data[41]_network_info_remote_port",
+                "local_ip": "data[41]_network_info_local_ip",
+                "local_port": "data[41]_network_info_local_port",
+                "direction": "data[41]_network_info_direction",
+                "protocol": "data[41]_network_info_protocol"
+            },
+            "ver": "data[41]_ver"
+        },
+        {
+            "connector_guid": "data[42]_connector_guid",
+            "bundle_id": "data[42]_bundle_id",
+            "group_guids": [
+                "data[42]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[42]_links_computer",
+                "trajectory": "data[42]_links_trajectory",
+                "group": "data[42]_links_group"
+            },
+            "cdhash": "data[42]_cdhash",
+            "timestamp": "data[42]_timestamp",
+            "timestamp_nanoseconds": "data[42]_timestamp_nanoseconds",
+            "date": "data[42]_date",
+            "query_type": "data[42]_query_type",
+            "network_info": {
+                "dirty_url": "data[42]_network_info_dirty_url",
+                "remote_ip": "data[42]_network_info_remote_ip",
+                "remote_port": "data[42]_network_info_remote_port",
+                "local_ip": "data[42]_network_info_local_ip",
+                "local_port": "data[42]_network_info_local_port",
+                "direction": "data[42]_network_info_direction",
+                "protocol": "data[42]_network_info_protocol"
+            },
+            "ver": "data[42]_ver"
+        },
+        {
+            "connector_guid": "data[43]_connector_guid",
+            "bundle_id": "data[43]_bundle_id",
+            "group_guids": [
+                "data[43]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[43]_links_computer",
+                "trajectory": "data[43]_links_trajectory",
+                "group": "data[43]_links_group"
+            },
+            "cdhash": "data[43]_cdhash",
+            "timestamp": "data[43]_timestamp",
+            "timestamp_nanoseconds": "data[43]_timestamp_nanoseconds",
+            "date": "data[43]_date",
+            "query_type": "data[43]_query_type",
+            "network_info": {
+                "dirty_url": "data[43]_network_info_dirty_url",
+                "remote_ip": "data[43]_network_info_remote_ip",
+                "remote_port": "data[43]_network_info_remote_port",
+                "local_ip": "data[43]_network_info_local_ip",
+                "local_port": "data[43]_network_info_local_port",
+                "direction": "data[43]_network_info_direction",
+                "protocol": "data[43]_network_info_protocol"
+            },
+            "ver": "data[43]_ver"
+        },
+        {
+            "connector_guid": "data[44]_connector_guid",
+            "bundle_id": "data[44]_bundle_id",
+            "group_guids": [
+                "data[44]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[44]_links_computer",
+                "trajectory": "data[44]_links_trajectory",
+                "group": "data[44]_links_group"
+            },
+            "cdhash": "data[44]_cdhash",
+            "timestamp": "data[44]_timestamp",
+            "timestamp_nanoseconds": "data[44]_timestamp_nanoseconds",
+            "date": "data[44]_date",
+            "query_type": "data[44]_query_type",
+            "network_info": {
+                "dirty_url": "data[44]_network_info_dirty_url",
+                "remote_ip": "data[44]_network_info_remote_ip",
+                "remote_port": "data[44]_network_info_remote_port",
+                "local_ip": "data[44]_network_info_local_ip",
+                "local_port": "data[44]_network_info_local_port",
+                "direction": "data[44]_network_info_direction",
+                "protocol": "data[44]_network_info_protocol"
+            },
+            "ver": "data[44]_ver"
+        },
+        {
+            "connector_guid": "data[45]_connector_guid",
+            "bundle_id": "data[45]_bundle_id",
+            "group_guids": [
+                "data[45]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[45]_links_computer",
+                "trajectory": "data[45]_links_trajectory",
+                "group": "data[45]_links_group"
+            },
+            "cdhash": "data[45]_cdhash",
+            "timestamp": "data[45]_timestamp",
+            "timestamp_nanoseconds": "data[45]_timestamp_nanoseconds",
+            "date": "data[45]_date",
+            "query_type": "data[45]_query_type",
+            "network_info": {
+                "dirty_url": "data[45]_network_info_dirty_url",
+                "remote_ip": "data[45]_network_info_remote_ip",
+                "remote_port": "data[45]_network_info_remote_port",
+                "local_ip": "data[45]_network_info_local_ip",
+                "local_port": "data[45]_network_info_local_port",
+                "direction": "data[45]_network_info_direction",
+                "protocol": "data[45]_network_info_protocol"
+            },
+            "ver": "data[45]_ver"
+        },
+        {
+            "connector_guid": "data[46]_connector_guid",
+            "bundle_id": "data[46]_bundle_id",
+            "group_guids": [
+                "data[46]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[46]_links_computer",
+                "trajectory": "data[46]_links_trajectory",
+                "group": "data[46]_links_group"
+            },
+            "cdhash": "data[46]_cdhash",
+            "timestamp": "data[46]_timestamp",
+            "timestamp_nanoseconds": "data[46]_timestamp_nanoseconds",
+            "date": "data[46]_date",
+            "query_type": "data[46]_query_type",
+            "network_info": {
+                "dirty_url": "data[46]_network_info_dirty_url",
+                "remote_ip": "data[46]_network_info_remote_ip",
+                "remote_port": "data[46]_network_info_remote_port",
+                "local_ip": "data[46]_network_info_local_ip",
+                "local_port": "data[46]_network_info_local_port",
+                "direction": "data[46]_network_info_direction",
+                "protocol": "data[46]_network_info_protocol"
+            },
+            "ver": "data[46]_ver"
+        },
+        {
+            "connector_guid": "data[47]_connector_guid",
+            "bundle_id": "data[47]_bundle_id",
+            "group_guids": [
+                "data[47]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[47]_links_computer",
+                "trajectory": "data[47]_links_trajectory",
+                "group": "data[47]_links_group"
+            },
+            "cdhash": "data[47]_cdhash",
+            "timestamp": "data[47]_timestamp",
+            "timestamp_nanoseconds": "data[47]_timestamp_nanoseconds",
+            "date": "data[47]_date",
+            "query_type": "data[47]_query_type",
+            "network_info": {
+                "dirty_url": "data[47]_network_info_dirty_url",
+                "remote_ip": "data[47]_network_info_remote_ip",
+                "remote_port": "data[47]_network_info_remote_port",
+                "local_ip": "data[47]_network_info_local_ip",
+                "local_port": "data[47]_network_info_local_port",
+                "direction": "data[47]_network_info_direction",
+                "protocol": "data[47]_network_info_protocol"
+            },
+            "ver": "data[47]_ver"
+        },
+        {
+            "connector_guid": "data[48]_connector_guid",
+            "bundle_id": "data[48]_bundle_id",
+            "group_guids": [
+                "data[48]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[48]_links_computer",
+                "trajectory": "data[48]_links_trajectory",
+                "group": "data[48]_links_group"
+            },
+            "cdhash": "data[48]_cdhash",
+            "timestamp": "data[48]_timestamp",
+            "timestamp_nanoseconds": "data[48]_timestamp_nanoseconds",
+            "date": "data[48]_date",
+            "query_type": "data[48]_query_type",
+            "network_info": {
+                "dirty_url": "data[48]_network_info_dirty_url",
+                "remote_ip": "data[48]_network_info_remote_ip",
+                "remote_port": "data[48]_network_info_remote_port",
+                "local_ip": "data[48]_network_info_local_ip",
+                "local_port": "data[48]_network_info_local_port",
+                "direction": "data[48]_network_info_direction",
+                "protocol": "data[48]_network_info_protocol"
+            },
+            "ver": "data[48]_ver"
+        },
+        {
+            "connector_guid": "data[49]_connector_guid",
+            "bundle_id": "data[49]_bundle_id",
+            "group_guids": [
+                "data[49]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[49]_links_computer",
+                "trajectory": "data[49]_links_trajectory",
+                "group": "data[49]_links_group"
+            },
+            "cdhash": "data[49]_cdhash",
+            "timestamp": "data[49]_timestamp",
+            "timestamp_nanoseconds": "data[49]_timestamp_nanoseconds",
+            "date": "data[49]_date",
+            "query_type": "data[49]_query_type",
+            "network_info": {
+                "dirty_url": "data[49]_network_info_dirty_url",
+                "remote_ip": "data[49]_network_info_remote_ip",
+                "remote_port": "data[49]_network_info_remote_port",
+                "local_ip": "data[49]_network_info_local_ip",
+                "local_port": "data[49]_network_info_local_port",
+                "direction": "data[49]_network_info_direction",
+                "protocol": "data[49]_network_info_protocol"
+            },
+            "ver": "data[49]_ver"
+        },
+        {
+            "connector_guid": "data[50]_connector_guid",
+            "bundle_id": "data[50]_bundle_id",
+            "group_guids": [
+                "data[50]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[50]_links_computer",
+                "trajectory": "data[50]_links_trajectory",
+                "group": "data[50]_links_group"
+            },
+            "cdhash": "data[50]_cdhash",
+            "timestamp": "data[50]_timestamp",
+            "timestamp_nanoseconds": "data[50]_timestamp_nanoseconds",
+            "date": "data[50]_date",
+            "query_type": "data[50]_query_type",
+            "network_info": {
+                "dirty_url": "data[50]_network_info_dirty_url",
+                "remote_ip": "data[50]_network_info_remote_ip",
+                "remote_port": "data[50]_network_info_remote_port",
+                "local_ip": "data[50]_network_info_local_ip",
+                "local_port": "data[50]_network_info_local_port",
+                "direction": "data[50]_network_info_direction",
+                "protocol": "data[50]_network_info_protocol"
+            },
+            "ver": "data[50]_ver"
+        },
+        {
+            "connector_guid": "data[51]_connector_guid",
+            "bundle_id": "data[51]_bundle_id",
+            "group_guids": [
+                "data[51]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[51]_links_computer",
+                "trajectory": "data[51]_links_trajectory",
+                "group": "data[51]_links_group"
+            },
+            "cdhash": "data[51]_cdhash",
+            "timestamp": "data[51]_timestamp",
+            "timestamp_nanoseconds": "data[51]_timestamp_nanoseconds",
+            "date": "data[51]_date",
+            "query_type": "data[51]_query_type",
+            "network_info": {
+                "dirty_url": "data[51]_network_info_dirty_url",
+                "remote_ip": "data[51]_network_info_remote_ip",
+                "remote_port": "data[51]_network_info_remote_port",
+                "local_ip": "data[51]_network_info_local_ip",
+                "local_port": "data[51]_network_info_local_port",
+                "direction": "data[51]_network_info_direction",
+                "protocol": "data[51]_network_info_protocol"
+            },
+            "ver": "data[51]_ver"
+        },
+        {
+            "connector_guid": "data[52]_connector_guid",
+            "bundle_id": "data[52]_bundle_id",
+            "group_guids": [
+                "data[52]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[52]_links_computer",
+                "trajectory": "data[52]_links_trajectory",
+                "group": "data[52]_links_group"
+            },
+            "cdhash": "data[52]_cdhash",
+            "timestamp": "data[52]_timestamp",
+            "timestamp_nanoseconds": "data[52]_timestamp_nanoseconds",
+            "date": "data[52]_date",
+            "query_type": "data[52]_query_type",
+            "network_info": {
+                "dirty_url": "data[52]_network_info_dirty_url",
+                "remote_ip": "data[52]_network_info_remote_ip",
+                "remote_port": "data[52]_network_info_remote_port",
+                "local_ip": "data[52]_network_info_local_ip",
+                "local_port": "data[52]_network_info_local_port",
+                "direction": "data[52]_network_info_direction",
+                "protocol": "data[52]_network_info_protocol"
+            },
+            "ver": "data[52]_ver"
+        },
+        {
+            "connector_guid": "data[53]_connector_guid",
+            "bundle_id": "data[53]_bundle_id",
+            "group_guids": [
+                "data[53]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[53]_links_computer",
+                "trajectory": "data[53]_links_trajectory",
+                "group": "data[53]_links_group"
+            },
+            "cdhash": "data[53]_cdhash",
+            "timestamp": "data[53]_timestamp",
+            "timestamp_nanoseconds": "data[53]_timestamp_nanoseconds",
+            "date": "data[53]_date",
+            "query_type": "data[53]_query_type",
+            "network_info": {
+                "dirty_url": "data[53]_network_info_dirty_url",
+                "remote_ip": "data[53]_network_info_remote_ip",
+                "remote_port": "data[53]_network_info_remote_port",
+                "local_ip": "data[53]_network_info_local_ip",
+                "local_port": "data[53]_network_info_local_port",
+                "direction": "data[53]_network_info_direction",
+                "protocol": "data[53]_network_info_protocol"
+            },
+            "ver": "data[53]_ver"
+        },
+        {
+            "connector_guid": "data[54]_connector_guid",
+            "bundle_id": "data[54]_bundle_id",
+            "group_guids": [
+                "data[54]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[54]_links_computer",
+                "trajectory": "data[54]_links_trajectory",
+                "group": "data[54]_links_group"
+            },
+            "cdhash": "data[54]_cdhash",
+            "timestamp": "data[54]_timestamp",
+            "timestamp_nanoseconds": "data[54]_timestamp_nanoseconds",
+            "date": "data[54]_date",
+            "query_type": "data[54]_query_type",
+            "network_info": {
+                "dirty_url": "data[54]_network_info_dirty_url",
+                "remote_ip": "data[54]_network_info_remote_ip",
+                "remote_port": "data[54]_network_info_remote_port",
+                "local_ip": "data[54]_network_info_local_ip",
+                "local_port": "data[54]_network_info_local_port",
+                "direction": "data[54]_network_info_direction",
+                "protocol": "data[54]_network_info_protocol"
+            },
+            "ver": "data[54]_ver"
+        },
+        {
+            "connector_guid": "data[55]_connector_guid",
+            "bundle_id": "data[55]_bundle_id",
+            "group_guids": [
+                "data[55]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[55]_links_computer",
+                "trajectory": "data[55]_links_trajectory",
+                "group": "data[55]_links_group"
+            },
+            "cdhash": "data[55]_cdhash",
+            "timestamp": "data[55]_timestamp",
+            "timestamp_nanoseconds": "data[55]_timestamp_nanoseconds",
+            "date": "data[55]_date",
+            "query_type": "data[55]_query_type",
+            "network_info": {
+                "dirty_url": "data[55]_network_info_dirty_url",
+                "remote_ip": "data[55]_network_info_remote_ip",
+                "remote_port": "data[55]_network_info_remote_port",
+                "local_ip": "data[55]_network_info_local_ip",
+                "local_port": "data[55]_network_info_local_port",
+                "direction": "data[55]_network_info_direction",
+                "protocol": "data[55]_network_info_protocol"
+            },
+            "ver": "data[55]_ver"
+        },
+        {
+            "connector_guid": "data[56]_connector_guid",
+            "bundle_id": "data[56]_bundle_id",
+            "group_guids": [
+                "data[56]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[56]_links_computer",
+                "trajectory": "data[56]_links_trajectory",
+                "group": "data[56]_links_group"
+            },
+            "cdhash": "data[56]_cdhash",
+            "timestamp": "data[56]_timestamp",
+            "timestamp_nanoseconds": "data[56]_timestamp_nanoseconds",
+            "date": "data[56]_date",
+            "query_type": "data[56]_query_type",
+            "network_info": {
+                "dirty_url": "data[56]_network_info_dirty_url",
+                "remote_ip": "data[56]_network_info_remote_ip",
+                "remote_port": "data[56]_network_info_remote_port",
+                "local_ip": "data[56]_network_info_local_ip",
+                "local_port": "data[56]_network_info_local_port",
+                "direction": "data[56]_network_info_direction",
+                "protocol": "data[56]_network_info_protocol"
+            },
+            "ver": "data[56]_ver"
+        },
+        {
+            "connector_guid": "data[57]_connector_guid",
+            "bundle_id": "data[57]_bundle_id",
+            "group_guids": [
+                "data[57]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[57]_links_computer",
+                "trajectory": "data[57]_links_trajectory",
+                "group": "data[57]_links_group"
+            },
+            "cdhash": "data[57]_cdhash",
+            "timestamp": "data[57]_timestamp",
+            "timestamp_nanoseconds": "data[57]_timestamp_nanoseconds",
+            "date": "data[57]_date",
+            "query_type": "data[57]_query_type",
+            "network_info": {
+                "dirty_url": "data[57]_network_info_dirty_url",
+                "remote_ip": "data[57]_network_info_remote_ip",
+                "remote_port": "data[57]_network_info_remote_port",
+                "local_ip": "data[57]_network_info_local_ip",
+                "local_port": "data[57]_network_info_local_port",
+                "direction": "data[57]_network_info_direction",
+                "protocol": "data[57]_network_info_protocol"
+            },
+            "ver": "data[57]_ver"
+        },
+        {
+            "connector_guid": "data[58]_connector_guid",
+            "bundle_id": "data[58]_bundle_id",
+            "group_guids": [
+                "data[58]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[58]_links_computer",
+                "trajectory": "data[58]_links_trajectory",
+                "group": "data[58]_links_group"
+            },
+            "cdhash": "data[58]_cdhash",
+            "timestamp": "data[58]_timestamp",
+            "timestamp_nanoseconds": "data[58]_timestamp_nanoseconds",
+            "date": "data[58]_date",
+            "query_type": "data[58]_query_type",
+            "network_info": {
+                "dirty_url": "data[58]_network_info_dirty_url",
+                "remote_ip": "data[58]_network_info_remote_ip",
+                "remote_port": "data[58]_network_info_remote_port",
+                "local_ip": "data[58]_network_info_local_ip",
+                "local_port": "data[58]_network_info_local_port",
+                "direction": "data[58]_network_info_direction",
+                "protocol": "data[58]_network_info_protocol"
+            },
+            "ver": "data[58]_ver"
+        },
+        {
+            "connector_guid": "data[59]_connector_guid",
+            "bundle_id": "data[59]_bundle_id",
+            "group_guids": [
+                "data[59]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[59]_links_computer",
+                "trajectory": "data[59]_links_trajectory",
+                "group": "data[59]_links_group"
+            },
+            "cdhash": "data[59]_cdhash",
+            "timestamp": "data[59]_timestamp",
+            "timestamp_nanoseconds": "data[59]_timestamp_nanoseconds",
+            "date": "data[59]_date",
+            "query_type": "data[59]_query_type",
+            "network_info": {
+                "dirty_url": "data[59]_network_info_dirty_url",
+                "remote_ip": "data[59]_network_info_remote_ip",
+                "remote_port": "data[59]_network_info_remote_port",
+                "local_ip": "data[59]_network_info_local_ip",
+                "local_port": "data[59]_network_info_local_port",
+                "direction": "data[59]_network_info_direction",
+                "protocol": "data[59]_network_info_protocol"
+            },
+            "ver": "data[59]_ver"
+        },
+        {
+            "connector_guid": "data[60]_connector_guid",
+            "bundle_id": "data[60]_bundle_id",
+            "group_guids": [
+                "data[60]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[60]_links_computer",
+                "trajectory": "data[60]_links_trajectory",
+                "group": "data[60]_links_group"
+            },
+            "cdhash": "data[60]_cdhash",
+            "timestamp": "data[60]_timestamp",
+            "timestamp_nanoseconds": "data[60]_timestamp_nanoseconds",
+            "date": "data[60]_date",
+            "query_type": "data[60]_query_type",
+            "network_info": {
+                "dirty_url": "data[60]_network_info_dirty_url",
+                "remote_ip": "data[60]_network_info_remote_ip",
+                "remote_port": "data[60]_network_info_remote_port",
+                "local_ip": "data[60]_network_info_local_ip",
+                "local_port": "data[60]_network_info_local_port",
+                "direction": "data[60]_network_info_direction",
+                "protocol": "data[60]_network_info_protocol"
+            },
+            "ver": "data[60]_ver"
+        },
+        {
+            "connector_guid": "data[61]_connector_guid",
+            "bundle_id": "data[61]_bundle_id",
+            "group_guids": [
+                "data[61]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[61]_links_computer",
+                "trajectory": "data[61]_links_trajectory",
+                "group": "data[61]_links_group"
+            },
+            "cdhash": "data[61]_cdhash",
+            "timestamp": "data[61]_timestamp",
+            "timestamp_nanoseconds": "data[61]_timestamp_nanoseconds",
+            "date": "data[61]_date",
+            "query_type": "data[61]_query_type",
+            "network_info": {
+                "dirty_url": "data[61]_network_info_dirty_url",
+                "remote_ip": "data[61]_network_info_remote_ip",
+                "remote_port": "data[61]_network_info_remote_port",
+                "local_ip": "data[61]_network_info_local_ip",
+                "local_port": "data[61]_network_info_local_port",
+                "direction": "data[61]_network_info_direction",
+                "protocol": "data[61]_network_info_protocol"
+            },
+            "ver": "data[61]_ver"
+        },
+        {
+            "connector_guid": "data[62]_connector_guid",
+            "bundle_id": "data[62]_bundle_id",
+            "group_guids": [
+                "data[62]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[62]_links_computer",
+                "trajectory": "data[62]_links_trajectory",
+                "group": "data[62]_links_group"
+            },
+            "cdhash": "data[62]_cdhash",
+            "timestamp": "data[62]_timestamp",
+            "timestamp_nanoseconds": "data[62]_timestamp_nanoseconds",
+            "date": "data[62]_date",
+            "query_type": "data[62]_query_type",
+            "network_info": {
+                "dirty_url": "data[62]_network_info_dirty_url",
+                "remote_ip": "data[62]_network_info_remote_ip",
+                "remote_port": "data[62]_network_info_remote_port",
+                "local_ip": "data[62]_network_info_local_ip",
+                "local_port": "data[62]_network_info_local_port",
+                "direction": "data[62]_network_info_direction",
+                "protocol": "data[62]_network_info_protocol"
+            },
+            "ver": "data[62]_ver"
+        },
+        {
+            "connector_guid": "data[63]_connector_guid",
+            "bundle_id": "data[63]_bundle_id",
+            "group_guids": [
+                "data[63]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[63]_links_computer",
+                "trajectory": "data[63]_links_trajectory",
+                "group": "data[63]_links_group"
+            },
+            "cdhash": "data[63]_cdhash",
+            "timestamp": "data[63]_timestamp",
+            "timestamp_nanoseconds": "data[63]_timestamp_nanoseconds",
+            "date": "data[63]_date",
+            "query_type": "data[63]_query_type",
+            "network_info": {
+                "dirty_url": "data[63]_network_info_dirty_url",
+                "remote_ip": "data[63]_network_info_remote_ip",
+                "remote_port": "data[63]_network_info_remote_port",
+                "local_ip": "data[63]_network_info_local_ip",
+                "local_port": "data[63]_network_info_local_port",
+                "direction": "data[63]_network_info_direction",
+                "protocol": "data[63]_network_info_protocol"
+            },
+            "ver": "data[63]_ver"
+        },
+        {
+            "connector_guid": "data[64]_connector_guid",
+            "bundle_id": "data[64]_bundle_id",
+            "group_guids": [
+                "data[64]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[64]_links_computer",
+                "trajectory": "data[64]_links_trajectory",
+                "group": "data[64]_links_group"
+            },
+            "cdhash": "data[64]_cdhash",
+            "timestamp": "data[64]_timestamp",
+            "timestamp_nanoseconds": "data[64]_timestamp_nanoseconds",
+            "date": "data[64]_date",
+            "query_type": "data[64]_query_type",
+            "network_info": {
+                "dirty_url": "data[64]_network_info_dirty_url",
+                "remote_ip": "data[64]_network_info_remote_ip",
+                "remote_port": "data[64]_network_info_remote_port",
+                "local_ip": "data[64]_network_info_local_ip",
+                "local_port": "data[64]_network_info_local_port",
+                "direction": "data[64]_network_info_direction",
+                "protocol": "data[64]_network_info_protocol"
+            },
+            "ver": "data[64]_ver"
+        },
+        {
+            "connector_guid": "data[65]_connector_guid",
+            "bundle_id": "data[65]_bundle_id",
+            "group_guids": [
+                "data[65]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[65]_links_computer",
+                "trajectory": "data[65]_links_trajectory",
+                "group": "data[65]_links_group"
+            },
+            "cdhash": "data[65]_cdhash",
+            "timestamp": "data[65]_timestamp",
+            "timestamp_nanoseconds": "data[65]_timestamp_nanoseconds",
+            "date": "data[65]_date",
+            "query_type": "data[65]_query_type",
+            "network_info": {
+                "dirty_url": "data[65]_network_info_dirty_url",
+                "remote_ip": "data[65]_network_info_remote_ip",
+                "remote_port": "data[65]_network_info_remote_port",
+                "local_ip": "data[65]_network_info_local_ip",
+                "local_port": "data[65]_network_info_local_port",
+                "direction": "data[65]_network_info_direction",
+                "protocol": "data[65]_network_info_protocol"
+            },
+            "ver": "data[65]_ver"
+        },
+        {
+            "connector_guid": "data[66]_connector_guid",
+            "bundle_id": "data[66]_bundle_id",
+            "group_guids": [
+                "data[66]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[66]_links_computer",
+                "trajectory": "data[66]_links_trajectory",
+                "group": "data[66]_links_group"
+            },
+            "cdhash": "data[66]_cdhash",
+            "timestamp": "data[66]_timestamp",
+            "timestamp_nanoseconds": "data[66]_timestamp_nanoseconds",
+            "date": "data[66]_date",
+            "query_type": "data[66]_query_type",
+            "network_info": {
+                "dirty_url": "data[66]_network_info_dirty_url",
+                "remote_ip": "data[66]_network_info_remote_ip",
+                "remote_port": "data[66]_network_info_remote_port",
+                "local_ip": "data[66]_network_info_local_ip",
+                "local_port": "data[66]_network_info_local_port",
+                "direction": "data[66]_network_info_direction",
+                "protocol": "data[66]_network_info_protocol"
+            },
+            "ver": "data[66]_ver"
+        },
+        {
+            "connector_guid": "data[67]_connector_guid",
+            "bundle_id": "data[67]_bundle_id",
+            "group_guids": [
+                "data[67]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[67]_links_computer",
+                "trajectory": "data[67]_links_trajectory",
+                "group": "data[67]_links_group"
+            },
+            "cdhash": "data[67]_cdhash",
+            "timestamp": "data[67]_timestamp",
+            "timestamp_nanoseconds": "data[67]_timestamp_nanoseconds",
+            "date": "data[67]_date",
+            "query_type": "data[67]_query_type",
+            "network_info": {
+                "dirty_url": "data[67]_network_info_dirty_url",
+                "remote_ip": "data[67]_network_info_remote_ip",
+                "remote_port": "data[67]_network_info_remote_port",
+                "local_ip": "data[67]_network_info_local_ip",
+                "local_port": "data[67]_network_info_local_port",
+                "direction": "data[67]_network_info_direction",
+                "protocol": "data[67]_network_info_protocol"
+            },
+            "ver": "data[67]_ver"
+        },
+        {
+            "connector_guid": "data[68]_connector_guid",
+            "bundle_id": "data[68]_bundle_id",
+            "group_guids": [
+                "data[68]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[68]_links_computer",
+                "trajectory": "data[68]_links_trajectory",
+                "group": "data[68]_links_group"
+            },
+            "cdhash": "data[68]_cdhash",
+            "timestamp": "data[68]_timestamp",
+            "timestamp_nanoseconds": "data[68]_timestamp_nanoseconds",
+            "date": "data[68]_date",
+            "query_type": "data[68]_query_type",
+            "network_info": {
+                "dirty_url": "data[68]_network_info_dirty_url",
+                "remote_ip": "data[68]_network_info_remote_ip",
+                "remote_port": "data[68]_network_info_remote_port",
+                "local_ip": "data[68]_network_info_local_ip",
+                "local_port": "data[68]_network_info_local_port",
+                "direction": "data[68]_network_info_direction",
+                "protocol": "data[68]_network_info_protocol"
+            },
+            "ver": "data[68]_ver"
+        },
+        {
+            "connector_guid": "data[69]_connector_guid",
+            "bundle_id": "data[69]_bundle_id",
+            "group_guids": [
+                "data[69]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[69]_links_computer",
+                "trajectory": "data[69]_links_trajectory",
+                "group": "data[69]_links_group"
+            },
+            "cdhash": "data[69]_cdhash",
+            "timestamp": "data[69]_timestamp",
+            "timestamp_nanoseconds": "data[69]_timestamp_nanoseconds",
+            "date": "data[69]_date",
+            "query_type": "data[69]_query_type",
+            "network_info": {
+                "dirty_url": "data[69]_network_info_dirty_url",
+                "remote_ip": "data[69]_network_info_remote_ip",
+                "remote_port": "data[69]_network_info_remote_port",
+                "local_ip": "data[69]_network_info_local_ip",
+                "local_port": "data[69]_network_info_local_port",
+                "direction": "data[69]_network_info_direction",
+                "protocol": "data[69]_network_info_protocol"
+            },
+            "ver": "data[69]_ver"
+        },
+        {
+            "connector_guid": "data[70]_connector_guid",
+            "bundle_id": "data[70]_bundle_id",
+            "group_guids": [
+                "data[70]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[70]_links_computer",
+                "trajectory": "data[70]_links_trajectory",
+                "group": "data[70]_links_group"
+            },
+            "cdhash": "data[70]_cdhash",
+            "timestamp": "data[70]_timestamp",
+            "timestamp_nanoseconds": "data[70]_timestamp_nanoseconds",
+            "date": "data[70]_date",
+            "query_type": "data[70]_query_type",
+            "network_info": {
+                "dirty_url": "data[70]_network_info_dirty_url",
+                "remote_ip": "data[70]_network_info_remote_ip",
+                "remote_port": "data[70]_network_info_remote_port",
+                "local_ip": "data[70]_network_info_local_ip",
+                "local_port": "data[70]_network_info_local_port",
+                "direction": "data[70]_network_info_direction",
+                "protocol": "data[70]_network_info_protocol"
+            },
+            "ver": "data[70]_ver"
+        },
+        {
+            "connector_guid": "data[71]_connector_guid",
+            "bundle_id": "data[71]_bundle_id",
+            "group_guids": [
+                "data[71]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[71]_links_computer",
+                "trajectory": "data[71]_links_trajectory",
+                "group": "data[71]_links_group"
+            },
+            "cdhash": "data[71]_cdhash",
+            "timestamp": "data[71]_timestamp",
+            "timestamp_nanoseconds": "data[71]_timestamp_nanoseconds",
+            "date": "data[71]_date",
+            "query_type": "data[71]_query_type",
+            "network_info": {
+                "dirty_url": "data[71]_network_info_dirty_url",
+                "remote_ip": "data[71]_network_info_remote_ip",
+                "remote_port": "data[71]_network_info_remote_port",
+                "local_ip": "data[71]_network_info_local_ip",
+                "local_port": "data[71]_network_info_local_port",
+                "direction": "data[71]_network_info_direction",
+                "protocol": "data[71]_network_info_protocol"
+            },
+            "ver": "data[71]_ver"
+        },
+        {
+            "connector_guid": "data[72]_connector_guid",
+            "bundle_id": "data[72]_bundle_id",
+            "group_guids": [
+                "data[72]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[72]_links_computer",
+                "trajectory": "data[72]_links_trajectory",
+                "group": "data[72]_links_group"
+            },
+            "cdhash": "data[72]_cdhash",
+            "timestamp": "data[72]_timestamp",
+            "timestamp_nanoseconds": "data[72]_timestamp_nanoseconds",
+            "date": "data[72]_date",
+            "query_type": "data[72]_query_type",
+            "network_info": {
+                "dirty_url": "data[72]_network_info_dirty_url",
+                "remote_ip": "data[72]_network_info_remote_ip",
+                "remote_port": "data[72]_network_info_remote_port",
+                "local_ip": "data[72]_network_info_local_ip",
+                "local_port": "data[72]_network_info_local_port",
+                "direction": "data[72]_network_info_direction",
+                "protocol": "data[72]_network_info_protocol"
+            },
+            "ver": "data[72]_ver"
+        },
+        {
+            "connector_guid": "data[73]_connector_guid",
+            "bundle_id": "data[73]_bundle_id",
+            "group_guids": [
+                "data[73]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[73]_links_computer",
+                "trajectory": "data[73]_links_trajectory",
+                "group": "data[73]_links_group"
+            },
+            "cdhash": "data[73]_cdhash",
+            "timestamp": "data[73]_timestamp",
+            "timestamp_nanoseconds": "data[73]_timestamp_nanoseconds",
+            "date": "data[73]_date",
+            "query_type": "data[73]_query_type",
+            "network_info": {
+                "dirty_url": "data[73]_network_info_dirty_url",
+                "remote_ip": "data[73]_network_info_remote_ip",
+                "remote_port": "data[73]_network_info_remote_port",
+                "local_ip": "data[73]_network_info_local_ip",
+                "local_port": "data[73]_network_info_local_port",
+                "direction": "data[73]_network_info_direction",
+                "protocol": "data[73]_network_info_protocol"
+            },
+            "ver": "data[73]_ver"
+        },
+        {
+            "connector_guid": "data[74]_connector_guid",
+            "bundle_id": "data[74]_bundle_id",
+            "group_guids": [
+                "data[74]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[74]_links_computer",
+                "trajectory": "data[74]_links_trajectory",
+                "group": "data[74]_links_group"
+            },
+            "cdhash": "data[74]_cdhash",
+            "timestamp": "data[74]_timestamp",
+            "timestamp_nanoseconds": "data[74]_timestamp_nanoseconds",
+            "date": "data[74]_date",
+            "query_type": "data[74]_query_type",
+            "network_info": {
+                "dirty_url": "data[74]_network_info_dirty_url",
+                "remote_ip": "data[74]_network_info_remote_ip",
+                "remote_port": "data[74]_network_info_remote_port",
+                "local_ip": "data[74]_network_info_local_ip",
+                "local_port": "data[74]_network_info_local_port",
+                "direction": "data[74]_network_info_direction",
+                "protocol": "data[74]_network_info_protocol"
+            },
+            "ver": "data[74]_ver"
+        },
+        {
+            "connector_guid": "data[75]_connector_guid",
+            "bundle_id": "data[75]_bundle_id",
+            "group_guids": [
+                "data[75]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[75]_links_computer",
+                "trajectory": "data[75]_links_trajectory",
+                "group": "data[75]_links_group"
+            },
+            "cdhash": "data[75]_cdhash",
+            "timestamp": "data[75]_timestamp",
+            "timestamp_nanoseconds": "data[75]_timestamp_nanoseconds",
+            "date": "data[75]_date",
+            "query_type": "data[75]_query_type",
+            "network_info": {
+                "dirty_url": "data[75]_network_info_dirty_url",
+                "remote_ip": "data[75]_network_info_remote_ip",
+                "remote_port": "data[75]_network_info_remote_port",
+                "local_ip": "data[75]_network_info_local_ip",
+                "local_port": "data[75]_network_info_local_port",
+                "direction": "data[75]_network_info_direction",
+                "protocol": "data[75]_network_info_protocol"
+            },
+            "ver": "data[75]_ver"
+        },
+        {
+            "connector_guid": "data[76]_connector_guid",
+            "bundle_id": "data[76]_bundle_id",
+            "group_guids": [
+                "data[76]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[76]_links_computer",
+                "trajectory": "data[76]_links_trajectory",
+                "group": "data[76]_links_group"
+            },
+            "cdhash": "data[76]_cdhash",
+            "timestamp": "data[76]_timestamp",
+            "timestamp_nanoseconds": "data[76]_timestamp_nanoseconds",
+            "date": "data[76]_date",
+            "query_type": "data[76]_query_type",
+            "network_info": {
+                "dirty_url": "data[76]_network_info_dirty_url",
+                "remote_ip": "data[76]_network_info_remote_ip",
+                "remote_port": "data[76]_network_info_remote_port",
+                "local_ip": "data[76]_network_info_local_ip",
+                "local_port": "data[76]_network_info_local_port",
+                "direction": "data[76]_network_info_direction",
+                "protocol": "data[76]_network_info_protocol"
+            },
+            "ver": "data[76]_ver"
+        },
+        {
+            "connector_guid": "data[77]_connector_guid",
+            "bundle_id": "data[77]_bundle_id",
+            "group_guids": [
+                "data[77]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[77]_links_computer",
+                "trajectory": "data[77]_links_trajectory",
+                "group": "data[77]_links_group"
+            },
+            "cdhash": "data[77]_cdhash",
+            "timestamp": "data[77]_timestamp",
+            "timestamp_nanoseconds": "data[77]_timestamp_nanoseconds",
+            "date": "data[77]_date",
+            "query_type": "data[77]_query_type",
+            "network_info": {
+                "dirty_url": "data[77]_network_info_dirty_url",
+                "remote_ip": "data[77]_network_info_remote_ip",
+                "remote_port": "data[77]_network_info_remote_port",
+                "local_ip": "data[77]_network_info_local_ip",
+                "local_port": "data[77]_network_info_local_port",
+                "direction": "data[77]_network_info_direction",
+                "protocol": "data[77]_network_info_protocol"
+            },
+            "ver": "data[77]_ver"
+        },
+        {
+            "connector_guid": "data[78]_connector_guid",
+            "bundle_id": "data[78]_bundle_id",
+            "group_guids": [
+                "data[78]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[78]_links_computer",
+                "trajectory": "data[78]_links_trajectory",
+                "group": "data[78]_links_group"
+            },
+            "cdhash": "data[78]_cdhash",
+            "timestamp": "data[78]_timestamp",
+            "timestamp_nanoseconds": "data[78]_timestamp_nanoseconds",
+            "date": "data[78]_date",
+            "query_type": "data[78]_query_type",
+            "network_info": {
+                "dirty_url": "data[78]_network_info_dirty_url",
+                "remote_ip": "data[78]_network_info_remote_ip",
+                "remote_port": "data[78]_network_info_remote_port",
+                "local_ip": "data[78]_network_info_local_ip",
+                "local_port": "data[78]_network_info_local_port",
+                "direction": "data[78]_network_info_direction",
+                "protocol": "data[78]_network_info_protocol"
+            },
+            "ver": "data[78]_ver"
+        },
+        {
+            "connector_guid": "data[79]_connector_guid",
+            "bundle_id": "data[79]_bundle_id",
+            "group_guids": [
+                "data[79]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[79]_links_computer",
+                "trajectory": "data[79]_links_trajectory",
+                "group": "data[79]_links_group"
+            },
+            "cdhash": "data[79]_cdhash",
+            "timestamp": "data[79]_timestamp",
+            "timestamp_nanoseconds": "data[79]_timestamp_nanoseconds",
+            "date": "data[79]_date",
+            "query_type": "data[79]_query_type",
+            "network_info": {
+                "dirty_url": "data[79]_network_info_dirty_url",
+                "remote_ip": "data[79]_network_info_remote_ip",
+                "remote_port": "data[79]_network_info_remote_port",
+                "local_ip": "data[79]_network_info_local_ip",
+                "local_port": "data[79]_network_info_local_port",
+                "direction": "data[79]_network_info_direction",
+                "protocol": "data[79]_network_info_protocol"
+            },
+            "ver": "data[79]_ver"
+        },
+        {
+            "connector_guid": "data[80]_connector_guid",
+            "bundle_id": "data[80]_bundle_id",
+            "group_guids": [
+                "data[80]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[80]_links_computer",
+                "trajectory": "data[80]_links_trajectory",
+                "group": "data[80]_links_group"
+            },
+            "cdhash": "data[80]_cdhash",
+            "timestamp": "data[80]_timestamp",
+            "timestamp_nanoseconds": "data[80]_timestamp_nanoseconds",
+            "date": "data[80]_date",
+            "query_type": "data[80]_query_type",
+            "network_info": {
+                "dirty_url": "data[80]_network_info_dirty_url",
+                "remote_ip": "data[80]_network_info_remote_ip",
+                "remote_port": "data[80]_network_info_remote_port",
+                "local_ip": "data[80]_network_info_local_ip",
+                "local_port": "data[80]_network_info_local_port",
+                "direction": "data[80]_network_info_direction",
+                "protocol": "data[80]_network_info_protocol"
+            },
+            "ver": "data[80]_ver"
+        },
+        {
+            "connector_guid": "data[81]_connector_guid",
+            "bundle_id": "data[81]_bundle_id",
+            "group_guids": [
+                "data[81]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[81]_links_computer",
+                "trajectory": "data[81]_links_trajectory",
+                "group": "data[81]_links_group"
+            },
+            "cdhash": "data[81]_cdhash",
+            "timestamp": "data[81]_timestamp",
+            "timestamp_nanoseconds": "data[81]_timestamp_nanoseconds",
+            "date": "data[81]_date",
+            "query_type": "data[81]_query_type",
+            "network_info": {
+                "dirty_url": "data[81]_network_info_dirty_url",
+                "remote_ip": "data[81]_network_info_remote_ip",
+                "remote_port": "data[81]_network_info_remote_port",
+                "local_ip": "data[81]_network_info_local_ip",
+                "local_port": "data[81]_network_info_local_port",
+                "direction": "data[81]_network_info_direction",
+                "protocol": "data[81]_network_info_protocol"
+            },
+            "ver": "data[81]_ver"
+        },
+        {
+            "connector_guid": "data[82]_connector_guid",
+            "bundle_id": "data[82]_bundle_id",
+            "group_guids": [
+                "data[82]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[82]_links_computer",
+                "trajectory": "data[82]_links_trajectory",
+                "group": "data[82]_links_group"
+            },
+            "cdhash": "data[82]_cdhash",
+            "timestamp": "data[82]_timestamp",
+            "timestamp_nanoseconds": "data[82]_timestamp_nanoseconds",
+            "date": "data[82]_date",
+            "query_type": "data[82]_query_type",
+            "network_info": {
+                "dirty_url": "data[82]_network_info_dirty_url",
+                "remote_ip": "data[82]_network_info_remote_ip",
+                "remote_port": "data[82]_network_info_remote_port",
+                "local_ip": "data[82]_network_info_local_ip",
+                "local_port": "data[82]_network_info_local_port",
+                "direction": "data[82]_network_info_direction",
+                "protocol": "data[82]_network_info_protocol"
+            },
+            "ver": "data[82]_ver"
+        },
+        {
+            "connector_guid": "data[83]_connector_guid",
+            "bundle_id": "data[83]_bundle_id",
+            "group_guids": [
+                "data[83]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[83]_links_computer",
+                "trajectory": "data[83]_links_trajectory",
+                "group": "data[83]_links_group"
+            },
+            "cdhash": "data[83]_cdhash",
+            "timestamp": "data[83]_timestamp",
+            "timestamp_nanoseconds": "data[83]_timestamp_nanoseconds",
+            "date": "data[83]_date",
+            "query_type": "data[83]_query_type",
+            "network_info": {
+                "dirty_url": "data[83]_network_info_dirty_url",
+                "remote_ip": "data[83]_network_info_remote_ip",
+                "remote_port": "data[83]_network_info_remote_port",
+                "local_ip": "data[83]_network_info_local_ip",
+                "local_port": "data[83]_network_info_local_port",
+                "direction": "data[83]_network_info_direction",
+                "protocol": "data[83]_network_info_protocol"
+            },
+            "ver": "data[83]_ver"
+        },
+        {
+            "connector_guid": "data[84]_connector_guid",
+            "bundle_id": "data[84]_bundle_id",
+            "group_guids": [
+                "data[84]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[84]_links_computer",
+                "trajectory": "data[84]_links_trajectory",
+                "group": "data[84]_links_group"
+            },
+            "cdhash": "data[84]_cdhash",
+            "timestamp": "data[84]_timestamp",
+            "timestamp_nanoseconds": "data[84]_timestamp_nanoseconds",
+            "date": "data[84]_date",
+            "query_type": "data[84]_query_type",
+            "network_info": {
+                "dirty_url": "data[84]_network_info_dirty_url",
+                "remote_ip": "data[84]_network_info_remote_ip",
+                "remote_port": "data[84]_network_info_remote_port",
+                "local_ip": "data[84]_network_info_local_ip",
+                "local_port": "data[84]_network_info_local_port",
+                "direction": "data[84]_network_info_direction",
+                "protocol": "data[84]_network_info_protocol"
+            },
+            "ver": "data[84]_ver"
+        },
+        {
+            "connector_guid": "data[85]_connector_guid",
+            "bundle_id": "data[85]_bundle_id",
+            "group_guids": [
+                "data[85]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[85]_links_computer",
+                "trajectory": "data[85]_links_trajectory",
+                "group": "data[85]_links_group"
+            },
+            "cdhash": "data[85]_cdhash",
+            "timestamp": "data[85]_timestamp",
+            "timestamp_nanoseconds": "data[85]_timestamp_nanoseconds",
+            "date": "data[85]_date",
+            "query_type": "data[85]_query_type",
+            "network_info": {
+                "dirty_url": "data[85]_network_info_dirty_url",
+                "remote_ip": "data[85]_network_info_remote_ip",
+                "remote_port": "data[85]_network_info_remote_port",
+                "local_ip": "data[85]_network_info_local_ip",
+                "local_port": "data[85]_network_info_local_port",
+                "direction": "data[85]_network_info_direction",
+                "protocol": "data[85]_network_info_protocol"
+            },
+            "ver": "data[85]_ver"
+        },
+        {
+            "connector_guid": "data[86]_connector_guid",
+            "bundle_id": "data[86]_bundle_id",
+            "group_guids": [
+                "data[86]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[86]_links_computer",
+                "trajectory": "data[86]_links_trajectory",
+                "group": "data[86]_links_group"
+            },
+            "cdhash": "data[86]_cdhash",
+            "timestamp": "data[86]_timestamp",
+            "timestamp_nanoseconds": "data[86]_timestamp_nanoseconds",
+            "date": "data[86]_date",
+            "query_type": "data[86]_query_type",
+            "network_info": {
+                "dirty_url": "data[86]_network_info_dirty_url",
+                "remote_ip": "data[86]_network_info_remote_ip",
+                "remote_port": "data[86]_network_info_remote_port",
+                "local_ip": "data[86]_network_info_local_ip",
+                "local_port": "data[86]_network_info_local_port",
+                "direction": "data[86]_network_info_direction",
+                "protocol": "data[86]_network_info_protocol"
+            },
+            "ver": "data[86]_ver"
+        },
+        {
+            "connector_guid": "data[87]_connector_guid",
+            "bundle_id": "data[87]_bundle_id",
+            "group_guids": [
+                "data[87]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[87]_links_computer",
+                "trajectory": "data[87]_links_trajectory",
+                "group": "data[87]_links_group"
+            },
+            "cdhash": "data[87]_cdhash",
+            "timestamp": "data[87]_timestamp",
+            "timestamp_nanoseconds": "data[87]_timestamp_nanoseconds",
+            "date": "data[87]_date",
+            "query_type": "data[87]_query_type",
+            "network_info": {
+                "dirty_url": "data[87]_network_info_dirty_url",
+                "remote_ip": "data[87]_network_info_remote_ip",
+                "remote_port": "data[87]_network_info_remote_port",
+                "local_ip": "data[87]_network_info_local_ip",
+                "local_port": "data[87]_network_info_local_port",
+                "direction": "data[87]_network_info_direction",
+                "protocol": "data[87]_network_info_protocol"
+            },
+            "ver": "data[87]_ver"
+        },
+        {
+            "connector_guid": "data[88]_connector_guid",
+            "bundle_id": "data[88]_bundle_id",
+            "group_guids": [
+                "data[88]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[88]_links_computer",
+                "trajectory": "data[88]_links_trajectory",
+                "group": "data[88]_links_group"
+            },
+            "cdhash": "data[88]_cdhash",
+            "timestamp": "data[88]_timestamp",
+            "timestamp_nanoseconds": "data[88]_timestamp_nanoseconds",
+            "date": "data[88]_date",
+            "query_type": "data[88]_query_type",
+            "network_info": {
+                "dirty_url": "data[88]_network_info_dirty_url",
+                "remote_ip": "data[88]_network_info_remote_ip",
+                "remote_port": "data[88]_network_info_remote_port",
+                "local_ip": "data[88]_network_info_local_ip",
+                "local_port": "data[88]_network_info_local_port",
+                "direction": "data[88]_network_info_direction",
+                "protocol": "data[88]_network_info_protocol"
+            },
+            "ver": "data[88]_ver"
+        },
+        {
+            "connector_guid": "data[89]_connector_guid",
+            "bundle_id": "data[89]_bundle_id",
+            "group_guids": [
+                "data[89]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[89]_links_computer",
+                "trajectory": "data[89]_links_trajectory",
+                "group": "data[89]_links_group"
+            },
+            "cdhash": "data[89]_cdhash",
+            "timestamp": "data[89]_timestamp",
+            "timestamp_nanoseconds": "data[89]_timestamp_nanoseconds",
+            "date": "data[89]_date",
+            "query_type": "data[89]_query_type",
+            "network_info": {
+                "dirty_url": "data[89]_network_info_dirty_url",
+                "remote_ip": "data[89]_network_info_remote_ip",
+                "remote_port": "data[89]_network_info_remote_port",
+                "local_ip": "data[89]_network_info_local_ip",
+                "local_port": "data[89]_network_info_local_port",
+                "direction": "data[89]_network_info_direction",
+                "protocol": "data[89]_network_info_protocol"
+            },
+            "ver": "data[89]_ver"
+        },
+        {
+            "connector_guid": "data[90]_connector_guid",
+            "bundle_id": "data[90]_bundle_id",
+            "group_guids": [
+                "data[90]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[90]_links_computer",
+                "trajectory": "data[90]_links_trajectory",
+                "group": "data[90]_links_group"
+            },
+            "cdhash": "data[90]_cdhash",
+            "timestamp": "data[90]_timestamp",
+            "timestamp_nanoseconds": "data[90]_timestamp_nanoseconds",
+            "date": "data[90]_date",
+            "query_type": "data[90]_query_type",
+            "network_info": {
+                "dirty_url": "data[90]_network_info_dirty_url",
+                "remote_ip": "data[90]_network_info_remote_ip",
+                "remote_port": "data[90]_network_info_remote_port",
+                "local_ip": "data[90]_network_info_local_ip",
+                "local_port": "data[90]_network_info_local_port",
+                "direction": "data[90]_network_info_direction",
+                "protocol": "data[90]_network_info_protocol"
+            },
+            "ver": "data[90]_ver"
+        },
+        {
+            "connector_guid": "data[91]_connector_guid",
+            "bundle_id": "data[91]_bundle_id",
+            "group_guids": [
+                "data[91]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[91]_links_computer",
+                "trajectory": "data[91]_links_trajectory",
+                "group": "data[91]_links_group"
+            },
+            "cdhash": "data[91]_cdhash",
+            "timestamp": "data[91]_timestamp",
+            "timestamp_nanoseconds": "data[91]_timestamp_nanoseconds",
+            "date": "data[91]_date",
+            "query_type": "data[91]_query_type",
+            "network_info": {
+                "dirty_url": "data[91]_network_info_dirty_url",
+                "remote_ip": "data[91]_network_info_remote_ip",
+                "remote_port": "data[91]_network_info_remote_port",
+                "local_ip": "data[91]_network_info_local_ip",
+                "local_port": "data[91]_network_info_local_port",
+                "direction": "data[91]_network_info_direction",
+                "protocol": "data[91]_network_info_protocol"
+            },
+            "ver": "data[91]_ver"
+        },
+        {
+            "connector_guid": "data[92]_connector_guid",
+            "bundle_id": "data[92]_bundle_id",
+            "group_guids": [
+                "data[92]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[92]_links_computer",
+                "trajectory": "data[92]_links_trajectory",
+                "group": "data[92]_links_group"
+            },
+            "cdhash": "data[92]_cdhash",
+            "timestamp": "data[92]_timestamp",
+            "timestamp_nanoseconds": "data[92]_timestamp_nanoseconds",
+            "date": "data[92]_date",
+            "query_type": "data[92]_query_type",
+            "network_info": {
+                "dirty_url": "data[92]_network_info_dirty_url",
+                "remote_ip": "data[92]_network_info_remote_ip",
+                "remote_port": "data[92]_network_info_remote_port",
+                "local_ip": "data[92]_network_info_local_ip",
+                "local_port": "data[92]_network_info_local_port",
+                "direction": "data[92]_network_info_direction",
+                "protocol": "data[92]_network_info_protocol"
+            },
+            "ver": "data[92]_ver"
+        },
+        {
+            "connector_guid": "data[93]_connector_guid",
+            "bundle_id": "data[93]_bundle_id",
+            "group_guids": [
+                "data[93]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[93]_links_computer",
+                "trajectory": "data[93]_links_trajectory",
+                "group": "data[93]_links_group"
+            },
+            "cdhash": "data[93]_cdhash",
+            "timestamp": "data[93]_timestamp",
+            "timestamp_nanoseconds": "data[93]_timestamp_nanoseconds",
+            "date": "data[93]_date",
+            "query_type": "data[93]_query_type",
+            "network_info": {
+                "dirty_url": "data[93]_network_info_dirty_url",
+                "remote_ip": "data[93]_network_info_remote_ip",
+                "remote_port": "data[93]_network_info_remote_port",
+                "local_ip": "data[93]_network_info_local_ip",
+                "local_port": "data[93]_network_info_local_port",
+                "direction": "data[93]_network_info_direction",
+                "protocol": "data[93]_network_info_protocol"
+            },
+            "ver": "data[93]_ver"
+        },
+        {
+            "connector_guid": "data[94]_connector_guid",
+            "bundle_id": "data[94]_bundle_id",
+            "group_guids": [
+                "data[94]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[94]_links_computer",
+                "trajectory": "data[94]_links_trajectory",
+                "group": "data[94]_links_group"
+            },
+            "cdhash": "data[94]_cdhash",
+            "timestamp": "data[94]_timestamp",
+            "timestamp_nanoseconds": "data[94]_timestamp_nanoseconds",
+            "date": "data[94]_date",
+            "query_type": "data[94]_query_type",
+            "network_info": {
+                "dirty_url": "data[94]_network_info_dirty_url",
+                "remote_ip": "data[94]_network_info_remote_ip",
+                "remote_port": "data[94]_network_info_remote_port",
+                "local_ip": "data[94]_network_info_local_ip",
+                "local_port": "data[94]_network_info_local_port",
+                "direction": "data[94]_network_info_direction",
+                "protocol": "data[94]_network_info_protocol"
+            },
+            "ver": "data[94]_ver"
+        },
+        {
+            "connector_guid": "data[95]_connector_guid",
+            "bundle_id": "data[95]_bundle_id",
+            "group_guids": [
+                "data[95]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[95]_links_computer",
+                "trajectory": "data[95]_links_trajectory",
+                "group": "data[95]_links_group"
+            },
+            "cdhash": "data[95]_cdhash",
+            "timestamp": "data[95]_timestamp",
+            "timestamp_nanoseconds": "data[95]_timestamp_nanoseconds",
+            "date": "data[95]_date",
+            "query_type": "data[95]_query_type",
+            "network_info": {
+                "dirty_url": "data[95]_network_info_dirty_url",
+                "remote_ip": "data[95]_network_info_remote_ip",
+                "remote_port": "data[95]_network_info_remote_port",
+                "local_ip": "data[95]_network_info_local_ip",
+                "local_port": "data[95]_network_info_local_port",
+                "direction": "data[95]_network_info_direction",
+                "protocol": "data[95]_network_info_protocol"
+            },
+            "ver": "data[95]_ver"
+        },
+        {
+            "connector_guid": "data[96]_connector_guid",
+            "bundle_id": "data[96]_bundle_id",
+            "group_guids": [
+                "data[96]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[96]_links_computer",
+                "trajectory": "data[96]_links_trajectory",
+                "group": "data[96]_links_group"
+            },
+            "cdhash": "data[96]_cdhash",
+            "timestamp": "data[96]_timestamp",
+            "timestamp_nanoseconds": "data[96]_timestamp_nanoseconds",
+            "date": "data[96]_date",
+            "query_type": "data[96]_query_type",
+            "network_info": {
+                "dirty_url": "data[96]_network_info_dirty_url",
+                "remote_ip": "data[96]_network_info_remote_ip",
+                "remote_port": "data[96]_network_info_remote_port",
+                "local_ip": "data[96]_network_info_local_ip",
+                "local_port": "data[96]_network_info_local_port",
+                "direction": "data[96]_network_info_direction",
+                "protocol": "data[96]_network_info_protocol"
+            },
+            "ver": "data[96]_ver"
+        },
+        {
+            "connector_guid": "data[97]_connector_guid",
+            "bundle_id": "data[97]_bundle_id",
+            "group_guids": [
+                "data[97]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[97]_links_computer",
+                "trajectory": "data[97]_links_trajectory",
+                "group": "data[97]_links_group"
+            },
+            "cdhash": "data[97]_cdhash",
+            "timestamp": "data[97]_timestamp",
+            "timestamp_nanoseconds": "data[97]_timestamp_nanoseconds",
+            "date": "data[97]_date",
+            "query_type": "data[97]_query_type",
+            "network_info": {
+                "dirty_url": "data[97]_network_info_dirty_url",
+                "remote_ip": "data[97]_network_info_remote_ip",
+                "remote_port": "data[97]_network_info_remote_port",
+                "local_ip": "data[97]_network_info_local_ip",
+                "local_port": "data[97]_network_info_local_port",
+                "direction": "data[97]_network_info_direction",
+                "protocol": "data[97]_network_info_protocol"
+            },
+            "ver": "data[97]_ver"
+        },
+        {
+            "connector_guid": "data[98]_connector_guid",
+            "bundle_id": "data[98]_bundle_id",
+            "group_guids": [
+                "data[98]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[98]_links_computer",
+                "trajectory": "data[98]_links_trajectory",
+                "group": "data[98]_links_group"
+            },
+            "cdhash": "data[98]_cdhash",
+            "timestamp": "data[98]_timestamp",
+            "timestamp_nanoseconds": "data[98]_timestamp_nanoseconds",
+            "date": "data[98]_date",
+            "query_type": "data[98]_query_type",
+            "network_info": {
+                "dirty_url": "data[98]_network_info_dirty_url",
+                "remote_ip": "data[98]_network_info_remote_ip",
+                "remote_port": "data[98]_network_info_remote_port",
+                "local_ip": "data[98]_network_info_local_ip",
+                "local_port": "data[98]_network_info_local_port",
+                "direction": "data[98]_network_info_direction",
+                "protocol": "data[98]_network_info_protocol"
+            },
+            "ver": "data[98]_ver"
+        },
+        {
+            "connector_guid": "data[99]_connector_guid",
+            "bundle_id": "data[99]_bundle_id",
+            "group_guids": [
+                "data[99]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[99]_links_computer",
+                "trajectory": "data[99]_links_trajectory",
+                "group": "data[99]_links_group"
+            },
+            "cdhash": "data[99]_cdhash",
+            "timestamp": "data[99]_timestamp",
+            "timestamp_nanoseconds": "data[99]_timestamp_nanoseconds",
+            "date": "data[99]_date",
+            "query_type": "data[99]_query_type",
+            "network_info": {
+                "dirty_url": "data[99]_network_info_dirty_url",
+                "remote_ip": "data[99]_network_info_remote_ip",
+                "remote_port": "data[99]_network_info_remote_port",
+                "local_ip": "data[99]_network_info_local_ip",
+                "local_port": "data[99]_network_info_local_port",
+                "direction": "data[99]_network_info_direction",
+                "protocol": "data[99]_network_info_protocol"
+            },
+            "ver": "data[99]_ver"
+        },
+        {
+            "connector_guid": "data[100]_connector_guid",
+            "bundle_id": "data[100]_bundle_id",
+            "group_guids": [
+                "data[100]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[100]_links_computer",
+                "trajectory": "data[100]_links_trajectory",
+                "group": "data[100]_links_group"
+            },
+            "cdhash": "data[100]_cdhash",
+            "timestamp": "data[100]_timestamp",
+            "timestamp_nanoseconds": "data[100]_timestamp_nanoseconds",
+            "date": "data[100]_date",
+            "query_type": "data[100]_query_type",
+            "network_info": {
+                "dirty_url": "data[100]_network_info_dirty_url",
+                "remote_ip": "data[100]_network_info_remote_ip",
+                "remote_port": "data[100]_network_info_remote_port",
+                "local_ip": "data[100]_network_info_local_ip",
+                "local_port": "data[100]_network_info_local_port",
+                "direction": "data[100]_network_info_direction",
+                "protocol": "data[100]_network_info_protocol"
+            },
+            "ver": "data[100]_ver"
+        },
+        {
+            "connector_guid": "data[101]_connector_guid",
+            "bundle_id": "data[101]_bundle_id",
+            "group_guids": [
+                "data[101]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[101]_links_computer",
+                "trajectory": "data[101]_links_trajectory",
+                "group": "data[101]_links_group"
+            },
+            "cdhash": "data[101]_cdhash",
+            "timestamp": "data[101]_timestamp",
+            "timestamp_nanoseconds": "data[101]_timestamp_nanoseconds",
+            "date": "data[101]_date",
+            "query_type": "data[101]_query_type",
+            "network_info": {
+                "dirty_url": "data[101]_network_info_dirty_url",
+                "remote_ip": "data[101]_network_info_remote_ip",
+                "remote_port": "data[101]_network_info_remote_port",
+                "local_ip": "data[101]_network_info_local_ip",
+                "local_port": "data[101]_network_info_local_port",
+                "direction": "data[101]_network_info_direction",
+                "protocol": "data[101]_network_info_protocol"
+            },
+            "ver": "data[101]_ver"
+        },
+        {
+            "connector_guid": "data[102]_connector_guid",
+            "bundle_id": "data[102]_bundle_id",
+            "group_guids": [
+                "data[102]_group_guids_0"
+            ],
+            "links": {
+                "computer": "data[102]_links_computer",
+                "trajectory": "data[102]_links_trajectory",
+                "group": "data[102]_links_group"
+            },
+            "cdhash": "data[102]_cdhash",
+            "timestamp": "data[102]_timestamp",
+            "timestamp_nanoseconds": "data[102]_timestamp_nanoseconds",
+            "date": "data[102]_date",
+            "query_type": "data[102]_query_type",
+            "network_info": {
+                "dirty_url": "data[102]_network_info_dirty_url",
+                "remote_ip": "data[102]_network_info_remote_ip",
+                "remote_port": "data[102]_network_info_remote_port",
+                "local_ip": "data[102]_network_info_local_ip",
+                "local_port": "data[102]_network_info_local_port",
+                "direction": "data[102]_network_info_direction",
+                "protocol": "data[102]_network_info_protocol"
+            },
+            "ver": "data[102]_ver"
+        }
+    ]
+}

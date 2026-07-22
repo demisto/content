@@ -1,0 +1,43 @@
+args:
+- default: true
+  description: The slack user to ask - can be either email or slack username
+  name: user
+  required: true
+- description: The message ask the user
+  name: message
+  required: true
+- description: First option for a user reply. "yes" is the default.
+  name: option1
+- description: Second option for the user reply. "no" is the default.
+  name: option2
+- description: Which task should we close with the reply. If none then no playbook tasks will be closed.
+  name: task
+- description: Tag to add on email reply entries
+  name: replyEntriesTag
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Indicates whether to use one-time entitlement or a persistent one
+  name: persistent
+  predefined:
+  - 'true'
+  - 'false'
+comment: Deprecated. Use the SlackAsk script instead.
+commonfields:
+  id: SlackAskUser
+  version: -1
+name: SlackAskUser
+script: '-'
+system: true
+tags:
+- slack
+timeout: 0s
+type: python
+subtype: python2
+tests:
+- no test - untestable
+dependson:
+  must:
+  - slack-send
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

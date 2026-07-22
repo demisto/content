@@ -1,0 +1,724 @@
+{
+    "id": "IQ-Hub Report",
+    "fromVersion": "6.0.0",
+    "modified": "2021-05-11T19:06:50.937942438Z",
+    "startDate": "0001-01-01T00:00:00Z",
+    "times": 0,
+    "recurrent": false,
+    "endingDate": "0001-01-01T00:00:00Z",
+    "timezoneOffset": 0,
+    "cronView": false,
+    "scheduled": false,
+    "name": "IQ-Hub Report",
+    "description": "Confluera Iqhub report",
+    "tags": [
+
+    ],
+    "createdBy": "DBot",
+    "type": "pdf",
+    "system": false,
+    "locked": false,
+    "sections": [
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 0,
+                "h": 2,
+                "i": "db478db0-b28b-11eb-95ce-a72ccc0b5d68",
+                "layout": "horizontal",
+                "rowPos": 2,
+                "sign": "",
+                "signAlignment": "left",
+                "style": {
+
+                },
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "DetectionsCount",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Confluera Detections Count",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "barSize": 35,
+                    "format": "DD MMM Y",
+                    "isDatesChart": false,
+                    "layout": "horizontal"
+                },
+                "chartType": "column",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 300,
+                    "width": 1049
+                },
+                "h": 3,
+                "i": "dbd37a00-b28b-11eb-95ce-a72ccc0b5d68",
+                "legendStyle": {
+                    "align": "right",
+                    "hideLegend": false,
+                    "iconType": "circle",
+                    "layout": "vertical",
+                    "verticalAlign": "top",
+                    "wrapperStyle": {
+                        "top": 5
+                    }
+                },
+                "rowPos": 7,
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "DetectionsData",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Confluera Detections Data",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "cx": 341.415,
+                    "cy": 135,
+                    "innerRadius": 101.25,
+                    "layout": "horizontal",
+                    "maxRadius": 270,
+                    "outerRadius": 135
+                },
+                "chartType": "pie",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 300,
+                    "width": 1049
+                },
+                "h": 3,
+                "i": "dcccce20-b28b-11eb-95ce-a72ccc0b5d68",
+                "legendStyle": {
+                    "align": "left",
+                    "hideLegend": false,
+                    "iconType": "circle",
+                    "layout": "vertical",
+                    "verticalAlign": "top",
+                    "width": 346.17
+                },
+                "rowPos": 4,
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "DetectionsSummary",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Confluera Detections Summary",
+            "titleStyle": null
+        },
+        {
+            "type": "number",
+            "data": null,
+            "layout": {
+                "columnPos": 6,
+                "h": 2,
+                "i": "df908200-b28b-11eb-95ce-a72ccc0b5d68",
+                "layout": "horizontal",
+                "rowPos": 2,
+                "sign": "",
+                "signAlignment": "left",
+                "style": {
+
+                },
+                "w": 6
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "ProgressionsCount",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Confluera Progressions Count",
+            "titleStyle": null
+        },
+        {
+            "type": "chart",
+            "data": null,
+            "layout": {
+                "chartProperties": {
+                    "barSize": 15,
+                    "format": "DD MMM Y",
+                    "isDatesChart": false,
+                    "layout": "vertical"
+                },
+                "chartType": "bar",
+                "columnPos": 0,
+                "dimensions": {
+                    "height": 156,
+                    "width": 1049
+                },
+                "h": 3,
+                "i": "e00c41b0-b28b-11eb-95ce-a72ccc0b5d68",
+                "legendStyle": {
+                    "align": "center",
+                    "hideLegend": false,
+                    "iconType": "square",
+                    "layout": "horizontal",
+                    "verticalAlign": "top",
+                    "wrapperStyle": {
+                        "maxHeight": 96,
+                        "top": 5,
+                        "width": "100%"
+                    }
+                },
+                "rowPos": 10,
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "ProgressionsData",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "Confluera Progressions Data",
+            "titleStyle": null
+        },
+        {
+            "type": "table",
+            "data": null,
+            "layout": {
+                "classes": "striped stackable small compact",
+                "columnPos": 0,
+                "h": 2,
+                "i": "e16716c0-b28b-11eb-95ce-a72ccc0b5d68",
+                "readableHeaders": {
+                    "Count": "Count",
+                    "URL": "URL"
+                },
+                "rowPos": 0,
+                "tableColumns": [
+                    "Count",
+                    "URL"
+                ],
+                "w": 12
+            },
+            "query": {
+                "type": "scripts",
+                "filter": {
+                    "query": "IqHubLog",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z"
+                }
+            },
+            "automation": {
+                "name": "",
+                "id": "",
+                "args": null,
+                "noEvent": false
+            },
+            "title": "IQ-HUB Log",
+            "titleStyle": null
+        }
+    ],
+    "recipients": [
+
+    ],
+    "orientation": "landscape",
+    "paperSize": "A4",
+    "runOnce": false,
+    "latestReportTime": "0001-01-01T00:00:00Z",
+    "latestScheduledReportTime": "0001-01-01T00:00:00Z",
+    "nextScheduledTime": "0001-01-01T00:00:00Z",
+    "decoder": {
+        "evidences.fetched": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "evidences.markedDate": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "evidences.occurred": {
+            "type": "date",
+            "value": "02/01/06 3:04:05 PM"
+        },
+        "incident.activated": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.closed": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.dbotStatus.0": {
+            "type": "string",
+            "value": "Pending"
+        },
+        "incident.dbotStatus.1": {
+            "type": "string",
+            "value": "Active"
+        },
+        "incident.dbotStatus.2": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.dbotStatus.3": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.dbotStatus.4": {
+            "type": "string",
+            "value": "On Hold"
+        },
+        "incident.dueDate": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.modified": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.occurred": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.openDuration": {
+            "type": "duration",
+            "value": ""
+        },
+        "incident.phase.": {
+            "type": "string",
+            "value": "Unassigned"
+        },
+        "incident.reminder": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "incident.roles.": {
+            "type": "string",
+            "value": "Unassigned"
+        },
+        "incident.severity.0": {
+            "type": "string",
+            "value": "Unknown"
+        },
+        "incident.severity.0.5": {
+            "type": "string",
+            "value": "Informational"
+        },
+        "incident.severity.1": {
+            "type": "string",
+            "value": "Low"
+        },
+        "incident.severity.2": {
+            "type": "string",
+            "value": "Medium"
+        },
+        "incident.severity.3": {
+            "type": "string",
+            "value": "High"
+        },
+        "incident.severity.4": {
+            "type": "string",
+            "value": "Critical"
+        },
+        "incident.status.0": {
+            "type": "string",
+            "value": "Pending"
+        },
+        "incident.status.1": {
+            "type": "string",
+            "value": "Active"
+        },
+        "incident.status.2": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.3": {
+            "type": "string",
+            "value": "Closed"
+        },
+        "incident.status.4": {
+            "type": "string",
+            "value": "On Hold"
+        },
+        "incident.totalTime": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.firstSeen": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.lastSeen": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "indicators.score.0": {
+            "type": "string",
+            "value": "None"
+        },
+        "indicators.score.1": {
+            "type": "string",
+            "value": "Good"
+        },
+        "indicators.score.2": {
+            "type": "string",
+            "value": "suspicious"
+        },
+        "indicators.score.3": {
+            "type": "string",
+            "value": "Bad"
+        },
+        "investigation.closed": {
+            "type": "date",
+            "value": "02 Jan 2006"
+        },
+        "investigation.created": {
+            "type": "date",
+            "value": "Mon, 02 Jan 2006 15:04:05 MST"
+        },
+        "investigation.openDuration": {
+            "type": "duration",
+            "value": ""
+        },
+        "investigation.status.0": {
+            "type": "string",
+            "value": "Active"
+        },
+        "investigation.status.1": {
+            "type": "string",
+            "value": "Done"
+        },
+        "investigation.type.0": {
+            "type": "string",
+            "value": "Standard"
+        },
+        "investigation.type.1": {
+            "type": "string",
+            "value": "Restricted"
+        },
+        "investigation.type.9": {
+            "type": "string",
+            "value": "Playground"
+        }
+    },
+    "sensitive": false,
+    "disableHeader": false,
+    "dashboard": {
+        "id": "",
+        "version": 0,
+        "modified": "0001-01-01T00:00:00Z",
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "byTo": "",
+            "byFrom": "days",
+            "toValue": null,
+            "fromValue": 7,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "name": "IQ-Hub Report",
+        "layout": [
+            {
+                "id": "db478db0-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 2,
+                "i": "db478db0-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 6,
+                "h": 2,
+                "widget": {
+                    "id": "detcount",
+                    "version": 3,
+                    "modified": "2021-05-11T18:54:25.406907061Z",
+                    "name": "Confluera Detections Count",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "DetectionsCount",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "dbd37a00-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 7,
+                "i": "dbd37a00-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "detchart",
+                    "version": 3,
+                    "modified": "2021-05-11T18:55:28.183105807Z",
+                    "name": "Confluera Detections Data",
+                    "dataType": "scripts",
+                    "widgetType": "column",
+                    "query": "DetectionsData",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "dcccce20-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 4,
+                "i": "dcccce20-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "detsummary",
+                    "version": 3,
+                    "modified": "2021-05-11T18:55:59.905774944Z",
+                    "name": "Confluera Detections Summary",
+                    "dataType": "scripts",
+                    "widgetType": "pie",
+                    "query": "DetectionsSummary",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "df908200-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 6,
+                "y": 2,
+                "i": "df908200-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 6,
+                "h": 2,
+                "widget": {
+                    "id": "progressioncount",
+                    "version": 3,
+                    "modified": "2021-05-11T18:56:36.888452052Z",
+                    "name": "Confluera Progressions Count",
+                    "dataType": "scripts",
+                    "widgetType": "number",
+                    "query": "ProgressionsCount",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "e00c41b0-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 10,
+                "i": "e00c41b0-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 12,
+                "h": 3,
+                "widget": {
+                    "id": "progressionchart",
+                    "version": 3,
+                    "modified": "2021-05-11T18:56:57.857765239Z",
+                    "name": "Confluera Progressions Data",
+                    "dataType": "scripts",
+                    "widgetType": "bar",
+                    "query": "ProgressionsData",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            },
+            {
+                "id": "e16716c0-b28b-11eb-95ce-a72ccc0b5d68",
+                "forceRange": false,
+                "x": 0,
+                "y": 0,
+                "i": "e16716c0-b28b-11eb-95ce-a72ccc0b5d68",
+                "w": 12,
+                "h": 2,
+                "widget": {
+                    "id": "Iq hub log",
+                    "version": 2,
+                    "modified": "2021-05-02T18:44:24.184852265Z",
+                    "name": "IQ-HUB Log",
+                    "dataType": "scripts",
+                    "widgetType": "table",
+                    "query": "IqHubLog",
+                    "isPredefined": false,
+                    "dateRange": {
+                        "fromDate": "0001-01-01T00:00:00Z",
+                        "toDate": "0001-01-01T00:00:00Z",
+                        "period": {
+                            "byTo": "",
+                            "byFrom": "",
+                            "toValue": null,
+                            "fromValue": null,
+                            "field": ""
+                        },
+                        "fromDateLicense": "0001-01-01T00:00:00Z"
+                    },
+                    "params": null,
+                    "size": 0
+                }
+            }
+        ]
+    }
+}

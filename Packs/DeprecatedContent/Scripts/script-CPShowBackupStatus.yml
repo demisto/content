@@ -1,0 +1,84 @@
+commonfields:
+  id: CPShowBackupStatus
+  version: -1
+name: CPShowBackupStatus
+script: >
+  from re import escape
+
+  CLI_SHOW = 'show backup status'
+
+  BASH_SHOW = '/etc/cli.sh -c "' + CLI_SHOW + '"'
+
+  keepPolling = True
+
+  res = []
+
+  tbl = []
+
+  devices = demisto.get(demisto.args(), 'devices')
+
+  devicesBackupStarted = []
+
+  devicesBackupError = []
+
+  if not devices:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty device list!"})
+  else:
+      devices = ','.join(devices) if isinstance(devices, list) else devices
+      sshArgs = {"using": devices,
+               "cmd": BASH_SHOW
+               }
+      while keepPolling:
+          resSSH = demisto.executeCommand("ssh", sshArgs)
+          try:
+              for entry in resSSH:
+                  if isError(entry):
+                      res += resSSH
+                      break
+                  else:
+                      device = entry['ModuleName']
+                      if demisto.get(entry, 'Contents.success'):
+                          output = demisto.get(entry, 'Contents.output')
+                          backFileLoc = output.find("Backup file location")
+                          result = 'Answer returned'
+                          devicesBackupStarted.append({
+                              'DeviceName' : device,
+                              'System' : demisto.get(entry, 'Contents.system'),
+                              'Status': ("Done" if output.find("local backup succeeded.") > -1 else "Pending"),
+                              'Path': (output[backFileLoc :] if backFileLoc > -1 else None)
+                              })
+                      else:
+                          devicesBackupError.append(device)
+                          output = "Output:\n" + str(demisto.get(entry, 'Contents.output')) + "Error:\n" + str(demisto.get(entry, 'Contents.error'))
+                          result = 'Failed to query'
+
+                      tbl.append({'DeviceName': device, 'System': demisto.get(entry, 'Contents.system'), 'Query result': result, 'Output': output })
+          except Exception as ex:
+              res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                          "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSSH)})
+          keepPolling = False
+      demisto.setContext('CheckpointBackup', devicesBackupStarted)
+
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": tbl})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- checkpoint
+comment: Deprecated. Connect to a checkpoint firewall appliance using SSH and retrieve status for backup tasks. The user account being used to access the device must be set to use the SSH shell and not the built in Checkpoint CLI. Consult the Checkpoint documentation for instructions on how to do this.
+enabled: true
+deprecated: true
+args:
+- name: devices
+  description: List of devices to backup, commma separated
+  required: true
+  default: true
+- name: waittimeout
+  description: In seconds. If not provided, does not wait.
+scripttarget: 0
+dependson:
+  must:
+  - ssh
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

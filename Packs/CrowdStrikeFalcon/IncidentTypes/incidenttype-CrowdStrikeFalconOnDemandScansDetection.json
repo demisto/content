@@ -1,0 +1,31 @@
+{
+    "id": "CrowdStrike Falcon On-Demand Scans Detection",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "CrowdStrike Falcon On-Demand Scans Detection",
+    "prevName": "CrowdStrike Falcon On-Demand Scans Detection",
+    "color": "#E5CF7C",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.10.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

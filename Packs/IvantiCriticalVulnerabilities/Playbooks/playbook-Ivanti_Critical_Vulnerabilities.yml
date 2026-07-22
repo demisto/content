@@ -1,0 +1,1596 @@
+id: Ivanti Critical Vulnerabilities
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Ivanti Critical Vulnerabilities
+description: "Ivanti has recently disclosed four critical vulnerabilities in their VPN devices, identified as CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893, with active exploitation reported. These security flaws impact all supported versions of Ivanti Connect Secure and Ivanti Policy Secure gateways, including versions 9.x and 22.x, and Ivanti Neurons for ZTA.\n\n#### Disclosed Vulnerabilities\n\n* CVE-2023-46805, a high-severity vulnerability, allows attackers to bypass authentication checks in the web component, granting access to restricted resources without credentials.\n\n* CVE-2024-21887, of critical severity, enables command injection through specially crafted requests by authenticated administrators, leading to arbitrary command execution.\n\n* CVE-2024-21888, another critical vulnerability, permits privilege escalation within the web component, enabling users to gain administrative rights.\n\n* CVE-2024-21893 exposes a server-side request forgery (SSRF) vulnerability within the SAML component, allowing unauthorized access to specific restricted resources.\n\nThe combination of these vulnerabilities, particularly CVE-2023-46805 and CVE-2024-21887, facilitates attackers to execute commands on the compromised system sans authentication, posing a significant security risk. Organizations utilizing affected Ivanti products are urged to apply mitigations and patches to safeguard their systems against potential exploits.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\n**IoCs Collection**\n- Unit42 IoCs download\n\n**Hunting**\n- PANW Hunting:\n  - Panorama Threat IDs hunting\n  - Cortex Xpanse issues hunting\n- Indicators hunting\n- Endpoints by CVE hunting\n\n**Mitigations**\n\nIvanti recommended workaround and patch.\n\n**References**\n\n[Unit42 Threat Brief: Multiple Ivanti Vulnerabilities](https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/#ivanti-2024-addit-resources)\n\n[CVE-2023-46805 (Authentication Bypass) & CVE-2024-21887 (Command Injection) for Ivanti Connect Secure and Ivanti Policy Secure Gateways](https://forums.ivanti.com/s/article/CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bdfccc2e-ee28-4622-8eb3-9e32bebdd5a7
+    type: start
+    task:
+      id: bdfccc2e-ee28-4622-8eb3-9e32bebdd5a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 13c5654f-bc6d-459e-89df-61f8aafaa943
+    type: title
+    task:
+      id: 13c5654f-bc6d-459e-89df-61f8aafaa943
+      version: -1
+      name: Extract and Enrich Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: af53820c-cd05-4e27-89b7-01f611f9d0b1
+    type: regular
+    task:
+      id: af53820c-cd05-4e27-89b7-01f611f9d0b1
+      version: -1
+      name: Collect IoCs from Unit42
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      exclude_indicators:
+        simple: raw.githubusercontent[.]com
+      url:
+        simple: https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9202ab44-fc31-4fe9-8638-58d50b6727ab
+    type: title
+    task:
+      id: 9202ab44-fc31-4fe9-8638-58d50b6727ab
+      version: -1
+      name: Tag Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "49"
+      - "55"
+      - "56"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a23eb650-3dbb-408e-885a-9a9162539c10
+    type: title
+    task:
+      id: a23eb650-3dbb-408e-885a-9a9162539c10
+      version: -1
+      name: Set Rapid Breach Response Layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ce1c9560-720b-4ad5-8806-b275a41c1625
+    type: playbook
+    task:
+      id: ce1c9560-720b-4ad5-8806-b275a41c1625
+      version: -1
+      name: Rapid Breach Response - Set Incident Info
+      description: This playbook is responsible for setting up the Rapid Breach Response Incident Info tab in the layout.
+      playbookName: Rapid Breach Response - Set Incident Info
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      SourceOfIndicators:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      countTotalIndicators:
+        complex:
+          root: CVE
+          accessor: ID
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IP.Address
+                iscontext: true
+          - operator: uniq
+          - operator: count
+      playbookDescription:
+        complex:
+          root: inputs.PlaybookDescription
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 3cd3a968-ac43-4930-81f4-0cfd87da6915
+    type: regular
+    task:
+      id: 3cd3a968-ac43-4930-81f4-0cfd87da6915
+      version: -1
+      name: Tag Domain Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
+      type:
+        simple: Domain
+      value:
+        simple: ${ExtractedIndicators.Domain}
+      verdict:
+        simple: Malicious
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ef632a65-b77d-4134-894b-a96e6cfa0af0
+    type: title
+    task:
+      id: ef632a65-b77d-4134-894b-a96e6cfa0af0
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+      - "64"
+      - "62"
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b60b10f6-ea88-4482-8750-7e0d52169874
+    type: title
+    task:
+      id: b60b10f6-ea88-4482-8750-7e0d52169874
+      version: -1
+      name: Indicators Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2c126c1d-bde1-4799-8f64-59f20ef11fa6
+    type: playbook
+    task:
+      id: 2c126c1d-bde1-4799-8f64-59f20ef11fa6
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      QRadarTimeFrame:
+        complex:
+          root: inputs.QRadarTimeRange
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      SplunkEarliestTime:
+        complex:
+          root: inputs.SplunkEarliestTime
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: Domain.Name
+          filters:
+          - - operator: notEndWith
+              left:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+              right:
+                value:
+                  simple: paloaltonetworks.com
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: a54147d2-cb66-4f1b-89a4-3853415e2dfc
+    type: playbook
+    task:
+      id: a54147d2-cb66-4f1b-89a4-3853415e2dfc
+      version: -1
+      name: Block Indicators - Generic v3
+      description: |-
+        This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic v2
+        - Block Account - Generic v2
+        - Block IP - Generic v3
+        - Block File - Generic v2
+        - Block Email - Generic v2
+        - Block Domain - Generic v2.
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      AutoBlockIndicators:
+        simple: ${inputs.autoBlockIndicators}
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: Domain.Name
+                iscontext: true
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+              ignorecase: true
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: IP.Address
+                iscontext: true
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      Tag:
+        simple: Blocked Indicator In Systems
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: ede2a696-f7e5-45a4-8c5d-8e8e1931f441
+    type: title
+    task:
+      id: ede2a696-f7e5-45a4-8c5d-8e8e1931f441
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 5b885f9c-46bd-4b7f-8926-3fdbe8bdcc9d
+    type: title
+    task:
+      id: 5b885f9c-46bd-4b7f-8926-3fdbe8bdcc9d
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: e1b661f1-258f-4407-8357-05a8e443631e
+    type: title
+    task:
+      id: e1b661f1-258f-4407-8357-05a8e443631e
+      version: -1
+      name: Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: fdec27f8-fedc-4d18-8ace-487872f3389c
+    type: regular
+    task:
+      id: fdec27f8-fedc-4d18-8ace-487872f3389c
+      version: -1
+      name: Ivanti mitigation measures
+      description: |
+        ## Recommendations
+
+        Please refer to the recommended mitigations provided in the following KB:
+        [KB CVE-2023-46805 (Authentication Bypass) & CVE-2024-21887 (Command Injection) for Ivanti Connect Secure and Ivanti Policy Secure Gateways
+        s](https://forums.ivanti.com/s/article/KB-CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: de30002e-ea06-420e-853a-e1f29800142f
+    type: regular
+    task:
+      id: de30002e-ea06-420e-853a-e1f29800142f
+      version: -1
+      name: Tag File Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
+      type:
+        simple: File
+      value:
+        simple: ${ExtractedIndicators.File}
+      verdict:
+        simple: Malicious
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: dc72209a-6751-46f0-837b-666423686c6f
+    type: regular
+    task:
+      id: dc72209a-6751-46f0-837b-666423686c6f
+      version: -1
+      name: Tag CVE Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
+      type:
+        simple: CVE
+      value:
+        simple: ${ExtractedIndicators.CVE}
+      verdict:
+        simple: Malicious
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 9c1db421-afac-4c8a-8cf3-dd2eae309ceb
+    type: regular
+    task:
+      id: 9c1db421-afac-4c8a-8cf3-dd2eae309ceb
+      version: -1
+      name: Tag IP Indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      source:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+      tags:
+        simple: CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, CVE-2024-21893, Ivanti
+      type:
+        simple: IP
+      value:
+        simple: ${ExtractedIndicators.IP}
+      verdict:
+        simple: Malicious
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 585b92cf-4169-472e-8bc0-4c847159bd9a
+    type: title
+    task:
+      id: 585b92cf-4169-472e-8bc0-4c847159bd9a
+      version: -1
+      name: Panorama Threat Prevention
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 5864dc8c-8f64-4830-8d1c-79ba041abd2a
+    type: playbook
+    task:
+      id: 5864dc8c-8f64-4830-8d1c-79ba041abd2a
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      log_type:
+        simple: threat
+      query:
+        simple: (threatid eq 81872) or (threatid eq 94885) or (threatid eq 94886) or (threatid eq 94888)
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 88d46991-cc9a-4298-8f85-52df74cad4dc
+    type: title
+    task:
+      id: 88d46991-cc9a-4298-8f85-52df74cad4dc
+      version: -1
+      name: CVE Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: cb51a4e1-998c-49ea-8d0a-d5127a00e4af
+    type: playbook
+    task:
+      id: cb51a4e1-998c-49ea-8d0a-d5127a00e4af
+      version: -1
+      name: Search Endpoint by CVE - Generic
+      description: Hunt for assets with a given CVE using available tools
+      playbookName: Search Endpoint by CVE - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      CVE_ID:
+        simple: ${CVE.ID}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: a93a65db-18b0-4331-8b6f-d3e2455f3b96
+    type: title
+    task:
+      id: a93a65db-18b0-4331-8b6f-d3e2455f3b96
+      version: -1
+      name: Cortex Xpanse
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 1e4c6de7-0354-4bbe-8c2e-ef44bffc1020
+    type: regular
+    task:
+      id: 1e4c6de7-0354-4bbe-8c2e-ef44bffc1020
+      version: -1
+      name: Search for Pulse Secure VPN Devices with an open issues
+      description: Retrieve issues related to Pulse Secure VPN.
+      script: '|||expanse-get-issues'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      issue_type:
+        simple: Ivanti Connect Secure, Ivanti Policy Secure
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 5a11ee90-a3c9-45a7-87db-c33c35df4a16
+    type: condition
+    task:
+      id: 5a11ee90-a3c9-45a7-87db-c33c35df4a16
+      version: -1
+      name: Is Xpanse Enabled?
+      description: Check if Expanse instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ExpanseV2
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: bf69dd86-58d0-46fa-894c-3898d6db06ef
+    type: regular
+    task:
+      id: bf69dd86-58d0-46fa-894c-3898d6db06ef
+      version: -1
+      name: Indicators extraction
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      text:
+        simple: ${http.parsedBlog.indicators}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 689fb935-653a-4d2b-8249-e32ea9b8e309
+    type: condition
+    task:
+      id: 689fb935-653a-4d2b-8249-e32ea9b8e309
+      version: -1
+      name: Should pause for mitigations?
+      description: Checks if the analyst chose to pause at the mitigation phase.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldPauseForMitigation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: e6f50106-b6e7-4c21-87b3-585fc9189233
+    type: playbook
+    task:
+      id: e6f50106-b6e7-4c21-87b3-585fc9189233
+      version: -1
+      name: Entity Enrichment - Generic v3
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: ExtractedIndicators
+          accessor: File
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: ExtractedIndicators
+          accessor: URL
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      UseReputationCommand:
+        simple: "True"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 559c716c-7bfb-45da-8089-8a6f0b5642df
+    type: condition
+    task:
+      id: 559c716c-7bfb-45da-8089-8a6f0b5642df
+      version: -1
+      name: Should close automatically?
+      description: Checks if the analyst chose to close the investigation automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldCloseAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: ecef1e88-6050-4e1f-81a3-00908708fcbc
+    type: regular
+    task:
+      id: ecef1e88-6050-4e1f-81a3-00908708fcbc
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: b1bf6b00-7333-4814-8841-7514904ad015
+    type: title
+    task:
+      id: b1bf6b00-7333-4814-8841-7514904ad015
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "68_43_#default#": 0.16,
+      "68_67_yes": 0.46,
+      "71_42_#default#": 0.5,
+      "71_45_yes": 0.61,
+      "73_74_yes": 0.61,
+      "73_75_#default#": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3345,
+        "width": 2040,
+        "x": -280,
+        "y": -170
+      }
+    }
+  }
+inputs:
+- key: PlaybookDescription
+  value:
+    simple: "Ivanti has recently disclosed four critical vulnerabilities in their VPN devices, identified as CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893, with active exploitation reported. These security flaws impact all supported versions of Ivanti Connect Secure and Ivanti Policy Secure gateways, including versions 9.x and 22.x, and Ivanti Neurons for ZTA.\n\n#### Disclosed Vulnerabilities\n\n* CVE-2023-46805, a high-severity vulnerability, allows attackers to bypass authentication checks in the web component, granting access to restricted resources without credentials.\n\n* CVE-2024-21887, of critical severity, enables command injection through specially crafted requests by authenticated administrators, leading to arbitrary command execution.\n\n* CVE-2024-21888, another critical vulnerability, permits privilege escalation within the web component, enabling users to gain administrative rights.\n\n* CVE-2024-21893 exposes a server-side request forgery (SSRF) vulnerability within the SAML component, allowing unauthorized access to specific restricted resources.\n\nThe combination of these vulnerabilities, particularly CVE-2023-46805 and CVE-2024-21887, facilitates attackers to execute commands on the compromised system sans authentication, posing a significant security risk. Organizations utilizing affected Ivanti products are urged to apply mitigations and patches to safeguard their systems against potential exploits.\n\n**This playbook should be triggered manually or can be configured as a job.** \n\n**IoCs Collection**\n- Unit42 IoCs download\n\n**Hunting**\n- PANW Hunting:\n  - Panorama Threat IDs hunting\n  - Cortex Xpanse issues hunting\n- Indicators hunting\n- Endpoints by CVE hunting\n\n**Mitigations**\n\nIvanti recommended workaround and patch.\n\n**References**\n\n[Unit42 Threat Brief: Multiple Ivanti Vulnerabilities](https://unit42.paloaltonetworks.com/threat-brief-ivanti-cve-2023-46805-cve-2024-21887/#ivanti-2024-addit-resources)\n\n[CVE-2023-46805 (Authentication Bypass) & CVE-2024-21887 (Command Injection) for Ivanti Connect Secure and Ivanti Policy Secure Gateways](https://forums.ivanti.com/s/article/CVE-2023-46805-Authentication-Bypass-CVE-2024-21887-Command-Injection-for-Ivanti-Connect-Secure-and-Ivanti-Policy-Secure-Gateways?language=en_US)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.\n"
+  required: false
+  description: The playbook description to be used in the Rapid Breach Response - Set Incident Info sub-playbook.
+  playbookInputQuery:
+- key: autoBlockIndicators
+  value:
+    simple: "False"
+  required: false
+  description: Wether to block the indicators automatically.
+  playbookInputQuery:
+- key: QRadarTimeRange
+  value:
+    simple: LAST 14 DAYS
+  required: false
+  description: QRadar hunting time range.
+  playbookInputQuery:
+- key: SplunkEarliestTime
+  value:
+    simple: -14d@d
+  required: false
+  description: Splunk hunting earliest time.
+  playbookInputQuery:
+- key: ShouldPauseForMitigation
+  value:
+    simple: "False"
+  required: false
+  description: Whether to wait for the analyst's response for the mitigation phase or let the playbook continue with the automated flow.
+  playbookInputQuery:
+- key: ShouldCloseAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to close the investigation automatically.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

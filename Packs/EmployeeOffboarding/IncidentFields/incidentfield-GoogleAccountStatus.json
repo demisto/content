@@ -1,0 +1,43 @@
+{
+	"id": "incident_googleaccountstatus",
+	"version": -1,
+	"fromVersion": "5.0.0",
+	"modified": "2019-12-17T18:22:44.552516714Z",
+	"name": "Google Account Status",
+	"ownerOnly": false,
+	"placeholder": "",
+	"description": "The status of the Google account. Can be either \"Enabled\" or \"Deleted\".",
+	"cliName": "googleaccountstatus",
+	"type": "singleSelect",
+	"closeForm": false,
+	"editForm": true,
+	"required": false,
+	"script": "",
+	"fieldCalcScript": "",
+	"neverSetAsRequired": false,
+	"isReadOnly": false,
+	"selectValues": [
+		"Enabled",
+		"Deleted"
+	],
+	"validationRegex": "",
+	"useAsKpi": true,
+	"locked": false,
+	"system": false,
+	"content": true,
+	"group": 0,
+	"hidden": false,
+	"associatedTypes": [
+		"Employee Offboarding"
+	],
+	"systemAssociatedTypes": null,
+	"associatedToAll": false,
+	"unmapped": false,
+	"unsearchable": false,
+	"caseInsensitive": true,
+	"columns": null,
+	"defaultRows": null,
+	"sla": 0,
+	"threshold": 72,
+	"breachScript": ""
+}

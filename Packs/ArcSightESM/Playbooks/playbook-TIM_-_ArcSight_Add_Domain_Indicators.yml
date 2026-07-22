@@ -1,0 +1,874 @@
+id: TIM - ArcSight Add Domain Indicators
+version: -1
+fromversion: 5.5.0
+name: TIM - ArcSight Add Domain Indicators
+description:
+  This playbook queries indicators based on a pre-defined
+  query or results from a parent playbook, and adds the resulting indicators to an ArcSight
+  Active List. The Active List ID should also be defined in the playbook inputs, as well as the field name in the Active list to add to.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7e02782c-3f0a-4155-9b69-55fcda2baeff
+    type: start
+    task:
+      id: 7e02782c-3f0a-4155-9b69-55fcda2baeff
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+    type: condition
+    task:
+      id: 3c1a518d-1cc5-4a52-88ab-725d979b88b9
+      version: -1
+      name: Is ArcSight Enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "30"
+      - "60"
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ArcSight ESM v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 2a09d73b-239b-4106-83ad-60a5c1cf7210
+    type: condition
+    task:
+      id: 2a09d73b-239b-4106-83ad-60a5c1cf7210
+      version: -1
+      name: Are there filtered results?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: f48ed3d7-c1ec-453f-847a-c680be0d04ca
+    type: condition
+    task:
+      id: f48ed3d7-c1ec-453f-847a-c680be0d04ca
+      version: -1
+      name: Is there an ArcSight Block list Domain Active List and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightBlackListDomainActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightBlackDomainValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: ab9d83d4-8938-4456-8b0c-5405dcf4d664
+    type: regular
+    task:
+      id: ab9d83d4-8938-4456-8b0c-5405dcf4d664
+      version: -1
+      name: Add Domain to ArcSight Active list block list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightBlackDomainValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightBlackListDomainActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 63d6017f-ccef-4f11-8d41-0c5e8dbe4ad5
+    type: condition
+    task:
+      id: 63d6017f-ccef-4f11-8d41-0c5e8dbe4ad5
+      version: -1
+      name: Is there an ArcSight allow list Domain Active List and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightWhiteListDomainActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightWhiteListDomainValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: c7cb6db4-316e-4c60-8c8b-bb945635c0e3
+    type: regular
+    task:
+      id: c7cb6db4-316e-4c60-8c8b-bb945635c0e3
+      version: -1
+      name: Add Domain to ArcSight Active list allow list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_white
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightWhiteListDomainValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightWhiteListDomainActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 44b4b9d6-42eb-43c4-8c59-237257ebeac6
+    type: title
+    task:
+      id: 44b4b9d6-42eb-43c4-8c59-237257ebeac6
+      version: -1
+      name: Done
+      description: ''
+      type: title
+      iscommand: false
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: a655e1a3-c7ef-4397-8f4f-16f39ab36389
+    type: regular
+    task:
+      id: a655e1a3-c7ef-4397-8f4f-16f39ab36389
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_black
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: e7ad42ed-94c1-4c9e-802d-66917b8cf7d0
+    type: regular
+    task:
+      id: e7ad42ed-94c1-4c9e-802d-66917b8cf7d0
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_white
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2350,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 8e5e172e-ba3d-4cb6-8996-336a2154bd52
+    type: condition
+    task:
+      id: 8e5e172e-ba3d-4cb6-8996-336a2154bd52
+      version: -1
+      name: Is there an ArcSight watch list Domain Active List and values?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcSightWatchListDomainActiveListID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ArcsightWatchListDomainValueFieldName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_white
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: 145ac1fe-1783-4f3c-838c-9bd2f783b719
+    type: regular
+    task:
+      id: 145ac1fe-1783-4f3c-838c-9bd2f783b719
+      version: -1
+      name: Add Domain to ArcSight Active list watch list
+      description: Adds new entries to the Active List.
+      script: ArcSight ESM v2|||as-add-entries
+      type: regular
+      iscommand: true
+      brand: ArcSight ESM v2
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      entries:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_watchlist
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (.*)
+              replaceWith:
+                value:
+                  simple: $1
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ':'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.ArcsightWatchListDomainValueFieldName
+                iscontext: true
+              suffix: {}
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: '"},{"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: ':'
+              replaceWith:
+                value:
+                  simple: '":"'
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"'
+              suffix:
+                value:
+                  simple: '"}]'
+      resourceId:
+        simple: ${inputs.ArcSightWatchListDomainActiveListID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: 3c1d9e5d-b517-4d8d-8683-3123eae9f53c
+    type: regular
+    task:
+      id: 3c1d9e5d-b517-4d8d-8683-3123eae9f53c
+      version: -1
+      name: Add SIEM tag
+      description: Adds the SIEM tag to the indicator.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: SIEM
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.tags
+                iscontext: true
+              right:
+                value:
+                  simple: approved_watchlist
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3190,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1600,
+        "width": 2660,
+        "x": 910,
+        "y": -175
+      }
+    }
+  }
+inputs:
+- key: ArcSightBlackListDomainActiveListID
+  value: {}
+  required: false
+  description: ID of the block list Domain Active List resource as it appears in
+    ArcSight.
+  playbookInputQuery: null
+- key: ArcsightBlackDomainValueFieldName
+  value: {}
+  required: false
+  description: The name of the block list Active List field to insert the Domain value
+    to.
+  playbookInputQuery: null
+- key: ArcSightWhiteListDomainActiveListID
+  value: {}
+  required: false
+  description: ID of the allow list Domain Active List resource as appears in
+    ArcSight.
+  playbookInputQuery: null
+- key: ArcsightWhiteListDomainValueFieldName
+  value: {}
+  required: false
+  description: The name of the allow list Active List field to insert the Domain value
+    to.
+  playbookInputQuery: null
+- key: ArcSightWatchListDomainActiveListID
+  value: {}
+  required: false
+  description: ID of the watch list Domain Active List resource as appears in ArcSight.
+  playbookInputQuery: null
+- key: ArcsightWatchListDomainValueFieldName
+  value: {}
+  required: false
+  description: The name of the watch list Active List field to insert the Domain value
+    to.
+  playbookInputQuery: null
+outputs: []
+quiet: true
+tests:
+- No test

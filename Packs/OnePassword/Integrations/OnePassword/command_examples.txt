@@ -1,0 +1,1 @@
+!one-password-get-events event_type="Sign in attempts" limit=2 from_date="2024-12-12T12:00:00.000Z" should_push_events=False

@@ -1,0 +1,12 @@
+{
+    "id": 77,
+    "hostname": "comp-asset-1",
+    "status": "ok",
+    "compliance_rules_count": 10,
+    "compliance_rules_failed_count": 1,
+    "compliance_rules_succeed_count": 9,
+    "compliance_repositories": [
+      { "id": 1, "name": "Security_Best_Practices", "description": null, "color": "#336699" }
+    ]
+  }
+  

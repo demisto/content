@@ -1,0 +1,59 @@
+commonfields:
+  id: XBUser
+  version: -1
+name: XBUser
+script: >-
+  import time
+
+  res = '## Exabeam User Info'
+
+  entry = demisto.executeCommand('xb-userinfo', {'username': demisto.args()['username']})[0]
+
+  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
+      info = demisto.get(entry, 'Contents.userInfo.info')
+      if info:
+          res += '\n\n\n![photo](data:image/png;base64,' +  demisto.get(info, 'photo').replace('\n', '') + ')'
+          res += '\n|Account|Email|Name|Title|Department|Devision|DN|Location|Manager|Office|Cell|Group|First Seen|Last Seen|'
+          res += '\n|-------|-----|----|-----|----------|--------|--|--------|-------|------|----|-----|----------|---------|'
+          res += '\n| ' + demisto.get(info, 'accountId') + ' | ' + demisto.get(info, 'email') + ' | ' + demisto.get(info, 'fullName') + ' | ' + \
+                 demisto.get(info, 'title') + ' | ' + demisto.get(info, 'department') + ' | ' + demisto.get(info, 'division') + ' | ' + \
+                 demisto.get(info, 'dn') + ' | ' + demisto.get(info, 'location') + ', ' + demisto.get(info, 'country') + ' | ' + \
+                 demisto.get(info, 'manager') + ' | ' + demisto.get(info, 'phoneOffice') + ' | ' + demisto.get(info, 'phoneCell') + ' | ' + \
+                 demisto.get(info, 'group') + ' | ' + time.ctime(demisto.get(entry, 'Contents.userInfo.firstSeen') / 1000.0) + ' | ' + time.ctime(demisto.get(entry, 'Contents.userInfo.lastSeen') / 1000.0) + ' |'
+      res += '\nScore: **' + str(demisto.get(entry, 'Contents.userInfo.riskScore')) + '**, On watch: ' + str(demisto.get(entry, 'Contents.isOnWatchlist'))
+      res += '\n\n### Manager Info'
+      info = demisto.get(entry, 'Contents.managerInfo.info')
+      if info:
+          res += '\n\n\n![photo](data:image/png;base64,' +  demisto.get(info, 'photo').replace('\n', '') + ')'
+          res += '\n|Account|Email|Name|Title|Department|Devision|DN|Location|Manager|Office|Cell|Group|First Seen|Last Seen|'
+          res += '\n|-------|-----|----|-----|----------|--------|--|--------|-------|------|----|-----|----------|---------|'
+          res += '\n| ' + demisto.get(info, 'accountId') + ' | ' + demisto.get(info, 'email') + ' | ' + demisto.get(info, 'fullName') + ' | ' + \
+                 demisto.get(info, 'title') + ' | ' + demisto.get(info, 'department') + ' | ' + demisto.get(info, 'division') + ' | ' + \
+                 demisto.get(info, 'dn') + ' | ' + demisto.get(info, 'location') + ', ' + demisto.get(info, 'country') + ' | ' + \
+                 demisto.get(info, 'manager') + ' | ' + demisto.get(info, 'phoneOffice') + ' | ' + demisto.get(info, 'phoneCell') + ' | ' + \
+                 demisto.get(info, 'group') + ' | ' + time.ctime(demisto.get(entry, 'Contents.managerInfo.firstSeen') / 1000.0) + ' | ' + time.ctime(demisto.get(entry, 'Contents.managerInfo.lastSeen') / 1000.0) + ' |'
+      res += '\nScore: **' + str(demisto.get(entry, 'Contents.managerInfo.riskScore')) + '**'
+      demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
+  else:
+      demisto.results(entry)
+type: python
+subtype: python2
+tags:
+- server
+- analytics
+- exabeam
+comment: Deprecated. This script is deprecated. Use the Exabeam integration instead.
+system: true
+deprecated: true
+args:
+- name: username
+  required: true
+  default: true
+  description: Username for query
+scripttarget: 0
+dependson:
+  must:
+  - xb-user
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

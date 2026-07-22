@@ -1,0 +1,67 @@
+[
+    {
+      "id": 912,
+      "hostname": "srv1",
+      "description": "Lorem ipsum dolor sit ame",
+      "last_communication": "2020-11-10T16:36:29.000+01:00",
+      "reboot_required": null,
+      "addresses": [],
+      "updates_count": 0,
+      "boot_at": null,
+      "category": "server",
+      "created_at": "2017-01-24T09:33:08.000+01:00",
+      "cve_announcements_count": 0,
+      "analyzed_at": "2020-11-10T16:36:29.000+01:00",
+      "prioritized_cve_announcements_count": 0,
+      "status": "server_vulnerable",
+      "os": {
+        "key": "ubuntu_1404_64",
+        "name": "Ubuntu 14.04 LTS",
+        "arch": "x86_64",
+        "eol": "2019-04-01",
+        "short_name": "Ubuntu 14.04",
+        "type": "Os::Ubuntu"
+      },
+      "environment": {
+        "id": 34,
+        "name": "High",
+        "confidentiality_requirement": "confidentiality_requirement_high",
+        "integrity_requirement": "integrity_requirement_high",
+        "availability_requirement": "availability_requirement_high",
+        "ceiling_cvss_v3": null
+      },
+      "groups": [
+        {
+          "id": 617,
+          "name": "ENV_PRODUCTION",
+          "description": null,
+          "color": "#12AFCB"
+        },
+        {
+          "id": 774,
+          "name": "Sentinelo",
+          "description": "",
+          "color": "#342e37"
+        },
+        {
+          "id": 775,
+          "name": "auditeur",
+          "description": null,
+          "color": "#9fd356"
+        },
+        {
+          "id": 807,
+          "name": "APP_Apache",
+          "description": null,
+          "color": "#12AFCB"
+        },
+        {
+          "id": 856,
+          "name": "LINUX ",
+          "description": "Machines Linux uniquement",
+          "color": "#ffd166"
+        }
+      ],
+      "compliance_repositories": []
+    }
+  ]

@@ -1,0 +1,96 @@
+args:
+- description: A comma-separated list of identical incident keys.
+  name: similarIncidentKeys
+- description: 'A comma-separated list of similar label keys. Comma separated value. Also supports allowing X different words between labels, within the following way: label_name:X, where X is the number of words. X can also be ''*'' for contains. For example: the value "Email/subject:*" will consider  email subject similar, if one is substring of the other.'
+  name: similarLabelsKeys
+  deprecated: true
+- description: A comma-separated list of similar context keys. Also supports allowing X different words between values (see the labels description).
+  name: similarContextKeys
+- description: A comma-separated list of Similar custom fields keys. Also supports allowing X different words between values (see the labels description).
+  name: similarCustomFields
+  deprecated: true
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: Whether to ignore closed incidents as duplicate candidates. Can be "yes" (ignore) or "no" (don't ignore). The default value is "yes".
+  name: ignoreClosedIncidents
+  predefined:
+  - 'yes'
+  - 'no'
+- defaultValue: '1000'
+  description: Maximum number of incidents to query.
+  name: maxNumberOfIncidents
+- defaultValue: '72'
+  description: Query incidents in the last X hours. Supports float value.
+  name: hoursBack
+- auto: PREDEFINED
+  defaultValue: created
+  description: Filter incidents by this time field.
+  name: timeField
+  predefined:
+  - occurred
+  - created
+  - modified
+- defaultValue: '10'
+  description: Maximum number of results to display.
+  name: maxResults
+- description: A comma-separated list of similar incident fields keys. Also supports allowing X different words between values (see the labels description).
+  name: similarIncidentFields
+- description: Use this query condition when fetching duplicate incidents.
+  name: filterQuery
+- auto: PREDEFINED
+  defaultValue: AND
+  description: The condition to apply between incident fields. Can be "OR" or "AND". This will apply only for fields with "exact match".
+  name: incidentFieldsAppliedCondition
+  predefined:
+  - AND
+  - OR
+- auto: PREDEFINED
+  defaultValue: 'yes'
+  description: 'Whether to skip the incident if it does not have specific key. Can be "yes" (skip) or "no" (don''t skip). The default value is "yes". WARNING: if no fields exist in the incident, random incidents might be returned as results due to the empty condition.'
+  name: skipMissingValues
+  predefined:
+  - 'yes'
+  - 'no'
+comment: |-
+  Deprecated. Use DBotFindSimilarIncidents instead.
+
+  Finds similar incidents by common incident keys, labels, custom fields or context keys.
+  It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+  For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+commonfields:
+  id: FindSimilarIncidents
+  version: -1
+deprecated: true
+enabled: true
+name: FindSimilarIncidents
+outputs:
+- contextPath: similarIncident.rawId
+  description: Similar incident ID.
+  type: string
+- contextPath: isSimilarIncidentFound
+  description: Whether a similar incident was found ("true" or "false").
+  type: boolean
+- contextPath: similarIncident
+  description: Similar incident.
+  type: unknown
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
+script: '-'
+subtype: python3
+tags:
+- dedup
+- duplicate
+- incidents
+timeout: 300ns
+type: python
+dockerimage: demisto/python3:3.10.13.83255
+tests:
+- Dedup - Generic v3
+fromversion: 5.0.0

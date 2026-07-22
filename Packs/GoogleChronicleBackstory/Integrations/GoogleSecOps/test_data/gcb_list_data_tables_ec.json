@@ -1,0 +1,43 @@
+{
+    "GoogleChronicleBackstory.DataTable(val.displayName == obj.displayName)": [
+        {
+            "name": "projects/sample-001/locations/us/instances/00000000-0000-0000-0000-000000000001/dataTables/test",
+            "displayName": "test",
+            "description": "test description",
+            "createTime": "2025-08-18T05:45:04.624866Z",
+            "updateTime": "2025-08-18T05:45:04.624866Z",
+            "columnInfo": [
+                {
+                    "originalColumn": "column_1",
+                    "columnType": "REGEX"
+                },
+                {
+                    "originalColumn": "column_2",
+                    "columnType": "STRING",
+                    "columnIndex": 1
+                }
+            ],
+            "dataTableUuid": "00000000000000000000000000000000"
+        },
+        {
+            "name": "projects/sample-001/locations/us/instances/00000000-0000-0000-0000-000000000001/dataTables/test_1",
+            "displayName": "test_1",
+            "description": "test description",
+            "createTime": "2025-08-13T05:01:47.031912Z",
+            "updateTime": "2025-08-22T08:03:03.395766Z",
+            "columnInfo": [
+                {
+                    "originalColumn": "A",
+                    "columnType": "STRING"
+                },
+                {
+                    "originalColumn": "B",
+                    "columnType": "REGEX",
+                    "columnIndex": 1
+                }
+            ],
+            "dataTableUuid": "00000000000000000000000000000001",
+            "approximateRowCount": "1055"
+        }
+    ]
+}

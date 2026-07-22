@@ -1,0 +1,122 @@
+{
+    "result": {
+        "hits": [
+            {
+                "certificate_v1": {
+                    "resource": {
+                        "fingerprint_sha256": "0003da4aee3b252097bfc7f871ab6fbe3e08eb94c34ff5cea91aaa29248d3c8b",
+                        "fingerprint_sha1": "0123456789abcdef0123456789abcdef01234567",
+                        "fingerprint_md5": "0123456789abcdef0123456789abcdef",
+                        "tbs_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "tbs_no_ct_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                        "parsed": {
+                            "version": 3,
+                            "serial_number": "0123456789abcdef0123456789abcdef01234567",
+                            "issuer_dn": "C=US, O=Company Inc, CN=Generic CA",
+                            "issuer": {
+                                "common_name": [
+                                    "Generic CA"
+                                ],
+                                "country": [
+                                    "US"
+                                ],
+                                "organization": [
+                                    "Company Inc"
+                                ]
+                            },
+                            "subject_dn": "C=US, O=Company Inc, CN=Generic Subject",
+                            "subject": {
+                                "country": [
+                                    "US"
+                                ],
+                                "organization": [
+                                    "Company Inc"
+                                ]
+                            },
+                            "subject_key_info": {
+                                "key_algorithm": {
+                                    "name": "RSA",
+                                    "oid": "1.2.840.113549.1.1.1"
+                                },
+                                "rsa": {
+                                    "exponent": 65537,
+                                    "modulus": "0123456789abcdef",
+                                    "length": 2048
+                                },
+                                "fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                            },
+                            "validity_period": {
+                                "not_before": "2025-04-15T00:50:59Z",
+                                "not_after": "2026-04-15T00:50:59Z",
+                                "length_seconds": 31536001
+                            },
+                            "signature": {
+                                "signature_algorithm": {
+                                    "name": "SHA256-RSA",
+                                    "oid": "1.2.840.113549.1.1.11"
+                                },
+                                "value": "0123456789abcdef"
+                            },
+                            "extensions": {
+                                "key_usage": {
+                                    "digital_signature": true,
+                                    "key_encipherment": true,
+                                    "value": 5
+                                },
+                                "basic_constraints": {
+                                    "is_ca": true
+                                },
+                                "authority_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                "subject_key_id": "0123456789abcdef0123456789abcdef01234567",
+                                "extended_key_usage": {
+                                    "server_auth": true
+                                }
+                            },
+                            "serial_number_hex": "0123456789abcdef",
+                            "ja4x": "0123456789ab_0123456789ab_0123456789ab"
+                        },
+                        "validation": {
+                            "nss": {},
+                            "microsoft": {},
+                            "apple": {},
+                            "chrome": {}
+                        },
+                        "revocation": {
+                            "ocsp": {},
+                            "crl": {
+                                "reason": "unspecified"
+                            }
+                        },
+                        "ever_seen_in_scan": true,
+                        "added_at": "2025-04-16T00:51:00Z",
+                        "modified_at": "2025-04-16T00:51:00Z",
+                        "validated_at": "2025-06-06T05:13:07Z",
+                        "parse_status": "success",
+                        "zlint": {
+                            "version": 3,
+                            "timestamp": "2025-04-16T00:51:00Z",
+                            "warnings_present": true,
+                            "errors_present": true,
+                            "failed_lints": [
+                                "e_ca_common_name_missing",
+                                "e_ca_crl_sign_not_set",
+                                "e_ca_key_cert_sign_not_set",
+                                "e_ca_key_usage_not_critical",
+                                "e_mp_authority_key_identifier_correct",
+                                "e_sub_ca_certificate_policies_missing",
+                                "e_sub_ca_crl_distribution_points_missing",
+                                "e_sub_cert_not_is_ca",
+                                "w_ext_key_usage_not_critical",
+                                "w_rsa_public_exponent_not_in_range",
+                                "w_sub_ca_aia_does_not_contain_issuing_ca_url",
+                                "w_sub_ca_aia_missing"
+                            ]
+                        },
+                        "spki_subject_fingerprint_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                    },
+                    "extensions": {}
+                }
+            }
+        ]
+    }
+}

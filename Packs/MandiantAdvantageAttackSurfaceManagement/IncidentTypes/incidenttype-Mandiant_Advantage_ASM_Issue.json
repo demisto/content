@@ -1,0 +1,29 @@
+{
+    "id": "Mandiant Advantage ASM Issue",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Mandiant Advantage ASM Issue",
+    "prevName": "Mandiant Advantage ASM Issue",
+    "color": "#D693F9",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 1,
+    "onChangeRepAlg": 1,
+    "layout": "Mandiant Advantage ASM Vulnerable Item",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.8.0"
+}

@@ -1,0 +1,13 @@
+{
+  "regex": "^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$",
+  "details": "MAC Address",
+  "disabled": false,
+  "shouldPublish": true,
+  "shouldCommit": true,
+  "expiration": 0,
+  "version": -1,
+  "fromVersion": "6.0.0",
+  "system": false,
+  "id": "MAC Address",
+  "layout": "MAC Indicator"
+}

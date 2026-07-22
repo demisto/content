@@ -1,0 +1,37 @@
+{
+    "id": "1cce37cb-99c0-4ab1-be75-60c4331ffb4c",
+    "name": "test - name",
+    "displayName": "Sophos Central Group - 2 updated",
+    "description": "Security group for Sophos Central admins - updated",
+    "groups": {
+        "total": 0,
+        "itemsCount": 0,
+        "items": []
+    },
+    "source": {
+        "type": "custom"
+    },
+    "users": {
+        "total": 3,
+        "itemsCount": 3,
+        "items": [
+            {
+                "id": "4d3174a8-bad6-47d0-9662-d32255603169",
+                "name": "John Doe"
+            },
+            {
+                "id": "f7972c84-aeeb-46c6-b896-cb87597ac5d9",
+                "name": "Mark Doe"
+            },
+            {
+                "id": "55570a08-0a38-41e6-b075-e0a7eb96571d",
+                "name": "Administrator"
+            }
+        ]
+    },
+    "tenant": {
+        "id": "fb66cdd2-55ea-4927-ba59-529309e264f6"
+    },
+    "createdAt": "2022-09-19T05:50:11.908Z",
+    "updatedAt": "2022-09-19T12:11:46.581Z"
+}

@@ -1,0 +1,26 @@
+commonfields:
+  id: D2Rekall
+  version: -1
+name: D2Rekall
+script: ''
+type: javascript
+tags:
+- agent
+- memory
+- forensics
+comment: Use the D2 agent to execute Rekall on a system (usually a forensics workstation)
+  and analyze a memory dump file located on that system.
+system: true
+args:
+- name: file
+  required: true
+  default: true
+  description: Path to the memory dump file in the machine's filesystem.
+- name: format
+  description: Format argument for Rekall e.g. json or text.
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- no test

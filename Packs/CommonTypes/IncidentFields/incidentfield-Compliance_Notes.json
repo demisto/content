@@ -1,0 +1,51 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Qradar Generic",
+        "Prisma Cloud Compute Compliance v2"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "compliancenotes",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "Notes regarding the assets compliance.",
+    "editForm": true,
+    "extractIndicatorTypesIDs": [],
+    "fieldCalcScript": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_compliancenotes",
+    "isExtractingSpecificIndicatorTypes": false,
+    "isReadOnly": false,
+    "itemVersion": "",
+    "locked": false,
+    "name": "Compliance Notes",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "",
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "Qradar Generic",
+        "Prisma Cloud Compute Compliance v2"
+    ],
+    "threshold": 72,
+    "toServerVersion": "",
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "openEnded": true
+}

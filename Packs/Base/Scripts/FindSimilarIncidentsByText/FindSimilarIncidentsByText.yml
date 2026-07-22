@@ -1,0 +1,86 @@
+args:
+- defaultValue: name,details
+  description: 'Text fields to compare. Can be label name, incident fields or custom fields. Comma separated value. '
+  name: textFields
+  required: true
+- defaultValue: '0.95'
+  description: TFIDF score threshold (to consider incident as similar).
+  name: threshold
+- defaultValue: '1000'
+  description: Maximum number of incidents to check.
+  name: maximumNumberOfIncidents
+- defaultValue: '72'
+  description: Check incidents in this time frame.
+  name: timeFrameHours
+- auto: PREDEFINED
+  defaultValue: 'no'
+  description: Ignore close incidents.
+  name: ignoreClosedIncidents
+  predefined:
+  - 'yes'
+  - 'no'
+- auto: PREDEFINED
+  defaultValue: occurred
+  description: Time field to consider.
+  name: timeField
+  predefined:
+  - occurred
+  - created
+  - modified
+- defaultValue: '10'
+  description: Maximum number of similar candidates.
+  name: maxResults
+- defaultValue: '50'
+  description: Minimum required text length to compare.
+  name: minTextLength
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to pre-process text (removing HTML, normilize words)
+  name: preProcessText
+  predefined:
+  - 'true'
+  - 'false'
+comment: |-
+  Deprecated. Use DBotFindSimilarIncidents instead.
+  Find similar incidents by text comparison - the algorithm based on TF-IDF method.
+  To read more about this method: https://en.wikipedia.org/wiki/Tf%E2%80%93idf
+
+  This automation runs using the default Limited User role, unless you explicitly
+  change the permissions.
+  For more information, see the section about permissions here:
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+commonfields:
+  id: FindSimilarIncidentsByText
+  version: -1
+enabled: true
+name: FindSimilarIncidentsByText
+outputs:
+- contextPath: similarIncident.rawId
+  description: Similar incident ID.
+  type: string
+- contextPath: isSimilarIncidentFound
+  description: Is similar incident found? (true\false)
+  type: boolean
+- contextPath: similarIncident
+  description: Similar incident.
+  type: Unknown
+- contextPath: similarIncident.name
+  description: Similar incident name.
+  type: string
+script: '-'
+subtype: python3
+tags:
+- ml
+- dedup
+- duplicate
+- incidents
+timeout: '0'
+type: python
+dockerimage: demisto/sklearn:1.0.0.49796
+runonce: true
+tests:
+- No test
+fromversion: 5.0.0
+deprecated: true

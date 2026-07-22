@@ -1,0 +1,9 @@
+[file:F5LTM_image.png]
+ignore=IM111
+
+[file:F5LTMParsingRules.yml]
+ignore=PR101
+
+[file:F5LTMModelingRules_1_3.yml]
+ignore=MR108
+

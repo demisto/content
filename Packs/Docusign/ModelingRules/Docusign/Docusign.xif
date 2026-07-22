@@ -1,0 +1,75 @@
+[RULE: docusign_common_fields]
+alter 
+// Check weather the event type is Audit or Monitor.
+    check_event_type = if(source_log_type = "auditusers", "User Info", "Monitor Events");
+
+[MODEL: dataset="docusign_docusign_raw"]
+call docusign_common_fields 
+| filter check_event_type = "Monitor Events"
+| alter
+// Extract from the field 'os' only the operating system name without version.
+    extract_os_family = arrayindex(regextract(os, "^[A-Za-z]+"),0)
+| alter
+/* XDM Model mapping for Monitor Events.
+   API: GET - /api/v{version}/datasets/{dataSetName}/stream
+   References: https://developers.docusign.com/docs/monitor-api/reference/monitor/dataset/getstream/
+   Gets customer event data for the organization that owns the integration key.
+*/
+    xdm.event.id = eventId,
+    xdm.event.type = check_event_type,
+    xdm.event.operation = if(
+        action = "Updated", XDM_CONST.OPERATION_TYPE_UPDATE,
+        action = "Created", XDM_CONST.OPERATION_TYPE_CREATE,
+        action = "Deleted", XDM_CONST.OPERATION_TYPE_DELETE,
+        to_string(uppercase(action))
+    ),
+    xdm.source.user.identifier = userId,
+    xdm.source.ipv4 = if(is_ipv4(ipAddress),ipAddress,null),
+    xdm.source.ipv6 = if(is_ipv6(ipAddress),ipAddress,null),
+    xdm.source.user_agent = userAgent,
+    xdm.source.host.os = os,
+    xdm.source.host.os_family = if(
+        extract_os_family contains "Windows", XDM_CONST.OS_FAMILY_WINDOWS, 
+        extract_os_family contains "Mac", XDM_CONST.OS_FAMILY_MACOS, 
+        extract_os_family contains "Linux", XDM_CONST.OS_FAMILY_LINUX, 
+        extract_os_family contains "Debian", XDM_CONST.OS_FAMILY_DEBIAN, 
+        extract_os_family contains "Ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, 
+        extract_os_family contains "Centos", XDM_CONST.OS_FAMILY_CENTOS, 
+        extract_os_family
+        ),
+    xdm.event.outcome = if(
+    result = "Failed", XDM_CONST.OUTCOME_FAILED,
+    result = "Success", XDM_CONST.OUTCOME_SUCCESS,
+    to_string(result)
+    ),
+    xdm.source.location.city = city,
+    xdm.source.location.country = country,
+    xdm.source.location.latitude = to_float(latitude),
+    xdm.source.location.longitude = to_float(longitude),
+    xdm.target.resource.type = object,
+    xdm.target.resource.value = data -> {},
+    xdm.network.http.browser = browser,
+    xdm.observer.name = site,
+    xdm.observer.type = source;
+
+call docusign_common_fields 
+| filter check_event_type = "User Info"
+| alter
+    extract_group_name = arraymap(groupList -> [], "@element" -> groupName)
+| alter
+/* XDM Model mapping for User Info Events.
+    API: GET - /restapi/v2.1/accounts/{accountId}/users/{userId}
+   References: https://developers.docusign.com/docs/esign-rest-api/reference/users/users/
+   Gets the user information for a specified user using a userId (GUID). To find a user based on their email address, use the list endpoint.
+*/
+    xdm.event.type = check_event_type,
+    xdm.target.user.username = userName,
+    xdm.target.user.identifier = userId,
+    xdm.target.user.is_disabled = if(userStatus = "Active", to_boolean(FALSE), to_boolean(TRUE)),
+    xdm.target.user.upn = email,
+    xdm.target.user.first_name = firstName,
+    xdm.target.user.last_name = lastName,
+    xdm.target.user.groups = extract_group_name,
+    xdm.target.location.city = workAddress -> city,
+    xdm.target.location.country = workAddress -> country,
+    xdm.event.description = object_create("URI", uri, "Is_Admin", isAdmin, "Is_NAR_Enabled", isNAREnabled);

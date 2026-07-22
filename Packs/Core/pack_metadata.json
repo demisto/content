@@ -1,0 +1,38 @@
+{
+    "name": "Core",
+    "description": "Automates incident response",
+    "support": "xsoar",
+    "currentVersion": "3.5.73",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Endpoint"
+    ],
+    "dependencies": {
+        "CloudIncidentResponse": {
+            "mandatory": false,
+            "display_name": "Cloud Incident Response"
+        }
+    },
+    "excludedDependencies": [
+        "Dropbox"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "exposure_management",
+        "cloud",
+        "cloud_runtime_security",
+        "agentix",
+        "cloud_posture",
+        "xsiam",
+        "edr"
+    ]
+}

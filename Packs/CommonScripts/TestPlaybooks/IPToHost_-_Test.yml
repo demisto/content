@@ -1,0 +1,174 @@
+id: IPToHost - Test
+inputs: []
+name: IPToHost - Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d8cb280c-8cc7-48c3-8e30-f93b239423d9
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d8cb280c-8cc7-48c3-8e30-f93b239423d9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: resp=
+      ignore-outputs:
+        simple: "true"
+      ip:
+        simple: 1.1.1.1
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Try to get the hostname correlated with the input IP.
+      id: 0dc0903d-2aaa-4072-8baa-e1b60dcf6117
+      iscommand: false
+      name: Run IPToHost
+      script: IPToHost
+      type: regular
+      version: -1
+    taskid: 0dc0903d-2aaa-4072-8baa-e1b60dcf6117
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b8e78e97-1816-4a6e-84e0-b095d75cecb3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: b8e78e97-1816-4a6e-84e0-b095d75cecb3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: resp
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: Endpoint(val.Hostname && val.Hostname === obj.Hostname)
+                  operator: getField
+          operator: hasLength
+          right:
+            value:
+              simple: "0"
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: resp
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: Hostname
+                  operator: getField
+          operator: hasLength
+          right:
+            value:
+              simple: "1"
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff4f7a82-d3b2-4b5c-89bb-9d796f67aaba
+      iscommand: false
+      name: Verify response
+      type: condition
+      version: -1
+    taskid: ff4f7a82-d3b2-4b5c-89bb-9d796f67aaba
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.0.0

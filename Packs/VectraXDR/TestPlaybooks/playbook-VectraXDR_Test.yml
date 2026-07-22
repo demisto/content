@@ -1,0 +1,2810 @@
+id: VectraXDR-Test
+version: -1
+name: VectraXDR-Test
+description: Test playbook for VectraXDR integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 91fc1fba-7dfd-4073-8ade-710f88965c42
+    type: start
+    task:
+      id: 91fc1fba-7dfd-4073-8ade-710f88965c42
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: ded776de-e328-4eca-8a6a-d20d49a2b2d8
+    type: regular
+    task:
+      id: ded776de-e328-4eca-8a6a-d20d49a2b2d8
+      version: -1
+      name: DeleteContext
+      description: Delete context.
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6dac9497-82bf-4a9a-828d-eb5010fc2e2e
+    type: regular
+    task:
+      id: 6dac9497-82bf-4a9a-828d-eb5010fc2e2e
+      version: -1
+      name: vectra-user-list
+      description: User list command.
+      script: VectraXDR|||vectra-user-list
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e744fedb-a735-434d-85a8-2a71d93783bd
+    type: condition
+    task:
+      id: e744fedb-a735-434d-85a8-2a71d93783bd
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.User.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.User.user_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.User.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.User.role
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.User.last_login_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.User.last_login
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0cddb89f-74da-4a78-82c8-9972191ab0d8
+    type: regular
+    task:
+      id: 0cddb89f-74da-4a78-82c8-9972191ab0d8
+      version: -1
+      name: vectra-entity-list
+      description: Entit list command.
+      script: VectraXDR|||vectra-entity-list
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      entity_type:
+        simple: account
+      page_size:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: fe5a2965-15f9-48ff-8522-8dbf56a260dd
+    type: condition
+    task:
+      id: fe5a2965-15f9-48ff-8522-8dbf56a260dd
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.breadth_contrib
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.importance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Entity.is_prioritized
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.urgency_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.velocity_contrib
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.detection_set
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.last_detection_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.attack_rating
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.attack_profile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.account_type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9472548f-ad32-4d75-8e6c-030bfded97e2
+    type: regular
+    task:
+      id: 9472548f-ad32-4d75-8e6c-030bfded97e2
+      version: -1
+      name: vectra-entity-describe
+      description: Entity get command.
+      script: VectraXDR|||vectra-entity-describe
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f64806c0-b997-4bcd-84cd-e77ce38919d1
+    type: condition
+    task:
+      id: f64806c0-b997-4bcd-84cd-e77ce38919d1
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.breadth_contrib
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.importance
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Entity.is_prioritized
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.urgency_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.velocity_contrib
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.detection_set
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.last_detection_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.last_modified_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.attack_rating
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.attack_profile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.account_type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b61eb283-0d8a-417f-8b3a-86bf818b5310
+    type: regular
+    task:
+      id: b61eb283-0d8a-417f-8b3a-86bf818b5310
+      version: -1
+      name: vectra-entity-detection-list
+      description: Entity detection list command.
+      script: VectraXDR|||vectra-entity-detection-list
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+      page_size:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d603cb66-a0a0-43b9-8c47-71987c58d806
+    type: condition
+    task:
+      id: d603cb66-a0a0-43b9-8c47-71987c58d806
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.certainty
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.detection_category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.detection_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.last_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.sensor_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.threat
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.url
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f1d9d10d-3e39-4896-8f93-03ec82cb49a8
+    type: regular
+    task:
+      id: f1d9d10d-3e39-4896-8f93-03ec82cb49a8
+      version: -1
+      name: vectra-detection-describe
+      description: Detection get command.
+      script: VectraXDR|||vectra-detection-describe
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      detection_ids:
+        complex:
+          root: Vectra.Entity.Detections
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 74ad0f1f-7cbf-401f-8f81-33477dad0407
+    type: regular
+    task:
+      id: 74ad0f1f-7cbf-401f-8f81-33477dad0407
+      version: -1
+      name: vectra-entity-note-add
+      description: Entity note add command.
+      script: VectraXDR|||vectra-entity-note-add
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+      note:
+        simple: Test Note
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b46c94ec-aa29-445e-816d-62889972a748
+    type: condition
+    task:
+      id: b46c94ec-aa29-445e-816d-62889972a748
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.entity_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.note_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.date_created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.note
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 401914a4-04e4-4fb2-8a70-4bd811819431
+    type: regular
+    task:
+      id: 401914a4-04e4-4fb2-8a70-4bd811819431
+      version: -1
+      name: vectra-entity-note-update
+      description: Entity note update command.
+      script: VectraXDR|||vectra-entity-note-update
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+      note:
+        simple: Updated Test Note
+      note_id:
+        complex:
+          root: Vectra.Entity.Notes
+          accessor: note_id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 87a93808-56bc-4236-8b9f-f51defd3c51d
+    type: condition
+    task:
+      id: 87a93808-56bc-4236-8b9f-f51defd3c51d
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.entity_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.note_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.date_created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.date_modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.modified_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.note
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d44b9ab2-8929-4b1e-851d-f27c9c10c0e7
+    type: regular
+    task:
+      id: d44b9ab2-8929-4b1e-851d-f27c9c10c0e7
+      version: -1
+      name: vectra-entity-note-remove
+      description: Entity note remove command.
+      script: VectraXDR|||vectra-entity-note-remove
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+      note_id:
+        complex:
+          root: Vectra.Entity.Notes
+          accessor: note_id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1abe0bf7-8509-4c9f-85d5-44416cef84f4
+    type: regular
+    task:
+      id: 1abe0bf7-8509-4c9f-85d5-44416cef84f4
+      version: -1
+      name: vectra-detections-mark-fixed
+      description: Mark detections as fixed command.
+      script: VectraXDR|||vectra-detections-mark-fixed
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      detection_ids:
+        complex:
+          root: Vectra.Entity.Detections
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3a8751ee-b51a-4f09-8a1b-40442a9670eb
+    type: regular
+    task:
+      id: 3a8751ee-b51a-4f09-8a1b-40442a9670eb
+      version: -1
+      name: vectra-detections-unmark-fixed
+      description: unmark detections as fixed command.
+      script: VectraXDR|||vectra-detections-unmark-fixed
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      detection_ids:
+        complex:
+          root: Vectra.Entity.Detections
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: bc0c8228-c5fc-4592-8b0d-c458e78d01f8
+    type: regular
+    task:
+      id: bc0c8228-c5fc-4592-8b0d-c458e78d01f8
+      version: -1
+      name: vectra-entity-tag-add
+      description: Entity tag list command.
+      script: VectraXDR|||vectra-entity-tag-add
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+      tags:
+        simple: tag1,tag2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 724ecf0b-141f-4833-8af1-ef127fc42814
+    type: condition
+    task:
+      id: 724ecf0b-141f-4833-8af1-ef127fc42814
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.tag_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.entity_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.entity_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 89d7b98c-9732-41a2-8df8-0e1dced1c6b7
+    type: regular
+    task:
+      id: 89d7b98c-9732-41a2-8df8-0e1dced1c6b7
+      version: -1
+      name: vectra-entity-tag-remove
+      description: Entity tag remove command.
+      script: VectraXDR|||vectra-entity-tag-remove
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+      tags:
+        simple: tag1,tag2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 826e0438-411c-4e7a-8945-9aedc0e90f83
+    type: condition
+    task:
+      id: 826e0438-411c-4e7a-8945-9aedc0e90f83
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.tag_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.entity_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.entity_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: ffab3ceb-b92e-460b-8ab4-1dc620796366
+    type: regular
+    task:
+      id: ffab3ceb-b92e-460b-8ab4-1dc620796366
+      version: -1
+      name: vectra-entity-tag-list
+      description: Entity tag list command.
+      script: VectraXDR|||vectra-entity-tag-list
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bcb54abf-e014-4647-808f-30127c9f3c22
+    type: condition
+    task:
+      id: bcb54abf-e014-4647-808f-30127c9f3c22
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.tag_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.entity_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.entity_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Tags.tags
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: fb28ddaf-4849-4800-8b83-321afce89a54
+    type: regular
+    task:
+      id: fb28ddaf-4849-4800-8b83-321afce89a54
+      version: -1
+      name: vectra-entity-assignment-add
+      description: Add an assignment for the entity.
+      script: VectraXDR|||vectra-entity-assignment-add
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra
+          accessor: Entity
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      entity_type:
+        complex:
+          root: Vectra
+          accessor: Entity
+          transformers:
+          - operator: FirstArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: type
+      user_id:
+        complex:
+          root: Vectra
+          accessor: User
+          transformers:
+          - operator: LastArrayElement
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: bdca822e-cb67-42a9-8c39-5cdaca69ed8b
+    type: regular
+    task:
+      id: bdca822e-cb67-42a9-8c39-5cdaca69ed8b
+      version: -1
+      name: vectra-entity-assignment-update
+      description: Entity assignment update command.
+      script: VectraXDR|||vectra-entity-assignment-update
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      assignment_id:
+        complex:
+          root: Vectra.Entity.Assignments
+          accessor: id
+      user_id:
+        complex:
+          root: Vectra.User
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: fc354c56-31f3-4734-80bc-4b4b33f2e520
+    type: regular
+    task:
+      id: fc354c56-31f3-4734-80bc-4b4b33f2e520
+      version: -1
+      name: vectra-entity-assignment-resolve
+      description: Entity assignment resolve command.
+      script: VectraXDR|||vectra-entity-assignment-resolve
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      assignment_id:
+        complex:
+          root: Vectra.Entity.Assignments
+          accessor: id
+      detection_ids:
+        complex:
+          root: Vectra.Entity.Detections.id
+      outcome:
+        simple: False Positive
+      triage_as:
+        simple: Triage by XSOAR
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 7a826446-f534-4d16-8259-7323fdfabfe9
+    type: regular
+    task:
+      id: 7a826446-f534-4d16-8259-7323fdfabfe9
+      version: -1
+      name: vectra-detection-pcap-download
+      description: Download detection pcap command.
+      script: VectraXDR|||vectra-detection-pcap-download
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      detection_id:
+        complex:
+          root: Vectra.Entity.Detections
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: ff8d64ce-ea22-4af2-8639-97345c2fc158
+    type: condition
+    task:
+      id: ff8d64ce-ea22-4af2-8639-97345c2fc158
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA512
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: cb524e27-35fa-4b6b-8821-4af43afbb223
+    type: regular
+    task:
+      id: cb524e27-35fa-4b6b-8821-4af43afbb223
+      version: -1
+      name: vectra-entity-detections-mark-fixed
+      description: Makr entity detections as fixed command.
+      script: VectraXDR|||vectra-entity-detections-mark-fixed
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 4f6864dc-6ced-45d1-8866-ab4fdb43546d
+    type: regular
+    task:
+      id: 4f6864dc-6ced-45d1-8866-ab4fdb43546d
+      version: -1
+      name: vectra-assignment-list
+      description: Assignments list command.
+      script: VectraXDR|||vectra-assignment-list
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      page_size:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: a8d3e71d-126c-4565-8dc4-dd425c7bbc4b
+    type: condition
+    task:
+      id: a8d3e71d-126c-4565-8dc4-dd425c7bbc4b
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.date_assigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 9463be8d-764a-4587-8ff2-de9e78ad418e
+    type: regular
+    task:
+      id: 9463be8d-764a-4587-8ff2-de9e78ad418e
+      version: -1
+      name: vectra-assignment-outcome-list
+      description: Assignment outcome list command.
+      script: VectraXDR|||vectra-assignment-outcome-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 7d21c59d-f860-4dca-8009-ed42803ad93e
+    type: condition
+    task:
+      id: 7d21c59d-f860-4dca-8009-ed42803ad93e
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.Outcomes.id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.Outcomes.builtin
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.Outcomes.user_selectable
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.Outcomes.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.Outcomes.category
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 693ab70b-fb31-4265-85a8-558da6deed65
+    type: regular
+    task:
+      id: 693ab70b-fb31-4265-85a8-558da6deed65
+      version: -1
+      name: vectra-entity-note-list
+      description: Entity note list command.
+      script: VectraXDR|||vectra-entity-note-list
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      entity_id:
+        complex:
+          root: Vectra.Entity
+          accessor: id
+      entity_type:
+        complex:
+          root: Vectra.Entity
+          accessor: type
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 74f42875-62e2-48d5-80ce-ac94b483e708
+    type: regular
+    task:
+      id: 74f42875-62e2-48d5-80ce-ac94b483e708
+      version: -1
+      name: vectra-group-list
+      description: Group list command.
+      script: VectraXDR|||vectra-group-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 4f3770f9-0c8a-4be4-8514-135923707e91
+    type: condition
+    task:
+      id: 4f3770f9-0c8a-4be4-8514-135923707e91
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.group_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.last_modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.last_modified_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Group.members.is_key_asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.triage_category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.importance
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Group.cognito_managed
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 6bca8491-e16f-4116-8ae5-919e6d4f0996
+    type: regular
+    task:
+      id: 6bca8491-e16f-4116-8ae5-919e6d4f0996
+      version: -1
+      name: vectra-group-assign
+      description: Assign members to the specified group.
+      script: VectraXDR|||vectra-group-assign
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      group_id:
+        complex:
+          root: Vectra.Group
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+      members:
+        simple: test.domain.com
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 0ef174b8-3df8-417f-8865-66c9b707fe9f
+    type: condition
+    task:
+      id: 0ef174b8-3df8-417f-8865-66c9b707fe9f
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.group_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.last_modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.last_modified_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Group.members.is_key_asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.triage_category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 8ff1db72-eee2-47d4-8380-209cdec88f53
+    type: regular
+    task:
+      id: 8ff1db72-eee2-47d4-8380-209cdec88f53
+      version: -1
+      name: vectra-group-unassign
+      description: Unassign members from the specified group.
+      script: VectraXDR|||vectra-group-unassign
+      type: regular
+      iscommand: true
+      brand: VectraXDR
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      group_id:
+        complex:
+          root: Vectra.Group
+          accessor: id
+          transformers:
+          - operator: LastArrayElement
+      members:
+        simple: test.domain.com
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: ce6e1597-f854-4208-8163-985a320b769a
+    type: condition
+    task:
+      id: ce6e1597-f854-4208-8163-985a320b769a
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.group_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.last_modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.last_modified_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Group.members.is_key_asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.members.uid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.triage_category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Group.rules.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 074444a1-c4bd-4e53-8f10-318a4965941a
+    type: title
+    task:
+      id: 074444a1-c4bd-4e53-8f10-318a4965941a
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: c0921aa2-3995-46d5-870e-b57044d1c89f
+    type: condition
+    task:
+      id: c0921aa2-3995-46d5-870e-b57044d1c89f
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.certainty
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.c_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.detection_category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.detection_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Vectra.Entity.Detections.is_targeting_key_asset
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.last_timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.sensor_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.src_account.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.src_account.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.src_account.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.src_account.threat
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.src_account.certainty
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.threat
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Detections.url
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 32db7bd0-2909-45d9-836f-9f3e5319cc3d
+    type: condition
+    task:
+      id: 32db7bd0-2909-45d9-836f-9f3e5319cc3d
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.date_assigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 2ad81636-f963-467e-80b0-d24a0c571be4
+    type: condition
+    task:
+      id: 2ad81636-f963-467e-80b0-d24a0c571be4
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.date_assigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 6ffb636b-9024-4424-8058-84916e8d003f
+    type: condition
+    task:
+      id: 6ffb636b-9024-4424-8058-84916e8d003f
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_by.username
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.date_assigned
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.assignment_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.events.actor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Assignments.assigned_to.username
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: ea6e1d75-c4a9-46d3-8e83-1bd89655f29c
+    type: condition
+    task:
+      id: ea6e1d75-c4a9-46d3-8e83-1bd89655f29c
+      version: -1
+      name: Verify Outputs
+      description: Verify command outputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.entity_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.note_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.date_created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.created_by
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Vectra.Entity.Notes.note
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 8085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

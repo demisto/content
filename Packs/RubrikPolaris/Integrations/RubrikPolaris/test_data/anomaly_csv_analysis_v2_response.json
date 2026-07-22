@@ -1,0 +1,92 @@
+{
+    "empty_response": {
+        "data": {}
+    },
+    "initial_request_success": {
+        "raw_response": {
+            "data": {
+                "downloadAnomalyDetailsCsv": {
+                    "isSuccessful": true
+                }
+            }
+        },
+        "outputs": {
+            "clusterId": "cluster-123",
+            "snapshotId": "snapshot-456",
+            "objectId": "object-789",
+            "isSuccessful": true
+        }
+    },
+    "polling_file_ready": {
+        "raw_response": {
+            "data": {
+                "allUserFiles": [
+                    {
+                        "downloads": [
+                            {
+                                "filename": "snapshot_snapshot-456",
+                                "state": "READY",
+                                "externalId": "external-123"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "outputs": {
+            "clusterId": "cluster-123",
+            "snapshotId": "snapshot-456",
+            "isSuccessful": true,
+            "objectId": "object-789",
+            "externalId": "external-123"
+        }
+    },
+    "polling_file_not_ready": {
+        "raw_response": {
+            "data": {
+                "allUserFiles": [
+                    {
+                        "downloads": [
+                            {
+                                "filename": "snapshot_snapshot-456",
+                                "state": "PENDING",
+                                "externalId": "external-123"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "outputs": {
+            "clusterId": "cluster-123",
+            "snapshotId": "snapshot-456",
+            "isSuccessful": true,
+            "objectId": "object-789",
+            "externalId": ""
+        }
+    },
+    "polling_file_failed": {
+        "raw_response": {
+            "data": {
+                "allUserFiles": [
+                    {
+                        "downloads": [
+                            {
+                                "filename": "snapshot_snapshot-456",
+                                "state": "FAILED",
+                                "externalId": "external-123"
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        "outputs": {
+            "clusterId": "cluster-123",
+            "snapshotId": "snapshot-456",
+            "isSuccessful": false,
+            "objectId": "object-789",
+            "externalId": ""
+        }
+    }
+}

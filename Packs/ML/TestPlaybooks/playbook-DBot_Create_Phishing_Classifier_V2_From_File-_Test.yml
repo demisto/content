@@ -1,0 +1,304 @@
+id: DBotCreatePhishingClassifierV2FromFile-Test
+version: -1
+name: DBotCreatePhishingClassifierV2FromFile-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8210b4a0-dd4b-4b24-8893-ab9f3e5d21ad
+    type: start
+    task:
+      id: 8210b4a0-dd4b-4b24-8893-ab9f3e5d21ad
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 622b1351-3b36-41a8-8617-e8c123c7ce02
+    type: regular
+    task:
+      id: 622b1351-3b36-41a8-8617-e8c123c7ce02
+      version: -1
+      name: Create Incidents File
+      script: TestCreateIncidentsFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      fileID:
+        simple: testFile
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1aa209a9-3d42-4680-8ecf-10d050b9ba6e
+    type: regular
+    task:
+      id: 1aa209a9-3d42-4680-8ecf-10d050b9ba6e
+      version: -1
+      name: Predict Sentence
+      description: Predict text label using a pre-trained machine learning phishing model, and get the most important words used in the classification decision.
+      scriptName: DBotPredictPhishingWords
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      emailBody:
+        simple: this message is spam. this message is spam
+      labelProbabilityThreshold:
+        simple: "0"
+      minTextLength:
+        simple: "0"
+      modelName:
+        simple: ${DBotPhishingClassifier.ModelName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 067671f5-b98d-4e1e-8e6e-fa4c43ff7de0
+    type: condition
+    task:
+      id: 067671f5-b98d-4e1e-8e6e-fa4c43ff7de0
+      version: -1
+      name: Check Prediction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: spam
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Probability
+            iscontext: true
+          right:
+            value:
+              simple: "0.6"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7f39c142-9139-4e4f-880a-5ac03f42f5f9
+    type: title
+    task:
+      id: 7f39c142-9139-4e4f-880a-5ac03f42f5f9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 47ebe0a5-32d3-404e-851a-99aa212e76ef
+    type: regular
+    task:
+      id: 47ebe0a5-32d3-404e-851a-99aa212e76ef
+      version: -1
+      name: Clean Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 76e221f8-85d5-4107-816b-b86cb93a5e7b
+    type: playbook
+    task:
+      id: 76e221f8-85d5-4107-816b-b86cb93a5e7b
+      version: -1
+      name: DBot Create Phishing Classifier V2 From File
+      description: Create a phishing classifier using machine learning. The classifier is based on incidents files extracted from email content.
+      playbookName: DBot Create Phishing Classifier V2 From File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      dedupThreshold:
+        simple: "0"
+      emailSubjectKey:
+        simple: Email Subject|name
+      emailTagKey:
+        simple: closeReason
+      emailTextKey:
+        simple: Email Body|Email Body HTML|details
+      fileID:
+        simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID : val.File.EntryID)}'
+      incidentTypes:
+        simple: Phishing
+      inputFormat:
+        simple: csv
+      maxIncidentsToFetchOnTraining:
+        simple: "6000"
+      modelName:
+        simple: phishing_model_from_file
+      modelTargetAccuracy:
+        simple: "0.7"
+      outputFormat:
+        simple: pickle
+      overrideModel:
+        simple: "true"
+      phishingLabels:
+        simple: '*'
+      removeShortTextThreshold:
+        simple: "15"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.1.0
+description: ''

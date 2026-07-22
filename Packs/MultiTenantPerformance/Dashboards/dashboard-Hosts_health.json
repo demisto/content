@@ -1,0 +1,495 @@
+{
+    "id": "Hosts - health",
+    "version": -1,
+    "fromVersion": "6.1.0",
+    "description": "",
+    "period": {
+        "by": "",
+        "byTo": "days",
+        "byFrom": "hours",
+        "toValue": 0,
+        "fromValue": 24,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Hosts - health",
+    "layout": [
+        {
+            "id": "bbf37ed0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 0,
+            "i": "bbf37ed0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 3,
+            "widget": {
+                "id": "host-cpu-bar",
+                "version": 1,
+                "sequenceNumber": 17746,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381173Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "CPU Usage % per Host",
+                "prevName": "CPU Usage % per Host",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.cpu",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Percentage of CPU usage per host.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        },
+        {
+            "id": "bc903400-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 0,
+            "i": "bc903400-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 3,
+            "widget": {
+                "id": "host-cpu-line",
+                "version": 1,
+                "sequenceNumber": 17752,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381305Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "CPU Usage per Host (last 24h)",
+                "prevName": "CPU Usage % per host (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.cpu",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Percentage of CPU usageper host in the previous 24 hours.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        },
+        {
+            "id": "d0ddcdf0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 6,
+            "i": "d0ddcdf0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 3,
+            "widget": {
+                "id": "host-disk-bar",
+                "version": 1,
+                "sequenceNumber": 17756,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381362Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Disk Usage per Host",
+                "prevName": "Disk Usage % per host",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.disk",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Percentage of disk usage per host.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        },
+        {
+            "id": "d574e240-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 6,
+            "i": "d574e240-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 3,
+            "widget": {
+                "id": "host-disk-line",
+                "version": 1,
+                "sequenceNumber": 17751,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.38129Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Disk Usage per Host (last 24h)",
+                "prevName": "Disk Usage % per host (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.disk",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Percentage of disk usage per host in the previous 24 hours.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        },
+        {
+            "id": "dcaa9640-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 3,
+            "i": "dcaa9640-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 3,
+            "widget": {
+                "id": "host-memory-line",
+                "version": 1,
+                "sequenceNumber": 17760,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381417Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Memory Usage per Host (last 24h)",
+                "prevName": "Memory Usage % per host (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.memory",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Percentage of memory usageper host in the previous 24 hours.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        },
+        {
+            "id": "e560a8b0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "e560a8b0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 3,
+            "widget": {
+                "id": "host-memory-bar",
+                "version": 1,
+                "sequenceNumber": 17753,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381321Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Memory Usage per Host",
+                "prevName": "Memory Usage % per host",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.memory",
+                "sort": null,
+                "isPredefined": true,
+                "description": "Memory usage percentage per host",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        },
+        {
+            "id": "edd6a4e0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 5,
+            "y": 9,
+            "i": "edd6a4e0-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 7,
+            "h": 3,
+            "widget": {
+                "id": "host-containers-line",
+                "version": 1,
+                "sequenceNumber": 17748,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.381243Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Docker Container Count per Host (last 24h)",
+                "prevName": "Docker containers count per host (last 24h)",
+                "dataType": "system",
+                "widgetType": "line",
+                "query": "host.account-docker-containers",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The number of Docker containers used per host in the previous 24 hours.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "minutes",
+                        "toValue": null,
+                        "fromValue": 60,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ],
+                    "timeFrame": "minutes"
+                },
+                "size": 1440,
+                "category": ""
+            }
+        },
+        {
+            "id": "fcf0ea80-28b9-11eb-b4b9-7b497d0fd2a3",
+            "forceRange": false,
+            "x": 0,
+            "y": 9,
+            "i": "fcf0ea80-28b9-11eb-b4b9-7b497d0fd2a3",
+            "w": 5,
+            "h": 3,
+            "widget": {
+                "id": "host-container-bar",
+                "version": 1,
+                "sequenceNumber": 17758,
+                "primaryTerm": 1,
+                "modified": "2020-11-17T09:41:35.38139Z",
+                "sortValues": null,
+                "packID": "MultiTenantPerformance",
+                "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
+                "toServerVersion": "",
+                "propagationLabels": [
+
+                ],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Docker Container Count per Host",
+                "prevName": "Docker containers count per host",
+                "dataType": "system",
+                "widgetType": "bar",
+                "query": "host.account-docker-containers",
+                "sort": null,
+                "isPredefined": true,
+                "description": "The number of Docker containers used per host.",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "host"
+                    ]
+                },
+                "size": 61,
+                "category": ""
+            }
+        }
+    ],
+    "isPredefined": true
+}

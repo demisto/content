@@ -1,0 +1,14 @@
+{
+    "totalSize": 1,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "BMCServiceDesk__Status__c",
+                "url": "/services/data/v48.0/sobjects/BMCServiceDesk__Status__c/a3w2w000000TfGCAA0"
+            },
+            "Id": "a3w2w000000TfGCAA0",
+            "Name": "CLOSED"
+        }
+    ]
+}

@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1111,
+        "name": "(Default) Internal Domains",
+        "uploaded_filename": null,
+        "content_checksum": "1a2b3c4d",
+        "version": 11,
+        "last_modified_time": "2022-06-23T10:41:35.000+0000",
+        "content": null
+    },
+    {
+        "id": 2222,
+        "name": "Access Whitelist Users",
+        "uploaded_filename": null,
+        "content_checksum": "5e6f7g8h",
+        "version": 22,
+        "last_modified_time": "2020-04-15T13:08:09.000+0000",
+        "content": null
+    }
+]

@@ -1,0 +1,1577 @@
+id: Infoblox Test
+version: -1
+name: Infoblox Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 553bb419-102c-4fc2-84c0-be30f476d726
+    type: start
+    task:
+      id: 553bb419-102c-4fc2-84c0-be30f476d726
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: af4e5b90-ec97-48cc-867a-1b89c4db722b
+    type: regular
+    task:
+      id: af4e5b90-ec97-48cc-867a-1b89c4db722b
+      version: -1
+      name: infoblox-list-response-policy-zones
+      description: List all response policy zones
+      script: Infoblox|||infoblox-list-response-policy-zones
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      max_results: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: b97192e2-46fc-4ec6-84c4-2fe248f02c65
+    type: regular
+    task:
+      id: b97192e2-46fc-4ec6-84c4-2fe248f02c65
+      version: -1
+      name: infoblox-list-response-policy-zone-rules
+      description: List all response policy rules that belongs to the given response
+        policy zone.
+      script: Infoblox|||infoblox-list-response-policy-zone-rules
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      next_page_id: {}
+      page_size:
+        simple: "2"
+      response_policy_zone_name:
+        simple: ${Infoblox.ResponsePolicyZones.FQDN(val === 'infoblow.com')}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3f8777ec-682c-4834-8efc-0e9e7b7b1cf4
+    type: regular
+    task:
+      id: 3f8777ec-682c-4834-8efc-0e9e7b7b1cf4
+      version: -1
+      name: infoblox-list-response-policy-zone-rules
+      description: List all response policy rules that belongs to the given response
+        policy zone.
+      script: Infoblox|||infoblox-list-response-policy-zone-rules
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      next_page_id:
+        simple: ${Infoblox.RulesNextPage.NextPageID}
+      page_size: {}
+      response_policy_zone_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: bca98d3c-207b-4ead-874c-ba982faf40c3
+    type: regular
+    task:
+      id: bca98d3c-207b-4ead-874c-ba982faf40c3
+      version: -1
+      name: infoblox-search-related-objects-by-ip
+      description: Serach IP related objects by a given IP.
+      script: Infoblox|||infoblox-search-related-objects-by-ip
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      ip:
+        simple: ${Infoblox.IP.IpAddress}
+      max_results: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d418afeb-b2c8-4748-8d93-7012b7e4081e
+    type: regular
+    task:
+      id: d418afeb-b2c8-4748-8d93-7012b7e4081e
+      version: -1
+      name: infoblox-get-ip
+      description: Get IP info
+      script: Infoblox|||infoblox-get-ip
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ip:
+        simple: 172.0.0.0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: bd8b65db-b375-47fb-8936-a040c84d235d
+    type: regular
+    task:
+      id: bd8b65db-b375-47fb-8936-a040c84d235d
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: b3072bea-f68e-4426-8ef5-ee20a49e5184
+    type: regular
+    task:
+      id: b3072bea-f68e-4426-8ef5-ee20a49e5184
+      version: -1
+      name: infoblox-search-rule
+      description: Search a specific rule by its name.
+      script: Infoblox|||infoblox-search-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      object_type:
+        complex:
+          root: Infoblox
+          accessor: ResponsePolicyZoneRulesList
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Type
+      output_fields:
+        complex:
+          root: ${Infoblox
+          accessor: ObjectFields.SupportedFields}
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      rule_name:
+        simple: ${Infoblox.ResponsePolicyZoneRulesList.[0].Name}.${Infoblox.ResponsePolicyZoneRulesList.[0].Zone}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7309fe32-d2e0-4ab7-882f-7004e3772f30
+    type: regular
+    task:
+      id: 7309fe32-d2e0-4ab7-882f-7004e3772f30
+      version: -1
+      name: infoblox-get-object-fields
+      description: Use this command the retrieve object field names to be used later
+        in the search rules command.
+      script: Infoblox|||infoblox-get-object-fields
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      object_type:
+        complex:
+          root: Infoblox
+          accessor: ResponsePolicyZoneRulesList
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: Type
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 1646d721-1033-4e68-8079-d2e9924f0aa5
+    type: regular
+    task:
+      id: 1646d721-1033-4e68-8079-d2e9924f0aa5
+      version: -1
+      name: infoblox-disable-rule
+      description: Disable a rule by its reference ID (this could be exctracted by
+        running the 'infoblox-search-rule' command)
+      script: Infoblox|||infoblox-disable-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.RulesSearchResults.ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 3b52d0e4-8672-45e2-83e5-9d5c455e3310
+    type: regular
+    task:
+      id: 3b52d0e4-8672-45e2-83e5-9d5c455e3310
+      version: -1
+      name: infoblox-enable-rule
+      description: Disable a rule by its reference ID (reference ID could be exctracted
+        by running the serach rules command)
+      script: Infoblox|||infoblox-enable-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.RulesSearchResults.ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 65b2cdd5-1481-4dff-87c0-a5eb80368b5b
+    type: regular
+    task:
+      id: 65b2cdd5-1481-4dff-87c0-a5eb80368b5b
+      version: -1
+      name: infoblox-create-a-substitute-record-rule
+      description: Create 'Substitute (A Record) Rule'.
+      script: Infoblox|||infoblox-create-a-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      comment:
+        simple: nightly-test-a-sub
+      ipv4addr:
+        simple: 0.0.0.0
+      name:
+        simple: nightly-test-a-sub.infoblow.com
+      rp_zone:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: b3c5c2f4-3456-48d5-8438-2bc3a765ee8c
+    type: regular
+    task:
+      id: b3c5c2f4-3456-48d5-8438-2bc3a765ee8c
+      version: -1
+      name: infoblox-create-aaaa-substitute-record-rule
+      description: Create 'Substitute (AAAA Record) Rule'.
+      script: Infoblox|||infoblox-create-aaaa-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      comment:
+        simple: nightly-test-aaaa-sub
+      ipv6addr:
+        simple: fd60:e32:f1b9::2
+      name:
+        simple: nightly-test-aaaa-sub.infoblow.com
+      rp_zone:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 0cde34b7-b775-4f95-8de9-79925dffb853
+    type: regular
+    task:
+      id: 0cde34b7-b775-4f95-8de9-79925dffb853
+      version: -1
+      name: infoblox-create-ipv4-substitute-record-rule
+      description: Create 'Substitute (ipv4 Record) Rule'.
+      script: Infoblox|||infoblox-create-ipv4-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      comment:
+        simple: nightly-test-ipv4-sub
+      ipv4addr:
+        simple: 3.3.3.4
+      name:
+        simple: 3.3.3.3.infoblow.com
+      rp_zone:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: f9f3f78a-d574-4fd2-81bb-b5eb1a47b2c0
+    type: regular
+    task:
+      id: f9f3f78a-d574-4fd2-81bb-b5eb1a47b2c0
+      version: -1
+      name: infoblox-create-ipv6-substitute-record-rule
+      description: Create 'Substitute (ipv6 Record) Rule'.
+      script: Infoblox|||infoblox-create-ipv6-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      comment:
+        simple: nightly-test-ipv6-sub
+      ipv6addr:
+        simple: fd60:e22:f1b9::2
+      name:
+        simple: 000:000:000::1.infoblow.com
+      rp_zone:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: eaba2b10-16a1-41a6-89db-645b7609c1f5
+    type: regular
+    task:
+      id: eaba2b10-16a1-41a6-89db-645b7609c1f5
+      version: -1
+      name: infoblox-create-mx-substitute-record-rule
+      description: Create 'Substitute (MX Record) Rule'.
+      script: Infoblox|||infoblox-create-mx-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      comment:
+        simple: nightly-test-mx-sub
+      mail_exchanger:
+        simple: 0.0.0.0
+      name:
+        simple: nightly-test-mx-sub.infoblow.com
+      preference:
+        simple: "5"
+      rp_zone:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 26606d5d-65e1-4d90-86e6-4e004e53b3a1
+    type: regular
+    task:
+      id: 26606d5d-65e1-4d90-86e6-4e004e53b3a1
+      version: -1
+      name: infoblox-create-naptr-substitute-record-rule
+      description: Create 'Substitute (NAPTR Record) Rule'.
+      script: Infoblox|||infoblox-create-naptr-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      comment:
+        simple: nightly-test-naptr-sub
+      name:
+        simple: nightly-test-naptr-sub.infoblow.com
+      order:
+        simple: "0"
+      preference:
+        simple: "1"
+      replacement:
+        simple: infoblow.com
+      rp_zone:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 93163840-c12a-47f5-89cf-7333a25651b0
+    type: regular
+    task:
+      id: 93163840-c12a-47f5-89cf-7333a25651b0
+      version: -1
+      name: infoblox-create-ptr-substitute-record-rule
+      description: Create 'Substitute (PTR Record) Rule'.
+      script: Infoblox|||infoblox-create-ptr-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      comment:
+        simple: nightly-test-ptr-sub
+      ipv4addr:
+        simple: 0.0.0.0
+      ipv6addr: {}
+      name: {}
+      ptrdname:
+        simple: infoblow.com
+      rp_zone:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: d83efb66-b94c-4d14-85d7-cedda18a7279
+    type: regular
+    task:
+      id: d83efb66-b94c-4d14-85d7-cedda18a7279
+      version: -1
+      name: infoblox-create-rpz-rule
+      description: Create response policy rule
+      script: Infoblox|||infoblox-create-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      comment:
+        simple: nightly-test-rpz-sub
+      name:
+        simple: nightly-test-rpz-sub.infoblow.com
+      object_type:
+        simple: Domain Name
+      rp_zone:
+        simple: infoblow.com
+      rule_type:
+        simple: Passthru
+      substitute_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 269b39a8-f3cc-45bb-848b-839cf90221fd
+    type: regular
+    task:
+      id: 269b39a8-f3cc-45bb-848b-839cf90221fd
+      version: -1
+      name: infoblox-create-srv-substitute-record-rule
+      description: Create 'Substitute (SRV Record) Rule'.
+      script: Infoblox|||infoblox-create-srv-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      comment:
+        simple: nightly-test-srv-sub
+      name:
+        simple: nightly-test-srv-sub.infoblow.com
+      port:
+        simple: "22"
+      priority:
+        simple: "10"
+      rp_zone:
+        simple: infoblow.com
+      target:
+        simple: infoblow.com
+      weight:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: d5395f97-face-4e10-8dc5-291109fa88af
+    type: regular
+    task:
+      id: d5395f97-face-4e10-8dc5-291109fa88af
+      version: -1
+      name: infoblox-create-txt-substitute-record-rule
+      description: Create 'Substitute (txt Record) Rule'.
+      script: Infoblox|||infoblox-create-txt-substitute-record-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      comment:
+        simple: nightly-test-txt-sub
+      name:
+        simple: nightly-test-txt-sub.infoblow.com
+      rp_zone:
+        simple: infoblow.com
+      text:
+        simple: nightly-test-txt-sub
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: d96d9929-6680-4768-8b12-e1a4546686fa
+    type: regular
+    task:
+      id: d96d9929-6680-4768-8b12-e1a4546686fa
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-a-sub.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: cac19410-0b53-4891-89e5-e527bb2add8a
+    type: regular
+    task:
+      id: cac19410-0b53-4891-89e5-e527bb2add8a
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-mx-sub.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 7105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 49813966-ec68-49b2-8ee9-d5ff57290b3d
+    type: regular
+    task:
+      id: 49813966-ec68-49b2-8ee9-d5ff57290b3d
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-naptr-sub.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: cfcc6bd9-dfc0-4664-83df-92e39488e04e
+    type: regular
+    task:
+      id: cfcc6bd9-dfc0-4664-83df-92e39488e04e
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === '0.0.0.0.in-addr.arpa.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: b2c694ef-c8ba-49ac-87af-849de9d9442a
+    type: regular
+    task:
+      id: b2c694ef-c8ba-49ac-87af-849de9d9442a
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-txt-sub.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 6055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b6efe0d8-c204-4f03-8d32-038ffa43416e
+    type: regular
+    task:
+      id: b6efe0d8-c204-4f03-8d32-038ffa43416e
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-srv-sub.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: cec7d04e-8223-401e-8555-589fa60220cc
+    type: regular
+    task:
+      id: cec7d04e-8223-401e-8555-589fa60220cc
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-aaaa-sub.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 7b6e81a2-a74f-497f-842c-479f45cd26ba
+    type: regular
+    task:
+      id: 7b6e81a2-a74f-497f-842c-479f45cd26ba
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === '3.3.3.3.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: a906d8c4-10fb-4b49-84b6-5ac6378a2186
+    type: regular
+    task:
+      id: a906d8c4-10fb-4b49-84b6-5ac6378a2186
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === '::1.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: fbe7625a-d7d8-424e-872c-93d6416c23df
+    type: regular
+    task:
+      id: fbe7625a-d7d8-424e-872c-93d6416c23df
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Delete a rule
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ModifiedResponsePolicyZoneRules(val.Name === 'nightly-test-rpz-sub.infoblow.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 3c756bd5-154b-4755-8b9c-17be684deec5
+    type: regular
+    task:
+      id: 3c756bd5-154b-4755-8b9c-17be684deec5
+      version: -1
+      name: infoblox-delete-response-policy-zone
+      description: Delete a given response policy zone.
+      script: Infoblox|||infoblox-delete-response-policy-zone
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ResponsePolicyZones(val.FQDN == 'infonlox.nightly.tpb.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 29a1fdcc-0c7a-48b9-8438-e13f1cd86247
+    type: regular
+    task:
+      id: 29a1fdcc-0c7a-48b9-8438-e13f1cd86247
+      version: -1
+      name: infoblox-create-response-policy-zone
+      description: Create response policy zone.
+      script: Infoblox|||infoblox-create-response-policy-zone
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      FQDN:
+        simple: infonlox.nightly.tpb.com
+      rpz_policy:
+        simple: DISABLED
+      rpz_severity:
+        simple: INFORMATIONAL
+      rpz_type:
+        simple: FEED
+      substitute_name: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 1b34d5a3-5f9d-4e91-8d3d-001d1e602e57
+    type: regular
+    task:
+      id: 1b34d5a3-5f9d-4e91-8d3d-001d1e602e57
+      version: -1
+      name: infoblox-list-response-policy-zone-rules
+      description: List all response policy rules that belongs to the given response
+        policy zone.
+      script: Infoblox|||infoblox-list-response-policy-zone-rules
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      next_page_id: {}
+      page_size: {}
+      response_policy_zone_name:
+        simple: infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: ff9d4286-c76f-43b5-870b-d05afc73151d
+    type: title
+    task:
+      id: ff9d4286-c76f-43b5-870b-d05afc73151d
+      version: -1
+      name: Cleaning previous nightly remainings (if there are)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: c0a1e2ba-02d5-4d60-83b9-7b4911cb4ad3
+    type: regular
+    task:
+      id: c0a1e2ba-02d5-4d60-83b9-7b4911cb4ad3
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 27b66c10-2a57-4b7e-871d-74aa0b5b6648
+    type: regular
+    task:
+      id: 27b66c10-2a57-4b7e-871d-74aa0b5b6648
+      version: -1
+      name: infoblox-search-rule
+      description: Searches a specific rule by its name.
+      script: Infoblox|||infoblox-search-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      object_type:
+        simple: ${Infoblox.ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly') != -1 || val.Name.indexOf('nightly') != -1).Type}
+      output_fields: {}
+      rule_name:
+        complex:
+          root: ${Infoblox
+          accessor: ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly') != -1 || val.Name.indexOf('nightly') != -1).Name}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .infoblow.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 952f58fe-d221-4434-878f-8d0795567e7d
+    type: regular
+    task:
+      id: 952f58fe-d221-4434-878f-8d0795567e7d
+      version: -1
+      name: infoblox-delete-rpz-rule
+      description: Deletes a rule.
+      script: Infoblox|||infoblox-delete-rpz-rule
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.RulesSearchResults.ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: fdc50c92-2af9-4671-862e-230c62bad23a
+    type: title
+    task:
+      id: fdc50c92-2af9-4671-862e-230c62bad23a
+      version: -1
+      name: Creating new rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 359edf05-5479-48c6-83ad-149da6980c13
+    type: title
+    task:
+      id: 359edf05-5479-48c6-83ad-149da6980c13
+      version: -1
+      name: Starting test
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: b746792a-808e-43d2-8b57-3d9062da2991
+    type: regular
+    task:
+      id: b746792a-808e-43d2-8b57-3d9062da2991
+      version: -1
+      name: infoblox-list-response-policy-zones
+      description: List all response policy zones
+      script: Infoblox|||infoblox-list-response-policy-zones
+      type: regular
+      iscommand: true
+      brand: Infoblox
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      max_results: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: e52f112b-8f73-41be-8d9e-eb9330fdf722
+    type: regular
+    task:
+      id: e52f112b-8f73-41be-8d9e-eb9330fdf722
+      version: -1
+      name: Delete Zone
+      description: Deletes a given response policy zone.
+      script: '|||infoblox-delete-response-policy-zone'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      reference_id:
+        simple: ${Infoblox.ResponsePolicyZones(val.FQDN == 'infonlox.nightly.tpb.com').ReferenceID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 365df82a-784e-4850-8c57-a552539608ae
+    type: condition
+    task:
+      id: 365df82a-784e-4850-8c57-a552539608ae
+      version: -1
+      name: Check for leftover zones
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Infoblox.ResponsePolicyZones(val.FQDN == 'infonlox.nightly.tpb.com')}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 6f9bbf6b-0f4f-41e9-84f0-7775b4b9affe
+    type: condition
+    task:
+      id: 6f9bbf6b-0f4f-41e9-84f0-7775b4b9affe
+      version: -1
+      name: Check for leftover rules
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: Infoblox
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${Infoblox.ResponsePolicyZoneRulesList(val.Comment.indexOf('nightly')
+                != -1 || val.Name.indexOf('nightly') != -1)}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7500,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

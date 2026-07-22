@@ -1,0 +1,94 @@
+[
+    {
+        "auditLogs": [
+            {
+                "details": "test@test.com@helios logged in from \"1.2.3.4\" with role \"Super Admin\".",
+                "username": "test@test.com",
+                "domain": "helios",
+                "sourceType": "helios",
+                "entityName": "test@test.com",
+                "entityType": "User",
+                "action": "Login",
+                "timestampUsecs": 170691857331522,
+                "ip": "1.2.3.4",
+                "isImpersonation": false,
+                "tenantId": "1234/",
+                "originalTenantId": "",
+                "serviceContext": "Mcm"
+            },
+            {
+                "details": "test@test.com@helios logged in from \"1.2.3.4\" with role \"Super Admin\".",
+                "username": "test@test.com",
+                "domain": "helios",
+                "sourceType": "helios",
+                "entityName": "test@test.com",
+                "entityType": "User",
+                "action": "Login",
+                "timestampUsecs": 1706191757331522,
+                "ip": "1.2.3.4",
+                "isImpersonation": false,
+                "tenantId": "1234/",
+                "originalTenantId": "",
+                "serviceContext": "Mcm"
+            }
+        ],
+        "count": 2
+    },
+    {
+        "auditLogs": [
+            {
+                "details": "test@test.com@helios created api key \"test\" with id \"1234\".",
+                "username": "test@test.com",
+                "domain": "helios",
+                "sourceType": "helios",
+                "entityName": "test-labs-integration",
+                "entityType": "ApiKey",
+                "action": "Create",
+                "timestampUsecs": 1706038602184624,
+                "ip": "1.2.3.4",
+                "isImpersonation": false,
+                "tenantId": "1234/",
+                "originalTenantId": "",
+                "newRecord": "{\"id\":\"491f5e75-dd50-4ed7-54e9-8faa6a6dc27c\",\"name\":\"test\"}",
+                "serviceContext": "Mcm"
+            },
+            {
+                "details": "test@test.com@helios created api key \"test\" with id \"1234\".",
+                "username": "test@test.com",
+                "domain": "helios",
+                "sourceType": "helios",
+                "entityName": "test-labs-integration",
+                "entityType": "ApiKey",
+                "action": "Create",
+                "timestampUsecs": 1706038601184624,
+                "ip": "1.2.3.4",
+                "isImpersonation": false,
+                "tenantId": "1234/",
+                "originalTenantId": "",
+                "newRecord": "{\"id\":\"491f5e75-dd50-4ed7-54e9-8faa6a6dc27c\",\"name\":\"test\"}",
+                "serviceContext": "Mcm"
+            }
+        ],
+        "count": 2
+    },
+    {
+        "auditLogs": [
+            {
+                "details": "test@test.com@helios logged in from \"1.2.3.4\" with role \"Super Admin\".",
+                "username": "test@test.com",
+                "domain": "helios",
+                "sourceType": "helios",
+                "entityName": "test@test.com",
+                "entityType": "User",
+                "action": "Login",
+                "timestampUsecs": 1706038519477685,
+                "ip": "1.2.3.4",
+                "isImpersonation": false,
+                "tenantId": "1234/",
+                "originalTenantId": "",
+                "serviceContext": "Mcm"
+            }
+        ],
+        "count": 1
+    }
+]

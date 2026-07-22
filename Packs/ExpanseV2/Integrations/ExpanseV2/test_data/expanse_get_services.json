@@ -1,0 +1,305 @@
+{
+  "data": [
+    {
+      "id": "1c0cb095-2bf1-385f-a760-cb364cbe6f59",
+      "name": "DNS Server at 10.0.0.0:53",
+      "portNumber": 53,
+      "activityStatus": "Active",
+      "businessUnits": [
+        {
+          "id": "bd2dbe4d-cb64-4af5-9553-d7b37b5e8685",
+          "name": "testcorp123 Dev"
+        }
+      ],
+      "ips": [
+        {
+          "ip": "10.0.0.0",
+          "assetId": "f24bcd1a-9a4c-35e1-b48d-a1b9a3889662",
+          "transportProtocol": "UDP",
+          "geolocation": {
+            "countryCode": "US",
+            "latitude": 40.04,
+            "longitude": -86.12,
+            "city": "WESTFIELD",
+            "timeZone": null,
+            "regionCode": "IN"
+          },
+          "provider": {
+            "id": "OnPrem",
+            "name": "On Prem"
+          },
+          "firstObserved": "2020-09-05T12:54:31Z",
+          "lastObserved": "2021-03-19T14:50:05Z"
+        }
+      ],
+      "domains": [],
+      "certificates": [],
+      "tlsVersions": [],
+      "classifications": [
+        {
+          "id": "DnsServer",
+          "name": "DNS Server",
+          "details": [
+            {
+              "value": {
+                "bindVersions": []
+              },
+              "firstObserved": "2020-09-05T12:54:31Z",
+              "lastObserved": "2021-03-19T14:50:05Z"
+            }
+          ],
+          "firstObserved": "2020-07-17T06:59:51Z",
+          "lastObserved": "2021-03-19T14:50:05Z"
+        }
+      ],
+      "firstObserved": "2020-07-17T06:59:51Z",
+      "lastObserved": "2021-03-19T14:50:05Z",
+      "annotations": {
+        "tags": []
+      },
+      "assets": [
+        {
+          "id": "f24bcd1a-9a4c-35e1-b48d-a1b9a3889662",
+          "assetKey": "58ef7496-4203-3b6c-844f-4186c235374b",
+          "assetType": "IpRange",
+          "displayName": "10.0.0.0-10.255.255.255",
+          "referenceReason": {
+            "id": "WithinOwnedIpRange",
+            "name": "The IP Range this service is running on is attributed to your organization."
+          }
+        }
+      ],
+      "discoveryInfo": {
+        "type": "DirectlyDiscovered",
+        "details": []
+      },
+      "cloudManagementStatus": {
+        "id": "NotApplicable",
+        "name": ""
+      }
+    },
+    {
+      "id": "0df5c26b-3345-388a-a778-d1eadc0fc26e",
+      "name": "HTTP Server at 192.168.4.64:443",
+      "portNumber": 443,
+      "activityStatus": "Active",
+      "businessUnits": [
+        {
+          "id": "bd2dbe4d-cb64-4af5-9553-d7b37b5e8685",
+          "name": "testcorp123 Dev"
+        }
+      ],
+      "ips": [
+        {
+          "ip": "192.168.4.64",
+          "assetId": "035b5d95-e753-350b-a6c1-8d6f3cd675db",
+          "transportProtocol": "TCP",
+          "geolocation": {
+            "countryCode": "US",
+            "latitude": 40.04,
+            "longitude": -86.12,
+            "city": "WESTFIELD",
+            "timeZone": null,
+            "regionCode": "IN"
+          },
+          "provider": {
+            "id": "OnPrem",
+            "name": "On Prem"
+          },
+          "firstObserved": "2020-09-11T04:04:04Z",
+          "lastObserved": "2021-03-20T14:06:19Z"
+        }
+      ],
+      "domains": [
+        {
+          "domain": "master-test13.clarence.lab.testcorpdomain2.com",
+          "assetId": null,
+          "lastObserved": "2021-03-20T14:06:19Z",
+          "firstObserved": "2020-09-12T10:37:43Z"
+        },
+        {
+          "domain": "master-test14.clarence.lab.testcorpdomain2.com",
+          "assetId": null,
+          "lastObserved": "2021-03-20T11:12:34Z",
+          "firstObserved": "2020-09-15T08:52:45Z"
+        }
+      ],
+      "certificates": [
+        {
+          "certificate": {
+            "formattedIssuerOrg": null,
+            "id": "966c43a5-70cc-3aa3-a909-ccf6327bdd7c",
+            "issuer": "C=US,O=Let's Encrypt,CN=Let's Encrypt Authority X3",
+            "issuerAlternativeNames": "",
+            "issuerCountry": "US",
+            "issuerEmail": null,
+            "issuerLocality": null,
+            "issuerName": "Let's Encrypt Authority X3",
+            "issuerOrg": "Let's Encrypt",
+            "issuerOrgUnit": null,
+            "issuerState": null,
+            "md5Hash": "lmxDpXDMOqOpCcz2MnvdfA==",
+            "pemSha1": "91WoWezv6rpgVbR3JfVYoa91i4A=",
+            "pemSha256": "KX5MqvZllELHnPEJcuqJNZibnvQ2rY5OdIkDfzFpx0Y=",
+            "publicKey": "publickey",
+            "publicKeyAlgorithm": "RSA",
+            "publicKeyBits": 2048,
+            "publicKeyModulus": "c3442a59465ff03598249510924a3ef34d6acc1c3ada17c3c88e1e3741aa9cf94c21d2529f49caaacf3a1482612ca69e0a320a6d2a3399c0070f8d562a2e857eae8db24bcd4df56261a2f91070b135ee5a4209860d2a5a73d724e49399e6846f561ed1851cea690e75026a0a44cd8211c45619745677f63c71408bd51c14b63b04c11f231c9ac14e4bcc1beb577e7cc080844cd8a1809c75f45fe64edafc03e67ffa64026f9421811ba5344db0d234e00221d59fc02b813b28d4742bce6c0fa66b49e8b672b7595fbb7aab35ddb9e2be7c1757e801fc2d2195269a148fad084af8198db602f26aedfc1bf907f5c2cfbdf3d00cbe75924df8d47ea166f08fabc5",
+            "publicKeyRsaExponent": 65537,
+            "publicKeySpki": "OZjn8NMMUYwAoCKb6kB8Hx4ymukgPCSsFB4BBh1siGM=",
+            "serialNumber": "403024102160246841371796659770100783505996",
+            "signatureAlgorithm": "SHA256withRSA",
+            "subject": "CN=*.clarence.lab.testcorpdomain2.com",
+            "subjectAlternativeNames": "*.clarence.lab.testcorpdomain2.com",
+            "subjectCountry": null,
+            "subjectEmail": null,
+            "subjectLocality": null,
+            "subjectName": "*.clarence.lab.testcorpdomain2.com",
+            "subjectOrg": null,
+            "subjectOrgUnit": null,
+            "subjectState": null,
+            "validNotAfter": "2020-07-19T16:17:07Z",
+            "validNotBefore": "2020-04-20T16:17:07Z",
+            "version": "3"
+          },
+          "assetId": null,
+          "firstObserved": "2020-09-11T04:04:04Z",
+          "lastObserved": "2021-03-20T14:06:19Z"
+        }
+      ],
+      "tlsVersions": [
+        {
+          "tlsVersion": "TLS 1.2",
+          "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+          "firstObserved": "2020-09-11T04:04:04Z",
+          "lastObserved": "2021-03-20T14:06:19Z"
+        },
+        {
+          "tlsVersion": "TLS 1.1",
+          "cipherSuite": "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+          "firstObserved": "2020-08-12T08:16:00Z",
+          "lastObserved": "2021-03-20T05:25:23Z"
+        }
+      ],
+      "classifications": [
+        {
+          "id": "ApplicationServerSoftware",
+          "name": "Application Server Software",
+          "details": [
+            {
+              "value": {
+                "applicationServerSoftware": "ASP.NET"
+              },
+              "firstObserved": "2020-09-11T04:04:04Z",
+              "lastObserved": "2021-03-20T14:06:19Z"
+            }
+          ],
+          "firstObserved": "2020-07-01T16:19:11Z",
+          "lastObserved": "2021-03-20T14:06:19Z"
+        },
+        {
+          "id": "HttpServer",
+          "name": "HTTP Server",
+          "details": [
+            {
+              "value": {
+                "httpHeaders": [
+                  {
+                    "name": "Server",
+                    "value": "GENERIC cache server"
+                  },
+                  {
+                    "name": "Date",
+                    "value": "xxxxxxxxxx"
+                  },
+                  {
+                    "name": "Content-Type",
+                    "value": "text/html"
+                  },
+                  {
+                    "name": "Content-Length",
+                    "value": "1157"
+                  },
+                  {
+                    "name": "Connection",
+                    "value": "keep-alive"
+                  },
+                  {
+                    "name": "Vary",
+                    "value": "Accept-Encoding"
+                  },
+                  {
+                    "name": "X-Powered-By",
+                    "value": "ASP.NET"
+                  }
+                ],
+                "loadBalancer": "",
+                "certificateId": "GNBBn4eZqnES3YHRd7K3Hw==",
+                "httpStatusCode": 403,
+                "serverSoftware": "GENERIC cache server",
+                "loadBalancerPool": "",
+                "htmlPasswordField": "",
+                "htmlPasswordAction": "",
+                "httpAuthenticationRealm": "",
+                "applicationServerSoftware": "ASP.NET",
+                "httpAuthenticationMethods": []
+              },
+              "firstObserved": "2020-12-16T17:11:41Z",
+              "lastObserved": "2021-03-20T14:06:19Z"
+            }
+          ],
+          "firstObserved": "2020-07-01T16:19:11Z",
+          "lastObserved": "2021-03-20T14:06:19Z"
+        },
+        {
+          "id": "ServerSoftware",
+          "name": "Server Software",
+          "details": [
+            {
+              "value": {
+                "serverSoftware": "GENERIC cache server"
+              },
+              "firstObserved": "2020-09-11T04:04:04Z",
+              "lastObserved": "2021-03-20T14:06:19Z"
+            }
+          ],
+          "firstObserved": "2020-07-01T16:19:11Z",
+          "lastObserved": "2021-03-20T14:06:19Z"
+        }
+      ],
+      "firstObserved": "2020-07-01T16:19:11Z",
+      "lastObserved": "2021-03-20T14:06:19Z",
+      "annotations": {
+        "tags": []
+      },
+      "assets": [
+        {
+          "id": "035b5d95-e753-350b-a6c1-8d6f3cd675db",
+          "assetKey": "38e2b7d9-cfb7-379b-b121-f7feca7c211e",
+          "assetType": "IpRange",
+          "displayName": "192.168.4.0-192.168.4.255",
+          "referenceReason": {
+            "id": "WithinOwnedIpRange",
+            "name": "The IP Range this service is running on is attributed to your organization."
+          }
+        }
+      ],
+      "discoveryInfo": {
+        "type": "DirectlyDiscovered",
+        "details": []
+      },
+      "cloudManagementStatus": {
+        "id": "NotApplicable",
+        "name": ""
+      }
+    }
+  ],
+  "pagination": {
+    "next": null,
+    "prev": null
+  },
+  "meta": {
+    "nextPageToken": null,
+    "prevPageToken": null
+  }
+}

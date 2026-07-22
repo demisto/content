@@ -1,0 +1,568 @@
+id: FilterByList - Test
+version: -1
+name: FilterByList - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 16d84e53-6b65-451e-8fb1-76cf092cadfd
+    type: start
+    task:
+      id: 16d84e53-6b65-451e-8fb1-76cf092cadfd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 119f2064-ccc9-4395-8edc-35cccbfc24d7
+    type: regular
+    task:
+      id: 119f2064-ccc9-4395-8edc-35cccbfc24d7
+      version: -1
+      name: Create allow list
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      listData:
+        simple: demisto.com,google.com,foo.google.com
+      listName:
+        simple: whiteList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 1d20ce5b-57ee-413d-8c27-d41120418577
+    type: regular
+    task:
+      id: 1d20ce5b-57ee-413d-8c27-d41120418577
+      version: -1
+      name: Run FilterByList
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      listname:
+        simple: whiteList
+      values:
+        simple: ^demisto.com$,foo.google.com,walla.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 88f32a18-0b9a-4281-8fa1-4bdddfbd2e95
+    type: regular
+    task:
+      id: 88f32a18-0b9a-4281-8fa1-4bdddfbd2e95
+      version: -1
+      name: Verify 'In' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expectedValue:
+        simple: '["^demisto.com$","foo.google.com"]'
+      fields: {}
+      path:
+        simple: List.In
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a8216660-64b5-42e1-8938-ae051d70ba78
+    type: regular
+    task:
+      id: a8216660-64b5-42e1-8938-ae051d70ba78
+      version: -1
+      name: Verify 'NotIn' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue:
+        simple: '["walla.com"]'
+      fields: {}
+      path:
+        simple: List.NotIn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1a40ed24-c82f-4401-86e9-d60476aef8af
+    type: title
+    task:
+      id: 1a40ed24-c82f-4401-86e9-d60476aef8af
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 4abb960b-df67-410b-84eb-c1bb7f76dc91
+    type: regular
+    task:
+      id: 4abb960b-df67-410b-84eb-c1bb7f76dc91
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 55c33444-6ca3-4328-88e1-9e3656655777
+    type: regular
+    task:
+      id: 55c33444-6ca3-4328-88e1-9e3656655777
+      version: -1
+      name: Create allow list
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      listData:
+        simple: demisto.com
+      listName:
+        simple: whiteList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: e221d153-1308-4236-85d1-51fd213f89bd
+    type: regular
+    task:
+      id: e221d153-1308-4236-85d1-51fd213f89bd
+      version: -1
+      name: remove from list
+      script: Builtin|||removeFromList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      listData:
+        simple: demisto.com
+      listName:
+        simple: whiteList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: a74e2ece-5b93-4851-8e09-3eef8a9ef299
+    type: regular
+    task:
+      id: a74e2ece-5b93-4851-8e09-3eef8a9ef299
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 67eac8de-755c-47ed-8784-7c64aa9b4360
+    type: regular
+    task:
+      id: 67eac8de-755c-47ed-8784-7c64aa9b4360
+      version: -1
+      name: Verify 'NotIn' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      expectedValue:
+        simple: '["demisto.com","google.com","foo.google.com"]'
+      fields: {}
+      path:
+        simple: List.NotIn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: cd93851e-9a03-4252-86e5-504bf426c9c7
+    type: regular
+    task:
+      id: cd93851e-9a03-4252-86e5-504bf426c9c7
+      version: -1
+      name: Run FilterByList on empty list
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      listname:
+        simple: whiteList
+      values:
+        simple: demisto.com,google.com,foo.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 47eed749-e38b-4679-88f9-b62b2d7e10ff
+    type: title
+    task:
+      id: 47eed749-e38b-4679-88f9-b62b2d7e10ff
+      version: -1
+      name: list is empty
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: f44e3031-8da0-4856-89a1-e2a3ad3c10d5
+    type: regular
+    task:
+      id: f44e3031-8da0-4856-89a1-e2a3ad3c10d5
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: b270cc68-b5fe-41ca-8206-3c9b2fd25bf1
+    type: regular
+    task:
+      id: b270cc68-b5fe-41ca-8206-3c9b2fd25bf1
+      version: -1
+      name: Create allow list with capital case
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      listData:
+        simple: FOO.GOOGLE.COM,DEMISTO.COM
+      listName:
+        simple: whiteList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 768fba09-6336-453f-808a-02819824ac70
+    type: regular
+    task:
+      id: 768fba09-6336-453f-808a-02819824ac70
+      version: -1
+      name: Run FilterByList with ignore case
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ignorecase:
+        simple: "yes"
+      listname:
+        simple: whiteList
+      values:
+        simple: ^DEMISTO.COM$,FOO.GOOGLE.COM,walla.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 3218463b-daed-4609-8df6-c7465691770b
+    type: regular
+    task:
+      id: 3218463b-daed-4609-8df6-c7465691770b
+      version: -1
+      name: Verify 'In' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      expectedValue:
+        simple: '["^DEMISTO.COM$","FOO.GOOGLE.COM"] '
+      fields: {}
+      path:
+        simple: List.In
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 8f4877ac-5940-4614-8cc1-e1e4a1b02d13
+    type: regular
+    task:
+      id: 8f4877ac-5940-4614-8cc1-e1e4a1b02d13
+      version: -1
+      name: Verify 'NotIn' list context
+      scriptName: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      expectedValue:
+        simple: '["walla.com"]'
+      fields: {}
+      path:
+        simple: List.NotIn
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2980,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

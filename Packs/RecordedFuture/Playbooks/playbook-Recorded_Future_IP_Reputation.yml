@@ -1,0 +1,338 @@
+id: Recorded Future IP Reputation
+version: -1
+name: Recorded Future IP Reputation
+description: IP address reputation using Recorded Future SOAR enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 516c1e66-6dc3-42cc-8aab-55ae4d423887
+    type: start
+    task:
+      id: 516c1e66-6dc3-42cc-8aab-55ae4d423887
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 503cd71c-1ef9-434a-8a5f-3c864c8fd2bd
+    type: title
+    task:
+      id: 503cd71c-1ef9-434a-8a5f-3c864c8fd2bd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: cde569ba-1616-4b91-8836-82af19b61235
+    type: condition
+    task:
+      id: cde569ba-1616-4b91-8836-82af19b61235
+      version: -1
+      name: Is there an IP address to get reputation of?
+      description: Determine whether the playbook's input contains at least one IP
+        address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: ea628132-47f2-4d68-8ed2-89db95914aa8
+    type: title
+    task:
+      id: ea628132-47f2-4d68-8ed2-89db95914aa8
+      version: -1
+      name: Get reputation using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: f2c03e77-bee9-46d3-8e25-0cdf5e520c51
+    type: condition
+    task:
+      id: f2c03e77-bee9-46d3-8e25-0cdf5e520c51
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Checks if there is an active instance of the Recorded Future API
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 30520374-376e-474e-8818-46d3ec49445b
+    type: regular
+    task:
+      id: 30520374-376e-474e-8818-46d3ec49445b
+      version: -1
+      name: Get IP reputation from Recorded Future
+      description: Get a quick indicator of the risk associated with an IP.
+      script: Recorded Future v2|||ip
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      ip:
+        simple: ${inputs.IP}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: b596c1c9-322d-4ac2-8555-b3221b8b4ebc
+    type: regular
+    task:
+      id: b596c1c9-322d-4ac2-8555-b3221b8b4ebc
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      recordedfutureriskrules:
+        simple: ${RecordedFuture.IP.rules}
+      value:
+        simple: ${inputs.IP}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "28_24_#default#": 0.59,
+      "37_24_#default#": 0.42,
+      "37_38_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1035,
+        "width": 880,
+        "x": -90,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: IP
+      accessor: Address
+      transformers:
+      - operator: uniq
+  required: false
+  description: The IP address to get reputation of.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: IP.Malicious.Vendor
+  description: For malicious IP addresses, the vendor that made the decision
+  type: string
+- contextPath: IP.Malicious.Description
+  description: For malicious IP addresses, the reason that the vendor made the decision
+  type: string
+- contextPath: IP.Address
+  description: IP address
+  type: string
+- contextPath: RecordedFuture.IP.riskScore
+  description: Recorded Future IP Risk Score
+  type: number
+- contextPath: RecordedFuture.IP.riskLevel
+  description: Recorded Future IP Risk Level
+  type: string
+- contextPath: RecordedFuture.IP.Evidence.rule
+  description: Recorded Future Risk Rule Name
+  type: string
+- contextPath: RecordedFuture.IP.Evidence.mitigation
+  description: Recorded Future Risk Rule Mitigation
+  type: string
+- contextPath: RecordedFuture.IP.Evidence.description
+  description: Recorded Future Risk Rule Description
+  type: string
+- contextPath: RecordedFuture.IP.Evidence.timestamp
+  description: Recorded Future Risk Rule Timestamp
+  type: date
+- contextPath: RecordedFuture.IP.Evidence.level
+  description: Recorded Future Risk Rule Level
+  type: number
+- contextPath: RecordedFuture.IP.Evidence.ruleid
+  description: Recorded Future Risk Rule ID
+  type: string
+- contextPath: RecordedFuture.IP.name
+  description: IP Address
+  type: string
+- contextPath: RecordedFuture.IP.maxRules
+  description: Maximum count of Recorded Future IP Risk Rules
+  type: number
+- contextPath: RecordedFuture.IP.ruleCount
+  description: Number of triggered Recorded Future IP Risk Rules
+  type: number
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

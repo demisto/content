@@ -1,0 +1,9 @@
+{
+    "whitelisted-hosts": [
+        {
+            "annotation": "whitelisted outbound",
+            "hostAddress": "12.1.1.1",
+            "updateTime": 1615814171
+        }
+    ]
+}

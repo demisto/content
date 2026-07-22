@@ -1,0 +1,289 @@
+id: RiskSense Get Unique Open Findings - Test
+version: -1
+name: RiskSense Get Unique Open Findings - Test
+description: This playbook uses the RiskSense integration and tests the various scenarios
+  of the "risksense-get-unique-open-findings" command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6405ebcc-5846-438a-8fc5-7178032e76a6
+    type: start
+    task:
+      id: 6405ebcc-5846-438a-8fc5-7178032e76a6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 4da9aca8-c158-4b3e-89b0-04fda2363886
+    type: regular
+    task:
+      id: 4da9aca8-c158-4b3e-89b0-04fda2363886
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 0949edc8-1edc-44e2-854a-c08c91b5a740
+    type: regular
+    task:
+      id: 0949edc8-1edc-44e2-854a-c08c91b5a740
+      version: -1
+      name: Execute Risksense-get-unique-open-findings command from Demisto.
+      description: This command is used to find unique open host findings. The open
+        findings can be searched based on input parameters like fieldname (severity,
+        title, source etc), operator (exact, in, like), page and size.
+      script: '|||risksense-get-unique-open-findings'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      exclude:
+        simple: "false"
+      fieldname:
+        simple: title
+      operator:
+        simple: EXACT
+      page: {}
+      size:
+        simple: "5"
+      sort_by: {}
+      sort_direction: {}
+      value:
+        simple: NetBIOS Name Accessible
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: b10c440b-e24e-41c2-835d-f12eeb6d0e7e
+    type: condition
+    task:
+      id: b10c440b-e24e-41c2-835d-f12eeb6d0e7e
+      version: -1
+      name: Is context data matched ?
+      description: This section matches the context data with response from API.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueHostFinding.Title
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueHostFinding.Severity
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueHostFinding.HostCount
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueHostFinding.Source
+                transformers:
+                - operator: uniq
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: RiskSense
+                accessor: UniqueHostFinding.SourceID
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: e58acd28-b303-4f21-82b3-6220cedb208f
+    type: regular
+    task:
+      id: e58acd28-b303-4f21-82b3-6220cedb208f
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 3fb5b0e7-8bf4-4476-8589-1a39123b67fb
+    type: regular
+    task:
+      id: 3fb5b0e7-8bf4-4476-8589-1a39123b67fb
+      version: -1
+      name: Close Investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 8d74e4e2-a9d2-4287-8f9f-eed4dc093734
+    type: title
+    task:
+      id: 8d74e4e2-a9d2-4287-8f9f-eed4dc093734
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

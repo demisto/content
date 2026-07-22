@@ -1,0 +1,18 @@
+[INGEST:vendor="tableau", product="log", target_dataset="tableau_log_raw", no_hit=keep]
+filter _raw_log ~= "\"ts\":\"[^\"]+\"" or _raw_log ~= "^[^\s]+\s+[^\s]+\s+[^\s]+\s+(\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+)\s+\"[^\"]+\"" or _raw_log ~= "\d+\-\d+\-\d+\s+\d+:\d+:\d+.\d+\s+\W\d+"
+| alter 
+    tmp1_full_timestamp= if(_raw_log ~= "\d+\-\d+\-\d+\s+\d+:\d+:\d+.\d+\s+\W\d+", arraystring(regextract(_raw_log, "\d+\-\d+\-\d+\s+\d+:\d+:\d+.\d+\s+\W\d+"), ""), null),
+    tmp2_full_datetime = if(_raw_log ~= "^[^\s]+\s+[^\s]+\s+[^\s]+\s+(\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+)\s+\"[^\"]+\"", arraystring(regextract(_raw_log, "^[^\s]+\s+[^\s]+\s+[^\s]+\s+(\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+)\s+\"[^\"]+\""), ""), null),
+    tmp2_zone = if(_raw_log ~= "^[^\s]+\s+[^\s]+\s+[^\s]+\s+(\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+)\s+\"[^\"]+\"",  arraystring(regextract(_raw_log, "^[^\s]+\s+[^\s]+\s+[^\s]+\s+\d+\-\d+\-\d+T\d+:\d+:\d+\.\d+\s+\"([^\"]+)\""), ""), null),
+    tmp3_full_timestamp = if(_raw_log ~= "\"ts\":\"[^\"]+\"", arraystring(regextract(_raw_log, "\"ts\":\"([^\"]+)\""), ""), null)
+| alter
+    tmp1_timestamp = if(tmp1_full_timestamp != null, parse_timestamp("%Y-%m-%d %H:%M:%E3S %z", tmp1_full_timestamp), null),
+    tmp2_timestamp = if(tmp2_full_datetime != null, parse_timestamp("%Y-%m-%dT%H:%M:%E*S %z", arraystring(arraycreate(tmp2_full_datetime, tmp2_zone), " ")), null),
+    tmp3_1_timestamp = if(tmp3_full_timestamp = null, null, tmp3_full_timestamp ~= ":\d{2}\.\d+Z", parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp3_full_timestamp), null)
+| alter
+    tmp3_2_timestamp = if(tmp3_1_timestamp = null, parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp3_full_timestamp), null)
+| alter
+    tmp_pick_time = coalesce(tmp1_timestamp, tmp2_timestamp, tmp3_1_timestamp, tmp3_2_timestamp)
+| alter
+    _time = tmp_pick_time
+| fields -tmp1_full_timestamp, tmp2_full_datetime, tmp2_zone, tmp3_full_timestamp, tmp1_timestamp, tmp2_timestamp, tmp3_1_timestamp, tmp3_2_timestamp, tmp_pick_time;

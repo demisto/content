@@ -1,0 +1,26 @@
+{
+  "collections": [
+    {
+      "can_read": true,
+      "can_write": false,
+      "description": "",
+      "id": "4c649e16-2bb7-50f5-8826-2a2d0a0b9631",
+      "media_types": [
+        "application/vnd.oasis.stix+json; version=2.0"
+      ],
+      "query": "type:IP",
+      "title": "Collection1"
+    },
+    {
+      "can_read": true,
+      "can_write": false,
+      "description": "",
+      "id": "e46189b5-c5c8-5c7f-b947-183e0302b4d3",
+      "media_types": [
+        "application/vnd.oasis.stix+json; version=2.0"
+      ],
+      "query": "sourceBrands:\"Some Feed\"",
+      "title": "Collection2"
+    }
+  ]
+}

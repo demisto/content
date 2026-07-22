@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: Delinea_ALM_ModelingRule
+name: Delinea ALM Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

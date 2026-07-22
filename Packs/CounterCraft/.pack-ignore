@@ -1,0 +1,6 @@
+[file:CounterCraft.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM102,RM104
+

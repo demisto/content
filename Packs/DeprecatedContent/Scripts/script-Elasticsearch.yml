@@ -1,0 +1,62 @@
+commonfields:
+  id: Elasticsearch
+  version: -1
+name: Elasticsearch
+script: >+
+  dArgs = demisto.args()
+
+  dArgs['using-brand'] = 'elasticsearch'
+
+  res = demisto.executeCommand('search', dArgs)
+
+  if isError(res[0]):
+      demisto.results(res)
+  else:
+      md = '### Elasticsearch results\n'
+      md += '* Query: ' + dArgs['query'] + '\n'
+      md += '* Index: ' + dArgs['index'] + '\n'
+      if demisto.get(res[0],'Contents.total'):
+          data = demisto.get(res[0], 'Contents.hits')
+          data = flattenTable(data)
+          demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': data})
+      else:
+          demisto.results({'ContentsFormat': formats['text'], 'Type': entryTypes['note'], 'Contents': 'No results.'})
+
+
+type: python
+subtype: python2
+tags:
+- Elasticsearch
+comment: |-
+  Deprecated. Use the Elasticsearch v2 integration instead.
+
+  Run a search query using Elasticsearch
+enabled: true
+args:
+- name: explain
+  description: Computes a score explanation for a query and a specific document, default false
+- name: fields
+  description: Fields to fetch, leave empty to bring the entire document
+- name: index
+  required: true
+  description: Index name/s to query, comma separated
+- name: query
+  required: true
+  default: true
+  description: search query
+- name: page
+  description: Page number to start search from, default 0
+- name: size
+  description: Page size, 1 - 10000, default 100
+- name: sort
+  description: Sort field[:order] order = true for ascending, default true
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - elasticsearch|||search
+timeout: 0s
+tests:
+- No test - deprecated
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

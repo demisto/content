@@ -1,0 +1,36 @@
+{
+  "GoogleChronicleBackstory.AssetAliases(val.asset.asset_ip_address == obj.asset.asset_ip_address && val.asset.product_id == obj.asset.product_id && val.asset.mac == obj.asset.mac && val.asset.hostname == obj.asset.hostname)": {
+    "asset": {
+      "hostname": "example.com",
+      "aliases": [
+        {
+          "metadata": {
+            "interval": {
+              "startTime": "2021-01-01T00:00:00Z",
+              "endTime": "2022-01-01T00:00:00Z"
+            }
+          },
+          "entity": {
+            "asset": {
+              "hostname": "windows-endpoin"
+            }
+          }
+        },
+        {
+          "metadata": {
+            "interval": {
+              "startTime": "2021-01-01T00:00:00Z",
+              "endTime": "2022-01-01T00:00:00Z"
+            }
+          },
+          "entity": {
+            "asset": {
+              "hostname": "windows-endpoin",
+              "assetId": "test_asset_id"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

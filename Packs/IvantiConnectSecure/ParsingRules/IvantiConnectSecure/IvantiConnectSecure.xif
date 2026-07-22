@@ -1,0 +1,27 @@
+[INGEST:vendor="ivanti", product="connect_secure", target_dataset="ivanti_connect_secure_raw", no_hit=keep]
+filter _raw_log ~= "\d{4}\-\d{2}\-\d{2}[\s\S]\d{2}:\d{2}:\d{2}[Z\.+\-\d:]+"
+| alter
+    tmp_get_date = arrayindex(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2})[\s\S]\d{2}:\d{2}:\d{2}[Z\.+\-\d:]+"), 0),
+    tmp_get_time = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}[\s\S](\d{2}:\d{2}:\d{2})[Z\.+\-\d:]+"), 0),
+    tmp_get_additions = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}[\s\S]\d{2}:\d{2}:\d{2}([Z\.+\-\d:]+)"), 0)    
+| alter
+    tmp_check_z = if(tmp_get_additions ~= "^Z$", "+00:00", null),
+    tmp_check_zone = if(tmp_get_additions ~= "^[+|-]\d{2}:\d{2}$", tmp_get_additions, null),
+    tmp_check_3mili_zone = if(tmp_get_additions ~= "^\.\d{3}[+|-]\d{2}:\d{2}", tmp_get_additions, null),
+    tmp_check_6mili_zone = if(tmp_get_additions ~= "^\.\d{6}[+|-]\d{2}:\d{2}", tmp_get_additions, null),
+    tmp_check_z_3mili = if(tmp_get_additions ~= "^\.\d{3}Z$", replex(tmp_get_additions, "Z", "+00:00"), null),
+    tmp_check_z_6mili = if(tmp_get_additions ~= "^\.\d{6}Z$", replex(tmp_get_additions, "Z", "+00:00"), null)
+| alter
+    tmp_create_timestamp_format = concat(tmp_get_date, " ", arraystring(arraycreate(tmp_get_time, coalesce(tmp_check_z, tmp_check_zone, tmp_check_3mili_zone, tmp_check_6mili_zone, tmp_check_z_3mili, tmp_check_z_6mili)), ""))
+| alter
+    tmp_timestamp1 = if(tmp_check_z != null, parse_timestamp("%Y-%m-%d %H:%M:%S%Ez", tmp_create_timestamp_format), null),
+    tmp_timestamp2 = if(tmp_check_zone != null, parse_timestamp("%Y-%m-%d %H:%M:%S%Ez", tmp_create_timestamp_format), null),
+    tmp_timestamp3 = if(tmp_check_3mili_zone != null, parse_timestamp("%Y-%m-%d %H:%M:%E3S%Ez", tmp_create_timestamp_format), null),
+    tmp_timestamp4 = if(tmp_check_6mili_zone != null, parse_timestamp("%Y-%m-%d %H:%M:%E*S%Ez", tmp_create_timestamp_format), null),
+    tmp_timestamp5 = if(tmp_check_z_3mili != null, parse_timestamp("%Y-%m-%d %H:%M:%E3S%Ez", tmp_create_timestamp_format), null),
+    tmp_timestamp6 = if(tmp_check_z_6mili != null, parse_timestamp("%Y-%m-%d %H:%M:%E*S%Ez", tmp_create_timestamp_format), null)
+| alter
+    tmp_final_timestamp = coalesce(tmp_timestamp1, tmp_timestamp2, tmp_timestamp3, tmp_timestamp4, tmp_timestamp5, tmp_timestamp6)
+| alter
+    _time = tmp_final_timestamp
+| fields -tmp_get_date, tmp_get_time, tmp_get_additions, tmp_check_z, tmp_check_z_3mili, tmp_check_z_6mili, tmp_check_zone, tmp_check_3mili_zone, tmp_check_z_6mili, tmp_create_timestamp_format, tmp_timestamp1,tmp_timestamp2, tmp_timestamp3, tmp_timestamp4, tmp_timestamp5, tmp_timestamp6, tmp_final_timestamp;

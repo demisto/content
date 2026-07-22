@@ -1,0 +1,210 @@
+id: Rubrik Object Context Analysis - Rubrik Polaris
+version: -1
+name: Rubrik Object Context Analysis - Rubrik Polaris
+description: This playbook will investigate based on the object type from the Rubrik Anomaly incident to retrieve the policy hits of the files related to the object.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f72d3fe9-707f-4413-8ee2-17af6a3f6710
+    type: start
+    task:
+      id: f72d3fe9-707f-4413-8ee2-17af6a3f6710
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4a8c2b89-376c-43fa-8464-7224c263ccd7
+    type: title
+    task:
+      id: 4a8c2b89-376c-43fa-8464-7224c263ccd7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a86dbba9-493d-46bb-87ff-067a5bfcb1e6
+    type: condition
+    task:
+      id: a86dbba9-493d-46bb-87ff-067a5bfcb1e6
+      version: -1
+      name: Is the object type Fileset, Volume Group, or VM?
+      description: Checks whether the object type contains fileset, volume group or the VM.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.object_type
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value:
+              simple: Fileset
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.object_type
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value:
+              simple: Vm
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.object_type
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value:
+              simple: VolumeGroup
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1cb54c33-0f08-4ef7-8852-95d374988334
+    type: playbook
+    task:
+      id: 1cb54c33-0f08-4ef7-8852-95d374988334
+      version: -1
+      name: Rubrik File Context Analysis - Rubrik Polaris
+      description: This playbook fetches file context information for the provided file, folder, or file share name and the object ID to get the policy hits.
+      playbookName: Rubrik File Context Analysis - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "50"
+      object_id:
+        complex:
+          root: inputs.object_id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 610,
+        "x": 10,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: object_id
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisfid
+  required: false
+  description: The Object ID or the Snappable ID. Default can be received from incident if present.
+  playbookInputQuery:
+- key: object_type
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisobjecttype
+  required: false
+  description: The Object type. Default can be received from incident if present.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

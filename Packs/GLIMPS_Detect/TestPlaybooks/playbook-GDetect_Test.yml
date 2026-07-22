@@ -1,0 +1,498 @@
+id: GDetect
+name: GDetect
+version: -1
+fromversion: 6.0.0
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 'e38a54cd-27c6-4866-ac09-3b1785f1b4c9'
+    type: start
+    task:
+      id: 'e38a54cd-27c6-4866-ac09-3b1785f1b4c9'
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: 1
+    taskid: '0dbd3a6a-80d0-46b7-b5a1-1e70fcf834b3'
+    type: regular
+    task:
+      id: '0dbd3a6a-80d0-46b7-b5a1-1e70fcf834b3'
+      version: -1
+      name: DeleteContext
+      description: ''
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '2':
+    id: 2
+    taskid: '455663d2-7570-4fd3-a13c-e4cc5d7aa81f'
+    type: regular
+    task:
+      id: '455663d2-7570-4fd3-a13c-e4cc5d7aa81f'
+      version: -1
+      name: gdetect-send
+      description: ''
+      script: GLIMPS_Detect|||gdetect-send
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '3':
+    id: '3'
+    taskid: 'f8e6a316-07db-4c85-9fe1-a2573ce9db8f'
+    type: condition
+    task:
+      id: 'f8e6a316-07db-4c85-9fe1-a2573ce9db8f'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.Gdetect.Send.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.Gdetect.Send.entryID
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '4':
+    id: 4
+    taskid: '193a037e-30f1-4c03-bed9-a61569bba534'
+    type: regular
+    task:
+      id: '193a037e-30f1-4c03-bed9-a61569bba534'
+      version: -1
+      name: gdetect-get-all
+      description: ''
+      script: GLIMPS_Detect|||gdetect-get-all
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '5':
+    id: '5'
+    taskid: 'caf842ff-3e56-4725-b7d6-d7828b4e7c95'
+    type: condition
+    task:
+      id: 'caf842ff-3e56-4725-b7d6-d7828b4e7c95'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.uuid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.ssdeep
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.is_malware
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.score
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.done
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.filetype
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.filenames
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.malwares
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.ssdeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.magic
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.size
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.is_malware
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.av_results.av
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.av_results.result
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.files.av_results.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.link
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.file_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.duration
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.token
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.filenames
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.tags.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.tags.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.magic
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.ssdeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.file_size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.threats.mime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: GLIMPS.GDetect.All.status
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '6':
+    id: 6
+    taskid: '421ea49f-6539-49a2-9812-0163e998dd8e'
+    type: regular
+    task:
+      id: '421ea49f-6539-49a2-9812-0163e998dd8e'
+      version: -1
+      name: gdetect-get-threats
+      description: ''
+      script: GLIMPS_Detect|||gdetect-get-threats
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments: {}
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '7':
+    id: '7'
+    taskid: '9ddb6260-cbee-4669-94d2-2c924a51c8ab'
+    type: condition
+    task:
+      id: '9ddb6260-cbee-4669-94d2-2c924a51c8ab'
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ''
+      brand: ''
+    nexttasks:
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.filenames
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.tags
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.tags.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.tags.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.magic
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.ssdeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.file_size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GLIMPS.GDetect.Threats.mime
+            iscontext: true
+    view: '{"position": {"x": 50, "y": 1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  '8':
+    id: '8'
+    taskid: '83f239d1-84fe-49dd-8469-e90662b4c370'
+    type: title
+    task:
+      id: '83f239d1-84fe-49dd-8469-e90662b4c370'
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: '{"position": {"x": 50, "y": 1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width": 380, "x": 50, "y": 50}}}'
+inputs: []
+outputs: []
+description: Test Playbook for the GDetect Integration

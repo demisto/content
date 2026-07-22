@@ -1,0 +1,302 @@
+id: Active Directory - ad-get-user limit check
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: 1.0.1
+    fromServerVersion: ""
+    toServerVersion: ""
+vcShouldKeepItemLegacyProdMachine: false
+name: Active Directory - ad-get-user limit check
+description: Checked the limit in ad-get-user command, in case no limit was added the default is 20.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c949911f-7d5e-47d9-8134-3f90b03d5d2e
+    type: start
+    task:
+      id: c949911f-7d5e-47d9-8134-3f90b03d5d2e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 046460bb-5d1a-41b1-88cd-de7604c432a0
+    type: condition
+    task:
+      id: 046460bb-5d1a-41b1-88cd-de7604c432a0
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks if the Active Directory Query v2 integration is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: cfa96462-ccbb-4d1c-88ae-7bf158f2387a
+    type: title
+    task:
+      id: cfa96462-ccbb-4d1c-88ae-7bf158f2387a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: e264fa8d-83ff-438a-8574-c679fd28207a
+    type: regular
+    task:
+      id: e264fa8d-83ff-438a-8574-c679fd28207a
+      version: -1
+      name: Run ad-get-user with no limit
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: ca0b0fae-ca3d-457d-8b34-cfa6b2b7a929
+    type: condition
+    task:
+      id: ca0b0fae-ca3d-457d-8b34-cfa6b2b7a929
+      version: -1
+      name: check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: Account
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "20"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: dd5de187-2780-4bc4-81d0-2e9a252cef72
+    type: regular
+    task:
+      id: dd5de187-2780-4bc4-81d0-2e9a252cef72
+      version: -1
+      name: Limit is not set currently
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: '"Default limit is not set currently" '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: fb9a9ca2-b09e-44bc-8160-bd222f4919b8
+    type: regular
+    task:
+      id: fb9a9ca2-b09e-44bc-8160-bd222f4919b8
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1285,
+        "width": 870,
+        "x": 260,
+        "y": -380
+      }
+    }
+  }
+inputs:
+- key: Username
+  value: {}
+  required: false
+  description: Search for user by the sAMAccountName attribute in Active Directory.
+  playbookInputQuery:
+- key: UserEmail
+  value:
+    complex:
+      root: Account
+      accessor: Email
+      transformers:
+      - operator: uniq
+  required: false
+  description: Search for user by the email attribute in Active Directory.
+  playbookInputQuery:
+outputs:
+- contextPath: UserManagerEmail
+  description: The email of the user's manager.
+- contextPath: UserManagerDisplayName
+  description: The display name of the user's manager.
+  type: unknown
+sourceplaybookid: Active Directory - Get User Manager Details
+fromversion: 5.0.0

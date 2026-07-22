@@ -1,0 +1,324 @@
+id: dnstwistTest
+version: -1
+name: dnstwistTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6216839f-3de0-48e5-8398-96a164ae4557
+    type: start
+    task:
+      id: 6216839f-3de0-48e5-8398-96a164ae4557
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "1":
+    id: "1"
+    taskid: 61bc86fc-ab1e-40b4-8829-0f9824f55de1
+    type: regular
+    task:
+      id: 61bc86fc-ab1e-40b4-8829-0f9824f55de1
+      version: -1
+      name: Delete context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: "2"
+    taskid: 694feacb-ab85-435f-8147-73ea1e39eb25
+    type: regular
+    task:
+      id: 694feacb-ab85-435f-8147-73ea1e39eb25
+      version: -1
+      name: dnstwist Domain on "demisto.com"
+      description: 'Check domain variations '
+      script: '|||dnstwist-domain-variations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain:
+        simple: demisto.com
+      limit: {}
+      whois: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: 59399f42-ede5-45bf-8507-4dd2bcc04c92
+    type: condition
+    task:
+      id: 59399f42-ede5-45bf-8507-4dd2bcc04c92
+      version: -1
+      name: Check that all outputs exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.IP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.DNS-MX
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.DNS-NS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: "4"
+    taskid: 34303bcf-9f19-4362-8962-bf125679a96f
+    type: title
+    task:
+      id: 34303bcf-9f19-4362-8962-bf125679a96f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: 89007996-9e58-4269-8c75-56573bb670af
+    type: regular
+    task:
+      id: 89007996-9e58-4269-8c75-56573bb670af
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "6":
+    id: "6"
+    taskid: ad9da2dd-267c-471c-8423-0e8912a4633d
+    type: regular
+    task:
+      id: ad9da2dd-267c-471c-8423-0e8912a4633d
+      version: -1
+      name: dnstwist domain on "lemisto.com" that has no MX
+      description: Checks for variations of a phishing domain name.
+      script: dnstwist|||dnstwist-domain-variations
+      type: regular
+      iscommand: true
+      brand: dnstwist
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        simple: lemisto.com
+      limit: {}
+      whois: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "7":
+    id: "7"
+    taskid: b6b036da-16f7-4756-8be2-a813810cb6fd
+    type: condition
+    task:
+      id: b6b036da-16f7-4756-8be2-a813810cb6fd
+      version: -1
+      name: Check that all outputs exist, but no dns-mx
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.IP
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.DNS-MX
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: Domain.Domains.DNS-NS
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: dnstwist
+                accessor: DNS-MX
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1265,
+        "width": 380,
+        "x": 60,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

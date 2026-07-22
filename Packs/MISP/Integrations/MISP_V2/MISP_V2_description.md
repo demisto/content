@@ -1,0 +1,1 @@
+Notice: Submitting indicators using the **url** command of this integration might make the indicator data publicly available.  See the vendor’s documentation for more details. 

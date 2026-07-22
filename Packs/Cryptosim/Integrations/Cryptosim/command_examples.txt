@@ -1,0 +1,2 @@
+!cryptosim-get-correlations
+!cryptosim-get-correlation-alert startDate=2022-01-20T12:00:00 endDate=20222-01T24:00:00

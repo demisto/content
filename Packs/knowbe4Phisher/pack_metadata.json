@@ -1,0 +1,28 @@
+{
+    "name": "PhishER",
+    "description": "A pack for KnowBe4 PhishER integration",
+    "support": "partner",
+    "currentVersion": "1.0.21",
+    "author": "KnowBe4",
+    "url": "https://www.knowbe4.com/products/phisher",
+    "email": "support@knowbe4.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "KnowBe4"
+    ],
+    "created": "2020-05-20T00:00:00Z",
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,14 @@
+{
+  "PassiveTotal.ThirdParty(val.id == obj.id)": {
+    "id": 45998,
+    "InsightAsset": {
+      "insightId": 123,
+      "segmentBy": "savedfilter_metric_29644"
+    }
+  },
+  "PassiveTotal.Summary.ThirdPartyInsightAsset(val.name == obj.name)": {
+    "name": "pt-list-third-party-attack-surface-assets",
+    "totalCount": 28,
+    "totalPages": 2
+  }
+}

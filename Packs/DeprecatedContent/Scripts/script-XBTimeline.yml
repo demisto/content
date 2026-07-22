@@ -1,0 +1,41 @@
+commonfields:
+  id: XBTimeline
+  version: -1
+name: XBTimeline
+script: >-
+  import time
+
+  res = []
+
+  entry = demisto.executeCommand('xb-timeline', {'username': demisto.args()['username']})[0]
+
+  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
+      entities = demisto.get(entry, 'Contents.entities')
+      if entities:
+          for e in entities:
+              res.append({'1.ID': demisto.get(e, 'id'), '2.Type': demisto.get(e, 'tp'), '3.Start': time.ctime(demisto.get(e, 'st') / 1000.0), '4.End': time.ctime(demisto.get(e, 'et') / 1000.0), \
+                          '5.Initial Risk': str(demisto.get(e, 'irs')), '6.Risk': str(demisto.get(e, 'rs')), '7.OS': str(demisto.get(e, 'os')), '8.OE': str(demisto.get(e, 'oe'))})
+      demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': res})
+  else:
+      demisto.results(entry)
+type: python
+subtype: python2
+tags:
+- server
+- analytics
+- exabeam
+comment: Deprecated. This script is deprecated. Use the Exabeam integration instead.
+system: true
+deprecated: true
+args:
+- name: username
+  required: true
+  default: true
+  description: Username for query
+scripttarget: 0
+dependson:
+  must:
+  - xb-timeline
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

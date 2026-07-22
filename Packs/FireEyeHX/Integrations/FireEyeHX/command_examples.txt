@@ -1,0 +1,4 @@
+!fireeye-hx-get-indicators limit=2
+!fireeye-hx-get-indicator category=Custom name="5def0b16-87bc-42a2-877a-bca45ebcbc9a"
+!fireeye-hx-get-host-set-information
+!fireeye-hx-get-all-hosts-information

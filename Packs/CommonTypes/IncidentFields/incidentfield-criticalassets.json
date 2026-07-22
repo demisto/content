@@ -1,0 +1,72 @@
+{
+ "id": "incident_criticalassets",
+ "version": -1,
+ "modified": "2019-10-06T12:42:27.040292745Z",
+ "name": "Critical Assets",
+ "ownerOnly": false,
+ "placeholder": "",
+ "description": "A table of critical assets involved in the incident, including the name and asset type.",
+ "cliName": "criticalassets",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "",
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [],
+ "validationRegex": "",
+ "useAsKpi": true,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Phishing",
+  "Malware",
+  "Access",
+  "Network"
+ ],
+ "systemAssociatedTypes": null,
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "assetname",
+   "displayName": "Asset Name",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "assettype",
+   "displayName": "Asset Type",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+  {
+
+  }
+ ],
+ "sla": 0,
+ "threshold": 72,
+ "breachScript": "",
+ "fromVersion": "5.0.0"
+}

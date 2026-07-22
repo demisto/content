@@ -1,0 +1,38 @@
+commonfields:
+  id: IntezerScanHost
+  version: -1
+name: IntezerScanHost
+script: ''
+type: python
+subtype: python2
+tags: []
+enabled: true
+comment: "Deprecated. D2 agent is deprecated. No available replacement."
+args:
+- name: host
+  required: true
+  description: Computer name.
+- name: os
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - linux
+  - osx
+  - windows
+  description: OS
+- name: intezer_api_key
+  required: true
+  secret: true
+  description: Intezer API key.
+outputs:
+- contextPath: Intezer.Analysis.ID
+  description: 'Endpoint analysis ID. '
+  type: string
+scripttarget: 0
+timeout: 900ns
+runas: DBotWeakRole
+tests:
+- no test (Impossible to mock test)
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+deprecated: true

@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointbreachsource",
+    "version": -1,
+    "modified": "2021-07-17T08:37:36.764846892+05:30",
+    "name": "Flashpoint Breach Source",
+    "description": "Data source of breach (i.e. Analyst Research, CredentialStealer, etc.).",
+    "ownerOnly": false,
+    "cliName": "flashpointbreachsource",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Compromised Credentials"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

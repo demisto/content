@@ -1,0 +1,72 @@
+{
+    "observeit_observeit_raw": {
+        "cefDeviceEventClassId": {
+          "type": "string",
+          "is_array": false
+        },
+        "cat": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs2": {
+          "type": "string",
+          "is_array": false
+        },
+        "src": {
+          "type": "string",
+          "is_array": false
+        },
+        "duid": {
+          "type": "string",
+          "is_array": false
+        },
+        "dhost": {
+          "type": "string",
+          "is_array": false
+        },
+        "duser": {
+          "type": "string",
+          "is_array": false
+        },
+        "shost": {
+          "type": "string",
+          "is_array": false
+        },
+        "sproc": {
+          "type": "string",
+          "is_array": false
+        },
+        "suser": {
+          "type": "string",
+          "is_array": false
+        },
+        "dntdom": {
+          "type": "string",
+          "is_array": false
+        },
+        "reason": {
+          "type": "string",
+          "is_array": false
+        },
+        "externalId": {
+          "type": "string",
+          "is_array": false
+        },
+        "sourceServiceName": {
+          "type": "string",
+          "is_array": false
+        },
+        "destinationServiceName": {
+          "type": "string",
+          "is_array": false
+        },
+        "cefSeverity": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs1": {
+          "type": "string",
+          "is_array": false
+        }
+    }
+}

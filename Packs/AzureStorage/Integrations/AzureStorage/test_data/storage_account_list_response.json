@@ -1,0 +1,112 @@
+{
+  "value": [
+    {
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "id": "/subscriptions/subscription_id_1/resourceGroups/resource_group_name_1/providers/Microsoft.Storage/storageAccounts/account_name_1",
+      "name": "account_name_1",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "location1",
+      "tags": {
+        "ms-resource-usage": "ms-resource-usage"
+      },
+      "properties": {
+        "privateEndpointConnections": [],
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": false,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2018-10-22T22:38:38.9742903Z"
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2018-10-22T22:38:38.9742903Z"
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "provisioningState": "Succeeded",
+        "creationTime": "2018-10-22T22:38:38.8180662Z",
+        "primaryEndpoints": {
+          "blob": "",
+          "queue": "",
+          "table": "",
+          "file": ""
+        },
+        "primaryLocation": "location1",
+        "statusOfPrimary": "available"
+      }
+    },
+    {
+      "sku": {
+        "name": "Standard_GRS",
+        "tier": "Standard"
+      },
+      "kind": "Storage",
+      "id": "/subscriptions/subscription_id_2/resourceGroups/resource_group_name_2/providers/Microsoft.Storage/storageAccounts/account_name_2",
+      "name": "account_name_2",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "location_2",
+      "tags": {
+        "tag1": "e"
+      },
+      "properties": {
+        "privateEndpointConnections": [],
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": true,
+        "largeFileSharesState": "Disabled",
+        "networkAcls": {
+          "bypass": "Logging, Metrics",
+          "virtualNetworkRules": [],
+          "ipRules": [
+            {
+              "value": "1.1.1.1",
+              "action": "Allow"
+            }
+          ],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2021-02-09T14:45:18.4169550Z"
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true,
+              "lastEnabledTime": "2021-02-09T14:45:18.4169550Z"
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "provisioningState": "Succeeded",
+        "creationTime": "2021-02-09T14:45:18.3075946Z",
+        "primaryEndpoints": {
+          "blob": "",
+          "queue": "",
+          "table": "",
+          "file": ""
+        },
+        "primaryLocation": "eastus",
+        "statusOfPrimary": "available",
+        "secondaryLocation": "westus",
+        "statusOfSecondary": "available"
+      }
+    }
+  ]
+}

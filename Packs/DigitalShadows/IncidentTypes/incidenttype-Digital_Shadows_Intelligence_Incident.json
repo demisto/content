@@ -1,0 +1,26 @@
+{
+    "autorun": true,
+    "color": "#3bceaf",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "extractSettings": {
+        "mode": "All",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Digital Shadows Intelligence Incident",
+    "layout": "Digital Shadows Intelligence Incident Layout",
+    "locked": false,
+    "name": "Digital Shadows Intelligence Incident",
+    "playbookId": "Digital Shadows - IoC Assessment \u0026 Enrichment",
+    "readonly": false,
+    "reputationCalc": 2,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "5.5.0"
+}

@@ -1,0 +1,42 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Digital Guardian Security Event"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "digitalguardianremoteport",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "Digital Guardian Remote Port",
+    "editForm": true,
+    "fieldCalcScript": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_digitalguardianremoteport",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Digital Guardian Remote Port",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "required": false,
+    "script": "",
+    "selectValues": null,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

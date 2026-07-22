@@ -1,0 +1,198 @@
+{
+  "iocs": [
+    {
+      "CustomFields": {
+        "service": "Daily Threat Feed"
+      },
+      "aggregatedReliability": "A - Completely reliable",
+      "calculatedTime": "2021-12-08T09:32:24.104143+02:00",
+      "expiration": "2021-12-15T12:05:31.570698+02:00",
+      "expirationSource": {
+        "brand": "Some Feed",
+        "expirationInterval": 10080,
+        "expirationPolicy": "indicatorType",
+        "instance": "Some Feed_instance_1",
+        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+        "setTime": "2021-12-08T12:05:28.570985+02:00",
+        "source": "indicatorType",
+        "user": ""
+      },
+      "expirationStatus": "active",
+      "firstSeen": "0001-01-01T00:00:00Z",
+      "firstSeenEntryID": "API",
+      "id": "5188347",
+      "indicator_type": "IP",
+      "lastSeen": "0001-01-01T00:00:00Z",
+      "lastSeenEntryID": "API",
+      "modified": "2021-12-08T12:05:28.617414+02:00",
+      "modifiedTime": "2021-12-08T12:05:11+02:00",
+      "moduleToFeedMap": {
+        "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+          "ExpirationSource": {
+            "brand": "Some Feed",
+            "expirationInterval": 10080,
+            "expirationPolicy": "indicatorType",
+            "instance": "Some Feed_instance_1",
+            "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+            "setTime": "2021-12-08T12:05:28.570985+02:00",
+            "source": "indicatorType",
+            "user": ""
+          },
+          "bypassExclusionList": false,
+          "classifierId": "",
+          "classifierVersion": 0,
+          "expirationInterval": 20160,
+          "expirationPolicy": "indicatorType",
+          "fetchTime": "2021-12-08T12:05:11+02:00",
+          "fields": {
+            "service": "Daily Threat Feed"
+          },
+          "isEnrichment": false,
+          "mapperId": "",
+          "mapperVersion": 0,
+          "modifiedTime": "2021-12-08T12:05:11+02:00",
+          "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+          "rawJSON": null,
+          "reliability": "A - Completely reliable",
+          "score": 3,
+          "sourceBrand": "Some Feed",
+          "sourceInstance": "Some Feed_instance_1",
+          "timestamp": "0001-01-01T00:00:00Z",
+          "type": "IP",
+          "value": "2.2.2.2"
+        }
+      },
+      "score": 3,
+      "sortValues": [
+        " \u0001\u0016_-f0\u000b\u0019Q\u0018",
+        "5188347"
+      ],
+      "sourceBrands": [
+        "Some Feed"
+      ],
+      "sourceInstances": [
+        "Some Feed_instance_1"
+      ],
+      "timestamp": "2021-12-08T09:32:24.104143+02:00",
+      "value": "2.2.2.2",
+      "version": 15
+    },
+    {
+      "CustomFields": {
+        "service": "Daily Threat Feed"
+      },
+      "aggregatedReliability": "A - Completely reliable",
+      "calculatedTime": "2021-12-08T09:32:24.104143+02:00",
+      "expiration": "2021-12-15T12:05:31.570698+02:00",
+      "expirationSource": {
+        "brand": "Some Feed",
+        "expirationInterval": 10080,
+        "expirationPolicy": "indicatorType",
+        "instance": "Some Feed_instance_1",
+        "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+        "setTime": "2021-12-08T12:05:28.570985+02:00",
+        "source": "indicatorType",
+        "user": ""
+      },
+      "expirationStatus": "active",
+      "firstSeen": "0001-01-01T00:00:00Z",
+      "firstSeenEntryID": "API",
+      "id": "5188347",
+      "indicator_type": "IP",
+      "lastSeen": "0001-01-01T00:00:00Z",
+      "lastSeenEntryID": "API",
+      "modified": "2021-12-08T12:05:28.617414+02:00",
+      "modifiedTime": "2021-12-08T12:05:11+02:00",
+      "moduleToFeedMap": {
+        "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15": {
+          "ExpirationSource": {
+            "brand": "Some Feed",
+            "expirationInterval": 10080,
+            "expirationPolicy": "indicatorType",
+            "instance": "Some Feed_instance_1",
+            "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+            "setTime": "2021-12-08T12:05:28.570985+02:00",
+            "source": "indicatorType",
+            "user": ""
+          },
+          "bypassExclusionList": false,
+          "classifierId": "",
+          "classifierVersion": 0,
+          "expirationInterval": 20160,
+          "expirationPolicy": "indicatorType",
+          "fetchTime": "2021-12-08T12:05:11+02:00",
+          "fields": {
+            "service": "Daily Threat Feed"
+          },
+          "isEnrichment": false,
+          "mapperId": "",
+          "mapperVersion": 0,
+          "modifiedTime": "2021-12-08T12:05:11+02:00",
+          "moduleId": "fd8269e7-5ffa-4888-8ca8-bfe5eae78e15",
+          "rawJSON": null,
+          "reliability": "A - Completely reliable",
+          "score": 3,
+          "sourceBrand": "Some Feed",
+          "sourceInstance": "Some Feed_instance_1",
+          "timestamp": "0001-01-01T00:00:00Z",
+          "type": "IP",
+          "value": "4.4.4.4"
+        }
+      },
+      "score": 3,
+      "sortValues": [
+        " \u0001\u0016_-f0\u000b\u0019Q\u0018",
+        "5188347"
+      ],
+      "sourceBrands": [
+        "Some Feed"
+      ],
+      "sourceInstances": [
+        "Some Feed_instance_1"
+      ],
+      "timestamp": "2021-12-08T09:32:24.104143+02:00",
+      "value": "4.4.4.4",
+      "version": 15
+    },
+    {
+      "id": "142",
+      "version": 3,
+      "cacheVersn": 0,
+      "modified": "2023-03-29T08:45:03.33884006Z",
+      "timestamp": "2023-03-29T08:44:50.961231752Z",
+      "indicator_type": "Domain",
+      "value": "bad-domain.com",
+      "investigationIDs": [
+          "8c718b2b-d02f-495b-8a9d-f639c6ddc2ee"
+      ],
+      "lastSeen": "2023-03-29T08:45:03.338180599Z",
+      "firstSeen": "2023-03-29T08:44:50.961202664Z",
+      "lastSeenEntryID": "57@8c718b2b-d02f-495b-8a9d-f639c6ddc2ee",
+      "firstSeenEntryID": "Manual",
+      "score": 0,
+      "expiration": "2023-04-12T08:44:50.96120226Z",
+      "expirationStatus": "active",
+      "expirationSource": {
+          "setTime": "2023-03-29T08:44:50.96120226Z",
+          "source": "indicatorType",
+          "user": "",
+          "brand": "",
+          "instance": "",
+          "moduleId": "",
+          "expirationPolicy": "indicatorType",
+          "expirationInterval": 20160
+      },
+      "calculatedTime": "2023-03-29T08:45:03.338180599Z",
+      "manuallyEditedFields": [
+          "indicator_type"
+      ],
+      "isDetectable": true,
+      "isPreventable": false
+  }
+  ],
+  "searchAfter": [
+    " \u0001\u0016^><zHx\\x",
+    "5183977"
+  ],
+  "total": 3
+}

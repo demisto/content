@@ -1,0 +1,21 @@
+commonfields:
+  id: UnpublishThreatIntelReport
+  version: -1
+name: UnpublishThreatIntelReport
+comment: Sets a Threat Intel Report as unpublished.
+script: ''
+type: python
+tags:
+- threatIntelReport-action-button
+enabled: true
+args:
+- name: object
+  required: true
+  description: The Threat Intel Report object to unpublish.
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10404775
+runas: DBotWeakRole
+fromversion: 6.5.0
+tests:
+- Threat_Intel_Report_test

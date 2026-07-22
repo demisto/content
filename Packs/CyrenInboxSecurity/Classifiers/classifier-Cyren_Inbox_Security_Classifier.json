@@ -1,0 +1,16 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "2b2c9b9d-cfb4-46d6-8b0c-55e02bf9f62c",
+    "keyTypeMap": {
+        "office365": "Cyren Inbox Security"
+    },
+    "name": "Cyren Inbox Security Classifier",
+    "transformer": {
+        "complex": null,
+        "simple": "application"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

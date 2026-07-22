@@ -1,0 +1,23 @@
+{
+    "id": "SolarWinds Alert",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "SolarWinds Alert",
+    "prevName": "SolarWinds Alert",
+    "color": "#50EB07",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "SolarWinds Alert",
+    "fromVersion": "5.5.0"
+}

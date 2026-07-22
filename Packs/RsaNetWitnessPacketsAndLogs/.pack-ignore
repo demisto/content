@@ -1,0 +1,9 @@
+[file:RsaNetWitnessPacketsAndLogs]
+ignore=PA116
+
+[file:RSANetWitnessPacketsAndLogs_image.png]
+ignore=IM111
+
+[known_words]
+renderToContext
+useSSL

@@ -1,0 +1,37 @@
+args:
+- default: true
+  description: Input list.
+  isArray: true
+  name: value
+  required: true
+- description: Keys to group by.
+  isArray: true
+  name: keys
+  required: true
+- description: Output key to merge.
+  isArray: true
+  name: outputkey
+  required: true
+- defaultValue: ','
+  description: Separator to use in the merged value.
+  name: separator
+comment: Deprecated. No available replacement.
+commonfields:
+  id: ListGroupBy
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: ListGroupBy
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+- general
+- entirelist
+type: python
+fromversion: 5.0.0
+tests:
+- No tests (deprecated)
+deprecated: true

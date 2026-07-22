@@ -1,0 +1,90 @@
+args:
+- default: true
+  defaultValue: '{}'
+  description: raw json object from incident
+  name: expanse_raw_json_event
+  required: true
+comment: Deprecated. No available replacement
+deprecated: true
+tags:
+- Expanse
+commonfields:
+  id: ExpanseParseRawIncident
+  version: -1
+name: ExpanseParseRawIncident
+outputs:
+- contextPath: Expanse.Event.eventType
+  description: The event type as returned by Expanse
+  type: String
+- contextPath: Expanse.Event.eventTime
+  description: Time the event occurred
+  type: Date
+- contextPath: Expanse.Event.businessUnit.id
+  description: The id of the business unit
+  type: String
+- contextPath: Expanse.Event.businessUnit.name
+  description: The name of the business unit
+  type: String
+- contextPath: Expanse.Event.payload._type
+  description: 'The type of payload that is being provided '
+  type: String
+- contextPath: Expanse.Event.payload.id
+  description: The id of the payload
+  type: String
+- contextPath: Expanse.Event.payload.exposureType
+  description: The exposure type
+  type: String
+- contextPath: Expanse.Event.payload.ip
+  description: The ip address of the device the event was seen on
+  type: String
+- contextPath: Expanse.Event.payload.port
+  description: The ip port of the device the event was seen on
+  type: Number
+- contextPath: Expanse.Event.payload.portProtocol
+  description: The port protocol of the device the event was seen on
+  type: String
+- contextPath: Expanse.Event.payload.exposureId
+  description: The id of this exposure
+  type: String
+- contextPath: Expanse.Event.payload.doimainName
+  description: The domain name seen in this exposure
+  type: String
+- contextPath: Expanse.Event.payload.geolocation.latitude
+  description: Latitude of IP address
+  type: String
+- contextPath: Expanse.Event.payload.geolocation.longitude
+  description: Longitude of IP address
+  type: String
+- contextPath: Expanse.Event.payload.geolocation.regionCode
+  description: RegionCode of the IP address
+  type: String
+- contextPath: Expanse.Event.payload.geolocation.countryCode
+  description: Country Code of the IP address
+  type: String
+- contextPath: Expanse.Event.configuration
+  description: Object that provides eventType specific confiugurations for the event
+  type: String
+- contextPath: Expanse.Event.severity
+  description: Expanse severity of the event
+  type: String
+- contextPath: Expanse.Event.tags.ipRange
+  description: IP range the IP address belongs to
+  type: String
+- contextPath: Expanse.Event.tags.providers
+  description: Cloud provider for this ip address
+  type: String
+- contextPath: Expanse.Event.tags.certificatePem
+  description: Certificate for this service
+  type: String
+- contextPath: Expanse.Event.tags.remediationStatuses
+  description: Expanse remidiation statuses
+  type: String
+- contextPath: Expanse.Event.id
+  description: Expanse event ID
+  type: String
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.9.7.24076

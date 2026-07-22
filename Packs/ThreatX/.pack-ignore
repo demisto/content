@@ -1,0 +1,6 @@
+[file:README.md]
+ignore=RM106
+
+[file:ThreatX_image.png]
+ignore=IM111
+

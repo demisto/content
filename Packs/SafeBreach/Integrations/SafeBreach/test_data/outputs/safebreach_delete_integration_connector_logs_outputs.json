@@ -1,0 +1,13 @@
+{
+    "outputs": {
+        "success": {
+            "error": 0,
+            "result": true
+        },
+        "fail": {
+            "errorCode": 500,
+            "error": 500,
+            "errorMessage": "Connector ID not found in connectorLogs: skXv47LK_l7Hni340wEmmm2dsd"
+        }
+    }
+}

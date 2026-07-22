@@ -1,0 +1,28 @@
+{
+    "name": "IBM Security QRadar SOAR",
+    "description": "Case management that enables visibility across your tools for continual IR improvement",
+    "support": "xsoar",
+    "currentVersion": "1.2.9",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-22T14:48:14Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "IBM Resilient Systems",
+        "IBM Security QRadar SOAR"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

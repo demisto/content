@@ -1,0 +1,437 @@
+id: TIM - Add All Indicator Types To SIEM
+version: -1
+fromversion: 5.5.0
+name: TIM - Add All Indicator Types To SIEM
+description: |-
+  This playbook runs sub playbooks that send indicators to your SIEM. To select the indicators you want to add, go to playbook inputs, choose “from indicators” and set your query. For example tags:approved_black, approved_white etc. The purpose of the playbook is to send to SIEM only indicators that have been processed and tagged accordingly after an automatic or manual review process. The default playbook query is"
+  (type:ip or type:file or type:Domain or type:URL) -tags:pending_review and (tags:approved_black or tags:approved_white or tags:approved_watchlist)"
+  In case more indicator types need to be sent to the SIEM, the query must be edited accordingly.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eb42f4ee-dd78-4c62-853d-6a45f75e21a7
+    type: start
+    task:
+      id: eb42f4ee-dd78-4c62-853d-6a45f75e21a7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "7"
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e71aedcf-fdf6-4749-8033-354298bcfff1
+    type: playbook
+    task:
+      id: e71aedcf-fdf6-4749-8033-354298bcfff1
+      version: -1
+      name: TIM - Add IP Indicators To SIEM
+      description: This playbook pushes to your SIEM indicators that have
+        the tag processed_black. These indicators have been either received by a reliable
+        Threat Intel feed or approved by an analyst manually.
+      playbookName: TIM - Add IP Indicators To SIEM
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ArcSightIPActiveListID: {}
+      ArcsightIPValueFieldName: {}
+      QRadarIPReferenceSetName: {}
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 00e7d9f8-86af-4053-830a-3cc848c887bc
+    type: title
+    task:
+      id: 00e7d9f8-86af-4053-830a-3cc848c887bc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 83477e4d-c432-490a-8bba-009202a88e25
+    type: condition
+    task:
+      id: 83477e4d-c432-490a-8bba-009202a88e25
+      version: -1
+      name: Are there IP results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: value
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 729aef8f-984e-41a4-8486-eafe3a4731c8
+    type: condition
+    task:
+      id: 729aef8f-984e-41a4-8486-eafe3a4731c8
+      version: -1
+      name: Are there bad Hash results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.CustomFields.tags
+                      iscontext: true
+                    right:
+                      value:
+                        simple: approved_black
+                accessor: value
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 8d713b29-1486-45a6-8280-c71965b11c17
+    type: playbook
+    task:
+      id: 8d713b29-1486-45a6-8280-c71965b11c17
+      version: -1
+      name: TIM - Add Bad Hash Indicators To SIEM
+      playbookName: TIM - Add Bad Hash Indicators To SIEM
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9d461c70-df64-4f0a-88e1-fbedeac33467
+    type: condition
+    task:
+      id: 9d461c70-df64-4f0a-88e1-fbedeac33467
+      version: -1
+      name: Are there Domain results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                accessor: value
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1510,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7fe4263f-2c8e-494c-8cbf-0f0ef4a4d27a
+    type: condition
+    task:
+      id: 7fe4263f-2c8e-494c-8cbf-0f0ef4a4d27a
+      version: -1
+      name: Are there URL results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: URL
+                accessor: value
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -670,
+          "y": -270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 202e48ee-1193-4afc-8ad7-a21d49eaf97b
+    type: playbook
+    task:
+      id: 202e48ee-1193-4afc-8ad7-a21d49eaf97b
+      version: -1
+      name: TIM - Add Domain Indicators To SIEM
+      playbookName: TIM - Add Domain Indicators To SIEM
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: f85efed7-c95e-403f-8092-c14ebc6d5ae0
+    type: playbook
+    task:
+      id: f85efed7-c95e-403f-8092-c14ebc6d5ae0
+      version: -1
+      name: TIM - Add Url Indicators To SIEM
+      playbookName: TIM - Add Url Indicators To SIEM
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": -840,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 565,
+        "width": 2900,
+        "x": -840,
+        "y": -430
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: (type:ip or type:file or type:Domain or type:URL) -tags:pending_review
+      and (tags:approved_black or tags:approved_white or tags:approved_watchlist) and expirationStatus:active
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+tests:
+- No test

@@ -1,0 +1,33 @@
+{
+    "name": "Censys",
+    "description": "The Censys integration adds the ability to enrich IPs, web properties, and certificates in Palo Alto XSOAR and XSIAM with Censys Platform data. It also adds actions to initiate a Censys rescan of a host or web property and retrieve event history for an IP address. Additionally, users can find related infrastructure to a host, certificate, or web property.",
+    "support": "partner",
+    "currentVersion": "3.1.0",
+    "author": "Censys",
+    "url": "https://docs.censys.com",
+    "email": "support@censys.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Plug & Enrich",
+        "Threat Intelligence",
+        "Incident Response"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "Censys"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

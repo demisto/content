@@ -1,0 +1,56 @@
+{
+    "id": "2097159",
+    "type": "page",
+    "ari": "ari:cloud:confluence:8c7bch53-af7f-4d70-8f21-33433g81f489:page/2097159",
+    "base64EncodedAri": "YXJpOmNsb3VkOmNvbmZsdWVuY2U6OGM3YmNlNTMtYTM3Zit0OTcwLThmZDEtMzM0ZDMxODFmNDg5OmNhbnRlbnQvMTE2MzY1NzM3NA==",
+    "status": "current",
+    "title": "XSOAR_Page",
+    "body": {
+        "storage": {
+            "value": "<p>test</p>",
+            "representation": "storage",
+            "_expandable": {
+                "content": "/rest/api/content/2097159"
+            }
+        },
+        "_expandable": {
+            "editor": "",
+            "atlas_doc_format": "",
+            "view": "",
+            "export_view": "",
+            "styled_view": "",
+            "dynamic": "",
+            "editor2": "",
+            "anonymous_export_view": ""
+        }
+    },
+    "extensions": {
+        "position": 1943
+    },
+    "_expandable": {
+        "container": "/rest/api/space/~712020cb6c1eefffb945f5g600d7a86a90f380",
+        "metadata": "",
+        "restrictions": "/rest/api/content/2097159/restriction/byOperation",
+        "history": "/rest/api/content/2097159/history",
+        "version": "",
+        "descendants": "/rest/api/content/2097159/descendant",
+        "space": "/rest/api/space/~712020cb6c1eefffb945f5g600d7a86a90f380",
+        "childTypes": "",
+        "schedulePublishInfo": "",
+        "operations": "",
+        "schedulePublishDate": "",
+        "children": "/rest/api/content/2097159/child",
+        "ancestors": "",
+        "draftVersion": ""
+    },
+    "_links": {
+        "editui": "/pages/resumedraft.action?draftId=2097159",
+        "webui": "/spaces/XSOAR/pages/2097159/XSOAR_Page",
+        "edituiv2": "/spaces/~712020cb6c1eeff0br45f59600d7a86a90f380/pages/edit-v2/2097159",
+        "context": "/wiki",
+        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/2097159",
+        "tinyui": "/x/ngBcBQ",
+        "collection": "/rest/api/content",
+        "base": "https://xsoar-bd.atlassian.net/wiki"
+    }
+}

@@ -1,0 +1,142 @@
+{
+    "groups": [
+        {
+            "_id": "Deny All",
+            "images": [
+                "*gg/*"
+            ],
+            "modified": "2022-04-27T17:30:02.803Z",
+            "name": "",
+            "owner": "test@paloaltonetworks.com",
+            "previousName": ""
+        },
+        {
+            "_id": "TRUSTED IMAGES",
+            "images": [
+                "img/aa:*",
+                "img/bb:*"
+            ],
+            "modified": "2023-02-27T21:35:49.697Z",
+            "name": "",
+            "owner": "test@paloaltonetworks.com",
+            "previousName": ""
+        },
+        {
+            "_id": "test",
+            "images": [
+                "img/abc:*"
+            ],
+            "modified": "2023-02-28T19:53:44.491Z",
+            "name": "",
+            "owner": "test@paloaltonetworks.com",
+            "previousName": ""
+        }
+    ],
+    "policy": {
+        "_id": "trust",
+        "enabled": true,
+        "rules": [
+            {
+                "allowedGroups": [
+                    "test"
+                ],
+                "collections": [
+                    {
+                        "accountIDs": [
+                            "*"
+                        ],
+                        "appIDs": [
+                            "*"
+                        ],
+                        "clusters": [
+                            "*"
+                        ],
+                        "codeRepos": [
+                            "*"
+                        ],
+                        "color": "#3FA2F7",
+                        "containers": [
+                            "*"
+                        ],
+                        "description": "System - all resources collection",
+                        "functions": [
+                            "*"
+                        ],
+                        "hosts": [
+                            "*"
+                        ],
+                        "images": [
+                            "*"
+                        ],
+                        "labels": [
+                            "*"
+                        ],
+                        "modified": "2021-01-31T08:21:54.823Z",
+                        "name": "All",
+                        "namespaces": [
+                            "*"
+                        ],
+                        "owner": "system",
+                        "prisma": false,
+                        "system": true
+                    }
+                ],
+                "disabled": true,
+                "effect": "alert",
+                "modified": "2023-06-08T12:28:46.723Z",
+                "name": "test",
+                "owner": "test@paloaltonetworks.com",
+                "previousName": ""
+            },
+            {
+                "collections": [
+                    {
+                        "accountIDs": [
+                            "*"
+                        ],
+                        "appIDs": [
+                            "*"
+                        ],
+                        "clusters": [
+                            "*"
+                        ],
+                        "codeRepos": [
+                            "*"
+                        ],
+                        "color": "#3FA2F7",
+                        "containers": [
+                            "*"
+                        ],
+                        "description": "System - all resources collection",
+                        "functions": [
+                            "*"
+                        ],
+                        "hosts": [
+                            "*"
+                        ],
+                        "images": [
+                            "*"
+                        ],
+                        "labels": [
+                            "*"
+                        ],
+                        "modified": "2021-01-31T08:21:54.823Z",
+                        "name": "All",
+                        "namespaces": [
+                            "*"
+                        ],
+                        "owner": "system",
+                        "prisma": false,
+                        "system": true
+                    }
+                ],
+                "disabled": true,
+                "effect": "alert",
+                "modified": "2022-04-27T19:24:00.987Z",
+                "name": "Default - alert all",
+                "owner": "test@paloaltonetworks.com",
+                "previousName": ""
+            }
+        ]
+    }
+}

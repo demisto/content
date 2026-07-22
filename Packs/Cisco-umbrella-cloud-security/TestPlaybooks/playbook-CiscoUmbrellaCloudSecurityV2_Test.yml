@@ -1,0 +1,875 @@
+id: CiscoUmbrellaCloudSecurityv2
+version: -1
+name: CiscoUmbrellaCloudSecurityv2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5cc50e15-bec5-4294-800a-729bb49ecccd
+    type: start
+    task:
+      id: 5cc50e15-bec5-4294-800a-729bb49ecccd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b06cced8-135f-469b-8fcd-ac37a4e0a2c4
+    type: regular
+    task:
+      id: b06cced8-135f-469b-8fcd-ac37a4e0a2c4
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 44a32812-d1e9-4c0d-800c-06f14c638ad2
+    type: regular
+    task:
+      id: 44a32812-d1e9-4c0d-800c-06f14c638ad2
+      version: -1
+      name: umbrella-destinations-list
+      script: Cisco Umbrella Cloud Security|||umbrella-destinations-list
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Cloud Security
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      destination_list_id:
+        simple: ${Umbrella.DestinationLists.id}
+      destinations:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d6da80f1-5e53-41c6-85f2-a051a17138b0
+    type: condition
+    task:
+      id: d6da80f1-5e53-41c6-85f2-a051a17138b0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.Destinations.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.Destinations.destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.Destinations.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.Destinations.comment
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.Destinations.createdAt
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 46321d4a-4513-4228-8d8c-9320e7f63196
+    type: regular
+    task:
+      id: 46321d4a-4513-4228-8d8c-9320e7f63196
+      version: -1
+      name: umbrella-destination-add
+      script: Cisco Umbrella Cloud Security|||umbrella-destination-add
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Cloud Security
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      destination_list_id:
+        simple: ${Umbrella.DestinationLists.id}
+      destinations:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 795cfa74-67a5-4fe1-8c95-1741f75aa373
+    type: condition
+    task:
+      id: 795cfa74-67a5-4fe1-8c95-1741f75aa373
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.organizationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.access
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isGlobal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.modifiedAt
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isMspDefault
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.markedForDeletion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.bundleTypeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.meta.destinationCount
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 07ca9965-59bd-40dc-88b5-786cd05ca7cb
+    type: regular
+    task:
+      id: 07ca9965-59bd-40dc-88b5-786cd05ca7cb
+      version: -1
+      name: umbrella-destination-delete
+      script: Cisco Umbrella Cloud Security|||umbrella-destination-delete
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Cloud Security
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      destination_ids:
+        simple: ${Umbrella.Destinations.id}
+      destination_list_id:
+        simple: ${Umbrella.DestinationLists.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 81e75f3f-696f-4f9e-8da2-2ad36a6f7a0b
+    type: condition
+    task:
+      id: 81e75f3f-696f-4f9e-8da2-2ad36a6f7a0b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.organizationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.access
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isGlobal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.modifiedAt
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isMspDefault
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.markedForDeletion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.bundleTypeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.meta.destinationCount
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 19aedd56-fe43-4442-8081-51db8c2bbf9c
+    type: regular
+    task:
+      id: 19aedd56-fe43-4442-8081-51db8c2bbf9c
+      version: -1
+      name: umbrella-destination-lists-list
+      script: Cisco Umbrella Cloud Security|||umbrella-destination-lists-list
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Cloud Security
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      destination_list_id:
+        simple: ${Umbrella.DestinationLists.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 707d6b82-4fbd-4799-86b8-b1412d0992a5
+    type: condition
+    task:
+      id: 707d6b82-4fbd-4799-86b8-b1412d0992a5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.organizationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.access
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isGlobal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.modifiedAt
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isMspDefault
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.markedForDeletion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.bundleTypeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.meta.destinationCount
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ed08948b-c575-411d-8fd7-ddeb3cd8447d
+    type: regular
+    task:
+      id: ed08948b-c575-411d-8fd7-ddeb3cd8447d
+      version: -1
+      name: umbrella-destination-list-create
+      script: Cisco Umbrella Cloud Security|||umbrella-destination-list-create
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Cloud Security
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      access:
+        simple: allow
+      bundle_type:
+        simple: WEB
+      is_global:
+        simple: "False"
+      name:
+        simple: LiorSBTestPlaybook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c035977e-017c-411b-8681-61f3b0fdb48b
+    type: condition
+    task:
+      id: c035977e-017c-411b-8681-61f3b0fdb48b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.organizationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.access
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isGlobal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.modifiedAt
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isMspDefault
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.markedForDeletion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.bundleTypeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.meta.destinationCount
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 949f3014-9d77-45c5-8f08-90f05bf994c4
+    type: regular
+    task:
+      id: 949f3014-9d77-45c5-8f08-90f05bf994c4
+      version: -1
+      name: umbrella-destination-list-update
+      script: Cisco Umbrella Cloud Security|||umbrella-destination-list-update
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Cloud Security
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      destination_list_id:
+        simple: ${Umbrella.DestinationLists.id}
+      name:
+        simple: LiorSBTestPlaybookUpdate
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2c1fcfcd-1f25-4d27-8daa-4ad938fc6e70
+    type: condition
+    task:
+      id: 2c1fcfcd-1f25-4d27-8daa-4ad938fc6e70
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.organizationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.access
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isGlobal
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.createdAt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.modifiedAt
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.isMspDefault
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Umbrella.DestinationLists.markedForDeletion
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.bundleTypeId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Umbrella.DestinationLists.meta.destinationCount
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ba624c94-620a-404b-8a84-362d2ca306ba
+    type: regular
+    task:
+      id: ba624c94-620a-404b-8a84-362d2ca306ba
+      version: -1
+      name: umbrella-destination-list-delete
+      script: Cisco Umbrella Cloud Security|||umbrella-destination-list-delete
+      type: regular
+      iscommand: true
+      brand: Cisco Umbrella Cloud Security
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      destination_list_id:
+        simple: ${Umbrella.DestinationLists.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 14c7292c-c2d0-4968-844f-0e53acf786e9
+    type: title
+    task:
+      id: 14c7292c-c2d0-4968-844f-0e53acf786e9
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3015,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0
+description: ''

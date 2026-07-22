@@ -1,0 +1,231 @@
+id: Service Desk Plus - Generic Polling Test
+version: -1
+name: Service Desk Plus - Generic Polling Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8db142dd-f9e8-42e4-82f6-f5f27a7deb93
+    type: start
+    task:
+      id: 8db142dd-f9e8-42e4-82f6-f5f27a7deb93
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: c7146715-022f-4ffe-82e7-00df6708d6d3
+    type: playbook
+    task:
+      id: c7146715-022f-4ffe-82e7-00df6708d6d3
+      version: -1
+      name: Service Desk Plus - Generic Polling
+      playbookName: Service Desk Plus - Generic Polling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      RequestId:
+        simple: ${ServiceDeskPlus.Request.Id}
+      Timeout:
+        simple: "20"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9eeaaaaa-6323-4701-8a55-9c2afd810322
+    type: regular
+    task:
+      id: 9eeaaaaa-6323-4701-8a55-9c2afd810322
+      version: -1
+      name: service-desk-plus-request-create
+      description: Creates new requests.
+      script: ServiceDeskPlus|||service-desk-plus-request-create
+      type: regular
+      iscommand: true
+      brand: ServiceDeskPlus
+    nexttasks:
+      '#none#':
+      - "4"
+      - "1"
+    scriptarguments:
+      assets: {}
+      category: {}
+      description: {}
+      email_ids_to_notify: {}
+      group: {}
+      impact: {}
+      is_fcr: {}
+      item: {}
+      level: {}
+      mode: {}
+      priority: {}
+      request_type: {}
+      requester: {}
+      resources: {}
+      service_category: {}
+      site: {}
+      status: {}
+      subcategory: {}
+      subject:
+        simple: Test request for polling PB
+      technician: {}
+      udf_fields: {}
+      urgency: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 14e3dca6-39d1-459d-83f8-8b6de72081d6
+    type: title
+    task:
+      id: 14e3dca6-39d1-459d-83f8-8b6de72081d6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: cea64eaf-d7ff-4b6b-86d1-95fa1c0e871a
+    type: regular
+    task:
+      id: cea64eaf-d7ff-4b6b-86d1-95fa1c0e871a
+      version: -1
+      name: Sleep 2 Minutes
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d20a95ed-f131-4875-816e-6a536e091d84
+    type: regular
+    task:
+      id: d20a95ed-f131-4875-816e-6a536e091d84
+      version: -1
+      name: service-desk-plus-request-close
+      description: Closes the specified request.
+      script: ServiceDeskPlus|||service-desk-plus-request-close
+      type: regular
+      iscommand: true
+      brand: ServiceDeskPlus
+    scriptarguments:
+      closure_code:
+        simple: Success
+      closure_comments:
+        simple: Closing the polling PB request
+      request_id:
+        simple: ${ServiceDeskPlus.Request.Id}
+      requester_ack_comments: {}
+      requester_ack_resolution: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

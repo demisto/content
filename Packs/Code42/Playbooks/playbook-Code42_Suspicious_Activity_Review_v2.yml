@@ -1,0 +1,502 @@
+id: Code42 Suspicious Activity Review v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Code42 Suspicious Activity Review v2
+description: Detects suspicious activities of a user and allows a recipient to assess the results. Afterward, the playbook takes action on the user such as adding them to legal hold.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2ad8ae16-3648-4049-8827-a3cbe16be8a2
+    type: start
+    task:
+      id: 2ad8ae16-3648-4049-8827-a3cbe16be8a2
+      version: -1
+      name: ""
+      description: The start task.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6628da6c-5017-432f-8144-313b13c20a14
+    type: regular
+    task:
+      id: 6628da6c-5017-432f-8144-313b13c20a14
+      version: -1
+      name: Retrieve Exfiltration Events
+      description: Search for Code42 Incydr File Events.
+      script: Code42|||code42-file-events-search
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      add-to-context:
+        simple: "true"
+      min_risk_score:
+        simple: "9"
+      username:
+        simple: ${inputs.Username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 730c2e5b-3d87-444c-861b-f40abc84c4f2
+    type: title
+    task:
+      id: 730c2e5b-3d87-444c-861b-f40abc84c4f2
+      version: -1
+      name: Complete
+      description: Complete
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: eb9117f3-3d63-49ba-8cdc-bc8339e75d5c
+    type: collection
+    task:
+      id: eb9117f3-3d63-49ba-8cdc-bc8339e75d5c
+      version: -1
+      name: Request Manager Review
+      description: Emails the exposure events to the recipient with a survey asking if the events seem suspicious.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.ReviewerEmail}
+      subject:
+        simple: Possible data exposure risk detected for ${inputs.Username}. Respond using link below.
+      body:
+        complex:
+          root: HTMLTable
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: Use the data in the table below to determine if the activity is suspicious. The link to the survey is found below the table.
+              suffix: {}
+      methods:
+      - email
+      format: html
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Does any of the reported file activity seem suspicious?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options:
+        - "Yes"
+        - "No"
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: What are the reasons for your answer?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Possible data exposure risk detected
+      description: This alert requires a review regarding data exposure.
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d07642cc-0369-457e-8a9f-17455b701fa9
+    type: condition
+    task:
+      id: d07642cc-0369-457e-8a9f-17455b701fa9
+      version: -1
+      name: Did the recipient say it is suspicious?
+      description: Did the recipient say it is suspicious?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "2"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Possible data exposure risk detected
+                accessor: Answers.0
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: "YES"
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Possible data exposure risk detected
+                accessor: Answers.0
+                transformers:
+                - operator: toUpperCase
+            iscontext: true
+          right:
+            value:
+              simple: "NO"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 534e531f-56f4-4344-8d03-3bf6bd848789
+    type: collection
+    task:
+      id: 534e531f-56f4-4344-8d03-3bf6bd848789
+      version: -1
+      name: Decide Remediation Action
+      description: Decide remediation action
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: What remediation action(s) would you like to take on ${inputs.Username}?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Which remediation action(s) should be taken on this user? Notes from recipient: ${Possible data exposure risk detected.Answers.1}'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: BLOCK
+        - simple: ADD-TO-WATCHLIST
+        - simple: ADD-TO-LEGAL-HOLD
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Select one or more actions from Block, Add-to-legal-hold, Add-to-Watchlist
+        readonly: false
+      title: Remediation Task
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9c4d9309-4696-4496-870e-5402a40af0ce
+    type: regular
+    task:
+      id: 9c4d9309-4696-4496-870e-5402a40af0ce
+      version: -1
+      name: ConvertTableToHTML
+      description: Converts a given array to an HTML table
+      scriptName: ConvertTableToHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      table:
+        simple: ${Code42.FileEvents}
+      title:
+        simple: Exposed Files
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 3948361e-a2fb-4b0f-8072-b59b273cbd24
+    type: condition
+    task:
+      id: 3948361e-a2fb-4b0f-8072-b59b273cbd24
+      version: -1
+      name: Were exposure events found?
+      description: Checks if exposure events were found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: Code42
+                accessor: FileEvents
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 9e5da943-1869-4330-85b0-e6cd98a34d99
+    type: playbook
+    task:
+      id: 9e5da943-1869-4330-85b0-e6cd98a34d99
+      version: -1
+      name: Code42 Suspicious Activity Action v2
+      description: Take corrective actions against a Code42 user found to be exposing file data.
+      playbookName: Code42 Suspicious Activity Action v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action:
+        complex:
+          root: Remediation Task.Answers
+          accessor: "0"
+          transformers:
+          - operator: toUpperCase
+      mattername:
+        simple: ${inputs.LegalHoldMatterId}
+      username:
+        simple: ${inputs.Username}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1435,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value:
+    simple: ${incident.code42username}
+  required: true
+  description: The username of the employee.
+  playbookInputQuery:
+- key: ReviewerEmail
+  value: {}
+  required: true
+  description: The email recipient to review potential suspicious activity related to the user, such as the user's manager.
+  playbookInputQuery:
+- key: LegalHoldMatterId
+  value: {}
+  required: false
+  description: The legal hold matter ID to add the user to if selecting ADD-TO-LEGAL-HOLD in the Decide Remediation Action task.
+  playbookInputQuery:
+outputs: []
+tests:
+- Code42 Suspicious Activity Action v2 - Test
+fromversion: 6.10.0

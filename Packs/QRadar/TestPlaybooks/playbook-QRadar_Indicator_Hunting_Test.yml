@@ -1,0 +1,132 @@
+id: QRadar Indicator Hunting Test
+version: -1
+fromversion: 5.0.0
+name: QRadar Indicator Hunting Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 903f7dea-47d4-4877-87f6-1800865a9262
+    type: start
+    task:
+      id: 903f7dea-47d4-4877-87f6-1800865a9262
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 150c7225-37e8-4de7-8608-df524271e32e
+    type: regular
+    task:
+      id: 150c7225-37e8-4de7-8608-df524271e32e
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      all:
+        simple: 'yes'
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '9':
+    id: '9'
+    taskid: b5ee7da2-7d43-426f-8870-f8dffc2f3b24
+    type: playbook
+    task:
+      id: b5ee7da2-7d43-426f-8870-f8dffc2f3b24
+      version: -1
+      name: QRadar Indicator Hunting V2
+      description: ''
+      playbookName: QRadar Indicator Hunting V2
+      type: playbook
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      IPAddress:
+        simple: 66.196.219.2,54.238.142.98,8.8.8.8,172.217.22.110
+      InternalRange: {}
+      InvestigationIPFields:
+        simple: sourceip,destinationip
+      InvestigationUserFields:
+        simple: username
+      MD5:
+        simple: 7D930D55986DF5C69CF1A9C2DE7E33B3,7D930D55986DF5C69CF1A9C2DE7E33B5
+      QradarIPfield:
+        simple: sourceip,destinationip
+      QradarSHA256Field: {}
+      QradarURLDomainField:
+        simple: URL
+      SHA1:
+        simple: D4ABAC114DBE28BAD8855C10D37F2B727177C9CA,5B624FEA6F08124DD0444168F9146EE55822BF26
+      SHA256:
+        simple: BEBB0D2229700C6A62B7811985061DC75F6279AB0FF8747C47CCADB6CC2CC462,70C9616C026266BB3A1213BCC50E3A9A24238703FB7745746628D11163905D2F
+      SelectFields:
+        simple: '*'
+      TimeFrame:
+        simple: LAST 1 DAYS
+      URLDomain:
+        simple: google,walla.com,demisto,wpad
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

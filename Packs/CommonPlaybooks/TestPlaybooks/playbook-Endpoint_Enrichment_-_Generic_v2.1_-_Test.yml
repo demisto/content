@@ -1,0 +1,438 @@
+id: Endpoint Enrichment - Generic v2.1 - Test
+version: -1
+name: Endpoint Enrichment - Generic v2.1 - Test
+description: |-
+  A test for the Endpoint Enrichment - Generic playbook.
+  We use specific hostnames that are known on the current integrations. The following list defines the integrations and the hostnames that should be enriched using them:
+  Active Directory - moshe
+  ePO - WIN-AQ0LQQOG4Q7
+
+  These should work but are not currently tested:
+  Carbon Black Enterprise Response - WIN-B73RGE9AAIF
+  CrowdStrike Falcon Host - AUTOMATIONPC
+  Cylance Protect v2 - DESKTOP-M7E991U
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: be549905-b8ff-4a41-865c-5efa5d989577
+    type: start
+    task:
+      id: be549905-b8ff-4a41-865c-5efa5d989577
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a706ad98-4872-43d8-869f-a35144a2dee5
+    type: regular
+    task:
+      id: a706ad98-4872-43d8-869f-a35144a2dee5
+      version: -1
+      name: Delete Context
+      description: Clear context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: bc6977e0-7040-4c72-81b2-73ba44c13905
+    type: regular
+    task:
+      id: bc6977e0-7040-4c72-81b2-73ba44c13905
+      version: -1
+      name: Set hostnames in context
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: Endpoint.Hostname
+      value:
+        simple: '["moshe", "WIN-AQ0LQQOG4Q7", "WIN-B73RGE9AAIF", "AUTOMATIONPC", "DESKTOP-M7E991U"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b32038d9-ccb0-4a5a-8322-6fcbfd001e19
+    type: title
+    task:
+      id: b32038d9-ccb0-4a5a-8322-6fcbfd001e19
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8412e521-872a-4d76-84b0-c29227462938
+    type: condition
+    task:
+      id: 8412e521-872a-4d76-84b0-c29227462938
+      version: -1
+      name: Did enrichment work?
+      description: Checks whether the enrichment outputs that we expected are in the context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Endpoint.ID
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: Endpoint.ID
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CylanceProtectDevice
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: CylanceProtectDevice
+                      iscontext: true
+                    ignorecase: true
+            iscontext: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Endpoint
+                accessor: ID
+            iscontext: true
+          right:
+            value:
+              simple: DC=demisto,DC=ninja
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 55b078ce-0818-40d6-862d-e51686b2ab4a
+    type: regular
+    task:
+      id: 55b078ce-0818-40d6-862d-e51686b2ab4a
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: Not all enrichment outputs were in context. Please check if hostnames that the integrations should know - have changed, and whether outputs of those integrations were the outputs we expected. For example, there could be a case where we look for "Windows 7" as the output for OS version, but the system was upgraded to Windows 10.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c986a247-1cfa-4775-8867-e84704644ad5
+    type: playbook
+    task:
+      id: c986a247-1cfa-4775-8867-e84704644ad5
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 103fa99e-e6e5-4777-8c58-d7b1ba6c5189
+    type: title
+    task:
+      id: 103fa99e-e6e5-4777-8c58-d7b1ba6c5189
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0f7e41d2-4a55-4181-8085-da54a6553260
+    type: title
+    task:
+      id: 0f7e41d2-4a55-4181-8085-da54a6553260
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: aaa69173-2d8a-446b-8896-21c1209fdd88
+    type: regular
+    task:
+      id: aaa69173-2d8a-446b-8896-21c1209fdd88
+      version: -1
+      name: Delete Context
+      description: Clear context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 0b715e8f-8519-40fe-8da1-b303820e2220
+    type: playbook
+    task:
+      id: 0b715e8f-8519-40fe-8da1-b303820e2220
+      version: -1
+      name: Endpoint Enrichment - Generic v2.1
+      description: |-
+        Enrich an endpoint by hostname using one or more integrations.
+        Supported integrations:
+        - Active Directory Query v2
+        - McAfee ePO v2
+        - VMware Carbon Black EDR v2
+        - Cylance Protect v2
+        - CrowdStrike Falcon
+        - ExtraHop Reveal(x)
+
+        - Endpoint reputation using !endpoint command
+      playbookName: Endpoint Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1765,
+        "width": 680,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

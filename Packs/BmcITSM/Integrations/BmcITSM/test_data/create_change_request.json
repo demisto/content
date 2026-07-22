@@ -1,0 +1,14 @@
+{
+    "values": {
+        "Change_Entry_ID": "CRQ000000000109",
+        "Infrastructure Change Id": "CRQ000000000109",
+        "Create Date": "2022-03-30T09:02:37.000+0000"
+    },
+    "_links": {
+        "self": [
+            {
+                "href": "https://lb-bmc-remedy-itsm-1790109711.eu-west-1.elb.amazonaws.com:9443/api/arsys/v1/entry/CHG:ChangeInterface_Create"
+            }
+        ]
+    }
+}

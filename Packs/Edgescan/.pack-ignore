@@ -1,0 +1,6 @@
+[file:Edgescan_image.png]
+ignore=IM111
+
+[file:incidentfield-CVES.json]
+ignore=BA116
+

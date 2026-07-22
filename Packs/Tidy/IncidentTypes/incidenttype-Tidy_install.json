@@ -1,0 +1,22 @@
+{
+ "autorun": true,
+ "color": "#64dc17",
+ "days": 0,
+ "daysR": 0,
+ "default": false,
+ "disabled": false,
+ "hours": 0,
+ "hoursR": 0,
+ "id": "Tidy install",
+ "layout": "9d3fb5f4-9111-44de-81a0-9b2525d97fd3",
+ "locked": false,
+ "name": "Tidy install",
+ "playbookId": "Tidy install content",
+ "readonly": false,
+ "reputationCalc": 0,
+ "system": false,
+ "version": -1,
+ "weeks": 0,
+ "weeksR": 0,
+ "fromVersion": "6.0.0"
+}

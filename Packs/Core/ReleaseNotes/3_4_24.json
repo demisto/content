@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In the 'Cortex Platform - Core' integration, the command 'core-get-asset-details' output changed from Core.CoreAsset.xdm__cloud__region to Core.CoreAsset.xdm__asset__cloud__region to match the command context. In the 'Investigation & Response' integration, the command 'core-get-asset-details' was deprecated. There is no replacement for this command."
+}

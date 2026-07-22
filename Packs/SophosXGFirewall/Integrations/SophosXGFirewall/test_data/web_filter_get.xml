@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Response APIVersion="1702.1" IPS_CAT_VER="1">
+  <Login>
+    <status>Authentication Successful</status>
+  </Login>
+  <WebFilterPolicy transactionid="">
+    <Name>unitest</Name>
+    <DefaultAction>Allow</DefaultAction>
+    <EnableReporting>Enable</EnableReporting>
+    <DownloadFileSizeRestriction>50</DownloadFileSizeRestriction>
+    <DownloadFileSizeRestrictionEnabled>1</DownloadFileSizeRestrictionEnabled>
+    <GoogAppDomainList/>
+    <GoogAppDomainListEnabled>0</GoogAppDomainListEnabled>
+    <YoutubeFilterIsStrict>0</YoutubeFilterIsStrict>
+    <YoutubeFilterEnabled>0</YoutubeFilterEnabled>
+    <EnforceSafeSearch>0</EnforceSafeSearch>
+    <EnforceImageLicensing>0</EnforceImageLicensing>
+    <Description/>
+  </WebFilterPolicy>
+</Response>

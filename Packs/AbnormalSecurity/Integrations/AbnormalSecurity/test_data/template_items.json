@@ -1,0 +1,97 @@
+{
+  "threat": {
+    "threatId": "template-threat",
+    "remediationTimestamp": "2023-09-17T15:00:00Z",
+    "description": "Template threat description",
+    "subject": "Suspicious Email - Possible Phishing Attempt"
+  },
+  "threat_detail": {
+    "threatId": "template-threat-detail",
+    "messages": [
+      {
+        "abxMessageId": "abx-123456",
+        "abxPortalUrl": "https://portal.abnormal.com/threats/abx-123456",
+        "attachmentCount": 2,
+        "attachmentNames": ["invoice.pdf", "document.docx"],
+        "attackStrategy": "Credential Theft",
+        "attackType": "Phishing",
+        "attackVector": "Email",
+        "attackedParty": "Corporate",
+        "autoRemediated": false,
+        "fromAddress": "attacker@malicious.com",
+        "fromName": "John Smith",
+        "impersonatedParty": "Microsoft Office 365",
+        "internetMessageId": "<message-id@example.com>",
+        "isRead": false,
+        "postRemediated": false,
+        "receivedTime": "2023-09-17T14:55:00Z",
+        "recipientAddress": "victim@example.com",
+        "remediationStatus": "Remediated",
+        "remediationTimestamp": "2023-09-17T15:00:00Z",
+        "sentTime": "2023-09-17T14:50:00Z",
+        "subject": "Suspicious Email - Possible Phishing Attempt",
+        "toAddresses": ["victim@example.com", "employee@example.com"],
+        "ccEmails": ["cc@example.com"],
+        "replyToEmails": ["reply@malicious.com"],
+        "returnPath": "<bounce@malicious.com>",
+        "senderDomain": "malicious.com",
+        "senderIpAddress": "192.168.1.100",
+        "summaryInsights": [
+          "Contains suspicious sender",
+          "Contains suspicious link",
+          "Impersonates known brand",
+          "Urgent request for action"
+        ],
+        "urlCount": 2,
+        "urls": [
+          "https://malicious-site.com/login",
+          "https://tracking.malicious-site.com/pixel.gif"
+        ],
+        "body": "Dear User, Your account has been compromised. Please login to secure your account: <a href='https://malicious-site.com/login'>Secure Account</a>"
+      }
+    ],
+    "pageNumber": 1,
+    "nextPageNumber": null
+  },
+  "case": {
+    "caseId": "template-case",
+    "description": "Template account takeover case description",
+    "lastModifiedTime": "2023-09-17T15:00:00Z"
+  },
+  "case_detail": {
+    "caseId": "template-case-detail",
+    "severity": "High",
+    "affectedEmployee": "user@example.com",
+    "firstObserved": "2023-09-17T14:45:00Z",
+    "threatIds": ["threat-123", "threat-456"],
+    "genai_summary": "Account takeover attempt detected for user@example.com. Multiple login attempts observed from unusual locations. Two related phishing threats identified targeting the user's credentials.",
+    "status": "Open",
+    "caseType": "Account Takeover",
+    "assignedTo": "security-analyst@example.com",
+    "lastModifiedTime": "2023-09-17T15:00:00Z",
+    "createdBy": "security-system@example.com",
+    "createdTime": "2023-09-17T14:46:00Z",
+    "resolution": "",
+    "resolutionTime": null
+  },
+  "campaign": {
+    "campaignId": "template-campaign",
+    "lastReportedTime": "2023-09-17T15:00:00Z"
+  },
+  "campaign_detail": {
+    "campaignId": "template-campaign-detail",
+    "firstReported": "2023-09-17T14:50:00Z",
+    "lastReported": "2023-09-17T15:00:00Z",
+    "messageId": "abx-789012",
+    "subject": "Phishing Campaign - Fake Invoice",
+    "fromName": "Amazon Billing",
+    "fromAddress": "billing@malicious-domain.com",
+    "recipientName": "Finance Department",
+    "recipientAddress": "finance@example.com",
+    "judgementStatus": "Malicious",
+    "overallStatus": "Remediated",
+    "attackType": "Attack Type: Phishing",
+    "reporter": "security@example.com",
+    "threatType": "Credential Theft"
+  }
+} 

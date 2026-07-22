@@ -1,0 +1,6 @@
+[file:PerceptionPoint.yml]
+ignore=IN126,BA124
+
+[file:README.md]
+ignore=RM104
+

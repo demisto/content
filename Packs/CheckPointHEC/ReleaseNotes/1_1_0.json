@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Search emails command has been extended to receive many more options and give much more information."
+}

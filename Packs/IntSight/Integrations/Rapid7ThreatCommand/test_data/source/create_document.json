@@ -1,0 +1,10 @@
+{
+    "Success": true,
+    "Data": {
+        "sourceDetails": {
+            "_id": "6400789094a06f1d8131e1c3",
+            "SourceType": "File"
+        },
+        "iocSavedCount": 3
+    }
+}

@@ -1,0 +1,29 @@
+[
+    {
+        "type": [
+            "CYBER"
+        ],
+        "title": "Background Information",
+        "content": [
+            "This is a placeholder description for background information related to the issue."
+        ]
+    },
+    {
+        "type": [
+            "CYBER"
+        ],
+        "title": "Current Status",
+        "content": [
+            "This is a placeholder description for the current status of the issue."
+        ]
+    },
+    {
+        "type": [
+            "PHYSICAL"
+        ],
+        "title": "Impact",
+        "content": [
+            "This is a placeholder description for the potential impact of the issue."
+        ]
+    }
+]

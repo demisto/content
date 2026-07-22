@@ -1,0 +1,531 @@
+id: playbook12
+version: -1
+system: true
+fromversion: 5.0.0
+name: McAfee ePO Endpoint Compliance Playbook
+description: Deprecated. Use "McAfee ePO Endpoint Compliance Playbook v2" playbook instead. Discover endpoints that are not using the latest McAfee AV Signatures
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: a3d08d64-ed0b-41ff-886d-00daa3ed7c90
+    type: start
+    task:
+      id: a3d08d64-ed0b-41ff-886d-00daa3ed7c90
+      version: -1
+      description: ""
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -87
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: cdd9fe08-f2d7-4b2f-8e62-ec21ed9e3715
+    type: regular
+    task:
+      id: cdd9fe08-f2d7-4b2f-8e62-ec21ed9e3715
+      version: -1
+      description: ""
+      name: Retrieve ePO's current DAT version
+      script: epo|||epo-get-current-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      repos:
+        simple: ${repo}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 313,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b8d7abd0-0a4f-4e52-8aac-5fd4e6949fd6
+    type: condition
+    task:
+      id: b8d7abd0-0a4f-4e52-8aac-5fd4e6949fd6
+      version: -1
+      name: Are any endpoints outdated and using an older DAT version?
+      description: Type list of systems in comments - comma separated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "9"
+      "Yes":
+      - "11"
+    scriptarguments:
+      faultydelta: {}
+      repoversions:
+        simple: ${repoversions}
+      requireddatversion:
+        simple: "-1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 209
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: aa4a2429-7901-440e-8d5a-e46557154f5b
+    type: condition
+    task:
+      id: aa4a2429-7901-440e-8d5a-e46557154f5b
+      version: -1
+      name: Are any endpoints faulty and dangerously outdated?
+      description: Type system names in comments - comma separated
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "12"
+    scriptarguments:
+      data:
+        simple: ${faultyendpoints}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 313,
+          "y": 553
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 64ae7dd1-592c-4f0a-8b57-3107a6e4040a
+    type: regular
+    task:
+      id: 64ae7dd1-592c-4f0a-8b57-3107a6e4040a
+      version: -1
+      description: ""
+      name: Isolate dangerous systems from network
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 598,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 05cac450-0b26-47b5-82ab-23e64849c2c3
+    type: regular
+    task:
+      id: 05cac450-0b26-47b5-82ab-23e64849c2c3
+      version: -1
+      description: ""
+      name: Open ServiceNow ticket with list of problematic endpoints to be handled by the appropriate team
+      script: ServiceNow|||servicenow-incident-create
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      active: {}
+      activity_due: {}
+      additional_assignee_list: {}
+      approval: {}
+      approval_history: {}
+      approval_set: {}
+      assigned_to: {}
+      assignment_group: {}
+      business_duration: {}
+      business_service: {}
+      business_stc: {}
+      calendar_duration: {}
+      caller_id: {}
+      category:
+        simple: Software
+      caused_by: {}
+      close_code: {}
+      close_notes: {}
+      closed_at: {}
+      closed_by: {}
+      cmdb_ci: {}
+      comments:
+        simple: ${endpointsToIsolate}
+      comments_and_work_notes: {}
+      company: {}
+      contact_type: {}
+      correlation_display: {}
+      correlation_id: {}
+      data:
+        simple: ${faultyendpoints}
+      delivery_plan: {}
+      description: {}
+      display: {}
+      due_date: {}
+      escalation: {}
+      expected_start: {}
+      follow_up: {}
+      group_list: {}
+      impact: {}
+      incident_state: {}
+      knowledge: {}
+      location: {}
+      made_sla: {}
+      notify: {}
+      number: {}
+      order: {}
+      parent: {}
+      parent_incident: {}
+      priority: {}
+      problem_id: {}
+      reassignment_count: {}
+      reopen_count: {}
+      resolved_at: {}
+      resolved_by: {}
+      rfc: {}
+      severity:
+        simple: "3"
+      short_description: {}
+      sla_due: {}
+      subcategory:
+        simple: Antivirus
+      sys_updated_by: {}
+      sys_updated_on: {}
+      urgency: {}
+      user_input: {}
+      watch_list: {}
+      work_end: {}
+      work_notes: {}
+      work_notes_list: {}
+      work_start: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 598,
+          "y": 1063
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6d0b0842-0873-4629-8e39-9b4b873f46cb
+    type: regular
+    task:
+      id: 6d0b0842-0873-4629-8e39-9b4b873f46cb
+      version: -1
+      description: ""
+      name: Trigger signature update on outdated endpoints
+      script: epo|||epo-update-client-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      abortAfterMinutes: {}
+      endpoints:
+        simple: ${outdatedendpoints}
+      eposerver:
+        simple: ${repo}
+      randomizationInterval: {}
+      retryAttempts: {}
+      retryIntervalInSeconds: {}
+      stopAfterMinutes: {}
+      systems:
+        simple: ${outdatedEndpoints}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": 713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 99679543-7b3b-4f76-8cc7-fec535710df0
+    type: regular
+    task:
+      id: 99679543-7b3b-4f76-8cc7-fec535710df0
+      version: -1
+      description: ""
+      name: Display list of AV related tickets from ServiceNow
+      script: ServiceNow|||servicenow-incidents-query
+      type: regular
+      iscommand: true
+      brand: ServiceNow
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      fields:
+        simple: comments,short_description,category,subcategory,state
+      limit: {}
+      query:
+        simple: subcategory=Antivirus
+      sysparm_query:
+        simple: subcategory=Antivirus
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 598,
+          "y": 1248
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
+    type: regular
+    task:
+      id: 8b9983e7-0454-4087-8dee-e85b4cda4ba4
+      version: -1
+      description: ""
+      name: Close the investigation
+      scriptName: CloseInvestigation
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      reason:
+        simple: AuditCompleted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 62,
+          "y": 1428
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a8019bd1-dd82-4437-8b23-a38d82a0fe5e
+    type: regular
+    task:
+      id: a8019bd1-dd82-4437-8b23-a38d82a0fe5e
+      version: -1
+      name: Get McAfee latest DAT Version
+      description: Check the latest DAT file in McAfee repository
+      script: epo|||epo-get-latest-dat
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -204,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 370580ad-016e-4515-8a0e-e76cd0e55373
+    type: regular
+    task:
+      id: 370580ad-016e-4515-8a0e-e76cd0e55373
+      version: -1
+      name: Store system names to context key outdatedEndpoints
+      description: Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. For accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      contextKey:
+        simple: outdatedEndpoints
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator:
+        simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 313,
+          "y": 381
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 2ea4d150-6e57-4bb3-812c-2b18efa693e6
+    type: regular
+    task:
+      id: 2ea4d150-6e57-4bb3-812c-2b18efa693e6
+      version: -1
+      name: Store system names to context key endpointsToIsolate
+      description: Takes the comments of a given entry ID and stores them in the incident context, under a provided context key. For accessing the last executed task's comments, provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter.
+      scriptName: commentsToContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      contextKey:
+        simple: endpointsToIsolate
+      entryId:
+        simple: ${lastCompletedTaskEntries.[0]}
+      listSeperator: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 598,
+          "y": 713
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ce5e0dfc-c502-4f3c-8569-38e2b4c7baee
+    type: regular
+    task:
+      id: ce5e0dfc-c502-4f3c-8569-38e2b4c7baee
+      version: -1
+      name: Set incident severity to High
+      description: Modify incident info such as name, owner, type, etc.
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      addLabels: {}
+      customFieldName: {}
+      customFieldValue: {}
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity:
+        simple: High
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 598,
+          "y": 1428
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 1182,
+        "x": -204,
+        "y": -87
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No test - Deprecated playbook
+deprecated: true

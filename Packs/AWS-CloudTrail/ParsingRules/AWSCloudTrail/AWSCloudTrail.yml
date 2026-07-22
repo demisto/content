@@ -1,0 +1,8 @@
+id: Amazon_AWS_CloudTrail_ParsingRule
+name: Amazon AWS CloudTrail Parsing Rule
+fromversion: 8.7.0   
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

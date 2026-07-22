@@ -1,0 +1,621 @@
+id: email_address_enrichment_-_generic
+version: -1
+name: Email Address Enrichment - Generic
+description: Deprecated. Use "Email Address Enrichment - Generic v2.1" playbook instead. Get email address reputation using one or more integrations
+fromversion: 5.0.0
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 10b003be-68f2-4e57-8f11-d0475f1aac42
+    type: start
+    task:
+      id: 10b003be-68f2-4e57-8f11-d0475f1aac42
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 50
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 01ab9a35-e60e-4331-826d-48194fb5a771
+    type: title
+    task:
+      id: 01ab9a35-e60e-4331-826d-48194fb5a771
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      details: {}
+      fromclosedate: {}
+      fromdate: {}
+      fromduedate: {}
+      id: {}
+      level: {}
+      name: {}
+      notstatus: {}
+      owner: {}
+      page: {}
+      query:
+        simple: entry.contents:${Account.Username}
+      reason: {}
+      size: {}
+      sort: {}
+      status: {}
+      toclosedate: {}
+      todate: {}
+      toduedate: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1390
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 58fbce31-8318-47d5-881e-b17a428d22e0
+    type: condition
+    task:
+      id: 58fbce31-8318-47d5-881e-b17a428d22e0
+      version: -1
+      name: Are there Email addresses to check?
+      description: Checks that the input email address is not empty
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              simple: inputs.Email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 3291020c-5ec9-4f58-8814-27c07a575dc0
+    type: regular
+    task:
+      id: 3291020c-5ec9-4f58-8814-27c07a575dc0
+      version: -1
+      name: Check Email addresses  reputation
+      description: Get email address reputation from all supporting integrations
+      scriptName: EmailReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      email:
+        complex:
+          root: Account
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: External
+          accessor: Email.Address
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1215
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 550ff29a-79f5-4274-847f-fabf4193d2a7
+    type: regular
+    task:
+      id: 550ff29a-79f5-4274-847f-fabf4193d2a7
+      version: -1
+      name: Mark Email addresses as internal or external
+      description: Add to each email address a NetworkType attribute
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+      - "14"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+      email:
+        complex:
+          root: inputs.Email
+      extend-context: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 370
+        }
+      }
+  "10":
+    id: "10"
+    taskid: e82515ea-9f9a-4273-8182-e6a84b24e4d6
+    type: title
+    task:
+      id: e82515ea-9f9a-4273-8182-e6a84b24e4d6
+      version: -1
+      name: Internal
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 735
+        }
+      }
+  "11":
+    id: "11"
+    taskid: d501d6f3-d086-40fa-8c28-052fc32787fb
+    type: title
+    task:
+      id: d501d6f3-d086-40fa-8c28-052fc32787fb
+      version: -1
+      name: External
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 895
+        }
+      }
+  "12":
+    id: "12"
+    taskid: e66c5a66-3272-4ef8-8283-b0bc74af7cd0
+    type: regular
+    task:
+      id: e66c5a66-3272-4ef8-8283-b0bc74af7cd0
+      version: -1
+      name: Get Email addresses info from Active Directory
+      description: Use Active Directory to get internal email address user information
+      scriptName: ADGetUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      dn: {}
+      email:
+        complex:
+          root: Account
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: Internal
+          accessor: Email.Address
+      headers: {}
+      limit: {}
+      name: {}
+      nestedSearch: {}
+      userAccountControlOut: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 1215
+        }
+      }
+  "13":
+    id: "13"
+    taskid: f335c2d8-9c33-4b5e-8cf6-d8ab05f9cb9a
+    type: condition
+    task:
+      id: f335c2d8-9c33-4b5e-8cf6-d8ab05f9cb9a
+      version: -1
+      name: Are there external email addresses?
+      description: 'Check for Email Addresses with external NetworkType '
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "11"
+    scriptarguments:
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: External
+          accessor: Email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 882a4290-4166-4b8a-81f9-b5d163f34f06
+    type: condition
+    task:
+      id: 882a4290-4166-4b8a-81f9-b5d163f34f06
+      version: -1
+      name: Are there internal email addresses?
+      description: 'Check for Email Addresses with internal NetworkType '
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    scriptarguments:
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: Internal
+          accessor: Email
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 545
+        }
+      }
+  "15":
+    id: "15"
+    taskid: ab84c271-880d-4dc8-8feb-e73c2d4004e0
+    type: regular
+    task:
+      id: ab84c271-880d-4dc8-8feb-e73c2d4004e0
+      version: -1
+      name: Check Email addresses DomainSquatting Reputation
+      description: Check if an email address's domain is trying to squat other domain using Levenshtein distance algorithm
+      scriptName: EmailDomainSquattingReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+      email:
+        complex:
+          root: Account
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: External
+          accessor: Email.Address
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 140.5,
+          "y": 1215
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 9752ef45-8db2-45cc-80df-0926909ddf73
+    type: title
+    task:
+      id: 9752ef45-8db2-45cc-80df-0926909ddf73
+      version: -1
+      name: Active Directory
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 895
+        }
+      }
+  "17":
+    id: "17"
+    taskid: a030b50a-b7ba-4aba-89db-eb2a50d29e4d
+    type: condition
+    task:
+      id: a030b50a-b7ba-4aba-89db-eb2a50d29e4d
+      version: -1
+      name: Is Active Directory enabled?
+      description: Check if there's an active instance of Active Directory
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "12"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: activedir
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+          accessor: brand
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1175,
+          "y": 1040
+        }
+      }
+  "18":
+    id: "18"
+    taskid: 2a3f300c-f84f-43ac-8ec7-c98afd558416
+    type: condition
+    task:
+      id: 2a3f300c-f84f-43ac-8ec7-c98afd558416
+      version: -1
+      name: Is there a domain list input?
+      description: ""
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "15"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -32,
+          "y": 1040
+        }
+      }
+  "19":
+    id: "19"
+    taskid: b0e3026b-ae43-4032-8074-381bfd0f8fa3
+    type: condition
+    task:
+      id: b0e3026b-ae43-4032-8074-381bfd0f8fa3
+      version: -1
+      name: Should the system get the Email Addresses reputation?
+      description: |2-
+
+        Should the system retrieve the  Email Addresses reputation from all of the relevant integration?
+        Default: True
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 1040
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_4_#default#": 0.74
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1699.5,
+        "x": -32,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: false
+  description: A list of internal domains
+- key: Email
+  value:
+    complex:
+      root: Account
+      accessor: Email.Address
+  required: false
+  description: The email addresses to enrich
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook get reputation for the Email Address
+outputs:
+- contextPath: Account
+  description: The Account's object
+  type: unknown
+- contextPath: Account.Email.Address
+  description: The Email account full address
+  type: string
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+  type: string
+- contextPath: Account.Email.Domain
+  description: The Email account domain
+  type: string
+- contextPath: Account.Email.NetworkType
+  description: The Email account NetworkType (could be Internal/External)
+  type: string
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.Email.Username
+  description: The Email account username
+  type: string
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+- contextPath: Account.Email.Distance.Domain
+  description: The compared domain
+  type: string
+- contextPath: Account.Email.Distance.Value
+  description: 'The distance between the email domain and the compared domain '
+  type: number
+- contextPath: DBotScore.Indicator
+  description: The Indicator
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore's object
+  type: unknown
+- contextPath: DBotScore.Type
+  description: The Indicator Type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: The DBot score vendor
+  type: string
+- contextPath: DBotScore.Score
+  description: The DBot score
+  type: number
+tests:
+- No test - deprecated. use V2.1 instead.
+deprecated: true

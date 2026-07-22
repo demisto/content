@@ -1,0 +1,66 @@
+[
+ {
+  "id": 4,
+  "start_time": 1636720227485,
+  "update_time": 1636720227485,
+  "end_time": 1636720227485,
+  "title": "Daily Summary: Credentials Received over HTTP",
+  "description": "Over the past day, servers received HTTP data with passwords or basic authentication headers. If the unencrypted HTTP data is accessible to an attacker, they can collect sensitive information. Confirm that the SSL/TLS protocol or HTTP Strict Transport Security (HSTS) policy is enabled for these servers.",
+  "categories": [
+   "sec.attack",
+   "sec.caution"
+  ],
+  "risk_score": 60,
+  "type": "http_plaintext_password_server",
+  "properties": {},
+  "participants": [
+   {
+    "object_type": "device",
+    "object_id": 369,
+    "role": "offender",
+    "external": false,
+    "id": 3
+   }
+  ],
+  "ticket_id": null,
+  "assignee": null,
+  "status": null,
+  "resolution": null,
+  "mitre_tactics": [],
+  "mitre_techniques": [],
+  "appliance_id": 0,
+  "is_user_created": false
+ },
+ {
+  "id": 5,
+  "start_time": 1637130390376,
+  "update_time": 1637240460000,
+  "end_time": 1637154295716,
+  "title": "Daily Summary: Credentials Received over HTTP",
+  "description": "Over the past day, servers received HTTP data with passwords or basic authentication headers. If the unencrypted HTTP data is accessible to an attacker, they can collect sensitive information. Confirm that the SSL/TLS protocol or HTTP Strict Transport Security (HSTS) policy is enabled for these servers.",
+  "categories": [
+   "sec.attack",
+   "sec.caution"
+  ],
+  "risk_score": 60,
+  "type": "http_plaintext_password_server",
+  "properties": {},
+  "participants": [
+   {
+    "object_type": "device",
+    "object_id": 384,
+    "role": "offender",
+    "external": false,
+    "id": 4
+   }
+  ],
+  "ticket_id": null,
+  "assignee": null,
+  "status": null,
+  "resolution": null,
+  "mitre_tactics": [],
+  "mitre_techniques": [],
+  "appliance_id": 0,
+  "is_user_created": false
+ }
+]

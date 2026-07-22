@@ -1,0 +1,333 @@
+commonfields:
+  id: OPSWAT-Metadefender
+  version: -1
+name: OPSWAT-Metadefender
+display: OPSWAT-Metadefender (Deprecated)
+category: Data Enrichment & Threat Intelligence
+deprecated: true
+image: data:image/png;base64,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
+description: Deprecated. At the heart of the solution, the Metadefender multi-scanning engine uses 30+ anti-malware engines to scan files for threats, significantly increasing malware detection.
+configuration:
+- display: Server URL (e.g. http://localhost:8008/metascan_rest/)
+  name: url
+  defaultvalue: http://localhost:8008/metascan_rest/
+  type: 0
+  required: true
+- display: API Key
+  name: api
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: 'The low threshold '
+  name: lowPercnt
+  defaultvalue: "34"
+  type: 0
+  required: true
+- display: 'The high threshold '
+  name: highPercnt
+  defaultvalue: "66"
+  type: 0
+  required: true
+- display: Cloud based
+  name: cloud
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: >
+    var sendRequest = function(url,param, fileId) {
+        if (params.url[params.url.length - 1] !== '/') {
+            params.url += '/';
+        }
+        var requestUrl = params.url + url + param;
+        var res;
+        if (params.cloud) {
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: fileName,
+                            apikey: [params.api]
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json'],
+                            apikey: [params.api]
+                        }
+                    }
+                    );
+                return res;
+            }
+        } else {
+            if (fileId) {
+                var fileName = dq(invContext, 'File(val.EntryID == \'' + fileId + '\').Name');
+                res = httpMultipart(
+                    requestUrl,
+                    fileId,
+                    {
+                        Method: 'POST',
+                        Headers: {
+                            Accept: ['application/json'],
+                            filename: fileName
+                        }
+                    },
+                    {},
+                    params.insecure,
+                    params.proxy,
+                    undefined,
+                    'file',
+                    fileName);
+            } else {
+                res = http(
+                    requestUrl,
+                    {
+                        Method: 'GET',
+                        Headers: {
+                            Accept: ['application/json']
+                        }
+                    }
+                    );
+            }
+        }
+
+        if (res.StatusCode < 200 || res.StatusCode >= 300) {
+            throw 'Request Failed.\nStatus code: ' + res.StatusCode + '.\nBody: ' + JSON.stringify(res) + '.';
+        }
+
+        return res;
+    };
+
+
+
+    var searchHash = function() {
+        var res;
+        try {
+            res = JSON.parse(sendRequest('hash/', args.hash).Body);
+        } catch (err) {
+            throw 'Error in JSON parsing\n';
+        }
+        var md = '# OPSWAT-Metadefender\n';
+        var ec = {};
+        var dbotScore = 0;
+
+        md += '### Results for Hash ' + args.hash + '\n';
+
+        if (res.file_info) {
+            md += 'File name: ' + res.file_info.display_name + '\n';
+            md += 'File description: ' + res.file_info.file_type_description + '\n';
+            md += 'Scan result: ' + res.scan_results.scan_all_result_a + '\n';
+            md += 'Detected AV: ' + res.scan_results.total_detected_avs + '/' + res.scan_results.total_avs + '\n';
+
+            md += 'AV Name|Def Time|Threat Name Found\n';
+            md += '---|---|---\n';
+
+            var avRes = res.scan_results.scan_details;
+
+            Object.keys(avRes).forEach(function(key) {
+              md += key + '|';
+              md += avRes[key].def_time + '|';
+              md += avRes[key].threat_found + '\n';
+            });
+
+            var percntBad = (res.scan_results.total_detected_avs / res.scan_results.total_avs) * 100;
+
+            if (percntBad >= parseInt(params.highPercnt)) {
+                dbotScore = 3;
+                addMalicious(ec, outputPaths.file,{
+                    Hash: args.hash,
+                    Malicious: {Vendor: 'OPSWAT', Description: 'Result from OPSWAT-Metadefender'}
+                });
+            } else if (percntBad >= parseInt(params.lowPercnt)) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
+            }
+            ec.DBotScore = {Indicator: args.hash, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore};
+
+
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        } else {
+            md += 'No results for this hash\n';
+
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        }
+    };
+
+
+
+    var scanFile = function() {
+        var res;
+        var fileName = dq(invContext, 'File(val.EntryID == \'' + args.fileId + '\').Name');
+
+        if (!fileName) {
+            throw 'Wrong FileID\n';
+        }
+
+        try {
+            res = JSON.parse(sendRequest('file', '' , args.fileId).Body);
+        } catch (err) {
+            throw 'Error in JSON parsing\n';
+        }
+        var md = '# OPSWAT-Metadefender\n';
+        var ec = {};
+
+        md += 'The file has been successfully submitted to scan.\n';
+        md += 'Scan id: ' + res.data_id + '\n';
+
+        ec.OPSWAT = {
+            FileName: fileName[0],
+            ScanId: res.data_id
+        };
+
+        return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+    };
+
+
+
+    var getScanResult = function() {
+        var res;
+        try {
+            res = JSON.parse(sendRequest('file/' + args.id, '').Body);
+        } catch (err) {
+            throw 'Error in JSON parsing\n';
+        }
+
+        var md = '# OPSWAT-Metadefender\n';
+        var ec = {};
+        var dbotScore = 0;
+
+        md += '### Results for scan id ' + args.id + '\n';
+
+        if (res.file_info &&
+            res.process_info) {
+            if (res.process_info.progress_percentage < 100) {
+                md += '### The scan proccess is in progrees (done: ' + res.process_info.progress_percentage + '%) \n'
+            }
+            md += 'File name: ' + res.file_info.display_name + '\n';
+            md += 'File description: ' + res.file_info.file_type_description + '\n';
+            if (res.scan_results) {
+                md += 'Scan result: ' + res.scan_results.scan_all_result_a + '\n';
+                md += 'Detected AV: ' + res.scan_results.scan_all_result_i + '/' + res.scan_results.total_avs + '\n';
+            }
+
+            md += 'Scan progress percentage ' + res.process_info.progress_percentage + '\n';
+
+            var percntBad = (res.scan_results.scan_all_result_i / res.scan_results.total_avs) * 100;
+
+            ec['OPSWAT(val.ScanId == ' + args.id + ').ScanProgress'] = res.process_info.progress_percentage;
+            ec['OPSWAT(val.ScanId == ' + args.id + ').PercentageBad'] = percntBad;
+            ec['OPSWAT(val.ScanId == ' + args.id + ').Result'] = res.scan_results.scan_all_result_a;
+
+
+            md += 'AV Name|Def Time|Threat Name Found\n';
+            md += '---|---|---\n';
+
+            var avRes = res.scan_results.scan_details;
+
+            Object.keys(avRes).forEach(function(key) {
+              md += key + '|';
+              md += avRes[key].def_time + '|';
+              md += avRes[key].threat_found + '\n';
+            });
+
+
+
+            if (percntBad >= parseInt(params.highPercnt)) {
+                dbotScore = 3;
+                addMalicious(ec, outputPaths.file,{
+                    Hash: res.file_info.md5,
+                    Malicious: {Vendor: 'OPSWAT', Description: 'Result from OPSWAT-Metadefender'}
+                });
+            } else if (percntBad >= parseInt(params.lowPercnt)) {
+                dbotScore = 2;
+            } else {
+                dbotScore = 1;
+            }
+            ec.DBotScore = {Indicator: res.file_info.md5, Type: 'hash', Vendor: 'OPSWAT', Score: dbotScore};
+
+
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        } else {
+            md += 'No results for this id\n';
+
+            return {Type: entryTypes.note, Contents: res, ContentsFormat: formats.json, HumanReadable: md, EntryContext: ec};
+        }
+    };
+
+
+
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            var res = sendRequest('hash/', '66DA1A91E1ED5D59BECFAD85F53C05F9');
+            if (res.StatusCode !== 200) {
+                return res
+            }
+            return 'ok';
+        case 'opswat-hash':
+            return searchHash();
+        case 'opswat-scan-file':
+            return scanFile();
+        case 'opswat-scan-result':
+            return getScanResult();
+        default:
+            throw 'Unknown command - ' + command;
+    }
+  type: javascript
+  commands:
+  - name: opswat-hash
+    deprecated: true
+    arguments:
+    - name: hash
+      required: true
+      default: true
+      description: File hash (Can be any hash type)
+    description: Check file hash on OPSWAT
+  - name: opswat-scan-file
+    deprecated: true
+    arguments:
+    - name: fileId
+      required: true
+      default: true
+      description: Entry id of a file in Demisto
+    outputs:
+    - contextPath: OPSWAT.FileName
+      description: OPSWAT file name to scan
+    - contextPath: OPSWAT.ScanId
+      description: OPSWAT scan id of the scan
+    description: Scan file in OPSWAT
+  - name: opswat-scan-result
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: OPSWAT scan id
+    description: Get OPSWAT result
+tests:
+- No tests - no instance
+fromversion: 5.0.0

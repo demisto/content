@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: Jira_Parsing_Rule
+name: Jira Parsing Rule
+rules: ''
+samples: ''
+supportedModules:
+- xsiam
+tags: []

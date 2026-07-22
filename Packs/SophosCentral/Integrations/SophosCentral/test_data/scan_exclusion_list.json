@@ -1,0 +1,31 @@
+{
+   "items":[
+      {
+         "id":"369b0956-a7b6-44fc-b1cc-bd7b3279c663",
+         "value":"%programfiles(x86)%\\Sophos\\Sophos Anti-Virus\\",
+         "type":"path",
+         "scanMode":"onDemandAndOnAccess",
+         "description":"Sophos temporary exclusion see KBA 133945",
+         "comment":"Sophos temporary exclusion see KBA 133945"
+      },
+      {
+         "id":"2de72c9a-d3c5-46c7-bf53-59ba7566e50c",
+         "value":"root/helloworld",
+         "type":"path",
+         "scanMode":"onDemandAndOnAccess",
+         "comment":"changed"
+      },
+      {
+         "id":"16bac29f-17a4-4c3a-9370-8c5968c5ac7d",
+         "value":"changedvirus.exe",
+         "type":"process",
+         "scanMode":"onAccess",
+         "comment":"changed before demo"
+      }
+   ],
+   "pages":{
+      "current":1,
+      "size":3,
+      "maxSize":100
+   }
+}

@@ -1,0 +1,341 @@
+{
+  "defaultIncidentType": "Armis Alert - Anomaly Detection",
+  "description": "Maps incoming Armis alerts.",
+  "feed": false,
+  "id": "Armis - Incoming Mapper",
+  "mapping": {
+    "Armis Alert": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Alert ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "alertId",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Alert Name": {
+          "complex": null,
+          "simple": "title"
+        },
+        "Armis Alert Description": {
+          "complex": null,
+          "simple": "title"
+        },
+        "Armis Alert ID": {
+          "complex": null,
+          "simple": "alertId"
+        },
+        "Armis Alert Severity": {
+          "complex": null,
+          "simple": "severity"
+        },
+        "Armis Alert Status ": {
+          "complex": null,
+          "simple": "status"
+        },
+        "Armis Alert Type": {
+          "complex": null,
+          "simple": "type"
+        },
+        "Armis Device Identifier": {
+          "complex": null,
+          "simple": "deviceIds.[0]"
+        },
+        "Armis Device IDs": {
+          "complex": null,
+          "simple": "deviceIds.[0]"
+        },
+        "State": {
+          "complex": null,
+          "simple": "status"
+        },
+        "details": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "description",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "title",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    },
+    "Armis Alert - Anomaly Detection": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Alert ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "alertId",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Alert Name": {
+          "complex": null,
+          "simple": "title"
+        },
+        "Armis Alert Description": {
+          "complex": null,
+          "simple": "description"
+        },
+        "Armis Alert ID": {
+          "complex": null,
+          "simple": "alertId"
+        },
+        "Armis Alert Severity": {
+          "complex": null,
+          "simple": "severity"
+        },
+        "Armis Alert Status ": {
+          "complex": null,
+          "simple": "status"
+        },
+        "Armis Alert Type": {
+          "complex": null,
+          "simple": "type"
+        },
+        "details": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "description",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "title",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    },
+    "Armis Alert - Policy Violation": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Alert ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "alertId",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Alert Name": {
+          "complex": null,
+          "simple": "title"
+        },
+        "Armis Alert Description": {
+          "complex": null,
+          "simple": "description"
+        },
+        "Armis Alert ID": {
+          "complex": null,
+          "simple": "alertId"
+        },
+        "Armis Alert Severity": {
+          "complex": null,
+          "simple": "severity"
+        },
+        "Armis Alert Status ": {
+          "complex": null,
+          "simple": "status"
+        },
+        "Armis Alert Type": {
+          "complex": null,
+          "simple": "type"
+        },
+        "details": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "description",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "title",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    },
+    "Armis Alert - System Policy Violation": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Alert ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "alertId",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Alert Name": {
+          "complex": null,
+          "simple": "title"
+        },
+        "Armis Alert Description": {
+          "complex": null,
+          "simple": "description"
+        },
+        "Armis Alert ID": {
+          "complex": null,
+          "simple": "alertId"
+        },
+        "Armis Alert Severity": {
+          "complex": null,
+          "simple": "severity"
+        },
+        "Armis Alert Status ": {
+          "complex": null,
+          "simple": "status"
+        },
+        "Armis Alert Type": {
+          "complex": null,
+          "simple": "type"
+        },
+        "details": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "description",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "title",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    },
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Alert ID": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "alertId",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Alert Name": {
+          "complex": null,
+          "simple": "title"
+        },
+        "Armis Device Identifier": {
+          "complex": null,
+          "simple": "deviceIds.[0]"
+        },
+        "Armis Device IDs": {
+          "complex": null,
+          "simple": "deviceIds.[0]"
+        },
+        "Event Type": {
+          "complex": null,
+          "simple": "type"
+        },
+        "details": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "description",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "name": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "title",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "severity",
+            "transformers": []
+          },
+          "simple": ""
+        }
+      }
+    }
+  },
+  "name": "Armis - Incoming Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.0.0"
+}

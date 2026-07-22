@@ -1,0 +1,31 @@
+{
+ "fromVersion": "6.0.0",
+ "associatedToAll": false,
+ "associatedTypes": [
+  "MobileIron Cloud Device Incident",
+  "MobileIron Core Device Incident"
+ ],
+ "caseInsensitive": false,
+ "cliName": "mobileirondeviceid",
+ "closeForm": false,
+ "content": true,
+ "description": "MobileIron Device Identifier",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_mobileirondeviceid",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "MobileIron Device ID",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1
+}

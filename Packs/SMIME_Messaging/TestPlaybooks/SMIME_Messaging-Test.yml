@@ -1,0 +1,262 @@
+id: SMIME_Messaging-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: SMIME_Messaging-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9e01aa8c-c7f4-48d0-88ea-bf04fe432e47
+    type: start
+    task:
+      id: 9e01aa8c-c7f4-48d0-88ea-bf04fe432e47
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3da2ec28-9b6d-42e5-8964-c6e88f29aca0
+    type: regular
+    task:
+      id: 3da2ec28-9b6d-42e5-8964-c6e88f29aca0
+      version: -1
+      name: SMIME Sign and Encrypt
+      description: Encrypts and signs an email message with S/MIME protocol by using
+        a public RSA certificate.
+      script: '|||smime-sign-and-encrypt'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      attachment_entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: txt
+          accessor: EntryID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      message:
+        simple: "<p style=\"font-weight: bold; font-size: 16px;\">This is a test email,
+          \ in HTML, signed and encrypted.\nä, Ø, ß \n</p>\n\n\n"
+      recipients:
+        simple: '{"${inputs.recipient}":"instancePublicKey"}'
+      subject:
+        simple: Email TEST - HTML Signed and encrypted
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f4a4bd33-bfb6-4352-82ae-01709564ef59
+    type: title
+    task:
+      id: f4a4bd33-bfb6-4352-82ae-01709564ef59
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 172b41fe-c8b7-4955-8a09-d17a20b98b6b
+    type: regular
+    task:
+      id: 172b41fe-c8b7-4955-8a09-d17a20b98b6b
+      version: -1
+      name: Create attachment
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      data:
+        simple: This is a test attachment
+      filename:
+        simple: attachment.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4e40e920-c2ca-413b-84e1-0a9d33e866f2
+    type: regular
+    task:
+      id: 4e40e920-c2ca-413b-84e1-0a9d33e866f2
+      version: -1
+      name: Send mail
+      description: Sends an email using EWS.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      raw_message:
+        simple: ${SMIME.SignedAndEncrypted.Message}
+      subject:
+        simple: SMIME Test subject
+      to:
+        simple: ${inputs.recipient}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1c0dd1fe-1aa3-468c-8d32-ee37b48aaf29
+    type: regular
+    task:
+      id: 1c0dd1fe-1aa3-468c-8d32-ee37b48aaf29
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1040,
+        "width": 380,
+        "x": 50,
+        "y": -210
+      }
+    }
+  }
+inputs:
+- key: recipient
+  value:
+    simple: buildtests@demisto.int
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
+fromversion: 5.0.0

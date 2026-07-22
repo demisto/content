@@ -1,0 +1,42 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Digital Guardian Security Event"
+    ],
+    "breachScript": "",
+    "caseInsensitive": true,
+    "cliName": "digitalguardianusername",
+    "closeForm": false,
+    "columns": null,
+    "content": true,
+    "defaultRows": null,
+    "description": "Digital Guardian Username",
+    "editForm": true,
+    "fieldCalcScript": "",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_digitalguardianusername",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Digital Guardian Username",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "placeholder": "",
+    "required": false,
+    "script": "",
+    "selectValues": null,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": null,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "validationRegex": "",
+    "version": -1,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+       "xsoar"
+    ]
+}

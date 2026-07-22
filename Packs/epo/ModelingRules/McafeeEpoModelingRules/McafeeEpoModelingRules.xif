@@ -1,0 +1,14 @@
+[MODEL: dataset = mcafee_epo_raw, model=Endpoint]
+filter AnalyzerName = "McAfee Endpoint Security" or AnalyzerName = "Data Loss Prevention"
+| alter XDM.Endpoint.event_timestamp = _time,
+    XDM.Endpoint.original_event_id = to_string(ThreatEventID),
+    XDM.Endpoint.threat.category = ThreatCategory,
+    XDM.Endpoint.threat.severity = to_string(ThreatSeverity),
+    XDM.Endpoint.threat.name = ThreatName,
+    XDM.Endpoint.Actor.host.hostname = NodeName,
+    XDM.Endpoint.Actor.host.device_id = ServerID,
+    XDM.Endpoint.Target.host.ipv4_addresses = arraycreate(coalesce(TargetIPV4, 0)),
+    XDM.Endpoint.Target.host.ipv6_addresses = arraycreate(coalesce(TargetIPV6, "")),
+    XDM.Endpoint.Target.host.mac_addresses = arraycreate(coalesce(TargetMAC , "")),
+    XDM.Endpoint.Target.agent.version = AnalyzerVersion,
+    XDM.Endpoint.Observer.product = AnalyzerName;

@@ -1,0 +1,239 @@
+id: Digital Defense FrontlineVM - Old Vulnerabilities Found
+version: -1
+fromversion: 5.0.0
+name: Digital Defense FrontlineVM - Old Vulnerabilities Found
+description: This will query Frontline.Cloud's active view for any critical level vulnerabilities found to be older than 90 days.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5ee129af-486b-4c38-8a49-9320f10ce172
+    type: start
+    task:
+      id: 5ee129af-486b-4c38-8a49-9320f10ce172
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: a64ad67e-b87b-4259-8869-c019bd0197d3
+    type: regular
+    task:
+      id: a64ad67e-b87b-4259-8869-c019bd0197d3
+      version: -1
+      name: frontline-get-vulns (query for any old vulnerabilities)
+      description: This will query Frontline's active view for any vulnerabilities found to be high or critical and older than the given number of days.
+      script: Digital Defense FrontlineVM|||frontline-get-vulns
+      type: regular
+      iscommand: true
+      brand: Digital Defense FrontlineVM
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      host_id: {}
+      ip_address: {}
+      max_days_since_created:
+        simple: ${inputs.Days Older Than}
+      min_days_since_created: {}
+      min_severity:
+        simple: high
+      severity: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: 0c512919-fcb9-4157-8a6c-3948598585ad
+    type: condition
+    task:
+      id: 0c512919-fcb9-4157-8a6c-3948598585ad
+      version: -1
+      name: Were vulnerabilities found?
+      description: Checks results of previous task.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FrontlineVM.Vulns
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: b9f89f8a-7a57-4003-8a88-caac2d9c5c61
+    type: regular
+    task:
+      id: b9f89f8a-7a57-4003-8a88-caac2d9c5c61
+      version: -1
+      name: Vulnerabilities found.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        complex:
+          root: FrontlineVM
+          accessor: Vulns
+          transformers:
+          - operator: count
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: 41187f42-9456-4109-80a9-87c76e44c9c6
+    type: regular
+    task:
+      id: 41187f42-9456-4109-80a9-87c76e44c9c6
+      version: -1
+      name: No vulnerabilities were found
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: No high or critical level severity vulnerabilities found within Frontline.Cloud's active view for the given number of days.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '5':
+    id: '5'
+    taskid: 9d4aa8e7-1d6e-4abf-8180-ca9fadbde22e
+    type: collection
+    task:
+      id: 9d4aa8e7-1d6e-4abf-8180-ca9fadbde22e
+      version: -1
+      name: Get number of days.
+      description: Query for any vulnerabilities found older than this given day (from now).
+      type: collection
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Query for any vulnerabilities found older than this given day (from now).
+      methods: []
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: '0'
+        label: ''
+        labelarg:
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: number
+        options: []
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: Query for any vulnerabilities found older than this given day (from now).
+      title: Query for any vulnerabilities found older than this given day (from now).
+      description: Query for any vulnerabilities found older than this given day (from now).
+      sender: ''
+      expired: false
+      totalanswers: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Days Older Than
+  value: {}
+  required: true
+  description: Input number of days from now in which to search if vulnerabilities exist.
+outputs: []
+tests:
+- No test - manual task

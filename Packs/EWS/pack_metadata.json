@@ -1,0 +1,31 @@
+{
+    "name": "EWS",
+    "description": "Exchange Web Services and Office 365 (mail)",
+    "support": "xsoar",
+    "currentVersion": "2.1.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-21T07:41:48Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "dependencies": {
+        "MicrosoftExchangeOnPremise": {
+            "mandatory": true,
+            "display_name": "Microsoft Exchange On-Premise"
+        },
+        "MicrosoftExchangeOnline": {
+            "mandatory": true,
+            "display_name": "Microsoft Exchange Online"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

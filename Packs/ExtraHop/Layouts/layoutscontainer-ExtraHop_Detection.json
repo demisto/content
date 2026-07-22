@@ -1,0 +1,1251 @@
+{
+    "close": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_closereason",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "details": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_category",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_extrahophostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionticketed",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionupdatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_riskscore",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Detection Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_participants",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Detection Participants",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Work Plan",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "workplan"
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Incident Files",
+                "query": {
+                    "categories": [
+                        "attachments"
+                    ],
+                    "lastId": "",
+                    "pageSize": 100,
+                    "tags": [],
+                    "users": []
+                },
+                "queryType": "warRoomFilter",
+                "readOnly": true,
+                "type": "invTimeline"
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Linked Incidents",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "linkedIncidents"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Incident Timeline",
+                "query": {
+                    "categories": [
+                        "incidentInfo"
+                    ],
+                    "lastId": "",
+                    "pageSize": 100,
+                    "tags": [],
+                    "users": []
+                },
+                "queryType": "warRoomFilter",
+                "readOnly": true,
+                "type": "invTimeline"
+            }
+        ]
+    },
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "caseinfoid-field-changed-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-bfe0c200-1496-11eb-9980-5f8e6bceb89a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "df7419f0-1496-11eb-9980-5f8e6bceb89a",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "e7b375c0-1496-11eb-9980-5f8e6bceb89a",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "ede463f0-1496-11eb-9980-5f8e6bceb89a",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotstatus",
+                                "height": 22,
+                                "id": "f2e49a50-1496-11eb-9980-5f8e6bceb89a",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "fa472ab0-1496-11eb-9980-5f8e6bceb89a",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "01522530-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "09d71580-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "roles",
+                                "height": 22,
+                                "id": "1793ee00-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "phase",
+                                "height": 22,
+                                "id": "48a34950-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "category",
+                                "height": 22,
+                                "id": "1f709060-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+						"displayType": "CARD",
+                        "h": 5,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "7f464160-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 0,
+                                "listId": "caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxdetectionid",
+                                "height": 22,
+                                "id": "088d5b50-ab92-11ed-85d4-a9318b4d07e0",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "86d8aca0-149d-11eb-9980-5f8e6bceb89a",
+                                "index": 2,
+                                "listId": "caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "7e6fa8c0-149d-11eb-9980-5f8e6bceb89a",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxstarttime",
+                                "height": 22,
+                                "id": "b86880f0-af7e-11ed-aeb3-17e4ab65d78c",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxupdatetime",
+                                "height": 22,
+                                "id": "c6235da0-af7e-11ed-aeb3-17e4ab65d78c",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxmodtime",
+                                "height": 22,
+                                "id": "0fc09e00-b1d7-11ed-b7b0-11ddace27d31",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxendtime",
+                                "height": 22,
+                                "id": "c9e5bcd0-af7e-11ed-aeb3-17e4ab65d78c",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxriskscore",
+                                "height": 22,
+                                "id": "98c8f400-af7e-11ed-aeb3-17e4ab65d78c",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahopapplianceid",
+                                "height": 22,
+                                "id": "a8f22e20-ac48-11ed-ad24-e1f6fc9cd422",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxdetectionstatus",
+                                "height": 22,
+                                "id": "2b0711a0-ac53-11ed-9939-b34573b2eaec",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxdetectiontype",
+                                "height": 22,
+                                "id": "17cd6150-a935-11ed-beec-cd0cb5eb7120",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxusercreated",
+                                "height": 22,
+                                "id": "2cb9ac40-a935-11ed-beec-cd0cb5eb7120",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectionurl",
+                                "height": 22,
+                                "id": "75e91980-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 12,
+                                "listId": "caseinfoid-field-changed-caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectionticketed",
+                                "height": 22,
+                                "id": "78513fe0-1497-11eb-9980-5f8e6bceb89a",
+                                "index": 13,
+                                "listId": "caseinfoid-field-changed-caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "extrahophostname",
+                                "height": 22,
+                                "id": "19f4ae20-a935-11ed-beec-cd0cb5eb7120",
+                                "index": 14,
+                                "listId": "caseinfoid-field-changed-caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "dbottotaltime",
+                                "height": 22,
+                                "id": "820b4610-149d-11eb-9980-5f8e6bceb89a",
+                                "index": 15,
+                                "listId": "caseinfoid-field-changed-caseinfoid-568f2110-1497-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detection Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": false,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-a89de770-1497-11eb-9980-5f8e6bceb89a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "extrahoprevealxdetectionparticipants",
+                                "height": 106,
+                                "id": "2ce1bb60-ab5e-11ed-85b3-0dd32a5984c8",
+                                "index": 1,
+                                "listId": "caseinfoid-a89de770-1497-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detection Participants",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 7,
+                        "i": "caseinfoid-field-changed-caseinfoid-07cbbfb0-1498-11eb-9980-5f8e6bceb89a",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Timeline",
+                        "query": {
+                            "categories": [
+                                "incidentInfo"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 15
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-040a8710-149a-11eb-9980-5f8e6bceb89a",
+                        "items": [
+                            {
+                                "endCol": 4,
+                                "fieldId": "description",
+                                "height": 53,
+                                "id": "760a6b90-ab93-11ed-85d4-a9318b4d07e0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detection Description",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-field-changed-caseinfoid-bc884400-149d-11eb-9980-5f8e6bceb89a",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 1,
+                        "y": 13
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-field-changed-caseinfoid-269b43b0-149e-11eb-9980-5f8e6bceb89a",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Incident Files",
+                        "query": {
+                            "categories": [
+                                "attachments"
+                            ],
+                            "lastId": "",
+                            "pageSize": 100,
+                            "tags": [],
+                            "users": []
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 0,
+                        "y": 13
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-5a82bb60-ab94-11ed-b1dd-9fa418020c0a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "extrahoprevealxmitretechniques",
+                                "height": 106,
+                                "id": "27abf110-ab95-11ed-b1dd-9fa418020c0a",
+                                "index": 0,
+                                "listId": "caseinfoid-040a8710-149a-11eb-9980-5f8e6bceb89a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detection Mitre Techniques",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-91c1d380-ac30-11ed-8ae7-71b5fe3d0b36",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "extrahoprevealxmitretactics",
+                                "height": 106,
+                                "id": "abae06b0-ac30-11ed-8ae7-71b5fe3d0b36",
+                                "index": 0,
+                                "listId": "caseinfoid-91c1d380-ac30-11ed-8ae7-71b5fe3d0b36",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Detection Mitre Tactics",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 11
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-f8f755c0-ac30-11ed-8ae7-71b5fe3d0b36",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "extrahoprevealxproperties",
+                                "height": 22,
+                                "id": "56ca3c70-ac32-11ed-8ae7-71b5fe3d0b36",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Extrahop Properties",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-field-changed-caseinfoid-4ce28b00-ac36-11ed-af36-61746b21b6cd",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "extrahoprevealxdetectiondevices",
+                                "height": 106,
+                                "id": "82b9f5b0-ac36-11ed-af36-61746b21b6cd",
+                                "index": 0,
+                                "listId": "caseinfoid-4ce28b00-ac36-11ed-af36-61746b21b6cd",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "ExtraHop Reveal(x) Detection Devices",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 7
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_extrahophostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_riskscore",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_participants",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionupdatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionendtime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Detection Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "ExtraHop Detection",
+    "mobile": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_category",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_extrahophostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionticketed",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionupdatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_riskscore",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Detection Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "name": "ExtraHop Detection",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_category",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_extrahophostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionticketed",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionupdatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_riskscore",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionid",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Detection Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_participants",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Detection Participants",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "system": false,
+    "version": -1,
+    "marketplaces": [
+        "xsoar"
+    ],
+    "fromVersion": "6.5.0",
+    "description": ""
+}

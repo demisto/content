@@ -1,0 +1,16 @@
+[
+    {
+        "IName": "Profile1",
+        "Name": "My VLAN profile name",
+        "Is Default": false,
+        "VLAN Group Names": [
+            "named-group-1"
+        ],
+        "VLAN Names": [
+            "named-1"
+        ],
+        "VLAN Names Adaptive Policy Group Names": [
+            "Infrastructure"
+        ]
+    }
+]

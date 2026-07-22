@@ -1,0 +1,25 @@
+{
+    "outputs": {
+        "successful_creation": {
+            "data": {
+                "id": 59,
+                "name": "acme",
+                "description": "description",
+                "accountId": 1234567890,
+                "createdBy": 1234567890200002,
+                "updatedAt": "2023-09-09T15:10:26.592Z",
+                "createdAt": "2023-09-09T15:10:26.592Z",
+                "lastUsed": null,
+                "deletedAt": null,
+                "key": "000000-0000-0000-0000-000000000",
+                "roles": "{\"administrator\":true,\"read\":true}",
+                "role": "administrator"
+            }
+        },
+        "failed_creation": {
+            "error": {
+                "errors": "Name already exists"
+            }
+        }
+    }
+}

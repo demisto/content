@@ -1,0 +1,365 @@
+{
+    "description": "Map incoming DTM alert JSON data to XSOAR fields.",
+    "feed": false,
+    "id": "Google Threat Intelligence DTM Alerts - Incoming Mapper",
+    "mapping": {
+        "Google Threat Intelligence DTM Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert AI Doc Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "ai_doc_summary",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Aggregation ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "aggregated_under_id",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Analysis": {
+                    "complex": {
+                        "filters": [],
+                        "root": "analysis",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Attachments": {
+                    "complex": {
+                        "filters": [],
+                        "root": "attachments",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Confidence Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "confidence",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "by": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    }
+                                },
+                                "operator": "precision"
+                            }
+                        ]
+                    }
+                },
+                "GTI DTM Alert Created At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "created_at",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Body": {
+                    "complex": {
+                        "accessor": "body",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Description": {
+                    "complex": {
+                        "accessor": "description",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "doc_markdown",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Domain": {
+                    "complex": {
+                        "accessor": "domain",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc ID": {
+                    "complex": {
+                        "accessor": "__id",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Ingested Time": {
+                    "complex": {
+                        "accessor": "ingested",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Item Type": {
+                    "complex": {
+                        "accessor": "item_type",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Language": {
+                    "complex": {
+                        "accessor": "language",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Message ID": {
+                    "complex": {
+                        "accessor": "message_id",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Paste ID": {
+                    "complex": {
+                        "accessor": "paste_id",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Post Date": {
+                    "complex": {
+                        "accessor": "post_date",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Raw Text": {
+                    "complex": {
+                        "accessor": "raw_text",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Similar Domains": {
+                    "complex": {
+                        "accessor": "similar_domains",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Source": {
+                    "complex": {
+                        "accessor": "source",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Subject": {
+                    "complex": {
+                        "accessor": "subject",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Timestamp": {
+                    "complex": {
+                        "accessor": "timestamp",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Title": {
+                    "complex": {
+                        "accessor": "title",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Topic ID": {
+                    "complex": {
+                        "accessor": "topic_id",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Doc Type": {
+                    "complex": {
+                        "accessor": "__type",
+                        "filters": [],
+                        "root": "doc",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Email Sent At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "email_sent_at",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Has Analysis": {
+                    "complex": {
+                        "filters": [],
+                        "root": "has_analysis",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Indicator Malicious Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "indicator_mscore",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Labels": {
+                    "complex": {
+                        "filters": [],
+                        "root": "labels",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Monitor ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "monitor_id",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Monitor Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "monitor_name",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Monitor Version": {
+                    "complex": {
+                        "filters": [],
+                        "root": "monitor_version",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Similarity Score": {
+                    "complex": {
+                        "filters": [],
+                        "root": "similarity_score",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Summary": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alert_summary",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Topics": {
+                    "complex": {
+                        "filters": [],
+                        "root": "topics",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "alert_type",
+                        "transformers": []
+                    }
+                },
+                "GTI DTM Alert Updated At": {
+                    "complex": {
+                        "filters": [],
+                        "root": "updated_at",
+                        "transformers": []
+                    }
+                },
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_link",
+                        "transformers": []
+                    }
+                },
+                "Tags": {
+                    "complex": {
+                        "filters": [],
+                        "root": "tags",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_direction",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_id",
+                        "transformers": []
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "complex": {
+                        "filters": [],
+                        "root": "mirror_instance",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": []
+					}
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Google Threat Intelligence DTM Alerts - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

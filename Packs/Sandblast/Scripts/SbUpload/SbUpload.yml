@@ -1,0 +1,55 @@
+commonfields:
+  id: SbUpload
+  version: -1
+name: SbUpload
+script: ''
+type: python
+subtype: python2
+tags:
+- sandblast
+comment: Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on cloud.
+system: true
+args:
+- name: file_name
+  required: true
+  default: true
+  description: File name - service calculates the file name from the part name
+- name: md5
+  description: The md5 to upload
+- name: sha1
+  description: The sha1 to upload
+- name: sha256
+  description: The sha256 to upload
+- name: file_type
+  description: File extension (although the service identifies the type)
+- name: features
+  auto: PREDEFINED
+  predefined:
+  - te
+  - av
+  - extraction
+  - all
+  description: Available features - default is te and av
+- name: images
+  description: Array of objects with id and revision of available OS images
+- name: reports
+  description: Array of supported report formats of - pdf | xml | tar
+- name: benign_reports
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  description: By default, reports are returned only for malicious files - you can mark this as true and get benign reports
+- name: file_id
+  required: true
+  description: The file id
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - sandblast-upload
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (deprecated)
+deprecated: true

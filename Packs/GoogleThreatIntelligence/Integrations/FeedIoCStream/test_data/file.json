@@ -1,0 +1,139 @@
+{
+    "id": "<sha256>",
+    "type": "file",
+    "attributes": {
+        "type_description": "Win32 EXE",
+        "tlsh": "<tlsh>",
+        "vhash": "<vhash>",
+        "exiftool": {
+            "MIMEType": "application/octet-stream",
+            "Subsystem": "Windows GUI",
+            "MachineType": "Intel 386 or later, and compatibles",
+            "TimeStamp": "2010:11:20 09:03:08+00:00",
+            "FileType": "Win32 EXE",
+            "PEType": "PE32",
+            "CodeSize": "36864",
+            "LinkerVersion": "6.0",
+            "ImageFileCharacteristics": "No relocs, Executable, No line numbers, No symbols, 32-bit",
+            "FileTypeExtension": "exe",
+            "InitializedDataSize": "3682304",
+            "SubsystemVersion": "4.0",
+            "ImageVersion": "0.0",
+            "OSVersion": "4.0",
+            "EntryPoint": "0x9a16",
+            "UninitializedDataSize": "0"
+        },
+        "trid": [
+            {
+                "file_type": "Win32 Executable MS Visual C++ (generic)",
+                "probability": 38.8
+            },
+            {
+                "file_type": "Microsoft Visual C++ compiled executable (generic)",
+                "probability": 20.5
+            },
+            {
+                "file_type": "Win64 Executable (generic)",
+                "probability": 13.0
+            },
+            {
+                "file_type": "Win32 Dynamic Link Library (generic)",
+                "probability": 8.1
+            },
+            {
+                "file_type": "Win16 NE executable (generic)",
+                "probability": 6.2
+            }
+        ],
+        "creation_date": 1290243788,
+        "names": [
+            "<name>.virus"
+        ],
+        "last_modification_date": 1635959808,
+        "type_tag": "peexe",
+        "times_submitted": 1,
+        "total_votes": {
+            "harmless": 0,
+            "malicious": 0
+        },
+        "size": 3723264,
+        "authentihash": "<authentihash>",
+        "last_submission_date": 1635952526,
+        "meaningful_name": "<name>.virus",
+        "downloadable": true,
+        "sha256": "<sha256>",
+        "type_extension": "exe",
+        "tags": [
+            "peexe",
+            "cve-2017-0147",
+            "exploit"
+        ],
+        "last_analysis_date": 1635952526,
+        "unique_sources": 1,
+        "first_submission_date": 1635952526,
+        "sha1": "<sha1>",
+        "ssdeep": "<ssdeep>",
+        "bloom": "<bloom>",
+        "packers": {
+            "PEiD": "Microsoft Visual C++"
+        },
+        "md5": "<md5>",
+        "pe_info": {
+            "imphash": "<imphash>"
+        },
+        "magic": "PE32 executable for MS Windows (GUI) Intel 80386 32-bit",
+        "last_analysis_stats": {
+            "harmless": 0,
+            "type-unsupported": 5,
+            "suspicious": 0,
+            "confirmed-timeout": 0,
+            "timeout": 0,
+            "failure": 0,
+            "malicious": 60,
+            "undetected": 9
+        },
+        "reputation": 0,
+        "gti_assessment": {
+            "verdict": {
+                "value": "VERDICT_MALICIOUS"
+            },
+            "contributing_factors": {
+                "associated_actor": true,
+                "normalised_categories": [
+                    "malware"
+                ],
+                "mandiant_confidence_score": 84,
+                "safebrowsing_verdict": "harmless",
+                "mandiant_association_actor": true,
+                "mandiant_association_report": true
+            },
+            "threat_score": {
+                "value": 95
+            },
+            "severity": {
+                "value": "SEVERITY_HIGH"
+            },
+            "description": "This indicator is malicious (high severity) with high impact. It is associated with a Mandiant Intelligence Report, Mandiant's scoring pipeline identified this indicator as malicious and it is associated with a tracked Mandiant threat actor. Analysts should prioritize investigation."
+        }
+    },
+    "context_attributes": {
+        "notification_id": "19104706970",
+        "origin": "hunting",
+        "notification_date": 1726761663,
+        "sources": [
+            {
+                "id": "19072418300",
+                "type": "hunting_ruleset",
+                "label": "Malware Families YARA ruleset"
+            }
+        ],
+        "tags": [
+            "malware_families_yara_ruleset",
+            "malwarefamilyagenttesla"
+        ],
+        "hunting_info": {
+            "rule_name": "MalwareFamilyAgentTesla",
+            "match_source": "ORIGINAL_FILE"
+        }
+    }
+}

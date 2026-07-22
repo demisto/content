@@ -1,0 +1,19 @@
+[MODEL: dataset=fireeye_mps_raw]
+alter 
+    xdm.target.port = to_number(dpt),
+    xdm.source.port = to_number(spt),
+    xdm.event.operation_sub_type = act,
+    xdm.target.ipv4 = dst,
+    xdm.source.ipv4 = src,
+    xdm.target.host.mac_addresses = arraycreate(coalesce(dmac,"")) ,
+    xdm.source.host.mac_addresses = arraycreate(coalesce(smac,"")),
+    xdm.target.process.name = dproc,
+    xdm.target.file.filename = fname,
+    xdm.network.ip_protocol = proto,
+    xdm.target.host.hostname = dvchost,
+    xdm.network.http.url = request,
+    xdm.source.process.executable.path = filePath,
+    xdm.source.process.executable.md5 = fileHash,
+    xdm.source.process.executable.file_type = fileType,
+    xdm.network.http.method = requestMethod,
+    xdm.alert.original_threat_name = cs1;

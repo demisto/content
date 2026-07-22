@@ -1,0 +1,181 @@
+name: Google BigQuery
+display: Google BigQuery
+commonfields:
+  id: Google BigQuery
+  version: -1
+category: Database
+provider: Google
+sectionorder:
+- Connect
+- Collect
+description: Integration for Google BigQuery, a data warehouse for querying and analyzing large databases. In all commands, for any argument not specified, the BigQuery default value for that argument will be applied.
+configuration:
+- display: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
+  name: google_service_creds
+  defaultvalue: ""
+  type: 4
+  hidden: true
+  required: false
+  section: Connect
+- displaypassword: Google service account JSON (a credentials JSON generated from Google API Manager or from GCP console)
+  name: credentials_google_service
+  hiddenusername: true
+  type: 9
+  required: false
+  section: Connect
+- display: Region
+  name: region
+  options:
+  - us-central1
+  - us-east1
+  - us-east4
+  - us-east5
+  - us-south1
+  - us-west1
+  - us-west2
+  - us-west3
+  - us-west4
+  - northamerica-northeast1
+  - northamerica-northeast2
+  - southamerica-east1
+  - europe-west1
+  - europe-west2
+  - europe-west3
+  - europe-west4
+  - europe-west6
+  - europe-west8
+  - europe-west9
+  - europe-north1
+  - europe-central2
+  - asia-east1
+  - asia-east2
+  - asia-northeast1
+  - asia-northeast2
+  - asia-northeast3
+  - asia-south1
+  - asia-southeast1
+  - australia-southeast1
+  type: 15
+  section: Connect
+  advanced: true
+  required: false
+  additionalinfo: The geographic location where the connectivity test should run.
+- display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
+  name: first_fetch
+  defaultvalue: '1 days'
+  type: 0
+  required: false
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  section: Collect
+- defaultvalue: '50'
+  display: Fetch Limit (Max.- 200, Recommended less than 50)
+  name: max_fetch
+  type: 0
+  required: false
+  section: Collect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: Fetch query
+  name: fetch_query
+  type: 0
+  required: false
+  section: Collect
+- display: Fetch time field
+  additionalinfo: Will be used for determining the time-specifying field of each row. Default is CreationTime.
+  name: fetch_time_field
+  defaultvalue: 'CreationTime'
+  section: Collect
+  type: 0
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: bigquery-query
+    arguments:
+    - name: query
+      required: true
+      description: A query string (in BigQuery query syntax). For more information about the standard syntax, see the BigQuery documentation - https://cloud.google.com/bigquery/docs/reference/standard-sql/query-syntax.
+    - name: location
+      description: The geographic location where the job should run. Required for locations other than US and EU.
+    - name: allow_large_results
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Allow query results tables larger than 128 MB compressed (legacy SQL only).
+    - name: default_dataset
+      description: A string of the fully-qualified dataset ID in standard SQL format. The value must include a project ID and dataset ID, separated by periods.
+    - name: destination_table
+      description: The table to which the results are written. Default value is "None".
+    - name: kms_key_name
+      description: Custom encryption configuration for the destination table.
+    - name: dry_run
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: If "true," BigQuery doesn't run the job. Instead, if the query is valid, BigQuery returns statistics about the job, such as how many bytes would be processed. If the query is invalid, an error is returned. The default value is "false".
+    - name: priority
+      auto: PREDEFINED
+      predefined:
+      - BATCH
+      - INTERACTIVE
+      description: Priority of the query (“INTERACTIVE” or “BATCH”). A query set as INTERACTIVE will be run on-demand, at the next possible time. A query set as BATCH will start as soon as idle resources are available, and changed to INTERACTIVE priority if it wasn’t started within 24 hours. The default value is “INTERACTIVE”.
+    - name: use_query_cache
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to look for the query results in the cache.
+    - name: use_legacy_sql
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      description: Whether to use legacy SQL syntax.
+    - name: job_id
+      description: The ID of the job. The ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-). The maximum length is 1,024 characters.
+    - name: write_disposition
+      auto: PREDEFINED
+      predefined:
+      - WRITE_EMPTY
+      - WRITE_TRUNCATE
+      - WRITE_APPEND
+      description: Specifies the action that occurs if the destination table already exists.
+    - name: project_id
+      description: ID of the project used to execute the current query.
+    - name: context_key_format
+      auto: PREDEFINED
+      predefined:
+        - underscore
+        - CamelCase
+      description: Choose whether the key in the context will be in an underscore or a CamelCase format.
+      defaultValue: 'CamelCase'
+    - name: datetime_format
+      description: The requested date and time format for datetime objects returned from the query.
+      defaultValue: "%m/%d/%Y %H:%M:%S"
+    - name: date_only_format
+      description: The requested format for date objects returned from the query, including only the date without time.
+      defaultValue: "%m/%d/%Y"
+    outputs:
+    - contextPath: BigQuery.Query
+      description: The query performed.
+      type: String
+    - contextPath: BigQuery.Row
+      description: The table rows the given query returned.
+      type: Unknown
+    description: Performs a query on BigQuery.
+  dockerimage: demisto/bigquery:1.0.0.10408886
+  subtype: python3
+  isfetch: true
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

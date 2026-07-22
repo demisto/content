@@ -1,0 +1,9 @@
+{
+    "@odata.type": "#microsoft.graph.security.articleIndicator",
+    "id": "specific_indicator",
+    "source": "microsoft",
+    "artifact": {
+        "@odata.type": "#microsoft.graph.security.hostname",
+        "id": "specific_artifact"
+    }
+}

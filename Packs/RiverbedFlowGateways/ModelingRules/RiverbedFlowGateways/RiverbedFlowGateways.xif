@@ -1,0 +1,51 @@
+[MODEL: dataset = riverbed_flow_gateways_raw]
+// Extracting fields from the parsed payloads.
+alter
+    origin_ip = parsed_fields1 -> origin_ip,
+    ipaddr = parsed_fields1 -> ipaddr,
+    success = parsed_fields1 -> success,
+    subtype = parsed_fields1 -> subtype,
+    priority = to_integer(parsed_header -> priority),
+    userLogin = parsed_fields1 -> UserLogin,
+    userName = rtrim(parsed_fields2 -> User_Name)
+
+
+// Determining IP address versions (IPv4/IPv6) and calculating syslog severity from the priority field
+| alter
+    severity = to_string(subtract(priority, multiply(floor(divide(priority, 8)), 8))),
+    origin_ipv4 = if(incidr(origin_ip, "0.0.0.0/0"), origin_ip),
+    origin_ipv6 = arrayindex(regextract(origin_ip, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    ipaddrv4 = if(incidr(ipaddr, "0.0.0.0/0"), ipaddr),
+    ipaddrv6 = arrayindex(regextract(ipaddr, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0)
+
+//XDM Mapping
+| alter
+    xdm.alert.severity = severity,
+    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY , severity = "1", XDM_CONST.LOG_LEVEL_ALERT , severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity),
+    xdm.event.id = parsed_fields1 -> id,
+    xdm.event.type = parsed_fields1 -> type,
+    xdm.event.operation_sub_type = if(subtype = "Linux_Audit", parsed_fields2 -> Linux_Audit_Type, subtype), // In "Linux_Audit" subtype, more specific subtype can be found in the "Linux_audit_type" field.
+    xdm.event.original_event_type = if(subtype = "Linux_Audit", subtype),
+    xdm.source.user.identifier = parsed_fields1 -> uid,
+    xdm.source.user.username = userLogin,
+    xdm.source.process.pid = to_integer(parsed_fields1 -> pid),
+    xdm.source.user.groups = arraycreate(parsed_fields2 -> User_Role),
+    xdm.target.user.username = userName,
+    xdm.target.process.command_line = rtrim(parsed_fields2 -> Command),
+    xdm.target.process.executable.directory = parsed_fields2 -> Working_Directory,
+    xdm.observer.name = parsed_header -> hostname,
+    xdm.observer.vendor = parsed_fields1 -> software,
+    xdm.observer.version = parsed_fields1 -> swVersion,
+    xdm.observer.product = parsed_header -> app_name,
+    xdm.target.url = parsed_fields2 -> URL,
+    xdm.auth.auth_method = parsed_fields2 -> Authentication_type,
+    xdm.source.host.ipv4_addresses = if(ipaddrv4 = null AND origin_ipv4 = null, null, arraycreate(origin_ipv4, ipaddrv4)),
+    xdm.source.host.ipv6_addresses = if(ipaddrv6 = null AND origin_ipv6 = null, null, arraycreate(origin_ipv6, ipaddrv6)),
+    xdm.source.ipv4 = coalesce(ipaddrv4, origin_ipv4),
+    xdm.source.ipv6 = coalesce(ipaddrv6, origin_ipv6),
+    xdm.event.outcome = if(success = "True", XDM_CONST.OUTCOME_SUCCESS, success ="False",XDM_CONST.OUTCOME_FAILED),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_NETWORK),
+    xdm.source.user.user_type = if(userLogin = "root", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
+    xdm.target.user.user_type =if(userName = null, null, userName = "root" OR userLogin != userName, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
+    xdm.source.user.identity_type = if(userLogin = "root" OR userLogin = userName, XDM_CONST.IDENTITY_TYPE_BUILTIN, userName = null OR userLogin != userName, XDM_CONST.IDENTITY_TYPE_USER),
+    xdm.target.user.identity_type = if(userName = null, null, userName = "root",XDM_CONST.IDENTITY_TYPE_BUILTIN, XDM_CONST.IDENTITY_TYPE_MACHINE);

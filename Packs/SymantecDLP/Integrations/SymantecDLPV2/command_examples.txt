@@ -1,0 +1,14 @@
+!symantec-dlp-list-incidents limit=2 severity=High incident_type=Network creation_date="4 days"
+!symantec-dlp-get-incident-details incident_id=1 custom_attributes="custom attribute group name" custom_data="att group2"
+!symantec-dlp-update-incident incident_ids=1 severity=Medium data_owner_email=testing@gmail.com custom_attributes=4:test
+!symantec-dlp-list-incident-status
+!symantec-dlp-list-remediation-status
+!symantec-dlp-get-incident-history limit=6 incident_id=2
+!symantec-dlp-get-incident-original-message incident_id=1
+!symantec-dlp-get-report-filters report_id=1
+!symantec-dlp-list-users
+!symantec-dlp-get-sender-recipient-pattern pattern_id=1
+!symantec-dlp-list-sender-recipient-patterns
+!symantec-dlp-update-sender-pattern pattern_id=1 name="XSOAR Sender Block Example" description="demo"
+!symantec-dlp-update-recipient-pattern pattern_id=1 name="XSOAR Recipient Edit Test" description="updated from XSOAR for demo"
+!symantec-dlp-get-message-body incident_id=1

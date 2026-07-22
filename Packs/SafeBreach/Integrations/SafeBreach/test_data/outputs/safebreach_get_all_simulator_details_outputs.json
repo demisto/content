@@ -1,0 +1,281 @@
+{
+    "outputs": {
+        "success": {
+            "data": {
+                "rows": [
+                    {
+                        "planName": "Dummy - Baseline",
+                        "planId": 123,
+                        "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
+                        "securityActionPerControl": [],
+                        "planRunId": "12313.42",
+                        "runId": "12313.42",
+                        "status": "CANCELED",
+                        "blocked": 0,
+                        "plannedSimulationsAmount": 19,
+                        "internalFail": 0,
+                        "notBlocked": 0,
+                        "assumedBlocked": 0,
+                        "constraintsSkipped": 12,
+                        "finalStatus": {
+                            "stopped": 0,
+                            "missed": 0,
+                            "logged": 0,
+                            "detected": 0,
+                            "prevented": 0,
+                            "inconsistent": 0,
+                            "drifted": 0,
+                            "not_drifted": 0,
+                            "baseline": 0
+                        },
+                        "endTime": 1694171406792,
+                        "startTime": 1694171261877,
+                        "simulatorCount": 1,
+                        "totalNumberOfSimulators": 12,
+                        "simulatorExecutions": [
+                            {
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
+                            }
+                        ],
+                        "ranBy": 1234567654,
+                        "moveExecutions": [
+                            {
+                                "moveId": "1465"
+                            },
+                            {
+                                "moveId": "1552"
+                            },
+                            {
+                                "moveId": "1558"
+                            },
+                            {
+                                "moveId": "2195"
+                            },
+                            {
+                                "moveId": "2196"
+                            },
+                            {
+                                "moveId": "2199"
+                            },
+                            {
+                                "moveId": "2221"
+                            },
+                            {
+                                "moveId": "2243"
+                            },
+                            {
+                                "moveId": "2264"
+                            },
+                            {
+                                "moveId": "2337"
+                            }
+                        ],
+                        "tags": [],
+                        "id": "12343.12"
+                    },
+                    {
+                        "planName": "Dummy - Attachment",
+                        "originalScenarioId": "86d8a8ff-68ce-46a2-842c-b018120b95e3",
+                        "securityActionPerControl": [],
+                        "planRunId": "1232.32",
+                        "runId": "1234.32",
+                        "status": "CANCELED",
+                        "blocked": 0,
+                        "plannedSimulationsAmount": 426,
+                        "internalFail": 90,
+                        "notBlocked": 0,
+                        "assumedBlocked": 0,
+                        "constraintsSkipped": 0,
+                        "finalStatus": {
+                            "no-result": 90
+                        },
+                        "endTime": 1690881064225,
+                        "startTime": 1690872544934,
+                        "simulatorCount": 2,
+                        "totalNumberOfSimulators": 13,
+                        "simulatorExecutions": [
+                            {
+                                "simulatorId": "152993a2-3712-4730-8483-b4ba07e4f0af"
+                            },
+                            {
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
+                            }
+                        ],
+                        "ranBy": 123456789000002,
+                        "moveExecutions": [
+                            {
+                                "moveId": "7766"
+                            },
+                            {
+                                "moveId": "7772"
+                            },
+                            {
+                                "moveId": "7774"
+                            },
+                            {
+                                "moveId": "7779"
+                            },
+                            {
+                                "moveId": "7784"
+                            },
+                            {
+                                "moveId": "7790"
+                            },
+                            {
+                                "moveId": "7795"
+                            },
+                            {
+                                "moveId": "7800"
+                            },
+                            {
+                                "moveId": "7805"
+                            },
+                            {
+                                "moveId": "7810"
+                            }
+                        ],
+                        "tags": [],
+                        "id": "12342.32"
+                    },
+                    {
+                        "planName": "Email - Attachment - Infiltration - Full Coverage",
+                        "originalScenarioId": "1ceaedc5-cf93-4fcd-b109-19df2ca8913f",
+                        "securityActionPerControl": [],
+                        "planRunId": "123432.22",
+                        "runId": "123432.22",
+                        "status": "CANCELED",
+                        "blocked": 0,
+                        "plannedSimulationsAmount": 2765,
+                        "internalFail": 49,
+                        "notBlocked": 0,
+                        "assumedBlocked": 0,
+                        "constraintsSkipped": 0,
+                        "finalStatus": {
+                            "stopped": 0,
+                            "missed": 0,
+                            "logged": 0,
+                            "detected": 0,
+                            "prevented": 0,
+                            "inconsistent": 0,
+                            "drifted": 0,
+                            "not_drifted": 0,
+                            "baseline": 0
+                        },
+                        "endTime": 1690538213788,
+                        "startTime": 1690538106700,
+                        "simulatorCount": 2,
+                        "totalNumberOfSimulators": 13,
+                        "simulatorExecutions": [
+                            {
+                                "simulatorId": "152993a2-3712-4730-8483-b4ba07e4f0af"
+                            },
+                            {
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
+                            }
+                        ],
+                        "ranBy": 123456789000002,
+                        "moveExecutions": [
+                            {
+                                "moveId": "1586"
+                            },
+                            {
+                                "moveId": "1587"
+                            },
+                            {
+                                "moveId": "1588"
+                            },
+                            {
+                                "moveId": "1589"
+                            },
+                            {
+                                "moveId": "1590"
+                            },
+                            {
+                                "moveId": "1591"
+                            },
+                            {
+                                "moveId": "1592"
+                            },
+                            {
+                                "moveId": "1593"
+                            },
+                            {
+                                "moveId": "1594"
+                            },
+                            {
+                                "moveId": "1681"
+                            }
+                        ],
+                        "tags": [],
+                        "id": "123432.22"
+                    },
+                    {
+                        "planName": "Testing>> Data Assets Exfiltration over HTTP - Baseline",
+                        "planId": 91,
+                        "originalScenarioId": "0000000-0000-0000-0000-00000000",
+                        "securityActionPerControl": [],
+                        "planRunId": "1111111111111.1",
+                        "runId": "1111111111111.1",
+                        "status": "CANCELED",
+                        "blocked": 18,
+                        "plannedSimulationsAmount": 40,
+                        "internalFail": 0,
+                        "notBlocked": 18,
+                        "assumedBlocked": 0,
+                        "constraintsSkipped": 0,
+                        "finalStatus": {
+                            "stopped": 18,
+                            "missed": 18,
+                            "logged": 0,
+                            "detected": 0,
+                            "prevented": 0,
+                            "inconsistent": 0,
+                            "drifted": 0,
+                            "not_drifted": 0,
+                            "baseline": 0
+                        },
+                        "endTime": 1687513386327,
+                        "startTime": 1687512818296,
+                        "simulatorCount": 2,
+                        "totalNumberOfSimulators": 12,
+                        "simulatorExecutions": [
+                            {
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
+                            },
+                            {
+                                "simulatorId": "0000000-0000-0000-0000-00000000"
+                            }
+                        ],
+                        "ranBy": 123456789000008,
+                        "moveExecutions": [
+                            {
+                                "moveId": "105"
+                            },
+                            {
+                                "moveId": "106"
+                            },
+                            {
+                                "moveId": "107"
+                            },
+                            {
+                                "moveId": "108"
+                            },
+                            {
+                                "moveId": "109"
+                            },
+                            {
+                                "moveId": "110"
+                            },
+                            {
+                                "moveId": "6975"
+                            }
+                        ],
+                        "tags": [],
+                        "id": "1111111111111.1"
+                    }
+                ],
+                "count": 4
+            }
+        }
+    }
+}

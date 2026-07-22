@@ -1,0 +1,129 @@
+id: PAN-OS EDL Setup v3 Test
+version: -1
+fromversion: "6.1.0"
+name: PAN-OS EDL Setup v3 Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: e0fd3092-abc1-401e-8b67-d12e10260b81
+    type: start
+    task:
+      id: e0fd3092-abc1-401e-8b67-d12e10260b81
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -395\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
+    type: title
+    task:
+      id: c0c11e5f-61c7-45d7-8524-8aee93ffd6ab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 65\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 35acf283-96be-4f82-835a-d139a35f3736
+    type: playbook
+    task:
+      id: 35acf283-96be-4f82-835a-d139a35f3736
+      version: -1
+      name: PAN-OS EDL Setup v3
+      description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule."
+      playbookName: PAN-OS EDL Setup v3
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      action-type:
+        simple: drop
+      auto-commit:
+        simple: Yes
+      device-group: {}
+      inbound-or-outbound-rule:
+        simple: outbound
+      ioc-type:
+        simple: ip
+      list-items:
+        simple: 1.1.1.1
+      list-name:
+        simple: ${inputs.list-name}
+      log-forwarding-object-name: {}
+      pre-post-rulebase:
+        simple: pre-rulebase
+      relative-rule-name: {}
+      rule-name:
+        simple: ${inputs.list-name}
+      rule-position:
+        simple: top
+      web-server-url:
+        simple: http://18.219.190.57/files/
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -90\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: 07bab852-564b-4abf-8229-4ccf4f50feb1
+    type: regular
+    task:
+      id: 07bab852-564b-4abf-8229-4ccf4f50feb1
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      all:
+        simple: yes
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": -260\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 525,\n      \"width\": 380,\n      \"x\": 480,\n      \"y\": -395\n    }\n  }\n}"
+inputs:
+- key: list-name
+  value:
+    simple: dont-del-ip-edl-test-elior
+  required: false
+  description: the name of the external file
+outputs: []
+sourceplaybookid: PAN-OS EDL Setup Test
+description: ''

@@ -1,0 +1,195 @@
+{
+  "gcp-pubsub-topic-messages-seek": {},
+  "gcp-pubsub-topics-list": {
+    "GoogleCloudPubSubTopics(val && val.name === obj.name)": [
+      {
+        "name": "projects/dmst-doc-prjct/topics/dmst-test-topic"
+      }
+    ]
+  },
+  "gcp-pubsub-topic-publish-message": {
+    "GoogleCloudPubSubPublishedMessages(val.messageId === obj.messageId)": [
+      {
+        "topic": "dmst-test-topic",
+        "messageId": "123",
+        "data": "42\\42",
+        "attributes": null
+      }
+    ]
+  },
+  "gcp-pubsub-topic-messages-pull": {
+    "GoogleCloudPubSubPulledMessages(val && val.messageId === obj.messageId)": [
+      {
+        "data": "42\\42",
+        "messageId": "123",
+        "publishTime": "2020-04-18T08:36:30.541Z"
+      }
+    ]
+  },
+  "gcp-pubsub-topic-subscription-get-by-name": {
+  "GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": {
+    "name": "projects/dmst-doc-prjct/subscriptions/test_sub_2",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "pushConfig": {},
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "604800s",
+    "expirationPolicy": {
+      "ttl": "9999999999s"
+    },
+    "deliveryType": "Pull"
+  }
+},
+  "gcp-pubsub-topic-subscriptions-list": {
+    "GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": [
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/dean-sub1",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 11,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "2678400s"
+        },
+        "deliveryType": "Pull"
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/dean-sub2",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "2678400s"
+        },
+        "deliveryType": "Pull"
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/test_sub_1",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "22678400s"
+        },
+        "deliveryType": "Pull"
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/test_sub",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "2678400s"
+        },
+        "deliveryType": "Pull"
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/test_sub_2",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "9999999999s"
+        },
+        "deliveryType": "Pull"
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/gcf-function-1-us-central1-dmst-test-topic",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {
+          "pushEndpoint": "",
+          "attributes": {
+            "x-goog-version": "v1"
+          }
+        },
+        "ackDeadlineSeconds": 600,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {},
+        "deliveryType": "Push"
+      }
+    ]
+  },
+  "gcp-pubsub-topic-subscription-create": {
+  "GoogleCloudPubSubSubscriptions": {
+    "name": "projects/dmst-doc-prjct/subscriptions/doc_sub_11",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "pushConfig": {},
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "86400s",
+    "expirationPolicy": {
+      "ttl": "86400s"
+    },
+    "projectName": "dmst-doc-prjct",
+    "subscriptionName": "doc_sub_11",
+    "deliveryType": "Pull"
+  }
+},
+  "gcp-pubsub-topic-subscription-update": {
+  "GoogleCloudPubSubSubscriptions(val && val.name === obj.name)": {
+    "name": "projects/dmst-doc-prjct/subscriptions/doc_sub_11",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "pushConfig": {
+      "attributes": {
+        "x-goog-version": "v1"
+      }
+    },
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "86400s",
+    "labels": {
+      "doc": "true"
+    },
+    "expirationPolicy": {
+      "ttl": "86400s"
+    },
+    "projectName": "dmst-doc-prjct",
+    "subscriptionName": "doc_sub_11",
+    "deliveryType": "Push"
+  }},
+  "gcp-pubsub-topic-create": {
+    "GoogleCloudPubSubTopics": {
+      "name": "projects/dmst-doc-prjct/topics/dmst-doc-topic11"
+    }
+  },
+  "gcp-pubsub-topic-update": {
+    "GoogleCloudPubSubTopics(val && val.name === obj.name)": {
+      "name": "projects/dmst-doc-prjct/topics/dmst-doc-topic11",
+      "labels": {
+        "doc": "true"
+      }
+    }
+  },
+  "gcp-pubsub-topic-delete": {},
+  "gcp-pubsub-topic-snapshot-create": {
+    "GoogleCloudPubSubSnapshots": {
+      "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
+      "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+      "expireTime": "2020-04-25T08:36:30.242Z"
+    }
+  },
+  "gcp-pubsub-topic-snapshot-update": {
+    "GoogleCloudPubSubSnapshots(val && val.name === obj.name)": {
+      "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
+      "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+      "expireTime": "2020-04-25T08:36:30.242Z",
+      "labels": {
+        "doc": "true"
+      }
+    }
+  },
+  "gcp-pubsub-topic-snapshots-list": {
+    "GoogleCloudPubSubSnapshots(val && val.name === obj.name)": [
+      {
+        "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "expireTime": "2020-04-25T08:36:30.242Z",
+        "labels": {
+          "doc": "true"
+        }
+      }
+    ]
+  },
+  "gcp-pubsub-topic-snapshot-delete": {}
+}

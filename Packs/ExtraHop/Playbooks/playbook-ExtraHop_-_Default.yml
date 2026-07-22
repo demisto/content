@@ -1,0 +1,373 @@
+id: ExtraHop - Default
+version: -1
+fromversion: 5.0.0
+name: ExtraHop - Default
+description: Default playbook to run for all ExtraHop Detection incidents.  This playbook
+  handles ticket tracking as well as triggering specific playbooks based on the name
+  of the ExtraHop Detection.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 596ac2d9-2aec-48f6-8a38-f93ae747883a
+    type: start
+    task:
+      id: 596ac2d9-2aec-48f6-8a38-f93ae747883a
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 60c216dd-4745-461b-866b-55a99dd9199e
+    type: title
+    task:
+      id: 60c216dd-4745-461b-866b-55a99dd9199e
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: dbf05a35-3c94-42d5-8cff-93ea45542d8f
+    type: condition
+    task:
+      id: dbf05a35-3c94-42d5-8cff-93ea45542d8f
+      version: -1
+      name: Is ExtraHop Reveal(x) enabled?
+      description: Checks if there is an active instance of the ExtraHop Reveal(x)
+        integration enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "18"
+      - "19"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: ExtraHop v2
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 9e039e8b-93b8-49a6-82f1-c89b6278263d
+    type: playbook
+    task:
+      id: 9e039e8b-93b8-49a6-82f1-c89b6278263d
+      version: -1
+      name: ExtraHop - Ticket Tracking v2
+      description: Links the Demisto incident back to the ExtraHop detection that
+        created it for ticket tracking purposes.
+      playbookName: ExtraHop - Ticket Tracking v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a3a89fe2-78a0-4efe-8cd3-5691ca187145
+    type: regular
+    task:
+      id: a3a89fe2-78a0-4efe-8cd3-5691ca187145
+      version: -1
+      name: Add initial investigation notes
+      description: This task is for the ExtraHop analyst to enter notes on the ExtraHop
+        Detection that created this Incident.  Used as a method of initial investigation
+        and tracking notes within the Work Plan.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4478086b-b644-4d48-8ba5-6c164bdaab3a
+    type: title
+    task:
+      id: 4478086b-b644-4d48-8ba5-6c164bdaab3a
+      version: -1
+      name: Detection Playbooks
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 043daa98-9b02-45f0-822a-092f9cc4a3aa
+    type: title
+    task:
+      id: 043daa98-9b02-45f0-822a-092f9cc4a3aa
+      version: -1
+      name: Ticket Tracking
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 96034d09-a0ec-47e4-8e18-4a384745112f
+    type: condition
+    task:
+      id: 96034d09-a0ec-47e4-8e18-4a384745112f
+      version: -1
+      name: Does the detection have a playbook?
+      description: |-
+        Check if the incoming detection has a specific playbook to run.
+        The incident name here refers to the detection's type.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      BlueKeep:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: BlueKeep
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: incident.name
+            iscontext: true
+          right:
+            value:
+              simple: CVE_2019_0708
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e91bd3c6-9ca3-4ec6-80cd-6c8f51e6541b
+    type: playbook
+    task:
+      id: e91bd3c6-9ca3-4ec6-80cd-6c8f51e6541b
+      version: -1
+      name: ExtraHop - CVE-2019-0708 (BlueKeep)
+      description: |-
+        This server received a Remote Desktop Protocol (RDP) connection request that is consistent with a known vulnerability, also known as BlueKeep, in older versions of Microsoft Windows. This vulnerability allows an unauthenticated attacker to remotely run arbitrary code on an RDP server. The attacker can then tamper with data or install malware that could propagate to other Windows devices across the network. Investigate to determine if this server is hosting a version affected by CVE-2019-0708: Windows 7, Windows XP, Windows Vista, Windows Server 2003, and Windows Server 2008.
+
+        MITIGATION OPTIONS
+        - Disable Remote Desktop Services if they are not required
+        - Implement Network Level Authentication (NLA) on systems running supported versions of Windows 7, Windows Server 2008, and Windows Server 2008 R2
+        - Configure firewalls to block traffic on TCP port 3389
+      playbookName: ExtraHop - CVE-2019-0708 (BlueKeep)
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoBlockIp:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -290,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_2_#default#": 0.18,
+      "20_21_BlueKeep": 0.44,
+      "20_2_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 950,
+        "x": -290,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs:
+- contextPath: CVE
+  description: Details on the CVE.
+  type: unknown
+- contextPath: ExtraHop.Device
+  description: 'Details on the host and any peer devices found. '
+  type: unknown
+- contextPath: ExtraHop.ActivityMap
+  description: The link to a visual activity map in ExtraHop.
+  type: string
+- contextPath: ExtraHop.Record.Source
+  description: Associated transaction records from ExtraHop.
+  type: unknown
+tests:
+- ExtraHop_v2-Test

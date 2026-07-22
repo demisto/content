@@ -1,0 +1,17 @@
+{
+    "result": [
+        {
+            "ip": "10.196.97.231",
+            "mac_address": "00:d0:c9:ca:bd:6a"
+        },
+        {
+            "ip": "172.16.0.4",
+            "mac_address": "00:d0:c9:ca:bd:6a"
+        }
+    ],
+    "header": [
+        "ip",
+        "mac_address"
+    ],
+    "total": 2
+}

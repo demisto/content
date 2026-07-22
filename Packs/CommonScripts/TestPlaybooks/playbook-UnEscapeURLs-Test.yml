@@ -1,0 +1,1041 @@
+id: UnEscapeURL-Test
+version: -1
+name: UnEscapeURL-Test
+description: test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8966498c-2e6b-4444-8801-fa60d4c6499e
+    type: start
+    task:
+      id: 8966498c-2e6b-4444-8801-fa60d4c6499e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 1635b7d9-601c-4005-8ecf-bf41408a65b4
+    type: regular
+    task:
+      id: 1635b7d9-601c-4005-8ecf-bf41408a65b4
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+      - "9"
+      - "10"
+      - "15"
+      - "17"
+      - "20"
+      - "22"
+      - "24"
+      - "28"
+      - "30"
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 54130e57-7ea7-4aee-86f5-954c9c0d181b
+    type: regular
+    task:
+      id: 54130e57-7ea7-4aee-86f5-954c9c0d181b
+      version: -1
+      name: UnescapeUrl
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7765fc94-12a3-4804-8c48-28e797e8af20
+    type: regular
+    task:
+      id: 7765fc94-12a3-4804-8c48-28e797e8af20
+      version: -1
+      name: UnEscapeUrl
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__maokvo.eu&d=DwMFAg&c=o6x-uYg5urBaLMPPRuq64I5b6ZOFWaPdobkZ8TbBW7M&r=0dtZ_EttZY1gHOgGdV-z-dFmoGOY7zdlOVi7L2EIj14&m=xskGZ0jNEJDRYL6ypuSoCj4YX6FMH8DqJ2l2jNxFL6I&s=KqZlmY1ZrCNVyIId8ADYgiCYNpzbB7-qmlmzv-KqYMs&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 5c9a2155-8988-405e-8bae-78da47895e0b
+    type: regular
+    task:
+      id: 5c9a2155-8988-405e-8bae-78da47895e0b
+      version: -1
+      name: Check Url
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://go.getpostman.com/y4wULsdG0h0DDMY0Dv00100
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 1653fbf3-d5b5-43ec-8218-709e06e31373
+    type: title
+    task:
+      id: 1653fbf3-d5b5-43ec-8218-709e06e31373
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2845,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 200aaa78-12f4-4e2c-8b2c-94e7425cf6bd
+    type: regular
+    task:
+      id: 200aaa78-12f4-4e2c-8b2c-94e7425cf6bd
+      version: -1
+      name: Check Url
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://maokvo.eu
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9ffcd955-3f6c-4fd6-888a-e71460235ca9
+    type: regular
+    task:
+      id: 9ffcd955-3f6c-4fd6-888a-e71460235ca9
+      version: -1
+      name: UnEscapeURL - ATP Safelink
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      input:
+        simple: na01.safelinks.protection.outlook.com/?url=http%3a%2f%2fwww.avanan.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 2be659be-7ac4-4fda-8651-41fa6e5ba4ce
+    type: regular
+    task:
+      id: 2be659be-7ac4-4fda-8651-41fa6e5ba4ce
+      version: -1
+      name: UnEscapeURL - ATP Safelink
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      input:
+        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 68ed4e2b-f6bb-448a-84eb-63d73ac7709a
+    type: regular
+    task:
+      id: 68ed4e2b-f6bb-448a-84eb-63d73ac7709a
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://www.avanan.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ff655145-01e2-43a1-85e0-bfdc4fd4334a
+    type: regular
+    task:
+      id: ff655145-01e2-43a1-85e0-bfdc4fd4334a
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: https://twitter.com/PhilipsBeLux
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: b6575d45-2f49-4480-8b79-e569eb523878
+    type: regular
+    task:
+      id: b6575d45-2f49-4480-8b79-e569eb523878
+      version: -1
+      name: UnEscapeURL
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      input:
+        simple: hxxps://www[.]demisto[.]com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: d8ca1601-29bd-49ad-8739-28fd276cfd75
+    type: regular
+    task:
+      id: d8ca1601-29bd-49ad-8739-28fd276cfd75
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: f3ac4fd0-2312-47f2-8b7c-6fcb6cdabd87
+    type: regular
+    task:
+      id: f3ac4fd0-2312-47f2-8b7c-6fcb6cdabd87
+      version: -1
+      name: UnEscapeURLs an Array of urls
+      description: |-
+        Extract original URLs from Protected URLs from security tools like Proofpoint and and Microsoft ATP.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Changes na01.safelinks.protection.outlook.com/?url=https%3a%2f%2fexample.com -> https://example.com
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+    scriptarguments:
+      input:
+        simple: https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.facebook.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=rSVqfaVO2V23rdg6L7rly%2BbWdn4WmvUk1T5YQ8%2BACbk%3D&reserved=0%3E,https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=,hxxps://www[.]demisto[.]com,https://google.com,www.spotify.com,meows://www[.]demisto[.]com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2415,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: e60d3236-8afe-4ea5-8b62-caf7553e96fd
+    type: regular
+    task:
+      id: e60d3236-8afe-4ea5-8b62-caf7553e96fd
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "2"
+      substring:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: eacd293c-a437-4ac1-886e-02a4e93567e7
+    type: regular
+    task:
+      id: eacd293c-a437-4ac1-886e-02a4e93567e7
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      substring:
+        simple: https://www.facebook.com/PhilipsBeLux
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 2d4c9986-1301-40b8-8864-44260be20e1b
+    type: regular
+    task:
+      id: 2d4c9986-1301-40b8-8864-44260be20e1b
+      version: -1
+      name: UnEscapeURL with capitalized 'HTTPS'
+      description: |-
+        Extract original URLs from Protected URLs from security tools like Proofpoint and and Microsoft ATP.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Changes na01.safelinks.protection.outlook.com/?url=https%3a%2f%2fexample.com -> https://example.com
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      extend-context:
+        simple: output=
+      input:
+        simple: HTTPS://autodesk.com/POSTSTUFF
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: f0f550dd-a059-4520-8e4d-de3c4c42daba
+    type: condition
+    task:
+      id: f0f550dd-a059-4520-8e4d-de3c4c42daba
+      version: -1
+      name: Verify that the output URL is correct
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      left:
+        complex:
+          root: output
+      right:
+        simple: https://autodesk.com/POSTSTUFF
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 689e4f07-db49-4438-86ef-020d1691a43d
+    type: regular
+    task:
+      id: 689e4f07-db49-4438-86ef-020d1691a43d
+      version: -1
+      name: UnEscapeURLs - Proofpoint V3 Link
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      input:
+        simple: https://urldefense.com/v3/__http:/www.nintendo.com__;!83Wvu-Cv-B_8k64!-XmeoAPIhKFgj4X-lVVmbQXWouodrfqiYRhDEj7kMbX6Kx_EZpL_Nh1iKyoLTt4QjpI$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 7f32224b-4eb2-45ec-8a98-150d76956bf6
+    type: regular
+    task:
+      id: 7f32224b-4eb2-45ec-8a98-150d76956bf6
+      version: -1
+      name: Check URL
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: http://www.nintendo.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3490,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: ef0c46e9-0a53-4079-8e28-729a5dfbe16d
+    type: regular
+    task:
+      id: ef0c46e9-0a53-4079-8e28-729a5dfbe16d
+      version: -1
+      name: UnEscapeURL - backward slash
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      input:
+        simple: http:\\example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 199cb0e3-6040-4056-8caa-cfc55fcb1bdb
+    type: regular
+    task:
+      id: 199cb0e3-6040-4056-8caa-cfc55fcb1bdb
+      version: -1
+      name: Check URL with backward slash
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+      substring:
+        simple: http://example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3920,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: b49e2e59-9949-4633-8d07-6b88cd60d112
+    type: regular
+    task:
+      id: b49e2e59-9949-4633-8d07-6b88cd60d112
+      version: -1
+      name: UnEscapeURL - no slash
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      input:
+        simple: http:example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: be9cfd60-82bf-491b-8ecf-3855b447fe4c
+    type: regular
+    task:
+      id: be9cfd60-82bf-491b-8ecf-3855b447fe4c
+      version: -1
+      name: Check URL without slash
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+      substring:
+        simple: http://example.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5640,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: e6ea965f-c12f-44d9-867d-12c7d2a19d0b
+    type: regular
+    task:
+      id: e6ea965f-c12f-44d9-867d-12c7d2a19d0b
+      version: -1
+      name: UnEscapeURL - verify special characters
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__example.example.com_test_test.php-3Fr-11111111111-26msgid-111111111118-26act-3DF00B-26c-3D1778479-26destination-3D4077.aaaaaaaaaaa.net_test.test08-23test.test-40test.com&d=DwMFaQ&c=8egZ_0rKLv-Rygj6-Z5JMhnB3JgBuvuCt9kJ5Nm7iqgaLAsUhwIjfRmsgG5FPIlE&r=J_P89lw1dB_f38Kyo0ZbBBkVbAInKb3paU4mYPRPzKA&m=UWugj3vBuXbdl88L39F06wwrG764e0a-Ofh8R6XEtoU&s=Es_DEqtkedAOr5xA8Y7CPrA-zuZpiN0Eq9CaZ3JfMwM&e=
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 1a515816-2b87-481e-8802-605ebb1dc06e
+    type: regular
+    task:
+      id: 1a515816-2b87-481e-8802-605ebb1dc06e
+      version: -1
+      name: Check Url
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: "http://example.example.com/test/test.php?r\x11111111111&msgid\x11\
+          1111111118&act=F00B&c=1778479&destination=4077.aaaaaaaaaaa.net/test.test08#test.test@test.com"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: eacdc1ac-a1d9-4a62-839f-be6354445d46
+    type: regular
+    task:
+      id: eacdc1ac-a1d9-4a62-839f-be6354445d46
+      version: -1
+      name: UnEscapeURL - urldefense v3 gov cloud
+      description: |-
+        Extract URLs redirected by security tools like Proofpoint.
+        Changes https://urldefense.proofpoint.com/v2/url?u=https-3A__example.com_something.html -> https://example.com/something.html
+        Also, un-escape URLs that are escaped for safety with formats like hxxps://www[.]demisto[.]com
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      input:
+        simple: https://urldefense.us/v3/__http:/www.nintendo.com__;!83Wvu-Cv-B_8k64!-XmeoAPIhKFgj4X-lVVmbQXWouodrfqiYRhDEj7kMbX6Kx_EZpL_Nh1iKyoLTt4QjpI$
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 62c064e2-8433-4303-84e7-cbc639b667f9
+    type: regular
+    task:
+      id: 62c064e2-8433-4303-84e7-cbc639b667f9
+      version: -1
+      name: Check Url
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+      substring:
+        simple: http://www.nintendo.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 4780,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: e4ba9645-256d-4294-8245-090eb8eb864a
+    type: regular
+    task:
+      id: e4ba9645-256d-4294-8245-090eb8eb864a
+      version: -1
+      name: UnEscapeURL
+      scriptName: UnEscapeURLs
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      input:
+        simple: meows://www[.]demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: b47dcf28-1225-4e41-861c-7579cbadb058
+    type: regular
+    task:
+      id: b47dcf28-1225-4e41-861c-7579cbadb058
+      version: -1
+      name: Check URL
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: https://www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 5210,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 5970,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

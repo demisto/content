@@ -1,0 +1,40 @@
+{
+  "sources": [
+     {
+      "sourceUrl": "https://tools.emergingthreats.net/docs/ET%20Intelligence%20Rep%20List%20Tech%20Description.pdf",
+      "confidenceScore": {
+        "strRawConfidenceScore": "70"
+      },
+      "rawSeverity": "High",
+      "category": "Known CnC for Mobile specific Family",
+      "addresses": [
+        {
+          "port": [
+            80
+          ],
+          "ipAddress": "0.0.0.0"
+        }
+      ],
+      "firstActiveTime": "2018-12-05T00:00:00Z",
+      "lastActiveTime": "2019-04-10T00:00:00Z"
+    },
+    {
+      "confidenceScore": {
+        "strRawConfidenceScore": "Low"
+      },
+      "rawSeverity": "n/a",
+      "category": "BlockedObject",
+      "addresses": [
+        {
+          "domain": "puknews.com"
+        },
+        {
+          "ipAddress": "0.0.0.0",
+          "port": [44902,65178]
+        }
+      ],
+      "firstActiveTime": "1970-01-01T00:00:00Z",
+      "lastActiveTime": "2020-01-30T01:25:09Z"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+commonfields:
+  id: InviteUser
+  version: -1
+name: InviteUser
+script: >-
+  return executeCommand('@', args);
+type: javascript
+tags:
+- server
+comment: Deprecated. Send a notification to another user and add user to the team
+system: true
+args:
+- name: user
+  required: true
+  default: true
+  description: Deprecated, use the **invite** script instead
+scripttarget: 0
+dependson: {}
+timeout: 0s
+deprecated: true
+tests:
+- No tests
+fromversion: 5.0.0

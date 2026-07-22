@@ -1,0 +1,8 @@
+name: Cisco ASR Parsing Rule
+id: Cisco_ASR_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

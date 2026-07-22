@@ -1,0 +1,19 @@
+{
+    "items": [
+        {
+            "id": "25de27bc-b07a-4728-b7b2-a021365ebbcd",
+            "isolation": {
+                "enabled": true,
+                "lastEnabledAt": "2021-08-13 09.07.03 GMT",
+                "lastEnabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f3930857"
+                },
+                "lastDisabledAt": "2021-08-13 09.54.02 GMT",
+                "lastDisabledBy": {
+                    "id": "e71332ab-c447-45ff-b356-b8b5f3930857"
+                },
+                "comment": "testing"
+            }
+        }
+    ]
+}

@@ -1,0 +1,676 @@
+id: TestMatchRegexV2
+version: -1
+name: TestMatchRegexV2
+description: Testing MatchRegexV2 Automation Script
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c64173ed-92ac-4e8c-8889-edeb7136b345
+    type: start
+    task:
+      id: c64173ed-92ac-4e8c-8889-edeb7136b345
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+  "1":
+    id: "1"
+    taskid: 268934f0-1581-41a5-8177-a949363b2274
+    type: regular
+    task:
+      id: 268934f0-1581-41a5-8177-a949363b2274
+      version: -1
+      name: Match
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: Hello World
+      flags: {}
+      group: {}
+      regex:
+        simple: Hell.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+  "2":
+    id: "2"
+    taskid: dc5cd984-4abe-49c1-83a3-c1ccde073107
+    type: regular
+    task:
+      id: dc5cd984-4abe-49c1-83a3-c1ccde073107
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+  "3":
+    id: "3"
+    taskid: 2d006c69-94e7-4698-899b-068e414a9204
+    type: condition
+    task:
+      id: 2d006c69-94e7-4698-899b-068e414a9204
+      version: -1
+      name: Check if found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: Hello
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+  "4":
+    id: "4"
+    taskid: 7508681d-4926-4db8-84ad-699bd99ecfc1
+    type: title
+    task:
+      id: 7508681d-4926-4db8-84ad-699bd99ecfc1
+      version: -1
+      name: No results
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+  "5":
+    id: "5"
+    taskid: 75243feb-b964-405b-8194-a2d16317ef8e
+    type: regular
+    task:
+      id: 75243feb-b964-405b-8194-a2d16317ef8e
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+  "6":
+    id: "6"
+    taskid: 48dd09bd-0041-4ac9-8e3c-00a5f9f806cb
+    type: regular
+    task:
+      id: 48dd09bd-0041-4ac9-8e3c-00a5f9f806cb
+      version: -1
+      name: Match
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: Hello World
+      flags:
+        simple: g
+      group: {}
+      regex:
+        simple: hell.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+  "7":
+    id: "7"
+    taskid: e7ac2c10-79db-4617-8fd1-7fe8fdf3874e
+    type: condition
+    task:
+      id: e7ac2c10-79db-4617-8fd1-7fe8fdf3874e
+      version: -1
+      name: Check if found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+  "8":
+    id: "8"
+    taskid: 935f47f7-b2be-4eb0-8644-241f187975ac
+    type: title
+    task:
+      id: 935f47f7-b2be-4eb0-8644-241f187975ac
+      version: -1
+      name: Ignore case
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+  "9":
+    id: "9"
+    taskid: fbe9ad60-28f1-41b5-8281-c724cebc6b55
+    type: regular
+    task:
+      id: fbe9ad60-28f1-41b5-8281-c724cebc6b55
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+  "10":
+    id: "10"
+    taskid: e1e1ed21-e6c6-420c-8173-1aa51f2fc4bc
+    type: regular
+    task:
+      id: e1e1ed21-e6c6-420c-8173-1aa51f2fc4bc
+      version: -1
+      name: Match
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: Hello World
+      flags:
+        simple: gi
+      group: {}
+      regex:
+        simple: hell.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+  "11":
+    id: "11"
+    taskid: a2fa408c-e8c3-4cfd-8e4d-430ea7b1c011
+    type: condition
+    task:
+      id: a2fa408c-e8c3-4cfd-8e4d-430ea7b1c011
+      version: -1
+      name: Check if found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+  "12":
+    id: "12"
+    taskid: 9bc2609b-d6b2-4028-8624-5fd9e19c9b8a
+    type: title
+    task:
+      id: 9bc2609b-d6b2-4028-8624-5fd9e19c9b8a
+      version: -1
+      name: Multiline
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+  "13":
+    id: "13"
+    taskid: a147da27-b5fa-422b-8e35-1f85fce11ba7
+    type: regular
+    task:
+      id: a147da27-b5fa-422b-8e35-1f85fce11ba7
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2205
+        }
+      }
+    note: false
+  "14":
+    id: "14"
+    taskid: e7fedde1-dc1b-404f-82ec-45f0ec066f51
+    type: regular
+    task:
+      id: e7fedde1-dc1b-404f-82ec-45f0ec066f51
+      version: -1
+      name: Match
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: |-
+          Hello World
+          Hello Demisto
+      flags: {}
+      group: {}
+      regex:
+        simple: hell.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2380
+        }
+      }
+    note: false
+  "15":
+    id: "15"
+    taskid: e6cc4472-2b66-4a5d-816d-20c7f879d1de
+    type: condition
+    task:
+      id: e6cc4472-2b66-4a5d-816d-20c7f879d1de
+      version: -1
+      name: Check if found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2555
+        }
+      }
+    note: false
+  "16":
+    id: "16"
+    taskid: a0228ae0-3a90-4b64-8b33-e54a3af27ba3
+    type: title
+    task:
+      id: a0228ae0-3a90-4b64-8b33-e54a3af27ba3
+      version: -1
+      name: Single match
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2730
+        }
+      }
+    note: false
+  "17":
+    id: "17"
+    taskid: df033a79-ff18-460e-86de-5fdefdf925e7
+    type: condition
+    task:
+      id: df033a79-ff18-460e-86de-5fdefdf925e7
+      version: -1
+      name: Check if found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: MatchRegex.results
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3225
+        }
+      }
+    note: false
+  "18":
+    id: "18"
+    taskid: 585e0e22-54cf-4d75-81d2-69e24c0c2b8a
+    type: regular
+    task:
+      id: 585e0e22-54cf-4d75-81d2-69e24c0c2b8a
+      version: -1
+      name: Match
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      contextKey: {}
+      data:
+        simple: |-
+          Hello World
+          Hello Demisto
+      flags:
+        simple: mi
+      group: {}
+      regex:
+        simple: hell.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3050
+        }
+      }
+    note: false
+  "19":
+    id: "19"
+    taskid: 2bb77283-86ed-4adf-84d0-d99e64b01433
+    type: regular
+    task:
+      id: 2bb77283-86ed-4adf-84d0-d99e64b01433
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2875
+        }
+      }
+    note: false
+  "20":
+    id: "20"
+    taskid: 11260abb-0eae-495f-8d98-4e778546cc49
+    type: title
+    task:
+      id: 11260abb-0eae-495f-8d98-4e778546cc49
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+  "21":
+    id: "21"
+    taskid: 81f52b27-9077-4d73-854f-84be31bb45b1
+    type: regular
+    task:
+      id: 81f52b27-9077-4d73-854f-84be31bb45b1
+      version: -1
+      name: Close
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3545
+        }
+      }
+    note: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,18 @@
+[
+    {
+        "status": 202,
+        "headers": [
+            {
+                "name": "Operation-Location",
+                "value": "{{request.baseUrl}}/v3.0/xdr/response/tasks/00000005"
+            }
+        ],
+        "url": "https://www.trendmicro.com",
+        "id": "012e4eac-9bd9-4e89-95db-77e02f75a6f5",
+        "digest": {
+            "md5": "f3a2e1227de8d5ae7296665c1f34b28d",
+            "sha1": "d79bff55069994b1c11f7856f9f029de36adfd8f",
+            "sha256": "619a273ee4d25fb4aeb97e89c554fcfbdbc82e22d840cfdb364a8f1932f48160"
+        }
+    }
+]

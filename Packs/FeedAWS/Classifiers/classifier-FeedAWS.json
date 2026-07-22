@@ -1,0 +1,17 @@
+{
+    "id": "AWS Feed Classifier",
+    "name": "AWS Feed - Classifier",
+    "type": "classification",
+    "description": "Classifies AWS IOCs.",
+	"defaultIncidentType": "",
+	"feed": true,
+	"keyTypeMap": {
+		"CIDR": "CIDR"
+	},
+	"transformer": {
+		"complex": null,
+		"simple": "type"
+	},
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

@@ -1,0 +1,9 @@
+[file:MicrosoftWSUS.yml]
+ignore=PR101
+
+[file:MicrosoftWSUSModelingRules_1_3.yml]
+ignore=MR108
+
+[file:MicrosoftWSUSModelingRules.yml]
+ignore=MR108
+

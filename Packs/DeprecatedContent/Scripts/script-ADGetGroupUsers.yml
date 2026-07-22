@@ -1,0 +1,34 @@
+commonfields:
+  id: ADGetGroupUsers
+  version: -1
+name: ADGetGroupUsers
+script: >-
+  # Optional arguments and default values
+
+  attrs = 'name,displayname'
+
+  if demisto.get(demisto.args(), 'attributes'):
+      attrs += "," + demisto.args()['attributes']
+  filterstr = r"(&(objectCategory=User)(memberof=" + demisto.args()['groupdn'] + "))"
+
+  demisto.results( demisto.executeCommand( 'AdSearch', { 'filter' : filterstr, 'attributes' : attrs } ) )
+type: python
+subtype: python2
+tags:
+- active directory
+comment: Deprecated. Use Active Directory to retrieve the list of users who are members of the specified group. Group must be given by its AD Distinguished Name. The \"attributes\" argument receives a comma-separated list of additional attributes you wish to be displayed in the results.\nExample usage !ADGetGroupUsers groupdn=CN=Domain Admins,CN=Users,DC=demisto,DC=com attributes=badPwdCount,memberOf
+system: true
+args:
+- name: groupdn
+  required: true
+  description: Active Directory Distinguished Name for the desired group
+- name: attributes
+  description: Include these AD attributes of the resulting objects in addition to the default ones
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - ad-search
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

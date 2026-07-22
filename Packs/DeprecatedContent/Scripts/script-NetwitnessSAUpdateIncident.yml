@@ -1,0 +1,65 @@
+commonfields:
+  id: NetwitnessSAUpdateIncident
+  version: -1
+name: NetwitnessSAUpdateIncident
+deprecated: true
+script: >
+  resp = demisto.executeCommand("nw-update-incident", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      if demisto.get(resp[0], "Contents.success") and demisto.get(resp[0], "Contents.data") >= 1:
+          demisto.results({"ContentsFormat": formats["text"], "Type": entryTypes["note"], "Contents": "Incident updated successfully."} )
+      else:
+          mdText = "Received an error from NetWitness. Please ensure that the referred incidents exist in NetWitness.\n" + tblToMd("Data returned:", [demisto.get(resp[0], "Contents")])
+          demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["error"], "Contents": mdText} )
+type: python
+subtype: python2
+tags:
+- RSA NetWitness Security Analytics
+comment: Deprecated. Update information for NetWitness SA incidents.
+system: true
+args:
+- name: idList
+  required: true
+  description: 'List of incident ids which will be updated, separated by comma [,]. Must not contain spaces. Example: "INC-13,INC-15,INC-23"'
+- name: name
+  description: '[optional string] Set name if incident name has been changed'
+- name: summary
+  description: '[optional string] Updated incident summary'
+- name: assignee
+  description: '[optional string] Set assignee login name if assignee has changed. You can execute nw-get-available-assignees to get the list of users. Example: demisto123'
+- name: comment
+  description: '[optional string] Add a journal entry describing your changes'
+- name: status
+  auto: PREDEFINED
+  predefined:
+  - NEW
+  - ASSIGNED
+  - IN_PROGRESS
+  - REMEDIATION_REQUESTED
+  - REMEDIATION_COMPLETED
+  - CLOSED
+  - CLOSED_FALSE_POSITIVE
+  description: '[optional status] Set status if changed'
+- name: priority
+  auto: PREDEFINED
+  predefined:
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  description: '[optional priority] Set priority if incident priority has been changed'
+- name: categories
+  description: List of categories.
+- name: incidentManagementId
+  description: '[optional number] This is the id of NetWitness INCIDENT_MANAGEMENT device/component id. It can be received by running nw-get-component command. If this argument is not filled/passed, the script will automatically get the first device of type INCIDENT_MANAGEMENT from the SA server.'
+scripttarget: 0
+dependson:
+  must:
+  - nw-update-incident
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "id": "id1",
+            "name": "name1",
+            "folder": "Shared",
+            "list": [
+                "www.google.com"
+            ],
+            "type": "URL List"
+        },
+        {
+            "id": "id2",
+            "name": "name2",
+            "folder": "Shared",
+            "list": [
+                "low-risk"
+            ],
+            "type": "Category Match"
+        },
+        {
+            "id": "id3",
+            "name": "name3",
+            "folder": "Shared",
+            "list": [
+                "low-risk"
+            ],
+            "type": "Category Match"
+        }
+    ],
+    "offset": 0,
+    "total": 3,
+    "limit": 200
+}

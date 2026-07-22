@@ -1,0 +1,6 @@
+[file:cisco-ise.yml]
+ignore=BA108,BA109,BA124,MR108,PR101
+
+[file:cisco-ise_image.png]
+ignore=IM111
+

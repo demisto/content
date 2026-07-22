@@ -1,0 +1,553 @@
+id: TIM - Update Indicators Organizational External IP Tag
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: TIM - Update Indicators Organizational External IP Tag
+description: This playbook checks if an indicator with a tag of organizational_external_ip
+  has been updated and keeps/removes the tag according to the check results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 78e61b73-8045-41d4-8937-e6a0fde8c8f7
+    type: start
+    task:
+      id: 78e61b73-8045-41d4-8937-e6a0fde8c8f7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": -1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 8582371a-142e-4b1f-8cf4-0187ab297a41
+    type: condition
+    task:
+      id: 8582371a-142e-4b1f-8cf4-0187ab297a41
+      version: -1
+      name: Are there IP results?
+      description: Checks for IP results from the indicators query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": -1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "105":
+    id: "105"
+    taskid: 33154239-54b9-4257-8b01-e5c4466197c9
+    type: title
+    task:
+      id: 33154239-54b9-4257-8b01-e5c4466197c9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -830,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "109":
+    id: "109"
+    taskid: 1e89df89-372c-4c19-83bc-aa4990802642
+    type: condition
+    task:
+      id: 1e89df89-372c-4c19-83bc-aa4990802642
+      version: -1
+      name: Are there an organization external CIDR and IP lists?
+      description: 'Checks if there are IP or CIDR lists available '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      Check Both Lists:
+      - "115"
+      Check CIDR List:
+      - "116"
+      Check IP List:
+      - "117"
+    separatecontext: false
+    conditions:
+    - label: Check Both Lists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalCIDRList
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalIPList
+            iscontext: true
+    - label: Check CIDR List
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalIPList
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalCIDRList
+            iscontext: true
+    - label: Check IP List
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalCIDRList
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.OrganizationsExternalIPList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "112":
+    id: "112"
+    taskid: 180f3e2c-f07c-4f44-804d-d7634d1781d7
+    type: regular
+    task:
+      id: 180f3e2c-f07c-4f44-804d-d7634d1781d7
+      version: -1
+      name: 'Remove organizations external IP tag from indicators '
+      description: Removes Tag from indicators not in IP and CIDR lists
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: organizational_external_ip
+      indicatorsValues:
+        complex:
+          root: playbookQuery.value
+          filters:
+          - - operator: notInList
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OrganizationsExternalIPList
+                iscontext: true
+          transformers:
+          - operator: IPv4Blacklist
+            args:
+              cidr_ranges:
+                value:
+                  simple: inputs.OrganizationsExternalCIDRList
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "113":
+    id: "113"
+    taskid: c973ff4d-ae5b-49df-8c88-996355f16a0a
+    type: regular
+    task:
+      id: c973ff4d-ae5b-49df-8c88-996355f16a0a
+      version: -1
+      name: 'Remove organizations external IP tag from indicators '
+      description: Removes Tag from indicators not in CIDR list
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: organizational_external_ip
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          accessor: value
+          transformers:
+          - operator: IPv4Blacklist
+            args:
+              cidr_ranges:
+                value:
+                  simple: inputs.OrganizationsExternalCIDRList
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "114":
+    id: "114"
+    taskid: 90455f71-f670-4019-8c54-15b7caf1dd9c
+    type: regular
+    task:
+      id: 90455f71-f670-4019-8c54-15b7caf1dd9c
+      version: -1
+      name: 'Remove organizations external IP tag from indicators '
+      description: Removes Tag from indicators not in IP list
+      script: Builtin|||removeIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: organizational_external_ip
+      indicatorsValues:
+        complex:
+          root: playbookQuery.value
+          filters:
+          - - operator: notInList
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.OrganizationsExternalIPList
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": -580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "115":
+    id: "115"
+    taskid: 212dbb41-4323-4c30-8b13-7ef8972b061d
+    type: condition
+    task:
+      id: 212dbb41-4323-4c30-8b13-7ef8972b061d
+      version: -1
+      name: Check if all indicators are in lists
+      description: Checks if indicators exist in both lists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "112"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery.value
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.OrganizationsExternalIPList
+                      iscontext: true
+            iscontext: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: value
+                transformers:
+                - operator: IPv4Whitelist
+                  args:
+                    cidr_ranges:
+                      value:
+                        simple: inputs.OrganizationsExternalCIDRList
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: None
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": -820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "116":
+    id: "116"
+    taskid: c2fabad1-bb33-42bb-8ef9-474556391c5b
+    type: condition
+    task:
+      id: c2fabad1-bb33-42bb-8ef9-474556391c5b
+      version: -1
+      name: Checks if indicators in CIDR list
+      description: Checks if indicators exist in CIDR list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                accessor: value
+                transformers:
+                - operator: IPv4Blacklist
+                  args:
+                    cidr_ranges:
+                      value:
+                        simple: inputs.OrganizationsExternalCIDRList
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: None
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "117":
+    id: "117"
+    taskid: ba9c053d-ab12-4632-8d61-4a00c95843bc
+    type: condition
+    task:
+      id: ba9c053d-ab12-4632-8d61-4a00c95843bc
+      version: -1
+      name: Check if all indicators are in lists
+      description: Checks if indicators exist in IP list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "105"
+      "yes":
+      - "114"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery.value
+                filters:
+                - - operator: notInList
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.OrganizationsExternalIPList
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": -820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+view: |-
+  {
+    "linkLabelsPosition": {
+      "109_105_#default#": 0.24,
+      "115_105_#default#": 0.13,
+      "115_112_yes": 0.49,
+      "116_105_#default#": 0.19,
+      "116_113_yes": 0.51,
+      "117_105_#default#": 0.32,
+      "19_105_#default#": 0.15,
+      "19_109_yes": 0.59
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 1540,
+        "x": -830,
+        "y": -1500
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: type:IP tags:organizational_external_ip
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+- key: OrganizationsExternalIPList
+  value: {}
+  required: false
+  description: A Cortex XSOAR list containing the organization's External IP address
+    values. The value should be taken from the Lists inputs. The list should be with comma separated values.
+  playbookInputQuery:
+- key: OrganizationsExternalCIDRList
+  value: {}
+  required: false
+  description: A Cortex XSOAR list containing the organization's External CIDR values.
+    The value should be taken from the Lists inputs. The list should be with comma separated values.
+  playbookInputQuery:
+outputs: []
+quiet: true
+marketplaces:
+- xsoar
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0

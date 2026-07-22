@@ -1,0 +1,70 @@
+{
+    "id": 1197,
+    "hostname": "srv1",
+    "description": "Machine Windows de démonstration",
+    "last_communication": "2019-09-13T09:14:34.000Z",
+    "reboot_required": false,
+    "addresses": [
+      "WIN-GNVEC8UIKUD"
+    ],
+    "updates_count": 9,
+    "boot_at": null,
+    "category": "server",
+    "created_at": "2019-09-10T14:59:23.000Z",
+    "cve_announcements_count": 1699,
+    "analyzed_at": "2022-06-08T07:57:47.440Z",
+    "prioritized_cve_announcements_count": 645,
+    "status": "server_vulnerable",
+    "cve_announcements": [
+      {
+        "cve_code": "CVE-2025-0001",
+        "score": 7.8,
+        "environmental_score": 7.6,
+        "epss": 0.9716,
+        "ignored": false,
+        "active": false,
+        "detected_at": "2025-06-01T00:00:00Z",
+        "fixed_at": "2020-09-20T11:39:29.000Z",
+        "published": "2017-09-12T23:29:12.193Z",
+        "prioritized": true
+      }
+    ],
+    "security_issues": [
+      {
+        "id": 44,
+        "sid": "PENTEST-2021-REF-1",
+        "level": "level_critical",
+        "title": "Résultat d'un test d'intrusion",
+        "description": "Description technique du résultat de test d'intrusion",
+        "editable": true,
+        "detected_at": "2020-11-12T14:56:17.241Z",
+        "status": "ignored"
+      }
+    ],
+    "os": {
+      "key": "windows_2012_r2",
+      "name": "Windows Server 2012 R2",
+      "arch": null,
+      "eol": "2023-10-10",
+      "short_name": "Windows 2012 R2",
+      "type": "Os::Windows"
+    },
+    "environment": {
+      "id": 34,
+      "name": "High",
+      "confidentiality_requirement": "confidentiality_requirement_high",
+      "integrity_requirement": "integrity_requirement_high",
+      "availability_requirement": "availability_requirement_high",
+      "ceiling_cvss_v3": null
+    },
+    "groups": [
+      {
+        "id": 807,
+        "name": "APP_Apache",
+        "description": null,
+        "color": "#12AFCB"
+      }
+    ],
+    "compliance_repositories": [],
+    "updates": []
+  }

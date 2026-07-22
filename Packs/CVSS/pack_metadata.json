@@ -1,0 +1,24 @@
+{
+    "name": "CVSS  (Deprecated)“",
+    "description": "Deprecated. Use from CommonScripts instead.",
+    "support": "xsoar",
+    "currentVersion": "1.0.3",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-06-16T07:58:55Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "cvss",
+        "score"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

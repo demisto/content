@@ -1,0 +1,35 @@
+[
+    {
+        "networkId": "N_24329156",
+        "serial": "0000-0000-0000",
+        "model": "MX68C",
+        "lastReportedAt": "2018-02-11T00:00:00Z",
+        "highAvailability": {
+            "enabled": true,
+            "role": "primary"
+        },
+        "uplinks": [
+            {
+                "interface": "wan1",
+                "status": "active",
+                "ip": "0.0.0.0",
+                "gateway": "0.0.0.0",
+                "publicIp": "0.0.0.0",
+                "primaryDns": "0.0.0.0",
+                "secondaryDns": "0.0.0.0",
+                "ipAssignedBy": "static",
+                "provider": "at&t",
+                "signalStat": {
+                    "rsrp": "-120",
+                    "rsrq": "-13"
+                },
+                "connectionType": "4g",
+                "apn": "internet",
+                "dns1": "0.0.0.0",
+                "dns2": "0.0.0.0",
+                "signalType": "4G",
+                "iccid": "123456789"
+            }
+        ]
+    }
+]

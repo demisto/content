@@ -1,0 +1,117 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "a1000_classification_report": {
+            "classification": "malicious",
+            "riskscore": 10,
+            "first_seen": "2022-12-19T11:39:11Z",
+            "last_seen": "2022-12-19T11:46:40Z",
+            "classification_result": "Win32.Trojan.Delf",
+            "classification_reason": "Antivirus",
+            "classification_origin": {
+                "sha1": "aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad",
+                "sha256": "43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1",
+                "sha512": "8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221",
+                "md5": "8521e64c683e47c1db64d80577513016",
+                "imphash": "c57e34b759dff2e57f71960b2fdb93da"
+            },
+            "cloud_last_lookup": "2022-12-19T21:43:44Z",
+            "data_source": "LOCAL",
+            "sha1": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6",
+            "sha256": "d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2",
+            "md5": "a322205db6c3b1c451725b84f1d010cc",
+            "av_scanners": {
+                "scanner_count": 31,
+                "scanner_match": 0,
+                "scanner_percent": 0.0,
+                "vendor_count": 21,
+                "vendor_match": 0,
+                "vendor_percent": 0.0,
+                "antivirus": {
+                    "vendor_match": 0,
+                    "scanner_match": 0,
+                    "vendor_count": 21,
+                    "scanner_count": 31
+                }
+            }
+        }
+    },
+    "HumanReadable": "## ReversingLabs A1000 get classification for sha1: a94775deb818a4d68635eeed3d16abc7f7b8bdd6\n**Classification:** malicious\n**Riskscore:** 10\n**First seen:** 2022-12-19T11:39:11Z\n**Last seen:** 2022-12-19T11:46:40Z\n**Classification result:** Win32.Trojan.Delf\n**Classification reason:** Antivirus\n**Classification origin:** {'sha1': 'aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad', 'sha256': '43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1', 'sha512': '8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221', 'md5': '8521e64c683e47c1db64d80577513016', 'imphash': 'c57e34b759dff2e57f71960b2fdb93da'}\n**Cloud last lookup:** 2022-12-19T21:43:44Z\n**Data source:** LOCAL\n**Sha1:** a94775deb818a4d68635eeed3d16abc7f7b8bdd6\n**Sha256:** d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2\n**Md5:** a322205db6c3b1c451725b84f1d010cc\n**Av scanners:** {'scanner_count': 31, 'scanner_match': 0, 'scanner_percent': 0.0, 'vendor_count': 21, 'vendor_match': 0, 'vendor_percent': 0.0, 'antivirus': {'vendor_match': 0, 'scanner_match': 0, 'vendor_count': 21, 'scanner_count': 31}}\n",
+    "EntryContext": {
+        "File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 || val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH || val.SSDeep && val.SSDeep == obj.SSDeep)": [
+            {
+                "Hashes": [
+                    {
+                        "type": "MD5",
+                        "value": "a322205db6c3b1c451725b84f1d010cc"
+                    },
+                    {
+                        "type": "SHA1",
+                        "value": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6"
+                    },
+                    {
+                        "type": "SHA256",
+                        "value": "d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2"
+                    }
+                ],
+                "MD5": "a322205db6c3b1c451725b84f1d010cc",
+                "SHA1": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6",
+                "SHA256": "d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2",
+                "Malicious": {
+                    "Vendor": "ReversingLabs A1000 v2",
+                    "Description": "malicious"
+                }
+            }
+        ],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [
+            {
+                "Indicator": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6",
+                "Type": "file",
+                "Vendor": "ReversingLabs A1000 v2",
+                "Score": 3,
+                "Reliability": "C - Fairly reliable"
+            }
+        ],
+        "ReversingLabs": {
+            "a1000_classification_report": {
+                "classification": "malicious",
+                "riskscore": 10,
+                "first_seen": "2022-12-19T11:39:11Z",
+                "last_seen": "2022-12-19T11:46:40Z",
+                "classification_result": "Win32.Trojan.Delf",
+                "classification_reason": "Antivirus",
+                "classification_origin": {
+                    "sha1": "aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad",
+                    "sha256": "43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1",
+                    "sha512": "8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221",
+                    "md5": "8521e64c683e47c1db64d80577513016",
+                    "imphash": "c57e34b759dff2e57f71960b2fdb93da"
+                },
+                "cloud_last_lookup": "2022-12-19T21:43:44Z",
+                "data_source": "LOCAL",
+                "sha1": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6",
+                "sha256": "d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2",
+                "md5": "a322205db6c3b1c451725b84f1d010cc",
+                "av_scanners": {
+                    "scanner_count": 31,
+                    "scanner_match": 0,
+                    "scanner_percent": 0.0,
+                    "vendor_count": 21,
+                    "vendor_match": 0,
+                    "vendor_percent": 0.0,
+                    "antivirus": {
+                        "vendor_match": 0,
+                        "scanner_match": 0,
+                        "vendor_count": 21,
+                        "scanner_count": 31
+                    }
+                }
+            }
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

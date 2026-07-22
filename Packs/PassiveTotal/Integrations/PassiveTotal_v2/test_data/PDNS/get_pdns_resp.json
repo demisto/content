@@ -1,0 +1,62 @@
+{
+  "success": {
+    "pager": null,
+    "queryValue": "dummy domain value",
+    "queryType": "domain",
+    "firstSeen": "2015-04-27 11:05:10",
+    "lastSeen": "2020-06-03 03:04:53",
+    "totalRecords": 3,
+    "results": [
+      {
+        "firstSeen": "2018-09-21 14:46:28",
+        "lastSeen": "2020-06-02 18:49:26",
+        "source": [
+          "source 1"
+        ],
+        "value": "dummy domain value",
+        "collected": "2020-06-03 10:04:53",
+        "recordType": "A",
+        "resolve": "resolve ip",
+        "resolveType": "ip",
+        "recordHash": "record hash"
+      },
+      {
+        "firstSeen": "2018-09-21 15:47:10",
+        "lastSeen": "2020-06-02 06:01:31",
+        "source": [
+          "source1",
+          "source2"
+        ],
+        "value": "dummy domain value",
+        "collected": "2020-06-03 10:04:53",
+        "recordType": "NS",
+        "resolve": "resolve domain",
+        "resolveType": "domain",
+        "recordHash": "record hash 1"
+      },
+      {
+        "firstSeen": "2020-06-03 03:04:53",
+        "lastSeen": "2020-06-03 03:04:53",
+        "source": [
+          "source1"
+        ],
+        "value": "dummy domain",
+        "collected": "2020-06-03 10:04:53",
+        "recordType": "SOA",
+        "resolve": "wresolve domian 1",
+        "resolveType": "domain",
+        "recordHash": "record hash 2"
+      }
+    ]
+  },
+  "zeroRecords": {
+    "pager": null,
+    "queryValue": "dummy domain value",
+    "queryType": "domain",
+    "firstSeen": "2015-04-27 11:05:10",
+    "lastSeen": "2020-06-03 03:04:53",
+    "totalRecords": 0,
+    "results": []
+  }
+}
+

@@ -1,0 +1,401 @@
+id: cve_enrichment_-_generic
+version: -1
+name: CVE Enrichment - Generic
+fromversion: 5.0.0
+description: Deprecated. Use "CVE Enrichment - Generic v2" playbook instead. Enrich CVE using one or more integrations.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8a9b5f57-93dc-4f6e-847a-472c93c1af17
+    type: start
+    task:
+      id: 8a9b5f57-93dc-4f6e-847a-472c93c1af17
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 8bb9a465-c8c6-4c01-855c-949ae425e1ee
+    type: condition
+    task:
+      id: 8bb9a465-c8c6-4c01-855c-949ae425e1ee
+      version: -1
+      name: Are there any CVE IDs?
+      description: Verify that the playbook input includes at least one CVE ID to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.CVE
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
+    type: title
+    task:
+      id: 1c1df4a5-6a12-4724-8cf5-586f7743fc57
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 865
+        }
+      }
+  "3":
+    id: "3"
+    taskid: f7b01173-8ceb-4a00-843c-ae25be38be72
+    type: title
+    task:
+      id: f7b01173-8ceb-4a00-843c-ae25be38be72
+      version: -1
+      name: Enrich CVE
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    taskid: ec903a88-c4cd-4c15-8cf4-3e2065626e24
+    type: condition
+    task:
+      id: ec903a88-c4cd-4c15-8cf4-3e2065626e24
+      version: -1
+      name: Is XFE enabled?
+      description: Verify that there's a valid instance of XFE enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: XFE
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 515
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 306a2d9e-6bf5-483e-8dae-7f65b705e535
+    type: condition
+    task:
+      id: 306a2d9e-6bf5-483e-8dae-7f65b705e535
+      version: -1
+      name: Is "CVE Search" enabled?
+      description: Verify that there's a valid instance of "CVE Search" enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CVE Search
+                    ignorecase: true
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1042.5,
+          "y": 515
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 7674b375-bbfd-4ac0-877a-42110ffc1a89
+    type: regular
+    task:
+      id: 7674b375-bbfd-4ac0-877a-42110ffc1a89
+      version: -1
+      name: Get CVE info from "CVE Search"
+      description: Retrieve CVE information from "CVE Search".
+      script: CVE Search|||cve-search
+      type: regular
+      iscommand: true
+      brand: CVE Search
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cveId:
+        complex:
+          root: inputs.CVE
+          accessor: ID
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1155,
+          "y": 690
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 64e794a4-8cf1-4f18-8d0c-0dd74d6f295e
+    type: regular
+    task:
+      id: 64e794a4-8cf1-4f18-8d0c-0dd74d6f295e
+      version: -1
+      name: Get CVE info from XFE
+      description: Retrieve CVE information from XFE.
+      script: XFE|||cve-search
+      type: regular
+      iscommand: true
+      brand: XFE
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cveId:
+        complex:
+          root: inputs.CVE
+          accessor: ID
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 690
+        }
+      }
+    skipunavailable: true
+  "8":
+    id: "8"
+    taskid: a8dc9bc9-7c74-4b59-86a4-aa7c09063fd0
+    type: condition
+    task:
+      id: a8dc9bc9-7c74-4b59-86a4-aa7c09063fd0
+      version: -1
+      name: Should the system retrieve the CVE reputation?
+      description: Is the GetReputation input set to 'True'?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: string.isEqual
+          left:
+            value:
+              complex:
+                root: inputs.GetReputation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 515
+        }
+      }
+  "9":
+    id: "9"
+    taskid: f779358d-7e46-4afd-8b42-b48167adb764
+    type: regular
+    task:
+      id: f779358d-7e46-4afd-8b42-b48167adb764
+      version: -1
+      name: Retrieve CVE reputation
+      description: Retrieve CVE reputation using one or more integrations.
+      scriptName: cveReputation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      input:
+        complex:
+          root: inputs.CVE
+          accessor: ID
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    results:
+    - CVE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 880,
+        "width": 1485,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: CVE
+  value:
+    complex:
+      root: CVE
+  required: false
+  description: The CVE to enrich.
+- key: GetReputation
+  value:
+    simple: "True"
+  required: true
+  description: Should the playbook retrieve the reputation for the CVE?
+outputs:
+- contextPath: CVE
+  description: The CVE object
+  type: unknown
+- contextPath: CVE.ID
+  description: The ID of the CVE
+  type: string
+- contextPath: CVE.CVSS
+  description: The CVSS score of the CVE
+  type: number
+- contextPath: CVE.Published
+  description: The date this was published
+  type: date
+- contextPath: CVE.Modified
+  description: When CVE was last modified
+  type: date
+- contextPath: CVE.Description
+  description: The CVE description
+  type: string
+tests:
+- No tests (auto formatted)
+deprecated: true
+marketplaces:
+- xsoar

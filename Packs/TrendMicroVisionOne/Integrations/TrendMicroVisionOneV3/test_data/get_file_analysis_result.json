@@ -1,0 +1,15 @@
+{
+    "id": "800f908d-9578-4333-91e5-822794ed5483",
+    "type": "url",
+    "digest": {
+        "md5": "8e2ef39aac9e466458557519b789a4e7",
+        "sha1": "22083a8a88396c95ed54ccdb40216048fd7d269e",
+        "sha256": "79b5ef7554f8d8031028e9d215ad08e1bbd23d2a96a02ecaff4462bbdedeccbd"
+    },
+    "arguments": "",
+    "risk_level": "high",
+    "threat_types": ["Dropper"],
+    "true_file_type": "URL",
+    "detection_names": ["VAN_WEB_THREAT.UMXX"],
+    "analysis_completion_date_time": "2021-01-23T20:32:48Z"
+}

@@ -1,0 +1,133 @@
+args:
+- description: Specify where the request should be sent. Include the URI scheme ('http' or 'https').
+  name: url
+  required: true
+- auto: PREDEFINED
+  description: Specify the HTTP method to use.
+  name: method
+  predefined:
+  - GET
+  - POST
+  - PUT
+  - PATCH
+  - DELETE
+  - HEAD
+  required: true
+- description: |-
+    Specify a hash of headers to send with the request.
+    Headers can be of string type but need to be formatted in the following ways:
+    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`.
+  name: headers
+  type: keyValue
+- description: Specify the body of the request.
+  name: body
+  type: textArea
+- description: |-
+    Specify the Content-Type header for the request.
+    Shorthands are provided for the following common content types:
+    json (application/json)
+    xml (text/xml)
+    form (application/x-www-form-urlencoded)
+    data (multipart/form-data)
+    If you choose to define a different type, please include the full type name, e.g: application/pdf.
+  name: request_content_type
+- description: |-
+    Specify the Accept header for the request - the response content type.
+    Shorthands are provided for the following common content types:
+    json (application/json)
+    xml (text/xml)
+    form (application/x-www-form-urlencoded)
+    data (multipart/form-data)
+    If you choose to define a different type, please include the full type name, e.g: application/pdf.
+  name: response_content_type
+- auto: PREDEFINED
+  defaultValue: raw_response
+  description: Specify how you would like to parse the response.
+  name: parse_response_as
+  predefined:
+  - text
+  - json
+  - xml
+  - raw_response
+- description: 'Basic authorization. Please set values in the format: username,password. For Bearer token please use the headers.'
+  name: auth_credentials
+  secret: true
+- description: URL parameters to specify the query.
+  name: params
+  type: keyValue
+- defaultValue: '10'
+  description: Specify the timeout of the HTTP request in seconds. Defaults to 10 seconds.
+  name: timeout
+- auto: PREDEFINED
+  defaultValue: 'True'
+  description: The request will be called again with the new URL.
+  name: enable_redirect
+  predefined:
+  - 'True'
+  - 'False'
+- description: ' Specify the array of status codes that should cause a retry. For example: 301-303,400,402.'
+  name: retry_on_status
+- defaultValue: '3'
+  description: Specify the number or retries to be made in case of a failure. Defaults to 3.
+  name: retry_count
+- defaultValue: '5'
+  description: Specify the timeout between each retry in seconds. Defaults to 5.
+  name: timeout_between_retries
+- auto: PREDEFINED
+  defaultValue: no
+  description: Save the response in a file.
+  name: save_as_file
+  predefined:
+  - yes
+  - no
+- defaultValue: http-file
+  description: filename.
+  name: filename
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Trust any certificate (not secure).
+  name: unsecure
+  predefined:
+  - 'True'
+  - 'False'
+- auto: PREDEFINED
+  defaultValue: 'False'
+  description: Use system proxy settings.
+  name: proxy
+  predefined:
+  - 'True'
+  - 'False'
+comment: Sends a HTTP request with advanced capabilities.
+commonfields:
+  id: HttpV2
+  version: -1
+name: HttpV2
+outputs:
+- contextPath: HttpRequest.Response.StatusCode
+  description: The number that indicates the status of the request.
+  type: String
+- contextPath: HttpRequest.Response.StatusText
+  description: The text corresponding to the status code.
+  type: String
+- contextPath: HttpRequest.Response.URL
+  description: The URL of the response.
+  type: String
+- contextPath: HttpRequest.Response.ParsedBody
+  description: The parsed response, according to `parse_response_as` argument.
+  type: String
+- contextPath: HttpRequest.Response.Headers
+  description: The response headers.
+  type: String
+- contextPath: HttpRequest.Response.Body
+  description: The response data.
+  type: Unknown
+script: '-'
+subtype: python3
+tags:
+- basescript
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.13.10404775
+tests:
+- HttpV2-test
+fromversion: 6.5.0

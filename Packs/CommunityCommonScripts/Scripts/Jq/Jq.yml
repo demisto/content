@@ -1,0 +1,34 @@
+args:
+- description: JSON String.
+  name: value
+  required: true
+- description: JQ compatible query.
+  name: query
+  required: true
+comment: "Deprecated. Use JMESPath transformer from the Filters and Transformers content pack instead."
+commonfields:
+  id: jq
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dependson:
+  must: []
+dockerimage: demisto/jq:1.0.0.113893
+enabled: true
+name: jq
+outputs:
+- contextPath: jq.result
+  type: unknown
+  description: Result of jq-query.
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- transformer
+type: python
+fromversion: 6.1.0
+tests:
+- No tests (deprecated)
+deprecated: true

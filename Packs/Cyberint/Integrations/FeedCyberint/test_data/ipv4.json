@@ -1,0 +1,90 @@
+{
+    "data": {
+        "entity": {
+            "type": "ipv4",
+            "value": "15.197.130.221"
+        },
+        "risk": {
+            "malicious_score": 100,
+            "detected_activities": [
+                {
+                    "type": "payload_delivery",
+                    "observation_date": "2025-02-13T08:38:50+00:00",
+                    "description": "Detected hosting malware.",
+                    "confidence": 20,
+                    "occurrences_count": 836
+                },
+                {
+                    "type": "phishing_website",
+                    "observation_date": "2025-03-05T10:17:32+00:00",
+                    "description": "Detected phishing website targeting Allegro, ING Direct, genericcloudflare.",
+                    "confidence": 20,
+                    "occurrences_count": 143
+                },
+                {
+                    "type": "cnc_server",
+                    "observation_date": "2025-02-14T22:21:12.084000+00:00",
+                    "description": "Detected in 21 source(s). Recognized as Quasar RAT. Detected activity linked to: Bumblebee (Malware), Cotton Sandstorm (Threat-Actor-Group), DadSec (Malware), GHOSTSPIDER (Malware), Quasar RAT (Malware), Salt Typhoon (Threat-Actor-Group), Sneaky 2FA (Malware), Vidar (Malware)",
+                    "confidence": 90,
+                    "occurrences_count": 21
+                }
+            ],
+            "occurrences_count": 1000
+        },
+        "enrichment": {
+            "related_entities": [
+                {
+                    "entity_id": "c654837d-444e-4f5c-a444-09fd8250696c",
+                    "entity_type": "Malware",
+                    "entity_name": "GHOSTSPIDER"
+                },
+                {
+                    "entity_id": "70b54325-05ea-46c6-b4e9-b25bc3617104",
+                    "entity_type": "Threat-Actor-Group",
+                    "entity_name": "Salt Typhoon"
+                },
+                {
+                    "entity_id": "baffd4c4-4483-4b84-96eb-0d19af94d2e8",
+                    "entity_type": "Malware",
+                    "entity_name": "DadSec"
+                },
+                {
+                    "entity_id": "862341a5-1951-4e09-b3c1-baac41dc7bcb",
+                    "entity_type": "Malware",
+                    "entity_name": "Vidar"
+                },
+                {
+                    "entity_id": "7b0a986f-733e-4497-8867-6aed00b802b8",
+                    "entity_type": "Threat-Actor-Group",
+                    "entity_name": "Cotton Sandstorm"
+                },
+                {
+                    "entity_id": "58cbb47d-176d-4937-9ebc-5121ceb36cf9",
+                    "entity_type": "Malware",
+                    "entity_name": "Sneaky 2FA"
+                },
+                {
+                    "entity_id": "2728ad3e-d870-4654-afd3-9a839f97dd72",
+                    "entity_type": "Malware",
+                    "entity_name": "Bumblebee"
+                },
+                {
+                    "entity_id": "fc26b8a7-a7cc-47b8-be1e-92b7a969543b",
+                    "entity_type": "Malware",
+                    "entity_name": "Quasar RAT"
+                }
+            ],
+            "geo": {
+                "country": "United States",
+                "city": null
+            },
+            "asn": {
+                "number": 16509,
+                "organization": "AMAZON-02"
+            },
+            "suspicious_urls": [],
+            "suspicious_domains": []
+        },
+        "benign": false
+    }
+}

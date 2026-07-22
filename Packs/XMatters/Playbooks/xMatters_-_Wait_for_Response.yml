@@ -1,0 +1,294 @@
+id: xMatters - Wait for Response
+version: -1
+name: xMatters - Wait for Response
+description: Trigger an xMatters workflow to notify a user for a response.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ea8d5944-365f-4767-8668-af399e302676
+    type: start
+    task:
+      id: ea8d5944-365f-4767-8668-af399e302676
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 917088fa-432d-42f4-84c4-e466e8f7650e
+    type: regular
+    task:
+      id: 917088fa-432d-42f4-84c4-e466e8f7650e
+      version: -1
+      name: xm-trigger-workflow
+      description: sends the event to xMatters
+      script: xMatters|||xm-trigger-workflow
+      type: regular
+      iscommand: true
+      brand: xMatters
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      body:
+        simple: ${inputs.body}
+      close_task_id:
+        simple: waiter
+      incident_id:
+        simple: ${inputs.incident_id}
+      parent_playbook_id:
+        simple: ${inputs.ParentPlaybook}
+      recipients:
+        simple: ${inputs.recipients}
+      subject:
+        simple: ${inputs.subject}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 28f7cc5f-4a8d-4955-82b8-fc4480c5d178
+    type: regular
+    task:
+      id: 28f7cc5f-4a8d-4955-82b8-fc4480c5d178
+      version: -1
+      name: waitForxMatters
+      description: Response from xMatters.
+      tags:
+      - waiter
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7d09ed97-922c-4603-8f5d-60875351fe85
+    type: title
+    task:
+      id: 7d09ed97-922c-4603-8f5d-60875351fe85
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1c89f2ff-306c-443f-8c37-ebfeb76a06ca
+    type: condition
+    task:
+      id: 1c89f2ff-306c-443f-8c37-ebfeb76a06ca
+      version: -1
+      name: Is xMatters Enabled?
+      description: 'Checks to see if the xMatters integration is enabled. '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: xMatters
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e86fa971-e711-483e-8006-cde144675991
+    type: title
+    task:
+      id: e86fa971-e711-483e-8006-cde144675991
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 385
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 16d81b73-b1d8-47d4-88af-ece5e3bef377
+    type: regular
+    task:
+      id: 16d81b73-b1d8-47d4-88af-ece5e3bef377
+      version: -1
+      name: WaitForKey
+      description: This adds a slight delay to ensure the context is updated before
+        continuing.
+      scriptName: WaitForKey
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      context_key:
+        simple: XMatters.UserResponseOut
+      iterations: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: recipients
+  value:
+    simple: ${incident.owner}
+  required: false
+  description: 'The targeted recipients in xMatters. Either the targetName or UUID.
+    Can be comma separated list. '
+  playbookInputQuery:
+- key: subject
+  value:
+    simple: ${incident.name}
+  required: false
+  description: A short description of the incident.
+  playbookInputQuery:
+- key: body
+  value:
+    simple: ${incident.details}
+  required: false
+  description: A detailed description of the incident.
+  playbookInputQuery:
+- key: incident_id
+  value:
+    simple: ${incident.id}
+  required: false
+  description: The ID of the incident.
+  playbookInputQuery:
+outputs:
+- contextPath: XMatters.RequestId
+  description: The request_id from xMatters
+  type: string
+- contextPath: XMatters.UserResponseOut
+  description: The User's response from the notification.
+  type: string
+fromversion: 5.5.0
+tests:
+- xMatters-Test

@@ -1,0 +1,38 @@
+{
+ "id": "incident_vendorid",
+ "version": -1,
+ "modified": "2018-08-23T18:31:06.443496625+03:00",
+ "name": "Vendor ID",
+ "ownerOnly": false,
+ "placeholder": "",
+ "description": "",
+ "cliName": "vendorid",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "",
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [],
+ "validationRegex": "",
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Vulnerability",
+  "Malware"
+ ],
+ "systemAssociatedTypes": [
+  "Vulnerability",
+  "Malware"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "fromVersion": "5.0.0"
+}

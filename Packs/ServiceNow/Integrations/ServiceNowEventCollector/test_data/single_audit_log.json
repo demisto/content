@@ -1,0 +1,11 @@
+{
+    "fieldname": "DELETED",
+    "reason": "",
+    "sys_id": "3",
+    "newvalue": "DELETED",
+    "sys_created_on": "2024-01-28 13:21:43",
+    "documentkey": "3",
+    "internal_checkpoint": "",
+    "record_checkpoint": "-1",
+    "tablename": "test_table"
+}

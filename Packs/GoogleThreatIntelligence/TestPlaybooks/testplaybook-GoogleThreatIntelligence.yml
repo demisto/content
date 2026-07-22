@@ -1,0 +1,940 @@
+id: GoogleThreatIntelligence-test
+version: -1
+name: GoogleThreatIntelligence-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4b4964af-06c0-4329-81f3-0d1655eb0ee0
+    type: start
+    task:
+      id: 4b4964af-06c0-4329-81f3-0d1655eb0ee0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 14ee5e52-15a3-4500-8f91-6a788552531b
+    type: title
+    task:
+      id: 14ee5e52-15a3-4500-8f91-6a788552531b
+      version: -1
+      name: Reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+      - "4"
+      - "5"
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f9d13e5f-af66-478f-8c96-e48a97626e5f
+    type: title
+    task:
+      id: f9d13e5f-af66-478f-8c96-e48a97626e5f
+      version: -1
+      name: Comments
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: e2c32aaf-af6a-47ca-80fc-3bfdc5163da3
+    type: regular
+    task:
+      id: e2c32aaf-af6a-47ca-80fc-3bfdc5163da3
+      version: -1
+      name: URL
+      description: Checks the reputation of a URL.
+      script: GoogleThreatIntelligence|||url
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      extended_data: {}
+      url:
+        complex:
+          root: inputs.url
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4a412f55-bdc1-40a1-8653-5d6ab9d02a10
+    type: regular
+    task:
+      id: 4a412f55-bdc1-40a1-8653-5d6ab9d02a10
+      version: -1
+      name: File
+      description: Checks the file reputation of the specified hash.
+      script: GoogleThreatIntelligence|||file
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      extended_data: {}
+      file:
+        complex:
+          root: inputs.hash
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 7fdf69bf-33b7-402d-8f3a-6e2e854d61cf
+    type: regular
+    task:
+      id: 7fdf69bf-33b7-402d-8f3a-6e2e854d61cf
+      version: -1
+      name: Domain
+      description: Checks the reputation of a domain.
+      script: GoogleThreatIntelligence|||domain
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.domain
+      extended_data: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: f963395d-5d10-4ed3-8b7b-92babfd237d2
+    type: regular
+    task:
+      id: f963395d-5d10-4ed3-8b7b-92babfd237d2
+      version: -1
+      name: IP
+      description: Checks the reputation of an IP address.
+      script: GoogleThreatIntelligence|||ip
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      extended_data: {}
+      ip:
+        complex:
+          root: inputs.ip
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: cbe8a307-8eca-4316-85c6-ed942fd91658
+    type: regular
+    task:
+      id: cbe8a307-8eca-4316-85c6-ed942fd91658
+      version: -1
+      name: Create a comment
+      description: Adds comments to files and URLs.
+      script: GoogleThreatIntelligence|||gti-comments-add
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      comment:
+        simple: A new comment
+      resource:
+        complex:
+          root: inputs.url
+      resource_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 7236c243-6cfe-4659-8f5d-05127c585663
+    type: regular
+    task:
+      id: 7236c243-6cfe-4659-8f5d-05127c585663
+      version: -1
+      name: Get comment by ID
+      description: Retrieves a comment by comment ID.
+      script: GoogleThreatIntelligence|||gti-comments-get-by-id
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      id:
+        complex:
+          root: GoogleThreatIntelligence.Comments.comments
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: bf72437f-74b6-41ed-8e39-1039d95989e0
+    type: regular
+    task:
+      id: bf72437f-74b6-41ed-8e39-1039d95989e0
+      version: -1
+      name: Delete comment
+      description: Delete a comment.
+      script: GoogleThreatIntelligence|||gti-comments-delete
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: GoogleThreatIntelligence.Comments.comments
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 1e6027cd-1bc6-4104-83c9-5f4ba1be4892
+    type: regular
+    task:
+      id: 1e6027cd-1bc6-4104-83c9-5f4ba1be4892
+      version: -1
+      name: Get comments
+      description: Retrieves comments for a given resource.
+      script: GoogleThreatIntelligence|||gti-comments-get
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      before: {}
+      limit: {}
+      resource:
+        complex:
+          root: inputs.url
+      resource_type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: edeed62c-7cd8-4ba1-87d4-803195d0b5e3
+    type: title
+    task:
+      id: edeed62c-7cd8-4ba1-87d4-803195d0b5e3
+      version: -1
+      name: Done comments
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 522dba60-f43a-4bba-80ad-fadcd45f57f0
+    type: regular
+    task:
+      id: 522dba60-f43a-4bba-80ad-fadcd45f57f0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+      - "2"
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: b48c5828-8301-4b0d-88bd-5b89fcb3007a
+    type: condition
+    task:
+      id: b48c5828-8301-4b0d-88bd-5b89fcb3007a
+      version: -1
+      name: Validate score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 052f6983-5d3c-4952-8711-4d25ab56141a
+    type: title
+    task:
+      id: 052f6983-5d3c-4952-8711-4d25ab56141a
+      version: -1
+      name: Done reputation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 739644c6-b039-4a5a-8683-efe6e32b77ae
+    type: condition
+    task:
+      id: 739644c6-b039-4a5a-8683-efe6e32b77ae
+      version: -1
+      name: Validate score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: a4000949-c514-40c6-8437-cdb5c51193d2
+    type: condition
+    task:
+      id: a4000949-c514-40c6-8437-cdb5c51193d2
+      version: -1
+      name: Validate score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 3e39aed7-7511-4f91-8466-e2fb72726c32
+    type: condition
+    task:
+      id: 3e39aed7-7511-4f91-8466-e2fb72726c32
+      version: -1
+      name: Validate score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Indicator
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 4437af0c-6e8e-45d4-852d-df1567a06b0f
+    type: title
+    task:
+      id: 4437af0c-6e8e-45d4-852d-df1567a06b0f
+      version: -1
+      name: Other commands
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+      - "22"
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 6ce4f04c-d2ae-4587-8484-775e6c729d6a
+    type: regular
+    task:
+      id: 6ce4f04c-d2ae-4587-8484-775e6c729d6a
+      version: -1
+      name: Passive DNS Data
+      description: Returns passive DNS records by indicator.
+      script: GoogleThreatIntelligence|||gti-passive-dns-data
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.ip
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: f7085816-ac0b-4aa2-80cc-40133280c040
+    type: condition
+    task:
+      id: f7085816-ac0b-4aa2-80cc-40133280c040
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleThreatIntelligence.PassiveDNS.attributes.ip_address
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: GoogleThreatIntelligence.PassiveDNS.attributes.ip_address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.ip
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 0bde68c3-ea6f-44e3-8d41-6a056ef7488f
+    type: regular
+    task:
+      id: 0bde68c3-ea6f-44e3-8d41-6a056ef7488f
+      version: -1
+      name: Sandbox report
+      description: Retrieves a behavioral relationship of the given file hash.
+      script: GoogleThreatIntelligence|||gti-file-sandbox-report
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      file:
+        complex:
+          root: inputs.hash
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 66c7e01c-b6d6-4157-8887-43853c47247c
+    type: condition
+    task:
+      id: 66c7e01c-b6d6-4157-8887-43853c47247c
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GoogleThreatIntelligence
+                accessor: SandboxReport
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3060,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 35d2d8e6-d679-4335-88a0-076d076f4b6b
+    type: regular
+    task:
+      id: 35d2d8e6-d679-4335-88a0-076d076f4b6b
+      version: -1
+      name: GTI Search
+      description: Search for an indicator in Google Threat Intelligence.
+      script: GoogleThreatIntelligence|||gti-search
+      type: regular
+      iscommand: true
+      brand: GoogleThreatIntelligence
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      extended_data: {}
+      limit: {}
+      query:
+        simple: paloaltonetworks.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 4f18dde1-b929-4a74-8d80-c17e82121e4a
+    type: condition
+    task:
+      id: 4f18dde1-b929-4a74-8d80-c17e82121e4a
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleThreatIntelligence.SearchResults
+                accessor: id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 565a1fa5-2987-4a80-83b7-911a42450b9f
+    type: title
+    task:
+      id: 565a1fa5-2987-4a80-83b7-911a42450b9f
+      version: -1
+      name: Done others
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 3390,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: url
+  value:
+    simple: https://paloaltonetworks.com
+  required: true
+  description: URL to check its reputation
+  playbookInputQuery:
+- key: ip
+  value:
+    simple: 8.8.8.8
+  required: true
+  description: IP to check its reputation
+  playbookInputQuery:
+- key: domain
+  value:
+    simple: paloaltonetworks.com
+  required: true
+  description: Domain to check its reputation
+  playbookInputQuery:
+- key: hash
+  value:
+    simple: 2b294b3499d1cce794badffc959b7618
+  required: false
+  description: hash to check reputation
+  playbookInputQuery:
+outputs: []
+fromversion: 6.10.0
+description: Test playbook of GoogleThreatIntelligence.

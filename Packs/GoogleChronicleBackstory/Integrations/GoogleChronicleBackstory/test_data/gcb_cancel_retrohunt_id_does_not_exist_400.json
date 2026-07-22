@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 400,
+        "message": "generic::failed_precondition: cannot transition retrohunt status from CANCELLED to CANCELLED",
+        "status": "FAILED_PRECONDITION"
+    }
+}

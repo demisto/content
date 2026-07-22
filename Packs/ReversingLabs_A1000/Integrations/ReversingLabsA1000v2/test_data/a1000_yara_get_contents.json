@@ -1,0 +1,1 @@
+{"code":200,"detail":{"name":"test_yara_rule","content":"rule example_rule{condition:false}"}}

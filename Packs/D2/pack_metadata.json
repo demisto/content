@@ -1,0 +1,23 @@
+{
+    "name": "D2 (Deprecated)",
+    "description": "Deprecated. No available replacement.",
+    "hidden": true,
+    "support": "xsoar",
+    "currentVersion": "1.0.7",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "created": "2020-05-14T14:23:06Z",
+    "useCases": [],
+    "keywords": [
+        "d2",
+        "agent tools"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}

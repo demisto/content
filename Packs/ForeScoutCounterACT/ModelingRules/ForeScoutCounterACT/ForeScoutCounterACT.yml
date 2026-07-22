@@ -1,0 +1,8 @@
+fromversion: 8.5.0
+id: ForeScout_CounterACT_ModelingRule
+name: ForeScout CounterACT Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

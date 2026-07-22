@@ -1,0 +1,18 @@
+[MODEL: dataset="msft_exchange_raw", model="Email"]
+alter XDM.Email.event_timestamp = date_time
+| alter    XDM.Email.Client.host.ipv4_addresses = arraycreate(coalesce(client_ip, "")) 
+| alter    XDM.Email.Client.host.hostname = client_hostname
+| alter    XDM.Email.Server.host.ipv4_addresses = arraycreate(coalesce(server_ip, ""))
+| alter    XDM.Email.Server.host.hostname = server_hostname
+| alter    XDM.Email.original_event_type = event_id
+| alter    XDM.Email.original_event_id = internal_message_id
+| alter    XDM.Email.message_id = message_id
+| alter    XDM.Email.session_context_id = network_message_id
+| alter    XDM.Email.recipients = arraycreate(coalesce(recipient_address, ""))
+| alter    XDM.Email.subject = message_subject
+| alter    XDM.Email.sender = sender_address
+| alter    XDM.Email.sender = sender_address
+| alter    XDM.Email.return_path = return_path
+| alter    XDM.Email.original_event_description = message_info
+| alter    XDM.Email.Observer.unique_identifier = tenant_id
+| alter    XDM.Email.Observer.content_version = schema_version;

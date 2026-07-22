@@ -1,0 +1,12 @@
+[file:README.md]
+ignore=RM104
+
+[file:Axonius_image.png]
+ignore=IM111
+
+[file:Axonius.yml]
+ignore=BA129
+
+[known_words]
+axonius
+

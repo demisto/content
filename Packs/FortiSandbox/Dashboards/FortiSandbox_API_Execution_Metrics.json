@@ -1,0 +1,495 @@
+{
+	"id": "FortiSandboxv2 API Execution Metrics",
+	"version": -1,
+	"fromDate": "0001-01-01T00:00:00Z",
+	"toDate": "0001-01-01T00:00:00Z",
+	"period": {
+		"by": "",
+		"byTo": "",
+		"byFrom": "days",
+		"toValue": null,
+		"fromValue": 7,
+		"field": ""
+	},
+	"fromDateLicense": "0001-01-01T00:00:00Z",
+	"name": "FortiSandboxv2 API Execution Metrics",
+	"layout": [
+		{
+			"id": "870b0d20-e0df-11ec-a7f6-39e12e3bcb7a",
+			"forceRange": false,
+			"x": 6,
+			"y": 0,
+			"i": "870b0d20-e0df-11ec-a7f6-39e12e3bcb7a",
+			"w": 6,
+			"h": 2,
+			"widget": {
+				"id": "bf5f197c-60ab-41c7-8634-1940207e08f1",
+				"version": 1,
+				"cacheVersn": 0,
+				"modified": "2022-05-31T08:45:15.383916281-04:00",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "Successful vs. Rate Limited API Calls for FortiSandbox",
+				"prevName": "Successful vs. Rate Limited API Calls by Integration",
+				"dataType": "metrics",
+				"widgetType": "bar",
+				"query": "type:integration name:FortiSandboxv2",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						null,
+						{
+							"Quota Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "QuotaError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Quota Error"
+							},
+							"Success": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "Successful",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Success"
+							}
+						}
+					],
+					"groupBy": [
+						"name",
+						"apiResponseType"
+					],
+					"keys": [
+						"sum|totalAPICalls"
+					],
+					"legend": [
+						{
+							"color": "#229D80",
+							"name": "FortiSandbox"
+						},
+						{
+							"color": "#ce5050",
+							"name": "Quota Error"
+						},
+						{
+							"color": "#4fa327",
+							"name": "Success"
+						}
+					],
+					"limitType": "top",
+					"valuesFormat": "abbreviated"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
+			"forceRange": false,
+			"x": 6,
+			"y": 2,
+			"i": "7f0bd220-e0e0-11ec-a7f6-39e12e3bcb7a",
+			"w": 6,
+			"h": 3,
+			"widget": {
+				"id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+				"version": 4,
+				"cacheVersn": 0,
+				"sequenceNumber": 409396,
+				"primaryTerm": 2,
+				"modified": "2022-04-27T11:34:53.64268093-04:00",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "FortiSandbox API Metrics for !url",
+				"prevName": "API Call Results for FortiSandbox",
+				"dataType": "metrics",
+				"widgetType": "line",
+				"query": "type:integration and command:\"url\" and name:FortiSandboxv2",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						null,
+						{
+							"General Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "GeneralError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "General Error"
+							},
+							"Other": {
+								"name": "Other"
+							},
+							"Quota Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "QuotaError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Quota Error"
+							},
+							"Success": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "Successful",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Success"
+							}
+						}
+					],
+					"groupBy": [
+						"modified(h)",
+						"apiResponseType"
+					],
+					"keys": [
+						"sum|totalAPICalls"
+					],
+					"referenceLine": {},
+					"timeFrame": "hours",
+					"valuesFormat": "abbreviated",
+					"xAxisLabel": "Time",
+					"yAxisLabel": "Request Counts"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "4603f290-e0e1-11ec-a7f6-39e12e3bcb7a",
+			"forceRange": false,
+			"x": 0,
+			"y": 0,
+			"i": "4603f290-e0e1-11ec-a7f6-39e12e3bcb7a",
+			"w": 6,
+			"h": 2,
+			"widget": {
+				"id": "vt-api-execution-metrics-enrichment-commands",
+				"version": 2,
+				"cacheVersn": 0,
+				"modified": "2022-05-31T08:57:46.243309208-04:00",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": true,
+				"size": 5,
+				"Cache": null,
+				"name": "FortiSandbox API Metrics For Enrichment Commands",
+				"prevName": "",
+				"dataType": "metrics",
+				"widgetType": "column",
+				"query": "type:integration and command:url or command:file and name:FortiSandboxv2",
+				"isPredefined": false,
+				"description": "API Metric information for all FortiSandbox enrichment commands.",
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						null,
+						{
+							"General Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "GeneralError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "General Error"
+							},
+							"Quota Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "QuotaError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Quota Error"
+							},
+							"Success": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "Successful",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Success"
+							}
+						}
+					],
+					"groupBy": [
+						"command",
+						"apiResponseType"
+					],
+					"keys": [
+						"sum|totalAPICalls"
+					],
+					"referenceLine": {},
+					"showGraphValues": true,
+					"tableColumns": [
+						{
+							"isDefault": true,
+							"key": "count",
+							"position": 0
+						},
+						{
+							"isDefault": true,
+							"key": "data",
+							"position": 1
+						},
+						{
+							"isDefault": true,
+							"key": "floatData",
+							"position": 2
+						},
+						{
+							"isDefault": true,
+							"key": "groups",
+							"position": 3
+						},
+						{
+							"isDefault": true,
+							"key": "name",
+							"position": 4
+						},
+						{
+							"isDefault": true,
+							"key": "color",
+							"position": 5
+						}
+					],
+					"valuesFormat": "regular",
+					"xAxisLabel": "Enrichment Command Name",
+					"yAxisLabel": "API Call Count"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+		{
+			"id": "7199c530-e639-11ec-97de-51f10ca01fc4",
+			"forceRange": false,
+			"x": 0,
+			"y": 2,
+			"i": "7199c530-e639-11ec-97de-51f10ca01fc4",
+			"w": 6,
+			"h": 3,
+			"widget": {
+				"id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+				"version": 4,
+				"cacheVersn": 0,
+				"sequenceNumber": 409396,
+				"primaryTerm": 2,
+				"modified": "2022-04-27T11:34:53.64268093-04:00",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [
+					"all"
+				],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "FortiSandbox API Metrics for !file",
+				"prevName": "",
+				"dataType": "metrics",
+				"widgetType": "line",
+				"query": "type:integration and command:\"file\" and name:FortiSandboxv2 ",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "",
+						"byFrom": "days",
+						"toValue": null,
+						"fromValue": 7,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						null,
+						{
+							"General Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "GeneralError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "General Error"
+							},
+							"Other": {
+								"name": "Other"
+							},
+							"Quota Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "QuotaError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Quota Error"
+							},
+							"Success": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "Successful",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Success"
+							}
+						}
+					],
+					"groupBy": [
+						"modified(h)",
+						"apiResponseType"
+					],
+					"keys": [
+						"sum|totalAPICalls"
+					],
+					"referenceLine": {},
+					"timeFrame": "hours",
+					"valuesFormat": "abbreviated",
+					"xAxisLabel": "Time",
+					"yAxisLabel": "Request Counts"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		}
+	],
+	"fromVersion": "6.10.0",
+	"description": "",
+	"isPredefined": true
+}

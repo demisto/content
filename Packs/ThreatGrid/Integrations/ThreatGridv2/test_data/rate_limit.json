@@ -1,0 +1,24 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "user": {
+            "submission-rate-limit": [],
+            "submission-wait-seconds": "data_user_submission-wait-seconds",
+            "submissions-available": "user_submissions-available"
+        },
+        "organization": {
+            "submission-rate-limit": [
+                {
+                    "samples": "data_organization_submission-rate-limit[0]_samples",
+                    "minutes": "data_organization_submission-rate-limit[0]_minutes",
+                    "submissions-available": "data_organization_submission-rate-limit[0]_submissions-available",
+                    "submission-wait-seconds": "data_organization_submission-rate-limit[0]_submission-wait-seconds"
+                }
+            ],
+            "submission-wait-seconds": "data_organization_submission-wait-seconds",
+            "submissions-available": "data_organization_submissions-available"
+        }
+    }
+}

@@ -1,0 +1,14 @@
+[
+    {
+        "_id": "Example",
+        "id": 1,
+        "name": "Example",
+        "status": "enable",
+        "vserver": "1.0.0.0/7/",
+        "httpPort": 80,
+        "httpsPort": 443,
+        "mode": "HTTP Content Routing",
+        "sessionCount": 0,
+        "connCntPerSec": 0
+    }
+]

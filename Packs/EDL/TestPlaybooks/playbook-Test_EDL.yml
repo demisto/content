@@ -1,0 +1,86 @@
+elasticcommonfields: {}
+id: Test_EDL
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: Test_EDL
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3b35f8c5-ad3e-4f8e-8bd6-3ce48c140668
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: 3b35f8c5-ad3e-4f8e-8bd6-3ce48c140668
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 7bd71efa-53d1-4290-8c18-673f62c99e73
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: 7bd71efa-53d1-4290-8c18-673f62c99e73
+      version: -1
+      name: Check Update EDL
+      description: Updates values stored in the EDL (only avaialable On-Demand).
+      script: '|||edl-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      edl_size:
+        simple: "2"
+      print_indicators:
+        simple: "true"
+      query:
+        simple: Tags:IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 265,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

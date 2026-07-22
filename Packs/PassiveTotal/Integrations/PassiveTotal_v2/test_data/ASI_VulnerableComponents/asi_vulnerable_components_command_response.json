@@ -1,0 +1,19 @@
+{
+  "totalCount": 25,
+  "totalPages": 13,
+  "nextPage": "https://api.pt.net/pt/v2/attack-surface/vuln-intel/components?page=1&size=2",
+  "vulnerableComponents": [
+    {
+      "name": "nginx 1.14.0",
+      "type": "Server",
+      "severity": "HIGH",
+      "count": 109
+    },
+    {
+      "name": "nginx 1.16.1",
+      "type": "Server",
+      "severity": "HIGH",
+      "count": 8
+    }
+  ]
+}

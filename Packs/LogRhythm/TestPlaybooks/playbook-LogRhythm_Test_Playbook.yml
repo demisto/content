@@ -1,0 +1,767 @@
+id: LogRhythm-Test-Playbook
+version: -1
+name: LogRhythm-Test-Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 81443c64-49fd-4d9d-82df-f456ba40028d
+    type: start
+    task:
+      id: 81443c64-49fd-4d9d-82df-f456ba40028d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ee87721d-2353-4386-86d1-a0fb3d90bc00
+    type: regular
+    task:
+      id: ee87721d-2353-4386-86d1-a0fb3d90bc00
+      version: -1
+      name: Get alarm by id
+      description: Retrieve alarms in a given time period, optionally filtered by the alarm status or entity
+      script: '|||lr-get-alarm-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      alarm-id:
+        complex:
+          root: AlarmID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c7328d73-1a23-4367-8618-05e0a9f1a6bd
+    type: regular
+    task:
+      id: c7328d73-1a23-4367-8618-05e0a9f1a6bd
+      version: -1
+      name: Clear context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3959b198-d124-46e1-8301-9b23893622b1
+    type: regular
+    task:
+      id: 3959b198-d124-46e1-8301-9b23893622b1
+      version: -1
+      name: Add alarm comment
+      script: '|||lr-add-alarm-comments'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      alarm-id:
+        complex:
+          root: AlarmID
+      comments:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 209a88e5-d289-411e-89c1-7995015f3568
+    type: regular
+    task:
+      id: 209a88e5-d289-411e-89c1-7995015f3568
+      version: -1
+      name: Get alarm events
+      script: '|||lr-get-alarm-events-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      alarm-id:
+        complex:
+          root: AlarmID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
+    type: regular
+    task:
+      id: 7df19295-cf3a-4af1-8af7-f165cc9e9ff2
+      version: -1
+      name: Get alarms with start and end date
+      script: '|||lr-get-alarms'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all-users:
+        simple: "true"
+      count: {}
+      end-date:
+        simple: "2020-06-01"
+      start-date:
+        simple: "2020-05-01"
+      status:
+        simple: New
+      time_frame: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: d74710c4-7871-487c-85d9-34516a889557
+    type: regular
+    task:
+      id: d74710c4-7871-487c-85d9-34516a889557
+      version: -1
+      name: Update status - New
+      script: '|||lr-update-alarm-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      alarm-id:
+        complex:
+          root: AlarmID
+      status:
+        simple: New
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 56e25cdc-8f06-4be7-8ae6-cccaa920e747
+    type: regular
+    task:
+      id: 56e25cdc-8f06-4be7-8ae6-cccaa920e747
+      version: -1
+      name: Update status - Closed
+      script: '|||lr-update-alarm-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      alarm-id:
+        complex:
+          root: AlarmID
+      status:
+        simple: Closed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 198b5efc-8920-4e3a-81e0-4c4391910993
+    type: title
+    task:
+      id: 198b5efc-8920-4e3a-81e0-4c4391910993
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 6037d2b4-7840-4896-83d7-b0ce6b9374be
+    type: condition
+    task:
+      id: 6037d2b4-7840-4896-83d7-b0ce6b9374be
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Alarm.ID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.ID
+            iscontext: true
+          right:
+            value:
+              simple: AlarmID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b5c9c9a4-c1be-472e-83b3-405b82103a61
+    type: condition
+    task:
+      id: b5c9c9a4-c1be-472e-83b3-405b82103a61
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.Comment
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 72545323-f31b-4f78-8dec-2e2cdd4625f6
+    type: condition
+    task:
+      id: 72545323-f31b-4f78-8dec-2e2cdd4625f6
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Alarm.Event
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 958dcec9-644f-4841-83e5-0a3e87ebc54c
+    type: condition
+    task:
+      id: 958dcec9-644f-4841-83e5-0a3e87ebc54c
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.ID
+            iscontext: true
+          right:
+            value:
+              simple: AlarmID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 1205e77d-135a-44c6-84a9-6e0747ee213d
+    type: condition
+    task:
+      id: 1205e77d-135a-44c6-84a9-6e0747ee213d
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.Status
+            iscontext: true
+          right:
+            value:
+              simple: New
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: ebf8537f-1e63-43c0-8c68-4d7e63653fa7
+    type: condition
+    task:
+      id: ebf8537f-1e63-43c0-8c68-4d7e63653fa7
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.Status
+            iscontext: true
+          right:
+            value:
+              simple: Closed
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 03d0ea6d-2667-4f5a-81c8-7eaa13d5d5d3
+    type: regular
+    task:
+      id: 03d0ea6d-2667-4f5a-81c8-7eaa13d5d5d3
+      version: -1
+      name: Execute query
+      description: Executes a query for logs that match query parameters.
+      script: '|||lr-execute-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      end-date:
+        simple: "2020-06-01"
+      keyword:
+        simple: failed
+      page-size:
+        simple: "5"
+      start-date:
+        simple: "2020-05-01"
+      time-frame: {}
+      time_frame:
+        simple: Custom
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: b3bb6635-b892-40eb-8b71-d9a722ca906b
+    type: regular
+    task:
+      id: b3bb6635-b892-40eb-8b71-d9a722ca906b
+      version: -1
+      name: Get hosts by entity
+      description: Retrieve a list of hosts for a given entity, or an empty list if none is found.
+      script: '|||lr-get-hosts-by-entity-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      entity-id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 0a1a2073-66e2-4e70-80cd-1b6c409bc85f
+    type: condition
+    task:
+      id: 0a1a2073-66e2-4e70-80cd-1b6c409bc85f
+      version: -1
+      name: Verify output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Host.EntityID
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8e48f833-0491-46f5-8955-2af28a1da866
+    type: condition
+    task:
+      id: 8e48f833-0491-46f5-8955-2af28a1da866
+      version: -1
+      name: Are there alarm events ?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Alarm.Event
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 61fed595-7c2a-475f-8602-a376b0dd7c7c
+    type: regular
+    task:
+      id: 61fed595-7c2a-475f-8602-a376b0dd7c7c
+      version: -1
+      name: Get alarms with time farme
+      script: '|||lr-get-alarms'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all-users:
+        simple: "true"
+      status:
+        simple: New
+      time_frame:
+        simple: LastWeek
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 98e052d2-c1b9-4c73-8fbf-4cad84f6ee2d
+    type: regular
+    task:
+      id: 98e052d2-c1b9-4c73-8fbf-4cad84f6ee2d
+      version: -1
+      name: Set alarm Id
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: AlarmID
+      value:
+        complex:
+          root: LogRhythm.Alarm
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3535,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

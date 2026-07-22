@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+    echo "This is a merge commit, skipping pre-commit"
+    exit 0
+fi
+
+# poetry is installed in ~/.local/bin
+PATH=~/.local/bin:$PATH
+# check if poetry is installed
+if ! command -v poetry >/dev/null 2>&1; then
+    echo "ERROR: poetry is missing. Please run the following command to install poetry:
+            curl -sSL https://install.python-poetry.org | python3 -"
+    exit 1
+fi
+
+# check if `poetry run demisto-sdk` is valid
+if ! poetry run demisto-sdk >/dev/null 2>&1; then
+    echo "ERROR: poetry run demisto-sdk is invalid. Please run the following command:
+         poetry install"
+    exit 1
+fi
+
+poetry run demisto-sdk pre-commit --staged-only --mode=commit

@@ -1,0 +1,26 @@
+{
+    "name": "Expanse (Deprecated)",
+    "description": "Deprecated. Use the Expanse V2 pack instead.",
+    "support": "partner",
+    "hidden": true,
+    "currentVersion": "1.2.4",
+    "author": "Expanse",
+    "url": "https://www.expanse.co/",
+    "email": "help@expanseinc.com",
+    "created": "2020-03-09T16:04:45Z",
+    "certification": "certified",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Expanse"
+    ],
+    "githubUser": [
+        "andrew-expanse"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}

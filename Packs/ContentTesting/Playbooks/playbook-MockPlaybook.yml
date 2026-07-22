@@ -1,0 +1,123 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: MockPlaybook
+description: ""
+inputs: []
+name: MockPlaybook
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 942a0a3d-a5a8-4e7c-8468-68dd4e23bf5a
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 942a0a3d-a5a8-4e7c-8468-68dd4e23bf5a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 120
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 96f8fd4f-24ac-4afb-89d5-38796950b3b0
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 96f8fd4f-24ac-4afb-89d5-38796950b3b0
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 510
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: test
+      value:
+        simple: test
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: f11459fd-28b9-4180-85a9-c49b88242802
+      iscommand: false
+      name: Do Something
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: f11459fd-28b9-4180-85a9-c49b88242802
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 300
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 455,
+        "width": 380,
+        "x": 850,
+        "y": 120
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

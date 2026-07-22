@@ -1,0 +1,23 @@
+{
+    "id": "Qualys-Fim",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Qualys-Fim",
+    "prevName": "Qualys-Fim",
+    "color": "#039BE5",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "layout": "52a5cf8d-1ba2-4484-85a9-e1075f23359c",
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,255 @@
+commonfields:
+  id: Mimecast
+  version: -1
+name: Mimecast
+display: Mimecast (Deprecated)
+deprecated: true
+category: Email Gateway
+system: true
+fromversion: 5.0.0
+image: data:image/png;base64,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
+description: Deprecated. Mimecast unified email management offers cloud email services for email security, continuity and archiving emails
+configuration:
+- display: 'BaseUrl - API url including region, For example https://eu-api.mimecast.com  '
+  name: baseUrl
+  defaultvalue: https://api.mimecast.com
+  type: 0
+  required: true
+- display: AccessKey
+  name: accessKey
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: SecretKey
+  name: secretKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+script:
+  script: >-
+    var insecure = params.insecure;
+
+
+    var accessKey = params.accessKey;
+
+
+    var secret = params.secretKey;
+
+
+    var baseUrl = params.baseUrl;
+
+
+    var searchURI = '/api/archive/search';
+
+
+
+
+    var defaultQueryXml =
+
+    "<?xml version=\"1.0\"?> \n\
+        <xmlquery trace=\"iql,muse\">\n\
+        <metadata query-type=\"emailarchive\" archive=\"true\" active=\"false\" page-size=\"25\" startrow=\"0\">\n\
+            <smartfolders/>\n\
+            <return-fields>\n\
+                <return-field>attachmentcount</return-field>\n\
+                <return-field>status</return-field>\n\
+                <return-field>subject</return-field>\n\
+                <return-field>size</return-field>\n\
+                <return-field>receiveddate</return-field>\n\
+                <return-field>displayfrom</return-field>\n\
+                <return-field>id</return-field>\n\
+                <return-field>displayto</return-field>\n\
+                <return-field>smash</return-field>\n\
+            </return-fields>\n\
+        </metadata>\n\
+        <muse>\n\
+            <text></text>\n\
+            <date select=\"last_year\"/>\n\
+            <sent></sent>\n\
+            <docs select=\"optional\"></docs>\n\
+            <route/>\n\
+        </muse>\n\
+    </xmlquery>";
+
+
+    var sendRequest = function(method, url, body) {
+            var res = http(
+                    url,
+                    {
+                        Method: method,
+                        Body: body,
+                        AuthProtocol: ['mimecast', '', '', secret, accessKey]
+                    },
+                    insecure
+                );
+            if (res.StatusCode < 200 || res.StatusCode >= 300) {
+                throw 'Failed to use url ' + url + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            }
+            return JSON.parse(res.Body);
+    };
+
+
+    var query = function(queryXML, isAdmin) {
+            var body = {};
+            var q = {};
+            q.query = queryXML;
+            q.admin = isAdmin;
+            body.data = [q];
+            bodyAsString = JSON.stringify(body);
+            return sendRequest('POST', baseUrl + searchURI, bodyAsString);
+    };
+
+
+    var parseQueryArgs = function(args) {
+            var queryXml = defaultQueryXml;
+            if ((args.pageSize) && (args.pageSize > 0) ){
+                queryXml = queryXml.replace('page-size=\"25\"','page-size=\"'+args.pageSize+'\"');
+            }
+            if ((args.startRow) && (args.startRow > 0) ){
+                queryXml = queryXml.replace('startrow=\"0\"','startrow=\"'+args.startRow+'\"');
+            }
+            if ((args.active) && (args.active == 'true') ){
+                queryXml = queryXml.replace('active=\"false\"','active=\"true\"');
+            }
+            if ((args.body) && (args.body.length > 0) ){
+                queryXml = queryXml.replace('<text></text>','<text>(body: '+args.body+')</text>');
+            }
+            if ((args.subject) && (args.subject.length > 0) ){
+                queryXml = queryXml.replace('<text></text>','<text>(subject: '+args.subject+')</text>');
+            }
+            if ((args.text) && (args.text.length > 0) ){
+                queryXml = queryXml.replace('<text></text>','<text>'+args.text+'</text>');
+            }
+
+            if ((args.date) && (args.date.length > 0) ){
+                queryXml = queryXml.replace('<date select=\"last_year\"/>','<date select=\"'+args.date+'\"/>');
+
+                if (((args.dateTo) && (args.dateTo.length > 0) ) || ((args.dateFrom) && (args.dateFrom.length > 0) )){
+                     throw 'Cannot use both date and dateFrom/dateTo arguments';
+                }
+            }
+            var dateTo = "";
+            var dateFrom = "";
+            if ((args.dateTo) && (args.dateTo.length > 0) ){
+                dateTo = args.dateTo;
+            }
+            if ((args.dateFrom) && (args.dateFrom.length > 0) ){
+                dateFrom = args.dateFrom;
+            }
+            if ((dateFrom.length > 0) && (dateTo.length > 0)){
+                queryXml = queryXml.replace('<date select=\"last_year\"/>','<date select=\"between\" from=\"'+dateFrom+'\" to=\"'+dateTo+'\" />');
+            } else if (dateFrom.length > 0){
+                queryXml = queryXml.replace('<date select=\"last_year\"/>','<date select=\"between\" from=\"'+dateFrom+'\" />');
+            } else if (dateTo.length > 0){
+                queryXml = queryXml.replace('<date select=\"last_year\"/>','<date select=\"between\" to=\"'+dateTo+'\" />');
+            }
+
+            if ((args.sentFrom) && (args.sentFrom.length > 0) ){
+                queryXml = queryXml.replace('<sent></sent>','<sent select=\"from\" >'+args.sentFrom+'</sent>');
+            }
+            if ((args.sentTo) && (args.sentTo.length > 0) ){
+                queryXml = queryXml.replace('<sent></sent>','<sent select=\"to\" >'+args.sentTo+'</sent>');
+            }
+            queryXml = queryXml.replace('<sent></sent>','');//no empty tag
+            if ((args.attachmentText) && (args.attachmentText.length > 0) ){
+                queryXml = queryXml.replace('</docs>',args.attachmentText+'</docs>');
+            }
+            if ((args.attachmentType) && (args.attachmentType.length > 0) ){
+                queryXml = queryXml.replace('<docs select=\"optional\">','<docs select=\"'+args.attachmentType+'\">');
+            }
+            return queryXml;
+    };
+
+
+    switch (command) {
+        case 'test-module':
+            var testArgs = {};
+            testArgs.pageSize = 1;
+            testArgs.text = 'Demisto';
+            var queryXml = parseQueryArgs(testArgs);
+            query(queryXml, true);
+            return 'ok';
+        case 'mimecast-query':
+            var queryXml = '';
+            if ((args.queryXml) && (args.queryXml.length > 0)) {
+                queryXml = args.queryXml;
+            } else {
+                queryXml = parseQueryArgs(args);
+            }
+            if ((args.dryRun) && (args.dryRun == 'true')){
+                return queryXml;
+            }
+
+            return query(queryXml, true);
+        default:
+    }
+  type: javascript
+  commands:
+  - name: mimecast-query
+    deprecated: true
+    arguments:
+    - name: queryXml
+      default: true
+      description: The query string xml for the search using Mimecast Unified Search Experience (MUSE) - read more on https://community.mimecast.com/docs/DOC-2262, using this will override other query arguments
+    - name: text
+      description: Search for this text in api messages
+    - name: dryRun
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Will no execute the query, but just return the query string builded
+    - name: date
+      auto: PREDEFINED
+      predefined:
+      - today
+      - yesterday
+      - last_week
+      - last_month
+      - last_year
+      description: Search in specific dates only
+    - name: dateFrom
+      description: search emails from date, format 2015-09-21T23:00:00Z
+    - name: dateTo
+      description: search emails to date, format 2015-09-21T23:00:00Z
+    - name: sentTo
+      description: filter on messages to a specific address
+    - name: sentFrom
+      description: filter on messages from a specific address
+    - name: subject
+      description: search email by subject, will override the text argument
+    - name: attachmentType
+      auto: PREDEFINED
+      predefined:
+      - optional
+      - any
+      - documents
+      - spreadsheets
+      - presentations
+      - text
+      - images
+      - media
+      - zips
+      - none
+      description: optional - messages with and without attachments any - messages with any attachment documents - messages with doc, dot, docx, docm, dotx, dotm, pdf, rtf, html attachments spreadsheets - messages with xls, xlt, xlsx, xlsm, xltx, xltm, xlsb, xlam, csv attachments presentations - messages with ppt, pptx, pptm, potx, potm, ppam, ppsx, ppsm, sldx, sldm, thms, pps attachments text - messages with txt, text, html, log attachments images - messages with jpg, jpeg, png, bmp, gif, psd, tif, tiff attachments media - messages with mp3, mp4, m4a, mpg, mpeg, avi, wav, aac, wma, mov attachments zips - messages with zip, rar, cab, gz, gzip, 7z attachments none - No attachments are to be present in the results
+    - name: attachmentText
+      description: search for text in attachments
+    - name: body
+      description: search email by text in body, will override the text and subject arguments
+    - name: pageSize
+      description: Sets the number of results to return per page (default 25)
+    - name: startRow
+      description: Sets the result to start returning results (default 0)
+    - name: active
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Defines if the search should query recently received messages that are not fully indexed yet (default false). You can search by mailbox and date time across active messages
+    description: query mimecast emails
+tests:
+- No test

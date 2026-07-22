@@ -1,0 +1,1168 @@
+id: DemistoLockTest
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: DemistoLockTest
+description: Test playbook for Demisto Locking integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1e488f23-17ae-4697-8ec5-2caf8cffc6cd
+    type: start
+    task:
+      id: 1e488f23-17ae-4697-8ec5-2caf8cffc6cd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 652133ff-d95f-4a4a-86f6-d1e465a05dae
+    type: regular
+    task:
+      id: 652133ff-d95f-4a4a-86f6-d1e465a05dae
+      version: -1
+      name: lock-info
+      description: Show information on a locks
+      script: Demisto Lock|||demisto-lock-info
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2cbaf424-3361-4362-80bb-689834c28267
+    type: regular
+    task:
+      id: 2cbaf424-3361-4362-80bb-689834c28267
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Lock|||demisto-lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "4"
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 61ac5ca5-5600-4629-8033-174fe9020f6a
+    type: regular
+    task:
+      id: 61ac5ca5-5600-4629-8033-174fe9020f6a
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Lock|||demisto-lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 3e212460-d3b5-467a-8118-7f3768147b43
+    type: regular
+    task:
+      id: 3e212460-d3b5-467a-8118-7f3768147b43
+      version: -1
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 26f2bb30-a754-4ad9-814a-7ff38d20a62a
+    type: regular
+    task:
+      id: 26f2bb30-a754-4ad9-814a-7ff38d20a62a
+      version: -1
+      name: Set context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: key
+      value:
+        simple: ok
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: eb4ee1ed-cf90-4091-87a0-dd1998eb2da8
+    type: regular
+    task:
+      id: eb4ee1ed-cf90-4091-87a0-dd1998eb2da8
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Lock|||demisto-lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 68bada69-ce19-4c03-81b9-66b16fde7d49
+    type: regular
+    task:
+      id: 68bada69-ce19-4c03-81b9-66b16fde7d49
+      version: -1
+      name: Print
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${key}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a862e1f0-dfaa-4024-8ab3-36d8bdbfe3a9
+    type: regular
+    task:
+      id: a862e1f0-dfaa-4024-8ab3-36d8bdbfe3a9
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Lock|||demisto-lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0fc95f73-2940-478b-8f1c-45182a6631ed
+    type: regular
+    task:
+      id: 0fc95f73-2940-478b-8f1c-45182a6631ed
+      version: -1
+      name: lock-info
+      description: Show information on a locks
+      script: Demisto Lock|||demisto-lock-info
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 22ad3680-27a4-48ff-8ec2-5620e5c3d01e
+    type: regular
+    task:
+      id: 22ad3680-27a4-48ff-8ec2-5620e5c3d01e
+      version: -1
+      name: closeInvestigation
+      description: Close the current investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 3955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 17aa6a6b-f97b-4b25-8f8c-ff94adedb6b7
+    type: regular
+    task:
+      id: 17aa6a6b-f97b-4b25-8f8c-ff94adedb6b7
+      version: -1
+      name: lock-release-all
+      description: Release all locks
+      script: Demisto Lock|||demisto-lock-release-all
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d10fd77e-a274-45c4-8217-9a6afb4724ed
+    type: regular
+    task:
+      id: d10fd77e-a274-45c4-8217-9a6afb4724ed
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5b66a81b-9ce4-4f8e-8fff-88e349f2b7ac
+    type: title
+    task:
+      id: 5b66a81b-9ce4-4f8e-8fff-88e349f2b7ac
+      version: -1
+      name: Check timeout
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7f6a5c73-42b8-45b5-82d7-833c7d8ee420
+    type: title
+    task:
+      id: 7f6a5c73-42b8-45b5-82d7-833c7d8ee420
+      version: -1
+      name: Check successful lock
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: bf5b17a1-76dc-4643-8ccb-dcd46ea41e35
+    type: regular
+    task:
+      id: bf5b17a1-76dc-4643-8ccb-dcd46ea41e35
+      version: -1
+      name: get-lock
+      script: Demisto Lock|||demisto-lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+    scriptarguments:
+      name:
+        simple: timeout
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 15f49725-9f27-4472-8c94-fc182d01ffcb
+    type: regular
+    task:
+      id: 15f49725-9f27-4472-8c94-fc182d01ffcb
+      version: -1
+      name: get-lock
+      script: Demisto Lock|||demisto-lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#error#':
+      - "20"
+      '#none#':
+      - "18"
+    scriptarguments:
+      name:
+        simple: timeout
+      timeout:
+        simple: "10"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 62d99bb8-7273-4361-8d76-7c39675b69e6
+    type: regular
+    task:
+      id: 62d99bb8-7273-4361-8d76-7c39675b69e6
+      version: -1
+      name: Sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      seconds:
+        simple: "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c0b5a468-c37d-4d05-8337-10f7a7ff57c8
+    type: condition
+    task:
+      id: c0b5a468-c37d-4d05-8337-10f7a7ff57c8
+      version: -1
+      name: Timeout?
+      scriptName: isError
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    scriptarguments:
+      entryId:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0856eef1-a548-4bce-8c0f-78dc5c2decd1
+    type: regular
+    task:
+      id: 0856eef1-a548-4bce-8c0f-78dc5c2decd1
+      version: -1
+      name: lock-release-all
+      script: Demisto Lock|||demisto-lock-release-all
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: d0c36655-2116-4bb7-8028-40610305c26e
+    type: title
+    task:
+      id: d0c36655-2116-4bb7-8028-40610305c26e
+      version: -1
+      name: Check parallel
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 499eee07-3190-43bf-8704-ca800c2e10f5
+    type: regular
+    task:
+      id: 499eee07-3190-43bf-8704-ca800c2e10f5
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Lock|||demisto-lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: de885218-aea6-4d0d-805a-ed0bb1edf7eb
+    type: regular
+    task:
+      id: de885218-aea6-4d0d-805a-ed0bb1edf7eb
+      version: -1
+      name: lock-get
+      description: Get lock. If the lock is already in use - will wait until it is
+        released or until timeout is reached
+      script: Demisto Lock|||demisto-lock-get
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: b41744bb-1c05-4e63-804b-a3266c4ff353
+    type: regular
+    task:
+      id: b41744bb-1c05-4e63-804b-a3266c4ff353
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 369814fd-56a3-4350-8577-e6cf70691e77
+    type: regular
+    task:
+      id: 369814fd-56a3-4350-8577-e6cf70691e77
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 22893d66-4f7d-49e2-8e7b-f9cd2de8722c
+    type: regular
+    task:
+      id: 22893d66-4f7d-49e2-8e7b-f9cd2de8722c
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Lock|||demisto-lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 4158c53c-88be-4e4b-8802-a67147affd9a
+    type: regular
+    task:
+      id: 4158c53c-88be-4e4b-8802-a67147affd9a
+      version: -1
+      name: lock-release
+      description: Release a lock
+      script: Demisto Lock|||demisto-lock-release
+      type: regular
+      iscommand: true
+      brand: Demisto Lock
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: f5c12d0c-5647-4000-8716-d7b249baa2fe
+    type: regular
+    task:
+      id: f5c12d0c-5647-4000-8716-d7b249baa2fe
+      version: -1
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: da21ce6d-469b-4fa2-8e16-394cfe6ae6d0
+    type: regular
+    task:
+      id: da21ce6d-469b-4fa2-8e16-394cfe6ae6d0
+      version: -1
+      name: Set 1
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: key1
+      value:
+        simple: key1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 4be7c571-c3cd-42ac-856d-9323104469c1
+    type: regular
+    task:
+      id: 4be7c571-c3cd-42ac-856d-9323104469c1
+      version: -1
+      name: Set 2
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      key:
+        simple: key2
+      value:
+        simple: key2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 1faa5b1e-ad5f-469d-8c2f-b6c2220ea088
+    type: condition
+    task:
+      id: 1faa5b1e-ad5f-469d-8c2f-b6c2220ea088
+      version: -1
+      name: Check if key 1 is set
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: key1
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 68484e6d-5029-41c4-8158-6af332283896
+    type: condition
+    task:
+      id: 68484e6d-5029-41c4-8158-6af332283896
+      version: -1
+      name: Check if key 2 is set
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: key2
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 3f2ebc1a-c739-4959-88fd-467f12a4242d
+    type: regular
+    task:
+      id: 3f2ebc1a-c739-4959-88fd-467f12a4242d
+      version: -1
+      name: Delete key 2
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      key:
+        simple: key2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: f7eb738d-84d1-4f9c-899a-22839b282d2a
+    type: regular
+    task:
+      id: f7eb738d-84d1-4f9c-899a-22839b282d2a
+      version: -1
+      name: Delete key 1
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      key:
+        simple: key1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_20_#error#": 0.69
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4000,
+        "width": 1045,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+dirtyInputs: true
+fromversion: 5.0.0
+marketplaces:
+  - xsoar
+  - marketplacev2
+  - platform

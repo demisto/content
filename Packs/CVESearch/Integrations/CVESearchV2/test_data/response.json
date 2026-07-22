@@ -1,0 +1,41 @@
+{
+    "Modified": "2020-11-19T21:04:00",
+    "Published": "2020-11-11T07:15:00",
+    "access": {
+        "authentication": "NONE",
+        "complexity": "MEDIUM",
+        "vector": "NETWORK"
+    },
+    "assigner": "cve@mitre.org",
+    "capec": [],
+    "cvss": 9.3,
+    "cvss-time": "2020-11-19T21:04:00",
+    "cvss-vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C",
+    "cwe": "NVD-CWE-noinfo",
+    "id": "CVE-2020-17106",
+    "impact": {
+        "availability": "COMPLETE",
+        "confidentiality": "COMPLETE",
+        "integrity": "COMPLETE"
+    },
+    "last-modified": "2020-11-19T21:04:00",
+    "references": [
+        "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2020-17106"
+    ],
+    "refmap": {
+        "misc": [
+            "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2020-17106"
+        ]
+    },
+    "summary": "HEVC Video Extensions Remote Code Execution Vulnerability This CVE ID is unique from CVE-2020-17107, CVE-2020-17108, CVE-2020-17109, CVE-2020-17110.",
+    "vulnerable_configuration": [
+        {
+            "id": "cpe:2.3:a:microsoft:hevc_video_extensions:*:*:*:*:*:*:*:*",
+            "title": "cpe:2.3:a:microsoft:hevc_video_extensions:*:*:*:*:*:*:*:*"
+        }
+    ],
+    "vulnerable_configuration_cpe_2_2": [],
+    "vulnerable_product": [
+        "cpe:2.3:a:microsoft:hevc_video_extensions:*:*:*:*:*:*:*:*"
+    ]
+}

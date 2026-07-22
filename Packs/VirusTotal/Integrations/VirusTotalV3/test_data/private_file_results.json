@@ -1,0 +1,150 @@
+{
+    "attributes": {
+        "type_description": "ELF",
+        "tlsh": "Example tlsh",
+        "vhash": "Example vhash",
+        "exiftool": {
+            "MIMEType": "application/octet-stream",
+            "CPUByteOrder": "Little endian",
+            "ObjectFileType": "Executable file",
+            "CPUArchitecture": "32 bit",
+            "CPUType": "i386",
+            "FileType": "ELF executable"
+        },
+        "trid": [
+            {
+                "file_type": "ELF Executable and Linkable format (Linux)",
+                "probability": 55
+            },
+            {
+                "file_type": "ELF Executable and Linkable format (generic)",
+                "probability": 45
+            }
+        ],
+        "crowdsourced_yara_results": [
+            {
+                "description": "Detects a suspicious ELF binary with UPX compression",
+                "source": "https://www.example.com",
+                "author": "Author X",
+                "ruleset_name": "gen_elf_file_anomalies",
+                "rule_name": "SUSP_ELF_LNX_UPX_Compressed_File",
+                "ruleset_id": "0224a54ba7"
+            }
+        ],
+        "threat_severity": {
+            "threat_severity_level": "SEVERITY_HIGH",
+            "threat_severity_data": {
+                "has_dropped_files_with_detections": true,
+                "type_tag": "elf",
+                "has_execution_parents_with_detections": true,
+                "can_be_detonated": true,
+                "popular_threat_category": "trojan"
+            },
+            "last_analysis_date": "1681045097",
+            "version": 1
+        },
+        "names": [
+            "private",
+            "/usr/lib/sample.so",
+            "private_sample.bin"
+        ],
+        "owner": "virustotal",
+        "type_tag": "elf",
+        "elf_info": {
+            "header": {
+                "hdr_version": "1 (current)",
+                "type": "EXEC (Executable file)",
+                "obj_version": "0x1",
+                "data": "2's complement, little endian",
+                "machine": "Intel 80386",
+                "num_section_headers": 0,
+                "os_abi": "UNIX - Linux",
+                "abi_version": 0,
+                "entrypoint": 4633,
+                "num_prog_headers": 2,
+                "class": "ELF32"
+            },
+            "packers": [
+                "upx"
+            ],
+            "segment_list": [
+                {
+                    "segment_type": "LOAD"
+                }
+            ]
+        },
+        "size": 255510,
+        "type_extension": "so",
+        "threat_verdict": "VERDICT_MALICIOUS",
+        "detectiteasy": {
+            "filetype": "ELF32",
+            "values": [
+                {
+                    "info": "EXEC 386-32",
+                    "version": "3.05",
+                    "type": "Packer",
+                    "name": "UPX"
+                }
+            ]
+        },
+        "crowdsourced_ids_stats": {
+            "high": 0,
+            "info": 0,
+            "medium": 1,
+            "low": 1
+        },
+        "type_tags": [
+            "executable",
+            "linux",
+            "elf"
+        ],
+        "sandbox_verdicts": {
+            "Zenbox Linux": {
+                "category": "malicious",
+                "confidence": 81,
+                "sandbox_name": "Zenbox Linux",
+                "malware_classification": [
+                    "MALWARE",
+                    "TROJAN",
+                    "EVADER"
+                ],
+                "malware_names": [
+                    "MalwareName"
+                ]
+            }
+        },
+        "sha256": "Example_sha256_with_64_characters_000000000000000000000000000000",
+        "tags": [
+            "elf",
+            "upx"
+        ],
+        "crowdsourced_ids_results": [
+            {
+                "rule_category": "Misc Attack",
+                "alert_severity": "medium",
+                "rule_msg": "Known Compromised or Hostile Host Traffic",
+                "rule_raw": "alert ip [8.8.8.8] any -> $HOME_NET any"
+            },
+            {
+                "rule_category": "Misc Attack",
+                "alert_severity": "low",
+                "rule_msg": "Poor Reputation IP",
+                "rule_raw": "alert ip [1.1.1.1] any -> $HOME_NET any)"
+            }
+        ],
+        "last_analysis_date": 1681386314,
+        "ssdeep": "Example ssdeep",
+        "packers": {
+            "Gandelf": "upx"
+        },
+        "md5": "Example_md5_00000000000000000000",
+        "sha1": "Example_sha1_000000000000000000000000000",
+        "magic": "ELF 32-bit LSB executable, Intel 80386, version 1 (GNU/Linux), statically linked, stripped",
+        "meaningful_name": "private"
+    },
+    "type": "private_file",
+    "id": "Example_sha256_with_64_characters_000000000000000000000000000000",
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/private/files/Example_sha256_with_64_characters_000000000000000000000000000000"
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "name": "CTM360",
+    "created": "2024-02-04T14:36:26Z",
+    "description": "Take action on incidents derived from threat intelligence that is directly linked to your organization.",
+    "support": "partner",
+    "currentVersion": "2.3.5",
+    "author": "CTM360",
+    "url": "https://www.ctm360.com",
+    "email": "xsoar@ctm360.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "TIM",
+        "Alerts",
+        "Compliance",
+        "Plug & Fetch",
+        "Incident Handling",
+        "Threat Intelligence"
+    ],
+    "useCases": [],
+    "keywords": [
+        "CTM360",
+        "HackerView",
+        "CyberBlindspot"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "devEmail": [
+        "xsoar@ctm360.com"
+    ],
+    "githubUser": [],
+    "defaultDataSource": "CTM360_CyberBlindspot",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "agentObjectId": 1
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getAgentObjectIdByAlternateSystemId"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "agentObjectId": 1
+            }
+        ],
+        "status": "success"
+    }
+}

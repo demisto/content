@@ -1,0 +1,30 @@
+[
+    {
+        "email": "testlogin@email.test",
+        "username": null,
+        "password": "pass1234",
+        "password_hash": null,
+        "salt": null,
+        "ip": "",
+        "date": "2022-12-24 15:17:00",
+        "source_name": "Test Sourcename",
+        "info": "",
+        "id": 99,
+        "query": "testlogin",
+        "detection_date": "2023-01-01 00:01:12"
+    },
+    {
+        "email": "testlogin@email.test",
+        "username": "testlogin",
+        "password": "pass3456",
+        "password_hash": null,
+        "salt": null,
+        "ip": "",
+        "date": "2022-12-14 12:11:00",
+        "source_name": "Test Sourcename 2",
+        "info": "",
+        "id": 199,
+        "query": "testlogin",
+        "detection_date": "2023-01-01 00:01:12"
+    }
+]

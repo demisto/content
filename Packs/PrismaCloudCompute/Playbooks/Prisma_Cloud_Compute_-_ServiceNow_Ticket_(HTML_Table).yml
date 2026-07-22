@@ -1,0 +1,1236 @@
+id: Prisma Cloud Compute - ServiceNow Ticket (HTML Table)
+version: -1
+name: Prisma Cloud Compute - ServiceNow Ticket (HTML Table)
+description: |-
+  This playbook is a sub-playbook of the "Prisma Cloud Compute - ServiceNow Compliance Ticket" playbook.
+  It creates a new ServiceNow ticket or updates an existing ServiceNow ticket with an HTML table for the given compliance ID retrieved from the parent playbook, with enriched data for each resource (host, image or container).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c381f14b-89f1-46b2-88c1-50b48ff58061
+    type: start
+    task:
+      id: c381f14b-89f1-46b2-88c1-50b48ff58061
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c283a9d2-0ba6-4cf9-8c3c-341d71d7fee0
+    type: regular
+    task:
+      id: c283a9d2-0ba6-4cf9-8c3c-341d71d7fee0
+      version: -1
+      name: Create a ServiceNow ticket with compliance issues table
+      description: Creates new ServiceNow ticket.
+      script: '|||servicenow-create-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      short_description:
+        simple: 'Prisma Cloud Compute - compliance issues ID: ${inputs.ComplianceIssueID}'
+      work_notes:
+        complex:
+          root: HTMLTable
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: \n
+              replaceWith:
+                value:
+                  simple: <br />
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: SNOWPrefix
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a5b5aad6-9919-4a4f-83e7-41c54b8da3ad
+    type: regular
+    task:
+      id: a5b5aad6-9919-4a4f-83e7-41c54b8da3ad
+      version: -1
+      name: Prepare ServiceNow work notes prefix
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      key:
+        simple: SNOWPrefix
+      value:
+        simple: '[code]<u>Compliance Issue ID</u>: ${inputs.ComplianceIssueID}<br /><u>Compliance Issue Description</u>: ${inputs.ComplianceIssueDescription}<br /><u>Compliance Issue Severity</u>: ${inputs.ComplianceIssueSeverity}<br /><u>Total Resources</u>: ${TotalResources}<br /><br />'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 6aab71dc-ffc7-4308-8c42-cb26f8e15c94
+    type: title
+    task:
+      id: 6aab71dc-ffc7-4308-8c42-cb26f8e15c94
+      version: -1
+      name: Create a new ticket (with HTML table)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b487a6da-518e-426e-83b2-c8802fcbf5ae
+    type: title
+    task:
+      id: b487a6da-518e-426e-83b2-c8802fcbf5ae
+      version: -1
+      name: Update an existing ticket (with HTML table)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 31637529-518b-4888-833b-230981605aa5
+    type: condition
+    task:
+      id: 31637529-518b-4888-833b-230981605aa5
+      version: -1
+      name: Is there an attachment?
+      description: Creates a new issue in Jira.
+      type: condition
+      iscommand: false
+      brand: Jira V3
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.Record
+                filters:
+                - - operator: startWith
+                    left:
+                      value:
+                        simple: ServiceNow.Record.file_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PCC_
+                    ignorecase: true
+                - - operator: endWith
+                    left:
+                      value:
+                        simple: ServiceNow.Record.file_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .xlsx
+                    ignorecase: true
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: ServiceNow.Record.file_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: _ComplianceIssues_ID_
+                    ignorecase: true
+                accessor: ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2619dc50-da78-4464-8517-115142e6fa55
+    type: regular
+    task:
+      id: 2619dc50-da78-4464-8517-115142e6fa55
+      version: -1
+      name: Delete attachment from existing ticket
+      description: Delete an attachment from a ticket.
+      tags:
+      - TicketInfo
+      script: '|||servicenow-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      file_sys_id:
+        complex:
+          root: ServiceNow.Record
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: ServiceNow.Record.file_name
+                iscontext: true
+              right:
+                value:
+                  simple: PCC_
+          - - operator: endWith
+              left:
+                value:
+                  simple: ServiceNow.Record.file_name
+                iscontext: true
+              right:
+                value:
+                  simple: xlsx
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: fe99e30c-3aa1-4943-812e-36042643ec95
+    type: regular
+    task:
+      id: fe99e30c-3aa1-4943-812e-36042643ec95
+      version: -1
+      name: Add a work note to existing ticket
+      description: Updates the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.TicketID
+      work_notes:
+        complex:
+          root: HTMLTable
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: \n
+              replaceWith:
+                value:
+                  simple: <br />
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: SNOWPrefix
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: c4b105b3-220f-42d1-8198-157294d19140
+    type: regular
+    task:
+      id: c4b105b3-220f-42d1-8198-157294d19140
+      version: -1
+      name: Set "TicketAction" as "Create"
+      description: The action of the the ticket (create or update) will be displayed in the layout under the “Ticketing Information” tab.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: TicketAction
+      value:
+        simple: Create
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 794b6ce1-6b38-47bc-80e6-d998b234b7c5
+    type: regular
+    task:
+      id: 794b6ce1-6b38-47bc-80e6-d998b234b7c5
+      version: -1
+      name: Set "TicketAction" as "Update"
+      description: The action of the the ticket (create or update) will be displayed in the layout under the “Ticketing Information” tab.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: TicketAction
+      value:
+        simple: Update
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 6c83e9df-d2c4-4c62-8b5d-cd492e5e4097
+    type: regular
+    task:
+      id: 6c83e9df-d2c4-4c62-8b5d-cd492e5e4097
+      version: -1
+      name: Count containers (to show in ServiceNow ticket)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: TotalResources
+      value:
+        complex:
+          root: incident.prismacloudcomputecontainercomplianceissues
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: incident.prismacloudcomputecontainercomplianceissues.complianceissues
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Filter
+                iscontext: true
+          accessor: containerid
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2490a922-6d5a-45c1-86fa-418a5f2f9cd8
+    type: condition
+    task:
+      id: 2490a922-6d5a-45c1-86fa-418a5f2f9cd8
+      description: ""
+      version: -1
+      name: What is the resource type?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Container:
+      - "32"
+      Host:
+      - "30"
+      Image:
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: Host
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: alertcategory
+            iscontext: true
+          right:
+            value:
+              simple: host
+          ignorecase: true
+    - label: Container
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: alertcategory
+            iscontext: true
+          right:
+            value:
+              simple: container
+          ignorecase: true
+    - label: Image
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: alertcategory
+            iscontext: true
+          right:
+            value:
+              simple: image
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2cc4dd03-bdb0-4015-823e-d9db00cef411
+    type: regular
+    task:
+      id: 2cc4dd03-bdb0-4015-823e-d9db00cef411
+      version: -1
+      name: Count images (to show in ServiceNow ticket)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: TotalResources
+      value:
+        complex:
+          root: incident.prismacloudcomputeimagecomplianceissues
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: incident.prismacloudcomputeimagecomplianceissues.complianceissues
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Filter
+                iscontext: true
+          accessor: imageid
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 89ddaf31-3f5a-4dcd-86da-9d54c1e0a893
+    type: regular
+    task:
+      id: 89ddaf31-3f5a-4dcd-86da-9d54c1e0a893
+      version: -1
+      name: Prepare hosts compliance table for ServiceNow (HTML table)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: SNOWResources
+      value:
+        complex:
+          root: incident.prismacloudcomputehostcomplianceissues
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: incident.prismacloudcomputehostcomplianceissues.complianceissues
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Filter
+                iscontext: true
+          transformers:
+          - operator: IgnoreFieldsFromJson
+            args:
+              fields:
+                value:
+                  simple: complianceissues
+              json_object:
+                value:
+                  simple: incident.prismacloudcomputehostcomplianceissues
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 070b6b1d-284c-47bd-851b-b6cf44fb1ddf
+    type: regular
+    task:
+      id: 070b6b1d-284c-47bd-851b-b6cf44fb1ddf
+      version: -1
+      name: Count hosts (to show in ServiceNow ticket)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: TotalResources
+      value:
+        complex:
+          root: incident.prismacloudcomputehostcomplianceissues
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: incident.prismacloudcomputehostcomplianceissues.complianceissues
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Filter
+                iscontext: true
+          accessor: hostname
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 7147d822-ea22-444a-8f3f-ee4f3b513eae
+    type: title
+    task:
+      id: 7147d822-ea22-444a-8f3f-ee4f3b513eae
+      version: -1
+      name: Host
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 2a7287f4-1ca5-4139-8004-06ee0e1c937f
+    type: title
+    task:
+      id: 2a7287f4-1ca5-4139-8004-06ee0e1c937f
+      version: -1
+      name: Image
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: e9c691a7-45a0-4ef8-81f3-4d9229d117af
+    type: title
+    task:
+      id: e9c691a7-45a0-4ef8-81f3-4d9229d117af
+      version: -1
+      name: Container
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d6ee3444-2047-44ed-87ed-b99cd128305f
+    type: condition
+    task:
+      id: d6ee3444-2047-44ed-87ed-b99cd128305f
+      description: ""
+      version: -1
+      name: Create a new ticket or update an existing one?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      Existing:
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: Existing
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.TicketID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: cc7b8cb8-99bb-47a0-85c8-b21e4a48d289
+    type: regular
+    task:
+      id: cc7b8cb8-99bb-47a0-85c8-b21e4a48d289
+      version: -1
+      name: Create HTML Table
+      description: Converts a given array to an HTML table
+      scriptName: ConvertTableToHTML
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      table:
+        complex:
+          root: SNOWResources
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 7a4a339e-ba0c-4e63-8132-38fb282437f2
+    type: regular
+    task:
+      id: 7a4a339e-ba0c-4e63-8132-38fb282437f2
+      version: -1
+      name: Search for attachments in existing ticket
+      description: Queries the specified table in ServiceNow.
+      script: '|||servicenow-query-table'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      fields:
+        simple: file_name
+      query:
+        simple: table_sys_id=${inputs.TicketID}
+      table_name:
+        simple: sys_attachment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: c2bdafb8-a156-4f76-8d8a-178759a4a6b6
+    type: title
+    task:
+      id: c2bdafb8-a156-4f76-8d8a-178759a4a6b6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: b2d15671-ca79-40af-89ca-287750014beb
+    type: regular
+    task:
+      id: b2d15671-ca79-40af-89ca-287750014beb
+      version: -1
+      name: Prepare images compliance table for ServiceNow (HTML table)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: SNOWResources
+      value:
+        complex:
+          root: incident.prismacloudcomputeimagecomplianceissues
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: incident.prismacloudcomputeimagecomplianceissues.complianceissues
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Filter
+                iscontext: true
+          transformers:
+          - operator: IgnoreFieldsFromJson
+            args:
+              fields:
+                value:
+                  simple: complianceissues
+              json_object:
+                value:
+                  simple: incident.prismacloudcomputeimagecomplianceissues
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1710,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 9ef26484-483f-4d3c-8c70-d3d656ea950a
+    type: regular
+    task:
+      id: 9ef26484-483f-4d3c-8c70-d3d656ea950a
+      version: -1
+      name: Prepare containers compliance table for ServiceNow (HTML table)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: SNOWResources
+      value:
+        complex:
+          root: incident.prismacloudcomputecontainercomplianceissues
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: incident.prismacloudcomputecontainercomplianceissues.complianceissues
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.Filter
+                iscontext: true
+          transformers:
+          - operator: IgnoreFieldsFromJson
+            args:
+              fields:
+                value:
+                  simple: complianceissues
+              json_object:
+                value:
+                  simple: incident.prismacloudcomputecontainercomplianceissues
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 3a576336-8dac-4b71-8668-d9c83a1ff91b
+    type: regular
+    task:
+      id: 3a576336-8dac-4b71-8668-d9c83a1ff91b
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2585,
+        "width": 2500,
+        "x": -410,
+        "y": -280
+      }
+    }
+  }
+inputs:
+- key: TicketID
+  value: {}
+  required: false
+  description: Existing ticket ID. Used to determine whether to create a new ticket or update an existing one.
+  playbookInputQuery:
+- key: Filter
+  value: {}
+  required: false
+  description: A filter to use for extracting affected resources with a specific compliance issue ID.
+  playbookInputQuery:
+- key: ComplianceIssueID
+  value: {}
+  required: false
+  description: The compliance issue ID to open a ServiceNow ticket for.
+  playbookInputQuery:
+- key: ComplianceIssueDescription
+  value: {}
+  required: false
+  description: The compliance issue description.
+  playbookInputQuery:
+- key: ComplianceIssueSeverity
+  value: {}
+  required: false
+  description: The compliance issue severity.
+  playbookInputQuery:
+outputs:
+- contextPath: TicketAction
+  description: The ticket action - create or update.
+  type: string
+- contextPath: Ticket
+  description: The ticket object which was created or updated.
+  type: string
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

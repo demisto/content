@@ -1,0 +1,997 @@
+id: JOB - Integrations and Playbooks Health Check
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: JOB - Integrations and Incidents Health Check
+description: You should run this playbook as a scheduled job.  The playbook checks
+  the health of all enabled integrations and open incidents.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 814f2f15-e8a9-4162-8b7a-75842231adde
+    type: start
+    task:
+      id: 814f2f15-e8a9-4162-8b7a-75842231adde
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b58016a6-9341-4abb-807d-1e78fa07ec68
+    type: title
+    task:
+      id: b58016a6-9341-4abb-807d-1e78fa07ec68
+      version: -1
+      name: Run Health Check Scripts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 637b8ce2-998d-4a98-8241-b9212464d3a9
+    type: title
+    task:
+      id: 637b8ce2-998d-4a98-8241-b9212464d3a9
+      version: -1
+      name: Create Lists for Dashboard
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 802e016d-5606-4568-8faa-acb55df55621
+    type: playbook
+    task:
+      id: 802e016d-5606-4568-8faa-acb55df55621
+      version: -1
+      name: JOB - Integrations and Incidents Health Check - Lists handling
+      description: This playbook is triggered by a 'JOB - Integrations and Incidents
+        Health' playbook and is responsible for creating or updating related XSOAR
+        lists.
+      playbookName: JOB - Integrations and Incidents Health Check - Lists handling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "28"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 87332e3c-3142-4d55-8863-8bd83f04bd85
+    type: condition
+    task:
+      id: 87332e3c-3142-4d55-8863-8bd83f04bd85
+      version: -1
+      name: Should send the health check report?
+      description: |
+        Checks the input to see if there is what to send the health check report ("SendHealthCheckReport") equal 'True'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.SendHealthCheckReport
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 047c13e5-1b2f-4d92-81e9-ce622b79201f
+    type: regular
+    task:
+      id: 047c13e5-1b2f-4d92-81e9-ce622b79201f
+      version: -1
+      name: Generate Health Check report
+      description: Generates a general health check report.
+      script: Builtin|||generateGeneralReport
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      name:
+        simple: Integrations and Incidents Health Check
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: fa64ddd2-f8c4-4867-85fe-e106ecceed04
+    type: condition
+    task:
+      id: fa64ddd2-f8c4-4867-85fe-e106ecceed04
+      version: -1
+      name: Is there an email address to send the report?
+      description: Checks if there is an input of the email address to send the report
+        to.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EmailReportTo
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 2f38b21f-c996-427b-8f93-249b6c5fc0c8
+    type: regular
+    task:
+      id: 2f38b21f-c996-427b-8f93-249b6c5fc0c8
+      version: -1
+      name: Send Health Check report
+      description: Sends the Health Check report.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      attachIDs:
+        complex:
+          root: InfoFile
+          accessor: EntryID
+      body:
+        simple: Please find attached Integrations and Incidents Health Check report
+          for enabled integrations and open incidents.
+      subject:
+        simple: Integrations and Incidents Health Check Report
+      to:
+        complex:
+          root: inputs.EmailReportTo
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 34fd3738-56e8-4aef-84b9-45356162adb7
+    type: title
+    task:
+      id: 34fd3738-56e8-4aef-84b9-45356162adb7
+      version: -1
+      name: Send Health Check Report
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 3fa7c4dc-4c43-491a-8222-5bfe8c1acb0b
+    type: title
+    task:
+      id: 3fa7c4dc-4c43-491a-8222-5bfe8c1acb0b
+      version: -1
+      name: Re-RunTests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: bd2a9755-07bb-47e7-80e6-5e4f97a98f9a
+    type: condition
+    task:
+      id: bd2a9755-07bb-47e7-80e6-5e4f97a98f9a
+      version: -1
+      name: Should rerun health check tests?
+      description: Asks the user to re-run the health check tests.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      "Yes":
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: cd4df84a-a673-44ad-8044-95cec11f3fc5
+    type: regular
+    task:
+      id: cd4df84a-a673-44ad-8044-95cec11f3fc5
+      version: -1
+      name: Delete context data
+      description: Delete field from context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 271115df-9b10-40a2-806f-ac34bb5ed107
+    type: title
+    task:
+      id: 271115df-9b10-40a2-806f-ac34bb5ed107
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 2834100f-3f00-489f-8cb5-6ba3cb1d1b04
+    type: playbook
+    task:
+      id: 2834100f-3f00-489f-8cb5-6ba3cb1d1b04
+      version: -1
+      name: JOB - Integrations and Incidents Health Check - Lists handling
+      description: This playbook is triggered by a 'JOB - Integrations and Incidents
+        Health' playbook and is responsible for creating or updating related XSOAR
+        lists.
+      playbookName: JOB - Integrations and Incidents Health Check - Lists handling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: ba84ed65-4370-4285-88b4-53047109ead0
+    type: title
+    task:
+      id: ba84ed65-4370-4285-88b4-53047109ead0
+      version: -1
+      name: Find open Health Check incidents
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: faabf605-bda9-4ac6-82d9-c132a123c1f2
+    type: regular
+    task:
+      id: faabf605-bda9-4ac6-82d9-c132a123c1f2
+      version: -1
+      name: Set linked incident to incident data
+      description: Adds the similar incident to incident context.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      similarincident:
+        complex:
+          root: similarIncidentList
+          accessor: rawId
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 019ae5c9-1933-4bdd-8ed9-21fa9c9c1b4d
+    type: regular
+    task:
+      id: 019ae5c9-1933-4bdd-8ed9-21fa9c9c1b4d
+      version: -1
+      name: Close linked incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      closeNotes:
+        simple: Created a new incident type.
+      id:
+        complex:
+          root: similarIncident
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: similarIncident
+                iscontext: true
+          accessor: rawId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 1aa23ad1-fe00-462d-8773-a6521ef840b8
+    type: regular
+    task:
+      id: 1aa23ad1-fe00-462d-8773-a6521ef840b8
+      version: -1
+      name: Copies analyst notes from linked incident
+      description: Copies the anaylst's notes from the integrations and incidents
+        grid.
+      scriptName: CopyLinkedAnalystNotes
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -540,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 415e6498-709e-4cba-8766-e4167e6adc93
+    type: regular
+    task:
+      id: 415e6498-709e-4cba-8766-e4167e6adc93
+      version: -1
+      name: Find similar incidents
+      description: Finds similar incidents by the type of the incident.
+      scriptName: FindSimilarIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      ignoreClosedIncidents:
+        simple: "yes"
+      similarIncidentFields:
+        simple: type,details
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 318d9e89-ac74-4629-8e41-0f3e21bab904
+    type: condition
+    task:
+      id: 318d9e89-ac74-4629-8e41-0f3e21bab904
+      version: -1
+      name: Found similar incidents?
+      description: Checks if found similar incident from previous task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: similarIncident
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 37c324dd-f456-4b40-8bd6-7742369ee767
+    type: condition
+    task:
+      id: 37c324dd-f456-4b40-8bd6-7742369ee767
+      version: -1
+      name: Automatically close investigation?
+      description: Checks if the "AutoCloseInvestigation" playbook input is 'True'.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseInvestigation
+                filters:
+                - - operator: isExists
+                    left:
+                      value:
+                        simple: inputs.AutoCloseInvestigation
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 1645bd48-d9e2-4ac8-8a62-c213f4eed825
+    type: regular
+    task:
+      id: 1645bd48-d9e2-4ac8-8a62-c213f4eed825
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: b3e9e58e-850c-43ea-89f2-60f822dad41d
+    type: regular
+    task:
+      id: b3e9e58e-850c-43ea-89f2-60f822dad41d
+      version: -1
+      name: 'Manually review and close investigation '
+      description: 'Manually Review and close investigation '
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 6d53ef9b-8ca5-45a5-8688-3981028db6be
+    type: regular
+    task:
+      id: 6d53ef9b-8ca5-45a5-8688-3981028db6be
+      version: -1
+      name: Restart failed tasks
+      description: Use this Script to re-run failed tasks. Run in the same incident
+        after running `GetFailedTasks` for restarting all of the failed tasks or some
+        of them.
+      scriptName: RestartFailedTasks
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      playbook_exclusion:
+        complex:
+          root: inputs.playbookExclusion
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: a89c38b7-1b12-46ab-87fc-16c0f5aab464
+    type: condition
+    task:
+      id: a89c38b7-1b12-46ab-87fc-16c0f5aab464
+      version: -1
+      name: Should restart failed tasks?
+      description: Whether to restart the failed tasks identified automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoRestartFailedTasks
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GetFailedTasks
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 7b8c190c-cc5f-4e4b-8f68-b12e2a42abb3
+    type: playbook
+    task:
+      id: 7b8c190c-cc5f-4e4b-8f68-b12e2a42abb3
+      version: -1
+      name: Integrations and Incidents Health Check - Running Scripts
+      description: This playbook is triggered by a 'JOB - Integrations and Incidents
+        Health' playbook and is responsible for running failed integrations and failed
+        incidents scripts. The playbook may run separately from the main playbook
+        to run health tests on enabled integrations and open incidents.
+      playbookName: Integrations and Incidents Health Check - Running Scripts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 1deb7f16-0555-40be-8caf-d24c3512a4e8
+    type: playbook
+    task:
+      id: 1deb7f16-0555-40be-8caf-d24c3512a4e8
+      version: -1
+      name: Integrations and Incidents Health Check - Running Scripts
+      playbookName: Integrations and Incidents Health Check - Running Scripts
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_18_yes": 0.43,
+      "16_21_#default#": 0.16,
+      "18_17_yes": 0.47,
+      "18_21_#default#": 0.18,
+      "22_24_Yes": 0.33,
+      "22_37_#default#": 0.21,
+      "36_21_#default#": 0.14,
+      "36_30_yes": 0.3,
+      "37_38_yes": 0.43,
+      "37_39_#default#": 0.44,
+      "41_40_yes": 0.36
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3495,
+        "width": 1580,
+        "x": -540,
+        "y": -430
+      }
+    }
+  }
+inputs:
+- key: SendHealthCheckReport
+  value: {}
+  required: false
+  description: |-
+    This input determines if the health check report should be sent automatically after running the playbook.
+    True - Yes.
+  playbookInputQuery:
+- key: EmailReportTo
+  value: {}
+  required: false
+  description: In case the 'SendHealthCheckReport' input equals to 'True', the email
+    address the report will be sent to.
+  playbookInputQuery:
+- key: AutoCloseInvestigation
+  value:
+    simple: "False"
+  required: false
+  description: This input determines if the investigation should close automatically
+    after the re-run of the scripts.
+  playbookInputQuery:
+- key: playbookExclusion
+  value: {}
+  required: false
+  description: Comma separated list of playbook names to exclude from restarting their failed tasks.
+  playbookInputQuery:
+- key: AutoRestartFailedTasks
+  value:
+    simple: "False"
+  required: false
+  description: Whether to automatically run the RestartFailedTasks automation.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests
+fromversion: 6.0.0
+marketplaces:
+  - xsoar

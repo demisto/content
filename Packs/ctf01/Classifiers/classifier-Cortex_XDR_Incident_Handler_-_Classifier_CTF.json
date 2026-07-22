@@ -1,0 +1,35 @@
+{
+    "description": "Classifies Cortex XDR incidents.",
+    "feed": false,
+    "id": "Cortex XDR Incident Handler - Classifier CTF",
+    "keyTypeMap": {
+        "FirstSSOAccess": "Cortex XDR Incident",
+        "Malware": "Malware Investigation and Response",
+        "PortScan": "Cortex XDR Port Scan",
+        "RDPBruteForce": "Cortex XDR Incident - CTF",
+        "XDR Incident": "Cortex XDR Incident"
+    },
+    "name": "Cortex XDR Incident Handler - Classifier CTF",
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": ".",
+            "transformers": [
+                {
+                    "args": {
+                        "dt": {
+                            "isContext": false,
+                            "value": {
+                                "simple": ".=val \u0026\u0026 val.description.toLowerCase().indexOf(\"port scan\") \u003e -1 ? \"PortScan\" : (val.description.toLowerCase().indexOf(\"image\") \u003e -1 ? \"Image\": (val.description.toLowerCase().indexOf(\"rdp brute-force\") \u003e -1 ? \"RDPBruteForce\" : (val.description.toLowerCase().indexOf(\"first successful sso connection from a country in organization\") \u003e -1 ? \"FirstSSOAccess\" : (val.description.toLowerCase().indexOf(\"first sso access from asn in organization\") \u003e -1 ? \"FirstSSOAccess\" : (val.file_artifacts != null ? \"Malware\" : \"XDR Incident\")))))"
+                            }
+                        }
+                    },
+                    "operator": "DT"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "8.2.0"
+}

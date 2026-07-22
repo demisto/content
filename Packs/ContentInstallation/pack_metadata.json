@@ -1,0 +1,21 @@
+{
+    "name": "Content Installation (deprecated)",
+    "description": "Deprecated. Use from CommonScripts instead.",
+    "support": "xsoar",
+    "currentVersion": "1.0.4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2021-12-06T07:45:21Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

@@ -1,0 +1,386 @@
+id: McAfee-TIE Test
+version: -1
+name: McAfee-TIE Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b71b0c55-e274-4b4d-8142-3aa69bff4bd1
+    type: start
+    task:
+      id: b71b0c55-e274-4b4d-8142-3aa69bff4bd1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c41046d5-3372-45a7-8f7b-cee805073d2c
+    type: condition
+    task:
+      id: c41046d5-3372-45a7-8f7b-cee805073d2c
+      version: -1
+      name: Verify Context File Reputation
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.TrustLevel
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 6b552aee-ad58-4223-895c-3f14d6cc9ac1
+    type: condition
+    task:
+      id: 6b552aee-ad58-4223-895c-3f14d6cc9ac1
+      version: -1
+      name: Verify Context DBot Score
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1abf001a-903c-47ae-8f4a-7f22edbb3723
+    type: regular
+    task:
+      id: 1abf001a-903c-47ae-8f4a-7f22edbb3723
+      version: -1
+      name: TIE file reputation
+      description: Retrieves the reputations for the specified hash. Can be "MD5",
+        "SHA1", or "SHA256".
+      script: McAfee Threat Intelligence Exchange|||file
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      file:
+        simple: 6EAE26DB8C13182A7947982991B4321732CC3DE2,85525e9c1fd30a20848812e417f3bb1a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f9bc7406-b16b-48e7-80aa-b864e1527282
+    type: regular
+    task:
+      id: f9bc7406-b16b-48e7-80aa-b864e1527282
+      version: -1
+      name: tie-file-references
+      description: Retrieves the set of systems which have referenced (typically executed)
+        the specified file.
+      script: McAfee Threat Intelligence Exchange|||tie-file-references
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      file:
+        simple: f2c7bb8acc97f92e987a2d4087d021b1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b7477ad9-9e13-42cc-8c7c-cfce5e99599e
+    type: regular
+    task:
+      id: b7477ad9-9e13-42cc-8c7c-cfce5e99599e
+      version: -1
+      name: Verify Context tie-file-references
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      fields:
+        simple: MD5,References
+      path:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e44d5ece-e171-4b3f-881c-01b7be40c861
+    type: regular
+    task:
+      id: e44d5ece-e171-4b3f-881c-01b7be40c861
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 4df40e4c-f08e-4ea2-876e-4c46dd69cc0e
+    type: regular
+    task:
+      id: 4df40e4c-f08e-4ea2-876e-4c46dd69cc0e
+      version: -1
+      name: TIE File reputation - Malicious
+      description: Retrieves the reputations for the specified hash. Can be "MD5",
+        "SHA1", or "SHA256".
+      script: McAfee Threat Intelligence Exchange|||file
+      type: regular
+      iscommand: true
+      brand: McAfee Threat Intelligence Exchange
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      file:
+        simple: 5AF84A3DB5883627BFDFF909E210634E
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5cc7f22b-90a1-4d6e-8187-f823ce0ee255
+    type: condition
+    task:
+      id: 5cc7f22b-90a1-4d6e-8187-f823ce0ee255
+      version: -1
+      name: Verify Context DBot Score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 42ec0ba4-8ca6-4cfa-8d31-a14356f6c381
+    type: title
+    task:
+      id: 42ec0ba4-8ca6-4cfa-8d31-a14356f6c381
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

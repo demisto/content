@@ -1,0 +1,24 @@
+commonfields:
+  id: ProofpointDecodeURL
+  version: -1
+name: ProofpointDecodeURL
+script: ''
+type: python
+subtype: python2
+tags: []
+comment: Deprecated. Use UnEscapeURLs instead. Decode ProofPoint URLs to get the actual URLs.
+enabled: true
+args:
+- name: url
+  required: true
+  default: true
+  description: URL to decode
+outputs:
+- contextPath: URL.Data
+  description: Decoded URLs
+scripttarget: 0
+tests:
+- No tests
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

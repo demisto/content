@@ -1,0 +1,194 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Wait Until Windows Host Online
+inputs:
+- description: ""
+  key: host
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Wait Until Windows Host Online
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d59e996a-bea6-44ad-8efb-b42e08e097b3
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: d59e996a-bea6-44ad-8efb-b42e08e097b3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerror: true
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data: {}
+      host:
+        simple: ${inputs.host}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: MicrosoftWindows
+      description: A windows version of the classic ping module
+      id: 4a7aab89-887f-4b95-8126-9b15e44f82ca
+      iscommand: true
+      name: Try to connect to host
+      script: MicrosoftWindows|||win-ping
+      type: regular
+      version: -1
+    taskid: 4a7aab89-887f-4b95-8126-9b15e44f82ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ${microsoftwindows.win_ping.[].ping}
+          operator: isEqualString
+          right:
+            value:
+              simple: pong
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      description: "Is the host online?"
+      brand: ""
+      id: ad660901-5688-44aa-84ad-44cf2d9b3b9a
+      iscommand: false
+      name: Host ready?
+      type: condition
+      version: -1
+    taskid: ad660901-5688-44aa-84ad-44cf2d9b3b9a
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append: {}
+      key:
+        simple: exitloop
+      stringify: {}
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: dab6d328-5ed6-48d1-8e71-a315cb61d338
+      iscommand: false
+      name: Exit Loop
+      script: Set
+      type: regular
+      version: -1
+    taskid: dab6d328-5ed6-48d1-8e71-a315cb61d338
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4a9e9873-2851-4782-8cc9-1986caba7d40
+      iscommand: false
+      name: Re-run
+      type: title
+      version: -1
+      description: ''
+    taskid: 4a9e9873-2851-4782-8cc9-1986caba7d40
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+description: Deprecated. Use "Wait Until Windows Host Online v2" playbook from the Ansible Microsoft Windows Pack instead.
+deprecated: true
+hidden: true

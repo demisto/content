@@ -1,0 +1,31 @@
+{
+ "id": "incident_googledriveactivityassignedpersonname",
+ "version": -1,
+ "modified": "2020-09-17T15:41:37.039939621+05:30",
+ "name": "Google Drive Activity Assigned Person Name",
+ "ownerOnly": false,
+ "description": "The user to whom the comment was assigned.",
+ "cliName": "googledriveactivityassignedpersonname",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Drive Activity"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

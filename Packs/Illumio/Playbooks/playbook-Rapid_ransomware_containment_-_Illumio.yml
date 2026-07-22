@@ -1,0 +1,1149 @@
+id: Rapid ransomware containment - Illumio
+version: -1
+name: Rapid ransomware containment - Illumio
+description: |+
+  Isolate one or more workloads based on traffic flows to a given port/protocol.
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e5c5f7c5-589e-44f8-8d28-480a04a08f5b
+    type: start
+    task:
+      id: e5c5f7c5-589e-44f8-8d28-480a04a08f5b
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 269c649a-3b5c-4037-8704-48e70c6e9b47
+    type: regular
+    task:
+      id: 269c649a-3b5c-4037-8704-48e70c6e9b47
+      version: -1
+      name: Get traffic analysis
+      description: Retrieves traffic flow of a particular port & protocol within the
+        specified time range based on policy decisions.
+      script: '|||illumio-traffic-analysis'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      end_time:
+        complex:
+          root: TrafficRange.Answers
+          accessor: "1"
+      extend-context:
+        simple: Illumio.TrafficAnalysis.Workload.href=dst.workload.href
+      ignore-outputs:
+        simple: "true"
+      port:
+        complex:
+          root: inputs.Port
+          transformers:
+          - operator: trim
+      protocol:
+        complex:
+          root: inputs.Protocol
+          transformers:
+          - operator: trim
+          - operator: toLowerCase
+      start_time:
+        complex:
+          root: TrafficRange.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 4e8c7018-7f7c-44a3-8380-2153d62e11dc
+    type: regular
+    task:
+      id: 4e8c7018-7f7c-44a3-8380-2153d62e11dc
+      version: -1
+      name: Create virtual service
+      description: Creates a virtual service for a particular port & protocol, which
+        can be further binded to workloads. Until provisioned with the 'illumio-object-provision'
+        command, this object will remain in a draft state.
+      script: '|||illumio-virtual-service-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.Protocol
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: TCP
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '-'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.Port
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: VS-XSOAR-
+              suffix: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
+      port:
+        complex:
+          root: inputs.Port
+          transformers:
+          - operator: trim
+      protocol:
+        complex:
+          root: inputs.Protocol
+          transformers:
+          - operator: trim
+          - operator: toUpperCase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e97d1fde-09f8-40f4-89ca-605c47018938
+    type: regular
+    task:
+      id: e97d1fde-09f8-40f4-89ca-605c47018938
+      version: -1
+      name: Provision virtual service
+      description: A utility method for provisioning policy objects from draft to
+        active state. Policy objects only affect the network once they've been provisioned.
+      script: '|||illumio-object-provision'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      security_policy_objects:
+        complex:
+          root: Illumio.VirtualService
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b866b2a3-eb54-4a0d-8d24-4f8e2b4773a9
+    type: regular
+    task:
+      id: b866b2a3-eb54-4a0d-8d24-4f8e2b4773a9
+      version: -1
+      name: Create service binding
+      description: Binds the existing or a new virtual service to the workloads.
+      script: '|||illumio-service-binding-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      virtual_service:
+        complex:
+          root: Illumio.VirtualService
+          accessor: href
+      workloads:
+        complex:
+          root: Illumio.TrafficAnalysis.Workload
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 34f67fe9-3fac-4d5f-832d-5b4e9f275999
+    type: regular
+    task:
+      id: 34f67fe9-3fac-4d5f-832d-5b4e9f275999
+      version: -1
+      name: Create ruleset
+      description: Creates a ruleset with a unique name. Until provisioned with the
+        'illumio-object-provision' command, this object will remain in a draft state.
+      script: '|||illumio-ruleset-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.Protocol
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: TCP
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '-'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.Port
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: RS-XSOAR-
+              suffix: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 8b2807c4-7e1f-4237-8833-e50807dfbc69
+    type: regular
+    task:
+      id: 8b2807c4-7e1f-4237-8833-e50807dfbc69
+      version: -1
+      name: Create rule
+      description: Creates & assigns rules to a particular ruleset. Added or updated
+        Rules will remain in draft state until their containing Rule Set is provisioned
+        using the "illumio-object-provision" command.
+      script: '|||illumio-rule-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      consumers:
+        complex:
+          root: Illumio.IPLists
+          accessor: href
+      providers:
+        complex:
+          root: Illumio.VirtualService
+          accessor: href
+      resolve_providers_as:
+        simple: virtual_services
+      ruleset_href:
+        complex:
+          root: Illumio.Ruleset
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 944119d5-ff7c-43b2-81a0-b2f55fdb41a6
+    type: regular
+    task:
+      id: 944119d5-ff7c-43b2-81a0-b2f55fdb41a6
+      version: -1
+      name: Create enforcement boundary
+      description: Creates an enforcement boundary for a particular port/protocol.
+        After completion of this command, provisioning will be done using the "illumio-object-provision"
+        command.
+      script: '|||illumio-enforcement-boundary-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      consumers:
+        simple: ${Illumio.IPLists.href}
+      name:
+        complex:
+          root: inputs.Protocol
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: TCP
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '-'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.Port
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: EB-XSOAR-
+              suffix: {}
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ' '
+      port:
+        complex:
+          root: inputs.Port
+          transformers:
+          - operator: trim
+      protocol:
+        complex:
+          root: inputs.Protocol
+          transformers:
+          - operator: trim
+          - operator: toUpperCase
+      providers:
+        simple: ams
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 0ddbe7e8-11a5-4f7e-863b-3a3871e4caeb
+    type: regular
+    task:
+      id: 0ddbe7e8-11a5-4f7e-863b-3a3871e4caeb
+      version: -1
+      name: Provision enforcement boundary
+      description: A utility method for provisioning policy objects from draft to
+        active state. Policy objects only affect the network once they've been provisioned.
+      script: '|||illumio-object-provision'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      security_policy_objects:
+        complex:
+          root: Illumio.EnforcementBoundary
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 409cd8ba-98ca-48fc-8a9a-76ed81559e2b
+    type: regular
+    task:
+      id: 409cd8ba-98ca-48fc-8a9a-76ed81559e2b
+      version: -1
+      name: Provision ruleset
+      description: A utility method for provisioning policy objects from draft to
+        active state. Policy objects only affect the network once they've been provisioned.
+      script: '|||illumio-object-provision'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      security_policy_objects:
+        complex:
+          root: Illumio.Ruleset
+          accessor: href
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6d52bea7-8049-455a-8588-525802b52c10
+    type: title
+    task:
+      id: 6d52bea7-8049-455a-8588-525802b52c10
+      version: -1
+      name: end
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8978365e-c45f-42a0-8794-17ee900f0ca2
+    type: condition
+    task:
+      id: 8978365e-c45f-42a0-8794-17ee900f0ca2
+      version: -1
+      name: Is update enforcement mode?
+      description: Checks if user want to update enforcement mode or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "no":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.update_enforcement_mode
+                transformers:
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "no"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b8031063-b46b-4e78-8719-ab7784d26658
+    type: regular
+    task:
+      id: b8031063-b46b-4e78-8719-ab7784d26658
+      version: -1
+      name: Get workloads
+      description: Retrieves the list of workloads based on the provided filters.
+      script: '|||illumio-workloads-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      enforcement_mode:
+        simple: visibility_only
+      execution-timeout:
+        simple: "3600"
+      extend-context:
+        simple: Illumio.workload_hrefs=href
+      ignore-outputs:
+        simple: "true"
+      max_results:
+        simple: "1000"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c7d9d501-9c24-4052-8b55-2ac0da2e2783
+    type: condition
+    task:
+      id: c7d9d501-9c24-4052-8b55-2ac0da2e2783
+      version: -1
+      name: Is traffic allowed?
+      description: Checks whether the traffic flow is allowed or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "no":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.allow_traffic
+                transformers:
+                - operator: trim
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "no"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b7532b6b-f573-42bb-8316-bf31184f7533
+    type: collection
+    task:
+      id: b7532b6b-f573-42bb-8316-bf31184f7533
+      version: -1
+      name: Provide necessary inputs
+      description: Get the required information for the commands.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Specify the time range before the incident to search for traffic on
+          the blocked port to allow.
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Start time for the traffic analysis
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 1 week ago
+        tooltip: 'Start of analysis range.  Supported formats: N minutes, N hours,
+          N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ  For
+          example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z'
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: End time for the traffic analysis
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Now
+        tooltip: 'End of analysis range.  Supported formats: N minutes, N hours, N
+          days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ  For
+          example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z'
+        readonly: false
+      title: TrafficRange
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 04a26c98-f9ff-465c-8cd5-0cac072829f6
+    type: condition
+    task:
+      id: 04a26c98-f9ff-465c-8cd5-0cac072829f6
+      version: -1
+      name: Is Illumio Core integration enabled?
+      description: Checks whether the IllumioCore integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IllumioCore
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: ae00c7d3-af70-4d19-87eb-69f971e12827
+    type: condition
+    task:
+      id: ae00c7d3-af70-4d19-87eb-69f971e12827
+      version: -1
+      name: Are workloads available?
+      description: Checks wether workloads are available or not for a given port and
+        protocol.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio.TrafficAnalysis.Workload
+                accessor: href
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e1d5dda3-6c0d-426e-8732-8773de79de26
+    type: condition
+    task:
+      id: e1d5dda3-6c0d-426e-8732-8773de79de26
+      version: -1
+      name: Are workloads available?
+      description: Checks whether the workloads are available or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Illumio
+                accessor: workload_hrefs
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 2985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: e0c1d3ef-c185-4636-8087-b5db7a10023a
+    type: playbook
+    task:
+      id: e0c1d3ef-c185-4636-8087-b5db7a10023a
+      version: -1
+      name: Update enforcement mode - Illumio
+      description: Runs update enforcement mode sub-playbook.
+      playbookName: Update enforcement mode - Illumio
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: Illumio
+                accessor: workload_hrefs
+            iscontext: true
+          right:
+            value: {}
+        - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: Illumio.UpdateStatuses
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: Updated
+          ignorecase: true
+      exitCondition: ""
+      wait: 1
+      max: 1000
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: ed413e98-f188-4a8d-8fbc-39ce21fac1a0
+    type: regular
+    task:
+      id: ed413e98-f188-4a8d-8fbc-39ce21fac1a0
+      version: -1
+      name: Workload status
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      value:
+        complex:
+          root: Illumio
+          accessor: workload_hrefs
+          transformers:
+          - operator: count
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' workloads are pending to update the mode.'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: Enforcement mode has been updated for all workloads.
+              toReplace:
+                value:
+                  simple: 0 workloads are pending to update the mode.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: dcb98b55-a1b7-44ea-81f5-8b3833987ea1
+    type: regular
+    task:
+      id: dcb98b55-a1b7-44ea-81f5-8b3833987ea1
+      version: -1
+      name: Print message for no workloads
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      value:
+        simple: No workloads present in visibility only mode.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c178ac0a-962e-4b20-840c-df3d7e046e4c
+    type: regular
+    task:
+      id: c178ac0a-962e-4b20-840c-df3d7e046e4c
+      version: -1
+      name: Get ip lists
+      description: Retrieves the list of IPs based on the query parameters.
+      script: '|||illumio-ip-lists-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      name:
+        simple: Any (0.0.0.0/0 and ::/0)
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_13_no": 0.16,
+      "16_17_#default#": 0.54,
+      "18_9_no": 0.19,
+      "20_13_#default#": 0.41,
+      "21_9_#default#": 0.18,
+      "22_30_#default#": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3535,
+        "width": 1500,
+        "x": -200,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Port
+  value: {}
+  required: true
+  description: Provide Port to be blocked.
+  playbookInputQuery: null
+- key: Protocol
+  value:
+    simple: TCP
+  required: false
+  description: Protocol of Port.
+  playbookInputQuery: null
+- key: allow_traffic
+  value:
+    simple: "Yes"
+  required: false
+  description: Do you want to search for traffic on this port before the incident
+    to allow? (Yes or No)
+  playbookInputQuery: null
+- key: update_enforcement_mode
+  value:
+    simple: "Yes"
+  required: false
+  description: Do you want to update the enforcement mode?(Yes or No)
+  playbookInputQuery: null
+outputs: []
+tests:
+- IllumioCore-Test
+fromversion: 6.2.0

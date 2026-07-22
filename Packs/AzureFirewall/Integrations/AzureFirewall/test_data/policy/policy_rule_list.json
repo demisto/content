@@ -1,0 +1,45 @@
+{
+  "properties": {
+    "priority": 300,
+    "ruleCollections": [
+      {
+        "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+        "action": {
+          "type": "Allow"
+        },
+        "rules": [
+          {
+            "ruleType": "ApplicationRule",
+            "name": "my-app-rule-1",
+            "protocols": [
+              {
+                "protocolType": "Http",
+                "port": 80
+              }
+            ],
+            "fqdnTags": [],
+            "webCategories": [],
+            "targetFqdns": [
+              "microsoft.com"
+            ],
+            "targetUrls": [],
+            "terminateTLS": false,
+            "sourceAddresses": [
+              "*"
+            ],
+            "destinationAddresses": [],
+            "sourceIpGroups": []
+          }
+        ],
+        "name": "my-application-collection",
+        "priority": 205
+      }
+    ],
+    "provisioningState": "Succeeded"
+  },
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/my-policy/ruleCollectionGroups/DefaultApplicationRuleCollectionGroup",
+  "name": "DefaultApplicationRuleCollectionGroup",
+  "type": "Microsoft.Network/FirewallPolicies/RuleCollectionGroups",
+  "etag": "13e0bd25-3bed-45e4-b34b-78f4e17791df",
+  "location": "westeurope"
+}

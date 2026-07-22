@@ -1,0 +1,28 @@
+{
+    "blacklisted-countries": [
+        {
+            "annotation": [
+                "haHAHA"
+            ],
+            "cid": [
+                -1
+            ],
+            "country": "AI",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1615913829
+        },
+        {
+            "annotation": ["Test2"],
+            "cid": [
+                -1
+            ],
+            "country": "BF",
+            "pgid": [
+                -1
+            ],
+            "updateTime": 1615803452
+        }
+    ]
+}

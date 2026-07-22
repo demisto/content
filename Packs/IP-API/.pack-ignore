@@ -1,0 +1,9 @@
+[file:IPAPI.yml]
+ignore=IN107
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:IPAPI_image.png]
+ignore=IM111
+

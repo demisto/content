@@ -1,0 +1,90 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [
+                    {
+                        "agentIsFilesystem": true,
+                        "agentObjectId": 1,
+                        "cancel": false,
+                        "children": 0,
+                        "connected": false,
+                        "contact": "",
+                        "createDate": "2021-12-13 14:49:50",
+                        "description": "",
+                        "events": 30,
+                        "inService": "",
+                        "intrusionSize": 500,
+                        "intrusions": 250,
+                        "location": "",
+                        "logsByDays": true,
+                        "name": "test2restore",
+                        "objectId": 2,
+                        "objectPath": "DSK050->local->test2restore",
+                        "objectStatus": 2,
+                        "objectSubType": 3,
+                        "objectType": 3,
+                        "parentId": 1,
+                        "requireNotes": false,
+                        "revisions": 250,
+                        "securityAdd": true,
+                        "securityEdit": true,
+                        "securityLock": true,
+                        "securityReport": true,
+                        "securityUnlock": true,
+                        "securityView": true,
+                        "templateId": 0,
+                        "url": "",
+                        "warnMinutes": 0
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getObject"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "agentIsFilesystem": true,
+                "agentObjectId": 1,
+                "cancel": false,
+                "children": 0,
+                "connected": false,
+                "contact": "",
+                "createDate": "2021-12-13 14:49:50",
+                "description": "",
+                "events": 30,
+                "inService": "",
+                "intrusionSize": 500,
+                "intrusions": 250,
+                "location": "",
+                "logsByDays": true,
+                "name": "test2restore",
+                "objectId": 2,
+                "objectPath": "DSK050->local->test2restore",
+                "objectStatus": 2,
+                "objectSubType": 3,
+                "objectType": 3,
+                "parentId": 1,
+                "requireNotes": false,
+                "revisions": 250,
+                "securityAdd": true,
+                "securityEdit": true,
+                "securityLock": true,
+                "securityReport": true,
+                "securityUnlock": true,
+                "securityView": true,
+                "templateId": 0,
+                "url": "",
+                "warnMinutes": 0
+            }
+        ],
+        "status": "success"
+    }
+}

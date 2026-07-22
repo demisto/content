@@ -1,0 +1,461 @@
+id: GoogleMapsTest
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: GoogleMapsTest
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7f104dae-d294-4a89-81da-d747b89f6485
+    type: start
+    task:
+      id: 7f104dae-d294-4a89-81da-d747b89f6485
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a585a297-341a-4a42-8961-db6d7c23e05a
+    type: regular
+    task:
+      id: a585a297-341a-4a42-8961-db6d7c23e05a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 845a78cc-b753-4bb6-8ebd-b4d5ce30a0a4
+    type: regular
+    task:
+      id: 845a78cc-b753-4bb6-8ebd-b4d5ce30a0a4
+      version: -1
+      name: Geocode a valid location
+      script: '|||google-maps-geocode'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      search_address:
+        simple: Paloalto Networks Tel Aviv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3275247a-22f8-41d9-885b-66b33a1da5fd
+    type: condition
+    task:
+      id: 3275247a-22f8-41d9-885b-66b33a1da5fd
+      version: -1
+      name: Verify Empty Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.lat
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.lng
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.SearchAddress
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.Address
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.Country
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a7e80ba6-f24d-419d-80ca-37e059fb8f06
+    type: title
+    task:
+      id: a7e80ba6-f24d-419d-80ca-37e059fb8f06
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2ecadb90-2239-43af-84d4-947d6c7042ba
+    type: regular
+    task:
+      id: 2ecadb90-2239-43af-84d4-947d6c7042ba
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 26f71197-5a7d-4643-88b5-d76b4f5166a5
+    type: regular
+    task:
+      id: 26f71197-5a7d-4643-88b5-d76b4f5166a5
+      version: -1
+      name: Geocode empty address expecting without error
+      script: '|||google-maps-geocode'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      search_address:
+        simple: ' '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: cdb48635-e5de-4afc-861d-42f33433edc5
+    type: condition
+    task:
+      id: cdb48635-e5de-4afc-861d-42f33433edc5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: GoogleMaps.lat
+            iscontext: true
+          right:
+            value:
+              simple: "32.0688581"
+      - - operator: isEqualNumber
+          left:
+            value:
+              simple: GoogleMaps.lng
+            iscontext: true
+          right:
+            value:
+              simple: "34.7940206"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleMaps.SearchAddress
+            iscontext: true
+          right:
+            value:
+              simple: Paloalto Networks Tel Aviv
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleMaps.Address
+            iscontext: true
+          right:
+            value:
+              simple: Yigal Alon St 94a, Tel Aviv-Yafo, 6789155, Israel
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GoogleMaps.Country
+            iscontext: true
+          right:
+            value:
+              simple: Israel
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 8ec664e9-5e77-4785-8e15-448ad2b4690b
+    type: regular
+    task:
+      id: 8ec664e9-5e77-4785-8e15-448ad2b4690b
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: eb4e5c59-b12b-4c20-8342-f354a8f31cf8
+    type: regular
+    task:
+      id: eb4e5c59-b12b-4c20-8342-f354a8f31cf8
+      version: -1
+      name: Geocode a valid location via ShowOnMap
+      description: Returns a map entry with marker on the given coordinates (lat,
+        lng), or address (requires a configured GoogleMaps instance)
+      scriptName: ShowOnMap
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      address:
+        simple: 94A Yigal Alon, Tel Aviv
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: cc84d5ab-6aed-4ba6-8a00-6b360edea115
+    type: condition
+    task:
+      id: cc84d5ab-6aed-4ba6-8a00-6b360edea115
+      version: -1
+      name: Verify Empty Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.lat
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.lng
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.SearchAddress
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.Address
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: GoogleMaps.Country
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1550,
+        "width": 380,
+        "x": 50,
+        "y": 10
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

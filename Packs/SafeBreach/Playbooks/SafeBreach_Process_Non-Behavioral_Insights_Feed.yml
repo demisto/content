@@ -1,0 +1,608 @@
+id: SafeBreach - Process Non-Behavioral Insights Feed
+version: -1
+name: SafeBreach - Process Non-Behavioral Insights Feed
+description: |-
+  Deprecated. No available replacement.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15e139ef-24e4-494e-8fba-e37824cb11da
+    type: start
+    task:
+      id: 15e139ef-24e4-494e-8fba-e37824cb11da
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 9cb0dfd8-0b07-4ab3-899c-c7b29fd8c17c
+    type: title
+    task:
+      id: 9cb0dfd8-0b07-4ab3-899c-c7b29fd8c17c
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d31f4007-b0a9-4e82-8588-81716ea68957
+    type: regular
+    task:
+      id: d31f4007-b0a9-4e82-8588-81716ea68957
+      version: -1
+      name: Extract list of insight ids from indicators
+      description: Sets "InsightIds" with all the insights related to the processes indicators.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append: {}
+      key:
+        simple: InsightIds
+      stringify: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.safebreachinsightids
+                iscontext: true
+          accessor: CustomFields.safebreachinsightids
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -85
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 610a5781-84c5-4108-83f9-0e6619079c5c
+    type: playbook
+    task:
+      id: 610a5781-84c5-4108-83f9-0e6619079c5c
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      AutoCommit:
+        simple: "Yes"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: SafeBreach Domains and URIs
+      DAG: {}
+      EDLServerIP: {}
+      IP:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: IP
+              ignorecase: true
+          accessor: value
+          transformers:
+          - operator: uniq
+      IPBlacklistMiner: {}
+      IPListName:
+        simple: SafeBreachIpBlockList
+      LogForwarding: {}
+      MD5: {}
+      SHA256:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+              ignorecase: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: playbookQuery.CustomFields.sha256
+                iscontext: true
+          accessor: CustomFields.sha256
+          transformers:
+          - operator: uniq
+      StaticAddressGroup: {}
+      URL:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: Domain,URL
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: value
+          transformers:
+          - operator: uniq
+      URLBlacklistMiner: {}
+      URLListName:
+        simple: SafeBreach List
+      Username: {}
+      categories: {}
+      device-group: {}
+      type:
+        simple: '"URL List"'
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: f02ad2fe-bf5e-4415-8b37-49dc20ee660e
+    type: regular
+    task:
+      id: f02ad2fe-bf5e-4415-8b37-49dc20ee660e
+      version: -1
+      name: Sleep for the remediation to work
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b60ddac3-66ce-495c-8f23-dcbc1b07d932
+    type: playbook
+    task:
+      id: b60ddac3-66ce-495c-8f23-dcbc1b07d932
+      version: -1
+      name: SafeBreach - Compare and Validate Insight Indicators
+      description: This playbook compares SafeBreach Insight indicators before and after the processing. It receives an insight and it's indicators before validation, fetches updated indicators after rerunning the insight, and then compares the results to validate mitigation. Indicators are classified as Remediated or Not Remediated based on their validated status and the appropriate field (SafeBreach Remediation Status) is updated.
+      playbookName: SafeBreach - Compare and Validate Insight Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      IndicatorsBefore:
+        complex:
+          root: playbookQuery
+          accessor: value
+      Insight:
+        complex:
+          root: SafeBreach
+          accessor: Insight
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 65b815fe-6c0c-4411-81bd-5da4a3d2d831
+    type: playbook
+    task:
+      id: 65b815fe-6c0c-4411-81bd-5da4a3d2d831
+      version: -1
+      name: SafeBreach - Rerun Insights
+      description: This is a sub-playbook reruns a list of SafeBreach insights based on Insight Id and waits until they complete. Used in main SafeBreach playbooks, such as "SafeBreach - Handle Insight Incident" and "SafeBreach - Process Non-Behavioral Insights Feed".
+      playbookName: SafeBreach - Rerun Insights
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      InsightIds:
+        complex:
+          root: InsightIds
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 137dfc1d-f46e-449e-875a-b049203d7244
+    type: regular
+    task:
+      id: 137dfc1d-f46e-449e-875a-b049203d7244
+      version: -1
+      name: Get insight info by id
+      description: Gets SafeBreach Insights by ids.
+      script: '|||safebreach-get-insights'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      insightIds:
+        complex:
+          root: InsightIds
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 67f47542-559d-4e50-8f4e-3c45300995f4
+    type: regular
+    task:
+      id: 67f47542-559d-4e50-8f4e-3c45300995f4
+      version: -1
+      name: Get insight remediation data
+      description: Gets remediation data for a specific SafeBreach Insight id.
+      script: '|||safebreach-get-remediation-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      insightId:
+        complex:
+          root: InsightIds
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 156fa493-ccd4-4600-8074-aa1d6ae2c234
+    type: condition
+    task:
+      id: 156fa493-ccd4-4600-8074-aa1d6ae2c234
+      version: -1
+      name: Is there still an indicator to remediate?
+      description: Check whether there is an indicator in "NotRemediatedIndicators".
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      More indicators to remediate:
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: More indicators to remediate
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: NotRemediatedIndicators
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: c1aa0809-cf94-4e1d-8f39-3e3549bb8c65
+    type: condition
+    task:
+      id: c1aa0809-cf94-4e1d-8f39-3e3549bb8c65
+      version: -1
+      name: Is there any indicator to process?
+      description: Check whether there is at least one input indicator to process.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": -710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 805fe301-1f29-412e-8ec9-a25c1e2ef316
+    type: playbook
+    task:
+      id: 805fe301-1f29-412e-8ec9-a25c1e2ef316
+      version: -1
+      name: SafeBreach - Create Incidents per Insight and Associate Indicators
+      description: This is a sub-playbook that creates incidents per SafeBreach insight, enriched with all the related indicators and additional SafeBreach insight contextual information. Used in main SafeBreach playbooks, such as "SafeBreach - Process Behavioral Insights Feed" and "SafeBreach - Process Non-Behavioral Insights Feed".
+      playbookName: SafeBreach - Create Incidents per Insight and Associate Indicators
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      indicators:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: NotRemediatedIndicators
+                iscontext: true
+      insightIds:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: NotRemediatedIndicators
+                iscontext: true
+          accessor: CustomFields.safebreachinsightids
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "24_3_#default#": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2315,
+        "width": 670,
+        "x": 490,
+        "y": -910
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: sourceBrands:["SafeBreach*"] and -safebreachisbehavioral:T
+    queryEntity: indicators
+    results:
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue:
+        fromvalue:
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: true
+outputs: []
+quiet: true
+fromversion: 5.5.0
+tests:
+- No tests (deprecated)
+deprecated: true

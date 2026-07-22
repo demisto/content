@@ -1,0 +1,530 @@
+id: CanaryTools Test
+version: -1
+name: CanaryTools Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: eb963636-1755-4b92-8990-f47623fbb3dd
+    type: start
+    task:
+      id: eb963636-1755-4b92-8990-f47623fbb3dd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b0e9ceba-f0c2-441b-8ab0-8dfb7b3b8da5
+    type: condition
+    task:
+      id: b0e9ceba-f0c2-441b-8ab0-8dfb7b3b8da5
+      version: -1
+      name: canarytools-check-whitelist condition
+      description: Check whether a given IP and port are on allow list
+      type: condition
+      iscommand: false
+      brand: Thinkst Canary
+    nexttasks:
+      add to whitelist:
+      - "26"
+      already on whitelist:
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - label: add to whitelist
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CanaryTools.IP.Whitelisted
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    - label: already on whitelist
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CanaryTools.IP.Whitelisted
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e9ca31c9-29df-4ec4-8ecc-08df4a3e89eb
+    type: regular
+    task:
+      id: e9ca31c9-29df-4ec4-8ecc-08df4a3e89eb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3d8b31c9-049a-4c69-850c-0e6693c16870
+    type: regular
+    task:
+      id: 3d8b31c9-049a-4c69-850c-0e6693c16870
+      version: -1
+      name: canarytools-list-canaries
+      description: List all registered Canaries
+      script: Thinkst Canary|||canarytools-list-canaries
+      type: regular
+      iscommand: true
+      brand: Thinkst Canary
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7ea3fdb9-d3e7-4079-82f6-a7326168e3f3
+    type: regular
+    task:
+      id: 7ea3fdb9-d3e7-4079-82f6-a7326168e3f3
+      version: -1
+      name: canarytools-list-tokens
+      description: List all Canary tokens
+      script: Thinkst Canary|||canarytools-list-tokens
+      type: regular
+      iscommand: true
+      brand: Thinkst Canary
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 74ecd63a-3d84-40b8-8fa8-3bcfdb00df38
+    type: regular
+    task:
+      id: 74ecd63a-3d84-40b8-8fa8-3bcfdb00df38
+      version: -1
+      name: canarytools-get-token
+      description: Fetch Canary Token file from the Canary Tools server
+      script: Thinkst Canary|||canarytools-get-token
+      type: regular
+      iscommand: true
+      brand: Thinkst Canary
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      token:
+        complex:
+          root: CanaryTools
+          accessor: Token
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: CanaryToken
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 42a01b13-74c5-41d6-8e77-bf84f76163ec
+    type: condition
+    task:
+      id: 42a01b13-74c5-41d6-8e77-bf84f76163ec
+      version: -1
+      name: Check list-tokens outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CanaryTools
+                accessor: Token
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: CanaryToken
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CanaryTools
+                accessor: Token
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: CreatedTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CanaryTools
+                accessor: Token
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "0"
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: Kind
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 77d2c2e0-a0cd-4404-8561-db54c2629752
+    type: condition
+    task:
+      id: 77d2c2e0-a0cd-4404-8561-db54c2629752
+      version: -1
+      name: Check list-canaries outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CanaryTools.Device.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CanaryTools.Device.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CanaryTools.Device.Description
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: CanaryTools.Device.Status
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 17e15834-d848-4b12-8f13-6b8ed3269ab9
+    type: title
+    task:
+      id: 17e15834-d848-4b12-8f13-6b8ed3269ab9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d4ba531c-e479-44bb-8463-15269b9f81b7
+    type: regular
+    task:
+      id: d4ba531c-e479-44bb-8463-15269b9f81b7
+      version: -1
+      name: Test Fetch
+      scriptName: FetchFromInstance
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      brand_name:
+        simple: Thinkst Canary
+      expect_data:
+        simple: "false"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 82c6def6-3bbb-4688-87f5-4f674035420b
+    type: regular
+    task:
+      id: 82c6def6-3bbb-4688-87f5-4f674035420b
+      version: -1
+      name: |-
+        Adds an IP address to the allow list in Canary
+        Untitled Task
+      description: Adds an IP address to the allow list in Canary
+      script: '|||canarytools-whitelist-ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      port:
+        simple: "6445"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 158d4179-ce25-4e15-8b73-9a1978b0398c
+    type: regular
+    task:
+      id: 158d4179-ce25-4e15-8b73-9a1978b0398c
+      version: -1
+      name: canarytools-check-whitelist
+      description: Check whether a given IP and port are on alow list
+      script: Thinkst Canary|||canarytools-check-whitelist
+      type: regular
+      iscommand: true
+      brand: Thinkst Canary
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1960,
+        "width": 570,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+description: Test playbook of integration Thinkst Canary.

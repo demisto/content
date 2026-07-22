@@ -1,0 +1,53 @@
+{
+    "@odata.context": "resource.com",
+    "@odata.etag": "W/\"CQ23124512ny\"",
+    "createdDateTime": "2019-04-16T19:40:00Z",
+    "lastModifiedDateTime": "2019-04-16T19:40:02Z",
+    "changeKey": "change_key",
+    "categories": ["Green category"],
+    "receivedDateTime": "2019-04-16T19:40:01Z",
+    "sentDateTime": "2019-04-16T19:40:01Z",
+    "hasAttachments": false,
+    "internetMessageId": "<msg_id.url.com>",
+    "subject": "Playbook has stopped on error for Legal Hold #` (#2231)",
+    "bodyPreview": "Incident playbook task \"Parse Legal Hold CSV File\" stopped on error.\nIncident Id: #2231\nIncident Name: Legal Hold #`\nIncident SLA: 26 Apr 19, 19:13 UTC\nIncident Severity: Unknown\n\nTask: #1\nTask Name: Parse Legal Hold CSV File\nTask SLA: N\\A\n\nView it on htt",
+    "importance": "normal",
+    "parentFolderId": "parent_folder",
+    "conversationId": "conversation_id",
+    "isDeliveryReceiptRequested": false,
+    "isReadReceiptRequested": false,
+    "isRead": true,
+    "isDraft": false,
+    "webLink": "link!!!",
+    "inferenceClassification": "focused",
+    "body": {
+        "contentType": "text",
+        "content": "Incident playbook task \"Parse Legal Hold CSV File\" stopped on error.\nIncident Id: #2231\nIncident Name: Legal Hold #`\nIncident SLA: 26 Apr 19, 19:13 UTC\nIncident Severity: Unknown\n\nTask: #1\nTask Name: Parse Legal Hold CSV File\nTask SLA: N\\A\n/WorkPlan/2231/1"
+    },
+    "sender": {
+        "emailAddress": {
+            "name": "Test Test",
+            "address": "test@test.com"
+        }
+    },
+    "from": {
+        "emailAddress": {
+            "name": "Test Test",
+            "address": "test@example.com"
+        }
+    },
+    "toRecipients": [
+        {
+            "emailAddress": {
+                "name": "Hatul Kaze",
+                "address": "KHatul@example.com"
+            }
+        }
+    ],
+    "ccRecipients": [],
+    "bccRecipients": [],
+    "replyTo": [],
+    "flag": {
+        "flagStatus": "notFlagged"
+    }
+}

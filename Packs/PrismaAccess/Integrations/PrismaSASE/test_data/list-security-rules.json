@@ -1,0 +1,528 @@
+{
+    "data": [
+        {
+            "id": "####225c-3f83-4ef9-b553-####48574d1f",
+            "name": "Drop Traffic to Known Malicious IP Addresses",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "drop",
+            "from": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "any"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "destination": [
+                "panw-known-ip-list"
+            ],
+            "tag": [
+                "best-practice"
+            ],
+            "description": "Rule to block traffic to well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel",
+            "category": [
+                "any"
+            ]
+        },
+        {
+            "id": "####c58d-3973-4b0f-bee9-####f5d5e3f1",
+            "name": "Drop Traffic to Potential High Risk IP Addresses",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "drop",
+            "from": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "any"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "tag": [
+                "best-practice"
+            ],
+            "description": "Rule to block traffic to IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations",
+            "category": [
+                "any"
+            ],
+            "negate_destination": false,
+            "destination": [
+                "panw-highrisk-ip-list"
+            ]
+        },
+        {
+            "id": "####702d-d40c-49a2-b3a2-####a2ea6f7c",
+            "name": "Drop Traffic to Bulletproof hosting providers",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "drop",
+            "from": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "any"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "tag": [
+                "best-practice"
+            ],
+            "description": "Rule to block traffic to bulletproof IP addresses as bulletproof hosting providers place few, if any, restrictions on content and attackers can use these services to host and distribute malicious, illegal, and unethical material",
+            "category": [
+                "any"
+            ],
+            "negate_destination": false,
+            "destination": [
+                "panw-bulletproof-ip-list"
+            ]
+        },
+        {
+            "id": "####8ccb-6e9c-4a31-a175-####9e70f3bc",
+            "name": "Drop Traffic from Known Malicious IP Addresses",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "drop",
+            "from": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "panw-known-ip-list"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "any"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "tag": [
+                "best-practice"
+            ],
+            "description": "Rule to block traffic from well known malicious IP addresses, as provided by dynamic feeds from Palo Alto Networks threat intel",
+            "category": [
+                "any"
+            ],
+            "negate_destination": false,
+            "destination": [
+                "any"
+            ]
+        },
+        {
+            "id": "####c780-f05c-4681-936e-####90367d44",
+            "name": "Drop Traffic from Potential High Risk IP Addresses",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "drop",
+            "from": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "panw-highrisk-ip-list"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "any"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "tag": [
+                "best-practice"
+            ],
+            "description": "Rule to block traffic from IP addresses that have recently been featured in threat activity advisories distributed by high-trust organizations",
+            "category": [
+                "any"
+            ],
+            "negate_destination": false,
+            "destination": [
+                "any"
+            ]
+        },
+        {
+            "id": "####5521-bd5b-4d10-9e82-####c70f03b",
+            "name": "Drop Traffic from Bulletproof hosting providers",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "drop",
+            "from": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "panw-bulletproof-ip-list"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "any"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "tag": [
+                "best-practice"
+            ],
+            "description": "Rule to block traffic from bulletproof IP addresses as bulletproof hosting providers place few, if any, restrictions on content and attackers can use these services to host and distribute malicious, illegal, and unethical material",
+            "category": [
+                "any"
+            ],
+            "negate_destination": false,
+            "destination": [
+                "any"
+            ]
+        },
+        {
+            "id": "####2aaa-4f1e-4624-bd9e-########ea3a307",
+            "name": "Deny Quic",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "drop",
+            "from": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "destination": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "quic"
+            ],
+            "service": [
+                "any"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "description": "Allows traffic to be decrypted for inspection",
+            "tag": [
+                "best-practice"
+            ]
+        },
+        {
+            "id": "####a7f2-0c30-4006-8c80-####f4bdcccb",
+            "name": "t-to-ut",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "allow",
+            "source_hip": [
+                "any"
+            ],
+            "destination_hip": [
+                "any"
+            ],
+            "from": [
+                "trust"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "destination": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "application-default"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "profile_setting": {
+                "group": [
+                    "test-pg-shared"
+                ]
+            },
+            "disabled": false
+        },
+        {
+            "id": "####b99d-a4f7-4859-b1df-####9cdf86c7",
+            "name": "t-to-t",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "allow",
+            "source_hip": [
+                "any"
+            ],
+            "destination_hip": [
+                "any"
+            ],
+            "from": [
+                "trust"
+            ],
+            "to": [
+                "trust"
+            ],
+            "source": [
+                "any"
+            ],
+            "destination": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "application-default"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "profile_setting": {
+                "group": [
+                    "best-practice"
+                ]
+            },
+            "disabled": false
+        },
+        {
+            "id": "####5a2d-aaae-439c-966d-####ce728b69",
+            "name": "deny-attackers",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "allow",
+            "source_hip": [
+                "any"
+            ],
+            "destination_hip": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "destination": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "application-default"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "profile_setting": {
+                "group": [
+                    "best-practice"
+                ]
+            },
+            "from": [
+                "any"
+            ],
+            "disabled": false
+        },
+        {
+            "id": "####a7e3-aaed-4761-aaae-####3358cb40",
+            "name": "allow-all-employees",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "allow",
+            "source_hip": [
+                "any"
+            ],
+            "destination_hip": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "destination": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "application-default"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "profile_setting": {
+                "group": [
+                    "best-practice"
+                ]
+            },
+            "from": [
+                "any"
+            ],
+            "disabled": false
+        },
+        {
+            "id": "####769a-7932-4556-9238-####940ffbe3",
+            "name": "allow-business-apps",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "allow",
+            "source_hip": [
+                "any"
+            ],
+            "destination_hip": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "destination": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "application-default"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "profile_setting": {
+                "group": [
+                    "best-practice"
+                ]
+            },
+            "from": [
+                "any"
+            ],
+            "disabled": false
+        },
+        {
+            "id": "####4c3b-11f0-4e0b-b4cb-####013f08f1",
+            "name": "deny-time-wasters",
+            "folder": "Shared",
+            "position": "pre",
+            "action": "allow",
+            "source_hip": [
+                "any"
+            ],
+            "destination_hip": [
+                "any"
+            ],
+            "to": [
+                "any"
+            ],
+            "source": [
+                "any"
+            ],
+            "destination": [
+                "any"
+            ],
+            "source_user": [
+                "any"
+            ],
+            "category": [
+                "any"
+            ],
+            "application": [
+                "any"
+            ],
+            "service": [
+                "application-default"
+            ],
+            "log_setting": "Cortex Data Lake",
+            "profile_setting": {
+                "group": [
+                    "best-practice"
+                ]
+            },
+            "from": [
+                "any"
+            ],
+            "disabled": false
+        }
+    ],
+    "offset": 0,
+    "total": 382,
+    "limit": 30
+}

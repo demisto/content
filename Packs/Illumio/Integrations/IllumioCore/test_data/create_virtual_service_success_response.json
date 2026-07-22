@@ -1,0 +1,13 @@
+{"apply_to": "host_only",
+ "caps": ["write", "provision", "delete"],
+ "created_at": "2022-08-30T10:16:59.412Z",
+ "created_by": {"href": "/users/68"},
+ "href": "/orgs/1/sec_policy/draft/virtual_services/2a3fa5e7-68ce-482d-98a6-529166781a84",
+ "ip_overrides": [],
+ "labels": [],
+ "name": "dummy-service",
+ "service_addresses": [],
+ "service_ports": [{"port": 8443, "proto": 6}],
+ "update_type": "create",
+ "updated_at": "2022-08-30T10:16:59.415Z",
+ "updated_by": {"href": "/users/68"}}

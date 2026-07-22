@@ -1,0 +1,40 @@
+commonfields:
+  id: TestCreateDuplicates
+  version: -1
+name: TestCreateDuplicates
+script: >-
+  from datetime import timedelta, datetime
+
+  incident = demisto.incidents()[0]
+
+
+  def parse_datetime(datetime_str):
+      datetime_str = datetime_str[:datetime_str.find(".")]
+      return datetime.strptime(datetime_str, "%Y-%m-%dT%H:%M:%S")
+
+  def parse_label(label):
+      return {label['type']: label['value']}
+
+  new_incident_time = parse_datetime(incident['occurred']) - timedelta(hours=int(demisto.args()['hoursDiff']))
+
+  res = demisto.executeCommand("createNewIncident", {'name': 'ThisIsATestForDuplicate',
+
+  'occurred': new_incident_time.strftime('%d %b %y %H:%M MST'), 'type': incident['type'],
+
+  'labels': map(parse_label, incident['labels'])
+
+  })
+
+  demisto.results(res)
+type: python
+subtype: python2
+tags: []
+comment: Create a duplicate incident to the current.
+enabled: true
+args:
+- name: hoursDiff
+  description: Hours different between the original incident and created incident.
+  defaultValue: "6"
+scripttarget: 0
+runonce: false
+fromversion: 5.0.0

@@ -1,0 +1,91 @@
+{
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)":[{
+    "Indicator": "fakedomain.com",
+    "Type": "domain",
+    "Vendor": "Flashpoint",
+    "Score": 3
+  }],
+  "Domain(val.Name && val.Name == obj.Name)": [{
+    "Name": "fakedomain.com",
+    "Malicious": {
+      "Vendor": "Flashpoint",
+      "Description": "Found in malicious indicators dataset"
+    },
+    "Relationships": [
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT1",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT2",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT3",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT4",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT5",
+        "EntityBType": "STIX Attack Pattern"
+      },
+      {
+        "Relationship": "indicator-of",
+        "EntityA": "fakedomain.com",
+        "EntityAType": "Domain",
+        "EntityB": "AT6",
+        "EntityBType": "STIX Attack Pattern"
+      }
+    ]
+  }],
+  "Flashpoint.Domain.Event(val.Fpid && val.Fpid == obj.Fpid)": [
+    {
+      "Domain": "fakedomain.com",
+      "Category": "category1",
+      "Fpid": "aaaaaaaaaaabbbbbbbbbbb",
+      "Href": "http://123-fake-api.com/api/v4/indicators/attribute/aaaaaaaaaaabbbbbbbbbbb",
+      "Timestamp": "1569436997",
+      "Type": "domain",
+      "Uuid": "5d8bb545-3eds-2222-1111-aaaaaaaaaaaa",
+      "EventDetails": {
+        "RelatedEvent": [],
+        "Tags": [
+          "Tags1",
+          "Tags2"
+        ],
+        "attack_ids": [
+          "AT1",
+          "AT2",
+          "AT3",
+          "AT4",
+          "AT5",
+          "AT6"
+        ],
+        "fpid": "aaaaaaaaaaabbbbbbbbbbb",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/aaaaaaaaaaabbbbbbbbbbb",
+        "info": "Gorgon Group actor profile",
+        "reports": [],
+        "timestamp": "1569441099"
+      },
+      "Comment": ""
+    }
+  ]
+}

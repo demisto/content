@@ -1,0 +1,36 @@
+{
+    "resources": [
+        {
+            "id": "case_id_1",
+            "evidence": {
+                "alerts": {
+                    "records": [
+                        {
+                            "selector": {
+                                "id": "alert_id_1"
+                            }
+                        }
+                    ]
+                },
+                "events": {
+                    "records": [
+                        {
+                            "selector": {
+                                "id": "event_id_1"
+                            }
+                        }
+                    ]
+                },
+                "leads": {
+                    "records": [
+                        {
+                            "selector": {
+                                "id": "lead_id_1"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

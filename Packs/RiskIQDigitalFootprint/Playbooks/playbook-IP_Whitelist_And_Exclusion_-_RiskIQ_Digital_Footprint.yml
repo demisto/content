@@ -1,0 +1,2227 @@
+id: IP Whitelist And Exclusion - RiskIQ Digital Footprint
+version: -1
+name: IP Whitelist And Exclusion - RiskIQ Digital Footprint
+description: Adds the IP Address(es) to allow list after checking if it should be added to allow list
+  according to the user inputs provided. This playbook also adds these IP Address
+  indicators to the exclusion list and tags it with the "RiskIQ Whitelisted IP Address"
+  tag.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 906f2979-da01-461d-80df-1dd2e0cbc10b
+    type: start
+    task:
+      id: 906f2979-da01-461d-80df-1dd2e0cbc10b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 58dabb27-2c4f-4367-8378-ed8dac08c2d5
+    type: title
+    task:
+      id: 58dabb27-2c4f-4367-8378-ed8dac08c2d5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 2640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 260f746f-eb4d-4e28-88b7-6754060ee035
+    type: condition
+    task:
+      id: 260f746f-eb4d-4e28-88b7-6754060ee035
+      version: -1
+      name: Is there an IP Address?
+      description: Checks if there is an IP Address.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ip_address
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 747624fa-4712-4add-8379-7fa6a3f4e5f2
+    type: condition
+    task:
+      id: 747624fa-4712-4add-8379-7fa6a3f4e5f2
+      version: -1
+      name: Is Google Cloud Compute enabled and GCP Firewall Name is set?
+      description: Checks whether there is an active instance of the Google Cloud
+        Compute integration enabled and if the "GCP Firewall Name" input is set.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.gcp_firewall_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3480,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 131327a3-441f-422f-8f64-13853cd8a712
+    type: condition
+    task:
+      id: 131327a3-441f-422f-8f64-13853cd8a712
+      version: -1
+      name: Is AWS - EC2 enabled and AWS Security Group Name set?
+      description: Checks whether there is an active instance of the AWS - EC2 integration
+        enabled and if the "AWS Security Group Name" input is set.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.aws_security_group_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -4550,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 1927d091-8859-4905-8e0e-bb30cc46089d
+    type: condition
+    task:
+      id: 1927d091-8859-4905-8e0e-bb30cc46089d
+      version: -1
+      name: Is Okta v2 enabled and Okta Zone ID set?
+      description: Checks whether there is an active instance of the Okta v2 integration
+        enabled and if the "Okta Zone ID" input is set.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.okta_zone_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -4020,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 88f79130-de5f-40e3-8155-3d0b9434c58a
+    type: playbook
+    task:
+      id: 88f79130-de5f-40e3-8155-3d0b9434c58a
+      version: -1
+      name: IP Whitelist - GCP Firewall
+      description: Set a list of IP addresses in GCP firewall.
+      playbookName: IP Whitelist - GCP Firewall
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      GCPFirewallName:
+        complex:
+          root: inputs.gcp_firewall_name
+      IP:
+        complex:
+          root: IPWhitelist
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IPWhitelist.Should the IP Address be whitelisted? Yes or
+                    No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      IndicatorTagName:
+        simple: GCP_RiskIQ_IP_Whitelist
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -3120,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 6e1a74b6-5268-47c8-8dd0-4ad046f4358e
+    type: playbook
+    task:
+      id: 6e1a74b6-5268-47c8-8dd0-4ad046f4358e
+      version: -1
+      name: IP Whitelist - AWS Security Group
+      description: Sync a list of IP addresses to an AWS Security Group.
+      playbookName: IP Whitelist - AWS Security Group
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      IP:
+        complex:
+          root: IPWhitelist
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IPWhitelist.Should the IP Address be whitelisted? Yes or
+                    No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      IndicatorTagName:
+        simple: AWS_RiskIQ_IP_Whitelist
+      SecurityGroupName:
+        complex:
+          root: inputs.aws_security_group_name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -4200,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: c96fa8b3-e92d-4d02-841f-dac1ffc46015
+    type: playbook
+    task:
+      id: c96fa8b3-e92d-4d02-841f-dac1ffc46015
+      version: -1
+      name: Allow IP - Okta Zone
+      description: "Sync a list of IP addresses to the Okta Network Zone with the\
+        \ given ID. \nExisting IPs in the Okta Zone which are not in the input list\
+        \ will be removed and the indicator will be untagged in Cortex XSOAR.\nIDs\
+        \ can be retrieved  using !okta-list-zones. This playbook supports CIDR notation\
+        \ only (1.1.1.1/32) and not range notation (1.1.1.1-1.1.1.1)"
+      playbookName: Allow IP - Okta Zone
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      IP:
+        complex:
+          root: IPWhitelist
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IPWhitelist.Should the IP Address be whitelisted? Yes or
+                    No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      IndicatorTagName:
+        simple: RiskIQ_Okta_Zone
+      ZoneID:
+        complex:
+          root: inputs.okta_zone_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -3670,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: e63fee56-e317-4024-8175-69c9723f909f
+    type: condition
+    task:
+      id: e63fee56-e317-4024-8175-69c9723f909f
+      version: -1
+      name: Is there an IP Address to whitelist and exclude?
+      description: Checks if there is an IP Address to be whitelisted and excluded.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPWhitelist
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IPExclusionList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": 425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 42e38537-ae1d-453f-8156-f84f1a917f41
+    type: playbook
+    task:
+      id: 42e38537-ae1d-453f-8156-f84f1a917f41
+      version: -1
+      name: Check IP Address For Whitelisting - RiskIQ Digital Footprint
+      description: Checks if the provided IP Address should be added to allow list and excluded
+        or not. Use this playbook as a sub-playbook to loop over multiple IP Addresses
+        to check if they should be added to allow list and excluded.
+      playbookName: Check IP Address For Whitelisting - RiskIQ Digital Footprint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      IP:
+        complex:
+          root: inputs.ip_address
+      InternalRange:
+        complex:
+          root: inputs.InternalRange
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+      forEach: true
+    view: |-
+      {
+        "position": {
+          "x": -630,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: ce388a39-a0c5-415f-8505-db990e5fcca6
+    type: condition
+    task:
+      id: ce388a39-a0c5-415f-8505-db990e5fcca6
+      version: -1
+      name: Is Auto Whitelist IP Address input set to "Yes" or "No"?
+      description: Checks if the IP Address whitelisting should be performed automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "no":
+      - "6"
+      "yes":
+      - "14"
+      - "15"
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_whitelist_ip_address
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_whitelist_ip_address
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -3130,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 5046e973-bd2e-48a5-8059-54eae8e6eb75
+    type: condition
+    task:
+      id: 5046e973-bd2e-48a5-8059-54eae8e6eb75
+      version: -1
+      name: Is Auto Exclude Whitelisted IP Address input set to "Yes" or "No"?
+      description: 'Checks if the IP Address(es) should be automatically added to
+        the exclusion list.'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "30"
+      "no":
+      - "6"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_exclude_whitelisted_ip_address
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.auto_exclude_whitelisted_ip_address
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: be574890-af05-4984-82dd-9a2a0417e0de
+    type: regular
+    task:
+      id: be574890-af05-4984-82dd-9a2a0417e0de
+      version: -1
+      name: Exclude the whitelisted IP Address(es)
+      description: Exclude the IP Address indicators that have been added to allow list.
+      script: Builtin|||excludeIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      indicatorsTypes:
+        simple: RiskIQAsset
+      indicatorsValues:
+        complex:
+          root: IPExclusionList
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IPExclusionList.Should the IP Address be excluded? Yes or
+                    No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      reason: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: cbe87c3e-ca6b-44e3-8171-e24e498d6fb2
+    type: regular
+    task:
+      id: cbe87c3e-ca6b-44e3-8171-e24e498d6fb2
+      version: -1
+      name: Tag the IP Address(es) to be whitelisted
+      description: Tags the whitelisted IP Address indicators with the "RiskIQ Whitelisted
+        IP Address" tag.
+      script: Builtin|||setIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assignedrole: {}
+      assigneduser: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      category: {}
+      chronicleassethostname: {}
+      chronicleassetip: {}
+      chronicleassetmac: {}
+      chronicleassetproductid: {}
+      chronicleassetsummary: {}
+      chroniclepotentiallyblockedhostname: {}
+      chroniclepotentiallyblockedip: {}
+      chroniclepotentiallyisolatedhostname: {}
+      chroniclepotentiallyisolatedip: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainstatus: {}
+      emailaddress: {}
+      entryid: {}
+      expiration: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      imphash: {}
+      indicatoridentification: {}
+      indicatorsIDs: {}
+      indicatorsValues:
+        complex:
+          root: inputs.ip_address
+      internal: {}
+      ipaddress: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory: {}
+      riskiqassetbrands: {}
+      riskiqassetconfidence: {}
+      riskiqassetcves: {}
+      riskiqassetenterpriseasset: {}
+      riskiqassetfirstseen: {}
+      riskiqassetinventorystatus: {}
+      riskiqassetlastseen: {}
+      riskiqassetlastupdated: {}
+      riskiqassetorganizations: {}
+      riskiqassetpriority: {}
+      riskiqassettags: {}
+      riskiqassettype: {}
+      riskiqassetuuid: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      sixgillactor: {}
+      sixgilldescription: {}
+      sixgillfeedid: {}
+      sixgillfeedname: {}
+      sixgillindicatorid: {}
+      sixgilllanguage: {}
+      sixgillmitreattcktactic: {}
+      sixgillmitreattcktechnique: {}
+      sixgillpostreference: {}
+      sixgillposttitle: {}
+      sixgillsource: {}
+      sixgillvirustotaldetectionrate: {}
+      sixgillvirustotalurl: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      stixaliases: {}
+      stixdescription: {}
+      stixgoals: {}
+      stixid: {}
+      stixismalwarefamily: {}
+      stixkillchainphases: {}
+      stixmalwaretypes: {}
+      stixprimarymotivation: {}
+      stixresourcelevel: {}
+      stixroles: {}
+      stixsecondarymotivations: {}
+      stixsophistication: {}
+      stixthreatactortypes: {}
+      stixtooltypes: {}
+      stixtoolversion: {}
+      subdomains: {}
+      tags:
+        simple: RiskIQ Whitelisted IP Address
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 5cfecfa6-0cda-48fd-8bc5-157b504a6ac5
+    type: regular
+    task:
+      id: 5cfecfa6-0cda-48fd-8bc5-157b504a6ac5
+      version: -1
+      name: Create a CSV file for the IP Address(es) to be excluded
+      description: Exports the list of IP Address(es) to be excluded in the form of
+        a CSV file.
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      csvArray:
+        complex:
+          root: IPExclusionList
+      fileName:
+        simple: IPAddressToExclude.csv
+      headers: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1640,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: ba5764c2-1871-4add-802d-eca398f48b4e
+    type: condition
+    task:
+      id: ba5764c2-1871-4add-802d-eca398f48b4e
+      version: -1
+      name: Is there a contact email address provided?
+      description: Checks whether there is a contact email address provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.support_contact
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1640,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 6bdb757b-1dfa-4874-8a6f-8fe58c4e8245
+    type: regular
+    task:
+      id: 6bdb757b-1dfa-4874-8a6f-8fe58c4e8245
+      version: -1
+      name: Send the created file through an email
+      description: Sends the created file of the IP Address(es) to be excluded through
+        an email.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: IPAddressToExclude.csv
+          accessor: EntryID
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hello,
+
+          Please follow the following steps and upload the modified CSV file to the XSOAR incident: ${ServerURL.URL}/#/Custom/caseinfoid/${incident.id} to proceed further.
+
+          - Download the CSV file attached to this email.
+          - Modify the value of the column "Should the IP Address be excluded?" to "No" if you do not want to exclude the IP Address.
+          - If you do not want to exclude any IP Address, please submit the form for entering entryID with an empty value.
+      cc: {}
+      from: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Adding the IP Address(es) to the
+          exclusion list'
+      templateParams: {}
+      to:
+        complex:
+          root: inputs.support_contact
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1850,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 5a9fdb77-d8fe-4266-8a7b-3a48a9c83457
+    type: regular
+    task:
+      id: 5a9fdb77-d8fe-4266-8a7b-3a48a9c83457
+      version: -1
+      name: Get XSOAR Server URL
+      description: Get the Server URL.
+      scriptName: GetServerURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+      - "53"
+      - "51"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 5ff2f10e-f1c9-46d0-8a4d-a2092d6f3586
+    type: regular
+    task:
+      id: 5ff2f10e-f1c9-46d0-8a4d-a2092d6f3586
+      version: -1
+      name: Clean "ServerURL" key from the context
+      description: Delete “ServerURL” field from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: ServerURL
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 33b2cf8c-aa8e-40be-892e-16b13d0578fd
+    type: collection
+    task:
+      id: 33b2cf8c-aa8e-40be-892e-16b13d0578fd
+      version: -1
+      name: Get the modified CSV file for the IP Address(es) to be excluded
+      description: Gets the EntryID of the modified CSV file for the IP Address(es)
+        to be excluded.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1640,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.support_contact
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Decide about the exclusion of the
+          IP Address(es)'
+      body:
+        simple: Please redirect to the following link in order to upload the modified
+          CSV file and proceed further.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: EntryID of the modified file for the IP Address(es) to be excluded
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: eg. 50@1
+        tooltip: Please enter the EntryID of the modified file for the IP Address(es)
+          to be excluded. Submit this form with an empty value if you do not want
+          to exclude any IP Address.
+        readonly: false
+      title: Modified CSV File for exclusion
+      description: Please download the CSV file from the email sent to you or from
+        the war room, modify the value in column "Should the IP Address be excluded?"
+        to "No" for the IP Address(es) that should not be excluded, and upload that
+        file here. After uploading the file, please enter the EntryID corresponding
+        to it here. Submit this form with an empty value if you do not want to exclude
+        any IP Address.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 9c1b0203-384f-4aaf-8c33-471d592cf958
+    type: condition
+    task:
+      id: 9c1b0203-384f-4aaf-8c33-471d592cf958
+      version: -1
+      name: Is the user willing to exclude the IP Address(es) and the entered EntryID
+        valid?
+      description: Checks whether the user is willing to add the IP Address(es) to
+        the exclusion list and if the entered EntryID is valid.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Modified CSV File for exclusion.Answers.0
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: Modified CSV File for exclusion.Answers.0
+                      iscontext: true
+                    right:
+                      value:
+                        simple: \b[0-9]+@[0-9]+\b
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1640,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 6625dfb4-69c9-49d3-872d-5565c8dc9034
+    type: regular
+    task:
+      id: 6625dfb4-69c9-49d3-872d-5565c8dc9034
+      version: -1
+      name: Parse the modified CSV for the IP Address(es) to be excluded
+      description: Parses the modified CSV for the IP Address(es) to be excluded.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      codec: {}
+      domains: {}
+      entryID:
+        complex:
+          root: Modified CSV File for exclusion.Answers
+          accessor: "0"
+      file: {}
+      hashes: {}
+      ips: {}
+      parseAll:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1850,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 50b8b81d-925e-4c6b-8c91-50d18df414e4
+    type: regular
+    task:
+      id: 50b8b81d-925e-4c6b-8c91-50d18df414e4
+      version: -1
+      name: Exclude the whitelisted IP Address(es)
+      description: Exclude the IP Address indicators that have been added to allow list.
+      script: Builtin|||excludeIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      indicatorsTypes:
+        simple: RiskIQAsset
+      indicatorsValues:
+        complex:
+          root: ParseCSV.ParsedCSV
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ParseCSV.ParsedCSV.Should the IP Address be excluded? Yes
+                    or No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      reason: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1850,
+          "y": 2185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 4f5853ba-2b4c-4e6c-8c6f-bfdd53afb7dd
+    type: regular
+    task:
+      id: 4f5853ba-2b4c-4e6c-8c6f-bfdd53afb7dd
+      version: -1
+      name: Create a CSV file for the IP Address(es) to be added to allow list
+      description: Exports the list of IP Address(es) to be added to allow list in the form
+        of a CSV file.
+      scriptName: ExportToCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      csvArray:
+        complex:
+          root: IPWhitelist
+      fileName:
+        simple: IPAddressToWhitelist.csv
+      headers: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -4950,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: 1e54f438-563d-4cf9-8e1f-e65058a59c1b
+    type: condition
+    task:
+      id: 1e54f438-563d-4cf9-8e1f-e65058a59c1b
+      version: -1
+      name: Is there a contact email address provided?
+      description: Checks whether there is a contact email address provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.support_contact
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -4950,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 3b12f157-fd85-4090-8640-4082b2f1dcb1
+    type: regular
+    task:
+      id: 3b12f157-fd85-4090-8640-4082b2f1dcb1
+      version: -1
+      name: Send the created file through an email
+      description: Sends the created file of the IP Address(es) to be added to allow list
+        through an email.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      additionalHeader: {}
+      attachCIDs: {}
+      attachIDs:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: IPAddressToWhitelist.csv
+          accessor: EntryID
+      attachNames: {}
+      bcc: {}
+      body:
+        simple: |-
+          Hello,
+
+          Please follow the following steps and upload the modified CSV file to the XSOAR incident: ${ServerURL.URL}/#/Custom/caseinfoid/${incident.id} to proceed further.
+
+          - Download the CSV file attached to this email.
+          - Modify the value of the column "Should the IP Address be whitelisted?" to "No" if you do not want to add the IP Address to allow list.
+          - If you do not want to add any IP Address to allow list, please submit the form for entering entryID with an empty value.
+      cc: {}
+      from: {}
+      htmlBody: {}
+      raw_message: {}
+      replyTo: {}
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Whitelisting the IP Address(es)'
+      templateParams: {}
+      to:
+        complex:
+          root: inputs.support_contact
+      transientFile: {}
+      transientFileCID: {}
+      transientFileContent: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5180,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 798ba47a-2682-48ee-87d3-0e39736e6cf5
+    type: collection
+    task:
+      id: 798ba47a-2682-48ee-87d3-0e39736e6cf5
+      version: -1
+      name: Get the modified CSV file for the IP Address(es) to be added to allow list
+      description: Gets the EntryID of the modified CSV file for the IP Address(es)
+        to be added to allow list.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -4950,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        complex:
+          root: inputs.support_contact
+      subject:
+        simple: 'RiskIQ Digital Footprint XSOAR: Decide about the whitelisting of
+          the IP Address(es)'
+      body:
+        simple: Please redirect to the following link in order to upload the modified
+          CSV file and proceed further.
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: EntryID of the modified file for the IP Address(es) to be added to allow list
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: eg. 50@1
+        tooltip: Please enter the EntryID of the modified file for the IP Address(es)
+          to be added to allow list. Submit this form with an empty value if you do not want
+          to add any IP Address to allow list.
+        readonly: false
+      title: Modified CSV File for whitelisting
+      description: Please download the CSV file from the email sent to you or from
+        the war room, modify the value in column "Should the IP Address be whitelisted?"
+        to "No" for the IP Address(es) that should not be added to allow list, and upload
+        that file here. After uploading the file, please enter the EntryID corresponding
+        to it here. Submit this form with an empty value if you do not want to add
+        any IP Address to allow list.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 075cb215-f05d-4bda-8af0-f2c3f02eb3f6
+    type: condition
+    task:
+      id: 075cb215-f05d-4bda-8af0-f2c3f02eb3f6
+      version: -1
+      name: Is the user willing to add the IP Address(es) to allow list and is the entered EntryID
+        valid?
+      description: Checks whether the user is willing to add the IP Address(es) to allow list
+        and if the entered EntryID is valid.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Modified CSV File for whitelisting.Answers.0
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: Modified CSV File for whitelisting.Answers.0
+                      iscontext: true
+                    right:
+                      value:
+                        simple: \b[0-9]+@[0-9]+\b
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -4950,
+          "y": 1895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 9b115943-d06b-4370-84e1-4c56ad0bb39e
+    type: regular
+    task:
+      id: 9b115943-d06b-4370-84e1-4c56ad0bb39e
+      version: -1
+      name: Parse the modified CSV for the IP Address(es) to be whitelisted
+      description: Parses the modified CSV for the IP Address(es) to be added to allow list.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+      - "47"
+      - "45"
+    scriptarguments:
+      codec: {}
+      domains: {}
+      entryID:
+        complex:
+          root: Modified CSV File for whitelisting.Answers
+          accessor: "0"
+      file: {}
+      hashes: {}
+      ips: {}
+      parseAll:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5180,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 6401dd57-9b40-4060-87e3-93e89c27834e
+    type: condition
+    task:
+      id: 6401dd57-9b40-4060-87e3-93e89c27834e
+      version: -1
+      name: Is AWS - EC2 enabled and AWS Security Group Name set?
+      description: Checks whether there is an active instance of the AWS - EC2 integration
+        enabled and if the "AWS Security Group Name" input is set.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.aws_security_group_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -6250,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 9e9e6694-a8df-4b82-8c88-6a59955dc4ad
+    type: playbook
+    task:
+      id: 9e9e6694-a8df-4b82-8c88-6a59955dc4ad
+      version: -1
+      name: IP Whitelist - AWS Security Group
+      description: Sync a list of IP addresses to an AWS Security Group.
+      playbookName: IP Whitelist - AWS Security Group
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      IP:
+        complex:
+          root: ParseCSV.ParsedCSV
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ParseCSV.ParsedCSV.Should the IP Address be whitelisted?
+                    Yes or No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      IndicatorTagName:
+        simple: AWS_RiskIQ_IP_Whitelist
+      SecurityGroupName:
+        complex:
+          root: inputs.aws_security_group_name
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -6400,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: a5be8e4d-d5ef-4cc0-8ba8-db580cfaa1fd
+    type: condition
+    task:
+      id: a5be8e4d-d5ef-4cc0-8ba8-db580cfaa1fd
+      version: -1
+      name: Is Okta v2 enabled and Okta Zone ID set?
+      description: Checks whether there is an active instance of the Okta v2 integration
+        enabled and if the "Okta Zone ID" input is set.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Okta v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.okta_zone_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -5710,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: a069e0a9-15eb-4441-8204-e4421b71a92c
+    type: playbook
+    task:
+      id: a069e0a9-15eb-4441-8204-e4421b71a92c
+      version: -1
+      name: Allow IP - Okta Zone
+      description: "Sync a list of IP addresses to the Okta Network Zone with the\
+        \ given ID. \nExisting IPs in the Okta Zone which are not in the input list\
+        \ will be removed and the indicator will be untagged in Cortex XSOAR.\nIDs\
+        \ can be retrieved  using !okta-list-zones. This playbook supports CIDR notation\
+        \ only (1.1.1.1/32) and not range notation (1.1.1.1-1.1.1.1)"
+      playbookName: Allow IP - Okta Zone
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      IP:
+        complex:
+          root: ParseCSV.ParsedCSV
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ParseCSV.ParsedCSV.Should the IP Address be whitelisted?
+                    Yes or No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+              ignorecase: true
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      IndicatorTagName:
+        simple: RiskIQ_Okta_Zone
+      ZoneID:
+        complex:
+          root: inputs.okta_zone_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -5860,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: c9e5dd4f-ea0c-43fc-88b5-7014d3d471c3
+    type: playbook
+    task:
+      id: c9e5dd4f-ea0c-43fc-88b5-7014d3d471c3
+      version: -1
+      name: IP Whitelist - GCP Firewall
+      description: Set a list of IP addresses in GCP firewall.
+      playbookName: IP Whitelist - GCP Firewall
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      GCPFirewallName:
+        complex:
+          root: inputs.gcp_firewall_name
+      IP:
+        complex:
+          root: ParseCSV.ParsedCSV
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ParseCSV.ParsedCSV.Should the IP Address be whitelisted?
+                    Yes or No
+                iscontext: true
+              right:
+                value:
+                  simple: "Yes"
+          accessor: IP Address
+          transformers:
+          - operator: uniq
+      IndicatorTagName:
+        simple: GCP_RiskIQ_IP_Whitelist
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -5330,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: fa858919-5f08-4b90-837b-54017c93e23f
+    type: condition
+    task:
+      id: fa858919-5f08-4b90-837b-54017c93e23f
+      version: -1
+      name: Is Google Cloud Compute enabled and GCP Firewall Name is set?
+      description: Checks whether there is an active instance of the Google Cloud
+        Compute integration enabled and if the "GCP Firewall Name" input is set.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.gcp_firewall_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -5180,
+          "y": 2240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 8a1dbcb4-6e1f-4f62-8c85-a48410994432
+    type: title
+    task:
+      id: 8a1dbcb4-6e1f-4f62-8c85-a48410994432
+      version: -1
+      name: IP Address Whitelisting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3130,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 99b2f166-68e3-46c0-8a82-b23afebf6928
+    type: title
+    task:
+      id: 99b2f166-68e3-46c0-8a82-b23afebf6928
+      version: -1
+      name: Tag IP Address
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -850,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 4173e4d1-277e-433e-8d79-d51bf2d34def
+    type: title
+    task:
+      id: 4173e4d1-277e-433e-8d79-d51bf2d34def
+      version: -1
+      name: IP Address Exclusion
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1290,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_25_yes": 0.56,
+      "12_6_#default#": 0.1,
+      "13_6_#default#": 0.11,
+      "14_6_#default#": 0.1,
+      "15_6_#default#": 0.1,
+      "26_14_yes": 0.9,
+      "26_15_yes": 0.9,
+      "26_39_#default#": 0.9,
+      "26_6_no": 0.1,
+      "27_28_yes": 0.29,
+      "27_6_no": 0.1,
+      "31_35_#default#": 0.56,
+      "36_6_#default#": 0.1,
+      "40_42_#default#": 0.45,
+      "43_44_yes": 0.4,
+      "43_6_#default#": 0.1,
+      "45_6_#default#": 0.1,
+      "47_6_#default#": 0.1,
+      "50_6_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2725,
+        "width": 6430,
+        "x": -6400,
+        "y": -20
+      }
+    }
+  }
+inputs:
+- key: ip_address
+  value: {}
+  required: true
+  description: The list of IP Address(es) to be added to allow list and excluded.
+  playbookInputQuery:
+- key: InternalRange
+  value: {}
+  required: false
+  description: 'A list of IP ranges to check if the IP Address is in that range for
+    adding to allow list. The list should be provided in CIDR notation, separated by commas.
+    An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16"
+    (without quotes). If a list is not provided, will use the default list provided
+    in the IsIPInRanges script (the known IPv4 private address ranges).'
+  playbookInputQuery:
+- key: auto_whitelist_ip_address
+  value:
+    complex:
+      root: incident
+      accessor: riskiqautowhitelistipaddress
+  required: false
+  description: Automatically add the IP Address(es) to allow list. You can set this as 'Yes'
+    or 'No' manually here or you can set it into a custom incident field 'RiskIQ Auto
+    Whitelist IP Address'.
+  playbookInputQuery:
+- key: auto_exclude_whitelisted_ip_address
+  value:
+    complex:
+      root: incident
+      accessor: riskiqautoexcludewhitelistedipaddress
+  required: false
+  description: Automatically add the IP Address(es) on allow list to the exclusion list.
+    You can set this as 'Yes' or 'No' manually here or you can set it into a custom
+    incident field 'RiskIQ Auto Exclude Whitelisted IP Address'.
+  playbookInputQuery:
+- key: support_contact
+  value:
+    complex:
+      root: incident
+      accessor: riskiqsupportcontact
+  required: false
+  description: The contact email address of the support team from which manual inputs
+    should be fetched.
+  playbookInputQuery:
+- key: aws_security_group_name
+  value:
+    complex:
+      root: incident
+      accessor: riskiqassetawssecuritygroupname
+  required: false
+  description: Name of the AWS Security Group to update the IPs on allow list.
+  playbookInputQuery:
+- key: gcp_firewall_name
+  value:
+    complex:
+      root: incident
+      accessor: riskiqassetgcpfirewallname
+  required: false
+  description: Name of the GCP Firewall where the playbook should set the IPs on allow list.
+  playbookInputQuery:
+- key: okta_zone_id
+  value:
+    complex:
+      root: incident
+      accessor: riskiqassetoktazoneid
+  required: false
+  description: ID of the Okta Zone to update the IPs on allow list. Use !okta-list-zones
+    to obtain the available zones.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

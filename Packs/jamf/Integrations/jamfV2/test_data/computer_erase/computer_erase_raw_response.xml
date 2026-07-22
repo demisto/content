@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<computer_command>
+    <command>
+        <name>EraseDevice</name>
+        <command_uuid>121c1f1e-079f-4281-ac95-f5df7655eb15</command_uuid>
+        <computer_id>138</computer_id>
+    </command>
+</computer_command>

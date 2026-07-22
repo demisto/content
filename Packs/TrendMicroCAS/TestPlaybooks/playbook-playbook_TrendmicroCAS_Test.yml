@@ -1,0 +1,419 @@
+id: playbook_TrendmicroCAS_Test
+version: -1
+name: playbook_TrendmicroCAS_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b0a405e3-d0ad-44b7-8875-160086cbf896
+    type: start
+    task:
+      id: b0a405e3-d0ad-44b7-8875-160086cbf896
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bc3d7047-b53d-49f0-8ae4-f52c71d7638a
+    type: regular
+    task:
+      id: bc3d7047-b53d-49f0-8ae4-f52c71d7638a
+      version: -1
+      name: email-sweep
+      description: Searches email messages in Cloud App Security protected mailboxes
+        for those that match meta information search criteria.
+      script: '|||trendmicro-cas-email-sweep'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      end: {}
+      file_extension: {}
+      file_name: {}
+      file_sha1: {}
+      lastndays: {}
+      limit:
+        simple: "1"
+      mailbox: {}
+      message_id: {}
+      next_link: {}
+      recipient: {}
+      sender: {}
+      source_domain: {}
+      source_ip: {}
+      start: {}
+      subject: {}
+      url: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 1f30035f-801a-4b81-8820-5f0e2d644f4f
+    type: regular
+    task:
+      id: 1f30035f-801a-4b81-8820-5f0e2d644f4f
+      version: -1
+      name: get blocked list
+      description: Retrieves all blocked senders, URLs, and SHA-1 hash values that
+        the administrator has configured to quarantine Exchange Online email messages.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-blocked-lists-get
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2b7aaf28-78aa-4afa-8fd6-1013964f8d96
+    type: regular
+    task:
+      id: 2b7aaf28-78aa-4afa-8fd6-1013964f8d96
+      version: -1
+      name: update blocked list
+      description: Adds or removes senders, URLs, and/or SHA-1 hash values to or from
+        the blocked lists.
+      script: '|||trendmicro-cas-blocked-lists-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      action_type:
+        simple: create
+      filehashes: {}
+      senders:
+        simple: 123@gmail.com,456@gmail.com
+      urls:
+        simple: 123.com,456.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: a3379baf-775f-4ff7-8243-3209fcb842db
+    type: condition
+    task:
+      id: a3379baf-775f-4ff7-8243-3209fcb842db
+      version: -1
+      name: verify blocked list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: TrendMicroCAS.BlockedList.senders
+            iscontext: true
+          right:
+            value:
+              simple: 123@gmail.com
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: TrendMicroCAS.BlockedList.urls
+            iscontext: true
+          right:
+            value:
+              simple: 123.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8da77ed0-956f-4d86-8f25-1f91847560d6
+    type: regular
+    task:
+      id: 8da77ed0-956f-4d86-8f25-1f91847560d6
+      version: -1
+      name: delete blocked list
+      description: Adds or removes senders, URLs, and/or SHA-1 hash values to or from
+        the blocked lists.
+      script: '|||trendmicro-cas-blocked-lists-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      action_type:
+        simple: delete
+      filehashes: {}
+      senders:
+        simple: 123@gmail.com,456@gmail.com
+      urls:
+        simple: 123.com,456.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: a6d5d8d9-add7-4068-8faa-7f1943d8a4c4
+    type: condition
+    task:
+      id: a6d5d8d9-add7-4068-8faa-7f1943d8a4c4
+      version: -1
+      name: verify blocked list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: TrendMicroCAS.BlockedList.senders
+            iscontext: true
+          right:
+            value:
+              simple: 123@gmail.com
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: TrendMicroCAS.BlockedList.urls
+            iscontext: true
+          right:
+            value:
+              simple: 123.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: e7520c3e-08c9-47ec-80fb-2fb38f7128e5
+    type: playbook
+    task:
+      id: e7520c3e-08c9-47ec-80fb-2fb38f7128e5
+      version: -1
+      name: Trend Micro CAS - Take Action On User Accounts
+      playbookName: Trend Micro CAS - Take Action On User Accounts
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      account_user_email:
+        simple: test@onmicrosoft.com
+      action_type:
+        simple: ACCOUNT_DISABLE
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a4fdc83d-e671-41ac-85a8-3fa8a251ced9
+    type: playbook
+    task:
+      id: a4fdc83d-e671-41ac-85a8-3fa8a251ced9
+      version: -1
+      name: Trend Micro CAS - Take Action On Emails
+      playbookName: Trend Micro CAS - Take Action On Emails
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    scriptarguments:
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+      action_type:
+        simple: MAIL_DELETE
+      mail_message_delivery_time:
+        simple: "2020-07-09T07:42:59.000Z"
+      mail_messge_id:
+        simple: '<DB7PR07MB5769F7ECC5AA5BAE27713D0399640@DB7PR07MB5769.eurprd07.prod.outlook.com> '
+      mail_unique_id:
+        simple: 767868u9079876t
+      mailbox:
+        simple: avishai@demistodev.onmicrosoft.com
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 405f30a4-e643-411a-83c4-1da30947d3a8
+    type: regular
+    task:
+      id: 405f30a4-e643-411a-83c4-1da30947d3a8
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1640,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

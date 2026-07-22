@@ -1,0 +1,94 @@
+{
+  "response": {
+    "matches": [
+      {
+        "artifact": {
+          "domainName": "test.com"
+        },
+        "sources": [
+          {
+            "source": "3rd Party",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          },
+          {
+            "source": "External",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          }
+        ],
+        "iocIngestTime": "2019-03-31T18:00:00Z",
+        "firstSeenTime": "2020-01-20T12:10:26Z",
+        "lastSeenTime": "2020-03-21T12:10:26Z"
+      },
+      {
+        "artifact": {
+          "domainName": "secondtest.com"
+        },
+        "sources": [
+          {
+            "source": "3rd Party",
+            "confidenceScore": {
+              "normalizedConfidenceScore": "Low",
+              "intRawConfidenceScore": 0
+            },
+            "rawSeverity": "Low",
+            "category": "Not Known"
+          }
+        ],
+        "iocIngestTime": "2019-03-30T18:00:00Z",
+        "firstSeenTime": "2020-01-21T12:10:26Z",
+        "lastSeenTime": "2020-01-21T12:10:26Z"
+      },
+      {
+        "artifact": {
+            "destinationIpAddress": "0.0.0.1"
+        },
+        "sources": [
+            {
+                "source": "Threat Intelligence",
+                "confidenceScore": {
+                    "normalizedConfidenceScore": "Medium",
+                    "intRawConfidenceScore": 0
+                },
+                "rawSeverity": "Medium",
+                "category": "Unwanted"
+            }
+        ],
+        "iocIngestTime": "2023-11-30T19:26:41.266555Z",
+        "firstSeenTime": "2023-01-17T09:54:19Z",
+        "lastSeenTime": "2023-01-17T09:54:19Z",
+        "uri": [
+            "https://demo.backstory.chronicle.security/destinationIpResults?ip=0.0.0.1"
+        ]
+      },
+      {
+        "artifact": {
+            "hashSha256": "0000000000000000000000000000000000000000000000000000000000000001"
+        },
+        "sources": [
+            {
+                "source": "Open Source Intel",
+                "confidenceScore": {
+                    "intRawConfidenceScore": 0
+                }
+            }
+        ],
+        "iocIngestTime": "2023-11-03T19:30:34.254760Z",
+        "firstSeenTime": "2023-05-05T09:52:57.409114Z",
+        "lastSeenTime": "2023-05-05T09:53:25.558Z",
+        "uri": [
+            "https://demo.backstory.chronicle.security/hashResults?sha256=0000000000000000000000000000000000000000000000000000000000000001"
+        ]
+      }
+    ]
+  }
+}

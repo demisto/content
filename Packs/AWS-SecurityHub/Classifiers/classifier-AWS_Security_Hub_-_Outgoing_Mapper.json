@@ -1,0 +1,63 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "AWS Security Hub - Outgoing Mapper",
+    "mapping": {
+        "AWS Security Hub Finding": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Confidence": {
+                    "simple": "awssecurityhubconfidence"
+                },
+                "Criticality": {
+                    "simple": "awssecurityhubcriticality"
+                },
+                "FindingIdentifiers.Id": {
+                    "simple": "alertid"
+                },
+                "FindingIdentifiers.ProductArn": {
+                    "simple": "awssecurityhubproductarn"
+                },
+                "Note.Text": {
+                    "simple": "comment"
+                },
+                "Note.UpdatedBy": {
+                    "simple": "owner"
+                },
+                "Severity.Label": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "0.5,1,2,3,4"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "INFORMATIONAL,LOW,MEDIUM,HIGH,CRITICAL"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "VerificationState": {
+                    "simple": "awssecurityhubverificationstate"
+                },
+                "Workflow.Status": {
+                    "simple": "awssecurityhubworkflowstatus"
+                }
+            }
+        }
+    },
+    "name": "AWS Security Hub - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

@@ -1,0 +1,1635 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
+id: MDE - Host Advanced Hunting For Network Activity
+inputs:
+- description: A comma-separated list of host names to hunt.
+  key: DeviceName
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: hostnames
+      root: incident
+      transformers:
+      - operator: uniq
+- description: A comma-separated list of device IDs to hunt.
+  key: DeviceID
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: agentsid
+      root: incident
+      transformers:
+      - operator: uniq
+- description: A comma-separated list of file SHA256 hashes to hunt.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value:
+    complex:
+      accessor: filesha256
+      root: incident
+      transformers:
+      - operator: uniq
+name: MDE - Host Advanced Hunting For Network Activity
+outputs:
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result
+  description: The query results for Hunt Network Connections.
+  type: unknown
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+  description: The query results for external_addresses query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+  description: The query results for dns_query query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
+  description: The query results for encoded_commands query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+  description: The query results for Hunt Lateral Movement Evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
+  description: The query results for network_connections query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+  description: The query results for smb_connections query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
+  description: The query results for credential_dumping query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+  description: The query results for management_connection query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: The query results for Hunt Persistence Evidence.
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+  description: The query results for scheduled_job query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+  description: The query results for registry_entry query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+  description: The query results for startup_folder_changes query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+  description: The query results for new_service_created query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+  description: The query results for service_updated query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+  description: The query results for file_replaced query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+  description: The query results for new_user query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+  description: The query results for new_group query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+  description: The query results for group_user_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+  description: The query results for local_firewall_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+  description: The query results for host_file_change query_purpose.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '4'
+      - "48"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: d34166a3-8643-4e9b-8894-fbb23ab0827a
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: d34166a3-8643-4e9b-8894-fbb23ab0827a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 4300,
+          "y": 260
+        }
+      }
+  '1':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on File External Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: File External Connections
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '10'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      query_operation:
+        simple: and
+      query_purpose:
+        simple: external_addresses
+      sha256:
+        simple: ${inputs.FileSha256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+      id: 322ac899-ca1c-4774-893c-7de1e66191b6
+      iscommand: true
+      name: Is there any network activity initiated by the file?
+      script: '|||microsoft-atp-advanced-hunting-network-connections'
+      type: regular
+      version: -1
+    taskid: 322ac899-ca1c-4774-893c-7de1e66191b6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 4080,
+          "y": 845
+        }
+      }
+    reputationcalc: 2
+  '2':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Remote Connections
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      device_name:
+        simple: ${inputs.DeviceName}
+      query_purpose:
+        simple: smb_connections
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
+      id: c4d1ddc3-40e5-43b4-8c4b-9a252c81ecdc
+      iscommand: true
+      name: Any SMB connections from the host?
+      script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
+      type: regular
+      version: -1
+    taskid: c4d1ddc3-40e5-43b4-8c4b-9a252c81ecdc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1460,
+          "y": 860
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieves an alert by a specific alert ID. Note - If the alert ID is not part of the results, it was not found.
+      id: 092a6b19-e5e5-4c91-8622-cf3e3f7cd671
+      iscommand: false
+      name: File Network Actions
+      type: title
+      version: -1
+    taskid: 092a6b19-e5e5-4c91-8622-cf3e3f7cd671
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 4080,
+          "y": 705
+        }
+      }
+  '4':
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 55155bfb-a391-4694-8a1f-3fbb6048e6b4
+      iscommand: false
+      name: Network Connections
+      type: title
+      version: -1
+      description: ''
+    taskid: 55155bfb-a391-4694-8a1f-3fbb6048e6b4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 400
+        }
+      }
+  '5':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Remote Connections
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '21'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      device_name:
+        simple: ${inputs.DeviceName}
+      query_purpose:
+        simple: management_connection
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
+      id: d9b0c4ac-6fb8-42a8-8cdf-e1a8f1daa555
+      iscommand: true
+      name: Other RDP atempts?
+      script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
+      type: regular
+      version: -1
+    taskid: d9b0c4ac-6fb8-42a8-8cdf-e1a8f1daa555
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 860
+        }
+      }
+  '6':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Enumeration of Network Shares query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Enumeration of Network Shares
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '41'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      device_name:
+        simple: ${inputs.DeviceName}
+      query_purpose:
+        simple: smb_connections
+      remote_ip_count:
+        simple: '10'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
+      id: b9a3f57e-7b1c-4b7b-88f9-663dcb1d5a75
+      iscommand: true
+      name: Enumeration of Network Shares
+      script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
+      type: regular
+      version: -1
+    taskid: b9a3f57e-7b1c-4b7b-88f9-663dcb1d5a75
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2710,
+          "y": 845
+        }
+      }
+  '7':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Remote Connections query in Advanced Hunting feature - Microsoft Defender For Endpoint
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '15'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      device_name:
+        simple: ${inputs.DeviceName}
+      query_purpose:
+        simple: host_file_change
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      id: 232738cb-1574-4389-8f40-84f06404dd50
+      iscommand: true
+      name: hosts File Modification?
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      version: -1
+    taskid: 232738cb-1574-4389-8f40-84f06404dd50
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3200,
+          "y": 845
+        }
+      }
+  '8':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on Local FW Rules Change query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Local FW Rules Change
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '19'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      device_name:
+        simple: ${inputs.DeviceName}
+      query_purpose:
+        simple: local_firewall_change
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      id: 611ec49e-e683-4d24-87b6-37e401967b31
+      iscommand: true
+      name: Any Change in Local FW rules?
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      version: -1
+    taskid: 611ec49e-e683-4d24-87b6-37e401967b31
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 845
+        }
+      }
+  '9':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Results on DNS Requests query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: DNS Requests
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      device_id:
+        simple: ${inputs.DeviceID}
+      query_operation:
+        simple: and
+      query_purpose:
+        simple: dns_query
+      sha256:
+        simple: ${inputs.FileSha256}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+      id: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
+      iscommand: true
+      name: Are there any DNS requests initiated?
+      script: '|||microsoft-atp-advanced-hunting-network-connections'
+      type: regular
+      version: -1
+    taskid: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 4530,
+          "y": 845
+        }
+      }
+  '10':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '28'
+      yes:
+      - '44'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Was there any traffic?
+      id: 4be8a4d0-6eb0-4033-81a5-9dba1fda5fc6
+      iscommand: false
+      name: Was there any traffic?
+      type: condition
+      version: -1
+    taskid: 4be8a4d0-6eb0-4033-81a5-9dba1fda5fc6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 4080,
+          "y": 1010
+        }
+      }
+  '11':
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ip:
+        complex:
+          root: IP.Address
+          transformers:
+          - operator: uniq
+          filters:
+          - - operator: IsNotInCidrRanges
+              left:
+                value:
+                  simple: IP.Address
+                iscontext: true
+              right:
+                value:
+                  simple: 127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Checks the reputation of an IP address.
+      id: 2a864409-9282-43e4-8b99-7c3b73cdbe57
+      iscommand: true
+      name: Enrich IPs
+      script: '|||ip'
+      type: regular
+      version: -1
+    taskid: 2a864409-9282-43e4-8b99-7c3b73cdbe57
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3690,
+          "y": 1700
+        }
+      }
+  '12':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: IP
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: IP.Malicious
+                      iscontext: true
+                accessor: Address
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: yes
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '28'
+      yes:
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any suspicious or malicious IPs?
+      id: 63828416-b4a9-4f49-88ab-86f070a3de0e
+      iscommand: false
+      name: Any suspicious or malicious IPs
+      type: condition
+      version: -1
+    taskid: 63828416-b4a9-4f49-88ab-86f070a3de0e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 3690,
+          "y": 1850
+        }
+      }
+  '14':
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      comment:
+        simple: 'XSOAR triggered by Advanced Hunting Playbook - #${incident.id}'
+      machine_id:
+        simple: ${inputs.DeviceID}
+      path:
+        simple: c:\Windows\System32\Drivers\etc\hosts
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Retrieves a file from a device. NOTE: Backslashes in the path must be escaped.'
+      id: 7ec060ca-f51d-49e7-8440-3e63721e35b6
+      iscommand: true
+      name: Retrieve host file
+      script: '|||microsoft-atp-live-response-get-file'
+      type: regular
+      version: -1
+    taskid: 7ec060ca-f51d-49e7-8440-3e63721e35b6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3420,
+          "y": 1180
+        }
+      }
+  '15':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '33'
+      yes:
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: 49fe7e92-4627-4c6c-8579-a2a4416d5b97
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 49fe7e92-4627-4c6c-8579-a2a4416d5b97
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 3200,
+          "y": 1010
+        }
+      }
+  '16':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: hosts File retrieved from the investigated endpoint.
+      tags:
+        simple: hosts File Modification
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "43"
+      - "49"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      lastZipFileInWarroom:
+        simple: Yes
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Unzips a file using file name or entry ID for specify a file. Unzipped files are loaded to the War Room and names are put into the context.
+      id: f1921faf-86cf-4e09-8e56-fc8276f712ce
+      iscommand: false
+      name: Unzip the retrieved host file
+      scriptName: UnzipFile
+      type: regular
+      version: -1
+    taskid: f1921faf-86cf-4e09-8e56-fc8276f712ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3420,
+          "y": 1350
+        }
+      }
+  '18':
+    id: '18'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      severity:
+        simple: High
+      tags:
+        simple: Malicious IP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update Tag - 'Malicious IP'
+      id: 45fbb52f-3162-4e81-867e-3d068d699699
+      iscommand: true
+      name: Update Tag - 'Malicious IP'
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 45fbb52f-3162-4e81-867e-3d068d699699
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3520,
+          "y": 2030
+        }
+      }
+  '19':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+          operator: isNotEmpty
+      label: yes
+    id: '19'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '33'
+      yes:
+      - '31'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: 2c361099-7f90-424f-8cc8-ea9d593d35d1
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 2c361099-7f90-424f-8cc8-ea9d593d35d1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2310,
+          "y": 1010
+        }
+      }
+  '20':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+          operator: isNotEmpty
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Name
+                root: Domain
+          operator: isExists
+      label: yes
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "28"
+      yes:
+      - '22'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: 5b68d31b-ffbd-47b8-8972-1b9a6a2b72a1
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 5b68d31b-ffbd-47b8-8972-1b9a6a2b72a1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 4530,
+          "y": 1010
+        }
+      }
+  '21':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+          operator: isNotEmpty
+      label: yes
+    id: '21'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '33'
+      yes:
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: 93e44bf7-3d84-471a-8689-38f7def2df42
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: 93e44bf7-3d84-471a-8689-38f7def2df42
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 1040
+        }
+      }
+  '22':
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '40'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        complex:
+          accessor: Name
+          root: Domain
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ''
+      description: Checks the reputation of a domain.
+      id: 17f04a0c-415a-4b67-85ab-0d583b975a6c
+      iscommand: true
+      name: Enrich DNS
+      script: '|||domain'
+      type: regular
+      version: -1
+    taskid: 17f04a0c-415a-4b67-85ab-0d583b975a6c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 4530,
+          "y": 1350
+        }
+      }
+  '23':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Name
+                root: Domain
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: Domain.Malicious
+                      iscontext: true
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: yes
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "28"
+      yes:
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any suspicious or malicious DNS?
+      id: 5e8e0cf4-2f34-4783-8db6-b178a87eab4f
+      iscommand: false
+      name: Any suspicious or malicious DNS
+      type: condition
+      version: -1
+    taskid: 5e8e0cf4-2f34-4783-8db6-b178a87eab4f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 4530,
+          "y": 1690
+        }
+      }
+  '25':
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      severity:
+        simple: High
+      tags:
+        simple: Malicious DNS
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update tag - 'Malicious DNS'
+      id: ef4e75f0-6641-41ea-8eb0-f4223d04e894
+      iscommand: true
+      name: Update tag - 'Malicious DNS'
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ef4e75f0-6641-41ea-8eb0-f4223d04e894
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 4530,
+          "y": 2030
+        }
+      }
+  '28':
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: bafdfa2c-e3c4-44e8-8efc-1f00faede674
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: bafdfa2c-e3c4-44e8-8efc-1f00faede674
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 4300,
+          "y": 2200
+        }
+      }
+  '30':
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        simple: Remote Connections
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update tag - "Remote Connections"
+      id: 1d78848b-ed8c-42ac-83b8-d7382117e0c3
+      iscommand: true
+      name: Update tag - "Remote Connections"
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1d78848b-ed8c-42ac-83b8-d7382117e0c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 1835
+        }
+      }
+  '31':
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        simple: Local FW Rules Change
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update Tag - 'Local FW Rules Change'
+      id: 125cb1d6-a660-4b72-8fe8-8b51281776b2
+      iscommand: true
+      name: Update Tag - 'Local FW Rules Change'
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 125cb1d6-a660-4b72-8fe8-8b51281776b2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2150,
+          "y": 1180
+        }
+      }
+  '33':
+    id: '33'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 4d9aad21-6c65-4525-8407-5239b2792197
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 4d9aad21-6c65-4525-8407-5239b2792197
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2520,
+          "y": 2350
+        }
+      }
+  '36':
+    id: '36'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '2'
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 48a0f363-1686-4905-8f7c-ed2520970c41
+      iscommand: false
+      name: Remote connections
+      type: title
+      version: -1
+      description: ''
+    taskid: 48a0f363-1686-4905-8f7c-ed2520970c41
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1670,
+          "y": 705
+        }
+      }
+  '37':
+    id: '37'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 1c1e5cc8-236e-4ee6-854b-53863725b9af
+      iscommand: false
+      name: 'DNS Queries '
+      type: title
+      version: -1
+      description: ''
+    taskid: 1c1e5cc8-236e-4ee6-854b-53863725b9af
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 4530,
+          "y": 705
+        }
+      }
+  '39':
+    id: '39'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+      - '6'
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 74c05cd6-3dcc-45b1-85ec-fbdc4a313e6d
+      iscommand: false
+      name: Local Network Configuration Modification
+      type: title
+      version: -1
+      description: ''
+    taskid: 74c05cd6-3dcc-45b1-85ec-fbdc4a313e6d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2710,
+          "y": 705
+        }
+      }
+  '40':
+    id: '40'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        simple: DNS Requests
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update tag - 'DNS Requests'
+      id: 1a3c62d2-0ba2-4dd6-8232-62631dc158d1
+      iscommand: true
+      name: Update tag - 'DNS Requests'
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1a3c62d2-0ba2-4dd6-8232-62631dc158d1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 4530,
+          "y": 1520
+        }
+      }
+  '41':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+          operator: isNotEmpty
+          right:
+            value: {}
+        - left:
+            iscontext: true
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+          operator: isNotEmpty
+      label: yes
+    id: '41'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '33'
+      yes:
+      - '42'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Any results?
+      id: d09c4a2b-6e4f-4e9d-8898-0f28cda243ae
+      iscommand: false
+      name: Any results?
+      type: condition
+      version: -1
+    taskid: d09c4a2b-6e4f-4e9d-8898-0f28cda243ae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 2710,
+          "y": 1010
+        }
+      }
+  '42':
+    id: '42'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        simple: Enumeration of Network Shares
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update Tag - 'Enumeration of Network Shares'
+      id: ec33ebd7-c5c3-48d9-8b78-7d0792e442e1
+      iscommand: true
+      name: Update Tag - 'Enumeration of Network Shares'
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ec33ebd7-c5c3-48d9-8b78-7d0792e442e1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2750,
+          "y": 1180
+        }
+      }
+  '43':
+    id: '43'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '33'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        simple: hosts File Modification
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update Tag - 'Hosts File Modification'
+      id: 6a6d65c3-0267-42da-85a1-11a725bc4755
+      iscommand: true
+      name: Update Tag - 'Hosts File Modification'
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6a6d65c3-0267-42da-85a1-11a725bc4755
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3100,
+          "y": 2030
+        }
+      }
+  '44':
+    id: '44'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      appendTags:
+        simple: 'true'
+      tags:
+        simple: File External Connections
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Update Tag - 'File External Connections'
+      id: 10abd8ab-14e5-4a89-85ff-352b2529d4bf
+      iscommand: true
+      name: Update Tag - 'File External Connections'
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 10abd8ab-14e5-4a89-85ff-352b2529d4bf
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 3840,
+          "y": 1350
+        }
+      }
+  "45":
+    id: "45"
+    taskid: 88124d1e-6223-43c8-89b1-264076f46201
+    type: condition
+    task:
+      id: 88124d1e-6223-43c8-89b1-264076f46201
+      version: -1
+      name: Check if device information was provided
+      description: Check if device information was provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "36"
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: fd8e6713-5106-4527-82c0-dc6970184e36
+    type: condition
+    task:
+      id: fd8e6713-5106-4527-82c0-dc6970184e36
+      version: -1
+      name: Are DeviceID and FileName provided?
+      description: Are DeviceID and FileName provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "3"
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4300,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 30ead09e-f404-43ef-8d76-65c3bcbea294
+    type: condition
+    task:
+      id: 30ead09e-f404-43ef-8d76-65c3bcbea294
+      version: -1
+      name: Are there any valid IPs to check?
+      description: Are there any valid IPs to check?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP.Address
+                filters:
+                - - operator: IsNotInCidrRanges
+                    left:
+                      value:
+                        simple: IP.Address
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 127.0.0.1/32,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
+                transformers:
+                - operator: uniq
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 3840,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_33_#default#": 0.16,
+      "19_33_#default#": 0.11,
+      "21_33_#default#": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2155,
+        "width": 3450,
+        "x": 1460,
+        "y": 260
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+system: true

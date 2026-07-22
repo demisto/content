@@ -1,0 +1,92 @@
+{
+    "pages": [
+      {
+        "iocs": [
+          {
+            "value": "CVE-2024-0001",
+            "score": 2,
+            "manuallyEditedFields": { "Score": true },
+            "modifiedTime": "2025-09-01T00:00:00Z",
+            "CustomFields": {
+              "cvssscore": 7.5,
+              "description": "Example vulnerability in product A.",
+              "published": "2024-05-01T00:00:00Z"
+            },
+            "insightCache": {
+              "scores": {
+                "brand1": {
+                  "score": 2,
+                  "reliability": "High",
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      { "Indicator": "CVE-2024-0001", "Vendor": "brand1", "Score": 2 }
+                    ],
+                    "CVE(val.ID && val.ID == obj.ID)": [
+                      {
+                        "ID": "CVE-2024-0001",
+                        "Brand": "brand1",
+                        "CVSS": { "Score": 9.8 },
+                        "Description": "brand1 view",
+                        "Published": "2024-05-02T00:00:00Z"
+                      }
+                    ]
+                  }
+                },
+                "brand2": {
+                  "score": 3,
+                  "reliability": "Medium",
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      { "Indicator": "CVE-2024-0001", "Vendor": "brand2", "Score": 3 }
+                    ],
+                    "CVE(val.ID && val.ID == obj.ID)": [
+                      {
+                        "ID": "CVE-2024-0001",
+                        "Brand": "brand2",
+                        "CVSS": "High",
+                        "Description": "brand2 view",
+                        "Published": "2024-05-03T00:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "value": "CVE-2023-9999",
+            "score": 1,
+            "CustomFields": {
+              "id": "CVE-2023-9999",
+              "cvssscore": 1.2,
+              "description": "Example low severity issue.",
+              "published": "2023-09-01T00:00:00Z"
+            },
+            "insightCache": {
+              "scores": {
+                "brand3": {
+                  "score": 1,
+                  "reliability": "Low",
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      { "Indicator": "CVE-2023-9999", "Vendor": "brand3", "Score": 1 }
+                    ],
+                    "CVE(val.ID && val.ID == obj.ID)": [
+                      {
+                        "ID": "CVE-2023-9999",
+                        "Brand": "brand3",
+                        "CVSS": 1.0,
+                        "Description": "brand3 view",
+                        "Published": "2023-09-02T00:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  

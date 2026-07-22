@@ -1,0 +1,15 @@
+[file:README.md]
+ignore=RM102
+
+[file:CiscoSMA.yml]
+ignore=PR101
+
+[file:CiscoSMAModelingRules.yml]
+ignore=MR108
+
+[file:CiscoSMAModelingRules_1_3.yml]
+ignore=MR108
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-CiscoSMA_Layout.json]
+ignore=GR103

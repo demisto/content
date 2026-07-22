@@ -1,0 +1,58 @@
+{
+  "GoogleChronicleBackstory.Alert(val.AssetName && val.AssetName == obj.AssetName)": [
+    {
+      "AssetName": "svetla",
+      "AlertCounts": 3,
+      "AlertInfo": [
+        {
+          "Name": "Command Shell Launched by Office Applications",
+          "SourceProduct": "Tanium",
+          "Severity": "Medium",
+          "Timestamp": "2019-08-12T20:25:57Z"
+        },
+        {
+          "Name": "Suspicious PowerShell Process Ancestry",
+          "SourceProduct": "Tanium",
+          "Severity": "Unspecified",
+          "Timestamp": "2019-08-12T20:24:31Z"
+        },
+        {
+          "Name": "Suspicious PowerShell Process Ancestry",
+          "SourceProduct": "Tanium",
+          "Severity": "Unspecified",
+          "Timestamp": "2019-08-12T21:24:31Z"
+        }
+      ]
+    },
+    {
+      "AssetName": "dc12",
+      "AlertCounts": 4,
+      "AlertInfo": [
+        {
+          "Name": "Possible Bitsadmin Exfiltration",
+          "SourceProduct": "Tanium",
+          "Severity": "Unspecified",
+          "Timestamp": "2019-12-30T18:49:33.923249Z"
+        },
+        {
+          "Name": "Possible Bitsadmin Exfiltration",
+          "SourceProduct": "Tanium",
+          "Severity": "Unspecified",
+          "Timestamp": "2020-01-16T18:49:33.923249Z"
+        },
+        {
+          "Name": "Possible Bitsadmin Exfiltration",
+          "SourceProduct": "Tanium",
+          "Severity": "Unspecified",
+          "Timestamp": "2020-02-16T18:49:33Z"
+        },
+        {
+          "Name": "Suspicious PowerShell Process Ancestry",
+          "SourceProduct": "Tanium",
+          "Severity": "Unspecified",
+          "Timestamp": "2019-08-12T21:24:31Z"
+        }
+      ]
+    }
+  ]
+}

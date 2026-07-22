@@ -1,0 +1,48 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Prisma Cloud",
+		"GCP Compute Engine Misconfiguration",
+		"AWS CloudTrail Misconfiguration",
+		"AWS IAM Policy Misconfiguration",
+		"AWS EC2 Instance Misconfiguration",
+		"Azure Active Directory Identity and Access",
+		"Prisma Cloud - VM Alert Prioritization"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "riskrating",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_riskrating",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "Risk Rating",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"systemAssociatedTypes": [
+		"Prisma Cloud - VM Alert Prioritization"
+	],
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validationRegex": "",
+	"version": -1,
+	"fromVersion": "5.0.0"
+}
+

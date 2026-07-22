@@ -1,0 +1,67 @@
+{
+    "response": {
+        "data": {
+            "allContents": {
+                "allContents": {
+                    "rows": [
+                    {
+                        "name": "file-name-1",
+                        "ownerDetails": {
+                            "name": "Foo Bar"
+                        },
+                        "category": "cat-1",
+                        "subcategory": "subcat-1",
+                        "service": "service-1",
+                        "type": "type-1",
+                        "risk_id": [
+                            1,
+                            3
+                        ],
+                        "created_at": "2019-12-05T08:32:01.000Z",
+                        "modified_at": "2020-06-09T04:07:27.000Z",
+                        "size": 32142,
+                        "path": "path/to/file"
+                    }
+                ],
+                "_scroll_id":"scroll id here",
+                "pagination": {
+                        "currentPage": 1,
+                        "pageSize": 1,
+                        "totalRecords": 1,
+                        "totalPages": 1
+                    }
+                }
+            },
+            "allAlerts": {
+                "riskRules": [
+                    {
+                        "id": 1,
+                        "risk_name": "risk1"
+                    },
+                    {
+                        "id": 2,
+                        "risk_name": "risk2"
+                    },
+                    {
+                        "id": 3,
+                        "risk_name": "risk3"
+                    }
+                ]
+
+            }
+
+        }
+    },
+    "output":{
+        "created_at": "2019-12-05T08:32:01.000Z",
+        "modified_at": "2020-06-09T04:07:27.000Z",
+        "name": "file-name-1",
+        "ownerDetails": "Foo Bar",
+        "path": "path/to/file",
+        "risk_names": "risk1,risk3",
+        "service": "service-1",
+        "size": 32142,
+        "subcategory": "subcat-1",
+        "type": "type-1"
+    }
+}

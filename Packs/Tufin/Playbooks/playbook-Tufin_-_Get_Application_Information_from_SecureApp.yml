@@ -1,0 +1,276 @@
+id: Tufin - Get Application Information from SecureApp
+version: -1
+name: Tufin - Get Application Information from SecureApp
+description: Search SecureApp by application name and retrieve basic application information
+  and all application connections.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 36b71890-6f73-4268-898f-5bbb33635869
+    type: start
+    task:
+      id: 36b71890-6f73-4268-898f-5bbb33635869
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5e4d12e7-eedb-40f2-828f-f9fab1b2b983
+    type: regular
+    task:
+      id: 5e4d12e7-eedb-40f2-828f-f9fab1b2b983
+      version: -1
+      name: Search Applications
+      description: Search SecureApp applications
+      script: '|||tufin-search-applications'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      name:
+        simple: ${inputs.ApplicationName}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 33b3a38e-7ebd-443d-8f18-44bc910241f6
+    type: regular
+    task:
+      id: 33b3a38e-7ebd-443d-8f18-44bc910241f6
+      version: -1
+      name: Get Application Connections
+      description: Get SecureApp application connections
+      script: '|||tufin-search-application-connections'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      application-id:
+        simple: ${Tufin.App.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: b4bc2a3b-2321-4b89-8f98-ef4fe1c57188
+    type: title
+    task:
+      id: b4bc2a3b-2321-4b89-8f98-ef4fe1c57188
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 363017f9-0e86-4c6f-8667-10dfffbad975
+    type: condition
+    task:
+      id: 363017f9-0e86-4c6f-8667-10dfffbad975
+      version: -1
+      name: Is Tufin Integration Available?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Tufin
+                accessor: brand
+            iscontext: true
+          right:
+            value:
+              simple: Tufin
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 92e6bd09-c537-4727-81e0-52d4c547c8dc
+    type: condition
+    task:
+      id: 92e6bd09-c537-4727-81e0-52d4c547c8dc
+      version: -1
+      name: Does Application Name Exist?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.ApplicationName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_3_#default#": 0.46,
+      "5_3_#default#": 0.24
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1175,
+        "width": 520,
+        "x": 450,
+        "y": -510
+      }
+    }
+  }
+inputs:
+- key: ApplicationName
+  value: {}
+  required: true
+  description: Name of the application to query
+  playbookInputQuery:
+outputs:
+- contextPath: Tufin.App.ID
+  description: Application ID
+- contextPath: Tufin.App.Name
+  description: Application name
+- contextPath: Tufin.App.Status
+  description: Application status
+- contextPath: Tufin.App.Decommissioned
+  description: Is the application decommissioned
+- contextPath: Tufin.App.OwnerID
+  description: Application owner ID
+- contextPath: Tufin.App.OwnerName
+  description: Application owner name
+- contextPath: Tufin.App.Comments
+  description: Application comments
+- contextPath: Tufin.AppConnection.ID
+  description: Connection ID
+- contextPath: Tufin.AppConnection.Name
+  description: Connection name
+- contextPath: Tufin.AppConnection.AppID
+  description: Application ID
+- contextPath: Tufin.AppConnection.Status
+  description: Connection status
+- contextPath: Tufin.AppConnection.Source
+  description: Connection source list
+- contextPath: Tufin.AppConnection.Destination
+  description: Connection destination list
+- contextPath: Tufin.AppConnection.Service
+  description: Connection service list
+- contextPath: Tufin.AppConnection.Comment
+  description: Connection comment
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,299 @@
+id: Panorama Query Logs - Test
+version: -1
+name: Panorama Query Logs - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7dfe7332-f25c-4a72-800f-7d2237e5094e
+    type: start
+    task:
+      id: 7dfe7332-f25c-4a72-800f-7d2237e5094e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 5db705c1-536b-4624-8adb-59806971fb62
+    type: playbook
+    task:
+      id: 5db705c1-536b-4624-8adb-59806971fb62
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      log_type:
+        simple: url
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url:
+        simple: winatp-gw-weu.microsoft.com
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e3db91cf-02db-4a31-8761-1ffd4d9f0b7f
+    type: condition
+    task:
+      id: e3db91cf-02db-4a31-8761-1ffd4d9f0b7f
+      version: -1
+      name: Exist context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Panorama.Monitor
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4ff37b91-b3f6-451e-80d6-dd2b7974435c
+    type: title
+    task:
+      id: 4ff37b91-b3f6-451e-80d6-dd2b7974435c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2eccd416-06f1-455d-8be3-9647fb056f94
+    type: playbook
+    task:
+      id: 2eccd416-06f1-455d-8be3-9647fb056f94
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      action:
+        simple: allow
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      log_type:
+        simple: traffic
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: dfb0cc7a-a07f-48f6-8b39-4d15b861272e
+    type: playbook
+    task:
+      id: dfb0cc7a-a07f-48f6-8b39-4d15b861272e
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      log_type:
+        simple: threat
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 26a781be-3a88-4942-8fc4-7e7452892c9e
+    type: playbook
+    task:
+      id: 26a781be-3a88-4942-8fc4-7e7452892c9e
+      version: -1
+      name: Panorama Query Logs
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      action: {}
+      addr-dst: {}
+      addr-src: {}
+      filedigest: {}
+      ip: {}
+      log_type:
+        simple: wildfire
+      port-dst: {}
+      query: {}
+      rule: {}
+      time-generated: {}
+      url: {}
+      zone-dst: {}
+      zone-src: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: "6.1.0"

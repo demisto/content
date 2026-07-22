@@ -1,0 +1,5 @@
+!skyhigh-security-incident-query limit="3" start_time="3 days"
+!skyhigh-security-incident-status-update incident_ids=CAP-114044 status=archived
+!skyhigh-security-policy-dictionary-list limit="3"
+!skyhigh-security-policy-dictionary-update dictionary_id="26436" name="(Default) Internal Domains" content="gmail.com, outlook.com"
+!skyhigh-security-anomaly-activity-list anomaly_id="1111"

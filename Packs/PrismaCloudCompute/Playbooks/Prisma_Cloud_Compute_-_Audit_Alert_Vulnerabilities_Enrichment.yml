@@ -1,0 +1,577 @@
+id: Prisma Cloud Compute - Audit Alert Vulnerabilities Enrichment
+version: -1
+name: Prisma Cloud Compute - Audit Alert Vulnerabilities Enrichment
+description: "This is a sub-playbook of the \"Prisma Cloud Compute - Audit Alert v2\" playbook.\nIt creates CVE indicators based on image or host vulnerabilities. "
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6ae5787f-ae72-4469-8cd5-46a403ecbf09
+    type: start
+    task:
+      id: 6ae5787f-ae72-4469-8cd5-46a403ecbf09
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 86b1e524-e5ad-4039-82fd-6201e064178d
+    type: regular
+    task:
+      id: 86b1e524-e5ad-4039-82fd-6201e064178d
+      version: -1
+      name: Create Indicators from Image Vulnerabilities
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cvedescription:
+        complex:
+          root: inputs.ImageVulnerabilities
+          accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      cvss:
+        complex:
+          root: inputs.ImageVulnerabilities
+          accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      cvssscore:
+        complex:
+          root: inputs.ImageVulnerabilities
+          accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      description:
+        complex:
+          root: inputs.ImageVulnerabilities
+          accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      source:
+        simple: Prisma Cloud Compute
+      tags:
+        complex:
+          root: inputs.ImageVulnerabilities
+          accessor: packageName
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      type:
+        simple: CVE
+      value:
+        complex:
+          root: inputs.ImageVulnerabilities
+          accessor: cve
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: dc19e613-67d1-46d7-8a80-9b3e83a0dbdc
+    type: title
+    task:
+      id: dc19e613-67d1-46d7-8a80-9b3e83a0dbdc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1f36cc8d-83e6-4797-86be-e6238f5a26a6
+    type: condition
+    task:
+      id: 1f36cc8d-83e6-4797-86be-e6238f5a26a6
+      description: ""
+      version: -1
+      name: Check if alert has image vulnerabilities
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "1"
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ImageVulnerabilities
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ImageVulnerabilities
+                accessor: cve
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7a4b4e86-15f4-47ad-881e-3e26fd7e9ac6
+    type: regular
+    task:
+      id: 7a4b4e86-15f4-47ad-881e-3e26fd7e9ac6
+      version: -1
+      name: Save CVEs (for report)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: CVEReport
+      value:
+        complex:
+          root: inputs.ImageVulnerabilities
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.ImageVulnerabilities.cve
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 98519006-1495-492f-82ef-979e2c2523a9
+    type: condition
+    task:
+      id: 98519006-1495-492f-82ef-979e2c2523a9
+      description: ""
+      version: -1
+      name: Check host vulnerabilities
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HostVulnerabilities
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.HostVulnerabilities
+                accessor: cve
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 85b195e3-2e5e-43bf-8be0-b1d21c8d4f9b
+    type: regular
+    task:
+      id: 85b195e3-2e5e-43bf-8be0-b1d21c8d4f9b
+      version: -1
+      name: Create Indicators from host Vulnerabilities
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cvedescription:
+        complex:
+          root: inputs.HostVulnerabilities
+          accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      cvss:
+        complex:
+          root: inputs.HostVulnerabilities
+          accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      cvssscore:
+        complex:
+          root: inputs.HostVulnerabilities
+          accessor: cvss
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      description:
+        complex:
+          root: inputs.HostVulnerabilities
+          accessor: description
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      source:
+        simple: Prisma Cloud Compute
+      tags:
+        complex:
+          root: inputs.HostVulnerabilities
+          accessor: packageName
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+      type:
+        simple: CVE
+      value:
+        complex:
+          root: inputs.HostVulnerabilities
+          accessor: cve
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.severity
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.CVEsIndicatorsSeverities
+                iscontext: true
+              ignorecase: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -250,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1fbd0237-637c-4d24-8024-d7a3c93f94e6
+    type: regular
+    task:
+      id: 1fbd0237-637c-4d24-8024-d7a3c93f94e6
+      version: -1
+      name: Save CVEs (for report)
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: CVEReport
+      value:
+        complex:
+          root: inputs.HostVulnerabilities
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.HostVulnerabilities.cve
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 192.5,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_1_yes": 0.28,
+      "3_4_yes": 0.61,
+      "5_2_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 825,
+        "width": 1680,
+        "x": -250,
+        "y": 190
+      }
+    }
+  }
+inputs:
+- key: ImageVulnerabilities
+  value: {}
+  required: false
+  description: Image vulnerabilities that were retrieved.
+  playbookInputQuery:
+- key: HostVulnerabilities
+  value: {}
+  required: false
+  description: Host vulnerabilities that were retrieved.
+  playbookInputQuery:
+- key: CVEsIndicatorsSeverities
+  value:
+    simple: High, Critical
+  required: false
+  description: |-
+    A list of the image or host CVE severities that the playbook creates indicators from.
+    Available options (not case sensitive):
+    - Critical
+    - High
+    - Medium
+    - moderate
+    - Important
+    - Low
+    - Negligible
+
+    Default value: High, Critical.
+  playbookInputQuery:
+outputs:
+- contextPath: CVEReport
+  description: CVE report.
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

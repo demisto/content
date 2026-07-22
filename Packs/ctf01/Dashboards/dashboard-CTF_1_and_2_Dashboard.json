@@ -1,0 +1,609 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "CTF 1 And 2 Dashboard",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "1582c710-4d62-11ee-8c0c-d11caf6412a3",
+            "id": "1582c710-4d62-11ee-8c0c-d11caf6412a3",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d6e964c1-defd-448f-8ff6-35d4950de7e4",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:36:55.745035316Z",
+                "name": "Users that finished CTF 02",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Users that finished CTF 02",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctf02.runStatus:ended and playbook:\"CTF 2 - Classify an incident - RDP Brute force\"",
+                "sequenceNumber": 20179453,
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "17eaed70-4d62-11ee-8c0c-d11caf6412a3",
+            "id": "17eaed70-4d62-11ee-8c0c-d11caf6412a3",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d6e964c1-defd-448f-8ff6-35d4950de7e4",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:36:55.745035316Z",
+                "name": "Users that finished CTF 01",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Users that finished CTF 02",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctf01.runStatus:ended and playbook:\"CTF 1 - Get to know XSOAR8\"",
+                "sequenceNumber": 20179453,
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "5b38ffe0-4d62-11ee-8c0c-d11caf6412a3",
+            "id": "5b38ffe0-4d62-11ee-8c0c-d11caf6412a3",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d6e964c1-defd-448f-8ff6-35d4950de7e4",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:36:55.745035316Z",
+                "name": "Users that are doing CTF 01",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": null
+                            },
+                            "#EF9700": {
+                                "value": 1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Users that finished CTF 02",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctf01.runStatus:running and playbook:\"CTF 1 - Get to know XSOAR8\" and status:Active",
+                "sequenceNumber": 20179453,
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "7428aaa0-4d62-11ee-8c0c-d11caf6412a3",
+            "id": "7428aaa0-4d62-11ee-8c0c-d11caf6412a3",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d6e964c1-defd-448f-8ff6-35d4950de7e4",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:36:55.745035316Z",
+                "name": "Users that are doing CTF 02",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#EF9700": {
+                                "value": 1
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Users that finished CTF 02",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctf02.runStatus:running and playbook:\"CTF 2 - Classify an incident - RDP Brute force\"  and status:Active",
+                "sequenceNumber": 20179453,
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "aa7a9c80-4d62-11ee-8c0c-d11caf6412a3",
+            "id": "aa7a9c80-4d62-11ee-8c0c-d11caf6412a3",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "eac19dfb-4eaf-4729-8b70-934920698496",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:41:05.621861022Z",
+                "name": "A list of users that are doing the CTF 01",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "defaultWidth": 110,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 100
+                        },
+                        {
+                            "defaultWidth": 300,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 119
+                        },
+                        {
+                            "defaultWidth": 80,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        },
+                        {
+                            "defaultWidth": 160,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "owner",
+                            "width": 160
+                        },
+                        {
+                            "defaultWidth": 150,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "width": 150
+                        }
+                    ]
+                },
+                "prevName": "list of users that are doing the CTF 01",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "(playbook:\"CTF 1 - Get to know XSOAR8\") and (ctf01.runStatus:running) and status:Active",
+                "sequenceNumber": 20179731,
+                "shouldCommit": false,
+                "size": 50,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "id",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 2,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "1c7fa5e0-4d64-11ee-8c0c-d11caf6412a3",
+            "id": "1c7fa5e0-4d64-11ee-8c0c-d11caf6412a3",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "5ad39a8c-1f84-41b4-800d-7b69212ef096",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:51:26.544752365Z",
+                "name": "Top 10 users finished CTF 01",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "owner"
+                    ],
+                    "keys": [
+                        "avg|ctf01.totalDuration"
+                    ],
+                    "limitType": "bottom",
+                    "showGraphValues": false,
+                    "valuesFormat": "hours"
+                },
+                "prevName": "Top 10 users finished CTF 01",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "playbook:\"CTF 1 - Get to know XSOAR8\" and ctf01.runStatus:ended",
+                "sequenceNumber": 20180415,
+                "shouldCommit": false,
+                "size": 10,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 2,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "21b2fa30-4d64-11ee-8c0c-d11caf6412a3",
+            "id": "21b2fa30-4d64-11ee-8c0c-d11caf6412a3",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "5ad39a8c-1f84-41b4-800d-7b69212ef096",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:51:26.544752365Z",
+                "name": "Top 10 users finished CTF 02",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "owner"
+                    ],
+                    "keys": [
+                        "avg|ctf02.totalDuration"
+                    ],
+                    "limitType": "bottom",
+                    "showGraphValues": false,
+                    "showOthers": false,
+                    "valuesFormat": "hours"
+                },
+                "prevName": "Top 10 users finished CTF 01",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "ctf02.runStatus:ended and playbook:\"CTF 2 - Classify an incident - RDP Brute force\"",
+                "sequenceNumber": 20180415,
+                "shouldCommit": false,
+                "size": 10,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 7,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "e1767800-5099-11ee-9082-3b457f44ad28",
+            "id": "e1767800-5099-11ee-9082-3b457f44ad28",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "eac19dfb-4eaf-4729-8b70-934920698496",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-09-07T09:41:05.621861022Z",
+                "name": "A list of users that are doing the CTF 02",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "defaultWidth": 110,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 100
+                        },
+                        {
+                            "defaultWidth": 300,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 119
+                        },
+                        {
+                            "defaultWidth": 80,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        },
+                        {
+                            "defaultWidth": 160,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "owner",
+                            "width": 160
+                        },
+                        {
+                            "defaultWidth": 150,
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "width": 150
+                        }
+                    ]
+                },
+                "prevName": "list of users that are doing the CTF 01",
+                "primaryTerm": 5,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "(playbook:\"CTF 2 - Classify an incident - RDP Brute force\") and (ctf02.runStatus:running) and status:Active",
+                "sequenceNumber": 20179731,
+                "shouldCommit": false,
+                "size": 50,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "id",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 7,
+            "y": 0
+        }
+    ],
+    "name": "CTF 1 And 2 Dashboard",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 0,
+        "field": ""
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "8.2.0",
+    "description": "",
+    "isPredefined": true
+}

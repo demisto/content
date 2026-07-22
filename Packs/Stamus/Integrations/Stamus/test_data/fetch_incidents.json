@@ -1,0 +1,18 @@
+{
+    "results": [{
+        "id": 283115,
+        "timestamp": "2023-07-14T15:20:48.231617+02:00",
+        "target": "10.11.13.101",
+        "target_type": "ip",
+        "kill_chain": "command_and_control",
+        "threat_id": "17",
+        "threat": "My custom threat",
+        "threat_description": "description of my custom threat",
+        "threat_link": "https://10.136.0.72/stamus/compromises/coverage/4/threat/17",
+        "family_id": "4",
+        "family": "Data Theft",
+        "family_description": "spyware",
+        "family_link": "https://10.136.0.72/stamus/compromises/coverage/4/",
+        "tenant": -1
+    }]
+}

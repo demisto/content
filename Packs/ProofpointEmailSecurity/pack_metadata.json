@@ -1,0 +1,31 @@
+{
+    "name": "Proofpoint Email Security",
+    "description": "Proofpoint Email Security pack provides visibility into email security threats and protects your organization from phishing, malware, and compliance risks.",
+    "support": "xsoar",
+    "currentVersion": "1.0.28",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "created": "2023-09-12T00:00:00Z",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Email",
+        "Alerts",
+        "Security"
+    ],
+    "useCases": [],
+    "keywords": [
+        "On Demand",
+        "PoD",
+        "proofpoint"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ]
+}

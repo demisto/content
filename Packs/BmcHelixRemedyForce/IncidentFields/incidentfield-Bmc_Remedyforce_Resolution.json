@@ -1,0 +1,32 @@
+{
+ "id": "incident_bmcremedyforceresolution",
+ "version": -1,
+ "modified": "2020-07-10T18:45:22.643468255+05:30",
+ "name": "Bmc Remedyforce Resolution",
+ "ownerOnly": false,
+ "description": "The Resolution of the BMC Remedyforce Incident",
+ "cliName": "bmcremedyforceresolution",
+ "type": "longText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Bmc Remedyforce Incident",
+  "Bmc Remedyforce Service Request"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "5.0.0"
+}

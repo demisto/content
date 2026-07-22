@@ -1,0 +1,144 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "agentname": "ip-108-111-99-97.ekrgmd.spcsdns.net",
+                        "agentuuid": "dd858202-667a-451e-b62d-f37e77cab048",
+                        "alternatesystemid": "test",
+                        "badd": true,
+                        "bedit": true,
+                        "benchmark": "CIS Microsoft Office 2016 Benchmark",
+                        "block": true,
+                        "blogon": true,
+                        "breports": true,
+                        "bunlock": true,
+                        "bview": true,
+                        "datatype": "summary",
+                        "ipaddress": "127.0.0.1",
+                        "isadmin": false,
+                        "lobjectid": 10,
+                        "objectid": 10,
+                        "objectpath": "DSK050->Discovered Nodes->ip-108-111-99-97.ekrgmd.spcsdns.net->Compliance Policy",
+                        "osversion": "",
+                        "pass": true,
+                        "personality": "",
+                        "profile": "Level 1",
+                        "scanid": 89,
+                        "testdate": "2022-03-14 14:33:55",
+                        "totalfailcount": 0,
+                        "totalpasscount": 0,
+                        "totaltestsran": 0,
+                        "totaltestsskipped": 53,
+                        "totalwaivecount": 0,
+                        "userId": 2
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getComplianceArchiveSummary"
+        },
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "bfoundinblacklist": "0",
+                        "dfilesize": 0,
+                        "dtmdatetime1": "2022-03-12 13:40:18",
+                        "dtmdatetime2": "",
+                        "dtmdeleted": "",
+                        "externalticketnumber": "",
+                        "filecontenthash": "",
+                        "id": 14559,
+                        "isauthcopy": "0",
+                        "lagentid": 0,
+                        "lcategory": 2,
+                        "ldeleteobjectdetailid": 0,
+                        "lemailsent": 0,
+                        "leventid": 14559,
+                        "lmessagelevel": 6,
+                        "lobjectdetailid": 0,
+                        "lobjectdetailidint": 0,
+                        "lobjectid": 0,
+                        "lobjectsettingid": 0,
+                        "lparentid": 0,
+                        "lprocessid": 0,
+                        "lstoragestatus": 0,
+                        "lsubtype": 0,
+                        "lthreadid": 0,
+                        "ltickcount": 0,
+                        "reconciled": "0",
+                        "status": "A",
+                        "szchecksum": "A576638628D14B808EE9514759419C77673C6FC1",
+                        "szcorrection": "",
+                        "szcorrectionid": "",
+                        "szfile": "",
+                        "szfileuser": "",
+                        "szforensicdata": "",
+                        "szmessage": "CimTrak Management Console Connected Username admin",
+                        "szmessageid": "S_LOGMSG_0000000020             ",
+                        "szobjectpath": "",
+                        "szprocess": "",
+                        "szuser": "admin",
+                        "ticketNumber": "",
+                        "total": 6325
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getEventLogRaw"
+        },
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.forceSync"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "agentname": "ip-108-111-99-97.ekrgmd.spcsdns.net",
+                "agentuuid": "dd858202-667a-451e-b62d-f37e77cab048",
+                "alternatesystemid": "test",
+                "badd": true,
+                "bedit": true,
+                "benchmark": "CIS Microsoft Office 2016 Benchmark",
+                "block": true,
+                "blogon": true,
+                "breports": true,
+                "bunlock": true,
+                "bview": true,
+                "datatype": "summary",
+                "ipaddress": "127.0.0.1",
+                "lobjectid": 10,
+                "objectid": 10,
+                "objectpath": "DSK050->Discovered Nodes->ip-108-111-99-97.ekrgmd.spcsdns.net->Compliance Policy",
+                "osversion": "",
+                "pass": true,
+                "personality": "",
+                "profile": "Level 1",
+                "scanid": 89,
+                "testdate": "2022-03-14 14:33:55",
+                "totalfailcount": 0,
+                "totalpasscount": 0,
+                "totaltestsran": 0,
+                "totaltestsskipped": 53,
+                "totalwaivecount": 0,
+                "userId": 2
+            }
+        ],
+        "status": "success"
+    }
+}

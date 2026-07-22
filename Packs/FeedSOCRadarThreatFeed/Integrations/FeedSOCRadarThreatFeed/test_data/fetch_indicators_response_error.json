@@ -1,0 +1,6 @@
+{
+  "data": null,
+  "is_success": false,
+  "message": "An error occurred while getting the collection data. Collection Names: MockCollectionName",
+  "response_code": 500
+}

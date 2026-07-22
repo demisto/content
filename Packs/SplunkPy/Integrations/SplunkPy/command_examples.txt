@@ -1,0 +1,11 @@
+!splunk-kv-store-collections-list app_name=search
+!splunk-kv-store-collection-create app_name=search kv_store_name=demisto_store
+!splunk-kv-store-collection-config app_name=search kv_store_collection_name=demisto_store kv_store_fields=addr=string
+!splunk-kv-store-collection-add-entries app_name=search kv_store_collection_name=demisto_store kv_store_data="{\"addr\": \"0.0.0.0\"}" indicator_path=addr
+!splunk-kv-store-collection-data-list app_name=search limit=3 kv_store_collection_name=demisto_store
+!splunk-kv-store-collection-search-entry app_name=search kv_store_collection_name=demisto_store key=addr value=0.0.0.0
+!splunk-kv-store-collection-delete-entry app_name=search kv_store_collection_name=demisto_store key=addr value=0.0.0.0 indicator_path=addr
+!splunk-kv-store-collection-data-delete app_name=search kv_store_collection_name=demisto_store
+!splunk-kv-store-collection-delete app_name=search kv_store_name=demisto_store
+!splunk-kv-store-collection-create-transform app_name=search kv_store_collection_name=demisto_store supported_fields=name,id,address
+!splunk-get-username-by-xsoar-user xsoar_username=admin

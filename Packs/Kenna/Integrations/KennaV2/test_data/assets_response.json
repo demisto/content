@@ -1,0 +1,200 @@
+{
+    "assets": [
+        {
+            "id": 1,
+            "created_at": "2019-10-24T19:07:10Z",
+            "priority": 10,
+            "operating_system": "Windows",
+            "notes": "Test",
+            "last_booted_at": null,
+            "primary_locator": "ip_address",
+            "locator": "0.0.0",
+            "vulnerabilities_count": 10,
+            "status": "active",
+            "last_seen_time": "2019-10-24T19:13:32Z",
+            "network_ports": [],
+            "tags": [
+                "Category10",
+                "Category9"
+            ],
+            "owner": null,
+            "inactive_at": null,
+            "status_set_manually": true,
+            "urls": {
+                "vulnerabilities": "api/1"
+            },
+            "ip_address": "0.0.0",
+            "database": null,
+            "hostname": null,
+            "fqdn": null,
+            "netbios": null,
+            "application": null,
+            "file": null,
+            "mac_address": null,
+            "ec2": null,
+            "url": null,
+            "external_id": "dummy",
+            "image": null,
+            "container": null,
+            "ipv6": null,
+            "risk_meter_score": 1000,
+            "asset_groups": [
+                {
+                    "id": 1,
+                    "name": "Windows"
+                },
+                {
+                    "id": 2,
+                    "name": "dummy"
+                }
+            ]
+        },
+        {
+            "vulnerabilities_count": 10,
+            "notes": null,
+            "last_booted_at": null,
+            "created_at": "2019-10-24T19:07:10Z",
+            "primary_locator": "ip_address",
+            "inactive_at": null,
+            "network_ports": [],
+            "operating_system": "Windows",
+            "id": 2,
+            "last_seen_time": "2019-10-24T19:13:25Z",
+            "owner": null,
+            "priority": 10,
+            "tags": [
+                "Category5",
+                "Category7"
+            ],
+            "status_set_manually": true,
+            "locator": "0.0.0",
+            "status": "active",
+            "urls": {
+                "vulnerabilities": "api/2"
+            },
+            "application": null,
+            "external_id": "dummy",
+            "ec2": null,
+            "url": null,
+            "netbios": null,
+            "file": null,
+            "fqdn": null,
+            "hostname": null,
+            "database": null,
+            "ip_address": "0.0.0",
+            "mac_address": null,
+            "ipv6": null,
+            "risk_meter_score": 1000,
+            "asset_groups": [
+                {
+                    "id": 3,
+                    "name": "Windows"
+                },
+                {
+                    "id": 4,
+                    "name": "dummy"
+                }
+            ]
+        },
+        {
+            "vulnerabilities_count": 10,
+            "notes": null,
+            "last_booted_at": null,
+            "created_at": "2019-10-24T19:07:10Z",
+            "primary_locator": "ip_address",
+            "inactive_at": null,
+            "network_ports": [],
+            "operating_system": "Windows",
+            "id": 5,
+            "last_seen_time": "2019-10-24T19:13:19Z",
+            "owner": null,
+            "priority": 10,
+            "tags": [
+                "Category5",
+                "Category1",
+                "hiii"
+            ],
+            "status_set_manually": true,
+            "locator": "0.0.0",
+            "status": "active",
+            "urls": {
+                "vulnerabilities": "api"
+            },
+            "application": null,
+            "external_id": "dummy",
+            "ec2": null,
+            "url": null,
+            "netbios": null,
+            "file": null,
+            "fqdn": null,
+            "hostname": null,
+            "database": null,
+            "ip_address": "0.0.0",
+            "mac_address": null,
+            "ipv6": null,
+            "risk_meter_score": 1000,
+            "asset_groups": [
+                {
+                    "id": 6,
+                    "name": "Windows"
+                },
+                {
+                    "id": 7,
+                    "name": "dummy"
+                }
+            ]
+        },
+        {
+            "vulnerabilities_count": 10,
+            "notes": null,
+            "last_booted_at": null,
+            "created_at": "2019-10-24T19:07:10Z",
+            "primary_locator": "ip_address",
+            "inactive_at": null,
+            "network_ports": [],
+            "operating_system": "Windows",
+            "id": 6,
+            "last_seen_time": "2019-10-24T19:13:09Z",
+            "owner": null,
+            "priority": 10,
+            "tags": [
+                "Category1",
+                "Category3"
+            ],
+            "status_set_manually": true,
+            "locator": "0.0.0",
+            "status": "active",
+            "urls": {
+                "vulnerabilities": "api"
+            },
+            "application": null,
+            "external_id": "dummy",
+            "ec2": null,
+            "url": null,
+            "netbios": null,
+            "file": null,
+            "fqdn": null,
+            "hostname": null,
+            "database": null,
+            "ip_address": "0.0.0",
+            "mac_address": null,
+            "ipv6": null,
+            "risk_meter_score": 1000,
+            "asset_groups": [
+                {
+                    "id": 9,
+                    "name": "Windows"
+                },
+                {
+                    "id": 8,
+                    "name": "dummy"
+                }
+            ]
+        }
+    ],
+    "meta": {
+        "total_count": 20,
+        "page": 1,
+        "pages": 1
+    }
+}

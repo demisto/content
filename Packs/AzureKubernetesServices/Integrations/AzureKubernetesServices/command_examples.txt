@@ -1,0 +1,4 @@
+!azure-ks-clusters-list
+!azure-ks-cluster-addon-update resource_name=aks-integration location=westus http_application_routing_enabled=true
+!azure-ks-subscriptions-list
+!azure-ks-resource-group-list

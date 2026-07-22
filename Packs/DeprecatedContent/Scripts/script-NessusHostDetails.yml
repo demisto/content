@@ -1,0 +1,48 @@
+commonfields:
+  id: NessusHostDetails
+  version: -1
+name: NessusHostDetails
+script: >
+  res = []
+
+
+  dArgs = demisto.args()
+
+  resCmd1 = demisto.executeCommand("scan-host-details", dArgs)
+
+  try:
+      for entry in resCmd1:
+          if isError(entry):
+              res = resCmd1
+              break
+          else:
+              mdResult = sectionsToMarkdown(resCmd1[0]['Contents'])
+              res.append({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': mdResult})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd1)})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- nessus
+comment: Deprecated. Display information about a host within the given scan. The numerical host ID can be retrieved using NessusScanDetails "hosts" section
+system: true
+args:
+- name: scanId
+  required: true
+  default: true
+  description: The Scan ID (use command list-scans to get possible scan ID's)
+- name: historyId
+  description: The history_id of the historical data that should be returned.
+- name: hostId
+  required: true
+  description: The numerical id of the host to retrieve
+scripttarget: 0
+dependson:
+  must:
+  - Nessus|||scan-host-details
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

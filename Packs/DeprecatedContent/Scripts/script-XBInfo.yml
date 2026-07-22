@@ -1,0 +1,47 @@
+commonfields:
+  id: XBInfo
+  version: -1
+name: XBInfo
+script: >-
+  res = '## Exabeam global info'
+
+  entry = demisto.executeCommand('xb-users', {})[0]
+
+  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
+      res += '\n### Users:'
+      res += '\n- High Risk: ' + str(demisto.get(entry, 'Contents.highRisk'))
+      res += '\n- Recent: ' + str(demisto.get(entry, 'Contents.recent'))
+      res += '\n- Total: ' + str(demisto.get(entry, 'Contents.total'))
+  entry = demisto.executeCommand('xb-assets', {})[0]
+
+  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
+      res += '\n### Assets:'
+      res += '\n- High Risk: ' + str(demisto.get(entry, 'Contents.highRisk'))
+      res += '\n- Recent: ' + str(demisto.get(entry, 'Contents.recent'))
+      res += '\n- Total: ' + str(demisto.get(entry, 'Contents.total'))
+  entry = demisto.executeCommand('xb-events', {})[0]
+
+  if entry['Type'] != entryTypes['error'] and entry['ContentsFormat'] == formats['json']:
+      res += '\n### Events:'
+      res += '\n- Recent: ' + str(int(demisto.get(entry, 'Contents.recent')))
+      res += '\n- Total: ' + str(int(demisto.get(entry, 'Contents.total')))
+  demisto.results({'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': res})
+type: python
+subtype: python2
+tags:
+- server
+- analytics
+- exabeam
+comment: Deprecated. This script is deprecated. Use the Exabeam integration instead.
+system: true
+scripttarget: 0
+deprecated: true
+dependson:
+  must: []
+  should:
+  - xb-users
+  - xb-assets
+  - xb-events
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

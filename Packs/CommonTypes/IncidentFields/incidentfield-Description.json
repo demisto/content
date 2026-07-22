@@ -1,0 +1,30 @@
+{
+    "id": "incident_description",
+    "version": -1,
+    "name": "Description",
+    "ownerOnly": false,
+    "description": "The description of the incident",
+    "cliName": "description",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

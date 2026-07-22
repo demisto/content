@@ -1,0 +1,10 @@
+[file:MicrosoftGraphDeviceManagement.yml]
+ignore=DS107
+
+[known_words]
+Intune
+GCC
+GCC-High
+DoD
+Germany
+China

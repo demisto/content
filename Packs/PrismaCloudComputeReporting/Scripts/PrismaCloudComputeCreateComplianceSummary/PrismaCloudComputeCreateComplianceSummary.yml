@@ -1,0 +1,29 @@
+args:
+- description: The ${PrismaCloudCompute.ReportsImagesScan} list of images returned from ...
+  isArray: true
+  name: ReportsImagesScan
+  required: true
+- auto: PREDEFINED
+  defaultValue: "True"
+  description: Boolean to determine if html report should be created.
+  name: HTMLOutput
+  predefined:
+  - "True"
+  - "False"
+comment: Deprecated. No available replacement.
+commonfields:
+  id: PrismaCloudComputeCreateComplianceSummary
+  version: -1
+dockerimage: demisto/python3:3.10.1.26972
+enabled: true
+name: PrismaCloudComputeCreateComplianceSummary
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+deprecated: true
+tests:
+- No tests (auto formatted)

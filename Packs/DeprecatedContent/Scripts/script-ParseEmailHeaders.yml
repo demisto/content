@@ -1,0 +1,92 @@
+commonfields:
+  id: ParseEmailHeader
+  version: -1
+name: ParseEmailHeaders
+script: >-
+  import json
+
+
+
+  def main():
+      execute_command_result = demisto.executeCommand("ParseEmailFiles", {
+          "entryid": demisto.args().get("entryId"),
+          "parse_only_headers": "true",
+          "max_depth": "1"
+      })
+      if is_error(execute_command_result):
+          return_error(get_error(execute_command_result))
+
+      parsed_email_headers = None
+      readable_output = ""
+      for command_result in execute_command_result:
+          if command_result.get("EntryContext") is not None \
+             and "Email" in command_result.get("EntryContext"):
+              parsed_email = command_result.get("EntryContext").get("Email")
+
+              if "HeadersMap" in parsed_email:
+                  # msg files will have HeadersMap as dict
+                  parsed_email_headers = parsed_email.get("HeadersMap")
+
+              readable_output = command_result.get('HumanReadable')
+
+      if parsed_email_headers is None:
+          return_outputs(readable_output="Couldn't find Headers outputs" + demisto.args()['entryId'] + "\n",
+                         outputs=None)
+
+      return_outputs(
+          readable_output=readable_output,
+          outputs={
+              "Email": {
+                  "Headers": parsed_email_headers
+              }
+          },
+          raw_response=parsed_email_headers
+      )
+
+
+  if __name__ == '__builtin__':
+      main()
+type: python
+subtype: python2
+tags:
+- email
+comment: Deprecated. use `ParseEmailFiles parse_only_headers=true`. This automation parses headers from an email file.
+enabled: true
+args:
+- name: entryId
+  required: true
+  default: true
+  description: Entry ID of an email file
+outputs:
+- contextPath: Email.Headers
+  description: The headers of the email
+  type: Unknown
+- contextPath: Email.Headers.From
+  description: This displays who the message is from, however, this can be easily forged and can be the least reliable.
+  type: Unknown
+- contextPath: Email.Headers.To
+  description: This shows to whom the message was addressed, but may not contain the recipient's address.
+  type: Unknown
+- contextPath: Email.Headers.Subject
+  description: Email subject
+  type: String
+- contextPath: Email.Headers.Date
+  description: The date and time the email message was composed
+  type: Unknown
+- contextPath: Email.Headers.CC
+  description: Email 'cc' addresses
+  type: Unknown
+- contextPath: Email.Headers.Reply-To
+  description: The email address for return mail
+  type: String
+- contextPath: Email.Headers.Received
+  description: List of all the servers/computers through which the message traveled
+  type: String
+- contextPath: Email.Headers.Message-ID
+  description: A unique string assigned by the mail system when the message is first created. These can easily be forged. (e.g. 5c530c1b.1c69fb81.bd826.0eff@mx.google.com)
+  type: String
+scripttarget: 0
+runas: DBotWeakRole
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

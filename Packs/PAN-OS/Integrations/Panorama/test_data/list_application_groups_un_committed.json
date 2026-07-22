@@ -1,0 +1,59 @@
+{
+   "response":{
+      "@status":"success",
+      "@code":"19",
+      "result":{
+         "@total-count":"1",
+         "@count":"1",
+         "application-group":{
+            "@admin":"admin",
+            "@dirtyId":"806",
+            "@time":"2022/09/13 05:19:53",
+            "entry":[
+               {
+                  "@name":"test",
+                  "@admin":"admin",
+                  "@dirtyId":"806",
+                  "@time":"2022/09/13 05:01:40",
+                  "members":{
+                     "@admin":"admin",
+                     "@dirtyId":"806",
+                     "@time":"2022/09/13 05:01:39",
+                     "member":{
+                        "@admin":"admin",
+                        "@dirtyId":"806",
+                        "@time":"2022/09/13 05:01:39",
+                        "#text":"application-3"
+                     }
+                  }
+               },
+               {
+                  "@name":"test-2",
+                  "@admin":"admin",
+                  "@dirtyId":"806",
+                  "@time":"2022/09/13 05:19:53",
+                  "members":{
+                     "@admin":"admin",
+                     "@dirtyId":"806",
+                     "@time":"2022/09/13 05:19:53",
+                     "member":[
+                        {
+                           "@admin":"admin",
+                           "@dirtyId":"806",
+                           "@time":"2022/09/13 05:19:53",
+                           "#text":"application-1"
+                        },
+                        {
+                           "@admin":"admin",
+                           "@dirtyId":"806",
+                           "@time":"2022/09/13 05:19:53",
+                           "#text":"application-2"
+                        }
+                     ]
+                  }
+               }
+            ]
+         }
+      }
+   }
+}

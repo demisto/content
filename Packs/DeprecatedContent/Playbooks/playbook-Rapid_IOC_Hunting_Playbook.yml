@@ -1,0 +1,410 @@
+id: playbook10
+fromversion: 5.0.0
+system: true
+version: -1
+name: Rapid IOC Hunting Playbook
+description: Deprecated. Use the Hunt File Hash playbook instead. Playbook to quickly react to discovery of new IOCs. Receive a list of IOCs as attached text / csv files, extract IOCs using regular expressions and hunt rapidly across the infrastructure using various integrations. Also supports attaching multiple files.
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: bba2ed1f-ba17-4fcc-81b3-990115ff1608
+    type: start
+    task:
+      id: bba2ed1f-ba17-4fcc-81b3-990115ff1608
+      version: -1
+      description: ""
+      name: start_task
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a815b6ec-64bf-4a15-8314-5055c5d6d89d
+    type: title
+    task:
+      id: a815b6ec-64bf-4a15-8314-5055c5d6d89d
+      version: -1
+      description: ""
+      name: Set up the investigation and acquire IOCs
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "38"
+      - "39"
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 7e822405-36be-4341-857e-bcc4e6b98402
+    type: condition
+    task:
+      id: 7e822405-36be-4341-857e-bcc4e6b98402
+      version: -1
+      description: ""
+      name: Need to Load data from attached text files?
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "41"
+    scriptarguments:
+      value:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: ef989693-4e8e-472e-84bf-bf6566ef1851
+    type: regular
+    task:
+      id: ef989693-4e8e-472e-84bf-bf6566ef1851
+      version: -1
+      description: ""
+      name: Extract hashes from text file
+      scriptName: ExtractHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      text:
+        simple: ${FileData}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 43ddbd9e-84f5-42c1-8398-e94851c85cff
+    type: regular
+    task:
+      id: 43ddbd9e-84f5-42c1-8398-e94851c85cff
+      version: -1
+      description: ""
+      name: Extract IP address from text file
+      scriptName: ExtractIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      text:
+        simple: ${FileData}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: c105e3b1-8e9a-40cd-8249-5337e8417b06
+    type: title
+    task:
+      id: c105e3b1-8e9a-40cd-8249-5337e8417b06
+      version: -1
+      description: ""
+      name: Hunt
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 37fc767e-b23c-463a-84da-40a94e6b1b6a
+    type: regular
+    task:
+      id: 37fc767e-b23c-463a-84da-40a94e6b1b6a
+      version: -1
+      description: ""
+      name: Collect Hashes from incident
+      scriptName: ExtractHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context: {}
+      text:
+        simple: ${incident}
+      value:
+        simple: ${File.Extension(val.indexOf('csv')>=0)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 7845e26f-f375-4a41-8720-0d186a052382
+    type: regular
+    task:
+      id: 7845e26f-f375-4a41-8720-0d186a052382
+      version: -1
+      description: ""
+      name: Collect IPs from incident
+      scriptName: ExtractIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context: {}
+      text:
+        simple: ${incident}
+      value:
+        simple: ${File.Extension(val.indexOf('csv')>=0)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 5e13d196-7f69-48e0-88d8-e9347d2b0567
+    type: regular
+    task:
+      id: 5e13d196-7f69-48e0-88d8-e9347d2b0567
+      version: -1
+      description: ""
+      name: Load contents of attached textual files
+      scriptName: ReadFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+    scriptarguments:
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 41007d8b-b092-4c62-8bb4-9176b3b8ad62
+    type: regular
+    task:
+      id: 41007d8b-b092-4c62-8bb4-9176b3b8ad62
+      version: -1
+      description: ""
+      name: Collect URLs from incident
+      scriptName: ExtractURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context: {}
+      text:
+        simple: ${incident}
+      value:
+        simple: ${File.Extension(val.indexOf('csv')>=0)}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 80ca226e-af97-4a74-818b-5cbc2f74e7e5
+    type: regular
+    task:
+      id: 80ca226e-af97-4a74-818b-5cbc2f74e7e5
+      version: -1
+      description: ""
+      name: Analyst work - hunt manually
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: Happy hunting!
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: 235f1662-0f0d-45fa-8e3f-18ee2419e1c1
+    type: playbook
+    task:
+      id: 235f1662-0f0d-45fa-8e3f-18ee2419e1c1
+      version: -1
+      description: ""
+      name: ""
+      playbookName: Hunt for bad IOCs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_41_yes": 0.55,
+      "3_6_#default#": 0.31
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1230,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No test
+deprecated: true

@@ -1,0 +1,219 @@
+{
+  "reply": {
+    "investigation_link": null,
+    "events": [
+      {
+        "Logon_Type": "1",
+        "User_Name": "example",
+        "Domain": "WIN10X64",
+        "Source_IP": "1.1.1.1",
+        "Process_Name": "C:\\Windows\\System32\\example.exe",
+        "Host_Name": "WIN10X64",
+        "Raw_Message": "An account was successfully logged on.",
+        "_time": 1652982800000,
+        "aaaaaa": "111111",
+        "bbbbbb": 1652982800000,
+        "cccccc": "222222",
+        "dddddd": 2,
+        "eeeeee": 1,
+        "insert_timestamp": 1652982800001,
+        "_vendor": "PANW",
+        "_product": "XDR agent",
+        "_is_cardable": true
+      }
+    ],
+    "events_viewdef": {
+      "PREDEFINED_FILTER": {},
+      "TABLE_NAME": "Events",
+      "TABLE_DESCRIPTION": null,
+      "EXPORT_METHODS": [],
+      "DATA_ID": null,
+      "DATA_TYPE": "GRID",
+      "COLUMN_DEFINITIONS": [
+        {
+          "FIELD_NAME": "Logon_Type",
+          "FIELD_PRETTY_NAME": "Logon_Type",
+          "DATA_TYPE": "TEXT",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 999,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        },
+        {
+          "FIELD_NAME": "User_Name",
+          "FIELD_PRETTY_NAME": "User_Name",
+          "DATA_TYPE": "TEXT",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 1000,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        },
+        {
+          "FIELD_NAME": "Domain",
+          "FIELD_PRETTY_NAME": "Domain",
+          "DATA_TYPE": "TEXT",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 1001,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        },
+        {
+          "FIELD_NAME": "Source_IP",
+          "FIELD_PRETTY_NAME": "Source_IP",
+          "DATA_TYPE": "TEXT",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 1002,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        },
+        {
+          "FIELD_NAME": "Process_Name",
+          "FIELD_PRETTY_NAME": "Process_Name",
+          "DATA_TYPE": "TEXT",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 1003,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        },
+        {
+          "FIELD_NAME": "Host_Name",
+          "FIELD_PRETTY_NAME": "Host_Name",
+          "DATA_TYPE": "TEXT",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 1004,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        },
+        {
+          "FIELD_NAME": "Raw_Message",
+          "FIELD_PRETTY_NAME": "Raw_Message",
+          "DATA_TYPE": "TEXT",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 1005,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        },
+        {
+          "FIELD_NAME": "_time",
+          "FIELD_PRETTY_NAME": "_time",
+          "DATA_TYPE": "TIMESTAMP",
+          "COLUMN_TYPE": "DEFAULT",
+          "IS_HIDDEN": false,
+          "SORTABLE": true,
+          "FILTERABLE": true,
+          "FILTER_PARAMS": {
+            "WILDCARD_FILTERABLE": true
+          },
+          "ORDER_POSITION": 1006,
+          "ALLOWED_FILTERS": null,
+          "EXTRA_FIELDS": [],
+          "FIELD_TITLE": null,
+          "ENABLES_COLUMNS": null,
+          "TOOLTIP": null,
+          "IS_MULTI_VALUE": false,
+          "IS_JSON_VALUE": false,
+          "HIGHLIGHT": null,
+          "DISABLE_TRANSLATE_ENUM": false
+        }
+      ],
+      "KEY_COLUMN": [],
+      "ENTITY_TYPE": null,
+      "TOTAL_WIDGETS": 0
+    },
+    "activity_first_seen_at": 1652982800002,
+    "activity_last_seen_at": 1652982800000,
+    "drilldown_min_ts": 1652982800002,
+    "drilldown_max_ts": 1652982800000
+  }
+}

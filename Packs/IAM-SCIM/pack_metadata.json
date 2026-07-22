@@ -1,0 +1,19 @@
+{
+    "name": "IAM SCIM",
+    "description": "Classifiers for IAM integrations that use SCIM (System for Cross-domain Identity Management).",
+    "support": "xsoar",
+    "currentVersion": "1.1.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-12-01T08:15:27Z",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ]
+}

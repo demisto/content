@@ -1,0 +1,19 @@
+{
+  "data": {
+    "comments": [
+      {
+        "author": {"username": "obfuscated@email.com"},
+        "body": "This is an example comment",
+        "id": "2",
+        "timestamp": "2021-04-23T00:38:43.977543"
+      },
+      {
+        "author": {"username": "obfuscated@email.com"},
+        "body": "Another example comment\n...with newline.",
+        "id": "3",
+        "timestamp": "2021-05-11T01:41:12.578220"
+      }
+    ]
+  },
+  "errors": []
+}

@@ -1,0 +1,1 @@
+{'enabled': '1', 'sequence': '1', 'action': 'pass', 'quick': '1', 'interface': 'opt1', 'direction': 'in', 'ipprotocol': 'inet', 'protocol': 'any', 'source_net': '1.2.3.4', 'source_not': '0', 'source_port': '', 'destination_net': '5.6.7.8', 'destination_not': '0', 'destination_port': '', 'gateway': '', 'log': '0', 'description': 'NewRule'}

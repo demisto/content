@@ -1,0 +1,56 @@
+category: Utilities
+provider: Open Source
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Image OCR
+  version: -1
+configuration:
+- display: A CSV of language codes of the language to use for OCR (leave empty to use defaults).
+  name: langs
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: If true, will not raise an error if the image is corrupt and could not be processed.
+  display: Skip on corrupted images
+  name: skip_corrupted
+  section: Connect
+  advanced: true
+  required: false
+  type: 8
+description: Extracts text from images.
+display: Image OCR
+name: Image OCR
+defaultEnabled: true
+fromversion: 5.0.0
+script:
+  commands:
+  - description: Lists supported languages for which the integration can extract text.
+    name: image-ocr-list-languages
+  - arguments:
+    - description: A comma-separated list of Entry IDs of image files to process.
+      name: entryid
+      required: true
+      isArray: true
+    - description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
+      isArray: true
+      name: langs
+    - description: Turn on verbose flag to display tesseract and other used libraries versions.
+      required: false
+      defaultValue: false
+      name: verbose
+    name: image-ocr-extract-text
+    description: Extract text from images.
+    outputs:
+    - contextPath: File.Text
+      description: Extracted text from the passed image file.
+      type: String
+  dockerimage: demisto/tesseract:1.0.0.9067966
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+tests:
+- No tests (auto formatted)

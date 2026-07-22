@@ -1,0 +1,36 @@
+args:
+- default: true
+  description: First list.
+  isArray: true
+  name: value
+  required: true
+- description: Second list.
+  isArray: true
+  name: right
+  required: true
+- description: The key to match (only for left list if rightkey is specified). Support "CustomFields" if used explicitly.
+  name: key
+  required: true
+- description: The key to match in the right list (optional). Support "CustomFields" if used explicitly.
+  name: rightkey
+  required: true
+comment: Deprecated. No available replacement.
+commonfields:
+  id: JoinListsOfDicts
+  version: -1
+enabled: true
+name: JoinListsOfDicts
+script: '-'
+subtype: python3
+tags:
+- transformer
+- general
+- entirelist
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.12.63474
+runas: DBotWeakRole
+tests:
+- No tests (deprecated)
+fromversion: 5.0.0
+deprecated: true

@@ -1,0 +1,83 @@
+[
+  {
+    "assetClass": "Low",
+    "attackStage": "Exploitation",
+    "dateCreated": "1591374026544",
+    "eventCount": 1,
+    "feedback": {
+      "closedAt": null,
+      "closedBy": null,
+      "newStatus": "NonActionable",
+      "optionalText": "fdsafdsafdsa",
+      "timeGiven": "1592523622852",
+      "userId": "user1"
+    },
+    "firstEventTime": "1591345217714",
+    "id": "8",
+    "internalSystems": [
+      {
+        "hostname": "test_server92",
+        "ipAddress": "100.100.100.100"
+      }
+    ],
+    "internalSystemsCount": 1,
+    "lastEventTime": "1591345217714",
+    "priority": "Low",
+    "probabilityBucket": "VeryLow",
+    "status": "Closed",
+    "tags": [],
+    "title": "Unknown",
+    "description": "incident description",
+    "userIds": [],
+    "avMalwareNames": [],
+    "avFileHashes": [],
+    "wpAccounts": [],
+    "avAccounts": [],
+    "edrAccounts": [],
+    "authDataAccounts": [],
+    "wpHosts": []
+  },
+  {
+    "assetClass": "Low",
+    "attackStage": "AttackObjective",
+    "dateCreated": "1591374028642",
+    "eventCount": 1,
+    "feedback": {
+      "closedAt": null,
+      "closedBy": null,
+      "newStatus": "Inconclusive",
+      "optionalText": null,
+      "timeGiven": "1592784436497",
+      "userId": "user1"
+    },
+    "firstEventTime": "1590653233714",
+    "id": "14",
+    "internalSystems": [
+      {
+        "hostname": null,
+        "ipAddress": "100.100.100.100"
+      }
+    ],
+    "internalSystemsCount": 1,
+    "lastEventTime": "1590653233714",
+    "priority": "Low",
+    "probabilityBucket": "Medium",
+    "status": "Closed",
+    "tags": [
+      {
+        "label": "Suspicious External System Attributes"
+      }
+    ],
+    "title": "Blocked Int - Ext C2 Malware",
+    "description": "incident description",
+    "userIds": [],
+    "avMalwareNames": [],
+    "avFileHashes": [],
+    "wpAccounts": [],
+    "avAccounts": [],
+    "edrAccounts": [],
+    "authDataAccounts": [],
+    "wpHosts": []
+  }
+]
+

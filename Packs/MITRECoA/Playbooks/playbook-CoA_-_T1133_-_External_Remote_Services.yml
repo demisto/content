@@ -1,0 +1,400 @@
+description: "This playbook Remediates the External Remote Services technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1133: External Remote Services\n\nKill Chain phases:\n- Persistence\n- Initial Access\n\nMITRE ATT&CK Description:\n\nAdversaries may use brute force techniques to gain access to accounts when passwords are unknown or when password hashes are obtained. Without knowledge of the password for an account or set of accounts, an adversary may systematically guess the password using a repetitive or iterative mechanism. Brute forcing passwords can take place via interaction with a service that will check the validity of those credentials or offline against previously acquired credential data, such as password hashes.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
+id: MITRE ATT&CK CoA - T1133 - External Remote Services
+inputs:
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1133 - External Remote Services
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5fda972a-8efa-4516-88c7-d22d47568828
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5fda972a-8efa-4516-88c7-d22d47568828
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - NGFW - Configure Interfaces and Zone segmentation.
+      id: 50575507-b823-4aad-867e-7661758f0655
+      iscommand: false
+      name: Manual - NGFW - Configure Interfaces and Zone segmentation
+      type: regular
+      version: -1
+    taskid: 50575507-b823-4aad-867e-7661758f0655
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1ad8d948-0e1d-438b-8046-40b7cf5200db
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 1ad8d948-0e1d-438b-8046-40b7cf5200db
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Configure XDR Host Firewall Profile.
+      id: e2b3cdb8-4833-4725-8e1e-56ae1ad998a3
+      iscommand: false
+      name: Manual - Configure XDR Host Firewall Profile
+      type: regular
+      version: -1
+    taskid: e2b3cdb8-4833-4725-8e1e-56ae1ad998a3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1180
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 76f2cd0d-d0a4-4d1f-81b3-d0fccce36874
+      iscommand: false
+      name: Deploy Vulnerability Protection Profile for all low and high severity threats with block action
+      type: title
+      version: -1
+      description: ''
+    taskid: 76f2cd0d-d0a4-4d1f-81b3-d0fccce36874
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 31014910-5436-481a-85fb-924a9a558330
+      iscommand: false
+      name: PAN-OS - Enforce Vulnerability Protection Best Practices Profile
+      playbookId: PAN-OS - Enforce Vulnerability Protection Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 31014910-5436-481a-85fb-924a9a558330
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1133
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 92ddbba1-d55c-41ee-8c10-a4604fb15f60
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 92ddbba1-d55c-41ee-8c10-a4604fb15f60
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1370
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0b8a9f84-d869-4f57-8327-3ab73bda53a3
+      iscommand: false
+      name: Configure XDR Host Firewall Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: 0b8a9f84-d869-4f57-8327-3ab73bda53a3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: 1bd1c47d-d93e-4411-85fb-4a3b1b37ee78
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: 1bd1c47d-d93e-4411-85fb-4a3b1b37ee78
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 840
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: 20b2a111-9420-4de2-8d27-3891b8ecfb8d
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: 20b2a111-9420-4de2-8d27-3891b8ecfb8d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1010
+        }
+      }
+  "18":
+    continueonerror: true
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 0ffc0707-b796-4eab-86c3-91358236b999
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 0ffc0707-b796-4eab-86c3-91358236b999
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_10_yes": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1755,
+        "width": 680,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

@@ -1,0 +1,8 @@
+fromversion: 8.5.0
+id: Azure_WAF_ModelingRule
+name: Azure WAF Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

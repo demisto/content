@@ -1,0 +1,1594 @@
+import json
+from datetime import datetime
+
+import pytest
+from freezegun import freeze_time
+from ProofpointTAP_v2 import ALL_EVENTS, ISSUES_EVENTS, Client, fetch_incidents, get_events_command
+
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MOCK_URL = "http://123-fake-api.com"
+MOCK_DELIVERED_MESSAGE = {
+    "GUID": "1111",
+    "QID": "r2FNwRHF004109",
+    "ccAddresses": ["bruce.wayne@university-of-education.zz"],
+    "clusterId": "pharmtech_hosted",
+    "fromAddress": "badguy@evil.zz",
+    "headerCC": '"Bruce Wayne" <bruce.wayne@university-of-education.zz>',
+    "headerFrom": '"A. Badguy" <badguy@evil.zz>',
+    "headerReplyTo": None,
+    "headerTo": '"Clark Kent" <clark.kent@pharmtech.zz>; "Diana Prince" <diana.prince@pharmtech.zz>',
+    "impostorScore": 0,
+    "malwareScore": 100,
+    "messageID": "1111@evil.zz",
+    "threatsInfoMap": [
+        {
+            "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
+            "classification": "MALWARE",
+            "threat": "threat_num",
+            "threatId": "threat_num",
+            "threatStatus": "active",
+            "threatTime": "2010-01-30T00:00:40.000Z",
+            "threatType": "ATTACHMENT",
+            "threatUrl": "https://threatinsight.proofpoint.com/43fc1aa4c1cd0146d334c5593b1428f6d062b2c406e5efe8abe95ca",
+        },
+        {
+            "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
+            "classification": "MALWARE",
+            "threat": "badsite.zz",
+            "threatId": "3ba97fc852c66a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
+            "threatTime": "2010-01-30T00:00:30.000Z",
+            "threatType": "URL",
+            "threatUrl": "https://threatinsight.proofpoint.com/a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
+        },
+    ],
+    "messageTime": "2010-01-30T00:00:59.000Z",
+    "modulesRun": ["pdr", "sandbox", "spam", "urldefense"],
+    "phishScore": 46,
+    "policyRoutes": ["default_inbound", "executives"],
+    "quarantineFolder": "Attachment Defense",
+    "quarantineRule": "module.sandbox.threat",
+    "recipient": ["clark.kent@pharmtech.zz", "diana.prince@pharmtech.zz"],
+    "replyToAddress": None,
+    "sender": "e99d7ed5580193f36a51f597bc2c0210@evil.zz",
+    "senderIP": "192.0.2.255",
+    "spamScore": 4,
+    "subject": "Please find a totally safe invoice attached.",
+    "toAddresses": "xx@xxx.com",
+    "xmailer": None,
+}
+
+MOCK_BLOCKED_MESSAGE = {
+    "GUID": "2222",
+    "QID": "r2FNwRHF004109",
+    "ccAddresses": ["bruce.wayne@university-of-education.zz"],
+    "clusterId": "pharmtech_hosted",
+    "fromAddress": "badguy@evil.zz",
+    "headerCC": '"Bruce Wayne" <bruce.wayne@university-of-education.zz>',
+    "headerFrom": '"A. Badguy" <badguy@evil.zz>',
+    "headerReplyTo": None,
+    "headerTo": '"Clark Kent" <clark.kent@pharmtech.zz>; "Diana Prince" <diana.prince@pharmtech.zz>',
+    "impostorScore": 0,
+    "malwareScore": 100,
+    "messageID": "2222@evil.zz",
+    "threatsInfoMap": [
+        {
+            "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
+            "classification": "MALWARE",
+            "threat": "threat_num",
+            "threatId": "threat_num",
+            "threatStatus": "active",
+            "threatTime": "2010-01-25T00:00:40.000Z",
+            "threatType": "ATTACHMENT",
+            "threatUrl": "https://threatinsight.proofpoint.com/43fc1aa4c1cd0146d334c5593b1428f6d062b2c406e5efe8abe95ca",
+        },
+        {
+            "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
+            "classification": "MALWARE",
+            "threat": "badsite.zz",
+            "threatId": "3ba97fc852c66a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
+            "threatTime": "2010-01-25T00:00:30.000Z",
+            "threatType": "URL",
+            "threatUrl": "https://threatinsight.proofpoint.com/a7ba761450edfdfb9f4ffab74715b591294f78b5e37a76481aa",
+        },
+    ],
+    "messageTime": "2010-01-25T00:00:10.000Z",
+    "modulesRun": ["pdr", "sandbox", "spam", "urldefense"],
+    "phishScore": 46,
+    "policyRoutes": ["default_inbound", "executives"],
+    "quarantineFolder": "Attachment Defense",
+    "quarantineRule": "module.sandbox.threat",
+    "recipient": ["clark.kent@pharmtech.zz", "diana.prince@pharmtech.zz"],
+    "replyToAddress": None,
+    "sender": "e99d7ed5580193f36a51f597bc2c0210@evil.zz",
+    "senderIP": "192.0.2.255",
+    "spamScore": 4,
+    "subject": "Please find a totally safe invoice attached.",
+    "toAddresses": "xx@xxx.com",
+    "xmailer": None,
+}
+
+MOCK_PERMITTED_CLICK = {
+    "id": "click-permitted-1",
+    "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
+    "classification": "MALWARE",
+    "clickIP": "192.0.2.1",
+    "clickTime": "2010-01-11T00:00:20.000Z",
+    "messageID": "3333",
+    "recipient": "bruce.wayne@pharmtech.zz",
+    "sender": "9facbf452def2d7efc5b5c48cdb837fa@badguy.zz",
+    "senderIP": "192.0.2.255",
+    "threatID": "threat_num2",
+    "threatTime": "2010-01-11T00:00:10.000Z",
+    "threatURL": "https://threatinsight.proofpoint.com/#/f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
+    "url": "http://badguy.zz/",
+    "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0",
+}
+
+MOCK_BLOCKED_CLICK = {
+    "id": "click-blocked-1",
+    "campaignId": "46e01b8a-c899-404d-bcd9-189bb393d1a7",
+    "classification": "MALWARE",
+    "clickIP": "192.0.2.2",
+    "clickTime": "2010-01-22T00:00:10.000Z",
+    "messageID": "4444",
+    "recipient": "bruce.wayne@pharmtech.zz",
+    "sender": "9facbf452def2d7efc5b5c48cdb837fa@badguy.zz",
+    "senderIP": "192.0.2.255",
+    "threatID": "threat_num2",
+    "threatTime": "2010-01-22T00:00:20.000Z",
+    "threatURL": "https://threatinsight.proofpoint.com/#/f7622167144dba5e3ae4480eeee78b23d66f7dfed970cfc3d086cc0dabdf50",
+    "url": "http://badguy.zz/",
+    "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0",
+}
+
+MOCK_ISSUES = {"messagesDelivered": [MOCK_DELIVERED_MESSAGE], "clicksPermitted": [MOCK_PERMITTED_CLICK]}
+
+MOCK_ALL_EVENTS = {
+    "messagesDelivered": [MOCK_DELIVERED_MESSAGE],
+    "clicksPermitted": [MOCK_PERMITTED_CLICK],
+    "clicksBlocked": [MOCK_BLOCKED_CLICK],
+    "messagesBlocked": [MOCK_BLOCKED_MESSAGE],
+}
+
+# Additional "new event" mocks for the look-back + dedup tests.
+# These are derived from the existing mocks above by copying them and overriding
+# only the dedup-key field (GUID for messages, id for clicks). They represent
+# genuinely new events that should NOT collide with the previously-seen IDs.
+MOCK_NEW_DELIVERED_MESSAGE = {**MOCK_DELIVERED_MESSAGE, "GUID": "9999", "messageID": "9999@evil.zz"}
+MOCK_NEW_BLOCKED_CLICK = {**MOCK_BLOCKED_CLICK, "id": "click-blocked-NEW"}
+
+
+def get_mocked_time():
+    return datetime.strptime("2010-01-01T00:00:00Z", "%Y-%m-%dT%H:%M:%SZ")
+
+
+def test_command(requests_mock):
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/issues?format=json&sinceSeconds=100&threatType=url&threatType=attachment", json=MOCK_ISSUES
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    args = {"threatType": "url,attachment", "sinceSeconds": "100", "eventTypes": ISSUES_EVENTS}
+    _, outputs, _ = get_events_command(client, args)
+
+    assert len(outputs["Proofpoint.MessagesDelivered(val.GUID == obj.GUID)"]) == 1
+    assert len(outputs["Proofpoint.ClicksPermitted(val.GUID == obj.GUID)"]) == 1
+
+
+def return_self(return_date):
+    return return_date
+
+
+@freeze_time("2010-01-01T00:00:00Z", tz_offset=0)
+def test_first_fetch_incidents(requests_mock, mocker):
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/all?format=json&interval=2009-12-31T23%3A30%3A00Z%2F2010-01-01T00%3A00%3A00Z", json=MOCK_ALL_EVENTS
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client, last_run={}, first_fetch_time="30 minutes", event_type_filter=ALL_EVENTS, threat_status="", threat_type=""
+    )
+
+    assert len(incidents) == 4
+    assert json.loads(incidents[3]["rawJSON"])["messageID"] == "4444"
+
+
+def test_next_fetch(requests_mock, mocker):
+    # Use 31 minutes to ensure interval is >= 30 seconds
+    current_date = "2010-01-01T00:31:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_date, "%Y-%m-%dT%H:%M:%SZ"))
+
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%"
+        "2F2010-01-01T00%3A31%3A00Z&threatStatus=active&threatStatus=cleared",
+        json=MOCK_ALL_EVENTS,
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2010-01-01T00:00:00Z"},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status=["active", "cleared"],
+        threat_type="",
+        limit=50,
+        look_back_minutes=0,
+    )
+
+    assert len(incidents) == 4
+    assert json.loads(incidents[3]["rawJSON"])["messageID"] == "4444"
+
+
+def test_fetch_limit(requests_mock, mocker):
+    # Use 31 minutes to ensure interval is >= 30 seconds
+    current_date = "2010-01-01T00:31:00Z"
+    this_run = {"last_fetch": "2010-01-01T00:00:00Z"}
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_date, "%Y-%m-%dT%H:%M:%SZ"))
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    next_run, incidents, remained = fetch_incidents(
+        client=client,
+        last_run=this_run,
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status=["active", "cleared"],
+        threat_type="",
+        limit=3,
+        look_back_minutes=0,
+    )
+
+    assert next_run["last_fetch"] == "2010-01-01T00:31:00Z"
+    assert len(incidents) == 3
+    assert len(remained) == 1
+    # test another run
+    next_run, incidents, remained = fetch_incidents(
+        client=client,
+        last_run=this_run,
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status=["active", "cleared"],
+        threat_type="",
+        limit=3,
+        integration_context={"incidents": remained},
+        look_back_minutes=0,
+    )
+    assert next_run["last_fetch"] == "2010-01-01T00:00:00Z"
+    assert len(incidents) == 1
+    assert not remained
+
+
+@freeze_time("2010-01-01T00:01:00Z", tz_offset=0)
+def test_fetch_incidents_with_encoding(requests_mock, mocker):
+    """
+    Given:
+        - Message with latin chars in its subject
+        - Raw JSON encoding param set to latin-1
+
+    When:
+        - Running fetch incidents
+
+    Then:
+        - Ensure subject is returned properly in the raw JSON
+    """
+    # Mock time to be 1 minute after the parsed time to ensure >= 30 second interval
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime("2010-01-01T00:01:00Z", "%Y-%m-%dT%H:%M:%SZ"))
+    mocker.patch("ProofpointTAP_v2.parse_date_range", return_value=("2010-01-01T00:00:00Z", "never mind"))
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/all?format=json&interval=2010-01-01T00%3A00%3A00Z%2F2010-01-01T00%3A01%3A00Z",
+        json={
+            "messagesDelivered": [
+                {
+                    "subject": "p\u00c3\u00a9rdida",
+                    "messageTime": "2010-01-30T00:00:59.000Z",
+                },
+            ],
+        },
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL,
+        api_version="v2",
+        service_principal="user1",
+        secret="123",
+        verify=False,
+        proxies=None,
+    )
+
+    _, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={},
+        first_fetch_time="now",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        raw_json_encoding="latin-1",
+        look_back_minutes=0,
+    )
+
+    assert json.loads(incidents[0]["rawJSON"])["subject"] == "pérdida"
+
+
+# Test data: (last_fetch, current_time, expected_interval_count)
+# Old format returned list of timestamps, new format returns list of (start, end) tuples
+FETCH_TIMES_MOCK = [
+    ("2010-01-01T00:00:00Z", "2010-01-01T03:00:00Z", 4),  # 3 hours = 3 intervals of 59min + 1 final interval
+    ("2010-01-01T00:00:00Z", "2010-01-01T00:03:00Z", 1),  # 3 minutes = 1 interval
+]
+
+
+@pytest.mark.parametrize("mock_past, mock_now, expected", FETCH_TIMES_MOCK)
+def test_get_fetch_times(mocker, mock_past, mock_now, expected):
+    from ProofpointTAP_v2 import get_fetch_times
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
+    intervals = get_fetch_times(mock_past)
+    assert len(intervals) == expected
+    # Verify all intervals are tuples of (start, end)
+    for interval in intervals:
+        assert isinstance(interval, tuple)
+        assert len(interval) == 2
+        start, end = interval
+        assert isinstance(start, str)
+        assert isinstance(end, str)
+
+
+# Test data for the conditional look-back logic of get_fetch_times.
+# Each row: (last_fetch, now, look_back_minutes, expected_first_interval_start, expected_last_interval_end)
+# Logic under test:
+#   effective_start = now - max(now - last_fetch, look_back_minutes)
+# i.e. the window is expanded ONLY when the existing gap is smaller than look_back_minutes.
+GET_FETCH_TIMES_LOOKBACK_MOCK = [
+    # 1. look_back_minutes=0 -> behavior unchanged, start == last_fetch.
+    (
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+        0,
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+    ),
+    # 2. now - last_fetch (1 min) < look_back_minutes (10) -> window expanded to look_back.
+    #    effective_start = now - 10min = 2009-12-31T23:51:00Z.
+    (
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:01:00Z",
+        10,
+        "2009-12-31T23:51:00Z",
+        "2010-01-01T00:01:00Z",
+    ),
+    # 3. now - last_fetch (5 min) >= look_back_minutes (2) -> window unchanged,
+    #    look-back is NOT added on top. effective_start stays at last_fetch.
+    (
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+        2,
+        "2010-01-01T00:00:00Z",
+        "2010-01-01T00:05:00Z",
+    ),
+]
+
+
+@pytest.mark.parametrize(
+    "last_fetch, mock_now, look_back_minutes, expected_start, expected_end",
+    GET_FETCH_TIMES_LOOKBACK_MOCK,
+)
+def test_get_fetch_times_look_back_conditional(mocker, last_fetch, mock_now, look_back_minutes, expected_start, expected_end):
+    """
+    Given:
+     - A `last_fetch` timestamp, the current time `now`, and a `look_back_minutes` value.
+    When:
+     - `get_fetch_times` is called.
+    Then:
+     - The effective start is `now - max(now - last_fetch, look_back_minutes)`.
+       * look_back_minutes=0   -> start == last_fetch (no change).
+       * gap <  look_back      -> start == now - look_back_minutes (window expanded).
+       * gap >= look_back      -> start == last_fetch (look-back NOT added on top).
+     - The window ends at `now`.
+    """
+    from ProofpointTAP_v2 import get_fetch_times
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(mock_now, "%Y-%m-%dT%H:%M:%SZ"))
+
+    intervals = get_fetch_times(last_fetch, look_back_minutes=look_back_minutes)
+
+    assert intervals, "expected at least one interval"
+    assert intervals[0][0] == expected_start
+    assert intervals[-1][1] == expected_end
+
+
+def test_fetch_with_look_back_buffer(requests_mock, mocker):
+    """
+    Scenario: Fetch incidents with look-back buffer to account for Proofpoint API indexing delay.
+    Given:
+     - User has configured look_back_minutes=10 to prevent missing events.
+     - Last fetch was at 2010-01-01T00:00:00Z.
+     - Current time is 2010-01-01T00:01:00Z (gap of 1 min < look_back of 10 min).
+    When:
+     - fetch_incidents is called with look_back_minutes=10.
+    Then:
+     - Ensure the fetch window is expanded so its length equals look_back_minutes:
+       effective_start = now - 10min = 2009-12-31T23:51:00Z.
+     - Ensure the fetch end is current time 2010-01-01T00:01:00Z.
+     - Ensure incidents are fetched correctly.
+     - Ensure next_run checkpoint is set to the end of the last interval (now).
+    """
+    from ProofpointTAP_v2 import fetch_incidents
+
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+    # gap (1 min) < look_back (10 min) -> effective_start = now - 10min = 23:51:00 previous day
+    expected_start_time = "2009-12-31T23:51:00Z"
+    # End time is now
+    expected_end_time = current_time
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    # Mock API call with the expected look-back interval (single interval since < 59 minutes)
+    start_encoded = expected_start_time.replace(":", "%3A")
+    end_encoded = expected_end_time.replace(":", "%3A")
+    requests_mock.get(
+        MOCK_URL + f"/v2/siem/all?format=json&interval={start_encoded}%2F{end_encoded}",
+        json=MOCK_ALL_EVENTS,
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        # Include an empty `seen_ids` to mark this instance as already initialized
+        # for look-back/dedup tracking (NOT a legacy upgrade), so the look-back is
+        # applied immediately at its configured value.
+        last_run={"last_fetch": last_fetch_time, "seen_ids": {}},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=10,
+    )
+
+    # Verify incidents were fetched
+    assert len(incidents) == 4
+    # Verify checkpoint is set to the end of the last interval (current time)
+    assert next_run["last_fetch"] == expected_end_time
+
+
+# ---------------------------------------------------------------------------
+# Look-back + Deduplication tests
+# ---------------------------------------------------------------------------
+# The integration tracks already-seen events in `last_run["seen_ids"]` as a
+# dict {dedup_key: interval_end_str}. Dedup keys per event type:
+#   - messagesDelivered -> "GUID"
+#   - messagesBlocked   -> "GUID"
+#   - clicksPermitted   -> "id"
+#   - clicksBlocked     -> "id"
+# ---------------------------------------------------------------------------
+
+
+def test_dedup_filters_already_seen_incidents_in_lookback_window(requests_mock, mocker):
+    """
+    Given:
+     - last_run.seen_ids contains all four event IDs from a previous fetch,
+       and look_back_minutes=2 so the previous window is rescanned.
+     - The API returns the exact same events again because of the overlap.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - All already-seen events are filtered; zero incidents are produced.
+     - The seen_ids dedup state is preserved (not lost) in next_run.
+     - last_fetch advances to the end of the last fetched interval.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+    interval_end_seen = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    # API returns the same events that were already fetched previously.
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    # Previously-seen IDs (mapped to the interval end in which they were first seen,
+    # which must be within the lookback window so they are not pruned).
+    seen_ids = {
+        MOCK_DELIVERED_MESSAGE["GUID"]: interval_end_seen,
+        MOCK_BLOCKED_MESSAGE["GUID"]: interval_end_seen,
+        MOCK_PERMITTED_CLICK["id"]: interval_end_seen,
+        MOCK_BLOCKED_CLICK["id"]: interval_end_seen,
+    }
+
+    next_run, incidents, remained = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(seen_ids)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=2,
+    )
+
+    # All four events were already seen -> filtered out
+    assert incidents == []
+    assert remained == []
+    # Dedup state is retained in next_run (not lost) — all 4 previously-seen IDs still present
+    assert set(next_run["seen_ids"].keys()) == set(seen_ids.keys())
+    # last_fetch advances to the end of the last fetched interval (= current time)
+    assert next_run["last_fetch"] == current_time
+
+
+def test_dedup_includes_new_events_within_lookback_window(requests_mock, mocker):
+    """
+    Given:
+     - last_run.seen_ids contains IDs of a delivered message and a blocked click
+       from a previous fetch.
+     - The API returns a mix of those previously-seen events AND new events
+       (MOCK_NEW_DELIVERED_MESSAGE, MOCK_NEW_BLOCKED_CLICK) within the
+       overlapped lookback window.
+     - look_back_minutes=2.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - Only the new (unseen) events become incidents.
+     - next_run.seen_ids contains both the previously-seen IDs (still in window)
+       AND the new IDs from this fetch.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:05:00Z"
+    interval_end_seen = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    api_response = {
+        "messagesDelivered": [MOCK_DELIVERED_MESSAGE, MOCK_NEW_DELIVERED_MESSAGE],
+        "messagesBlocked": [],
+        "clicksPermitted": [],
+        "clicksBlocked": [MOCK_BLOCKED_CLICK, MOCK_NEW_BLOCKED_CLICK],
+    }
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=api_response)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    previously_seen = {
+        MOCK_DELIVERED_MESSAGE["GUID"]: interval_end_seen,
+        MOCK_BLOCKED_CLICK["id"]: interval_end_seen,
+    }
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(previously_seen)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=2,
+    )
+
+    # Only the two new events become incidents
+    assert len(incidents) == 2
+    raw_jsons = [json.loads(inc["rawJSON"]) for inc in incidents]
+    fetched_dedup_keys = {raw.get("GUID") or raw.get("id") for raw in raw_jsons}
+    assert fetched_dedup_keys == {MOCK_NEW_DELIVERED_MESSAGE["GUID"], MOCK_NEW_BLOCKED_CLICK["id"]}
+
+    # next_run.seen_ids contains BOTH old (still within window) and new IDs
+    final_ids = set(next_run["seen_ids"].keys())
+    assert MOCK_DELIVERED_MESSAGE["GUID"] in final_ids  # old, retained
+    assert MOCK_BLOCKED_CLICK["id"] in final_ids  # old, retained
+    assert MOCK_NEW_DELIVERED_MESSAGE["GUID"] in final_ids  # new
+    assert MOCK_NEW_BLOCKED_CLICK["id"] in final_ids  # new
+
+
+def test_lookback_zero_prunes_stale_ids(requests_mock, mocker):
+    """
+    Given:
+     - look_back_minutes=0 (default behavior, no lookback).
+     - last_run carries a stale seen_ids entry that does not collide with the
+       new events from the API.
+     - The API returns brand-new events in a non-overlapping window.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - All events from the API window become incidents (no dedup-driven drops).
+     - The seen_ids in next_run is pruned (pruning runs unconditionally to
+       prevent unbounded last_run growth) — the ancient stale ID is removed
+       while the freshly-tracked new IDs remain.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:31:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    # A stale dedup ID that is far older than any look-back window.
+    pre_existing_seen = {"ancient-id": "2000-01-01T00:00:00Z"}
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(pre_existing_seen)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=0,
+    )
+
+    # All 4 events appear: no dedup overlap because the pre-existing seen ID
+    # doesn't collide with the new event dedup keys.
+    assert len(incidents) == 4
+
+    # With look_back_minutes=0 pruning still runs (cutoff = now - 30min), so the
+    # ancient stale ID is dropped, but the freshly-tracked new IDs (interval_end
+    # = current_time) are preserved.
+    final_ids = set(next_run["seen_ids"].keys())
+    assert "ancient-id" not in final_ids
+    assert MOCK_DELIVERED_MESSAGE["GUID"] in final_ids
+    assert MOCK_BLOCKED_MESSAGE["GUID"] in final_ids
+    assert MOCK_PERMITTED_CLICK["id"] in final_ids
+    assert MOCK_BLOCKED_CLICK["id"] in final_ids
+
+
+def test_lookback_dedup_state_pruning(requests_mock, mocker):
+    """
+    Given:
+     - last_run.seen_ids contains a mix of IDs:
+         * one mapped to an interval_end well outside the lookback window
+           (must be pruned),
+         * one mapped to an interval_end inside the lookback window
+           (must be kept).
+     - look_back_minutes=5  ->  prune cutoff = now - (5 + 30) min.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - The stale ID is removed from next_run.seen_ids.
+     - The in-window ID is preserved.
+    """
+    last_fetch_time = "2010-01-01T00:55:00Z"
+    current_time = "2010-01-01T01:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+
+    # Empty API response so we focus purely on pruning behavior.
+    requests_mock.get(
+        MOCK_URL + "/v2/siem/all",
+        json={"messagesDelivered": [], "messagesBlocked": [], "clicksPermitted": [], "clicksBlocked": []},
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    # Cutoff for look_back_minutes=5 is now - 35min = 2010-01-01T00:25:00Z.
+    seen_ids = {
+        "stale-id": "2009-12-31T00:00:00Z",  # way before cutoff -> pruned
+        "fresh-id": "2010-01-01T00:55:00Z",  # after cutoff -> kept
+    }
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": last_fetch_time, "seen_ids": dict(seen_ids)},
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=5,
+    )
+
+    assert incidents == []
+    assert "stale-id" not in next_run["seen_ids"]
+    assert "fresh-id" in next_run["seen_ids"]
+
+
+def test_lookback_first_fetch_initializes_dedup_state(requests_mock, mocker):
+    """
+    Given:
+     - First fetch (last_run = {}) with look_back_minutes=2.
+     - The API returns the standard set of all four events.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - The seen_ids dedup state is initialized in next_run with the dedup
+       keys of every fetched incident (GUIDs for messages, ids for clicks).
+     - All events become incidents and last_fetch is populated.
+    """
+    current_time = "2010-01-01T00:05:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    # parse_date_range returns the first_fetch start time for a clean first-fetch flow.
+    mocker.patch("ProofpointTAP_v2.parse_date_range", return_value=("2010-01-01T00:00:00Z", "never mind"))
+
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    next_run, incidents, _ = fetch_incidents(
+        client=client,
+        last_run={},  # first fetch
+        first_fetch_time="30 minutes",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=2,
+    )
+
+    # All 4 events become incidents on first fetch
+    assert len(incidents) == 4
+
+    # seen_ids is initialized and contains all 4 dedup keys
+    assert "seen_ids" in next_run
+    expected_ids = {
+        MOCK_DELIVERED_MESSAGE["GUID"],
+        MOCK_BLOCKED_MESSAGE["GUID"],
+        MOCK_PERMITTED_CLICK["id"],
+        MOCK_BLOCKED_CLICK["id"],
+    }
+    assert set(next_run["seen_ids"].keys()) == expected_ids
+    # last_fetch checkpoint is populated (end of last interval = current time)
+    assert next_run["last_fetch"] == current_time
+
+
+class TestGetForensics:
+    PLATFORMS_OBJECT = [
+        {
+            "name": "windows 7 sp1",
+            "os": "windows 7",
+            "version": "4.5.661",
+        }
+    ]
+    EVIDENCE_OBJECT_URL = {
+        "type": "url",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "url": "string",
+            "blacklisted": "boolean",
+            "ip": "string",
+            "httpStatus": "string",
+            "md5": "string",
+            "offset": "integer",
+            "rule": "string",
+            "sha256": "string",
+            "size": "integer",
+        },
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_REGISTRY = {
+        "type": "registry",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "key": "string",
+            "name": "string",
+            "rule": "string",
+            "value": "string",
+        },
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_PROCESS = {
+        "type": "process",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "path": "string",
+        },
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_NETWORK = {
+        "type": "network",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "action": "string",
+            "ip": "string",
+            "port": "string",
+            "type": "string",
+        },
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_MUTEX = {
+        "type": "mutex",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "name": "string",
+            "path": "string",
+        },
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_IDS = {
+        "type": "ids",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "name": "string",
+            "signatureId": "integer",
+        },
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_FILE = {
+        "type": "file",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {"action": "string", "md5": "string", "path": "string", "rule": "string", "sha256": "string", "size": "integer"},
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_DROPPER = {
+        "type": "dropper",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {"path": "string", "rule": "string", "url": "string"},
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_DNS = {
+        "type": "dns",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {
+            "host": "string",
+            "cnames": ["string1", "string2"],
+            "ips": ["string1", "string2"],
+            "nameservers": ["string1", "string2"],
+            "nameserversList": ["string1", "string2"],
+        },
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_COOKIE = {
+        "type": "cookie",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {"action": "string", "domain": "string", "key": "string", "value": "string"},
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_OBJECT_ATTACHMENT = {
+        "type": "attachment",
+        "display": "string",
+        "time": "string",
+        "malicious": "string",
+        "what": {"sha256": "string", "md5": "string", "offset": "integer", "rule": "string", "size": "integer"},
+        "platforms": PLATFORMS_OBJECT,
+    }
+    EVIDENCE_LIST = [
+        EVIDENCE_OBJECT_ATTACHMENT,
+        EVIDENCE_OBJECT_COOKIE,
+        EVIDENCE_OBJECT_DNS,
+        EVIDENCE_OBJECT_DROPPER,
+        EVIDENCE_OBJECT_FILE,
+        EVIDENCE_OBJECT_IDS,
+        EVIDENCE_OBJECT_MUTEX,
+        EVIDENCE_OBJECT_NETWORK,
+        EVIDENCE_OBJECT_PROCESS,
+        EVIDENCE_OBJECT_REGISTRY,
+        EVIDENCE_OBJECT_URL,
+    ]
+    REPORT_OBJECT = [
+        {
+            "name": "string",
+            "scope": "string",
+            "type": "string",
+            "id": "string",
+            "forensics": EVIDENCE_LIST,
+        }
+    ]
+
+    REPORT = {
+        "generated": "string",
+        "reports": REPORT_OBJECT * 2,
+    }
+
+    FORENSICS_REPORT = {
+        "Scope": "string",
+        "Type": "string",
+        "ID": "string",
+        "Attachment": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "SHA256": "string",
+                "MD5": "string",
+                "Offset": "integer",
+                "Size": "integer",
+            }
+        ],
+        "Cookie": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Action": "string",
+                "Domain": "string",
+                "Key": "string",
+                "Value": "string",
+            }
+        ],
+        "DNS": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Host": "string",
+                "CNames": ["string1", "string2"],
+                "IP": ["string1", "string2"],
+                "NameServers": ["string1", "string2"],
+                "NameServersList": ["string1", "string2"],
+            }
+        ],
+        "Dropper": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Path": "string",
+                "URL": "string",
+                "Rule": "string",
+            }
+        ],
+        "File": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Path": "string",
+                "Action": "string",
+                "SHA256": "string",
+                "MD5": "string",
+                "Size": "integer",
+            }
+        ],
+        "IDS": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Name": "string",
+                "SignatureID": "integer",
+            }
+        ],
+        "Mutex": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Name": "string",
+                "Path": "string",
+            }
+        ],
+        "Network": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Action": "string",
+                "IP": "string",
+                "Port": "string",
+                "Protocol": "string",
+            }
+        ],
+        "Process": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Action": "string",
+                "Path": "string",
+            }
+        ],
+        "Registry": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "Name": "string",
+                "Action": "string",
+                "Key": "string",
+                "Value": "string",
+            }
+        ],
+        "URL": [
+            {
+                "Time": "string",
+                "Display": "string",
+                "Malicious": "string",
+                "Platform": [{"Name": "windows 7 sp1", "OS": "windows 7", "Version": "4.5.661"}],
+                "URL": "string",
+                "Blacklisted": "boolean",
+                "SHA256": "string",
+                "MD5": "string",
+                "Size": "integer",
+                "HTTPStatus": "string",
+                "IP": "string",
+            }
+        ],
+    }
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+
+    def test_get_forensics(self, requests_mock):
+        from ProofpointTAP_v2 import get_forensic_command
+
+        requests_mock.get("http://123-fake-api.com/v2/forensics?threatId=1256", json=self.REPORT)
+        _, output, _ = get_forensic_command(self.client, {"threatId": "1256"})
+        reports = output["Proofpoint.Report(var.ID === obj.ID)"]
+        assert len(reports) == 2
+        report = reports[0]
+        assert all(report)
+        assert report == self.FORENSICS_REPORT
+
+
+def load_mock_response(file_name: str) -> str:
+    """
+    Load mock file that simulates an API response.
+
+    Args:
+        file_name (str): Name of the mock response JSON file to return.
+
+    Returns:
+        str: Mock file content.
+
+    """
+    with open(f"test_data/{file_name}", encoding="utf-8") as mock_file:
+        return mock_file.read()
+
+
+def test_get_clicks_command(requests_mock):
+    """
+    Scenario: Retrieves clicks to malicious URLs blocked and permitted in the specified time period.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A get-clicks command is called and there is clicks in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_clicks_command
+
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/clicks/blocked", json={"queryEndTime": "2021-03-23T14:00:00Z", "clicksBlocked": [MOCK_BLOCKED_CLICK]}
+    )
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/clicks/permitted",
+        json={"queryEndTime": "2021-03-23T14:00:00Z", "clicksPermitted": [MOCK_PERMITTED_CLICK]},
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    blocked_result = get_clicks_command(client, True, "3 days")
+    permitted_result = get_clicks_command(client, False, "3 days")
+    assert len(blocked_result.outputs) == 1
+    assert blocked_result.outputs_prefix == "Proofpoint.ClicksBlocked"
+    assert blocked_result.outputs[0].get("messageID") == "4444"
+    assert len(permitted_result.outputs) == 1
+    assert permitted_result.outputs_prefix == "Proofpoint.ClicksPermitted"
+    assert permitted_result.outputs[0].get("messageID") == "3333"
+
+
+def test_get_messages_command(requests_mock):
+    """
+    Scenario: Retrieves messages to malicious URLs blocked and delivered in the specified time period.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A get-messages command is called and there is messages in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_messages_command
+
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/messages/blocked",
+        json={"queryEndTime": "2021-03-23T14:00:00Z", "messagesBlocked": [MOCK_BLOCKED_MESSAGE]},
+    )
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/messages/delivered",
+        json={"queryEndTime": "2021-03-23T14:00:00Z", "messagesDelivered": [MOCK_DELIVERED_MESSAGE]},
+    )
+
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    blocked_result = get_messages_command(client, True, "3 days")
+    delivered_result = get_messages_command(client, False, "3 days")
+    assert len(blocked_result.outputs) == 1
+    assert blocked_result.outputs_prefix == "Proofpoint.MessagesBlocked"
+    assert blocked_result.outputs[0].get("messageID") == "2222@evil.zz"
+    assert len(delivered_result.outputs) == 1
+    assert delivered_result.outputs_prefix == "Proofpoint.MessagesDelivered"
+    assert delivered_result.outputs[0].get("messageID") == "1111@evil.zz"
+
+
+def test_list_campaigns_command(requests_mock):
+    """
+    Scenario: Retrieves a list of IDs of campaigns active in a time window.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - A list-campaign-ids command is called and there is campaigns in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, list_campaigns_command
+
+    mock_response = json.loads(load_mock_response("campaigns.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/campaign/ids", json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = list_campaigns_command(client, "3 days")
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == "Proofpoint.Campaign"
+    assert result.outputs[0].get("id") == "f3ff0874-85ef-475e-b3fe-d05f97b2ed3f"
+    assert result.outputs[0].get("lastUpdatedAt") == "2021-03-25T10:37:46.000Z"
+
+
+def test_get_campaign(requests_mock):
+    """
+    Scenario: Retrieves information for a given campaign.
+    Given:
+     - User has provided valid credentials and argument.
+    When:
+     - A get-campaign command is called and there is a campaign in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_campaign_command
+
+    mock_response = json.loads(load_mock_response("campaign_information.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/campaign/1", json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = get_campaign_command(client, "1")
+    assert len(result.outputs) == 7
+    assert result.outputs_prefix == "Proofpoint.Campaign"
+    assert result.outputs.get("info").get("id") == "aa9b3d62-4d72-4ebc-8f39-3da3833e7038"
+
+
+def test_list_most_attacked_users_command(requests_mock):
+    """
+    Scenario: Retrieves a list of the most attacked users in the organization for a given period.
+    Given:
+     - User has provided valid credentials and argument.
+    When:
+     - A get-vap command is called and there is a attacked people in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, list_most_attacked_users_command
+
+    mock_response = json.loads(load_mock_response("most_attacked_users.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/people/vap", json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = list_most_attacked_users_command(client, "")
+    assert len(result.outputs) == 5
+    assert result.outputs_prefix == "Proofpoint.Vap"
+    assert result.outputs.get("users")[0].get("identity").get("guid") == "88e36bf359-99e8-7e53-f58a-6df8b430be6d"
+    assert result.outputs.get("totalVapUsers") == 2
+
+
+def test_get_top_clickers_command(requests_mock):
+    """
+    Scenario: Retrieves a list of the top clickers in the organization for a given period.
+    Given:
+     - User has provided valid credentials and argument.
+    When:
+     - A get_top_clickers command is called and there is clickers in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, get_top_clickers_command
+
+    mock_response = json.loads(load_mock_response("top_clickers.json"))
+    requests_mock.get(f"{MOCK_URL}/v2/people/top-clickers", json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = get_top_clickers_command(client, "")
+    assert len(result.outputs) == 3
+    assert result.outputs_prefix == "Proofpoint.Topclickers"
+    assert result.outputs.get("users")[1].get("identity").get("guid") == "b4077fsv0e-3a2e-767f-7315-c049f831cc95"
+    assert result.outputs.get("totalTopClickers") == 2
+
+
+def test_url_decode(requests_mock):
+    """
+    Scenario: Decode URLs that have been rewritten by TAP to their original, target URL.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A url-decode command is called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, url_decode_command
+
+    mock_response = json.loads(load_mock_response("url_decode.json"))
+    requests_mock.post(f"{MOCK_URL}/v2/url/decode", json=mock_response)
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = url_decode_command(client, "")
+    assert len(result.outputs) == 2
+    assert result.outputs_prefix == "Proofpoint.URL"
+    assert result.outputs[1].get("decodedUrl") == "http://www.bouncycastle.org/"
+
+
+def test_list_issues_command(requests_mock):
+    """
+    Scenario: Retrieves events for clicks to malicious URLs permitted and messages delivered in the specified time period.
+    Given:
+     - User has provided valid credentials and arguments.
+    When:
+     - A list_issues command is called and there is clicks and messages in the response.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+
+    """
+    from ProofpointTAP_v2 import Client, list_issues_command
+
+    requests_mock.get(
+        f"{MOCK_URL}/v2/siem/issues",
+        json={
+            "queryEndTime": "2021-04-16T14:00:00Z",
+            "messagesDelivered": [MOCK_DELIVERED_MESSAGE],
+            "clicksPermitted": [MOCK_PERMITTED_CLICK],
+        },
+    )
+    client = Client(
+        proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None
+    )
+    result = list_issues_command(client, "3 days")
+    messages_result = result[0]
+    clicks_result = result[1]
+
+    assert len(clicks_result.outputs) == 1
+    assert clicks_result.outputs_prefix == "Proofpoint.ClicksPermitted"
+    assert clicks_result.outputs[0].get("messageID") == "3333"
+
+    assert len(messages_result.outputs) == 1
+    assert messages_result.outputs_prefix == "Proofpoint.MessagesDelivered"
+    assert messages_result.outputs[0].get("messageID") == "1111@evil.zz"
+
+
+@freeze_time("2024-05-03T11:00:00")
+def test_validate_first_fetch_time_valid_str():
+    """
+    Given:
+     - A valid str first_fetch_time
+    When:
+     - running test_module.
+    Then:
+     - No exception is thrown.
+    """
+    from ProofpointTAP_v2 import validate_first_fetch_time
+
+    first_fetch_time = "1 day ago"
+    try:
+        validate_first_fetch_time(first_fetch_time)
+    except Exception as e:
+        raise AssertionError(f"validate_first_fetch_time raised an exception {e}")  # noqa: PT015
+
+
+@freeze_time("2024-05-03T11:00:00")
+def test_validate_first_fetch_time_not_valid():
+    """
+    Given:
+     - A first_fetch_time bigger than 7 days ago
+    When:
+     - running test_module.
+    Then:
+     - Exception is thrown.
+    """
+    from ProofpointTAP_v2 import validate_first_fetch_time
+
+    first_fetch_time = "8 days ago"
+    try:
+        validate_first_fetch_time(first_fetch_time)
+    except Exception as e:
+        assert (
+            "The First fetch time range is more than 7 days ago. Please update this parameter since "
+            "Proofpoint supports a maximum 1 week fetch back."
+        ) in str(e)
+
+
+# ---------------------------------------------------------------------------
+# Look-back ramp-up tests (legacy upgrade safety)
+# ---------------------------------------------------------------------------
+# When `look_back_minutes` is enabled but the dedup state (`seen_ids`) is
+# empty or only freshly initialized, applying the full look-back would cause
+# events to be re-fetched as duplicates. The integration solves this with a
+# `look_back_enabled_from` timestamp stored in `last_run`: the effective
+# look-back grows linearly with the elapsed wall-clock time since that stamp
+# and is capped at the configured `look_back_minutes`.
+# These tests assert the effective value passed to `get_fetch_times`.
+# ---------------------------------------------------------------------------
+
+
+def _spy_get_fetch_times(mocker):
+    """Patch ProofpointTAP_v2.get_fetch_times to capture its arguments while
+    delegating to the real implementation. Returns the spy mock object.
+    """
+    from ProofpointTAP_v2 import get_fetch_times as _real_get_fetch_times
+
+    return mocker.patch("ProofpointTAP_v2.get_fetch_times", side_effect=_real_get_fetch_times)
+
+
+def _make_client():
+    return Client(proofpoint_url=MOCK_URL, api_version="v2", service_principal="user1", secret="123", verify=False, proxies=None)
+
+
+def test_lookback_legacy_instance_disables_lookback_and_stamps(requests_mock, mocker):
+    """
+    Given:
+     - A legacy instance whose last_run has `last_fetch` but no `seen_ids` key
+       (state from a version of the integration that predates the look-back
+       / seen_ids feature).
+     - look_back_minutes=30 (the new default).
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with look_back_minutes=0 for this cycle
+       (avoiding re-fetching the last 30 minutes as duplicates).
+     - next_run["look_back_enabled_from"] is stamped with the current time so
+       the ramp-up can grow on subsequent fetches.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={"last_fetch": last_fetch_time},  # no seen_ids -> legacy
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    # Effective look_back for this fetch must be 0.
+    assert spy.call_args.args[1] == 0 or spy.call_args.kwargs.get("look_back_minutes") == 0
+    # Stamp persisted for the next cycle.
+    assert next_run.get("look_back_enabled_from") == current_time
+    # seen_ids is initialized in next_run regardless (so on the next fetch
+    # we are no longer "legacy", just "ramping up").
+    assert "seen_ids" in next_run
+
+
+def test_lookback_rampup_caps_effective_to_elapsed(requests_mock, mocker):
+    """
+    Given:
+     - An instance previously stamped with look_back_enabled_from=00:00:00.
+     - Current time is 00:10:00 -> elapsed = 10 minutes.
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with look_back_minutes=10 (capped to the
+       elapsed window in which seen_ids has actually been tracking events).
+     - The stamp is carried forward in next_run because ramp-up is not done.
+    """
+    last_fetch_time = "2010-01-01T00:09:00Z"
+    current_time = "2010-01-01T00:10:00Z"
+    enabled_from = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={
+            "last_fetch": last_fetch_time,
+            "seen_ids": {},
+            "look_back_enabled_from": enabled_from,
+        },
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    # Effective look-back equals elapsed minutes (10), not the configured 30.
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 10
+    # Stamp is carried forward while ramp-up continues.
+    assert next_run.get("look_back_enabled_from") == enabled_from
+
+
+def test_lookback_rampup_completes_and_drops_stamp(requests_mock, mocker):
+    """
+    Given:
+     - An instance previously stamped with look_back_enabled_from=00:00:00.
+     - Current time is 01:00:00 -> elapsed = 60 minutes >= look_back_minutes.
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with the full configured look_back_minutes=30.
+     - The stamp is dropped from next_run (ramp-up complete, steady state).
+    """
+    last_fetch_time = "2010-01-01T00:55:00Z"
+    current_time = "2010-01-01T01:00:00Z"
+    enabled_from = "2010-01-01T00:00:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={
+            "last_fetch": last_fetch_time,
+            "seen_ids": {},
+            "look_back_enabled_from": enabled_from,
+        },
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 30
+    # Stamp dropped now that ramp-up is complete.
+    assert "look_back_enabled_from" not in next_run
+
+
+def test_lookback_steady_state_uses_full_lookback(requests_mock, mocker):
+    """
+    Given:
+     - An upgraded instance with last_fetch AND a populated seen_ids,
+       and NO look_back_enabled_from stamp (i.e. steady state).
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with the full configured look_back_minutes=30.
+     - No look_back_enabled_from is introduced in next_run.
+    """
+    last_fetch_time = "2010-01-01T00:00:00Z"
+    current_time = "2010-01-01T00:01:00Z"
+
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={
+            "last_fetch": last_fetch_time,
+            "seen_ids": {MOCK_DELIVERED_MESSAGE["GUID"]: "2010-01-01T00:00:00Z"},
+        },
+        first_fetch_time="3 days",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 30
+    assert "look_back_enabled_from" not in next_run
+
+
+def test_lookback_first_fetch_uses_full_lookback(requests_mock, mocker):
+    """
+    Given:
+     - A first-time fetch (empty last_run, no last_fetch, no seen_ids).
+     - Configured look_back_minutes=30.
+    When:
+     - fetch_incidents is called.
+    Then:
+     - get_fetch_times is called with the full configured look_back_minutes=30
+       (first fetches have nothing prior to duplicate, so ramp-up is unneeded).
+     - No look_back_enabled_from is stamped in next_run.
+    """
+    current_time = "2010-01-01T00:05:00Z"
+    mocker.patch("ProofpointTAP_v2.get_now", return_value=datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%SZ"))
+    mocker.patch("ProofpointTAP_v2.parse_date_range", return_value=("2010-01-01T00:00:00Z", "never mind"))
+    spy = _spy_get_fetch_times(mocker)
+    requests_mock.get(MOCK_URL + "/v2/siem/all", json=MOCK_ALL_EVENTS)
+
+    next_run, _, _ = fetch_incidents(
+        client=_make_client(),
+        last_run={},  # first fetch
+        first_fetch_time="30 minutes",
+        event_type_filter=ALL_EVENTS,
+        threat_status="",
+        threat_type="",
+        limit=50,
+        look_back_minutes=30,
+    )
+
+    passed_look_back = spy.call_args.args[1] if len(spy.call_args.args) >= 2 else spy.call_args.kwargs.get("look_back_minutes")
+    assert passed_look_back == 30
+    assert "look_back_enabled_from" not in next_run

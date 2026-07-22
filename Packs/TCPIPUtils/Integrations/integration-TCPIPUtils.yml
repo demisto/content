@@ -1,0 +1,122 @@
+commonfields:
+  id: TCPIPUtils
+  version: -1
+name: TCPIPUtils
+display: TCPIPUtils (Deprecated)
+deprecated: true
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Deprecated. Service has been terminated by the vendor. No available replacement.
+configuration:
+- display: TCPIPUtils.com API key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+script:
+  script: >-
+    import urllib2, json
+
+
+    API_KEY = demisto.params()["apiKey"]
+
+
+    IP2ASN_API_URL = "https://www.utlsapi.com/api.php?type=ip2asn&q=%s&version=1.0&apikey=" + API_KEY
+
+    IPV4_INFO_API_URL = "https://www.utlsapi.com/api.php?type=ipv4info&q=%s&version=1.1&apikey=" + API_KEY
+
+
+    # The command demisto.command() holds the command sent from the user.
+
+    if demisto.command() == 'test-module':
+        if API_KEY == "trial":
+            demisto.results('ok')
+        else:
+            query = IP2ASN_API_URL % "8.8.4.4"
+            response = json.loads(urllib2.urlopen(query).read())
+            if response['status'] == "succeed":
+                demisto.results('ok')
+        sys.exit(0)
+    if demisto.command() == 'ip':
+        ec = {}
+        def parse_whois_data(whois_lines):
+            result = {}
+            for line in whois_lines:
+                if line.startswith("#"):
+                    continue
+                key_value = line.split(":")
+                if len(key_value) == 2:
+                    key, value = key_value[0], key_value[1]
+                    result[key.strip()] = value.strip()
+            return result
+
+        query = IPV4_INFO_API_URL % demisto.args()["ip"]
+        response = urllib2.urlopen(query)
+        data = json.loads(response.read())["data"]
+        ip_address = data["question"]
+        ip_data = {
+            "Address": ip_address,
+        }
+
+        if data.get("asinfo"):
+            ip_data["ASN"] = "AS" + str(data["asinfo"]["asn"])
+
+        if data.get("geoinfo"):
+            ip_data.update({
+                "Geo": {
+                    "Country": data["geoinfo"]["country_name"],
+                    "Description": data["geoinfo"]["capital"]
+                }
+            })
+
+        if data.get("whois"):
+            ip_data["WHOIS"] = parse_whois_data(data["whois"]["whois"])
+
+        ec[outputPaths["ip"]] = [];
+        ec[outputPaths["ip"]].append(ip_data)
+
+        hm = {
+            "Address": ip_address
+        }
+        if ip_data.get("ASN"):
+            hm['ASN'] = ip_data["ASN"]
+        if ip_data.get("Geo"):
+            hm["Country"] = ip_data["Geo"]["Country"]
+            hm["City"] = ip_data["Geo"]["Description"]
+        if ip_data["WHOIS"].get("Organization"):
+            hm['Organization'] = ip_data["WHOIS"]['Organization']
+        if ip_data["WHOIS"].get("NetRange"):
+            hm['NetRange'] = ip_data["WHOIS"]['NetRange']
+
+        demisto.results({"Type": 1, "Contents": data, "ContentsFormat": "json", "EntryContext": ec,
+        "HumanReadable": tableToMarkdown("TCPIPUtils Info for " + ip_address, [hm], "")})
+
+        sys.exit(0)
+
+    # You can use demisto.args()[argName] to get a specific arg. args are strings.
+
+    # You can use demisto.params()[paramName] to get a specific params.
+
+    # Params are of the type given in the integration page creation.
+  type: python
+  subtype: python2
+  commands:
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: IP address to query. E.g. !ip 1.1.1.1
+    outputs:
+    - contextPath: IP.Address
+      description: ' The IP address'
+    - contextPath: IP.ASN
+      description: ' The IP ASN'
+    - contextPath: IP.Geo.Country
+      description: ' The IP country'
+    - contextPath: IP.Geo.Description
+      description: ' The IP city'
+    - contextPath: IP.WHOIS
+      description: WHOIS result for the IP
+    description: Get information about IP (ASN, WHOIS, country, city). When information is available, returns a JSON with details)
+  dockerimage: demisto/python:2.7.18.20958
+fromversion: 5.0.0

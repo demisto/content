@@ -1,0 +1,125 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Mandiant Advantage ASM Incoming - Mapper",
+    "mapping": {
+        "Mandiant Advantage ASM Issue": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Alert Name": {
+                    "complex": {
+                        "accessor": "pretty_name",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "Alert Source": {
+                    "complex": {
+                        "filters": [],
+                        "root": "upstream",
+                        "transformers": []
+                    }
+                },
+                "External Status": {
+                    "complex": {
+                        "accessor": "status",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "M-ASM Category": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": []
+                    }
+                },
+                "M-ASM Collection": {
+                    "complex": {
+                        "filters": [],
+                        "root": "collection",
+                        "transformers": []
+                    }
+                },
+                "M-ASM Confirmed": {
+                    "complex": {
+                        "accessor": "confidence",
+                        "filters": [],
+                        "root": "summary",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {},
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {
+                                        "value": {
+                                            "simple": "confirmed"
+                                        }
+                                    },
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "M-ASM Description": {
+                    "simple": "details.description"
+                },
+                "M-ASM Entity Name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "entity_name",
+                        "transformers": []
+                    }
+                },
+                "M-ASM Remediation": {
+                    "simple": "details.remediation"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorLastSync": {
+                    "simple": "first_seen"
+                }
+            }
+        }
+    },
+    "name": "Mandiant Advantage ASM Incoming - Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

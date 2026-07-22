@@ -1,0 +1,8 @@
+fromversion: 8.4.0
+id: SymantecDLP_ModelingRule
+name: SymantecDLP Modeling Rule
+rules: ''
+schema: ''
+tags:
+supportedModules:
+- xsiam

@@ -1,0 +1,6 @@
+[file:README.md]
+ignore=RM104
+
+[file:DomainTools.yml]
+ignore=IN144,IN153
+

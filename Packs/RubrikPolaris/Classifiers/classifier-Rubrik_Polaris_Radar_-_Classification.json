@@ -1,0 +1,19 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Rubrik Polaris Radar - Classification",
+    "keyTypeMap": {
+        "RubrikRadar": "Rubrik Radar",
+        "RubrikDSPMViolation": "Rubrik DSPM Violation",
+        "RubrikIRViolation": "Rubrik IR Violation",
+        "RubrikSensitiveDataObject": "Rubrik Sensitive Data Object",
+        "RubrikThreatMonitoringObject": "Rubrik Threat Monitoring Object"
+    },
+    "name": "Rubrik Polaris Radar - Classification",
+    "transformer": {
+        "simple": "incidentClassification"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,52 @@
+[
+    {
+        "id": 0,
+        "name": "PASSED",
+        "i18nKey": "condition.block_status.PASSED"
+    },
+    {
+        "id": 1,
+        "name": "BLOCKED",
+        "i18nKey": "condition.block_status.BLOCKED"
+    },
+    {
+        "id": 2,
+        "name": "MESSAGE_MODIFIED",
+        "i18nKey": "condition.block_status.MESSAGE_MODIFIED"
+    },
+    {
+        "id": 3,
+        "name": "PROTECT_FILE_COPIED",
+        "i18nKey": "condition.block_status.PROTECT_FILE_COPIED"
+    },
+    {
+        "id": 4,
+        "name": "PROTECT_FILE_QUARANTINED",
+        "i18nKey": "condition.block_status.PROTECT_FILE_QUARANTINED"
+    },
+    {
+        "id": 5,
+        "name": "PROTECT_FILE_DELETED",
+        "i18nKey": "condition.block_status.PROTECT_FILE_DELETED"
+    },
+    {
+        "id": 6,
+        "name": "PROTECT_REMEDIATION_ERROR",
+        "i18nKey": "condition.block_status.PROTECT_REMEDIATION_ERROR"
+    },
+    {
+        "id": 8,
+        "name": "CONTENT_REMOVED",
+        "i18nKey": "condition.block_status.CONTENT_REMOVED"
+    },
+    {
+        "id": 9,
+        "name": "ENDPOINT_BLOCK",
+        "i18nKey": "condition.block_status.ENDPOINT_BLOCK"
+    },
+    {
+        "id": 10,
+        "name": "ENDPOINT_NOTIFY",
+        "i18nKey": "condition.block_status.ENDPOINT_NOTIFY"
+    }
+]

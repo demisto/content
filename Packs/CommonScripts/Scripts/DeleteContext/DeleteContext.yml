@@ -1,0 +1,48 @@
+commonfields:
+  id: DeleteContext
+  version: -1
+name: DeleteContext
+script: ''
+type: javascript
+tags:
+- Utility
+comment: |-
+  Delete field from context.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+  - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+  - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+enabled: true
+args:
+- name: key
+  default: true
+  description: List of comma-separated keys to delete from context.
+- name: all
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: If you choose yes - all context will be deleted.
+- name: subplaybook
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  - "auto"
+  description: Specify "yes" if the context key is inside of a sub-playbook. Use **auto** to delete either from the sub-playbook context (if the playbook is called as a sub-playbook) or from the global context (if the playbook is the top playbook).
+- name: keysToKeep
+  description: Context keys to keep when deleting all context. Supports comma separated values and nested objects, e.g. URL.Data,IP.Address
+- name: index
+  description: index to delete in case 'key' argument was specified.
+scripttarget: 0
+runas: DBotRole
+sensitive: true
+fromversion: 5.0.0
+tests:
+- test_delete_context
+- DeleteContext-auto-test
+- DeleteContext-auto-subplaybook-test
+- Delete Context Subplaybook Test
+- DeleteContext-test

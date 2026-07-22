@@ -1,0 +1,30 @@
+opsgenie-create-alert message="Example Message"
+opsgenie-get-alerts limit=1
+opsgenie-get-alerts alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286
+opsgenie-ack-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286
+opsgenie-assign-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 owner_username=b@g.com
+opsgenie-add-responder-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 responders=schedule,name,test_schedule
+opsgenie-get-escalations
+opsgenie-get-escalations escalation_id=9a441a8d-2410-43f4-9ef2-f7a265e12b74
+opsgenie-escalate-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 escalation_id=9a441a8d-2410-43f4-9ef2-f7a265e12b74
+opsgenie-add-alert-tag alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 tags=1,2,3
+!opsgenie-remove-alert-tag alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286 tags=1,2,3
+opsgenie-get-alert-attachments alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286
+opsgenie-close-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286
+opsgenie-delete-alert alert-id=69df59c2-41c6-4866-8c03-65c1ecf5417d-1636973048286
+opsgenie-get-schedules
+opsgenie-get-schedules schedule_id=5892636c-6183-4788-99d6-6d93b9095194
+opsgenie-get-schedule-overrides schedule_id=5892636c-6183-4788-99d6-6d93b9095194
+opsgenie-get-on-call schedule_id=5892636c-6183-4788-99d6-6d93b9095194
+opsgenie-create-incident message="test" responders=team,name,test_team,team,name,test_team_1
+opsgenie-close-incident incident_id=c59086e0-bf2c-44e2-bdfb-ed7747cc126b
+opsgenie-delete-incident incident_id=c59086e0-bf2c-44e2-bdfb-ed7747cc126b
+opsgenie-get-incidents limit=1
+opsgenie-get-incidents incident_id=b15c7555-d685-4a96-8798-46320618004e
+opsgenie-resolve-incident incident_id=b15c7555-d685-4a96-8798-46320618004e
+opsgenie-add-responder-incident incident_id=577424c1-b03c-4d23-9871-da0d395fea17 responders="team,name,Integration Team"
+opsgenie-add-tag-incident incident_id=b15c7555-d685-4a96-8798-46320618004e tags=1,2,3
+opsgenie-remove-tag-incident incident_id=b15c7555-d685-4a96-8798-46320618004e tags=1,2
+opsgenie-get-teams
+opsgenie-get-teams team_id=51d69df8-c40b-439e-9808-e1a78e54f91b
+opsgenie-get-request request_id=b79800b2-4378-4249-8677-0bf2332b8a1f request_type=alerts

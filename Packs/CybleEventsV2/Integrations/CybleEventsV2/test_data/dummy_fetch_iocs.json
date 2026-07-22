@@ -1,0 +1,41 @@
+{
+  "data": {
+    "pagination": {
+      "total_count": 17381117,
+      "page": 1,
+      "limit": 10
+    },
+    "iocs": [
+        {
+            "ioc": "Indicator",
+            "ioc_type": "Some IOC Type",
+            "first_seen": 1722227702,
+            "last_seen": 1722472568,
+            "risk_score": 70,
+            "sources": [
+                "Some Source"
+            ],
+            "behaviour_tags": [
+                "Some Tags"
+            ],
+            "confidence_rating": "Some Rating",
+            "target_countries": [
+                "Some Countries"
+            ],
+            "target_regions": [
+                "Some Regions"
+            ],
+            "target_industries": [
+                "Some Industries"
+            ],
+            "related_malware": [
+                "Some Malware"
+            ],
+            "related_threat_actors": [
+                "Some Actors"
+            ]
+        }
+    ]
+  },
+  "success": true
+}

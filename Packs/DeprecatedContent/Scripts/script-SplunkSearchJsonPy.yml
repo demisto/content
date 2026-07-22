@@ -1,0 +1,66 @@
+commonfields:
+  id: SplunkSearchJsonPy
+  version: -1
+name: SplunkSearchJsonPy
+script: >
+  import json
+
+  rows = 30
+
+  if 'rows' in demisto.args():
+      rows = demisto.args()['rows']
+  query = demisto.args()['query']
+
+  query = query + ' | head ' + str(rows)
+
+  res = demisto.executeCommand('search', {'query': query, 'using-brand': 'splunk'})
+
+  if isError(res[0]):
+      demisto.results(res)
+  else:
+      data = demisto.get(res[0],'Contents')
+      if data:
+          data = data if isinstance(data, list) else [data]
+          new_data  = []
+          for r in data:
+              new_r = {}
+              raw = demisto.get(r, 'result._raw')
+              if raw:
+                  new_r["Time"] = demisto.get(r, 'result._time')
+                  new_r["Host"] = demisto.get(r, 'result.host')
+                  new_r["Source"] = demisto.get(r, 'result.source')
+                  raw = json.loads(raw)
+                  for key in raw.keys():
+                      new_r[key] = raw[key]
+              else:
+                  if not demisto.get(demisto.args(), 'showPreviews') and demisto.get(r, 'preview'):
+                      continue
+                  new_r = demisto.get(r, 'result')
+              new_data.append(new_r)
+          data = new_data
+          data = [{k: formatCell(row[k]).replace("\n","<br>") for k in row} for row in data]
+          data = tblToMd('Splunk search result',data)
+          demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- enhancement
+comment: Deprecated. Run a query through Splunk and format the results as a markdown with raw data parsed as JSON
+system: true
+args:
+- name: query
+  required: true
+  default: true
+  description: Splunk query to execute
+- name: rows
+  description: Return up to X first rows. If omitted, defaults to 30.
+scripttarget: 0
+dependson:
+  must:
+  - splunk|||search
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

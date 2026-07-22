@@ -1,0 +1,13 @@
+{
+  "_id": "id_12345",
+  "inProgress": true,
+  "progress": 0,
+  "categories": [
+    "XML Injection",
+    "Command Injection",
+    "File Inclusion",
+    "XSS",
+    "XML Injection",
+    "SQL Injection"
+  ]
+}

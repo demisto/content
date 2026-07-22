@@ -1,0 +1,533 @@
+id: Accessdata_Dump_memory_for_malicious_process
+version: -1
+fromversion: 5.0.0
+name: 'Accessdata: Dump memory for malicious process'
+description: Deprecated. No available replacement.
+deprecated: true
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8ad54dd6-b579-41ef-81da-1423e2aa8f4f
+    type: start
+    task:
+      id: 8ad54dd6-b579-41ef-81da-1423e2aa8f4f
+      version: -1
+      name: ""
+      description: Playbook entry point
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: 1b11d33b-fb1d-4221-8667-a362933d726c
+    type: regular
+    task:
+      id: 1b11d33b-fb1d-4221-8667-a362933d726c
+      version: -1
+      name: Get process list from legacy agent
+      description: Calls a command to get the process list from the legacy agent.
+      script: '|||accessdata-legacyagent-get-processlist'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      caseid: {}
+      target_ip:
+        simple: ${inputs.target_ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: 15ba3de3-acd0-4849-8f4c-6e9c37a559d2
+    type: title
+    task:
+      id: 15ba3de3-acd0-4849-8f4c-6e9c37a559d2
+      version: -1
+      name: Done
+      description: Playbook exit point
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1715
+        }
+      }
+    note: false
+    timertriggers: []
+  "10":
+    id: "10"
+    taskid: 0365d043-19bd-4a7d-8b65-d80671d992fa
+    type: regular
+    task:
+      id: 0365d043-19bd-4a7d-8b65-d80671d992fa
+      version: -1
+      name: Read snapshot file from case folder
+      description: Reads a file from a case folder and saves the content in the current context.
+      script: Accessdata|||accessdata-read-casefile
+      type: regular
+      iscommand: true
+      brand: Accessdata
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      filepath:
+        simple: ${Accessdata.Job.Result}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+  "11":
+    id: "11"
+    taskid: fd34f7f1-972f-4e34-8f9b-48e11804b387
+    type: regular
+    task:
+      id: fd34f7f1-972f-4e34-8f9b-48e11804b387
+      version: -1
+      name: Check if process exists in process list
+      description: Reads the content of an XML file from context, converts it to a JSON file and checks if the given filename exists in the process list. Returns yes or no.
+      scriptName: AccessdataCheckProcessExistsInSnapshot
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      filepath:
+        simple: ${Accessdata.Job.Result}
+      process:
+        simple: ${inputs.process_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "12":
+    id: "12"
+    taskid: e1963d53-5ffe-47ff-8d5c-1e54e247969f
+    type: condition
+    task:
+      id: e1963d53-5ffe-47ff-8d5c-1e54e247969f
+      version: -1
+      name: Does the process exist?
+      description: Simple conditional task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Accessdata.Process.Exists
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+  "13":
+    id: "13"
+    taskid: 09962146-a8e3-4071-829a-898189f4ac1e
+    type: regular
+    task:
+      id: 09962146-a8e3-4071-829a-898189f4ac1e
+      version: -1
+      name: Create memory dump job
+      description: Creates a legacy agent memory dump.
+      script: Accessdata|||accessdata-legacyagent-get-memorydump
+      type: regular
+      iscommand: true
+      brand: Accessdata
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      caseid:
+        simple: ${Accessdata.Job.CaseID}
+      target_ip:
+        simple: ${inputs.target_ip}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+  "15":
+    id: "15"
+    taskid: 11cc66b1-ae41-4139-89cc-49943dfda1eb
+    type: playbook
+    task:
+      id: 11cc66b1-ae41-4139-89cc-49943dfda1eb
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action must have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      Ids:
+        simple: ${Accessdata.Job.CaseJobID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: caseJobID
+      PollingCommandName:
+        simple: accessdata-jobstatus-scan
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success' && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+  "17":
+    id: "17"
+    taskid: 53865ec2-0f43-4b60-813b-3708fa2bf2da
+    type: playbook
+    task:
+      id: 53865ec2-0f43-4b60-813b-3708fa2bf2da
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action must have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      Ids:
+        simple: ${Accessdata.Job.CaseJobID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: caseJobID
+      PollingCommandName:
+        simple: accessdata-jobstatus-scan
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Accessdata.Job(val.State !== 'Finished' && val.State !== 'Success' && val.State !== 'Completed' && val.State !== 'Failed').CaseJobID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+  "19":
+    id: "19"
+    taskid: 7a1d37fe-21c2-4eea-8c1c-f55044720bff
+    type: regular
+    task:
+      id: 7a1d37fe-21c2-4eea-8c1c-f55044720bff
+      version: -1
+      name: Get process list job result
+      description: Returns the snapshot path from a result of the process list job.
+      script: Accessdata|||accessdata-get-jobstatus-processlist
+      type: regular
+      iscommand: true
+      brand: Accessdata
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      caseID:
+        simple: ${Accessdata.Job.CaseID}
+      jobID:
+        simple: ${Accessdata.Job(val.Type=="Volatile").ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+  "20":
+    id: "20"
+    taskid: 19ad4cc8-0740-40f6-8f6e-cf335fd4aad5
+    type: regular
+    task:
+      id: 19ad4cc8-0740-40f6-8f6e-cf335fd4aad5
+      version: -1
+      name: Get memory dump job result
+      description: Returns the memory dump path from the result of the memory dump job.
+      script: Accessdata|||accessdata-get-jobstatus-memorydump
+      type: regular
+      iscommand: true
+      brand: Accessdata
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      caseID:
+        simple: ${Accessdata.Job.CaseID}
+      jobID:
+        simple: ${Accessdata.Job(val.Type=="LegacyMemoryDump").ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+  "21":
+    id: "21"
+    taskid: 35cd342f-88f0-495d-8387-5dc6913e8a05
+    type: regular
+    task:
+      id: 35cd342f-88f0-495d-8387-5dc6913e8a05
+      version: -1
+      name: Set playbook output IsProcessDetected
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Accessdata.IsProcessDetected
+      value:
+        simple: ${Accessdata.Process.Exists}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -400,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+  "22":
+    id: "22"
+    taskid: 9c7fc126-a4e2-46e4-895c-63d249ff5ceb
+    type: regular
+    task:
+      id: 9c7fc126-a4e2-46e4-895c-63d249ff5ceb
+      version: -1
+      name: Init playbook output IsProcessDetected
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Accessdata.IsProcessDetected
+      value:
+        simple: "No"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "23":
+    id: "23"
+    taskid: 162e9bce-45c4-47c2-880d-455c549a6fb8
+    type: regular
+    task:
+      id: 162e9bce-45c4-47c2-880d-455c549a6fb8
+      version: -1
+      name: Init playbook output MemoryDumpPath
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Accessdata.MemoryDumpPath
+      value:
+        simple: '""'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+  "24":
+    id: "24"
+    taskid: ee6fd151-a9ce-4908-81a0-245e8dd9b498
+    type: regular
+    task:
+      id: ee6fd151-a9ce-4908-81a0-245e8dd9b498
+      version: -1
+      name: Set playbook output MemoryDumpPath
+      description: Sets a value into the context with the given context key.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append: {}
+      key:
+        simple: Accessdata.MemoryDumpPath
+      value:
+        simple: ${Accessdata.Job(val.Type=="LegacyMemoryDump").Result}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1715
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1710,
+        "width": 1350,
+        "x": -430,
+        "y": 100
+      }
+    }
+  }
+inputs:
+- key: target_ip
+  value: {}
+  required: true
+  description: ""
+- key: process_name
+  value: {}
+  required: true
+  description: ""
+outputs:
+- contextPath: Accessdata.IsProcessDetected
+  description: Indicates if the process with the specified name was detected on the agent machine during playbook execution.
+  type: boolean
+- contextPath: Accessdata.MemoryDumpPath
+  description: The path for the created memory dump file (if not created, it will be an empty string).
+  type: string
+tests:
+- No test

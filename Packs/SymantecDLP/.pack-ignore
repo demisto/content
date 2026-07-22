@@ -1,0 +1,12 @@
+[file:SymantecDLP.yml]
+ignore=IN126
+
+[file:README.md]
+ignore=RM104
+
+[tests_require_network]
+Symantec Data Loss Prevention
+
+[known_words]
+incidentStatusId
+Symantec

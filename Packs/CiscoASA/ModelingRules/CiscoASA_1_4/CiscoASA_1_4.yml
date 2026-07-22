@@ -1,0 +1,8 @@
+fromversion: 8.11.0
+id: cisco_asa_modeling_rule
+name: Cisco ASA Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

@@ -1,0 +1,1 @@
+!autofocus-get-indicators limit=10

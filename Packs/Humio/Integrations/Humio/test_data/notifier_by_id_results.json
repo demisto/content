@@ -1,0 +1,22 @@
+{
+    "data": {
+        "searchDomain": {
+            "action": {
+                "method": "POST",
+                "name": "Null Webhook",
+                "url": "http://localhost",
+                "__typename": "WebhookAction",
+                "webhookBodyTemplate": "{\n  \"repository\": \"{repo_name}\",\n  \"timestamp\": \"{alert_triggered_timestamp}\",\n  \"alert\": {\n    \"name\": \"{alert_name}\",\n    \"description\": \"{alert_description}\",\n    \"query\": {\n      \"queryString\": \"{query_string} \",\n      \"end\": \"{query_time_end}\",\n      \"start\": \"{query_time_start}\"\n    },\n    \"notifierID\": \"{alert_notifier_id}\",\n    \"id\": \"{alert_id}\",\n    \"linkURL\": \"{url}\"\n  },\n  \"warnings\": \"{warnings}\",\n  \"events\": {events},\n  \"numberOfEvents\": {event_count}\n}",
+                "id": "BTkuj8QArhIFMh_L39FoN0tnyTUEXplc",
+                "useProxy": true,
+                "headers": [
+                    {
+                        "header": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "ignoreSSL": false
+            }
+        }
+    }
+}

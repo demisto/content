@@ -1,0 +1,304 @@
+{
+    "inventa-get-datasubjects": [
+        {
+            "id": "627d8a2ee45cba5d59f072fc",
+            "timestamp": 1652395494203,
+            "sourceIds": [
+                "3e4a9fd42abb25bbdfdda9a24d64090cb550f56c870338766452eff122d58031"
+            ],
+            "rdaSourceIds": [
+                "1e4082f2-bc76-5534-a8bb-c449f9854ffe:00000000-0000-0000-0000-000000000001"
+            ],
+            "personalInfo": [
+                "BIRTHDAY",
+                "CC_CVV",
+                "CC_EXPIRES",
+                "CC_TYPE",
+                "CITY",
+                "COMPANY",
+                "COUNTRY",
+                "COUNTRY_CODE",
+                "DOMAIN",
+                "EMAIL_ADDRESS",
+                "GIVEN_NAME",
+                "GUID",
+                "MIDDLE_INITIAL",
+                "NATIONAL_ID",
+                "OCCUPATION",
+                "PASSPORT_NUMBER",
+                "PHONE_NUMBER",
+                "POLITICAL_OPINION",
+                "RACE",
+                "RELIGION",
+                "STATE",
+                "STREET_ADDRESS",
+                "SURNAME",
+                "TITLE",
+                "VEHICLE_MODEL",
+                "VEHICLE_NUMBER",
+                "VEHICLE_YEAR",
+                "ZIP_CODE"
+            ]
+        }
+    ],
+   
+    "inventa-get-datasubject-id": {
+        "datasubject_id": "627d8a2ee45cba5d59f072fc"
+    },
+
+    "inventa-get-sources": [
+        {
+            "id": "3e4a9fd42abb25bbdfdda9a24d64090cb550f56c870338766452eff122d58031",
+            "applianceName": "core_96",
+            "timestamp": "17 May 2022 00:05:47",
+            "keyType": "FS",
+            "path": "QA-CSV.csv",
+            "url": "smb://X.X.X.X/demo10k",
+            "hostName": "X.X.X.X",
+            "dbName": "demo10k",
+            "vendor": "CIFS",
+            "type": "CentralStorage",
+            "content": {
+                "contentType": "File",
+                "fileName": "QA-CSV",
+                "fileType": "csv",
+                "contentSize": 4674711,
+                "fileCreated": 1633364750593,
+                "fileLastChanged": 1643895926051,
+                "categories": []
+            },
+            "entityTypes": [
+                "CC_TYPE",
+                "DOMAIN",
+                "MOTHERS_MAIDEN",
+                "ZIP_CODE",
+                "CC_EXPIRES",
+                "MIDDLE_INITIAL",
+                "STATE",
+                "VEHICLE_NUMBER",
+                "NATIONAL_ID",
+                "COUNTRY",
+                "EMAIL_ADDRESS",
+                "CC_CVV",
+                "PASSPORT_NUMBER",
+                "USERNAME",
+                "BIRTHDAY",
+                "SURNAME",
+                "GIVEN_NAME",
+                "GUID",
+                "DRIVER_LICENSE",
+                "VEHICLE_MODEL",
+                "COMPANY",
+                "CITY",
+                "RELIGION",
+                "RACE",
+                "VEHICLE_YEAR",
+                "OCCUPATION",
+                "TITLE",
+                "POLITICAL_OPINION",
+                "CC_NUMBER",
+                "PHONE_NUMBER",
+                "STREET_ADDRESS",
+                "COUNTRY_CODE"
+            ]
+        }
+    ],
+    "inventa-get-sources-piis": {
+        "piis": [
+            "BIRTHDAY",
+            "CC_CVV",
+            "CC_EXPIRES",
+            "CC_NUMBER",
+            "CC_TYPE",
+            "CITY",
+            "COMPANY",
+            "COUNTRY",
+            "COUNTRY_CODE",
+            "DOMAIN",
+            "DRIVER_LICENSE",
+            "EMAIL_ADDRESS",
+            "GIVEN_NAME",
+            "GUID",
+            "MIDDLE_INITIAL",
+            "MOTHERS_MAIDEN",
+            "NATIONAL_ID",
+            "OCCUPATION",
+            "PASSPORT_NUMBER",
+            "PHONE_NUMBER",
+            "POLITICAL_OPINION",
+            "RACE",
+            "RELIGION",
+            "STATE",
+            "STREET_ADDRESS",
+            "SURNAME",
+            "TITLE",
+            "USERNAME",
+            "VEHICLE_MODEL",
+            "VEHICLE_NUMBER",
+            "VEHICLE_YEAR",
+            "ZIP_CODE"
+        ]
+    },
+    "inventa-create-ticket": {
+		"ticket_id": "305"
+	},
+    "inventa-get-datasubject-details": {
+        "email": "<test.email.1>",
+        "name": "jacobien szigethy"
+    },
+    "inventa-get-dsar-piis": {
+        "piis": [
+            "CITY",
+            "DRIVER_LICENSE",
+            "BROWSER_USER_AGENT",
+            "COUNTRY",
+            "GUID",
+            "COUNTRY_CODE",
+            "CC_CVV",
+            "RELIGION",
+            "TITLE",
+            "BIRTHDAY",
+            "EMAIL_ADDRESS",
+            "CC_EXPIRES",
+            "STREET_ADDRESS",
+            "STATE",
+            "VEHICLE_NUMBER",
+            "DOMAIN",
+            "CC_TYPE",
+            "USERNAME",
+            "RACE",
+            "NATIONAL_ID",
+            "OCCUPATION",
+            "PHONE_NUMBER",
+            "MIDDLE_INITIAL",
+            "VEHICLE_MODEL",
+            "COMPANY",
+            "GIVEN_NAME",
+            "ZIP_CODE",
+            "SURNAME",
+            "POLITICAL_OPINION",
+            "VEHICLE_YEAR",
+            "PASSPORT_NUMBER"
+        ]
+    },
+    "inventa-get-dsar-transactions": {
+        "transactions": [{}]
+    },
+    "inventa-get-dsar-files": {
+        "files": [
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 573,
+            "name": "AK-50KAK-50K",
+            "path": "/AK-50KAK-50K.xlsx",
+            "size": 17768910,
+            "timestamp": null,
+            "url": "nfs://<test.ip>//crawlershare"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 574,
+            "name": "AK-110K",
+            "path": "!\\AK-110K.xlsx",
+            "size": 38712273,
+            "timestamp": "06 Aug 2020 11:41:17",
+            "url": "smb://qa-server2016.1touch.co/vip"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 575,
+            "name": "CSV-100000-(1)_short",
+            "path": "New folder\\CSV-100000-(1)_short.csv",
+            "size": 49771766,
+            "timestamp": "01 Nov 2021 16:08:35",
+            "url": "smb://qa-server2016.1touch.co/dfs_yuri2016"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 576,
+            "name": "CSV-100000-(1)_short",
+            "path": "New folder\\CSV-100000-(1)_short.csv",
+            "size": 49771766,
+            "timestamp": "01 Nov 2021 16:08:35",
+            "url": "smb://qa-server2016.1touch.co/yuri"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 577,
+            "name": "CSV-100000-(1)_short",
+            "path": "New folder\\CSV-100000-(1)_short.csv",
+            "size": 49771766,
+            "timestamp": "01 Nov 2021 16:08:35",
+            "url": "smb://qa-server2016.1touch.co/new_dfs_share"
+          },
+          {
+            "entityTypes": "USERNAME, COMPANY, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, CC_EXPIRES, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, MIDDLE_INITIAL, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, SURNAME, GIVEN_NAME",
+            "id": 578,
+            "name": "QA-CSV",
+            "path": "QA-CSV.csv",
+            "size": 4674711,
+            "timestamp": "04 Oct 2021 16:25:50",
+            "url": "smb://qa-server2016.1touch.co/demo10k"
+          },
+          {
+            "entityTypes": "USERNAME, DRIVER_LICENSE, DOMAIN, BIRTHDAY, ZIP_CODE, GUID, RELIGION, STREET_ADDRESS, CITY, VEHICLE_NUMBER, CC_TYPE, OCCUPATION, VEHICLE_MODEL, EMAIL_ADDRESS, COUNTRY_CODE, VEHICLE_YEAR, CC_CVV, PASSPORT_NUMBER, NATIONAL_ID, COUNTRY, STATE, TITLE, PHONE_NUMBER, POLITICAL_OPINION, RACE, BROWSER_USER_AGENT, SURNAME, GIVEN_NAME",
+            "id": 579,
+            "name": "AK-110K.xlsAK-110K",
+            "path": "/AK-110K.xlsAK-110K.xlsx",
+            "size": 38712273,
+            "timestamp": null,
+            "url": "nfs://<test.ip>//crawlershare"
+          }
+        ]
+      },
+    "inventa-get-dsar-databases": {
+        "databases": [
+            {
+                "database": "flat_1t_40_full",
+                "entityTypes": "EMAIL_ADDRESS, BROWSER_USER_AGENT, DOMAIN, USERNAME, OCCUPATION, GUID, PASSPORT_NUMBER",
+                "id": 0,
+                "name": "flat_500t_100K_short.AK_100K_1_5"
+            },
+            {
+                "database": "flat_1t_40_full",
+                "entityTypes": "CITY, STATE, BIRTHDAY, VEHICLE_NUMBER, BROWSER_USER_AGENT, OCCUPATION, PASSPORT_NUMBER",
+                "id": 0,
+                "name": "flat_200000t_250PII_short.AK_250PII_single_152_5"
+            }
+        ]
+    },
+    "inventa-get-dsar-dataassets": {
+        "dataAssets": [
+            {
+                "description": "AK-50k",
+                "id": 358,
+                "name": "AK-50k",
+                "piis": "None",
+                "reasonsOfProcessing": "1"
+            },
+            {
+                "description": null,
+                "id": 359,
+                "name": "Default",
+                "piis": "None",
+                "reasonsOfProcessing": "None"
+            }
+        ]
+    },
+    "inventa-get-datasubject-id-from-ticket": {
+        "datasubject_id": "619257ea5287e1298b13d776"
+    },
+    "inventa-get-entities": {
+        "entities":[
+            "BIRTHDAY","BROWSER_USER_AGENT","GUID","ACCOUNT_NUMBER","CC_CVV","CC_EXPIRES",
+            "CC_NUMBER","CC_TYPE","RACE","VEHICLE_NUMBER","VEHICLE_YEAR","VEHICLE_MODEL",
+            "VEHICLE_TYPE","RELIGION","COMPANY","DOMAIN","OCCUPATION","TITLE","USERNAME",
+            "DRIVER_LICENSE","NATIONAL_ID","PASSPORT_NUMBER","TAX_ID","POLITICAL_OPINION",
+            "CITY","COUNTRY","COUNTRY_CODE","EMAIL_ADDRESS","PHONE_NUMBER","STATE",
+            "STREET_ADDRESS","UPS","ZIP_CODE","POSTCODE","FULL_NAME","GIVEN_NAME",
+            "MIDDLE_INITIAL","MOTHERS_MAIDEN","SURNAME"
+        ]
+    }
+
+
+}

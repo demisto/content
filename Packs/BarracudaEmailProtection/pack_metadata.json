@@ -1,0 +1,33 @@
+{
+    "name": "Barracuda Email Protection",
+    "description": "Email protection from Barracuda",
+    "support": "xsoar",
+    "currentVersion": "1.0.9",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Email"
+    ],
+    "tags": [
+        "Malware",
+        "Email",
+        "Alerts"
+    ],
+    "useCases": [
+        "Malware",
+        "Phishing"
+    ],
+    "keywords": [
+        "barracuda",
+        "email",
+        "protection"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ]
+}

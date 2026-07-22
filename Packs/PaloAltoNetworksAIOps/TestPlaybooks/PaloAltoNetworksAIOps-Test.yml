@@ -1,0 +1,333 @@
+id: PaloAltoNetworksAIOps-Test
+version: -1
+name: PaloAltoNetworksAIOps-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40e81e0c-bdf4-4c94-86bc-9aba38f43638
+    type: start
+    task:
+      id: 40e81e0c-bdf4-4c94-86bc-9aba38f43638
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: af5bfd26-4d3e-4286-88b9-736f1ddb83f9
+    type: regular
+    task:
+      id: af5bfd26-4d3e-4286-88b9-736f1ddb83f9
+      version: -1
+      name: Generate report
+      description: |-
+        Generates a bpa report. Steps:
+        - Get information about Pan-OS/Panorama device.
+        - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
+        - Use the information retrieved above to generate a BPA report.
+        - During this process the API also generates a report_id.
+      script: '|||aiops-bpa-report-generate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      requester_email:
+        simple: test@gmail.com
+      requester_name:
+        simple: test
+      show_in_context:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: ad1b06e5-ae81-4856-8b7c-8c47a6ea4efe
+    type: regular
+    task:
+      id: ad1b06e5-ae81-4856-8b7c-8c47a6ea4efe
+      version: -1
+      name: Upload file to warroom
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      data:
+        simple: ugigigo
+      filename:
+        simple: testFile.xml
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 13bfb980-231e-4a66-89e1-77d5e3cc282b
+    type: regular
+    task:
+      id: 13bfb980-231e-4a66-89e1-77d5e3cc282b
+      version: -1
+      name: Generate report with entryID - complete with error
+      description: |-
+        Generates a bpa report. Steps:
+        - Get information about Pan-OS/Panorama device.
+        - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
+        - Use the information retrieved above to generate a BPA report.
+        - During this process the API also generates a report_id.
+      script: '|||aiops-bpa-report-generate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      requester_email:
+        simple: test@gmail.com
+      requester_name:
+        simple: test
+      show_in_context:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1765fe56-9500-4283-8624-5e069c697c27
+    type: regular
+    task:
+      id: 1765fe56-9500-4283-8624-5e069c697c27
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cdc46a9a-d431-4caa-8c65-86b2e70333c5
+    type: condition
+    task:
+      id: cdc46a9a-d431-4caa-8c65-86b2e70333c5
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AiOps.BPAReport.report_status
+            iscontext: true
+          right:
+            value:
+              simple: COMPLETED_WITH_SUCCESS
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cde312d2-a4ea-48e8-86a7-53bf8c8f4cf0
+    type: regular
+    task:
+      id: cde312d2-a4ea-48e8-86a7-53bf8c8f4cf0
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: eeb0ebae-df68-4b8f-804a-17b27cbfc22f
+    type: title
+    task:
+      id: eeb0ebae-df68-4b8f-804a-17b27cbfc22f
+      version: -1
+      name: Completed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 390,
+        "x": 40,
+        "y": -130
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.9.0
+description: Test playbook for PaloAltoAIOps integration

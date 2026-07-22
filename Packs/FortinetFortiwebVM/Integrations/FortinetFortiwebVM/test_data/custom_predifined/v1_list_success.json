@@ -1,0 +1,308 @@
+[
+    {
+        "_id": 1,
+        "type": "URL",
+        "details": [
+            {
+                "_id": 100002,
+                "id": 100002,
+                "name": "",
+                "path": "/browserconfig.xml",
+                "domain": "",
+                "value": false
+            }
+        ]
+    },
+    {
+        "_id": 2,
+        "type": "Parameter",
+        "details": [
+            {
+                "_id": 200001,
+                "id": 200001,
+                "name": "__VIEWSTATE",
+                "path": "",
+                "domain": "",
+                "value": true
+            },
+            {
+                "_id": 200002,
+                "id": 200002,
+                "name": "__VIEWSTATEFIELDCOUNT",
+                "path": "",
+                "domain": "",
+                "value": true
+            },
+            {
+                "_id": 200003,
+                "id": 200003,
+                "name": "__VALIDATION",
+                "path": "",
+                "domain": "",
+                "value": true
+            },
+            {
+                "_id": 200004,
+                "id": 200004,
+                "name": "__VALIDATIONGROUP",
+                "path": "",
+                "domain": "",
+                "value": true
+            },
+            {
+                "_id": 200005,
+                "id": 200005,
+                "name": "__EVENTTARGET",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200006,
+                "id": 200006,
+                "name": "__EVENTARGUMENT",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200007,
+                "id": 200007,
+                "name": "__EVENTVALIDATION",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200008,
+                "id": 200008,
+                "name": "__SCROLLPOSITIONX",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200009,
+                "id": 200009,
+                "name": "__SCROLLPOSITIONY",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200010,
+                "id": 200010,
+                "name": "__LASTFOCUS",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200011,
+                "id": 200011,
+                "name": "__PREVIOUSPAGE",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200012,
+                "id": 200012,
+                "name": "__ACTIONURL",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200013,
+                "id": 200013,
+                "name": "__TRACKFOCUS",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200014,
+                "id": 200014,
+                "name": "__CLIENTSUBMIT",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200015,
+                "id": 200015,
+                "name": "__RequestVerificationToken",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200016,
+                "id": 200016,
+                "name": "__RequestVerificationToken_Lw__",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 200017,
+                "id": 200017,
+                "name": "utmcmd",
+                "path": "",
+                "domain": "",
+                "value": true
+            }
+        ]
+    },
+    {
+        "_id": 3,
+        "type": "Cookie",
+        "details": [
+            {
+                "_id": 300001,
+                "id": 300001,
+                "name": "__utma",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300002,
+                "id": 300002,
+                "name": "__utmb",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300003,
+                "id": 300003,
+                "name": "__utmc",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300004,
+                "id": 300004,
+                "name": "__utmz",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300005,
+                "id": 300005,
+                "name": "__utmv",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300006,
+                "id": 300006,
+                "name": "__utmx",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300007,
+                "id": 300007,
+                "name": "__RequestVerificationToken",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300008,
+                "id": 300008,
+                "name": "__RequestVerificationToken_Lw__",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300009,
+                "id": 300009,
+                "name": "CoreID6",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300010,
+                "id": 300010,
+                "name": "BDSVRTM",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300011,
+                "id": 300011,
+                "name": "X-BackEndCookie",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300012,
+                "id": 300012,
+                "name": "X-OWA-CANARY",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300013,
+                "id": 300013,
+                "name": "ASPSESSIONID",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300014,
+                "id": 300014,
+                "name": "PHPSESSID",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300015,
+                "id": 300015,
+                "name": "JSESSIONID",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300016,
+                "id": 300016,
+                "name": "ASP.NET_SessionId",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300017,
+                "id": 300017,
+                "name": "adAuthCookie",
+                "path": "",
+                "domain": "",
+                "value": false
+            },
+            {
+                "_id": 300018,
+                "id": 300018,
+                "name": "unique2u",
+                "path": "",
+                "domain": "",
+                "value": false
+            }
+        ]
+    }
+]

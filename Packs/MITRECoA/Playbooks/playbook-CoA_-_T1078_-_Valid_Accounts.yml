@@ -1,0 +1,513 @@
+description: "This playbook Remediates the Valid Accounts technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1078: Valid Accounts\n\nKill Chain phases:\n- Defense Evasion\n- Persistence\n- Privilege Escalation\n- Initial Access\n\nMITRE ATT&CK Description:\n\nAdversaries may obtain and abuse credentials of existing accounts as a means of gaining Initial Access, Persistence, Privilege Escalation, or Defense Evasion. Compromised credentials may be used to bypass access controls placed on various resources on systems within the network and may even be used for persistent access to remote systems and externally available services, such as VPNs, Outlook Web Access and remote desktop. Compromised credentials may also grant an adversary increased privilege to specific systems or access to restricted areas of the network. Adversaries may choose not to use malware or tools in conjunction with the legitimate access those credentials provide to make it harder to detect their presence.\n\nThe overlap of permissions for local, domain, and cloud accounts across a network of systems is of concern because the adversary may be able to pivot across accounts and systems to reach a high level of access (i.e., domain or enterprise administrator) to bypass access controls set within the enterprise.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+id: MITRE ATT&CK CoA - T1078 - Valid Accounts
+inputs:
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the results.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MITRE ATT&CK CoA - T1078 - Valid Accounts
+outputs:
+- contextPath: Handled.Techniques
+  description: The technique handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d617e05-aee9-453b-8390-e9c39a3e677d
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 8d617e05-aee9-453b-8390-e9c39a3e677d
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Configure Multi-Factor Authentication in PAN-OS.
+      id: a06e9baa-2786-4171-87d2-c2686e3abe6c
+      iscommand: false
+      name: Manual - NGFW - Configure Multi-Factor Authentication
+      type: regular
+      version: -1
+    taskid: a06e9baa-2786-4171-87d2-c2686e3abe6c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      DstIP:
+        complex:
+          accessor: "1"
+          root: Provide details for "Access Investigation - Generic" playbook.Answers
+      OnCall:
+        complex:
+          accessor: "4"
+          root: Provide details for "Access Investigation - Generic" playbook.Answers
+      Role:
+        complex:
+          accessor: "3"
+          root: Provide details for "Access Investigation - Generic" playbook.Answers
+      SrcIP:
+        complex:
+          accessor: "0"
+          root: Provide details for "Access Investigation - Generic" playbook.Answers
+      Username:
+        complex:
+          accessor: "2"
+          root: Provide details for "Access Investigation - Generic" playbook.Answers
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook investigates an access incident by gathering user and IP information.
+
+        The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
+      id: c8d38952-0652-4393-81e1-731cad6d4b58
+      iscommand: false
+      name: access_investigation_-_generic
+      playbookId: access_investigation_-_generic
+      type: playbook
+      version: -1
+    taskid: c8d38952-0652-4393-81e1-731cad6d4b58
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1190
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0790b89a-c34f-4c24-8aab-1c77007d838c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0790b89a-c34f-4c24-8aab-1c77007d838c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1725
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c92280dd-54d0-4158-8933-4e85e211801f
+      iscommand: false
+      name: PAN-OS - Enforce URL Filtering Best Practices Profile
+      playbookId: PAN-OS - Enforce URL Filtering Best Practices Profile
+      type: playbook
+      version: -1
+      description: ''
+    taskid: c92280dd-54d0-4158-8933-4e85e211801f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2c5d7812-20fd-4e4c-801c-58d35fdaeb1a
+      iscommand: false
+      name: Enable Credential Phishing protection
+      type: title
+      version: -1
+      description: ''
+    taskid: 2c5d7812-20fd-4e4c-801c-58d35fdaeb1a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Would you like to use "Access Investigation - Generic" playbook?
+      id: 94e731cd-12fd-48c4-80b7-0cfd0aa93d9d
+      iscommand: false
+      name: Would you like to use "Access Investigation - Generic" playbook?
+      type: condition
+      version: -1
+    taskid: 94e731cd-12fd-48c4-80b7-0cfd0aa93d9d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1078
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 662b529b-6817-4dee-884b-9acf96756679
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 662b529b-6817-4dee-884b-9acf96756679
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+  "14":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: SrcIP
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: DstIP
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Username
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Role
+        options: []
+        optionsarg: []
+        placeholder: Administrator
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: OnCall
+        options: []
+        optionsarg: []
+        placeholder: "false"
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      sender: ""
+      title: Provide details for "Access Investigation - Generic" playbook
+      totalanswers: 0
+    id: "14"
+    ignoreworker: false
+    message:
+      bcc:
+      body:
+        simple: Provide details for "Access Investigation - Generic" playbook
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Provide details for "Access Investigation - Generic" playbook.
+      id: f9925278-063c-43ed-8cba-05594138a656
+      iscommand: false
+      name: Provide details for "Access Investigation - Generic" playbook
+      type: collection
+      version: -1
+    taskid: f9925278-063c-43ed-8cba-05594138a656
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1010
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f18902cb-dd15-4a72-8bfa-37e799417053
+      iscommand: false
+      name: Deploy Cortex XSOAR Playbook – Access Investigation
+      type: title
+      version: -1
+      description: ''
+    taskid: f18902cb-dd15-4a72-8bfa-37e799417053
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 860
+        }
+      }
+  "16":
+    continueonerror: true
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: e30cae42-441d-42bc-81f8-5b94786b4b4f
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: e30cae42-441d-42bc-81f8-5b94786b4b4f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1540
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_13_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1740,
+        "width": 805,
+        "x": 265,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

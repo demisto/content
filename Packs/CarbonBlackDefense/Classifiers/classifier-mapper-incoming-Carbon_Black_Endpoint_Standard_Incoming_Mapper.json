@@ -1,0 +1,91 @@
+{
+    "name": "Carbon Black Endpoint Standard Incoming Mapper",
+    "description": "Maps incoming Carbon Black alert fields.",
+    "feed": false,
+    "id": "Carbon Black Endpoint Standard-mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "mapping": {
+        "Carbon Black Endpoint Standard": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Carbon Black ES Alert Severity": {
+                    "simple": "severity"
+                },
+                "Carbon Black ES First Event Time": {
+                    "simple": "first_event_timestamp"
+                },
+                "Carbon Black ES IOC Hit": {
+                    "simple": "ioc_hit"
+                },
+                "Carbon Black ES IOC Id": {
+                    "simple": "ioc_id"
+                },
+                "Carbon Black ES Last Event Time": {
+                    "simple": "last_event_timestamp"
+                },
+                "Carbon Black ES Process Id": {
+                    "simple": "process_guid"
+                },
+                "Carbon Black ES Process Name": {
+                    "simple": "process_name"
+                },
+                "Carbon Black ES Report Name": {
+                    "simple": "report_name"
+                },
+                "Carbon Black ES Reputation": {
+                    "simple": "process_reputation"
+                },
+                "Carbon Black ES Target Value": {
+                    "simple": "device_target_value"
+                },
+                "Carbon Black ES Threat Id": {
+                    "simple": "threat_id"
+                },
+                "Changed": {
+                    "simple": "workflow.changed_by"
+                },
+                "Description": {
+                    "simple": "reason"
+                },
+                "Device Id": {
+                    "simple": "device_id"
+                },
+                "Device Name": {
+                    "simple": "device_name"
+                },
+                "Device Username": {
+                    "simple": "device_username"
+                },
+                "Last Update Time": {
+                    "simple": "backend_update_timestamp"
+                },
+                "OS": {
+                    "simple": "device_os"
+                },
+                "OS Version": {
+                    "simple": "device_os_version"
+                },
+                "Policy ID": {
+                    "simple": "device_policy_id"
+                },
+                "Carbon Black ES Report ID": {
+                    "simple": "report_id"
+                },
+                "SHA256": {
+                    "simple": "process_sha256"
+                },
+                "State": {
+                    "simple": "workflow.status"
+                },
+                "Tags": {
+                    "simple": "tags"
+                }
+            }
+        }
+    }
+}

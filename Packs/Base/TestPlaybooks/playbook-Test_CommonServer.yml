@@ -1,0 +1,104 @@
+id: Test CommonServer
+version: -1
+name: Test CommonServer
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c7495e10-3c49-4697-8b02-589beff02399
+    type: start
+    task:
+      id: c7495e10-3c49-4697-8b02-589beff02399
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6cffd843-ef82-4158-8edd-db1c193cdedd
+    type: regular
+    task:
+      id: 6cffd843-ef82-4158-8edd-db1c193cdedd
+      version: -1
+      name: Test FormatTableValues function
+      script: TestFormatTableValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+        - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3a86ae69-1d70-4c5a-8e5f-9a988dd0aeda
+    type: regular
+    task:
+      id: 3a86ae69-1d70-4c5a-8e5f-9a988dd0aeda
+      version: -1
+      name: Test isDemistoVersionGE function
+      scriptName: TestIsDemistoVersionGE
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 415,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+fromversion: 5.0.0

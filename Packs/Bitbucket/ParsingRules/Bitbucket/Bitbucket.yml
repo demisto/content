@@ -1,0 +1,8 @@
+name: Bitbucket Parsing Rule
+id: Bitbucket_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

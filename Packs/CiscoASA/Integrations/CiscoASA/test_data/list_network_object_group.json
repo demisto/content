@@ -1,0 +1,35 @@
+{
+    "kind": "collection#NetworkObjGroup",
+    "selfLink": "selfLink",
+    "rangeInfo": {
+        "offset": 0,
+        "limit": 1,
+        "total": 1
+    },
+    "items": [
+        {
+            "kind": "object#NetworkObjGroup",
+            "selfLink": "items[0]_selfLink",
+            "name": "TEST_GROUP",
+            "members": [
+                {
+                    "kind": "objectRef#NetworkObj",
+                    "refLink": "items[0]_members[0]_refLink",
+                    "objectId": "Test_Lior"
+                },
+                {
+                    "kind": "objectRef#NetworkObj",
+                    "refLink": "items[0]_members[1]_refLink",
+                    "objectId": "Test_Lior1"
+                },
+                {
+                    "kind": "objectRef#NetworkObj",
+                    "refLink": "items[0]_members[2]_refLink",
+                    "objectId": "Test_Lior2"
+                }
+            ],
+            "description": "This is a test",
+            "objectId": "TEST_GROUP"
+        }
+    ]
+}

@@ -1,0 +1,117 @@
+id: Carbon Black Enterprise EDR process search with polling Test
+version: -1
+name: Carbon Black Enterprise EDR process search with polling Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 237493a4-d661-494b-8909-42db4c7cc387
+    type: start
+    task:
+      id: 237493a4-d661-494b-8909-42db4c7cc387
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5719c8fb-127c-411f-8967-e2e515066d71
+    type: regular
+    task:
+      id: 5719c8fb-127c-411f-8967-e2e515066d71
+      version: -1
+      name: run cb-eedr-process-search command
+      description: Creates a process search job.
+      script: Carbon Black Enterprise EDR|||cb-eedr-process-search
+      type: regular
+      iscommand: true
+      brand: Carbon Black Enterprise EDR
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      process_name:
+        simple: chrome.exe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1e384fe6-42de-48f7-80cc-f7fc6bfb007f
+    type: title
+    task:
+      id: 1e384fe6-42de-48f7-80cc-f7fc6bfb007f
+      version: -1
+      name: Done
+      tags:
+      - N/A
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 405,
+        "width": 380,
+        "x": 650,
+        "y": 10
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: "Test playbook for testing 'cb-eedr-process-search' command with polling: true."

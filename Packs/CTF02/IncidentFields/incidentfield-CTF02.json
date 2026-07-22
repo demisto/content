@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "CTF02"
+    ],
+    "caseInsensitive": true,
+    "cliName": "ctf02",
+    "closeForm": false,
+    "content": true,
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ctf02",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "CTF02",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "timer",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "8.2.0"
+}

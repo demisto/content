@@ -1,0 +1,888 @@
+id: Extract Indicators From File - Generic v2 - Test
+version: -1
+fromversion: 5.0.0
+name: Extract Indicators From File - Generic v2 - Test
+description: |-
+  A test playbook for extracting indicators from a file.
+  Supported file types:
+  PDF
+  TXT
+  HTM, HTML
+  DOC, DOCX
+  RTF
+  XLSX
+  PPTX
+  XML
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f48ad1dd-8a65-4db4-8dc1-53bdeafd8a30
+    type: start
+    task:
+      id: f48ad1dd-8a65-4db4-8dc1-53bdeafd8a30
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2dc5757d-cbc8-4448-8b19-377ee23b13f3
+    type: regular
+    task:
+      id: 2dc5757d-cbc8-4448-8b19-377ee23b13f3
+      version: -1
+      name: Download TXT file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/portuguesetextwithindicators.txt
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fa82a09c-736e-4e7d-8084-19bbae4fb4ab
+    type: title
+    task:
+      id: fa82a09c-736e-4e7d-8084-19bbae4fb4ab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c869e950-bb9f-4b94-8089-9ae5250a25a8
+    type: regular
+    task:
+      id: c869e950-bb9f-4b94-8089-9ae5250a25a8
+      version: -1
+      name: Make test fail
+      description: Causes the test playbook to fail if the correct email addresses
+        were not extracted.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: The email addresses were not found in context.
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 580,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e62702a7-1f80-458c-862e-40b3c1f7f94e
+    type: title
+    task:
+      id: e62702a7-1f80-458c-862e-40b3c1f7f94e
+      version: -1
+      name: Download Files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "1"
+      - "11"
+      - "15"
+      - "18"
+      - "20"
+      - "23"
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 2297988f-921f-4e3b-8e04-04a83aca1d51
+    type: regular
+    task:
+      id: 2297988f-921f-4e3b-8e04-04a83aca1d51
+      version: -1
+      name: Download DOC file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docwithindicators.doc
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: eb2eeac8-b187-442e-8856-43b86e5c0e6b
+    type: regular
+    task:
+      id: eb2eeac8-b187-442e-8856-43b86e5c0e6b
+      version: -1
+      name: Download DOCX file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/docxwithindicators.docx
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 901bf546-1e70-4dca-840a-369debb01146
+    type: regular
+    task:
+      id: 901bf546-1e70-4dca-840a-369debb01146
+      version: -1
+      name: Download PDF file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/pdfwithindicators.pdf
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1c2845b2-74cc-44f2-8fb9-753b186ba271
+    type: regular
+    task:
+      id: 1c2845b2-74cc-44f2-8fb9-753b186ba271
+      version: -1
+      name: Delete Context
+      description: Delete the context of the incident to start with clear context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 87a8377f-da40-48e8-8be0-0d2427b61d67
+    type: regular
+    task:
+      id: 87a8377f-da40-48e8-8be0-0d2427b61d67
+      version: -1
+      name: Delete Context
+      description: Delete the context of the incident to start with clear context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      all:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 4b79dde3-6c34-44ce-8f56-4461f0decaa8
+    type: condition
+    task:
+      id: 4b79dde3-6c34-44ce-8f56-4461f0decaa8
+      version: -1
+      name: Did the PDF file return outputs?
+      description: |-
+        Checks if the PDF returned all of the expected outputs, except for title.
+        Checks for the following outputs:
+        - File.Text
+        - File.Producer
+        - File.xap
+        - File.Author
+        - File.dc
+        - File.xapmm
+        - File.ModDate
+        - File.CreationDate
+        - File.Pages
+
+        File.Title is not being checked because it doesn't exist in the test PDF provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Producer
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Author
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: ModDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: CreationDate
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Pages
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: aca79c4b-4dc6-443e-8213-71deeb2eb623
+    type: regular
+    task:
+      id: aca79c4b-4dc6-443e-8213-71deeb2eb623
+      version: -1
+      name: Download EML file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/Inline_malicious_url.eml
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -910,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 4e39493e-b115-4618-8091-70354297180a
+    type: regular
+    task:
+      id: 4e39493e-b115-4618-8091-70354297180a
+      version: -1
+      name: Download XLSX file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/TestExcelFile.xlsx
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: db140e5c-260a-4643-8af7-a0522a73b11d
+    type: regular
+    task:
+      id: db140e5c-260a-4643-8af7-a0522a73b11d
+      version: -1
+      name: Download RTF file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/ACH.Payment.Advice.rtf
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b264a247-b5f7-476a-8417-d8f43da8df91
+    type: playbook
+    task:
+      id: b264a247-b5f7-476a-8417-d8f43da8df91
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+      - "28"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: bce327de-97f7-4b96-86ef-fc74fa6dea9c
+    type: regular
+    task:
+      id: bce327de-97f7-4b96-86ef-fc74fa6dea9c
+      version: -1
+      name: Download PPTX file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/test_pptx.pptx
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 8e1ef372-fd9f-47cd-89c3-52f0fdd2a69b
+    type: regular
+    task:
+      id: 8e1ef372-fd9f-47cd-89c3-52f0fdd2a69b
+      version: -1
+      name: Download XML file
+      description: Sends a HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      method:
+        simple: GET
+      save_as_file:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/demisto/content/master/TestData/test_xml.xml
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2400,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 6217bf7e-0ac2-4c97-8287-3577064faac2
+    type: title
+    task:
+      id: 6217bf7e-0ac2-4c97-8287-3577064faac2
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 37052f36-82fd-43b6-8411-c509d3e4f406
+    type: playbook
+    task:
+      id: 37052f36-82fd-43b6-8411-c509d3e4f406
+      version: -1
+      name: Extract Indicators From File - Generic v2
+      playbookName: Extract Indicators From File - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 3e7c1e5c-5343-4e68-89a9-b9b11d49cc8e
+    type: condition
+    task:
+      id: 3e7c1e5c-5343-4e68-89a9-b9b11d49cc8e
+      version: -1
+      name: Were the correct indicators extracted?
+      description: Checks whether specific indicators were extracted from each one
+        of the downloaded files.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+            iscontext: true
+          right:
+            value:
+              simple: demisto.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: www.pdftesturl.com
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://www.msn.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File.Text
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Text
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ACH payment has been processed
+            iscontext: true
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: https://mock.com?e=P6wGLG
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_4_yes": 0.65
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2105,
+        "width": 4160,
+        "x": -1380,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

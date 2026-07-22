@@ -1,0 +1,108 @@
+commonfields:
+  id: 514ec833-c02c-49a3-8ac6-d982198f5fa0
+  version: -1
+name: OktaUpdateUser
+script: >2
+
+  resp = demisto.executeCommand("okta-update-user", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- okta
+comment: Deprecated. Update user with a given login, all fields are optional, fields which are not set will not be overriden
+enabled: true
+args:
+- name: firstName
+  description: Given name of the user (givenName)
+- name: lastName
+  description: Family name of the user (familyName)
+- name: email
+  description: primary email address of user
+- name: username
+  required: true
+  description: Unique identifier for the user (login)
+- name: secondEmail
+  description: Secondary email address of user typically used for account recovery
+- name: middleName
+  description: Middle name(s) of the user
+- name: honorificPrefix
+  description: Honorific prefix(es) of the user, or title in most Western languages
+- name: honorificSuffix
+  description: honorific suffix(es) of the user
+- name: title
+  description: User’s title, such as “Vice President”
+- name: displayName
+  description: Name of the user, suitable for display to end-users
+- name: nickName
+  description: Casual way to address the user in real life
+- name: profileUrl
+  description: Url of user’s online profile (e.g. a web page)
+- name: primaryPhone
+  description: Primary phone number of user such as home number
+- name: mobilePhone
+  description: mobile phone number of user
+- name: streetAddress
+  description: Full street address component of user’s address
+- name: city
+  description: City or locality component of user’s address (locality)
+- name: state
+  description: State or region component of user’s address (region)
+- name: zipCode
+  description: Zipcode or postal code component of user’s address (postalCode)
+- name: countryCode
+  description: Country name component of user’s address (country)
+- name: postalAddress
+  description: Mailing address component of user’s address
+- name: preferredLanguage
+  description: User’s preferred written or spoken languages
+- name: locale
+  description: User’s default location for purposes of localizing items such as currency, date time format, numerical representations, etc.
+- name: timezone
+  description: User’s time zone
+- name: userType
+  description: Used to identify the organization to user relationship such as “Employee” or “Contractor”
+- name: employeeNumber
+  description: Organization or company assigned unique identifier for the user
+- name: costCenter
+  description: name of a cost center assigned to
+- name: organization
+  description: Name of user’s organization
+- name: division
+  description: Name of user’s division
+- name: department
+  description: Name of user’s department
+- name: managerId
+  description: ID of a user’s manager
+- name: manager
+  description: DisplayName of the user’s manager
+- name: password
+  description: Password for new user
+- name: passwordQuestion
+  description: Password question for new user
+- name: passwordAnswer
+  description: Password answer for question supplied
+- name: providerType
+  description: OKTA, ACTIVE_DIRECTORY,LDAP, FEDERATION, or SOCIAL
+- name: providerName
+  description: Name of provider
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - okta-update-user
+tests:
+- No test - deprecated script with no test prior
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,58 @@
+{
+   "paging": {
+      "page": 1,
+      "pageSize": 100,
+      "total": 2,
+      "totalPages": 1
+   },
+   "data": [
+      {
+         "entityId": "gcpServiceAccount-790383063640-compute@developer.gserviceaccount.com",
+         "methodsArray": [
+            {
+               "method": "gcpServiceAccountFromResource",
+               "methodName": "GCP Service Account From Resource",
+               "count": 46
+            }
+         ],
+         "methodsArrayLength": 1,
+         "name": "projects/focused-module-278310/serviceAccounts/790383063640-compute@developer.gserviceaccount.com",
+         "displayName": "Compute Engine default service account",
+         "entityData": {
+            "id": "gcpServiceAccount-790383063640-compute@developer.gserviceaccount.com",
+            "entitySubType": {
+               "name": "entitySubType",
+               "displayName": "Entity Subtype",
+               "value": "gcpServiceAccount",
+               "displayValue": "GCP Service Account"
+            },
+            "entityType": "gcpServiceAccount",
+            "entityTypeDisplayName": "GCP Service Account"
+         }
+      },
+      {
+         "entityId": "17372558283486306102",
+         "methodsArray": [
+            {
+               "method": "gcpVmFromNode",
+               "methodName": "GCP Virtual Machine from Compromised Node",
+               "count": 6
+            }
+         ],
+         "methodsArrayLength": 1,
+         "name": "win-instance",
+         "displayName": "win-instance",
+         "entityData": {
+            "id": "17372558283486306102",
+            "entitySubType": {
+               "name": "osType",
+               "displayName": "OS Type",
+               "value": "windows",
+               "displayValue": "Windows"
+            },
+            "entityType": "node",
+            "entityTypeDisplayName": "Sensor"
+         }
+      }
+   ]
+}

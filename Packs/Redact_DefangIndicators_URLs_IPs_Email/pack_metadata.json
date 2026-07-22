@@ -1,0 +1,24 @@
+{
+    "name": "Redact/Defang Indicators (URLs, IPs, Email) (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "Joerg Stephan",
+    "url": "",
+    "email": "",
+    "created": "2021-06-14T15:33:17Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "johestephan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

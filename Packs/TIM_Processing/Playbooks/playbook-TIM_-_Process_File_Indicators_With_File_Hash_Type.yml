@@ -1,0 +1,555 @@
+id: TIM - Process File Indicators With File Hash Type
+version: -1
+fromversion: 5.5.0
+marketplaces:
+- xsoar
+name: TIM - Process File Indicators With File Hash Type
+description: This playbook processes file indicator by tagging them
+  with the relevant file hash type tag, such as Sha256, Sha1, and Md5.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 962f88cb-45fc-47df-8cd7-9ccfe47142ac
+    type: start
+    task:
+      id: 962f88cb-45fc-47df-8cd7-9ccfe47142ac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 88f5341a-7811-4c94-82e2-ce77f5f68122
+    type: condition
+    task:
+      id: 88f5341a-7811-4c94-82e2-ce77f5f68122
+      version: -1
+      name: Are there results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "81":
+    id: "81"
+    taskid: d1696e34-5d0a-45a0-8190-353a5a43ae95
+    type: title
+    task:
+      id: d1696e34-5d0a-45a0-8190-353a5a43ae95
+      version: -1
+      name: Tag hash types
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "82"
+      - "83"
+      - "84"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: 7261014d-ceb5-4823-85f6-58718b0e4c10
+    type: condition
+    task:
+      id: 7261014d-ceb5-4823-85f6-58718b0e4c10
+      version: -1
+      name: Are there Md5 results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "85"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "32"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": -1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: 1020da43-e693-4ce6-8f28-c940a332ed6d
+    type: condition
+    task:
+      id: 1020da43-e693-4ce6-8f28-c940a332ed6d
+      version: -1
+      name: Are there Sha1 results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "40"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": -1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: a7aeb781-d581-410c-8a85-bca55d7262b3
+    type: condition
+    task:
+      id: a7aeb781-d581-410c-8a85-bca55d7262b3
+      version: -1
+      name: Are there Sha256 results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "88"
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: playbookQuery
+                filters:
+                - - operator: stringHasLength
+                    left:
+                      value:
+                        simple: playbookQuery.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "64"
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: playbookQuery.indicator_type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 6246a668-a8cb-46cf-88cc-d13cefd49e9d
+    type: regular
+    task:
+      id: 6246a668-a8cb-46cf-88cc-d13cefd49e9d
+      version: -1
+      name: Add Md5 tag to indicators
+      description: Adds the Md5 tag to the relevant indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: Md5
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: uniq
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": -980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "86":
+    id: "86"
+    taskid: 356be9f7-1767-4b49-87b3-fe9bd760cfb7
+    type: regular
+    task:
+      id: 356be9f7-1767-4b49-87b3-fe9bd760cfb7
+      version: -1
+      name: Add Sha1 tag to indicators
+      description: Adds the Sha1 tag to the relevant indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: Sha1
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: uniq
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "40"
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -220,
+          "y": -980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "87":
+    id: "87"
+    taskid: 06f3ce5e-485f-4959-8acd-0c5bf35d1331
+    type: regular
+    task:
+      id: 06f3ce5e-485f-4959-8acd-0c5bf35d1331
+      version: -1
+      name: Add Sha256 tag to indicators
+      description: Adds the Sha256 tag to the relevant indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: Sha256
+      indicatorsValues:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: uniq
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: playbookQuery.value
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          accessor: value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "88":
+    id: "88"
+    taskid: da6dce77-b1a1-471b-81c6-933d016f0407
+    type: title
+    task:
+      id: da6dce77-b1a1-471b-81c6-933d016f0407
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 1600,
+        "x": -700,
+        "y": -1660
+      }
+    }
+  }
+inputs:
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs: []
+quiet: true
+tests:
+- No test

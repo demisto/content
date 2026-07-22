@@ -1,0 +1,23 @@
+commonfields:
+  id: RegPathReputationBasicLists
+  version: -1
+name: RegPathReputationBasicLists
+script: ''
+type: python
+subtype: python3
+tags:
+- registry
+- reputation
+deprecated: true
+comment: Deprecated. No available replacement.
+enabled: true
+args:
+- name: input
+  required: true
+  description: Registry path to be checked
+scripttarget: 0
+runas: DBotWeakRole
+tests:
+- RegPathReputationBasicLists_test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415

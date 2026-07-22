@@ -1,0 +1,26 @@
+args:
+- default: true
+  description: Input string to transform to JSON escaped object.
+  name: input
+  required: true
+comment: Deprecated. No available replacement.
+commonfields:
+  id: PrepareArcannaRawJson
+  version: -1
+dockerimage: demisto/python3:3.10.14.98471
+enabled: true
+name: PrepareArcannaRawJson
+outputs:
+- contextPath: JsonObject
+  description: The JSON object loaded from input and escaped for Arcanna to be used.
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utility
+type: python
+deprecated: true
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

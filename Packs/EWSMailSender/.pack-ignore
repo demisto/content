@@ -1,0 +1,6 @@
+[file:EWSMailSender.yml]
+ignore=IN135
+
+[known_words]
+inReply
+errored

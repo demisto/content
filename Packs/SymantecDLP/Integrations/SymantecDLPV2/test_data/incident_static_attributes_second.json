@@ -1,0 +1,77 @@
+{
+    "incidentId": 3629,
+    "infoMap": {
+        "policyVersion": 1,
+        "attachmentInfo": [
+            {
+                "componentType": 3,
+                "messageComponentName": "423.txt",
+                "messageComponentId": 4638,
+                "wasCracked": false,
+                "documentFormat": "ascii",
+                "originalSize": 3928
+            }
+        ],
+        "fileCreateDate": "2022-01-05T14:10:04.798",
+        "discoverServer": "c:",
+        "fileAccessDate": "2022-01-05T14:10:04.798",
+        "discoverTargetName": "Discovery server - File system",
+        "messageType": "RAW",
+        "discoverRepositoryLocation": "c:/das/423.txt",
+        "discoverScanId": 216,
+        "discoverContentRootPath": "c:/das",
+        "policyName": "Illegal Drugs",
+        "policyGroupName": "Test Policy group for Endpoint Discover",
+        "policyGroupId": 21,
+        "messageSource": "DISCOVER",
+        "messageId": 2110,
+        "matchCount": 100,
+        "creationDate": "2022-03-06T15:23:53.246",
+        "discoverMillisSinceFirstSeen": 5244552861,
+        "isBlockedStatusSuperseded": false,
+        "detectionServerName": "Detection - Discovery",
+        "messageAclEntries": [
+            {
+                "principal": "NT AUTHORITY\\SYSTEM",
+                "aclType": "FILE",
+                "permission": "READ",
+                "grantDeny": "GRANT"
+            },
+            {
+                "principal": "NT AUTHORITY\\SYSTEM",
+                "aclType": "FILE",
+                "permission": "WRITE",
+                "grantDeny": "GRANT"
+            },
+            {
+                "principal": "BUILTIN\\Administrators",
+                "aclType": "FILE",
+                "permission": "READ",
+                "grantDeny": "GRANT"
+            },
+            {
+                "principal": "BUILTIN\\Administrators",
+                "aclType": "FILE",
+                "permission": "WRITE",
+                "grantDeny": "GRANT"
+            },
+            {
+                "principal": "BUILTIN\\Users",
+                "aclType": "FILE",
+                "permission": "READ",
+                "grantDeny": "GRANT"
+            }
+        ],
+        "policyId": 43,
+        "detectionDate": "2022-03-06T15:23:39.197",
+        "messageTypeId": 9,
+        "discoverTargetId": 2,
+        "discoverScanStartDate": "2022-03-06T07:00:00",
+        "discoverName": "423.txt",
+        "detectionServerId": 21,
+        "messageDate": "2022-01-05T14:10:16.548",
+        "fileOwner": "BUILTIN\\Administrators",
+        "recipientInfo": [],
+        "discoverUrl": "c:/das/423.txt"
+    }
+}

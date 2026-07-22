@@ -1,0 +1,4979 @@
+category: IT Services
+provider: CheckPoint Software Technologies
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: CheckPointFirewall_v2
+  version: -1
+configuration:
+- display: Server URL (e.g. example.net or 8.8.8.8)
+  name: server
+  required: true
+  type: 0
+  section: Connect
+- defaultvalue: '4434'
+  display: Server Port (e.g. 4434)
+  name: port
+  required: true
+  type: 0
+  section: Connect
+- display: Domain (used in Multi Domain Server)
+  name: domain
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Username
+  name: username
+  required: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: Use this integration to read information and send commands to the Check Point Firewall server.
+display: CheckPoint Firewall v2
+name: CheckPointFirewall_v2
+script:
+  commands:
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return.
+      name: limit
+    - defaultValue: '0'
+      description: The number of results to initially skip.
+      name: offset
+    - defaultValue: None
+      description: The session ID with which to execute the command.
+      name: session_id
+    - auto: PREDEFINED
+      description: The level of detail for the results. Possible values are "standard", "full", or "uid".
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: 'A comma-separated list of domains to process the commands on. Cannot be used with  details-level set to full. Must be run from the System Domain only with ignore-warnings set to true. Possible values are: "CURRENT_DOMAIN", "ALL_DOMAINS_ON_THIS_SERVER".'
+      isArray: true
+      name: domains_to_process
+    description: Returns all host objects.
+    name: checkpoint-host-list
+    outputs:
+    - contextPath: CheckPoint.Host.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Host.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Host.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Host.ipv4
+      description: IPv4 address of the host.
+      type: String
+    - contextPath: CheckPoint.Host.ipv6
+      description: IPv6 address of the host.
+      type: String
+    - contextPath: CheckPoint.Host.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Host.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Host.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
+  - arguments:
+    - description: The unique identifier (UID) or name of the object to get data for.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The level of detail for the results. Possible values are "standard", "full", or "uid".
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    description: Gets full data for the specified host.
+    name: checkpoint-host-get
+    outputs:
+    - contextPath: CheckPoint.Host.name
+      description: Host name.
+      type: Unknown
+    - contextPath: CheckPoint.Host.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Host.type
+      description: Object type.
+      type: Unknown
+    - contextPath: CheckPoint.Host.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Host.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Host.ipv4-address
+      description: Host IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.ipv6-address
+      description: IP address.
+      type: String
+    - contextPath: CheckPoint.Host.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Host.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Host.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Host.groups-name
+      description: The name of the group object linked to the current host object.
+      type: String
+    - contextPath: CheckPoint.Host.groups-uid
+      description: The UID of the group object linked to the current host object.
+      type: Unknown
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Host.comments
+      description: Comment string.
+      type: String
+    - contextPath: CheckPoint.Host.tags
+      description: Collection of tag objects associated with the host.
+      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
+  - arguments:
+    - description: A comma-separated list of names for the new hosts.
+      isArray: true
+      name: name
+      required: true
+    - description: A comma-separated list of IP addresses for the new hosts.
+      isArray: true
+      name: ip_address
+      required: true
+    - description: A comma-separated list of group identifiers.
+      isArray: true
+      name: groups
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings when adding a host.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore errors when adding a host.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Comment string.
+      name: comments
+    - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: The IPv4 address. This parameter is not required if nat_method is set to "hide" and nat_hide_behind is set to "gateway".
+      name: nat_ip
+    - description: Gateway for NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: The hide behind method. This parameter value must not be provided if nat_method is set to "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: The name of the network interface.
+      name: interfaces_name
+    - description: The IPv4 subnet mask of the interface.
+      name: interfaces_subnet
+    - description: The IPv4 network mask length. Required only when defining interfaces (when any interfaces_* arg is provided).
+      name: interfaces_mask_length
+    - description: A comma-separated list of tags to assign.
+      isArray: true
+      name: tags
+    description: Adds a new host.
+    name: checkpoint-host-add
+    outputs:
+    - contextPath: CheckPoint.Host.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Host.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Host.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Host.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Host.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Host.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Host.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Host.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Host.ipv4-address
+      description: Host IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.ipv6-address
+      description: Host IPv6 address.
+      type: String
+    - contextPath: CheckPoint.Host.read-only
+      description: Indicates if the object is read-only.
+      type: String
+    - contextPath: CheckPoint.Host.groups
+      description: Collection of group identifiers.
+      type: String
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Host.comments
+      description: Comment string.
+      type: String
+    - contextPath: CheckPoint.Host.tags
+      description: Collection of tag objects associated with the host.
+      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: IPv4 or IPv6 address.
+      name: ip_address
+    - description: New name of the object.
+      name: new_name
+    - description: Comments string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "False".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of group identifiers.
+      isArray: true
+      name: groups
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: The IPv4 address. This parameter must not be provided if nat_method is set to "hide" and nat_hide_behind is set to "gateway".
+      name: nat_ip
+    - description: The gateway for the NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: The hide behind method. This parameter must not be provided if nat_method is set to "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: The name of the network interface. Required only when defining interfaces (when any interfaces_* arg is provided).
+      name: interfaces_name
+    - description: The IPv4 subnet of the interface. Required only when defining interfaces (when any interfaces_* arg is provided).
+      name: interfaces_subnet
+    - description: The IPv4 network mask length. Required only when defining interfaces (when any interfaces_* arg is provided).
+      name: interfaces_mask_length
+    - description: A comma-separated list of tags to assign.
+      isArray: true
+      name: tags
+    description: Updates the specified host.
+    name: checkpoint-host-update
+    outputs:
+    - contextPath: CheckPoint.Host.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Host.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Host.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Host.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Host.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Host.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Host.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Host.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Host.ipv4-address
+      description: Host IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Host.group-name
+      description: The name of the group object linked to the host.
+      type: String
+    - contextPath: CheckPoint.Host.group-uid
+      description: The UID of the group object linked to the host.
+      type: String
+    - contextPath: CheckPoint.Host.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Host.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Host.tags
+      description: Collection of tag objects associated with the host.
+      type: Unknown
+    - contextPath: CheckPoint.Host.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.Host.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.Host.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.Host.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.Host.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+    - contextPath: CheckPoint.Host.interfaces
+      description: Host interfaces.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      isArray: true
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings when deleting a host.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore errors when deleting a host.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    description: Deletes the specified host.
+    name: checkpoint-host-delete
+    outputs:
+    - contextPath: CheckPoint.Host.message
+      description: Status of the delete operation.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The level of detail for the results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: A comma-separated list of domains to process the commands on.
+      isArray: true
+      name: domains_to_process
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
+      name: filter
+    description: Gets a list of all groups.
+    name: checkpoint-group-list
+    outputs:
+    - contextPath: CheckPoint.Group.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Group.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Group.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Group.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Group.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Group.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Group.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Group.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Group.tags
+      description: Collection of tag objects associated with the group.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The level of detail for the results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    description: Gets full data for the specified group.
+    name: checkpoint-group-get
+    outputs:
+    - contextPath: CheckPoint.Group.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Group.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Group.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Group.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Group.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Group.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Group.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Group.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Group.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Group.ipv4-address
+      description: Group IPv4 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.ipv6-address
+      description: Group IPv6 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.groups
+      description: Collection of group identifiers.
+      type: Unknown
+    - contextPath: CheckPoint.Group.members.member-ipv4-address
+      description: Group members IPv4 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-ipv6-address
+      description: Group members IPv6 addresses.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-name
+      description: Group members domain name.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-uid
+      description: Group members domain UID.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-domain-type
+      description: Group members domain type.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-name
+      description: Group member name.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-uid
+      description: Group member UID.
+      type: string
+    - contextPath: CheckPoint.Group.members.member-type
+      description: Group member type.
+      type: string
+  - arguments:
+    - description: A comma-separated list of object names. Must be unique in the domain.
+      isArray: true
+      name: name
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: A comma-separated list of group identifiers (names or UIDs).
+      isArray: true
+      name: members
+    - description: The comment string.
+      name: comments
+    - auto: PREDEFINED
+      description: 'Possible values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black.'
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of tags to assign.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes, ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes, ignoring errors.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    description: Adds a group.
+    name: checkpoint-group-add
+    outputs:
+    - contextPath: CheckPoint.Group.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Group.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Group.type
+      description: Object type.
+      type: Unknown
+    - contextPath: CheckPoint.Group.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Group.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Group.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Group.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Group.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Group.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Group.groups-name
+      description: Groups name.
+      type: Unknown
+    - contextPath: CheckPoint.Group.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.Group.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.Group.tags
+      description: Collection of tag objects associated with the group.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: New name of the object.
+      name: new_name
+    - description: The update comments.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: A comma-separated list of network objects identified by the name or UID.
+      isArray: true
+      name: members
+    - auto: PREDEFINED
+      defaultValue: modify
+      description: The action that should be taken towards the values.
+      name: action
+      predefined:
+      - add
+      - remove
+      - modify
+    - auto: PREDEFINED
+      description: 'Possible values: aquamarine, black, blue, crete blue, burlywood, cyan, dark green, khaki, orchid, dark orange, dark sea green, pink, turquoise, dark blue, firebrick, brown, forest green, gold, dark gold, gray, dark gray, light green, lemon chiffon, coral, sea green, sky blue, magenta, purple, slate blue, violet red, navy blue, olive, orange, red, sienna, yellow. Default: black.'
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of updated tags.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: The level of detail for the results. Possible values are "standard", "full", or "uid".
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    description: Updates the specified group object.
+    name: checkpoint-group-update
+    outputs:
+    - contextPath: CheckPoint.Group.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Group.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Group.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Group.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Group.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Group.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.Group.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Group.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Group.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Group.color
+      description: The color of the object.
+      type: String
+    - contextPath: CheckPoint.Group.comments
+      description: The comment string.
+      type: String
+    - contextPath: CheckPoint.Group.tags
+      description: Collection of tag objects associated with the group.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      isArray: true
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Deletes the specified group object.
+    name: checkpoint-group-delete
+    outputs:
+    - contextPath: CheckPoint.Group.message
+      description: Operation messege.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The level of detail for the results. Possible values are "standard", "full", or "uid".
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: A comma-separated list of domains to process the commands on.
+      isArray: true
+      name: domains_to_process
+    description: Gets a list all address range objects.
+    name: checkpoint-address-range-list
+    outputs:
+    - contextPath: CheckPoint.AddressRange.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - description: Name for the new address range object.
+      name: name
+      required: true
+    - description: First IP address in the range.
+      name: ip_address_first
+      required: true
+    - description: Last IP address in the range.
+      name: ip_address_last
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to update objects with the same identifier. Can be "true" or "false". Default is "false".
+      name: set_if_exists
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: A comma-separated list of group identifiers.
+      isArray: true
+      name: groups
+    - description: Comment string.
+      name: comments
+    - auto: PREDEFINED
+      description: Object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: The IPv4 address. This parameter value must not be provided if nat_method is set to "hide" and nat_hide_behind is set to "gateway".
+      name: nat_ip
+    - description: The gateway for the NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: The hide behind method. This parameter value must not be provided if nat_method is set to "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: A comma-separated list of tags to assign.
+      isArray: true
+      name: tags
+    description: Adds an address range object.
+    name: checkpoint-address-range-add
+    outputs:
+    - contextPath: CheckPoint.AddressRange.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv4-address-first
+      description: First IPv4 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv4-address-last
+      description: Last IPv4 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv6-address-first
+      description: First IPv6 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv6-address-last
+      description: Last IPv6 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.last-modifier
+      description: Indicates the user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.groups
+      description: Name of the group object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.comments
+      description: Comments string.
+      type: String
+    - contextPath: CheckPoint.AddressRange.tags
+      description: Collection of tag objects associated with the address range.
+      type: Unknown
+    - contextPath: CheckPoint.AddressRange.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+  - arguments:
+    - description: Name for the new address range object.
+      name: identifier
+      required: true
+    - description: First IP address in the range. Can be an IPv4 or IPv6 address.
+      name: ip_address_first
+    - description: Last IP address in the range. Can be an IPv4 or IPv6 address.
+      name: ip_address_last
+    - description: New name of the object.
+      name: new_name
+    - description: The update comments.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of group identifiers.
+      isArray: true
+      name: groups
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - auto: PREDEFINED
+      description: The update color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - auto: PREDEFINED
+      description: Required only when any nat_* argument is provided; otherwise omitted.
+      name: nat_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Update NAT method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - description: The updated IPv4 address. This parameter value must not be provided if nat_method is set to "hide" and nat_hide_behind is set to "gateway".
+      name: nat_ip
+    - description: Update NAT gateway.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: The hide behind method. This parameter value must not be provided if nat_method is set to "static".
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - description: A comma-separated list of updated tags.
+      isArray: true
+      name: tags
+    description: Updates the specified address range object.
+    name: checkpoint-address-range-update
+    outputs:
+    - contextPath: CheckPoint.AddressRange.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv4-address-first
+      description: First IPv4 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv4-address-last
+      description: Last IPv4 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv6-address-first
+      description: First IPv6 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.ipv6-address-last
+      description: Last IPv6 address in the range.
+      type: String
+    - contextPath: CheckPoint.AddressRange.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.groups
+      description: List of all groups the address range is linked to.
+      type: String
+    - contextPath: CheckPoint.AddressRange.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.comments
+      description: Comment string.
+      type: String
+    - contextPath: CheckPoint.AddressRange.tags
+      description: Collection of tag objects associated with the address range.
+      type: Unknown
+    - contextPath: CheckPoint.AddressRange.nat-auto-rule
+      description: Whether NAT automatic rules are enabled.
+      type: Boolean
+    - contextPath: CheckPoint.AddressRange.nat-method
+      description: NAT method (hide or static).
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-ipv4-address
+      description: NAT IPv4 address.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-install-on
+      description: Gateway for NAT rule installation.
+      type: String
+    - contextPath: CheckPoint.AddressRange.nat-hide-behind
+      description: Hide behind method (gateway or ip-address).
+      type: String
+  - arguments:
+    - description: Name for the new address range object.
+      isArray: true
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Deletes the specified address range.
+    name: checkpoint-address-range-delete
+    outputs:
+    - contextPath: CheckPoint.AddressRange.message
+      description: Status of the operation.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - description: A comma-separated list of domains to process.
+      isArray: true
+      name: domain_names
+    - auto: PREDEFINED
+      description: The level of detail for the results. Possible values are "standard", "full", or "uid".
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in SmartConsole Object Explorer. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. The search involves both a IP search and a textual search in name, comment, tags etc.
+      name: filter
+    description: Gets a list of all threat indicators.
+    name: checkpoint-threat-indicator-list
+    outputs:
+    - contextPath: CheckPoint.ThreatIndicator.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Gets data for the specified list indicator.
+    name: checkpoint-threat-indicator-get
+    outputs:
+    - contextPath: CheckPoint.ThreatIndicator.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-type
+      description: Domain type.
+      type: Unknown
+    - contextPath: CheckPoint.ThreatIndicator.creator
+      description: Creator of the threat indicator.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+  - arguments:
+    - description: Name for the new threat indicator.
+      name: name
+      required: true
+    - description: A comma-separated list of the indicator's observables, or the contents of a file containing the indicator's observables.
+      isArray: true
+      name: observables
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - auto: PREDEFINED
+      description: The action for the indicator.
+      name: action
+      predefined:
+      - Inactive
+      - Ask
+      - Prevent
+      - Detect
+    - description: A comma-separated list of profiles the indicator is applied to and the specific action to be performed, in the format "Profile_Action".
+      isArray: true
+      name: profile_action
+    - description: Comment string.
+      name: comments
+    - auto: PREDEFINED
+      description: The object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of tags to assign.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Apply changes, ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    description: Adds a threat indicator.
+    name: checkpoint-threat-indicator-add
+    outputs:
+    - contextPath: CheckPoint.ThreatIndicator.task-id
+      description: Asynchronous task unique identifier.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: Prevent
+      description: The action to set for the indicator.
+      name: action
+      predefined:
+      - Inactive
+      - Ask
+      - Prevent
+      - Detect
+    - description: New name of the object.
+      name: new_name
+    - description: Comments for the object.
+      name: comments
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: A comma-separated list of profiles the indicator is applied to and the specific action to be performed, in the format "Profile_Action".
+      isArray: true
+      name: profile_action
+    - auto: PREDEFINED
+      description: The update color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of updated tags.
+      isArray: true
+      name: tags
+    description: Updates the specified indicator.
+    name: checkpoint-threat-indicator-update
+    outputs:
+    - contextPath: CheckPoint.ThreatIndicator.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.action
+      description: The indicator's action.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.ThreatIndicator.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.ThreatIndicator.tags
+      description: Collection of tag objects associated with the indicator.
+      type: Unknown
+    - contextPath: CheckPoint.ThreatIndicator.profile-overrides
+      description: A list of profiles where the default action of this indicator is overridden, along with the overriding action.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Gets full data for the specified address range object.
+    name: checkpoint-address-range-get
+    outputs:
+    - contextPath: CheckPoint.AddressRange.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AddressRange.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.AddressRange.groups-name
+      description: The name of the group object linked to current host object.
+      type: String
+    - contextPath: CheckPoint.AddressRange.groups-uid
+      description: The UID of the group object linked to current host object.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      isArray: true
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Deletes the specified threat indicator.
+    name: checkpoint-threat-indicator-delete
+    outputs:
+    - contextPath: CheckPoint.ThreatIndicator.message
+      description: Status of the delete operation.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The level of detail for the results. Possible values are "standard", "full", or "uid".
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - auto: PREDEFINED
+      description: Includes hit count data in the output.
+      name: show_hits
+      predefined:
+      - 'true'
+      - 'false'
+    description: Returns the entire Access Rules layer.
+    name: checkpoint-access-rule-list
+    outputs:
+    - contextPath: CheckPoint.AccessRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.ipv4-address
+      description: IPv4 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.ipv6-address
+      description: IPv6 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.AccessRule.groups
+      description: Collection of group identifiers.
+      type: Unknown
+  - arguments:
+    - description: Layer to which to assign the rule, identified by the name or UID.
+      name: layer
+      required: true
+    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required.'
+      name: position
+      required: true
+    - description: The name of the rule or section to use as a reference point. The new rule is positioned relative to this rule or section. Required when position is "above" or "below". Optional when position is "top" or "bottom".
+      name: position_rule
+    - description: Rule name.
+      name: name
+    - auto: PREDEFINED
+      defaultValue: Drop
+      description: 'Action settings.'
+      name: action
+      predefined:
+      - Accept
+      - Drop
+      - Apply Layer
+      - Ask
+      - Info
+    - auto: PREDEFINED
+      description: 'Communities or Directional. Valid values: Any or All_GwToGw.'
+      name: vpn
+      predefined:
+      - Any
+      - All_GwToGw
+    - description: Collection of network objects identified by the name or UID.
+      name: destination
+    - description: Collection of network objects identified by the name or UID.
+      name: service
+    - description: Collection of network objects identified by the name or UID.
+      name: source
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: Comment string.
+      name: comments
+    - description: A comma-separated list of installation targets.
+      isArray: true
+      name: install_on
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to enable/disable the rule.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: 'Track settings for the rule. Possible values: "Log", "Extended Log", "Detailed Log", "None".'
+      name: track_type
+      predefined:
+      - Log
+      - Extended Log
+      - Detailed Log
+      - None
+    - auto: PREDEFINED
+      description: Whether to enable/disable track accounting.
+      name: track_accounting
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Whether to generate a log per session.
+      name: track_per_session
+      predefined:
+      - 'true'
+      - 'false'
+    description: Creates a new access rule.
+    name: checkpoint-access-rule-add
+    outputs:
+    - contextPath: CheckPoint.AccessRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.enabled
+      description: Indicates if the rule is enabled or disabled.
+      type: Boolean
+    - contextPath: CheckPoint.AccessRule.layer
+      description: Layer to which the rule was assigned, identified by the name or UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.creator
+      description: The object creator.
+      type: String
+    - contextPath: CheckPoint.AccessRule.last-modifier
+      description: The user that last modified the object.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID), rule name, or rule number.
+      name: identifier
+      required: true
+    - description: Layer to which the rule belongs, identified by the name or UID.
+      name: layer
+      required: true
+    - auto: PREDEFINED
+      description: Action to be taken on the rule.
+      name: action
+      predefined:
+      - Accept
+      - Drop
+      - Apply Layer
+      - Ask
+      - Info
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: If "true", the rule is enabled. Default is "true".
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - description: New name of the object.
+      name: new_name
+    - description: 'New position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the new_position_rule argument is required.'
+      name: new_position
+    - description: The name of the rule or section to use as a reference point. The rule is repositioned relative to this rule or section. Required when new_position is "above" or "below". Optional when new_position is "top" or "bottom".
+      name: new_position_rule
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to ignore warnings when applying the updates. Can be "True" or "False". Default is "True".
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to ignore errors when applying the updates. Can be "True" or "False". Default is "False".
+        Note: you won't be able to publish such these changes.
+        If the ignore-warnings flag was omitted, warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: Update comments.
+      name: comments
+    - auto: PREDEFINED
+      description: 'Track settings for the rule. Possible values: "Log", "Extended Log", "Detailed Log", "None".'
+      name: track_type
+      predefined:
+      - Log
+      - Extended Log
+      - Detailed Log
+      - None
+    - auto: PREDEFINED
+      description: Whether to enable/disable track accounting.
+      name: track_accounting
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Whether to generate a log per session.
+      name: track_per_session
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of updated targets.
+      isArray: true
+      name: install_on
+    - description: A comma-separated list of sources to add to the existing sources.
+      isArray: true
+      name: source_add
+    - description: A comma-separated list of sources to remove from the existing sources.
+      isArray: true
+      name: source_remove
+    - description: A comma-separated list of services to add to the existing services.
+      isArray: true
+      name: service_add
+    - description: A comma-separated list of services to remove from the existing services.
+      isArray: true
+      name: service_remove
+    - description: A comma-separated list of destinations to add to the existing destinations.
+      isArray: true
+      name: destination_add
+    - description: A comma-separated list of destinations to remove from the existing destinations.
+      isArray: true
+      name: destination_remove
+    description: Modifies an existing access rule, using object name or UID.
+    name: checkpoint-access-rule-update
+    outputs:
+    - contextPath: CheckPoint.AccessRule.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.action-name
+      description: Action name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.action-uid
+      description: Action UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.action-type
+      description: Action type.
+      type: Unknown
+    - contextPath: CheckPoint.AccessRule.action-domain-name
+      description: Action domain name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.content-direction
+      description: The direction on which the file types processing is applied.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.AccessRule.enabled
+      description: Indicates if the rule is enabled or disabled.
+      type: Boolean
+    - contextPath: CheckPoint.AccessRule.layer
+      description: Layer to which the rule belongs, identified by the name or UID.
+      type: String
+    - contextPath: CheckPoint.AccessRule.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.AccessRule.last-modifier
+      description: The user that last modified the object.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID), rule name, or rule number.
+      isArray: true
+      name: identifier
+      required: true
+    - description: Layer to which the rule belongs, identified by the name or UID.
+      name: layer
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Deletes the specified access rule.
+    name: checkpoint-access-rule-delete
+    outputs:
+    - contextPath: CheckPoint.AccessRule.message
+      description: Status of the delete operation.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    - auto: PREDEFINED
+      description: The level of detail for results.
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    - description: A comma-separated list of domains to process.
+      isArray: true
+      name: domains_to_process
+    description: Retrieves all application site objects.
+    name: checkpoint-application-site-list
+    outputs:
+    - contextPath: CheckPoint.ApplicationSite.name
+      description: Object names.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.uid
+      description: Objects UIDs.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.type
+      description: Object types.
+      type: String
+  - arguments:
+    - description: Object name. Must be unique in the domain.
+      name: name
+      required: true
+    - description: Each application is assigned to one primary category based on its most defining aspect.
+      name: primary_category
+      required: true
+    - description: |-
+        A comma-separated list of identifiers. Can be:
+          url-list(str): URLs that determine this particular application.
+          application-signature(str): Application signature generated by Signature Tool.
+      isArray: true
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: A comma-separated list of group identifiers.
+      isArray: true
+      name: groups
+    - description: Description of the application site.
+      name: description
+    - description: Comment string.
+      name: comments
+    - auto: PREDEFINED
+      description: The object color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of tags to assign.
+      isArray: true
+      name: tags
+    description: Adds an application site.
+    name: checkpoint-application-site-add
+    outputs:
+    - contextPath: CheckPoint.ApplicationSite.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.application-id
+      description: Application ID.
+      type: Number
+    - contextPath: CheckPoint.ApplicationSite.description
+      description: A description of the application.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.url-list
+      description: URLs that determine this application.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.last-modifier
+      description: The user that last modified this object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.groups
+      description: Collection of group identifiers.
+      type: Unknown
+    - contextPath: CheckPoint.ApplicationSite.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.comments
+      description: Comment string.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.tags
+      description: A comma-separated list of tag objects associated with the application site.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: A description of the application.
+      name: description
+    - description: Each application is assigned to one primary category based on its most defining aspect.
+      name: primary_category
+    - description: A comma-separated list of application signatures generated by Signature Tool.
+      isArray: true
+      name: application_signature
+    - description: New name of the object.
+      name: new_name
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: If "True", the URL is defined as a Regular Expression. Default is "True".
+      name: urls_defined_as_regular_expression
+      predefined:
+      - 'true'
+      - 'false'
+    - description: A comma-separated list of URLs that determine this particular application. This will replace the current URL collection.
+      isArray: true
+      name: url_list
+    - description: A comma-separated list of URLs to add to the collection.
+      isArray: true
+      name: url_list_to_add
+    - description: Removes a URL from the comma-separated list of URLs.
+      isArray: true
+      name: url_list_to_remove
+    - description: A comma-separated list of groups to update membership.
+      isArray: true
+      name: groups
+    - description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: Update comments.
+      name: comments
+    - auto: PREDEFINED
+      description: Update color.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of update tags.
+      isArray: true
+      name: tags
+    description: "Edits an existing application using the object name or UID. \nIt's impossible to set 'application-signature' when the application was initialized with 'url-list' and vice-versa."
+    name: checkpoint-application-site-update
+    outputs:
+    - contextPath: CheckPoint.ApplicationSite.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.application-id
+      description: Application ID.
+      type: Number
+    - contextPath: CheckPoint.ApplicationSite.description
+      description: A description for the application.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.url-list
+      description: URLs that determine this application.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.groups
+      description: Collection of group identifiers.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.primary-category
+      description: Objects primary category.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.color
+      description: Color of the object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.comments
+      description: Comment string.
+      type: String
+    - contextPath: CheckPoint.ApplicationSite.tags
+      description: Collection of tag objects associated with the application site.
+      type: Unknown
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      isArray: true
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Deletes an existing application site object using the object name or UID.
+    name: checkpoint-application-site-delete
+    outputs:
+    - contextPath: CheckPoint.ApplicationSite.message
+      description: Status of the delete operation.
+      type: String
+  - arguments:
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Publishes changes.
+    name: checkpoint-publish
+    outputs:
+    - contextPath: CheckPoint.Publish.task-id
+      description: Task id of the publish command.
+      type: String
+  - arguments:
+    - description: The name of the Policy Package to install.
+      name: policy_package
+      required: true
+    - description: The targets on which to execute this command. Targets can be identified by their name, or object unique identifier.
+      name: targets
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: If "True", will install the Access Control policy.
+      name: access
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Intsalls an Access Control policy.
+    name: checkpoint-install-policy
+    outputs:
+    - contextPath: CheckPoint.InstallPolicy.task-id
+      description: Operation task ID.
+      type: String
+  - arguments:
+    - description: The name of the Policy Package to verify.
+      name: policy_package
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Verifies the policy of the selected package.
+    name: checkpoint-verify-policy
+    outputs:
+    - contextPath: CheckPoint.VerifyPolicy.task-id
+      description: Operation task ID.
+      type: String
+  - arguments:
+    - description: Unique identifier of one or more tasks.
+      name: task_id
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Show task progress and details.
+    name: checkpoint-show-task
+    outputs:
+    - contextPath: CheckPoint.ShowTask.task-id
+      description: Task ID.
+      type: String
+    - contextPath: CheckPoint.ShowTask.task-name
+      description: Task name.
+      type: String
+    - contextPath: CheckPoint.ShowTask.status
+      description: Task status.
+      type: String
+    - contextPath: CheckPoint.ShowTask.progress-percentage
+      description: Task progress in percentage.
+      type: Unknown
+    - contextPath: CheckPoint.ShowTask.suppressed
+      description: Indicates if the task is suppressed.
+      type: Boolean
+  - arguments:
+    - defaultValue: '600'
+      description: Session expiration timeout in seconds. Default is 600 seconds. Session timeout range is between 600 to 3600 seconds.
+      name: session_timeout
+    - description: Optional domain to start session in, for use with MDS login only.
+      name: domain
+    description: Log in to CheckPoint and get the session ID.
+    name: checkpoint-login-and-get-session-id
+    outputs:
+    - contextPath: CheckPoint.Login.session-id
+      description: Session ID.
+      type: String
+  - arguments:
+    - description: Session ID to log out from.
+      name: session_id
+      required: true
+    description: Log out from a given session.
+    name: checkpoint-logout
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of the results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: List all packages.
+    name: checkpoint-packages-list
+    outputs:
+    - contextPath: CheckPoint.Packages.name
+      description: Name of the package.
+      type: String
+    - contextPath: CheckPoint.Packages.uid
+      description: UID of the package.
+      type: String
+    - contextPath: CheckPoint.Packages.type
+      description: Type of the package.
+      type: String
+    - contextPath: CheckPoint.Packages.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Packages.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Packages.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of the results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Retrieve all gateways and servers.
+    name: checkpoint-gateways-list
+    outputs:
+    - contextPath: CheckPoint.Gateways.name
+      description: Gateway name.
+      type: String
+    - contextPath: CheckPoint.Gateways.uid
+      description: Gateway UID.
+      type: String
+    - contextPath: CheckPoint.Gateways.type
+      description: Gateway type.
+      type: String
+    - contextPath: CheckPoint.Gateways.version
+      description: Gateway version.
+      type: String
+    - contextPath: CheckPoint.Gateways.network-security-blades
+      description: Gateway network security blades.
+      type: String
+    - contextPath: CheckPoint.Gateways.management-blades
+      description: Gateway management blades.
+      type: String
+    - contextPath: CheckPoint.Gateways.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Gateways.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Gateways.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of the results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Retrieve all application site category.
+    name: checkpoint-application-site-category-list
+    outputs:
+    - contextPath: CheckPoint.ApplicationSiteCategory.name
+      description: Name of the package.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.uid
+      description: UID of the package.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.type
+      description: Type of the package.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-type
+      description: Domain type.
+      type: String
+  - arguments:
+    - description: Object name or uid. Must be unique in the domain.
+      isArray: true
+      name: identifier
+      required: true
+    - description: Collection of group identifiers.
+      isArray: true
+      name: groups
+    - description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    description: Adds new application site category.
+    name: checkpoint-application-site-category-add
+    outputs:
+    - contextPath: CheckPoint.ApplicationSiteCategory.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.description
+      description: A description for the application.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.creator
+      description: Indicates the creator of the object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.last-modifier
+      description: Indicates the last user modified this object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.groups
+      description: Collection of group identifiers.
+      type: Unknown
+  - arguments:
+    - description: application site category object name or UID.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Retrieve application site category object using object name or UID.
+    name: checkpoint-application-site-category-get
+    outputs:
+    - contextPath: CheckPoint.ApplicationSiteCategory.name
+      description: Host name.
+      type: Unknown
+    - contextPath: CheckPoint.ApplicationSiteCategory.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.type
+      description: Object type.
+      type: Unknown
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.read-only
+      description: Indicates if the object is read only.
+      type: Boolean
+    - contextPath: CheckPoint.ApplicationSiteCategory.creator
+      description: Indicates the creator of the object.
+      type: String
+    - contextPath: CheckPoint.ApplicationSiteCategory.last-modifier
+      description: Indicates the last user modified the object.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Default is 50.
+      name: limit
+    - defaultValue: '0'
+      description: Number of the results to initially skip. Default is 0.
+      name: offset
+    - defaultValue: None
+      description: Search expression to filter objects by. The provided text should be exactly the same as it would be given in Smart Console. The logical operators in the expression ('AND', 'OR') should be provided in capital letters. By default, the search involves both a textual search and a IP search. To use IP search only, set the "ip-only" parameter to true.
+      name: filter_search
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If using "filter", use this field to search objects by their IP address only, without involving the textual search.
+      name: ip_only
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: object
+      description: 'The object type, e.g.: host, service-tcp, network, address-range. Default value is object.'
+      name: object_type
+    - defaultValue: None
+      description: Executes the command with the specified session ID.
+      name: session_id
+    description: Retrieve data about objects.
+    name: checkpoint-show-objects
+    outputs:
+    - contextPath: CheckPoint.Objects.name
+      description: Object name.
+      type: String
+    - contextPath: CheckPoint.Objects.uid
+      description: Object UID.
+      type: String
+    - contextPath: CheckPoint.Objects.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.Objects.ipv4-address
+      description: IPv4 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.Objects.ipv6-address
+      description: IPv6 address of the specified object.
+      type: String
+    - contextPath: CheckPoint.Objects.domain-name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.Objects.domain-uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.Objects.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Objects.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Objects.read-only
+      description: Indicates if the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Objects.groups
+      description: Collection of group identifiers.
+      type: Unknown
+  - arguments:
+    - description: The object unique identifier or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Retrieve the details of Checkpoint packages.
+    name: checkpoint-package-list
+    outputs:
+    - contextPath: CheckPoint.Package.name
+      description: The name of the package.
+      type: String
+    - contextPath: CheckPoint.Package.target-name
+      description: The name of the target.
+      type: String
+    - contextPath: CheckPoint.Package.target-uid
+      description: The UID of the target.
+      type: String
+    - contextPath: CheckPoint.Package.revision.domain.domain-type
+      description: The type of the domain.
+      type: String
+    - contextPath: CheckPoint.Package.revision.domain.name
+      description: The name of the domain.
+      type: String
+    - contextPath: CheckPoint.Package.revision.domain.uid
+      description: The UID of the domain.
+      type: String
+    - contextPath: CheckPoint.Package.revision.type
+      description: The type of the revision.
+      type: String
+    - contextPath: CheckPoint.Package.revision.uid
+      description: The UID of the revision.
+      type: String
+  - arguments:
+    - description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - defaultValue: host
+      description: Type of objects to be created.
+      name: object_type
+      required: true
+    - description: ip addresses to be added.
+      isArray: true
+      name: ipaddress
+      required: true
+    - description: names of the ip objects to be added.
+      isArray: true
+      name: name
+      required: true
+    description: 'Creates new objects in batch. To achieve optimum performance when adding more than one object, use this API. Note: Errors and warnings are ignored when using this API, operation will apply changes while ignoring errors. It is not possible to publish changes that contain validations errors.'
+    name: checkpoint-add-objects-batch
+    outputs:
+    - contextPath: CheckPoint.AddObjectBatch.task-id
+      description: Task id of the add-objects-batch command.
+      type: string
+  - arguments:
+    - description: Executes the command with the specified session ID.
+      name: session_id
+      required: true
+    - description: a comma separated list of names of the ip objects to be deleted.
+      name: name
+      isArray: true
+      required: true
+    - defaultValue: host
+      description: Type of objects to be deleted.
+      name: object_type
+      required: true
+    description: Deletes existing objects in batch using object name or uid. To achieve optimum performance when deleting more than one object, use this API.
+    name: checkpoint-delete-objects-batch
+    outputs:
+    - contextPath: CheckPoint.DeleteObjectsBatch.task-id
+      description: Task id of the delete-objects-batch command.
+      type: string
+  - arguments:
+    - name: uid
+      description: ''
+    - name: name
+      description: ''
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      name: showProfiles
+      description: ''
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      name: additionalProperties
+      description: ''
+      predefined:
+      - 'true'
+      - 'false'
+    description: Shows an existing threat protection using object name or uid.
+    name: checkpoint-show-threat-protection
+    outputs:
+    - contextPath: CheckPoint.ShowThreatProtection
+      description: ''
+  - arguments:
+    - name: filter
+      description: ''
+    - name: limit
+      description: ''
+    - name: offset
+      description: ''
+    - name: order
+      description: ''
+    description: Shows existing threat protections using a filter.
+    name: checkpoint-show-threat-protections
+    outputs:
+    - contextPath: CheckPoint.ShowThreatProtections
+      description: ''
+  - arguments:
+    - name: uid
+      description: ''
+    - name: name
+      description: ''
+    - name: comments
+      description: ''
+    - auto: PREDEFINED
+      name: follow_up
+      description: ''
+      predefined:
+      - 'true'
+      - 'false'
+    - name: action
+      description: ''
+    - auto: PREDEFINED
+      name: track
+      description: ''
+      predefined:
+      - None
+      - Log
+      - SNMP-Trap
+      - Mail
+      - Alert
+      - User-Alert
+      - User-Alert-2
+      - User-Alert-3
+    - name: capturePackets
+      description: ''
+    - name: profiles
+      description: ''
+    description: Edit existing object using object name or uid.
+    name: checkpoint-set-threat-protection
+    outputs:
+    - contextPath: CheckPoint.SetThreatProtections
+      description: ''
+  - arguments:
+    - name: name
+      required: true
+      description: ''
+    - name: active_protections_performance_impact
+      description: ''
+    - name: active_protections_severity
+      description: ''
+    - name: confidence_level_high
+      description: ''
+    - name: confidence_level_low
+      description: ''
+    - name: confidence_level_medium
+      description: ''
+    - name: ips_settings
+      description: ''
+    - name: tags
+      description: ''
+    - name: use_indicators
+      description: ''
+    - name: anti_bot
+      description: ''
+    - name: anti_virus
+      description: ''
+    - name: ips
+      description: ''
+    - name: threat_emulation
+      description: ''
+    - name: exclude_protection_with_performance_impact
+      description: ''
+    - auto: PREDEFINED
+      name: exclude_protection_with_performance_impact_mode
+      description: ''
+      predefined:
+      - very low
+      - low or very low
+      - medium or lower
+      - high or lower
+    - name: exclude_protection_with_severity
+      description: ''
+    - auto: PREDEFINED
+      name: exclude_protection_with_severity_mode
+      description: ''
+      predefined:
+      - low or above
+      - medium or above
+      - high or above
+      - critical
+    - auto: PREDEFINED
+      name: newly_updated_protections
+      description: ''
+      predefined:
+      - active
+      - inactive
+      - staging
+    description: Add a new threat profile.
+    name: checkpoint-add-threat-profile
+    outputs:
+    - contextPath: CheckPoint.AddedThreatProfiles
+      description: ''
+  - arguments:
+    - description: Valid response is "snort".
+      name: packageFormat
+      required: true
+    description: Deletes threat protections.
+    name: checkpoint-delete-threat-protections
+    outputs:
+    - contextPath: CheckPoint.DeletedThreatProtections
+      description: ''
+  - arguments:
+    - description: The object name. Must be unique in the domain.
+      name: name
+      required: true
+    - description: A comma-separated list of network objects identified by the name or UID.
+      isArray: true
+      name: members
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object. Must be one of the available colors.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: Collection of group identifiers.
+      isArray: true
+      name: groups
+    - description: Collection of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to apply changes while ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Apply changes ignoring errors. You won't be able to publish such changes.
+        If ignore-warnings flag was omitted - warnings will also be ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Adds a new service group object.
+    name: checkpoint-service-group-add
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: The member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: The member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: The member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: The group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: The group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: The tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: The tag UID.
+      type: String
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: 'Whether to display matched content as port ranges instead of service objects. If "true", replaces the members parameter with the ranges parameter in the response.'
+      name: show_as_ranges
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Shows an existing service group object using object name or UID.
+    name: checkpoint-service-group-get
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: The member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: The member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: The member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: The group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: The group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: The tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: The tag UID.
+      type: String
+  - arguments:
+    - description: The search expression used to filter objects. Matches the syntax used in the SmartConsole Object Explorer. Logical operators (for example, AND, OR) must be in uppercase. Includes IP addresses and textual fields such as names, comments, and tags.
+      name: filter
+    - description: The maximum number of results to return. API default is 50.
+      name: limit
+    - description: The number of results to initially skip. API default is 0.
+      name: offset
+    - description: 'The list of comma-separated "direction:field" pairs by which to sort results. Valid directions are ASC and DESC. For example, "ASC:type,DESC:uid". Default is "ASC:name".'
+      name: order
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: 'Whether to display matched content as port ranges instead of service objects. If "true", replaces the members parameter with the ranges parameter in the response.'
+      name: show_as_ranges
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: 'Whether to dereference the members field according to the detail level of each object in the response. If "true", expands the member details.'
+      name: dereference_group_members
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to calculate and show the groups field for every object in the reply.
+      name: show_membership
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      description: The domains to process the commands on. Cannot be used with details_level set to 'full'. Must be run from the System Domain.
+      name: domains_to_process
+      predefined:
+      - CURRENT_DOMAIN
+      - ALL_DOMAINS_ON_THIS_SERVER
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Gets a list of all service group objects.
+    name: checkpoint-service-group-list
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      description: 'The action to perform on the members list. If "add" or "remove", the members list is wrapped as {members_action: members}. Otherwise, members are sent without an action.'
+      name: members_action
+      predefined:
+      - add
+      - remove
+    - description: A comma-separated list of network objects identified by the name or UID.
+      isArray: true
+      name: members
+    - description: The new name of the object.
+      name: new_name
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object. Must be one of the available colors.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to apply changes while ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to apply changes while ignoring errors. If there are errors, you cannot publish the changes.
+        If the ignore_warnings flag is true, warnings are also ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      description: 'The action to perform on the groups list. When the action is "add" or "remove", the groups list is wrapped as {groups_action: groups}. Otherwise, groups are sent without an action.'
+      name: groups_action
+      predefined:
+      - add
+      - remove
+    - description: List of group identifiers.
+      isArray: true
+      name: groups
+    - auto: PREDEFINED
+      description: 'The actions to perform on the tags list. When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action.'
+      name: tags_action
+      predefined:
+      - add
+      - remove
+    - description: List of tag identifiers.
+      isArray: true
+      name: tags
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Updates the specified service group object.
+    name: checkpoint-service-group-update
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: Object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: Domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: Domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: The member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: Member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: The member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: The group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: The group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: The tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: The tag UID.
+      type: String
+  - arguments:
+    - description: The object unique identifier (UID) or name of the service group to clone.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      description: 'The action to perform on the members list. When the action is "add" or "remove", the members list is wrapped as {members_action: members}; otherwise, members are sent without an action.'
+      name: members_action
+      predefined:
+      - add
+      - remove
+    - description: The list of network objects identified by the name or UID.
+      isArray: true
+      name: members
+    - description: The new name of the object.
+      name: new_name
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object. Must be one of the available colors.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to apply changes while ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to apply changes while ignoring errors. If there are errors, you cannot publish the changes.
+         If the ignore_warnings flag is true, warnings are also ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      description: 'The list of groups. When the action is "add" or "remove", the groups list is wrapped as {groups_action: groups}; otherwise, the groups are sent without an action.'
+      name: groups_action
+      predefined:
+      - add
+      - remove
+    - description: A comma-separated list of group identifiers.
+      isArray: true
+      name: groups
+    - auto: PREDEFINED
+      description: 'The action to perform on the tags list. When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action.'
+      name: tags_action
+      predefined:
+      - add
+      - remove
+    - description: The list of tag identifiers.
+      isArray: true
+      name: tags
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Clones an existing service group object.
+    name: checkpoint-service-group-clone
+    outputs:
+    - contextPath: CheckPoint.ServiceGroup.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.name
+      description: The member object name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.uid
+      description: The member object UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.members.type
+      description: The member object type.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.name
+      description: The group name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.groups.uid
+      description: The group UID.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.name
+      description: The tag name.
+      type: String
+    - contextPath: CheckPoint.ServiceGroup.tags.uid
+      description: The tag UID.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to apply changes while ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to apply changes while ignoring errors. If there are errors, you cannot publish the changes.
+         If the ignore_warnings flag is true, warnings are also ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Deletes the specified service group object.
+    name: checkpoint-service-group-delete
+    outputs: []
+  - arguments:
+    - description: The layer that the rule belongs to, identified by the name or UID.
+      name: layer
+      required: true
+    - description: The name of the rule or section to use as a reference point. The new section is positioned relative to this rule or section. Required when position is "above" or "below". Optional when position is "top" or "bottom".
+      name: position_rule
+    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required.'
+      name: position
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - description: The object name. Must be unique in the domain.
+      name: name
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to apply changes while ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to apply changes while ignoring errors. If there are errors, you cannot publish the changes.
+         If the ignore_warnings flag is true, warnings are also ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Adds a new access section.
+    name: checkpoint-access-section-add
+    outputs:
+    - contextPath: CheckPoint.AccessSection.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.AccessSection.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: The layer that the rule belongs to, identified by the name or UID.
+      name: layer
+      required: true
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Shows an existing access section using object name or UID.
+    name: checkpoint-access-section-get
+    outputs:
+    - contextPath: CheckPoint.AccessSection.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.AccessSection.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: The layer that the rule belongs to, identified by the name or UID.
+      name: layer
+      required: true
+    - description: The new name of the object.
+      name: new_name
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - auto: PREDEFINED
+      description: 'The action to perform on the tags list. When the action is "add" or "remove", the tags list is wrapped as {tags_action: tags}. Otherwise, tags are sent without an action.'
+      name: tags_action
+      predefined:
+      - add
+      - remove
+    - description: The list of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to apply changes while ignoring warnings.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: |-
+        Whether to apply changes while ignoring errors. If there are errors, you cannot publish the changes.
+         If the ignore_warnings flag is true, warnings are also ignored.
+      name: ignore_errors
+      predefined:
+      - 'true'
+      - 'false'
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Updates the specified access section.
+    name: checkpoint-access-section-update
+    outputs:
+    - contextPath: CheckPoint.AccessSection.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.AccessSection.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.AccessSection.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: The layer that the rule belongs to, identified by the name or UID.
+      name: layer
+      required: true
+    - auto: PREDEFINED
+      defaultValue: standard
+      description: 'The level of detail for response fields, ranging from the object UID to a full representation.'
+      name: details_level
+      predefined:
+      - uid
+      - standard
+      - full
+    - defaultValue: None
+      description: The session ID used to execute the command.
+      name: session_id
+    description: Deletes the specified access section.
+    name: checkpoint-access-section-delete
+    outputs: []
+  - arguments:
+    - description: The unique identifier (UID) or name of the object.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - auto: PREDEFINED
+      description: 'The level of detail for the fields in the response. Can be "standard", "full", or "uid".'
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    description: Gets full data for the specified network object.
+    name: checkpoint-network-get
+    outputs:
+    - contextPath: CheckPoint.Network.name 
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.Network.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.Network.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.Network.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Network.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Network.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+  - arguments:
+    - defaultValue: '50'
+      description: The maximum number of results to return. Max is 500.
+      name: limit
+    - defaultValue: '0'
+      description: The number of results to initially skip.
+      name: offset
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - auto: PREDEFINED
+      description: 'The level of detail for the fields in the response. Can be "standard", "full", or "uid".'
+      name: details_level
+      predefined:
+      - standard
+      - full
+      - uid
+    description: Retrieves a list of network objects.
+    name: checkpoint-network-list
+    outputs:
+    - contextPath: CheckPoint.Network.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: The object type.
+      type: String
+  - arguments:
+    - description: The object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - description: The IPv4 network address.
+      name: subnet
+      required: true
+    - description: The IPv4 network mask length (for example, 24).
+      name: mask_length
+    - description: The IPv4 network mask (for example, 255.255.255.0).
+      name: subnet_mask
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: 'Whether to allow broadcast address inclusion. Can be "allow" or "disallow".'
+      name: broadcast
+      predefined:
+      - disallow
+      - allow
+    - description: The gateway for the NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: 'Hide behind method. This parameter is forbidden when nat_method is "static".'
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to add automatic address translation rules.
+      name: nat_settings_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'The IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
+      name: nat_settings_ip
+    - auto: PREDEFINED
+      description: The NAT translation method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    description: Create a new network object.
+    name: checkpoint-network-add
+    outputs:
+    - contextPath: CheckPoint.Network.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.Network.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.Network.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.Network.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.Network.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Network.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Network.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - description: The new name of the object.
+      name: new_identifier
+    - description: The IPv4 network address.
+      name: subnet
+    - description: The IPv4 network mask (for example, 255.255.255.0).
+      name: subnet_mask
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - auto: PREDEFINED
+      description: 'Whether to allow broadcast address inclusion. Can be "allow" or "disallow".'
+      name: broadcast
+      predefined:
+      - disallow
+      - allow
+    - description: The gateway for the NAT rule.
+      name: nat_install_on
+    - auto: PREDEFINED
+      description: 'The hide behind method. This parameter is not allowed when nat_method is "static".'
+      name: nat_hide_behind
+      predefined:
+      - gateway
+      - ip_address
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to add automatic address translation rules.
+      name: nat_settings_auto_rule
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'The IPv4 address. This parameter is not required when nat_method is "hide" and nat_hide_behind is "gateway".'
+      name: nat_settings_ip
+    - auto: PREDEFINED
+      description: The NAT translation method.
+      name: nat_method
+      predefined:
+      - hide
+      - static
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    description: Update an existing network object.
+    name: checkpoint-network-update
+    outputs:
+    - contextPath: CheckPoint.Network.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.Network.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.Network.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.Network.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.Network.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.Network.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.Network.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.Network.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.Network.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.Network.comments
+      description: A comment string.
+      type: String
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether to ignore warnings when deleting the network object.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    description: Deletes a network object.
+    name: checkpoint-network-delete
+    outputs: []
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - auto: PREDEFINED
+      description: The type of service to retrieve.
+      name: service_type
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      required: true
+    description: Gets full data for the specified service object.
+    name: checkpoint-service-get
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.TCPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.port
+      description: The port number of the service.
+      type: String
+    - contextPath: CheckPoint.UDPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.UDPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.port
+      description: The port number of the service.
+      type: String
+    - contextPath: CheckPoint.ICMPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.ICMPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: The ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: The ICMP code as listed in RFC 792.
+      type: Number
+  - arguments:
+    - description: The object unique identifier (UID) or name. When provided, calls the single-object endpoint instead of the list endpoint.
+      name: identifier
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - auto: PREDEFINED
+      description: The type of service to retrieve.
+      name: service_type
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of results to return. Max is 500.
+      name: limit
+    - defaultValue: '0'
+      description: Number of results to initially skip. Default is 0. 
+      name: offset
+    description: Retrieves a list of service objects. When the identifier is provided, returns a single service object.
+    name: checkpoint-service-list
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.TCPService.port
+      description: The port number of the service.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.UDPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.port
+      description: The port number of the service.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: The ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: The ICMP code as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: The object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - description: The port number of the service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
+      name: port
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: The time (in seconds) before the session times out.
+      name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    description: Creates a new TCP service object.
+    name: checkpoint-tcp-service-add
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.TCPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.TCPService.port
+      description: The port number of the service.
+      type: String
+  - arguments:
+    - description: The object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - description: The port number of the service. To specify a port range, place a hyphen between the lowest and highest port numbers (for example, 44-55).
+      name: port
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: Time (in seconds) before the session times out.
+      name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    description: Creates a new UDP service object.
+    name: checkpoint-udp-service-add
+    outputs:
+    - contextPath: CheckPoint.UDPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.UDPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.UDPService.port
+      description: The port number of the service.
+      type: String
+  - arguments:
+    - description: The object name. Must be unique in the domain.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - description: The ICMP type as listed in RFC 792 (default is 0).
+      name: icmp_type
+    - description: The ICMP code as listed in RFC 792 (default is 0).
+      name: icmp_code
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    description: Creates a new ICMP service object.
+    name: checkpoint-icmp-service-add
+    outputs:
+    - contextPath: CheckPoint.ICMPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: The ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: The ICMP code as listed in RFC 792.
+      type: Number
+  - arguments:
+    - description: The object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - description: The new name of the object.
+      name: new_identifier
+    - description: The port number of the service.
+      name: port
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: The time (in seconds) before the session times out.
+      name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    description: Updates an existing TCP service object.
+    name: checkpoint-tcp-service-update
+    outputs:
+    - contextPath: CheckPoint.TCPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.TCPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.TCPService.domain.domain-type
+      description: Domain type.
+      type: String
+    - contextPath: CheckPoint.TCPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.TCPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.TCPService.comments
+      description: A comment string.
+      type: String
+    - contextPath: CheckPoint.TCPService.port
+      description: The port number of the service.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - description: The new name of the object.
+      name: new_identifier
+    - description: The port number of the service.
+      name: port
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: The time (in seconds) before the session times out.
+      name: session_timeout
+    - description: 'Aggressive aging settings as a JSON object. Example: {"enable": true, "timeout": 360, "use-default-timeout": false}. Supported keys: enable (boolean), timeout (integer), default-timeout (integer), use-default-timeout (boolean).'
+      name: aggressive_aging
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    description: Update an existing UDP service object.
+    name: checkpoint-udp-service-update
+    outputs:
+    - contextPath: CheckPoint.UDPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.UDPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.UDPService.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.UDPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.UDPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.UDPService.comments
+      description: A comment string.
+      type: String
+    - contextPath: CheckPoint.UDPService.port
+      description: The port number of the service.
+      type: String
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - description: The new name of the object.
+      name: new_identifier
+    - description: The ICMP type as listed in RFC 792.
+      name: icmp_type
+    - description: The ICMP code as listed in RFC 792.
+      name: icmp_code
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      defaultValue: black
+      description: The color of the object.
+      name: color
+      predefined:
+      - aquamarine
+      - black
+      - blue
+      - crete blue
+      - burlywood
+      - cyan
+      - dark green
+      - khaki
+      - orchid
+      - dark orange
+      - dark sea green
+      - pink
+      - turquoise
+      - dark blue
+      - firebrick
+      - brown
+      - forest green
+      - gold
+      - dark gold
+      - gray
+      - dark gray
+      - light green
+      - lemon chiffon
+      - coral
+      - sea green
+      - sky blue
+      - magenta
+      - purple
+      - slate blue
+      - violet red
+      - navy blue
+      - olive
+      - orange
+      - red
+      - sienna
+      - yellow
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    description: Updates an existing ICMP service object.
+    name: checkpoint-icmp-service-update
+    outputs:
+    - contextPath: CheckPoint.ICMPService.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.uid
+      description: The object UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.ICMPService.domain.domain-type
+      description: The domain type.
+      type: String
+    - contextPath: CheckPoint.ICMPService.meta-info.creator
+      description: The creator of the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.meta-info.last-modifier
+      description: The user that last modified the object.
+      type: String
+    - contextPath: CheckPoint.ICMPService.read-only
+      description: Whether the object is read-only.
+      type: Boolean
+    - contextPath: CheckPoint.ICMPService.comments
+      description: A comment string.
+      type: String
+    - contextPath: CheckPoint.ICMPService.icmp-type
+      description: ICMP type as listed in RFC 792.
+      type: Number
+    - contextPath: CheckPoint.ICMPService.icmp-code
+      description: ICMP code as listed in RFC 792.
+      type: Number
+  - arguments:
+    - description: Object unique identifier (UID) or name.
+      name: identifier
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    - auto: PREDEFINED
+      description: The type of service to delete.
+      name: service_type
+      predefined:
+      - tcp
+      - udp
+      - icmp
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to ignore warnings when deleting the service object.
+      name: ignore_warnings
+      predefined:
+      - 'true'
+      - 'false'
+    description: Deletes a service object.
+    name: checkpoint-service-delete
+    outputs: []
+  - arguments:
+    - description: The rule name or rule number.
+      name: identifier
+      required: true
+    - description: The name of the package.
+      name: package
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    description: Gets full data for the specified NAT rule.
+    name: checkpoint-nat-rule-get
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.NatRule.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CheckPoint.NatRule.method
+      description: The NAT translation method.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-source.name
+      description: The original source object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-destination.name
+      description: The original destination object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-service.name
+      description: The original service object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-source.name
+      description: The translated source object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-destination.name
+      description: The translated destination object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-service.name
+      description: The translated service object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.comments
+      description: A comment string.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: Name of the package.
+      name: package
+      required: true
+    - defaultValue: '50'
+      description: The maximum number of results to return. Max is 500.
+      name: limit
+    - defaultValue: '0'
+      description: The number of results to initially skip.
+      name: offset
+    - description: The search expression to filter the rule base. The provided text should be exactly the same as it would be given in the Smart Console. The logical operators in the expression (AND, OR) should be provided in capital letters. Default operator is OR.
+      name: filter
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    description: Retrieves a list of NAT rules from the rulebase.
+    name: checkpoint-nat-rule-list
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: The object name.
+      type: String
+  - arguments:
+    - description: The name of the package.
+      name: package
+      required: true
+    - description: 'Position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the position_rule argument is required.'
+      name: position
+      required: true
+    - description: The name of the rule or section to use as a reference point. The new rule is positioned relative to this rule or section. Required when position is "above" or "below". Optional when position is "top" or "bottom".
+      name: position_rule
+    - description: The rule name.
+      name: name
+    - description: The original source object.
+      name: original_source
+    - description: The original destination object.
+      name: original_destination
+    - description: The original service object.
+      name: original_service
+    - description: The translated source object.
+      name: translated_source
+    - description: The translated destination object.
+      name: translated_destination
+    - description: The translated service object.
+      name: translated_service
+    - description: The gateways, identified by name or UID, on which to install the policy.
+      isArray: true
+      name: install_on
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      description: Whether to enable or disable the rule.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: The NAT translation method.
+      name: nat_method
+      predefined:
+      - static
+      - hide
+      - nat64
+      - nat46
+      - cgnat
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    description: Add a new NAT rule.
+    name: checkpoint-nat-rule-add
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: Object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.NatRule.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CheckPoint.NatRule.method
+      description: The NAT translation method.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-source.name
+      description: The original source object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-destination.name
+      description: The original destination object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-service.name
+      description: The original service object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-source.name
+      description: The translated source object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-destination.name
+      description: The translated destination object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-service.name
+      description: The translated service object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.comments
+      description: A comment string.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: The rule name or rule number.
+      name: identifier
+      required: true
+    - description: The name of the package.
+      name: package
+      required: true
+    - description: The original source object.
+      name: original_source
+    - description: The original destination object.
+      name: original_destination
+    - description: The translated source object.
+      name: translated_source
+    - description: The translated destination object.
+      name: translated_destination
+    - description: The original service object.
+      name: original_service
+    - description: The translated service object.
+      name: translated_service
+    - description: A comment string.
+      name: comments
+    - auto: PREDEFINED
+      description: Whether to enable or disable the rule.
+      name: enabled
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: The NAT translation method.
+      name: nat_method
+      predefined:
+      - static
+      - hide
+      - nat64
+      - nat46
+      - cgnat
+    - description: 'New position in the rulebase. Can be an integer, or one of: top, above, below, bottom. When using "above" or "below", the new_position_rule argument is required.'
+      name: new_position
+    - description: The name of the rule or section to use as a reference point. The rule is repositioned relative to this rule or section. Required when new_position is "above" or "below". Optional when new_position is "top" or "bottom".
+      name: new_position_rule
+    - description: A comma-separated list of tag identifiers.
+      isArray: true
+      name: tags
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    description: Updates an existing NAT rule.
+    name: checkpoint-nat-rule-update
+    outputs:
+    - contextPath: CheckPoint.NatRule.uid
+      description: The object unique identifier.
+      type: String
+    - contextPath: CheckPoint.NatRule.name
+      description: The object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.type
+      description: The object type.
+      type: String
+    - contextPath: CheckPoint.NatRule.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CheckPoint.NatRule.method
+      description: The NAT translation method.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-source.name
+      description: The original source object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-destination.name
+      description: The original destination object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.original-service.name
+      description: The original service object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-source.name
+      description: The translated source object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-destination.name
+      description: The translated destination object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.translated-service.name
+      description: The translated service object name.
+      type: String
+    - contextPath: CheckPoint.NatRule.comments
+      description: A comment string.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.name
+      description: The domain name.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.uid
+      description: The domain UID.
+      type: String
+    - contextPath: CheckPoint.NatRule.domain.domain-type
+      description: The domain type.
+      type: String
+  - arguments:
+    - description: The rule name or rule number.
+      name: identifier
+      required: true
+    - description: The name of the package.
+      name: package
+      required: true
+    - defaultValue: None
+      description: The session ID to use when executing the command.
+      name: session_id
+    description: Deletes a NAT rule.
+    name: checkpoint-nat-rule-delete
+    outputs: []
+  dockerimage: demisto/python3:3.12.13.8428455
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

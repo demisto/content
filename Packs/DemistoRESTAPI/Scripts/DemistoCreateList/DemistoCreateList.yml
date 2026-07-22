@@ -1,0 +1,26 @@
+commonfields:
+  id: DemistoCreateList
+  version: -1
+name: DemistoCreateList
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Create a new list.
+enabled: true
+args:
+- name: listName
+  required: true
+  default: true
+  description: Name of list to create.
+- name: listData
+  description: Initial data of list.
+scripttarget: 0
+dependson:
+  must:
+  - core-api-post
+fromversion: 5.0.0
+marketplaces:
+- xsoar
+tests:
+- no test

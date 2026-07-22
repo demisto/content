@@ -1,0 +1,507 @@
+id: search_endpoints_by_hash_-_crowdstrike
+fromversion: 5.0.0
+system: true
+version: -1
+name: Search Endpoints By Hash - CrowdStrike
+deprecated: true
+hidden: true
+description: Deprecated. Use CrowdStrike Falcon instead.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 64d3d099-e3f0-45ae-8898-c4530cf996b9
+    type: start
+    task:
+      id: 64d3d099-e3f0-45ae-8898-c4530cf996b9
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 5ad90257-ab46-4ecb-8b1b-668a94bb6522
+    type: condition
+    task:
+      id: 5ad90257-ab46-4ecb-8b1b-668a94bb6522
+      version: -1
+      name: Are there MD5s to hunt?
+      description: Are there MD5s to hunt?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          accessor: MD5
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.MD5Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 499,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    taskid: ce042e73-548a-4394-888e-0e36fa98bc92
+    type: condition
+    task:
+      id: ce042e73-548a-4394-888e-0e36fa98bc92
+      version: -1
+      name: Are there SHA1s to hunt?
+      description: Are there SHA1s to hunt?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "7"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          accessor: SHA1
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA1Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+  "4":
+    id: "4"
+    taskid: f3cd5ec3-a5d3-41fe-8d5b-3810cf9c8788
+    type: condition
+    task:
+      id: f3cd5ec3-a5d3-41fe-8d5b-3810cf9c8788
+      version: -1
+      name: Are there SHA256s to hunt?
+      description: Are there SHA256s to hunt?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: File
+          accessor: SHA256
+    continueonerror: true
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256Hash
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1402,
+          "y": 515
+        }
+      }
+  "6":
+    id: "6"
+    taskid: 83fcfd0c-232e-415d-8aa5-3a06601c78e1
+    type: regular
+    task:
+      id: 83fcfd0c-232e-415d-8aa5-3a06601c78e1
+      version: -1
+      name: Hunt for devices running MD5
+      description: Returns a list of device IDs on which an indicator ran
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      type:
+        simple: md5
+      value:
+        complex:
+          root: inputs.MD5Hash
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 556.5,
+          "y": 690
+        }
+      }
+  "7":
+    id: "7"
+    taskid: c25bd508-049f-4f6d-882d-f8c69723bbd3
+    type: regular
+    task:
+      id: c25bd508-049f-4f6d-882d-f8c69723bbd3
+      version: -1
+      name: Hunt for devices accessing SHA1
+      description: Returns a list of device IDs on which an indicator ran
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      type:
+        simple: sha1
+      value:
+        complex:
+          root: inputs.SHA1Hash
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1022,
+          "y": 690
+        }
+      }
+  "8":
+    id: "8"
+    taskid: 9dae770a-ec96-4d85-8af0-92dbd79060ac
+    type: regular
+    task:
+      id: 9dae770a-ec96-4d85-8af0-92dbd79060ac
+      version: -1
+      name: Hunt for devices accessing SHA256
+      description: Returns a list of device IDs on which an indicator ran
+      script: FalconHost|||cs-device-ran-on
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      type:
+        simple: sha256
+      value:
+        complex:
+          root: inputs.SHA256Hash
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 690
+        }
+      }
+  "9":
+    id: "9"
+    taskid: 461f7122-3239-492d-8a80-d4a37a18c645
+    type: title
+    task:
+      id: 461f7122-3239-492d-8a80-d4a37a18c645
+      version: -1
+      description: ""
+      name: Get device details
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 894
+        }
+      }
+  "14":
+    id: "14"
+    taskid: a4f4efd7-61d9-4103-88e3-036e3f76632b
+    type: condition
+    task:
+      id: a4f4efd7-61d9-4103-88e3-036e3f76632b
+      version: -1
+      name: Found any devices?
+      description: Found any devices?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "18"
+    scriptarguments:
+      value:
+        complex:
+          root: FalconHostDevices
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: FalconHostDevices
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1013
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 0be18d12-04e5-4109-89ff-b8f917d9bc38
+    type: title
+    task:
+      id: 0be18d12-04e5-4109-89ff-b8f917d9bc38
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1391
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 1fbb2b6e-5cb6-42b2-8c64-0c6d8f474e9a
+    type: condition
+    task:
+      id: 1fbb2b6e-5cb6-42b2-8c64-0c6d8f474e9a
+      version: -1
+      name: Is FalconHost enabled?
+      description: Is FalconHost enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "17"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: FalconHost
+          - - operator: string.isEqual
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: FalconHost
+                - - operator: string.isEqual
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 195
+        }
+      }
+  "17":
+    id: "17"
+    taskid: 78d65ffe-90ed-4323-83dd-76ac86842582
+    type: title
+    task:
+      id: 78d65ffe-90ed-4323-83dd-76ac86842582
+      version: -1
+      description: ""
+      name: Hunt for indicators
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 370
+        }
+      }
+  "18":
+    id: "18"
+    taskid: e51b7b8e-235f-4003-8ce9-0183d5ab8df5
+    type: regular
+    task:
+      id: e51b7b8e-235f-4003-8ce9-0183d5ab8df5
+      version: -1
+      name: Get device hostnames
+      description: Get device hostnames
+      script: FalconHost|||cs-device-details
+      type: regular
+      iscommand: true
+      brand: FalconHost
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      extend-context:
+        simple: Endpoint.Hostname=resources.hostname
+      ids:
+        complex:
+          root: FalconHostDevices
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 599,
+          "y": 1232
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_15_#default#": 0.71,
+      "14_18_yes": 0.54,
+      "16_15_#default#": 0.1,
+      "2_6_yes": 0.54,
+      "2_9_#default#": 0.27,
+      "3_7_yes": 0.52,
+      "3_9_#default#": 0.31,
+      "4_8_yes": 0.56,
+      "4_9_#default#": 0.14
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1406,
+        "width": 1393.5,
+        "x": 499,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: MD5Hash
+  value:
+    complex:
+      root: File
+      accessor: MD5
+  required: false
+  description: MD5 Hash
+- key: SHA1Hash
+  value:
+    complex:
+      root: File
+      accessor: SHA1
+  required: false
+  description: SHA1 Hash
+- key: SHA256Hash
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+  required: false
+  description: SHA256 Hash
+outputs:
+- contextPath: Endpoint.Hostname
+  description: Device hostname
+  type: string
+- contextPath: Endpoint
+  description: The endpoint
+  type: unknown
+tests:
+- No tests (auto formatted)

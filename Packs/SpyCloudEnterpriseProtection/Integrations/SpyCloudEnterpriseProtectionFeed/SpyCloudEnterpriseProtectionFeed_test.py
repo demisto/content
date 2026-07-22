@@ -1,0 +1,126 @@
+import json
+
+import pytest
+from CommonServerPython import DemistoException
+from SpyCloudEnterpriseProtectionFeed import (
+    Client,
+    create_spycloud_args,
+    fetch_incident,
+    fetch_domain_or_watchlist_data,
+    LIMIT_EXCEED,
+    MONTHLY_QUOTA_EXCEED_MSG,
+    TOO_MANY_REQUESTS,
+)
+
+
+def util_load_json(path):
+    with open(path) as f:
+        return json.loads(f.read())
+
+
+client = Client(base_url="http://test.com/", apikey="test_123", proxy=False, verify=False)
+WATCHLIST_DATA = util_load_json("test_data/breach_data_by_indicator.json")
+INCIDENTS = util_load_json("test_data/incidents.json")
+MODIFIED_RESPONSE = util_load_json("test_data/modified_response.json")
+DOMAIN_DATA = util_load_json("test_data/domain_data.json")
+
+
+class MockResponse:
+    def __init__(self, status_code, headers=None, json_data=None, url=None):
+        self.status_code = status_code
+        self.headers = headers or {}
+        self.json_data = json_data or {}
+        self.url = "https://api.spycloud.com/test"
+
+    def json(self):
+        return self.json_data
+
+
+def test_spy_cloud_error_handler(mocker):
+    # --- TOO_MANY_REQUESTS should trigger retry via query_spy_cloud_api ---
+    response = MockResponse(
+        status_code=429, headers={"x-amzn-ErrorType": TOO_MANY_REQUESTS}, json_data={"message": "Too many requests"}
+    )
+
+    retry_mock = mocker.patch.object(client, "query_spy_cloud_api")
+
+    assert client.spy_cloud_error_handler(response) is None
+    retry_mock.assert_called_once_with(response.url, is_retry=True)
+
+    # --- LIMIT_EXCEED should raise monthly quota exception ---
+    response = MockResponse(
+        status_code=429, headers={"x-amzn-ErrorType": LIMIT_EXCEED}, json_data={"message": "Monthly quota exceeded"}
+    )
+
+    with pytest.raises(DemistoException, match=MONTHLY_QUOTA_EXCEED_MSG):
+        client.spy_cloud_error_handler(response)
+
+    # --- 429 without Amazon error type should return None ---
+    response = MockResponse(status_code=429, headers={}, json_data={"message": "Rate limit exceeded"})
+
+    assert client.spy_cloud_error_handler(response) is None
+
+    # --- 403 should raise Authorization or IP error ---
+    response = MockResponse(
+        status_code=403, headers={"SpyCloud-Error": "Invalid IP"}, json_data={"message": "Invalid IP address"}
+    )
+
+    with pytest.raises(DemistoException, match="Authorization or IP error"):
+        client.spy_cloud_error_handler(response)
+
+    # --- Non-403, non-429 should raise generic SpyCloud API error ---
+    response = MockResponse(status_code=500, json_data={"message": "Internal server error"})
+
+    with pytest.raises(DemistoException, match="SpyCloud API error: Internal server error"):
+        client.spy_cloud_error_handler(response)
+
+
+def test_query_spy_cloud_api_success(requests_mock):
+    endpoint = "watchlist"
+    req_url = f"{client._base_url}{endpoint}"
+    requests_mock.get(req_url, json=WATCHLIST_DATA)
+    response = client.query_spy_cloud_api(endpoint, {})
+    assert response == WATCHLIST_DATA
+
+
+@pytest.mark.parametrize(
+    "raw_response, modified",
+    [
+        (WATCHLIST_DATA, MODIFIED_RESPONSE),
+    ],
+)
+def test_fetch_domain_or_watchlist_data(mocker, raw_response, modified):
+    mocker.patch.object(client, "query_spy_cloud_api", return_value=raw_response)
+    response = fetch_domain_or_watchlist_data(client, {}, {})
+    assert response == modified.get("results")[:6]
+
+
+@pytest.mark.parametrize(
+    "raw_response, modified",
+    [
+        (DOMAIN_DATA, DOMAIN_DATA),
+    ],
+)
+def test_fetch_domain_or_watchlist_data_with_domain(mocker, raw_response, modified):
+    mocker.patch.object(client, "query_spy_cloud_api", return_value=raw_response)
+    response = fetch_domain_or_watchlist_data(client, {"domain_search": "dummy.com"}, {})
+    assert response == modified.get("results")
+
+
+@pytest.mark.parametrize(
+    "raw_response, expected",
+    [
+        (WATCHLIST_DATA, INCIDENTS),
+    ],
+)
+def test_fetch_incident_command(mocker, raw_response, expected):
+    mocker.patch.object(client, "query_spy_cloud_api", return_value=raw_response)
+    mocker.patch.object(client, "get_last_run", return_value="2023-05-30")
+    response = fetch_incident(client, {})
+    assert response == expected
+
+
+def test_create_spycloud_args():
+    args = {"severity": "2, 1"}
+    with pytest.raises(DemistoException):
+        create_spycloud_args(args, client)

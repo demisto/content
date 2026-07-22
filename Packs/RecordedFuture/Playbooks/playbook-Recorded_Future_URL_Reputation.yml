@@ -1,0 +1,331 @@
+id: Recorded Future URL Reputation
+version: -1
+name: Recorded Future URL Reputation
+description: URL reputation using Recorded Future SOAR enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c92b1170-f0de-4f89-865b-57384f643590
+    type: start
+    task:
+      id: c92b1170-f0de-4f89-865b-57384f643590
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 12143d22-746b-4d0f-83e0-baaac8b7736d
+    type: condition
+    task:
+      id: 12143d22-746b-4d0f-83e0-baaac8b7736d
+      version: -1
+      name: Is there a URL to get reputation of?
+      description: do we have a url to check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: b6ea41c7-12b6-41d9-8b8a-56a8fafd735c
+    type: title
+    task:
+      id: b6ea41c7-12b6-41d9-8b8a-56a8fafd735c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: b778548d-ed9f-40f8-8fe2-31505eed7c77
+    type: title
+    task:
+      id: b778548d-ed9f-40f8-8fe2-31505eed7c77
+      version: -1
+      name: Get reputation using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 7ee7ccf8-8457-49d8-8266-206196ebaffc
+    type: condition
+    task:
+      id: 7ee7ccf8-8457-49d8-8266-206196ebaffc
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Checks if there is an active instance of the Recorded Future API
+        enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 025dc93f-d522-4986-8da8-894942710d88
+    type: regular
+    task:
+      id: 025dc93f-d522-4986-8da8-894942710d88
+      version: -1
+      name: Get URL reputation from Recorded Future
+      description: Get a quick indication of the risk associated with a URL.
+      script: Recorded Future v2|||url
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 9f129643-ad72-4f99-8daa-f8c1863b61ba
+    type: regular
+    task:
+      id: 9f129643-ad72-4f99-8daa-f8c1863b61ba
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      recordedfutureriskrules:
+        simple: ${RecordedFuture.URL.rules}
+      value:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 800,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL
+      accessor: Data
+      transformers:
+      - operator: uniq
+  required: false
+  description: URL to get reputation of.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: URL.Malicious.Vendor
+  description: For malicious URLs, the vendor that made the decision
+  type: string
+- contextPath: URL.Malicious.Description
+  description: For malicious URLs, the reason that the vendor made the decision
+  type: string
+- contextPath: URL.Data
+  description: URL name
+  type: string
+- contextPath: RecordedFuture.URL.riskScore
+  description: Recorded Future URL Risk Score
+  type: number
+- contextPath: RecordedFuture.URL.riskLevel
+  description: Recorded Future URL Risk Level
+  type: string
+- contextPath: RecordedFuture.URL.Evidence.rule
+  description: Recorded Future Risk Rule Name
+  type: string
+- contextPath: RecordedFuture.URL.Evidence.mitigation
+  description: Recorded Future Risk Rule Mitigation
+  type: string
+- contextPath: RecordedFuture.URL.Evidence.description
+  description: Recorded Future Risk Rule description
+  type: string
+- contextPath: RecordedFuture.URL.Evidence.timestamp
+  description: Recorded Future Risk Rule timestamp
+  type: date
+- contextPath: RecordedFuture.URL.Evidence.level
+  description: Recorded Future Risk Rule Level
+  type: number
+- contextPath: RecordedFuture.URL.Evidence.ruleid
+  description: Recorded Future Risk Rule ID
+  type: string
+- contextPath: RecordedFuture.URL.name
+  description: URL
+  type: string
+- contextPath: RecordedFuture.URL.maxRules
+  description: Maximum count of Recorded Future URL Risk Rules
+  type: number
+- contextPath: RecordedFuture.URL.ruleCount
+  description: Number of triggered Recorded Future URL Risk Rules
+  type: number
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

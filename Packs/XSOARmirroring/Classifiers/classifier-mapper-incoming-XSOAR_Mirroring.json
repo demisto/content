@@ -1,0 +1,44 @@
+{
+ "description": "",
+ "feed": false,
+ "id": "XSOAR-Incoming-Mapper",
+ "mapping": {
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": true,
+   "internalMapping": {
+    "dbotMirrorInstance": {
+     "complex": null,
+     "simple": "dbotMirrorInstance"
+    },
+    "details": {
+     "complex": null,
+     "simple": "details"
+    },
+    "name": {
+     "complex": null,
+     "simple": "name"
+    },
+    "occurred": {
+     "complex": null,
+     "simple": "occurred"
+    },
+    "owner": {
+     "complex": null,
+     "simple": "owner"
+    },
+    "phase": {
+     "complex": null,
+     "simple": "phase"
+    },
+    "severity": {
+     "complex": null,
+     "simple": "severity"
+    }
+   }
+  }
+ },
+ "name": "XSOAR Incoming Mapper",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

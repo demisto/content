@@ -1,0 +1,22 @@
+{
+  "id": 1234567,
+  "type": "user",
+  "address": "3000 Tannery Way, Santa Clara, CA 95054",
+  "avatar_url": "https://www.box.com/api/avatar/large/1234567",
+  "created_at": "2020-12-1T10:53:43-08:00",
+  "job_title": "CEO",
+  "language": "en",
+  "login": "dbot@paloaltonetworks.com",
+  "max_upload_size": 2147483648,
+  "modified_at": "2012-12-12T10:53:43-08:00",
+  "name": "D Bot",
+  "notification_email": {
+    "email": "notifications@example.com",
+    "is_confirmed": true
+  },
+  "phone": 4808675309,
+  "space_amount": 11345156112,
+  "space_used": 1237009912,
+  "status": "active",
+  "timezone": "US/West"
+}

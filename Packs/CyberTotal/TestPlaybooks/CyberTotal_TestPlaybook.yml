@@ -1,0 +1,880 @@
+id: CyberTotal_TestPlaybook
+version: 30
+name: CyberTotal_TestPlaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 792dbdae-20a5-4e24-8d70-a2eacd3939c2
+    type: start
+    task:
+      id: 792dbdae-20a5-4e24-8d70-a2eacd3939c2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 44aea95d-716c-4d3f-802b-632b3a7cb610
+    type: regular
+    task:
+      id: 44aea95d-716c-4d3f-802b-632b3a7cb610
+      version: -1
+      name: DeleteContext
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6e04db45-15d2-4928-8dfa-e98a46738bae
+    type: regular
+    task:
+      id: 6e04db45-15d2-4928-8dfa-e98a46738bae
+      version: -1
+      name: ip
+      description: Return IP information and reputation
+      script: CyberTotal|||ip
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      ip:
+        simple: 1.1.1.1
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: dcf51e8f-6759-4bf4-8187-0ea62fad4f16
+    type: condition
+    task:
+      id: dcf51e8f-6759-4bf4-8187-0ea62fad4f16
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.task_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.permalink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.threat
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.detection_engines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.positive_detections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.detection_ratio
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.IP.message
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 3a0cf1ee-fbc6-4fb8-872f-54cac0bd38bb
+    type: regular
+    task:
+      id: 3a0cf1ee-fbc6-4fb8-872f-54cac0bd38bb
+      version: -1
+      name: file
+      description: Return file's information and reputation
+      script: CyberTotal|||file
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      file:
+        simple: 7DF0B5CBDA6936D8BB6EA38F0DBC4F5D
+      hash:
+        complex:
+          root: File
+          accessor: MD5
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2e0977fc-fd9d-4c8d-822a-2370a75f06ac
+    type: condition
+    task:
+      id: 2e0977fc-fd9d-4c8d-822a-2370a75f06ac
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.task_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.permalink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.threat
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.detection_engines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.positive_detections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.detection_ratio
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.File.message
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: 7DF0B5CBDA6936D8BB6EA38F0DBC4F5D
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 13337e7c-65cd-4a74-85ad-87f10d81401e
+    type: regular
+    task:
+      id: 13337e7c-65cd-4a74-85ad-87f10d81401e
+      version: -1
+      name: domain
+      description: Return domain  information and reputation
+      script: CyberTotal|||domain
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      domain:
+        simple: abc.com
+      threshold: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 94240611-b3ee-4e17-83f8-962295bca51f
+    type: condition
+    task:
+      id: 94240611-b3ee-4e17-83f8-962295bca51f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.permalink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.threat
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.detection_engines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.positive_detections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.detection_ratio
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.Domain.message
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: abc.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d31532aa-8279-4ec1-81a1-f682aeb3fd86
+    type: regular
+    task:
+      id: d31532aa-8279-4ec1-81a1-f682aeb3fd86
+      version: -1
+      name: url
+      description: Return domain information and reputation
+      script: CyberTotal|||url
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      threshold: {}
+      url:
+        simple: http://abc.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0ae5d999-d3e2-47f9-8527-ac866b028efb
+    type: condition
+    task:
+      id: 0ae5d999-d3e2-47f9-8527-ac866b028efb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.resource
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.task_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.permalink
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.threat
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.detection_engines
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.positive_detections
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.detection_ratio
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.URL.message
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: URL
+                accessor: Data
+            iscontext: true
+          right:
+            value:
+              simple: http://abc.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 011377da-5337-4e33-88c7-95e5f1baafa7
+    type: regular
+    task:
+      id: 011377da-5337-4e33-88c7-95e5f1baafa7
+      version: -1
+      name: cybertotal-ip-whois
+      description: Return ip whois information
+      script: CyberTotal|||cybertotal-ip-whois
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ip:
+        simple: 162.253.177.9
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 26a337a1-4970-4eba-8a0c-caeefc5044e7
+    type: condition
+    task:
+      id: 26a337a1-4970-4eba-8a0c-caeefc5044e7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-IP.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-IP.task_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CyberTotal.WHOIS-IP.resource
+            iscontext: true
+          right:
+            value:
+              simple: 162.253.177.9
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-IP.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-IP.permalink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 9cc5dab9-67d9-4eb0-8d42-c15dd5670222
+    type: regular
+    task:
+      id: 9cc5dab9-67d9-4eb0-8d42-c15dd5670222
+      version: -1
+      name: cybertotal-url-whois
+      description: Return url whois information
+      script: CyberTotal|||cybertotal-url-whois
+      type: regular
+      iscommand: true
+      brand: CyberTotal
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      url:
+        simple: http://abc.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: a5ade94f-5053-4243-834e-09b9dc04ecd0
+    type: condition
+    task:
+      id: a5ade94f-5053-4243-834e-09b9dc04ecd0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.task_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.resource
+            iscontext: true
+          right:
+            value:
+              simple: http://abc.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-URL.permalink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: bde9c91a-433b-40bc-8a04-00c6a9d8e0d9
+    type: regular
+    task:
+      id: bde9c91a-433b-40bc-8a04-00c6a9d8e0d9
+      version: -1
+      name: cybertotal-domain-whois
+      description: Return domain whois information
+      script: '|||cybertotal-domain-whois'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      domain:
+        simple: abc.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 6597107d-7710-4c65-8819-69775273c3d6
+    type: condition
+    task:
+      id: 6597107d-7710-4c65-8819-69775273c3d6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.scan_date
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.task_id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.resource
+            iscontext: true
+          right:
+            value:
+              simple: abc.com
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.message
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CyberTotal.WHOIS-Domain.permalink
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: e3fb5c63-d016-49ac-8f20-60aca051c5ba
+    type: title
+    task:
+      id: e3fb5c63-d016-49ac-8f20-60aca051c5ba
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3215,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

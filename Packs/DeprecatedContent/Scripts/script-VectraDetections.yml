@@ -1,0 +1,98 @@
+commonfields:
+  id: VectraDetections
+  version: -1
+name: VectraDetections
+script: >2
+
+  resp = demisto.executeCommand("vec-detections", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- Vectra
+comment: Deprecated. Detection objects contain all the information related to security events detected on the network
+system: true
+args:
+- description: Filters objects listed
+  name: fields
+- description: Page number. Possible values are a positive integer or last
+  name: page
+- description: Page size. Possible values are a positive integer or all
+  name: page_size
+- description: "Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol"
+  name: ordering
+- description: '>= the id provided'
+  name: min_id
+- description: <= the id provided
+  name: max_id
+- description: 'filter by state: active, inactive, ignored, ignored for all'
+  name: state
+- description: filter by the detection type (verbose name)
+  name: type_vname
+- description: filter by the detection category
+  name: category
+- description: filter by source (ip address)
+  name: src_ip
+- description: filter by threat score
+  name: t_score
+- description: filter by threat score >= the score provided
+  name: t_score_gte
+- description: filter by certainty score
+  name: c_score
+- description: filter by certainty score >= the score provided
+  name: c_score_gte
+- description: filter by last timestamp
+  name: last_timestamp
+- description: filter by id of the host object a detection is attributed to
+  name: host_id
+- description: filter by a tag or a comma-separated list of tags
+  name: tags
+- description: filter by destination in the detection detail set
+  name: destination
+- description: filter by the protocol in the detection detail set
+  name: proto
+- description: filter by the destination port in the detection detail set
+  name: dst_port
+- description: filter by the inbound_ip in the relayed comm set
+  name: inbound_ip
+- description: filter by the inbound_proto in the relayed comm set
+  name: inbound_proto
+- description: filter by the inbound_port in the relayed comm set
+  name: inbound_port
+- description: filter by the inbound_dns in the relayed comm set
+  name: inbound_dns
+- description: filter by the outbound_ip in the relayed comm set
+  name: outbound_ip
+- description: filter by the outbound_proto in the relayed comm set
+  name: outbound_proto
+- description: filter by the outbound_port in the relayed comm set
+  name: outbound_port
+- description: filter by the outbound_dns in the relayed_comm_set
+  name: outbound_dns
+- description: filter by the dns_ip in the dns_set
+  name: dns_ip
+- description: filter by the dns_request in the dns_set
+  name: dns_request
+- description: filter by the resp_code in the dns_set
+  name: resp_code
+- description: filter by the resp in the dns_set
+  name: resp
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - vec-detections
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

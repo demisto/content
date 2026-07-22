@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "- The argument `notification_post_type` has been removed from the `wab-add-notification` command.\n- The argument `notification_put_type` has been removed from the `wab-edit-notification` command."
+}

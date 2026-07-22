@@ -1,0 +1,17 @@
+[
+    {
+      "id": 10,
+      "hostname": "srv-sysadmin-1",
+      "last_communication": "2025-06-01T10:00:00.000Z",
+      "category": "server",
+      "description": "first sysadmin asset"
+    },
+    {
+      "id": 11,
+      "hostname": "srv-sysadmin-2",
+      "last_communication": "2025-06-02T11:00:00.000Z",
+      "category": "server",
+      "description": "second sysadmin asset"
+    }
+  ]
+  

@@ -1,0 +1,11 @@
+{
+  "Flashpoint.Event(val.EventId == obj.EventId)": {
+    "EventId": "test_scan_id",
+    "Name": "[testing info](url/home/technical_data/iocs/items/5d0960cc-6128-4416-9996-05d20a640c05)",
+    "Tags": "tag1",
+    "ObservedTime": "Jun 18, 2019  22:08",
+    "EventCreatorEmail": "fake@test.com",
+    "Href": "http://123-fake-api.com/api/v4/indicators/event/test_scan_id",
+    "MalwareDescription": "<p>\"Ave Maria\" is a remote access trojan.</p>"
+  }
+}

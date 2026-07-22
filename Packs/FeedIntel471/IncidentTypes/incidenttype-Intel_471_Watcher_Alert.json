@@ -1,0 +1,29 @@
+{
+    "id": "Intel 471 Watcher Alert",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Intel 471 Watcher Alert",
+    "prevName": "Intel 471 Watcher Alert",
+    "color": "#d6002f",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Intel 471 Watcher Alert",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "5.5.0"
+}

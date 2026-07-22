@@ -1,0 +1,59 @@
+{
+    "Location": "SA_FWs",
+    "NegateDestination": "",
+    "UUID": "4c2d39ea-d2bd-45c1-8003-91264c4ade3b",
+    "Disabled": "",
+    "ICMPUnreachable": "yes",
+    "Description": "bbbbbbbbbb",
+    "GroupTag": "moishy tags",
+    "LogForwardingProfile": "Log forwarding for SA",
+    "NegateSource": "",
+    "SecurityProfileGroup": "Prince Security Profile Group",
+    "SecurityProfile": {
+        "url-filtering": "",
+        "data-filtering": "",
+        "file-blocking": "",
+        "vulnerability": "",
+        "wildfire-analysis": "",
+        "spyware": "default",
+        "virus": "default"
+    },
+    "Target": {
+        "devices": [
+            "007051000185487",
+            "007051000188986"
+        ],
+        "negate": "no"
+    },
+    "Name": "jl-test-1",
+    "Type": "intrazone",
+    "From": "internal",
+    "DestinationDevice": "bad nam",
+    "Action": "reset-server",
+    "SourceDevice": "good name",
+    "Tags": [
+        "APIiiiiii",
+        "test2shared"
+    ],
+    "SourceUser": "me",
+    "Application": "8x8",
+    "Service": [
+        "new group",
+        "service-http",
+        "service-https"
+    ],
+    "To": "internal",
+    "Source": "1.1.1.1",
+    "CustomUrlCategory": [
+        "alcohol-and-tobacco",
+        "auctions"
+    ],
+    "Destination": "my_shared_address_object_test",
+    "Options": {
+        "LogAtSessionStart": "yes",
+        "LogForwarding": "Log forwarding for SA",
+        "Schedule": "test-schedule",
+        "QoSMarking": "ip-precedence",
+        "DisableServerResponseInspection": "yes"
+    }
+}

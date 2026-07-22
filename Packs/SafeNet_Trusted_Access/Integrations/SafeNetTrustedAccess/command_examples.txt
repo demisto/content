@@ -1,0 +1,22 @@
+!sta-get-user-list
+!sta-get-user-info userName="demouser"
+!sta-create-user email="test.user@demisto.com" first_name="User" last_name="Test" userName="usertest123"
+!sta-update-user-info userName="usertest123" userName_new="testuser1" first_name="Demo" last_name="Name"
+!sta-delete-user userName="testuser1"
+!sta-get-user-groups userName="hellouser"
+!sta-get-group-list
+!sta-get-group-info groupName="TestGroup1"
+!sta-get-group-members groupName="TestGroup0"
+!sta-create-group groupName="TestGroup2" description="Group description." synchronized=False
+!sta-delete-group groupName="TestGroup2"
+!sta-update-group-info groupName="TestGroup1" description="Description has been updated."
+!sta-add-user-group groupName="TestGroup1" userName="hellouser"
+!sta-user-exist-group groupName="TestGroup1" userName="hellouser"
+!sta-remove-user-group groupName="TestGroup1" userName="hellouser"
+!sta-get-logs userName="demouser" since="2021-07-21T12:22:16.718Z"
+!sta-validate-tenant
+!sta-get-application-list
+!sta-get-application-info applicationName="Salesforce"
+!sta-get-user-applications userName="hellouser"
+!sta-get-user-sessions userName="hellouser"
+!sta-delete-user-sessions userName="hellouser"

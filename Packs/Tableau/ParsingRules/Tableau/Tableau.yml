@@ -1,0 +1,8 @@
+name: Tableau Parsing Rule
+id: Tableau_ParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

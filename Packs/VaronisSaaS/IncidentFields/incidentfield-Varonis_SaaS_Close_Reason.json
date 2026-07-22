@@ -1,0 +1,39 @@
+{
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Varonis SaaS Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "varonissaasclosereason",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_varonissaasclosereason",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Varonis SaaS Close Reason",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "selectValues": [
+        "none",
+        "other",
+        "benign activity",
+        "true positive",
+        "environment misconfiguration",
+        "alert recently customized",
+        "inaccurate alert logic",
+        "authorized activity"
+    ],
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false
+}

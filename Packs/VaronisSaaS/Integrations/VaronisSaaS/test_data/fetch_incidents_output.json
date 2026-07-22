@@ -1,0 +1,75 @@
+[
+    {
+      "Alert.Rule.Name": "Deletion: Multiple directory service objects",
+      "Alert.Rule.Severity.Name": "Medium",
+      "Alert.TimeUTC": "2023-12-11T03:50:00",
+      "Alert.Rule.Category.Name": "Denial of Service",
+      "Alert.User.Name": "varadm (intaf6fb.com)",
+      "Alert.Status.Name": "Under Investigation",
+      "Alert.ID": "A5F4B69A-F5C0-494F-B5B4-185185BC3FBE",
+      "Alert.Rule.ID": "140",
+      "Alert.Rule.Severity.ID": "1",
+      "Alert.Location.CountryName": "",
+      "Alert.Location.SubdivisionName": "",
+      "Alert.Status.ID": "2",
+      "Alert.EventsCount": "14",
+      "Alert.Initial.Event.TimeUTC": "2023-12-11T03:41:00",
+      "Alert.User.SamAccountName": "varadm",
+      "Alert.User.AccountType.Name": "Admin,Executive",
+      "Alert.Device.HostName": "intaf6fbdh",
+      "Alert.Device.IsMaliciousExternalIP": "",
+      "Alert.Device.ExternalIPThreatTypesName": "",
+      "Alert.Data.IsFlagged": "0",
+      "Alert.Data.IsSensitive": "0",
+      "Alert.Filer.Platform.Name": "Active Directory",
+      "Alert.Asset.Path": "intaf6fb.com(AD-intaf6fb.com)",
+      "Alert.Filer.Name": "AD-intaf6fb.com",
+      "Alert.CloseReason.Name": "True positive",
+      "Alert.Location.BlacklistedLocation": "",
+      "Alert.Location.AbnormalLocation": "",
+      "Alert.User.SidID": "971",
+      "Alert.IngestTime": "2023-12-11T03:52:00",
+      "Alert.Time": "2023-12-11T03:50:00",
+      "Url": "https://test.com/analytics/entity/Alert/A5F4B69A-F5C0-494F-B5B4-185185BC3FBE",
+      "Category": "Denial of Service",
+      "ID": "A5F4B69A-F5C0-494F-B5B4-185185BC3FBE",
+      "Name": "Deletion: Multiple directory service objects",
+      "Status": "Under Investigation",
+      "IPThreatTypes": "",
+      "CloseReason": "True positive",
+      "NumOfAlertedEvents": "14",
+      "ContainsFlaggedData": "0",
+      "ContainMaliciousExternalIP": "",
+      "ContainsSensitiveData": "0",
+      "Locations": [
+        {
+          "Country": "",
+          "State": "",
+          "BlacklistLocation": "",
+          "AbnormalLocation": ""
+        }
+      ],
+      "Sources": [
+        {
+          "Platform": "Active Directory",
+          "FileServerOrDomain": "AD-intaf6fb.com"
+        }
+      ],
+      "Devices": [
+        {
+          "Name": "intaf6fbdh",
+          "Asset": "intaf6fb.com(AD-intaf6fb.com)"
+        }
+      ],
+      "Users": [
+        {
+          "Name": "varadm (intaf6fb.com)",
+          "SamAccountName": "varadm",
+          "PrivilegedAccountType": "Admin",
+          "Department": ""
+        }
+      ],
+      "mirror_direction": null, 
+      "mirror_instance": ""
+    }
+  ]

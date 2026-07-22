@@ -1,0 +1,7 @@
+fromversion: 6.10.0
+id: DropboxEventCollector
+name: DropboxEventCollector
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

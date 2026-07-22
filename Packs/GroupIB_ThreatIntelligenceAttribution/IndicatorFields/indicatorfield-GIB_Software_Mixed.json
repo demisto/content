@@ -1,0 +1,29 @@
+{
+    "associatedTypes": [
+        "CVE"
+    ],
+    "associatedToAll": false,
+    "caseInsensitive": true,
+    "cliName": "gibsoftwaremixed",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_gibsoftwaremixed",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Software Mixed",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

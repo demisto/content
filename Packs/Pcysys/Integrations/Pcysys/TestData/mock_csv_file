@@ -1,0 +1,5 @@
+Severity,Time,Duration,Operation Type,Techniques,Parameters,Status
+9.8,2020-04-16 16:55:01,31.559,BlueKeep (CVE-2019-0708) Vulnerability Discovery,Network Service Scanning(T1046),"{""host"": ""1.1.1.1""}",success
+9.8,2020-04-16 16:55:09,32.569,BlueKeep (CVE-2019-0708) Vulnerability Discovery,Network Service Scanning(T1046),"{""host"": ""1.1.1.2""}",no results
+8.2,2020-04-16 17:10:26,0.365,Password Crack Level 1,Brute Force(T1110),"{""hash"": ""someUser::someDomain:645114766d02128700000000000000000000000000000000:9b64264735234e045665047d555cc983d4ad341cf0132f08:122334456677889""}",success
+8.0,2020-04-16 17:19:45,12.782,Password Crack Level 2,Brute Force(T1110),"{""hash"": ""d5cef1114f06d440af83aa1e94409c99""}",success

@@ -1,0 +1,1096 @@
+id: CrowdStrike Falcon Intel v2 - Test
+version: -1
+name: CrowdStrike Falcon Intel v2 - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 34fcdd80-3346-4632-8d00-b385ed199590
+    type: start
+    task:
+      id: 34fcdd80-3346-4632-8d00-b385ed199590
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b853ff42-4f93-4657-8732-cc129984906d
+    type: regular
+    task:
+      id: b853ff42-4f93-4657-8732-cc129984906d
+      version: -1
+      name: cs-reports
+      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
+        publications.
+      script: '|||cs-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: bde09e26-1d37-4f51-829e-4e7d3de120e6
+    type: regular
+    task:
+      id: bde09e26-1d37-4f51-829e-4e7d3de120e6
+      version: -1
+      name: cs-actors
+      description: Search known actors based on the given parameters.
+      script: '|||cs-actors'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7a583de4-1d4b-4f03-8c97-2aac50a5b40b
+    type: condition
+    task:
+      id: 7a583de4-1d4b-4f03-8c97-2aac50a5b40b
+      version: -1
+      name: Verify Outputs (cs-actors)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: Slug
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Actor
+                accessor: ShortDescription
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 58b223b3-966b-4943-8668-76e368035a88
+    type: regular
+    task:
+      id: 58b223b3-966b-4943-8668-76e368035a88
+      version: -1
+      name: cs-indicators
+      description: Search known indicators based on the given parameters.
+      script: '|||cs-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 977b2057-18c2-4cac-87bf-6f1728f8f558
+    type: condition
+    task:
+      id: 977b2057-18c2-4cac-87bf-6f1728f8f558
+      version: -1
+      name: Verify Outputs (cs-indicators)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 677de99c-fa6d-4aa7-82cc-c8fb6fdf0bfe
+    type: regular
+    task:
+      id: 677de99c-fa6d-4aa7-82cc-c8fb6fdf0bfe
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4f80c82f-b853-4bdc-8423-3241530d4289
+    type: regular
+    task:
+      id: 4f80c82f-b853-4bdc-8423-3241530d4289
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 18e535cb-cf50-4a90-8da2-de75365ce79a
+    type: regular
+    task:
+      id: 18e535cb-cf50-4a90-8da2-de75365ce79a
+      version: -1
+      name: Get IP
+      description: Search known indicators based on the given parameters.
+      script: '|||cs-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit:
+        simple: "1"
+      type:
+        simple: ip_address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 5c860fa3-d74f-46b4-8358-3134f0154b70
+    type: regular
+    task:
+      id: 5c860fa3-d74f-46b4-8358-3134f0154b70
+      version: -1
+      name: Set IP
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: IP_Address
+      value:
+        complex:
+          root: IP
+          accessor: Address
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b0718908-01a0-406d-8c33-52daf2dfef03
+    type: regular
+    task:
+      id: b0718908-01a0-406d-8c33-52daf2dfef03
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        complex:
+          root: FalconIntel
+          accessor: Indicator
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0073fe23-064c-4af3-866e-f3d9715b2283
+    type: regular
+    task:
+      id: 0073fe23-064c-4af3-866e-f3d9715b2283
+      version: -1
+      name: ip command
+      description: Check IP reputation.
+      script: CrowdStrike Falcon Intel v2|||ip
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Intel v2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ip:
+        simple: ${IP_Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 772f7ddc-900e-41d0-8c21-495c61b559c4
+    type: condition
+    task:
+      id: 772f7ddc-900e-41d0-8c21-495c61b559c4
+      version: -1
+      name: Verify Outputs (ip command)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FalconIntel.Indicator
+                accessor: Type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 273b38d6-af86-42a0-83bb-5b3496478541
+    type: title
+    task:
+      id: 273b38d6-af86-42a0-83bb-5b3496478541
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d68609b5-f42f-4049-8738-7eb3f245b2c7
+    type: regular
+    task:
+      id: d68609b5-f42f-4049-8738-7eb3f245b2c7
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 347b6d28-9b21-4241-8bb1-7b85a8589dcf
+    type: regular
+    task:
+      id: 347b6d28-9b21-4241-8bb1-7b85a8589dcf
+      version: -1
+      name: Multiple IPs
+      description: Checks the IP reputation.
+      script: CrowdStrike Falcon Intel v2|||ip
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Intel v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      ip:
+        simple: 185.203.116.58,2.2.2.2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b88dca04-94e5-427d-8738-066ef40714d5
+    type: condition
+    task:
+      id: b88dca04-94e5-427d-8738-066ef40714d5
+      version: -1
+      name: Verify Outputs (IP command)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 185.203.116.58
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 03f0ada3-49cd-4d99-8e17-d3ad9129e205
+    type: regular
+    task:
+      id: 03f0ada3-49cd-4d99-8e17-d3ad9129e205
+      version: -1
+      name: Multiple URLs
+      description: Checks the URL reputation.
+      script: CrowdStrike Falcon Intel v2|||url
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Intel v2
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      url:
+        simple: https://ketchas.ru/uplcv?utm_term=maaya+tamil+movie+online+hd,http://www.demisto.com,https://www.test.com'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 2b124b88-f649-46b1-81d9-214f751fc914
+    type: regular
+    task:
+      id: 2b124b88-f649-46b1-81d9-214f751fc914
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: f9e290e3-6439-4266-8990-717e8b769ad7
+    type: condition
+    task:
+      id: f9e290e3-6439-4266-8990-717e8b769ad7
+      version: -1
+      name: Verify Outputs (URL command)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+          right:
+            value:
+              simple: https://ketchas.ru/uplcv?utm_term=maaya+tamil+movie+online+hd
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: f53e3897-6f6d-4ce8-8053-1330e841aeee
+    type: regular
+    task:
+      id: f53e3897-6f6d-4ce8-8053-1330e841aeee
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: ${lastCompletedTaskEntries}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      substring:
+        simple: www.demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c5f0b975-4efe-4fab-8d83-aad21a7c0247
+    type: regular
+    task:
+      id: c5f0b975-4efe-4fab-8d83-aad21a7c0247
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 4e737fba-6e2d-4296-822a-4d55e0887950
+    type: regular
+    task:
+      id: 4e737fba-6e2d-4296-822a-4d55e0887950
+      version: -1
+      name: Multiple Domains
+      description: Checks the domain reputation.
+      script: CrowdStrike Falcon Intel v2|||domain
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Intel v2
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      domain:
+        simple: tw.com,xeemoquo.top
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: b91d9d81-72cf-43e6-8d95-a186093d0761
+    type: regular
+    task:
+      id: b91d9d81-72cf-43e6-8d95-a186093d0761
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: ${lastCompletedTaskEntries}
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      substring:
+        simple: tw.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: f65a8985-838f-49dd-8f7b-b3b23bd07ba7
+    type: condition
+    task:
+      id: f65a8985-838f-49dd-8f7b-b3b23bd07ba7
+      version: -1
+      name: Verify Outputs (Domain command)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+          right:
+            value:
+              simple: xeemoquo.top
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 77f6e3fd-be49-41ae-892d-00b5e6d8e001
+    type: regular
+    task:
+      id: 77f6e3fd-be49-41ae-892d-00b5e6d8e001
+      version: -1
+      name: Multiple Files
+      description: Checks the file reputation.
+      script: CrowdStrike Falcon Intel v2|||file
+      type: regular
+      iscommand: true
+      brand: CrowdStrike Falcon Intel v2
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      file:
+        simple: 369c8fc6532ba547d7ef5985bb5e880a,c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 6e876713-484c-4801-8a12-7822cc7b47a3
+    type: regular
+    task:
+      id: 6e876713-484c-4801-8a12-7822cc7b47a3
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      key:
+        simple: File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: afcc9d78-40fd-4366-8c6e-37797bde68f0
+    type: condition
+    task:
+      id: afcc9d78-40fd-4366-8c6e-37797bde68f0
+      version: -1
+      name: Verify Outputs (File command)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+          right:
+            value:
+              simple: 369c8fc6532ba547d7ef5985bb5e880a
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: c87172df108b5a15e693285c8b58f01c271e1e768e7e41b9da2f8b22cd784638
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4760,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Test playbook for Crowdstrike Falcon Intel v2

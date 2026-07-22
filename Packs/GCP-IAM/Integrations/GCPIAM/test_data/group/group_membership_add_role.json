@@ -1,0 +1,10 @@
+{
+  "membership": {
+    "name": "groups/group-3-name/memberships/membership-1",
+    "roles": [
+      {
+        "name": "OWNER"
+      }
+    ]
+  }
+}

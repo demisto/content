@@ -1,0 +1,12 @@
+[file:incidentfield-Orca_Alert_ID.json]
+ignore=IF100
+
+[file:Orca_image.png]
+ignore=IM111
+
+[file:classifier-OrcaAlert.json]
+ignore=BA101
+
+[file:OrcaModelingRules_1_3.yml]
+ignore=MR108
+

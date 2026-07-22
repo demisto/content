@@ -1,0 +1,41 @@
+{
+  "scan_time": 1594217477,
+  "url": "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247",
+  "whois": [
+    {
+      "createdAt": 1589320232,
+      "updatedAt": 1589320232,
+      "status": "ACTIVE",
+      "whoisID": 6666092209009726000,
+      "domain": "test.domain",
+      "domainMd5": "ede514d996ecdf82a0abf5356ff6a13c",
+      "domainUnicode": "test.domain",
+      "tld": "ipv4",
+      "nameservers": [],
+      "whoisServer": "xxx.net",
+      "registrarName": "xxx",
+      "registrarUpdatedAt": 1522374688,
+      "admin": {},
+      "technical": {},
+      "abuse": {},
+      "auditCreatedAt": 1589320232,
+      "auditUpdatedAt": 1589320232,
+      "registrarParseCode": 10528,
+      "noRecord": false,
+      "compositeParseCode": 10528,
+      "contactEmails": [
+        "xxxx"
+      ],
+      "expired": false,
+      "domainAvailable": false,
+      "contacts": [],
+      "contactNames": [
+        "xxxx"
+      ],
+      "contactOrganizations": [],
+      "contactCountries": [],
+      "id": 6666092209009726000,
+      "task_id": "41ddbb6c624943478cb8da0d768bab5e"
+    }
+  ]
+}

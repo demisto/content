@@ -1,0 +1,3 @@
+!cve CVE-2023-3421
+!opencve-get-product-cves product_name="chrome" vendor_name="google"
+!opencve-get-vendor-cves vendor_name="google"

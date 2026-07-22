@@ -1,0 +1,25 @@
+{
+    "name": "TrendAI™ Cloud App Security",
+    "description": "Use TrendAI™ Cloud App Security to: Log retrieval - Threat investigation: - Threat mitigation - Threat remediation - Intelligent investigation.",
+    "support": "xsoar",
+    "currentVersion": "1.1.16",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-07-30T09:36:20Z",
+    "categories": [
+        "Cloud Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,23 @@
+{
+ "id": "Google Cloud SCC Finding",
+ "version": -1,
+ "vcShouldIgnore": false,
+ "locked": false,
+ "name": "Google Cloud SCC Finding",
+ "prevName": "Google Cloud SCC Finding",
+ "color": "#81D4FA",
+ "hours": 0,
+ "days": 0,
+ "weeks": 0,
+ "hoursR": 0,
+ "daysR": 0,
+ "weeksR": 0,
+ "system": false,
+ "readonly": false,
+ "default": false,
+ "autorun": false,
+ "disabled": false,
+ "reputationCalc": 0,
+ "layout": "Google Cloud SCC Finding",
+ "fromVersion": "6.0.0"
+}

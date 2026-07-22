@@ -1,0 +1,8 @@
+[file:playbook-Get_File_Sample_From_Path_-_D2.yml]
+ignore=BA101
+
+[file:pack_metadata.json]
+ignore=PA125
+
+[file:README.md]
+ignore=RM104

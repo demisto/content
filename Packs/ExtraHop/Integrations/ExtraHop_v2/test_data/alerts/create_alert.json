@@ -1,0 +1,21 @@
+{
+  "apply_all": true,
+  "author": "string",
+  "categories": [
+    "string"
+  ],
+  "cc": [
+    "string"
+  ],
+  "description": "string",
+  "disabled": false,
+  "name": "string1",
+  "notify_snmp": true,
+  "refire_interval": "300",
+  "severity": "3",
+  "type": "detection",
+  "object_type": "device",
+"protocols": [
+"udp"
+]
+}

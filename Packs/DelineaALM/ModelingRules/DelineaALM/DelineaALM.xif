@@ -1,0 +1,21 @@
+[MODEL: dataset="thycotic_alm_raw"]
+alter eventType =  arrayindex(regextract(cefName, "^([\S^-]+)\s-"), 0)
+| alter xdm.event.type = eventType,
+        Operation = arrayindex(regextract(cefName, "^[\S^-]*\s-\s\S*\s-\s([\S^-]+)\s"), 0),
+        targetResource = arrayindex(regextract(cefName, "-\s([\S]+)$"),0)
+| alter targetResource = arrayindex(regextract(targetResource, "([^\\]+)$"),0),
+        targetType = if(eventType ~= "[Uu][Ss][Ee][Rr]", "User", eventType ~= "[Aa][Cc][Cc][Oo][Uu][Nn][Tt]", "Machine", eventType ~= "[Dd][Oo][Mm][Aa][Ii][Nn]", "Domain", null)
+| filter eventType not in ("Integration", "ExternalOrganizationalUnit", "ProvisionState", "ProvisionApproval") and eventType != null
+| alter xdm.target.resource.id = arrayindex(regextract(cefName, "^[\S^-]*\s-\s(\S+)\s"), 0),
+        xdm.event.operation = if(Operation = "Updated" and targetResource = "User", "OPERATION_TYPE_USER_UPDATE",
+                                 Operation = "Deleted" and targetResource = "User", "OPERATION_TYPE_USER_DELETE",
+                                 Operation = "Created" and targetResource = "User", "OPERATION_TYPE_USER_CREATE",
+                                 Operation = "Updated" and targetResource = "Machine", "OPERATION_TYPE_MACHINE_UPDATE",
+                                 Operation = "Deleted" and targetResource = "Machine", "OPERATION_TYPE_MACHINE_DELETE",
+                                 Operation = "Created" and targetResource = "Machine", "OPERATION_TYPE_MACHINE_CREATE",
+                                 Operation = "Updated" and targetResource = "Domain", "OPERATION_TYPE_DOMAIN_UPDATE",
+                                 Operation = "Deleted" and targetResource = "Domain", "OPERATION_TYPE_DOMAIN_DELETE",
+                                 Operation = "Created" and targetResource = "Domain", "OPERATION_TYPE_DOMAIN_CREATED",
+                                 to_string(Operation)),
+        xdm.target.resource.name = targetResource,
+        xdm.target.resource.type = targetType;

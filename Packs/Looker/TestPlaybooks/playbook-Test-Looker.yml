@@ -1,0 +1,263 @@
+id: Test-Looker
+version: -1
+name: Test-Looker
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 83113fa9-ed9b-4cd9-86ee-b5beb83b53a3
+    type: start
+    task:
+      id: 83113fa9-ed9b-4cd9-86ee-b5beb83b53a3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: e7bc9118-322e-424a-84c2-ffd3876b3c20
+    type: regular
+    task:
+      id: e7bc9118-322e-424a-84c2-ffd3876b3c20
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: e83e5df5-04bf-42be-8553-744bb6a48cd5
+    type: regular
+    task:
+      id: e83e5df5-04bf-42be-8553-744bb6a48cd5
+      version: -1
+      name: looker-search-looks
+      description: Find saved looks matching search criteria
+      script: Looker|||looker-search-looks
+      type: regular
+      iscommand: true
+      brand: Looker
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit: {}
+      name: {}
+      space_id: {}
+      user_id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 7366f700-e412-4300-8d18-7202aeb326ae
+    type: regular
+    task:
+      id: 7366f700-e412-4300-8d18-7202aeb326ae
+      version: -1
+      name: looker-run-look
+      description: Run a given look's query and return the results in the requested format.
+      script: Looker|||looker-run-look
+      type: regular
+      iscommand: true
+      brand: Looker
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fields: {}
+      id:
+        simple: "3"
+      limit:
+        simple: "0"
+      name: {}
+      result_format:
+        simple: json
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 37586f7b-f5fa-4f1d-8903-039ecb7615a4
+    type: condition
+    task:
+      id: 37586f7b-f5fa-4f1d-8903-039ecb7615a4
+      version: -1
+      name: Verify Context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: LookerResults.Results.[49]
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LookerResults.LookID
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isExists
+          left:
+            value:
+              simple: Looker.Look.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LookerResults.InlineQuery
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 77573e29-a8b4-4427-806d-b83d4781ddf6
+    type: title
+    task:
+      id: 77573e29-a8b4-4427-806d-b83d4781ddf6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 678b6c89-2b6c-42fb-82b8-587adffcc0f7
+    type: regular
+    task:
+      id: 678b6c89-2b6c-42fb-82b8-587adffcc0f7
+      version: -1
+      name: looker-run-inline-query
+      description: Run a query by defining it in the command arguments, rather than a saved query in looker.
+      script: '|||looker-run-inline-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      fields:
+        simple: order_items.status, order_items.order_id, products.brand
+      filters:
+        simple: products.brand=Ray-Ban, Calvin Klein
+      limit:
+        simple: "5"
+      model:
+        simple: thelook
+      pivots: {}
+      result_format:
+        simple: json
+      sorts: {}
+      view:
+        simple: order_items
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

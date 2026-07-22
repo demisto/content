@@ -1,0 +1,249 @@
+id: IsInternalHostName Test
+version: -1
+name: IsInternalHostName Test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e7fadd4f-1823-4199-8782-cd243055bc80
+    type: start
+    task:
+      id: e7fadd4f-1823-4199-8782-cd243055bc80
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 9b051556-250f-4683-8a67-e7908ae798dd
+    type: regular
+    task:
+      id: 9b051556-250f-4683-8a67-e7908ae798dd
+      version: -1
+      name: Check if hosts are intenal
+      description: Returns yes if the host name provided matches the organizations internal nameing convenstion.
+      scriptName: IsInternalHostName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+      - "5"
+    scriptarguments:
+      domainName:
+        simple: ${inputs.domain}
+      hostName:
+        simple: ${inputs.hosts}
+      internalRegex:
+        simple: ${inputs.regex}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 4e4f0f0c-de5c-4c38-8bf9-9de36dfc3d7d
+    type: condition
+    task:
+      id: 4e4f0f0c-de5c-4c38-8bf9-9de36dfc3d7d
+      version: -1
+      name: Check if hosts are valid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+          right:
+            value:
+              simple: bla1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.IsInternal
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 9ae00a03-5553-4cdd-8727-63633ae61d48
+    type: title
+    task:
+      id: 9ae00a03-5553-4cdd-8727-63633ae61d48
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 2b29e4e9-2511-43c8-8d1a-cb231f608eea
+    type: condition
+    task:
+      id: 2b29e4e9-2511-43c8-8d1a-cb231f608eea
+      version: -1
+      name: Check if hosts are valid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+          right:
+            value:
+              simple: bla1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.IsInternal
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 860,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 94621b68-cbb2-44f0-8ff5-10868f20e47d
+    type: condition
+    task:
+      id: 94621b68-cbb2-44f0-8ff5-10868f20e47d
+      version: -1
+      name: Check if hosts are valid
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+          right:
+            value:
+              simple: bla
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.IsInternal
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 605,
+        "width": 1200,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: hosts
+  value:
+    simple: bla2x.test.com,bla1,bla,host.com
+  required: false
+  description: ""
+- key: regex
+  value:
+    simple: \w\w\w\d$
+  required: false
+  description: ""
+- key: domain
+  value:
+    simple: test.com
+  required: false
+  description: ""
+outputs: []

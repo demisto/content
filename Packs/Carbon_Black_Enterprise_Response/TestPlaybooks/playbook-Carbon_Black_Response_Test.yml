@@ -1,0 +1,873 @@
+id: Carbon Black Response Test
+version: -1
+name: Carbon Black Response Test
+description: Deprecated. No available replacement because "carbonblack v2" is deprected. Use "VMware Carbon Black EDR v2" integration instead.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: db88a4f9-195c-4ba2-8bc2-b38549468ea7
+    type: start
+    task:
+      id: db88a4f9-195c-4ba2-8bc2-b38549468ea7
+      version: -1
+      name: ''
+      description: ''
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '39'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '12':
+    id: '12'
+    taskid: e916033b-ccba-4628-8552-ba0a498f0d2b
+    type: title
+    task:
+      id: e916033b-ccba-4628-8552-ba0a498f0d2b
+      version: -1
+      name: Isolate Endpoint
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '18'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2265\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '13':
+    id: '13'
+    taskid: 2796d063-3dfa-4619-85c0-e18b9ac51dfe
+    type: title
+    task:
+      id: 2796d063-3dfa-4619-85c0-e18b9ac51dfe
+      version: -1
+      name: Search for a binary and fetch it
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '22'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3460\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '14':
+    id: '14'
+    taskid: 3ac8640f-44c6-4d1b-890a-904ab9fdfff7
+    type: title
+    task:
+      id: 3ac8640f-44c6-4d1b-890a-904ab9fdfff7
+      version: -1
+      name: Add hash to block list
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4130\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '15':
+    id: '15'
+    taskid: ae635a2f-c5b1-4301-8d69-c555bb09fbed
+    type: regular
+    task:
+      id: ae635a2f-c5b1-4301-8d69-c555bb09fbed
+      version: -1
+      name: List available sensors
+      description: Display information about the given sensor
+      script: '|||cb-sensor-info'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '50'
+    scriptarguments:
+      groupid: {}
+      hostname:
+        simple: WIN-SOSSKVTTQAB
+      ip: {}
+      sensor: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2585\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '16':
+    id: '16'
+    taskid: 5df6479a-7f4a-47e3-8562-d64312157d3f
+    type: regular
+    task:
+      id: 5df6479a-7f4a-47e3-8562-d64312157d3f
+      version: -1
+      name: Isolate (quarantine) sensor (endpoint)
+      description: Isolate the endpoint from the network
+      script: '|||cb-quarantine-device'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '48'
+    scriptarguments:
+      sensor:
+        complex:
+          root: CBSensors
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CBSensors.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Online
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: CbSensorID
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2935\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '18':
+    id: '18'
+    taskid: 2886c529-902d-4f94-80ea-40aa0b17eb4d
+    type: regular
+    task:
+      id: 2886c529-902d-4f94-80ea-40aa0b17eb4d
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2410\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '19':
+    id: '19'
+    taskid: 6e914122-2d08-4c7d-85a5-4b848edfe9ec
+    type: regular
+    task:
+      id: 6e914122-2d08-4c7d-85a5-4b848edfe9ec
+      version: -1
+      name: Get binaries by query
+      description: Query for binaries based on given parameters
+      script: '|||cb-binary'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '32'
+    scriptarguments:
+      company-name: {}
+      digital-signature: {}
+      facet: {}
+      filepath: {}
+      group: {}
+      hostname: {}
+      product-name: {}
+      publisher: {}
+      query: {}
+      rows: {}
+      sort: {}
+      start: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3780\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '20':
+    id: '20'
+    taskid: 2570dbba-6a4c-48ec-8055-4a17a10eedd2
+    type: regular
+    task:
+      id: 2570dbba-6a4c-48ec-8055-4a17a10eedd2
+      version: -1
+      name: cb-block-hash
+      description: Blocking hash
+      script: '|||cb-block-hash'
+      type: regular
+      iscommand: true
+      brand: ''
+    scriptarguments:
+      banCount: {}
+      lastBanHost: {}
+      lastBanTime: {}
+      md5hash:
+        simple: ${CbResponse.BlockedHashes.[0].MD5}
+      text:
+        simple: Reason for blocking hash
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4800\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '21':
+    id: '21'
+    taskid: cf6980d1-720b-4403-821c-eff0fff803d1
+    type: regular
+    task:
+      id: cf6980d1-720b-4403-821c-eff0fff803d1
+      version: -1
+      name: cb-unblock-hash
+      description: Unblocking hash
+      script: '|||cb-unblock-hash'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    scriptarguments:
+      md5hash:
+        simple: ${CbResponse.BlockedHashes.[0].MD5}
+      text:
+        simple: Unblocked for testing
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4625\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '22':
+    id: '22'
+    taskid: 2a9fc1eb-4afb-4857-8502-bbf62ea5d3ba
+    type: regular
+    task:
+      id: 2a9fc1eb-4afb-4857-8502-bbf62ea5d3ba
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3605\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '23':
+    id: '23'
+    taskid: 3b93dd6a-73e4-4a48-8b20-5ca176986227
+    type: regular
+    task:
+      id: 3b93dd6a-73e4-4a48-8b20-5ca176986227
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4275\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '26':
+    id: '26'
+    taskid: c968aecf-b653-4f86-8290-794cd7e4332c
+    type: regular
+    task:
+      id: c968aecf-b653-4f86-8290-794cd7e4332c
+      version: -1
+      name: Get hash block list and choose an item to unblock and block
+      description: Returns a list of hashes on block list, with each list entry describing one hash on block list.
+      script: '|||cb-get-hash-blacklist'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '21'
+    scriptarguments:
+      filter:
+        simple: enabled == true
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 4450\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '27':
+    id: '27'
+    taskid: c4fa8eae-fe5b-4fc0-8180-da7f31715044
+    type: title
+    task:
+      id: c4fa8eae-fe5b-4fc0-8180-da7f31715044
+      version: -1
+      name: Update alert's status
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1405\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '28':
+    id: '28'
+    taskid: d6169c71-e56f-4d23-894d-056b20f13fca
+    type: regular
+    task:
+      id: d6169c71-e56f-4d23-894d-056b20f13fca
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1565\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '29':
+    id: '29'
+    taskid: 2719311f-1c22-4442-80e3-cfd56aa644c4
+    type: regular
+    task:
+      id: 2719311f-1c22-4442-80e3-cfd56aa644c4
+      version: -1
+      name: List alerts
+      description: Retrieve alerts from Carbon Black Response.
+      script: '|||cb-alert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      facet: {}
+      feedname: {}
+      hostname: {}
+      query: {}
+      report: {}
+      rows: {}
+      sort: {}
+      start: {}
+      status: {}
+      username: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1740\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '30':
+    id: '30'
+    taskid: 58fe65c2-8737-4805-8a50-dd757092ffa6
+    type: regular
+    task:
+      id: 58fe65c2-8737-4805-8a50-dd757092ffa6
+      version: -1
+      name: Update alert status to Unresolved
+      description: Alert update and resolution
+      script: '|||cb-alert-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      setIgnored: {}
+      status:
+        simple: Unresolved
+      uniqueId:
+        simple: ${CbResponse.Alerts.[0].CbAlertID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 1915\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '31':
+    id: '31'
+    taskid: 8417ad3f-1026-4d37-8abb-7da8c8bb1053
+    type: regular
+    task:
+      id: 8417ad3f-1026-4d37-8abb-7da8c8bb1053
+      version: -1
+      name: Update alert status to False Positive
+      description: Alert update and resolution
+      script: '|||cb-alert-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      setIgnored: {}
+      status:
+        simple: False Positive
+      uniqueId:
+        simple: ${CbResponse.Alerts.[0].CbAlertID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2090\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '32':
+    id: '32'
+    taskid: 6271e4e2-2fc9-4957-8496-e57687a0d2cf
+    type: regular
+    task:
+      id: 6271e4e2-2fc9-4957-8496-e57687a0d2cf
+      version: -1
+      name: Fetch binary
+      description: Retrieve a binary from CarbonBlack based on hash. Returned file will be places in the war room.
+      script: '|||cb-binary-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '14'
+    scriptarguments:
+      decompress: {}
+      md5:
+        simple: ${File.[0].MD5}
+      summary:
+        simple: yes
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3955\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '33':
+    id: '33'
+    taskid: 762fcc11-5990-42c0-84ab-a7a3fb6ed9d5
+    type: regular
+    task:
+      id: 762fcc11-5990-42c0-84ab-a7a3fb6ed9d5
+      version: -1
+      name: Unquarantine sensor (endpoint)
+      description: Unquarantine the endpoint
+      script: '|||cb-unquarantine-device'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      sensor:
+        complex:
+          root: CBSensors
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CBSensors.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Online
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: CbSensorID
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 3285\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '34':
+    id: '34'
+    taskid: cd3efc1c-3a91-4876-84b8-1d910c0f38bc
+    type: title
+    task:
+      id: cd3efc1c-3a91-4876-84b8-1d910c0f38bc
+      version: -1
+      name: Get processes info
+      description: ''
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '35':
+    id: '35'
+    taskid: ffb6a17d-6518-438e-8326-726c9d2fe436
+    type: regular
+    task:
+      id: ffb6a17d-6518-438e-8326-726c9d2fe436
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '45'
+      - '27'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 1215\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '39':
+    id: '39'
+    taskid: 6d523ba7-2570-465b-84f6-29947436452a
+    type: regular
+    task:
+      id: 6d523ba7-2570-465b-84f6-29947436452a
+      version: -1
+      name: DeleteContext
+      description: ''
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '40'
+    scriptarguments:
+      all:
+        simple: yes
+      key: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '40':
+    id: '40'
+    taskid: ca3740f1-680e-4e50-839d-2aca8470f72d
+    type: regular
+    task:
+      id: ca3740f1-680e-4e50-839d-2aca8470f72d
+      version: -1
+      name: Create a new watchlist
+      description: Create a new watchlist in Carbon black Response.
+      script: '|||cb-watchlist-new'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '41'
+    scriptarguments:
+      name:
+        simple: TestWatchlist#123
+      search-query:
+        simple: bla-bla
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '41':
+    id: '41'
+    taskid: 725bd7dd-7e34-424f-89ac-6dbc736af168
+    type: regular
+    task:
+      id: 725bd7dd-7e34-424f-89ac-6dbc736af168
+      version: -1
+      name: Set (update) watchlist name
+      description: Modify a watchlist in Carbon black Response.
+      script: '|||cb-watchlist-set'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '46'
+    scriptarguments:
+      indexType: {}
+      name:
+        simple: TestWatchlist#123Changed
+      search-query: {}
+      watchlist-id:
+        simple: ${CbResponse.Watchlists.CbWatchlistID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '42':
+    id: '42'
+    taskid: 181963c2-7bb6-4492-8ce6-b6e77430d9b1
+    type: regular
+    task:
+      id: 181963c2-7bb6-4492-8ce6-b6e77430d9b1
+      version: -1
+      name: Delete the created watchlist
+      description: Delete a watchlist in Carbon black Response.
+      script: '|||cb-watchlist-del'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      watchlist-id:
+        simple: ${CbResponse.Watchlists.CbWatchlistID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '45':
+    id: '45'
+    taskid: 9187d120-1df6-4a49-8d73-a75d662ddf09
+    type: regular
+    task:
+      id: 9187d120-1df6-4a49-8d73-a75d662ddf09
+      version: -1
+      name: Get md5 processes
+      description: Query processes based on given parameters
+      script: '|||cb-get-processes'
+      type: regular
+      iscommand: true
+      brand: ''
+    scriptarguments:
+      facet: {}
+      group: {}
+      hostname: {}
+      md5:
+        simple: d5669294f78a7d48c318ef22d5685ba7
+      name: {}
+      parent-process-name: {}
+      process-path: {}
+      query: {}
+      rows: {}
+      sort: {}
+      start: {}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 1390\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '46':
+    id: '46'
+    taskid: fb45c44b-dedb-40cc-8392-398aaf2fa2a1
+    type: condition
+    task:
+      id: fb45c44b-dedb-40cc-8392-398aaf2fa2a1
+      version: -1
+      name: Check that watchlist name was changed
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '47'
+      yes:
+      - '42'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CbResponse
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: CbResponse.Watchlists.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: TestWatchlist#123Changed
+                accessor: Watchlists
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '47':
+    id: '47'
+    taskid: f9b84373-abf1-48df-87e0-804b54748e58
+    type: regular
+    task:
+      id: f9b84373-abf1-48df-87e0-804b54748e58
+      version: -1
+      name: Failed to update watchlist name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: 'Could not find expected value in watchlist, Expected: "TestWatchlist#123Changed" Found: "${CbResponse.Watchlists.Name}"'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '48':
+    id: '48'
+    taskid: 4020f0a8-f21d-4d74-8343-564e9227adef
+    type: condition
+    task:
+      id: 4020f0a8-f21d-4d74-8343-564e9227adef
+      version: -1
+      name: Check that sensor was blocked
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '49'
+      yes:
+      - '33'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Endpoint
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Endpoint.LastAction
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Blocked
+                accessor: LastAction
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 3110\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '49':
+    id: '49'
+    taskid: f6ff0456-228b-4cdc-87e9-f3db00c24abd
+    type: regular
+    task:
+      id: f6ff0456-228b-4cdc-87e9-f3db00c24abd
+      version: -1
+      name: Sensor was not blocked
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: Failed to block sensor.
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 480,\n    \"y\": 3285\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '50':
+    id: '50'
+    taskid: edf13052-0f48-46ae-8d52-00e7c5fba5ce
+    type: regular
+    task:
+      id: edf13052-0f48-46ae-8d52-00e7c5fba5ce
+      version: -1
+      name: Workaround Set CBSensors context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '16'
+    scriptarguments:
+      append: {}
+      key:
+        simple: CBSensors
+      value:
+        simple: ${CbResponse.Sensors}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 2760\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 4845,\n      \"width\": 1240,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"
+inputs: []
+outputs: []
+fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)

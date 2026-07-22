@@ -1,0 +1,37 @@
+{
+  "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
+    "Indicator": "http://123-fake-api.com",
+    "Type": "url",
+    "Vendor": "Flashpoint",
+    "Score": 3
+  }],
+  "URL(val.Data && val.Data == obj.Data)": [{
+    "Data": "http://123-fake-api.com",
+    "Malicious": {
+      "Vendor": "Flashpoint",
+      "Description": "Found in malicious indicators dataset"
+    }
+  }],
+  "Flashpoint.URL.Event(val.Fpid == obj.Fpid)": [
+    {
+      "Fpid": "hdjkfhdjkhfdjfhd",
+      "EventDetails": {
+        "RelatedEvent": [],
+        "Tags": [],
+        "attack_ids": [],
+        "fpid": "hdjkfhdjkhfdjfhd",
+        "href": "http://123-fake-api.com/api/v4/indicators/event/hdjkfhdjkhfdjfhd",
+        "info": "info Page",
+        "reports": [],
+        "timestamp": "1572883071"
+      },
+      "Category": "category1",
+      "Href": "http://123-fake-api.com/api/v4/indicators/attribute/hdjkfhdjkhfdjfhd",
+      "Timestamp": "1572882868",
+      "Type": "url",
+      "Uuid": "dfhkj3-1111-2222-3333-334edfadf33",
+      "Comment": "",
+      "Url": "http://123-fake-api.com"
+    }
+  ]
+}

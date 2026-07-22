@@ -1,0 +1,29 @@
+{
+ "id": "investigation-activity",
+ "version": -1,
+ "name": "Investigation Activity Timeline",
+ "dataType": "entries",
+ "category": "others",
+ "widgetType": "line",
+ "size": 5,
+ "query": "",
+ "isPredefined": true,
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "toDate": "0001-01-01T00:00:00Z",
+  "period": {
+   "byTo": "",
+   "byFrom": "days",
+   "toValue": null,
+   "fromValue": 7,
+   "field": ""
+  }
+ },
+ "params": {
+  "groupBy": [
+   "created"
+  ]
+ },
+ "description": "",
+ "fromVersion": "5.0.0"
+}

@@ -1,0 +1,74 @@
+<response status="success">
+	<result>
+		<job>
+			<tenq>2022/08/18 05:45:03</tenq>
+			<tdeq>05:45:03</tdeq>
+			<id>123</id>
+			<user>api</user>
+			<type>CommitAll</type>
+			<status>FIN</status>
+			<queued>NO</queued>
+			<stoppable>no</stoppable>
+			<result>OK</result>
+			<tfin>05:45:03</tfin>
+			<description></description>
+			<positionInQ>0</positionInQ>
+			<progress>100</progress>
+			<push_type>shared-policy</push_type>
+			<dgname>Lab-Devices</dgname>
+			<warnings></warnings>
+			<devices>
+				<entry>
+					<serial-no>1234</serial-no>
+					<devicename>PA-VM</devicename>
+					<multi-vsys>no</multi-vsys>
+					<vsys></vsys>
+					<status>commit succeeded with warnings</status>
+					<result>OK</result>
+					<tstart>05:45:03</tstart>
+					<tfin>05:45:49</tfin>
+					<details>
+						<msg cmd="push-data" dname="007051000050926" dgname="Lab-Devices" jobid="123" result="success">\n
+							<errors>\n    
+								<line>Configuration committed successfully</line>\n  
+							</errors>\n  
+							<warnings>\n    
+								<line>Interface loopback.645 has no zone configuration.</line>\n    
+								<line>External Dynamic List test_pb_domain_edl_DONT_DEL is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>External Dynamic List Cortex XSOAR Remediation - IP EDL-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>External Dynamic List Cortex XSOAR Remediation - URL EDL-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>External Dynamic List Cortex XSOAR Remediation - URL EDL tamarcat3-url-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>External Dynamic List Cortex XSOAR Remediation - IP EDL tamarcat3-ip-edl-object is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n  
+							</warnings>\n
+						</msg>
+					</details>
+				</entry>
+				<entry>
+					<serial-no>1234</serial-no>
+					<devicename>test</devicename>
+					<multi-vsys>no</multi-vsys>
+					<vsys></vsys>
+					<status>commit succeeded with warnings</status>
+					<result>OK</result>
+					<tstart>05:45:03</tstart>
+					<tfin>05:45:57</tfin>
+					<details>
+						<msg cmd="push-data" dname="007051000086000" dgname="Lab-Devices" jobid="123" result="success">\n
+							<errors>\n    
+								<line>Configuration committed successfully</line>\n  
+							</errors>\n  
+							<warnings>\n    
+								<line>External Dynamic List minemeld is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>External Dynamic List edl-webinar-malicious-urls-OLD is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>External Dynamic List edl-webinar-malicious-ips is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>External Dynamic List edl-webinar-malicious-domains is configured with no certificate profile. Please select a certificate profile for performing server certificate validation.</line>\n    
+								<line>Warning: No valid Antivirus content package exists</line>\n    
+								<line>(Module: device)</line>\n  
+							</warnings>\n
+						</msg>
+					</details>
+				</entry>
+			</devices>
+		</job>
+	</result>
+</response>

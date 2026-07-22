@@ -1,0 +1,19 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.lock"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "status": "success"
+    }
+}

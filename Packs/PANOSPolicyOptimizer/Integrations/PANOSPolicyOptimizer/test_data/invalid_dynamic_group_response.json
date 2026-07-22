@@ -1,0 +1,19 @@
+{
+   "type":"rpc",
+   "tid":"51",
+   "action":"PanDirect",
+   "method":"execute",
+   "predefinedCacheUpdate":"true",
+   "result":{
+      "@status":"success",
+      "result":{
+         "dyn-addr-grp":{
+            "entry":[
+               {
+                  "member-list":"\n\t"
+               }
+            ]
+         }
+      }
+   }
+}

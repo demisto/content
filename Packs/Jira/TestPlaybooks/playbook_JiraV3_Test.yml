@@ -1,0 +1,2377 @@
+id: JiraV3 Test
+version: 63
+vcShouldKeepItemLegacyProdMachine: false
+name: JiraV3 Test
+fromversion: 6.8.0
+description: This test playbook is used to test both Cloud, and on-prem instances
+  (currently we don't have a functioning on-prem instance)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1b4b2091-d3cf-4e17-8eed-96ae1037d85f
+    type: start
+    task:
+      id: 1b4b2091-d3cf-4e17-8eed-96ae1037d85f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 547d01cc-f01e-47f3-8db5-4ce94ed5a7f0
+    type: regular
+    task:
+      id: 547d01cc-f01e-47f3-8db5-4ce94ed5a7f0
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5ef2516a-2a09-416c-8717-4c516d7cec53
+    type: regular
+    task:
+      id: 5ef2516a-2a09-416c-8717-4c516d7cec53
+      version: -1
+      name: Create First Issue
+      description: Creates a new issue in Jira.
+      script: Jira V3|||jira-create-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assignee_id:
+        simple: 557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76
+      components:
+        simple: dummy-comp,New-Component
+      description:
+        simple: Test description for Test playbook
+      issue_type_name:
+        simple: Task
+      project_name:
+        simple: Company Snoozing App
+      summary:
+        simple: Test Playbook V3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c6aaac96-7d78-43c4-80bd-460155984ace
+    type: regular
+    task:
+      id: c6aaac96-7d78-43c4-80bd-460155984ace
+      version: -1
+      name: Jira Get Issue
+      description: Fetches an issue from Jira.
+      script: Jira V3|||jira-get-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      expand_links:
+        simple: "true"
+      fields:
+        simple: Time Tracking, issuelinks
+      issue_id:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 868717b6-6bca-4cd9-8573-9a872e9e1fa9
+    type: condition
+    task:
+      id: 868717b6-6bca-4cd9-8573-9a872e9e1fa9
+      version: -1
+      name: Verify Context Fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Ticket.Status
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: Ticket.Creator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Ticket.Summary
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.timetracking.issueFieldDisplayName}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.timetracking.rawData}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.issuelinks.rawData}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.issuelinks.issueFieldDisplayName}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Ticket.Assignee
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6de07fb7-b0ff-44e2-806c-c78dcfebf590
+    type: regular
+    task:
+      id: 6de07fb7-b0ff-44e2-806c-c78dcfebf590
+      version: -1
+      name: Delete Second Issue
+      description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted
+        if there are any.
+      script: Jira V3|||jira-delete-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      issue_key:
+        simple: ${Ticket.[1].Key}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 93a42a13-d827-48f6-8475-46f1c9522f00
+    type: regular
+    task:
+      id: 93a42a13-d827-48f6-8475-46f1c9522f00
+      version: -1
+      name: Add Comment
+      description: Adds a new comment to an existing Jira issue.
+      script: Jira V3|||jira-issue-add-comment
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      comment:
+        simple: Test Playbook Comment
+      issue_id:
+        simple: ${Ticket.Id}
+      visibility:
+        simple: Administrators
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1fee3ff7-5341-42c0-83bd-bad5123c102f
+    type: regular
+    task:
+      id: 1fee3ff7-5341-42c0-83bd-bad5123c102f
+      version: -1
+      name: Jira Add Web Link
+      description: Creates (or updates) an issue link.
+      script: Jira V3|||jira-issue-add-link
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      issue_id:
+        simple: ${Ticket.Id}
+      title:
+        simple: Demisto
+      url:
+        simple: http://www.demisto.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: dab0bc79-d9bf-40c7-8ae7-de8376065484
+    type: regular
+    task:
+      id: dab0bc79-d9bf-40c7-8ae7-de8376065484
+      version: -1
+      name: File Create For Upload
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      data:
+        simple: Test Playbook
+      filename:
+        simple: test_playbook.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 45f87b07-faa6-4ea7-8f20-98f5095292a5
+    type: regular
+    task:
+      id: 45f87b07-faa6-4ea7-8f20-98f5095292a5
+      version: -1
+      name: Jira Upload File
+      description: Uploads a file attachment to an issue.
+      script: Jira V3|||jira-issue-upload-file
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      attachment_name:
+        simple: new_attachment_name.txt
+      issue_id:
+        simple: ${Ticket.Id}
+      upload:
+        simple: ${File.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 4c5f8695-822e-4183-832a-31c5701319b0
+    type: regular
+    task:
+      id: 4c5f8695-822e-4183-832a-31c5701319b0
+      version: -1
+      name: Jira Issue Query With Custom Fields
+      description: Queries Jira issues.
+      script: Jira V3|||jira-issue-query
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      fields:
+        simple: Time Tracking, issuelinks
+      query:
+        simple: id IN (${Ticket.[0].Id}, ${Ticket.[1].Id})
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a985f223-7811-44a2-817c-09fd0e10c9ae
+    type: condition
+    task:
+      id: a985f223-7811-44a2-817c-09fd0e10c9ae
+      version: -1
+      name: Verify Context Fields With Custom Fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.[0].timetracking.issueFieldDisplayName}
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.[0].timetracking.rawData}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.[1].issuelinks.rawData}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${Ticket.[1].issuelinks.issueFieldDisplayName}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 8375c6dd-0241-4b1e-878b-79834c6ecf6e
+    type: regular
+    task:
+      id: 8375c6dd-0241-4b1e-878b-79834c6ecf6e
+      version: -1
+      name: Jira Edit Issue With Rewrite Action
+      description: Modifies an issue in Jira.
+      script: Jira V3|||jira-edit-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      components:
+        simple: Integration
+      issue_id:
+        simple: ${Ticket.Id}
+      summary:
+        simple: Edited Test Playbook Summary
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a5a94975-291c-4b2a-8aef-7d87aaeb8d2e
+    type: regular
+    task:
+      id: a5a94975-291c-4b2a-8aef-7d87aaeb8d2e
+      version: -1
+      name: Create Second Issue
+      description: Creates a new issue in Jira.
+      script: Jira V3|||jira-create-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      description:
+        simple: Dummy Bug
+      due_date:
+        simple: "2023-04-04"
+      environment:
+        simple: Windows Vista
+      issue_type_name:
+        simple: Integration
+      labels:
+        simple: dummy-bug,label1,label2
+      priority:
+        simple: Highest
+      project_key:
+        simple: COMPANYSA
+      summary:
+        simple: Second Test Playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: c018eac6-571c-4e01-8e6d-eb473274c7d3
+    type: regular
+    task:
+      id: c018eac6-571c-4e01-8e6d-eb473274c7d3
+      version: -1
+      name: Jira Edit Issue With Append Action
+      description: Modifies an issue in Jira.
+      script: Jira V3|||jira-edit-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      action:
+        simple: append
+      components:
+        simple: comp1,comp2
+      issue_id:
+        simple: ${Ticket.Id}
+      labels:
+        simple: label1,label2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 1b97c18f-d044-41b4-85c1-bb258722d796
+    type: regular
+    task:
+      id: 1b97c18f-d044-41b4-85c1-bb258722d796
+      version: -1
+      name: Get Comments
+      description: Returns the comments added to a ticket.
+      script: Jira V3|||jira-get-comments
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      issue_id:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: f5d73fec-136a-49d5-8d92-ba1bd5d76f2f
+    type: condition
+    task:
+      id: f5d73fec-136a-49d5-8d92-ba1bd5d76f2f
+      version: -1
+      name: Verify Comment Content
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Ticket.Comment.Comment
+            iscontext: true
+          right:
+            value:
+              simple: Test Playbook Comment
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 8de582eb-8ce1-47c2-84b8-873eeafe4d72
+    type: regular
+    task:
+      id: 8de582eb-8ce1-47c2-84b8-873eeafe4d72
+      version: -1
+      name: Get Issue With Attachments
+      description: Fetches an issue from Jira.
+      script: Jira V3|||jira-get-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      get_attachments:
+        simple: "true"
+      issue_key:
+        simple: ${Ticket.Key}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 92c8b576-7054-4ebb-8bc3-6584c2e0087d
+    type: condition
+    task:
+      id: 92c8b576-7054-4ebb-8bc3-6584c2e0087d
+      version: -1
+      name: Verify Attachment Name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Ticket.Attachments.filename
+            iscontext: true
+          right:
+            value:
+              simple: new_attachment_name.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: new_attachment_name.txt
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 5790d96a-ed7c-4165-8066-3686103bf1b1
+    type: regular
+    task:
+      id: 5790d96a-ed7c-4165-8066-3686103bf1b1
+      version: -1
+      name: Delete First Issue
+      description: Deletes an issue in Jira. Issue's sub-tasks will also be deleted
+        if there are any.
+      script: Jira V3|||jira-delete-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      issue_id:
+        simple: ${Ticket.[0].Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 6405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 5fb0effe-e06a-4bd9-8d31-b569ba0e2412
+    type: regular
+    task:
+      id: 5fb0effe-e06a-4bd9-8d31-b569ba0e2412
+      version: -1
+      name: Get Account ID
+      description: Gets the account ID for a given user attribute.
+      script: '|||jira-get-id-by-attribute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      attribute:
+        simple: Tomer
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 035e2570-e252-4f68-8faa-5967f1b7387a
+    type: condition
+    task:
+      id: 035e2570-e252-4f68-8faa-5967f1b7387a
+      version: -1
+      name: Verify Account ID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Jira.User.AccountId
+            iscontext: true
+          right:
+            value:
+              simple: 557058:fb80ffc0-b374-4260-99a0-ea0c140a4e76
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: e48a71e4-b919-42e2-8386-d9177396b8fd
+    type: regular
+    task:
+      id: e48a71e4-b919-42e2-8386-d9177396b8fd
+      version: -1
+      name: Get Transitions
+      description: Lists all possible transitions for a given ticket.
+      script: Jira V3|||jira-list-transitions
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      issue_id:
+        simple: ${Ticket.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 81c7f511-54bc-465d-8302-8cd8c556d139
+    type: condition
+    task:
+      id: 81c7f511-54bc-465d-8302-8cd8c556d139
+      version: -1
+      name: Verify Transitions
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Ticket.Transitions.transitions
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 5c87608f-6ad1-4b1e-8a0e-2852a78159b8
+    type: title
+    task:
+      id: 5c87608f-6ad1-4b1e-8a0e-2852a78159b8
+      version: -1
+      name: Second Part of Test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8724bbcc-614e-4704-8deb-505d64ea292b
+    type: title
+    task:
+      id: 8724bbcc-614e-4704-8deb-505d64ea292b
+      version: -1
+      name: First Part of Test
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 2825adca-a8d0-4a2c-8e68-e0c5683e8432
+    type: regular
+    task:
+      id: 2825adca-a8d0-4a2c-8e68-e0c5683e8432
+      version: -1
+      name: Get Issue Attachment
+      description: Download attachments for a specific issue (Will download a file
+        to war room).
+      script: Jira V3|||jira-issue-get-attachment
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      attachment_id:
+        simple: ${Ticket.Attachments.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: e6b51540-a068-419e-8271-80d7abc5d91f
+    type: condition
+    task:
+      id: e6b51540-a068-419e-8271-80d7abc5d91f
+      version: -1
+      name: Verify Attachment Name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: new_attachment_name.txt
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 27d3f5fd-0b99-4bac-8cbe-5045945dff4c
+    type: regular
+    task:
+      id: 27d3f5fd-0b99-4bac-8cbe-5045945dff4c
+      version: -1
+      name: Delete Comment
+      description: Delete a comment that's part of an issue.
+      script: Jira V3|||jira-issue-delete-comment
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      comment_id:
+        simple: ${Ticket.Comment.Id}
+      issue_key:
+        simple: ${Ticket.Key}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 933787d5-6b46-452d-8f30-16ebc2bdccb1
+    type: regular
+    task:
+      id: 933787d5-6b46-452d-8f30-16ebc2bdccb1
+      version: -1
+      name: Edit Comment
+      description: Edit a comment that's part of an issue.
+      script: Jira V3|||jira-issue-edit-comment
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      comment:
+        simple: Newly Edited Comment
+      comment_id:
+        simple: ${Ticket.Comment.Id}
+      issue_key:
+        simple: ${Ticket.Key}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 81ef74e7-49d5-420c-8ad7-ca35aa1c5f15
+    type: condition
+    task:
+      id: 81ef74e7-49d5-420c-8ad7-ca35aa1c5f15
+      version: -1
+      name: Verify Comment Content
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Ticket.Comment.Comment
+            iscontext: true
+          right:
+            value:
+              simple: Newly Edited Comment
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 7b5cef96-f2b0-4fac-8e95-96d555ce6124
+    type: regular
+    task:
+      id: 7b5cef96-f2b0-4fac-8e95-96d555ce6124
+      version: -1
+      name: Delete InfoFile Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      key:
+        simple: InfoFile
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 7ecbf3c4-8b2c-4266-8e59-50d79c9a6ba3
+    type: regular
+    task:
+      id: 7ecbf3c4-8b2c-4266-8e59-50d79c9a6ba3
+      version: -1
+      name: Get Issue Links
+      description: Returns a list of all issue link types.
+      script: Jira V3|||jira-issue-link-type-get
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: d34267a2-bd31-4492-87d6-a9d3ff5646cc
+    type: regular
+    task:
+      id: d34267a2-bd31-4492-87d6-a9d3ff5646cc
+      version: -1
+      name: Create Issue to Issue Link
+      description: Use this command to create a link between two issues.
+      script: Jira V3|||jira-issue-to-issue-link
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      inward_issue:
+        simple: ${Ticket.[1].Id}
+      link_type:
+        simple: ${Jira.IssueLinkType.[0].name}
+      outward_issue:
+        simple: ${Ticket.[0].Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 861ff22d-037f-41cf-8ee3-5a1a5c04b027
+    type: regular
+    task:
+      id: 861ff22d-037f-41cf-8ee3-5a1a5c04b027
+      version: -1
+      name: List Issue Fields
+      description: This command returns the issue fields, both system and custom fields.
+      script: Jira V3|||jira-issue-list-fields
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      page:
+        simple: "1"
+      page_size:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9921e1ac-480b-4b17-82f8-0467f5cc3234
+    type: condition
+    task:
+      id: 9921e1ac-480b-4b17-82f8-0467f5cc3234
+      version: -1
+      name: Verify Issue Fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: Jira.IssueField
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 1b880835-f89e-4bda-8648-d1f28edc3876
+    type: title
+    task:
+      id: 1b880835-f89e-4bda-8648-d1f28edc3876
+      version: -1
+      name: Create Second Issue
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 6f3c3c00-a68c-4bd9-87c2-66d4a6c9e2e1
+    type: title
+    task:
+      id: 6f3c3c00-a68c-4bd9-87c2-66d4a6c9e2e1
+      version: -1
+      name: Create First Issue
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: bc77d6d4-da50-41d1-8d57-57815da25f8e
+    type: regular
+    task:
+      id: bc77d6d4-da50-41d1-8d57-57815da25f8e
+      version: -1
+      name: Boards List
+      description: Get board data. If board_id is given, then only the board that
+        corresponds to the board_id is returned, otherwise, the the command will return
+        boards that match the project_key_id, type, or board_name arguments.
+      script: Jira V3|||jira-board-list
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      board_name:
+        simple: C
+      type:
+        simple: kanban
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 9b43144a-415b-480e-8c79-5e96395b7194
+    type: condition
+    task:
+      id: 9b43144a-415b-480e-8c79-5e96395b7194
+      version: -1
+      name: Verify Boards List
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Jira.Board
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7425
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: e35276e7-a119-4dc3-80d9-5fafcdc3a5b7
+    type: regular
+    task:
+      id: e35276e7-a119-4dc3-80d9-5fafcdc3a5b7
+      version: -1
+      name: Backlog Issues of Board
+      description: Get issues from backlog of specific board. For Jira OnPrem, the
+        board must be of type scrum.
+      script: Jira V3|||jira-board-backlog-list
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      board_id:
+        simple: "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: dae10e4e-4158-43e0-895a-ff48c3aeb485
+    type: regular
+    task:
+      id: dae10e4e-4158-43e0-895a-ff48c3aeb485
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 7307e8b9-fe5f-400f-8e21-cfb07f781e6b
+    type: condition
+    task:
+      id: 7307e8b9-fe5f-400f-8e21-cfb07f781e6b
+      version: -1
+      name: Verify Issues of Backlog
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Jira.BoardBacklog.Ticket
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7775
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: af713e85-f257-4702-8fb1-084f0813e202
+    type: regular
+    task:
+      id: af713e85-f257-4702-8fb1-084f0813e202
+      version: -1
+      name: Issues to Sprints
+      description: Moves issues to a sprint, for a given sprint ID. Issues can only
+        be moved to open or active sprints. At most 50 issues may be moved at once.
+      script: Jira V3|||jira-sprint-issue-move
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      issues:
+        simple: TSTPRD-3,TSTPRD-6
+      sprint_id:
+        simple: "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: fc07e746-c07b-4491-8372-96f6630fcb9a
+    type: regular
+    task:
+      id: fc07e746-c07b-4491-8372-96f6630fcb9a
+      version: -1
+      name: Move Issues to Board
+      description: Moves issues from backlog to board, the command does not work with
+        boards with sprints. At most 50 issues may be moved at once. This command
+        is only supported for Jira Cloud instance.
+      script: Jira V3|||jira-issue-to-board
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      board_id:
+        simple: "14"
+      issues:
+        simple: ${Ticket.[0].Id},${Ticket.[1].Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 3259e700-c292-4e23-8119-ac8bc32b3b1f
+    type: regular
+    task:
+      id: 3259e700-c292-4e23-8119-ac8bc32b3b1f
+      version: -1
+      name: Move Issues to Backlog
+      description: Moves issues to backlog. If the issues supplied are NOT part of
+        a board that supports sprints, then the board_id argument is required. At
+        most 50 issues may be moved at once.
+      script: Jira V3|||jira-issue-to-backlog
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "6"
+      - "22"
+    scriptarguments:
+      board_id:
+        simple: "14"
+      issues:
+        simple: ${Ticket.[0].Id},${Ticket.[1].Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 6230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: e2762e43-7199-479f-88d6-cb06c8b8f76d
+    type: regular
+    task:
+      id: e2762e43-7199-479f-88d6-cb06c8b8f76d
+      version: -1
+      name: Move Issues to Backlog
+      description: Moves issues to backlog. If the issues supplied are NOT part of
+        a board that supports sprints, then the board_id argument is required. At
+        most 50 issues may be moved at once.
+      script: Jira V3|||jira-issue-to-backlog
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      board_id:
+        simple: "12"
+      issues:
+        simple: TSTPRD-3,TSTPRD-6
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 26daf8a5-fc12-4a18-8dfe-2bcda0d42edc
+    type: title
+    task:
+      id: 26daf8a5-fc12-4a18-8dfe-2bcda0d42edc
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 10050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 33498f62-56e2-4ab9-8512-a2738eedf56d
+    type: regular
+    task:
+      id: 33498f62-56e2-4ab9-8512-a2738eedf56d
+      version: -1
+      name: Get Issues of Board
+      description: Get all issues from a specific board
+      script: Jira V3|||jira-board-issue-list
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      board_id:
+        simple: "14"
+      jql_query:
+        simple: status!=done
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 7950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 45885df1-a456-499e-8b77-426e2d0519b9
+    type: condition
+    task:
+      id: 45885df1-a456-499e-8b77-426e2d0519b9
+      version: -1
+      name: Verify Issues of Board
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Jira.BoardIssue.Ticket
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 32e3c84e-2185-4808-8a67-0c5791992def
+    type: regular
+    task:
+      id: 32e3c84e-2185-4808-8a67-0c5791992def
+      version: -1
+      name: Get Sprints of Board
+      description: Get all sprints of a specific board.
+      script: Jira V3|||jira-board-sprint-list
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      board_id:
+        simple: "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 4423a016-3dc3-4133-8912-4cab5c55473f
+    type: condition
+    task:
+      id: 4423a016-3dc3-4133-8912-4cab5c55473f
+      version: -1
+      name: Verify Sprints of Board
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Jira.BoardSprint.Sprints
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 0996d263-2d2f-4929-823c-4039b9c4624c
+    type: regular
+    task:
+      id: 0996d263-2d2f-4929-823c-4039b9c4624c
+      version: -1
+      name: Get Epics of Board
+      description: Get all epics from a specific board
+      script: Jira V3|||jira-board-epic-list
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      board_id:
+        simple: "14"
+      done:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 77db7eaf-8ebf-41af-88ed-9476adbc4e7f
+    type: condition
+    task:
+      id: 77db7eaf-8ebf-41af-88ed-9476adbc4e7f
+      version: -1
+      name: Verify Epics of Board
+      description: Get all epics from a specific board
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Jira.BoardEpic.Epics
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 8825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 8fededb0-2eef-489b-806a-0f65036bccd0
+    type: regular
+    task:
+      id: 8fededb0-2eef-489b-806a-0f65036bccd0
+      version: -1
+      name: Get Issues of Sprint
+      description: Get all issues in a sprint.
+      script: Jira V3|||jira-sprint-issue-list
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      sprint_id:
+        simple: "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 23926f01-be6b-49b7-80fb-68b287e3b573
+    type: condition
+    task:
+      id: 23926f01-be6b-49b7-80fb-68b287e3b573
+      version: -1
+      name: Verify Issues of Sprint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Jira.SprintIssues.Ticket
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 70bc7a57-c6bd-4b57-8464-af702c29503d
+    type: regular
+    task:
+      id: 70bc7a57-c6bd-4b57-8464-af702c29503d
+      version: -1
+      name: Get Issues of Epic
+      description: Get all issues that belong to an epic (Child Issues).
+      script: Jira V3|||jira-epic-issue-list
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      epic_key:
+        simple: COMPANYSA-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 648c7f17-925a-497c-8d6a-d0338e5892b8
+    type: condition
+    task:
+      id: 648c7f17-925a-497c-8d6a-d0338e5892b8
+      version: -1
+      name: Verify Issues of Epic
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Jira.EpicIssues.Ticket
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 9525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 04ffa598-c242-4a05-80c4-b09763ae528a
+    type: regular
+    task:
+      id: 04ffa598-c242-4a05-80c4-b09763ae528a
+      version: -1
+      name: Jira Edit Issue Status With Fields
+      description: Modifies an issue in Jira.
+      script: Jira V3|||jira-edit-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      issue_id:
+        simple: ${Ticket.Id}
+      issue_json:
+        simple: '{"fields": {"customfield_10102":"Dummy draft reason"}}'
+      status:
+        simple: Draft
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 0df70e05-b6d0-4e46-8d51-0f451f471e51
+    type: regular
+    task:
+      id: 0df70e05-b6d0-4e46-8d51-0f451f471e51
+      version: -1
+      name: Jira Edit Issue to Backlog
+      description: Modifies an issue in Jira.
+      script: Jira V3|||jira-edit-issue
+      type: regular
+      iscommand: true
+      brand: Jira V3
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      issue_id:
+        simple: ${Ticket.Id}
+      status:
+        simple: Backlog
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 80d1c831-18ef-487b-8de9-4b1d47576ff3
+    type: regular
+    task:
+      id: 80d1c831-18ef-487b-8de9-4b1d47576ff3
+      version: -1
+      name: Delete file from issue
+      description: Deletes an attachment from an issue.
+      script: '|||jira-issue-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      attachment_id:
+        simple: ${Ticket.Attachments.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 9715,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true

@@ -1,0 +1,14 @@
+[file:PaloAltoNetworks_PAN_OS_EDL_Management]
+ignore=PA116
+
+[file:README.md]
+ignore=RM104,RM106
+
+[file:playbook-Block_IOCs_from_CSV_-_External_Dynamic_List_README.md]
+ignore=RM106
+
+[file:playbook-PAN-OS_-_Block_Domain_-_External_Dynamic_List_README.md]
+ignore=RM106
+
+[known_words]
+deprecated

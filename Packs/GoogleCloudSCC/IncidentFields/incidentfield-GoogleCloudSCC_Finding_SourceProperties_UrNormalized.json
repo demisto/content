@@ -1,0 +1,30 @@
+{
+ "id": "incident_googlecloudsccfindingsourcepropertiesurnormalized",
+ "version": -1,
+ "modified": "2021-01-22T00:52:26.606794597+05:30",
+ "name": "GoogleCloudSCC Finding SourceProperties UrNormalized",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccfindingsourcepropertiesurnormalized",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

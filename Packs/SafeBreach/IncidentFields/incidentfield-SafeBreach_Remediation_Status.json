@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachremediationstatus",
+    "closeForm": false,
+    "content": true,
+    "description": "Status of the Insight within XSOAR (New, Remediated, Not Remediated, Ignored)",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachremediationstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Remediation Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "New",
+        "Remediated",
+        "Not Remediated",
+        "Ignored"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

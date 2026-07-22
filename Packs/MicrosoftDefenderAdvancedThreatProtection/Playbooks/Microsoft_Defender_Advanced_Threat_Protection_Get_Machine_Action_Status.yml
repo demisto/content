@@ -1,0 +1,181 @@
+elasticcommonfields: {}
+id: Microsoft Defender Advanced Threat Protection Get Machine Action Status
+version: -1
+fromversion: 5.0.0
+name: Microsoft Defender Advanced Threat Protection Get Machine Action Status
+description: This playbook used generic polling to get machine action information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e3affdb9-3767-4b46-8989-693a0d2c2f15
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: e3affdb9-3767-4b46-8989-693a0d2c2f15
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 767426ee-8220-4948-8102-f1ac19bb872b
+    type: playbook
+    task:
+      elasticcommonfields: {}
+      id: 767426ee-8220-4948-8102-f1ac19bb872b
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${inputs.machine_action_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: microsoft-atp-list-machine-actions-details
+      Timeout:
+        simple: "60"
+      dt:
+        simple: MicrosoftATP.MachineAction(val.Status == "Pending" || val.Status == "InProgress" ).ID
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: f8cf2cce-4eb5-43e5-83c7-55bd848e2b49
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: f8cf2cce-4eb5-43e5-83c7-55bd848e2b49
+      version: -1
+      name: Get machine action info
+      description: |-
+        Return the machine's actions. If you set an action id it will return the info on the specific action
+        Filtering can be done only on one argument
+      script: '|||microsoft-atp-list-machine-actions-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.machine_action_id
+      machine_id: {}
+      requestor: {}
+      status: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 425,
+        "width": 380,
+        "x": 50,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: machine_action_id
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+outputs:
+- contextPath: MicrosoftATP.MachineAction.ID
+  description: The machine action ID
+  type: string
+- contextPath: MicrosoftATP.MachineAction.Type
+  description: Type of the action
+  type: string
+- contextPath: MicrosoftATP.MachineAction.Scope
+  description: Scope of the action
+- contextPath: MicrosoftATP.MachineAction.Requestor
+  description: The ID of the user that executed the action.
+  type: string
+- contextPath: MicrosoftATP.MachineAction.RequestorComment
+  description: Comment that was written when issuing the action.
+  type: string
+- contextPath: MicrosoftATP.MachineAction.Status
+  description: The current status of the command
+  type: string
+- contextPath: MicrosoftATP.MachineAction.MachineID
+  description: The machine ID on which the action was executed.
+  type: string
+- contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+  description: The machine DNS name on which the action was executed
+  type: string
+- contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+  description: The date and time when the action was created
+  type: date
+- contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+  description: The last date and time when the action status was updated
+  type: date
+- contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
+  description: The file identifier
+  type: string
+- contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
+  description: 'The type of the file identifier with the possible values: "Sha1" ,"Sha256" and "Md5"'
+  type: string
+tests:
+- No test - no testplaybook, but unitest exist

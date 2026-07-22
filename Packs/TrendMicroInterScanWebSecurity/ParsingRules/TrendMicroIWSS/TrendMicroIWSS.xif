@@ -1,0 +1,5 @@
+[INGEST:vendor="trendmicro", product="iwss", target_dataset="trendmicro_iwss_raw", no_hit=keep]
+filter _raw_log contains "tk_date_field"
+| alter tmp_datetime_field = arrayindex(regextract(_raw_log, "tk_date_field=([^,]+)"), 0)
+| alter _time = parse_timestamp("%F %X%z", tmp_datetime_field)
+| fields - tmp_datetime_field;

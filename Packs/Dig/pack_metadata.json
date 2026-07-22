@@ -1,0 +1,24 @@
+{
+    "name": "Dig (Deprecated)",
+    "description": "Deprecated. Dig script moved to CommonScripts pack.",
+    "support": "community",
+    "currentVersion": "1.1.2",
+    "author": "Anil Agrawal",
+    "url": "",
+    "email": "",
+    "created": "2021-06-15T22:22:31Z",
+    "hidden": true,
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "anilagr"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

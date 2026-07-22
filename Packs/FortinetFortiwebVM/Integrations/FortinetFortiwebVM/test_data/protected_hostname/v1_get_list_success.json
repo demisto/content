@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "_id": "1default_action=allow",
+        "name": "1default_action=allow",
+        "defaultAction": 1,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 2,
+        "_id": "11",
+        "name": "11",
+        "defaultAction": 6,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 3,
+        "_id": "12",
+        "name": "12",
+        "defaultAction": 6,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 4,
+        "_id": "13",
+        "name": "13",
+        "defaultAction": 4,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 5,
+        "_id": "sasdasd",
+        "name": "sasdasd",
+        "defaultAction": 1,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 6,
+        "_id": "sasdaasdasdsd",
+        "name": "sasdaasdasdsd",
+        "defaultAction": 1,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 7,
+        "_id": "1111111111",
+        "name": "1111111111",
+        "defaultAction": 1,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 8,
+        "_id": "1111",
+        "name": "1111",
+        "defaultAction": 1,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 9,
+        "_id": "config_mkasdasdey",
+        "name": "config_mkasdasdey",
+        "defaultAction": 1,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    },
+    {
+        "id": 10,
+        "_id": "sdfsdfdfgdfgdADASDASD",
+        "name": "sdfsdfdfgdfgdADASDASD",
+        "defaultAction": 1,
+        "protectedHostnameCount": 0,
+        "can_delete": true
+    }
+]

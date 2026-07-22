@@ -1,0 +1,216 @@
+id: Enrich DXL with ATD verdict v2
+version: -1
+name: Enrich DXL with ATD verdict v2
+description: |-
+  Uses McAfee ATD to push any malicious verdicts over DXL.
+  Detonates a file in ATD and if malicious, pushes its MD5, SHA1 and SHA256 hashes to McAfee DXL.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 338bb1e8-08eb-426e-8b33-51a7c3d6e8ac
+    type: start
+    task:
+      id: 338bb1e8-08eb-426e-8b33-51a7c3d6e8ac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": -19
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 69d36faa-c3ad-4d7c-806c-f9a38da0a01b
+    type: condition
+    task:
+      id: 69d36faa-c3ad-4d7c-806c-f9a38da0a01b
+      version: -1
+      name: Any malicious files detected?
+      description: Conditional task to verify if any malicious files were detected.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "6"
+    scriptarguments:
+      left: {}
+      right: {}
+      value:
+        simple: ${File.Malicious}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 302
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 6304fe2a-fedb-4cab-8c88-a5105646daa9
+    type: regular
+    task:
+      id: 6304fe2a-fedb-4cab-8c88-a5105646daa9
+      version: -1
+      name: Close incident
+      description: Closes the incident.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      code42alerttype: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 60d40b87-9c3d-4315-8025-6363e9d8bb7b
+    type: playbook
+    task:
+      id: 60d40b87-9c3d-4315-8025-6363e9d8bb7b
+      version: -1
+      name: ATD - Detonate File
+      description: |-
+        Detonates a File using the McAfee Advanced Threat Defense sandbox.
+        Advanced Threat Defense supports the following File Types:
+        32-bit Portable Executables (PE)files; 64-bit PE+files
+        exe, sys, dll, com, scr, cpl, ocx, cgi
+        Microsoft Office Suite documents
+        doc,dotm, docx, dotx, xls, ppam, xlsx, pps, xlsb, ppsx, xlsm, ppsm, ppt, ppt, pptx, pptm, rtf, shs, xltm, sldm, xltx, sldx, xlam, thmx, docm, xar
+        Just Systems Ichitaro documents
+        jtd, jtdc
+        Adobe
+        pdf, swf
+        Compressed files
+        gz, 7z, tgz, msi, zip, lzh, cab, lzma, rar
+        Android application package
+        apk, Java, JAR, CLASS, Java Script, Java bin files
+        Image files
+        jpeg, png, gif
+        Other file types
+        cmd, ace, bat, arj, vbs, chm, xml, lnk, url, mof, htm, ocx, html, potm, eml, potx, msg, ps1, vb, reg, vba, wsc, vbe, wsf, vbs, wsh
+      playbookName: ATD - Detonate File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "15"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 281,
+          "y": 118
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 27361272-04ea-420b-8313-a3d854712669
+    type: regular
+    task:
+      id: 27361272-04ea-420b-8313-a3d854712669
+      version: -1
+      name: DXL - Push file hashes as malicious
+      description: Deliver the specified event to the DXL fabric
+      script: McAfee DXL|||dxl-send-event
+      type: regular
+      iscommand: true
+      brand: McAfee DXL
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      payload:
+        simple: ${File(val.Malicious).MD5} ${File(val.Malicious).SHA1} ${File(val.Malicious).SHA256}
+      topic:
+        simple: MALICIOUS_FILE
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 531,
+          "y": 486
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 804,
+        "width": 671,
+        "x": 240,
+        "y": -19
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

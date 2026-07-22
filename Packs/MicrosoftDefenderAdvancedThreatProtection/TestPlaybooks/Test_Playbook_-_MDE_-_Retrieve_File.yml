@@ -1,0 +1,2355 @@
+id: Test Playbook - MDE - Retrieve File
+version: -1
+name: Test Playbook - MDE - Retrieve File
+description: |-
+  This playbook tests the 'MDE - Retrieve File' playbook which is part of the 'Malware Investigation and Response' pack.
+
+  The following tests are conducted in the playbook:
+  1- Ensure all context data was extracted properly.
+  2- Review and validate the playbook's output.
+  3 - Ensure that the retrieved files were unzipped using the 'UnzipFile' command.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 217f0253-cd71-48fb-8b59-2e49f1b39d3b
+    type: start
+    task:
+      id: 217f0253-cd71-48fb-8b59-2e49f1b39d3b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -2345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 3ce5da91-838b-4bd6-8938-3a0f802d8988
+    type: regular
+    task:
+      id: 3ce5da91-838b-4bd6-8938-3a0f802d8988
+      version: -1
+      name: Delete Context
+      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "288"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -2215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 8921b137-fbcb-4a88-81c1-9a42b03d215e
+    type: title
+    task:
+      id: 8921b137-fbcb-4a88-81c1-9a42b03d215e
+      version: -1
+      name: Start Testing
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "255"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "249":
+    id: "249"
+    taskid: 397af96b-90ed-4b1b-8cd0-61092c259f87
+    type: regular
+    task:
+      id: 397af96b-90ed-4b1b-8cd0-61092c259f87
+      version: -1
+      name: Verify Playbook Output Error - Extracted Files
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'ExtractedFiles' playbook output of the was not properly extracted. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'UnzipFile' automation outputs have been modified and no longer contain the 'ExtractedFiles'' context key.
+          3- The 'entryID' argument input configuration was changed for the 'UnzipFile' automation used within the 'Unzip results' playbook task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4210,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "250":
+    id: "250"
+    taskid: cc53f2cb-69a4-46be-82a5-6018d1984202
+    type: condition
+    task:
+      id: cc53f2cb-69a4-46be-82a5-6018d1984202
+      version: -1
+      name: Verify Extracted Files
+      description: |
+        Verify that the 'ExtractedFiles' playbook output contains the file name selected for extraction.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "249"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: ExtractedFiles
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: File
+                accessor: Name
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4210,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "255":
+    id: "255"
+    taskid: 3558fa0d-ead6-4011-8c3c-4ed1c6f38aef
+    type: title
+    task:
+      id: 3558fa0d-ead6-4011-8c3c-4ed1c6f38aef
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "257"
+      - "259"
+      - "261"
+      - "263"
+      - "265"
+      - "267"
+      - "269"
+      - "271"
+      - "273"
+      - "275"
+      - "279"
+      - "281"
+      - "303"
+      - "309"
+      - "313"
+      - "315"
+      - "319"
+      - "321"
+      - "323"
+      - "325"
+      - "327"
+      - "329"
+      - "250"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "257":
+    id: "257"
+    taskid: f49d404f-6ef0-418d-8a85-0f8b92e06441
+    type: condition
+    task:
+      id: f49d404f-6ef0-418d-8a85-0f8b92e06441
+      version: -1
+      name: Verify Cancellation Date Time UTC
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "302"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: cancellationDateTimeUtc
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "259":
+    id: "259"
+    taskid: ee17379a-8504-4c50-87fc-171ad329af47
+    type: condition
+    task:
+      id: ee17379a-8504-4c50-87fc-171ad329af47
+      version: -1
+      name: Verify Cancellation Comment
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.cancellationComment' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "301"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: cancellationComment
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "261":
+    id: "261"
+    taskid: eaf885a5-4b50-4403-8633-88a22ad7f889
+    type: condition
+    task:
+      id: eaf885a5-4b50-4403-8633-88a22ad7f889
+      version: -1
+      name: Verify Cancellation Requestor
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.cancellationRequestor' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "300"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: cancellationRequestor
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "263":
+    id: "263"
+    taskid: 50cd9e90-dd00-40dc-810b-397c7f6e14e5
+    type: condition
+    task:
+      id: 50cd9e90-dd00-40dc-810b-397c7f6e14e5
+      version: -1
+      name: Verify Last Update Date Time UTC
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "299"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: lastUpdateDateTimeUtc
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "265":
+    id: "265"
+    taskid: 54f4e353-e48a-4e65-8d48-8c55e25e73ab
+    type: condition
+    task:
+      id: 54f4e353-e48a-4e65-8d48-8c55e25e73ab
+      version: -1
+      name: Verify Creation Date Time UTC
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.creationDateTimeUtc' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "298"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: creationDateTimeUtc
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2160,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "267":
+    id: "267"
+    taskid: bb2c0883-4a64-4408-8b11-a4bdc7b20ddb
+    type: condition
+    task:
+      id: bb2c0883-4a64-4408-8b11-a4bdc7b20ddb
+      version: -1
+      name: Verify Computer DNS Name
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.computerDnsName' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "297"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: computerDnsName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2550,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: 6355a87e-4fa4-40d9-887c-29534f7a914d
+    type: condition
+    task:
+      id: 6355a87e-4fa4-40d9-887c-29534f7a914d
+      version: -1
+      name: Verify Machine ID
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.machineId' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "296"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: machineId
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: deviceid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2940,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "271":
+    id: "271"
+    taskid: c356c217-c6b6-4233-869a-23687a7df477
+    type: condition
+    task:
+      id: c356c217-c6b6-4233-869a-23687a7df477
+      version: -1
+      name: Verify Status
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.status' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "295"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: Succeeded
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3330,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "273":
+    id: "273"
+    taskid: b68bea93-d5f1-495f-86d5-91a9ff85310d
+    type: condition
+    task:
+      id: b68bea93-d5f1-495f-86d5-91a9ff85310d
+      version: -1
+      name: Verify Requestor Comment
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.requestorComment' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "294"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: requestorComment
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3730,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "275":
+    id: "275"
+    taskid: 268c7919-408f-4308-8101-f515920870e7
+    type: condition
+    task:
+      id: 268c7919-408f-4308-8101-f515920870e7
+      version: -1
+      name: Verify Requestor
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.requestor' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "293"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: requestor
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4120,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "279":
+    id: "279"
+    taskid: dff79de2-94d8-4ed1-80c3-e19fd7168141
+    type: condition
+    task:
+      id: dff79de2-94d8-4ed1-80c3-e19fd7168141
+      version: -1
+      name: Verify Type
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.type' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "291"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: type
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4510,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "280":
+    id: "280"
+    taskid: eeaed0e9-d4e7-4188-8d97-07fbd3029f19
+    type: regular
+    task:
+      id: eeaed0e9-d4e7-4188-8d97-07fbd3029f19
+      version: -1
+      name: Verify Context Error - ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.id' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.id'' context key.
+          2- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.action_id' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4900,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "281":
+    id: "281"
+    taskid: 67aa147e-fd1d-430b-83da-4a86f45c07f7
+    type: condition
+    task:
+      id: 67aa147e-fd1d-430b-83da-4a86f45c07f7
+      version: -1
+      name: Verify ID
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.id' context key has been extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "280"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: action_id
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4900,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "287":
+    id: "287"
+    taskid: 40508e9b-9849-4bd1-8899-4bd5a71a8890
+    type: playbook
+    task:
+      id: 40508e9b-9849-4bd1-8899-4bd5a71a8890
+      version: -1
+      name: MDE - Retrieve File
+      description: |-
+        This playbook is part of the ‘Malware Investigation And Response’ pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook uses the Live Response feature to retrieve a file from an endpoint. The playbook supports a supplied machine id as an input. Otherwise, it will take the Device ID incident field.
+        The playbook supports only one element to be retrieved for each task (if needed more then one - use the playbook loop feature).
+      playbookName: MDE - Retrieve File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "332"
+    scriptarguments:
+      paths:
+        simple: C:\Windows\System32\taskhostw.exe
+      MachineID:
+        complex:
+          root: incident
+          accessor: deviceid
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "288":
+    id: "288"
+    taskid: d05dd61d-b027-4e25-8cb2-f6d3b1537fe3
+    type: regular
+    task:
+      id: d05dd61d-b027-4e25-8cb2-f6d3b1537fe3
+      version: -1
+      name: Set Device ID To Incident Field
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "287"
+    scriptarguments:
+      deviceid:
+        simple: 4cceb3c642212014e0e9553aa8b59e999ea515ff
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -2055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "289":
+    id: "289"
+    taskid: 4e9ea99b-ecd5-4008-8a36-bd2d42b0a2e7
+    type: title
+    task:
+      id: 4e9ea99b-ecd5-4008-8a36-bd2d42b0a2e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "291":
+    id: "291"
+    taskid: 38049694-2efd-4f46-8d1e-6d06cfc2f8f3
+    type: regular
+    task:
+      id: 38049694-2efd-4f46-8d1e-6d06cfc2f8f3
+      version: -1
+      name: Verify Context Error - Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.type' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.type' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4510,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "293":
+    id: "293"
+    taskid: 5dfce3d7-aa24-47b2-8a9f-a432562234b9
+    type: regular
+    task:
+      id: 5dfce3d7-aa24-47b2-8a9f-a432562234b9
+      version: -1
+      name: Verify Context Error - Requestor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.requestor' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.requestor' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4120,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "294":
+    id: "294"
+    taskid: 306f4cfd-0d30-4b59-848d-296a0436a46a
+    type: regular
+    task:
+      id: 306f4cfd-0d30-4b59-848d-296a0436a46a
+      version: -1
+      name: Verify Context Error - Requestor Comment
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.type' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.requestorComment' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3730,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "295":
+    id: "295"
+    taskid: f6cff1b8-2571-42a1-8243-1e7e388ccc3b
+    type: regular
+    task:
+      id: f6cff1b8-2571-42a1-8243-1e7e388ccc3b
+      version: -1
+      name: Verify Context Error - Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.status' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.status' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3330,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "296":
+    id: "296"
+    taskid: ff68def4-e123-462c-8da4-63ec5173a460
+    type: regular
+    task:
+      id: ff68def4-e123-462c-8da4-63ec5173a460
+      version: -1
+      name: Verify Context Error - Machine ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.machineId' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.machineId' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2940,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "297":
+    id: "297"
+    taskid: 1dc6c39c-a3ac-4c70-8f86-f20905f59ccc
+    type: regular
+    task:
+      id: 1dc6c39c-a3ac-4c70-8f86-f20905f59ccc
+      version: -1
+      name: Verify Context Error - Computer DNS Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.computerDnsName' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.computerDnsName' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2550,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "298":
+    id: "298"
+    taskid: 0fca13c6-b848-4364-8fbc-1e475ef29452
+    type: regular
+    task:
+      id: 0fca13c6-b848-4364-8fbc-1e475ef29452
+      version: -1
+      name: Verify Context Error - Creation Date Time UTC
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.creationDateTimeUtc' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.creationDateTimeUtc' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2160,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "299":
+    id: "299"
+    taskid: cbe84506-3bf4-496d-8b3a-654c9f09d565
+    type: regular
+    task:
+      id: cbe84506-3bf4-496d-8b3a-654c9f09d565
+      version: -1
+      name: Verify Context Error - Last Update Date Time UTC
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.lastUpdateDateTimeUtc' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "300":
+    id: "300"
+    taskid: b595ee96-0d26-4289-8144-91731feb9870
+    type: regular
+    task:
+      id: b595ee96-0d26-4289-8144-91731feb9870
+      version: -1
+      name: Verify Context Error - Cancellation Requestor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.cancellationRequestor' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.cancellationRequestor' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1380,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "301":
+    id: "301"
+    taskid: 2b4728d4-e1ef-4991-8e0c-d6253561a908
+    type: regular
+    task:
+      id: 2b4728d4-e1ef-4991-8e0c-d6253561a908
+      version: -1
+      name: Verify Context Error - Cancellation Comment
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.cancellationComment' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.cancellationComment' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "302":
+    id: "302"
+    taskid: 40f1bb55-d50e-4e51-8f3e-55b282347e14
+    type: regular
+    task:
+      id: 40f1bb55-d50e-4e51-8f3e-55b282347e14
+      version: -1
+      name: Verify Context Error - Cancellation Date Time UTC
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.cancellationDateTimeUtc' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "303":
+    id: "303"
+    taskid: 657c8549-2b9c-4746-8f93-4de1ef4e3d86
+    type: condition
+    task:
+      id: 657c8549-2b9c-4746-8f93-4de1ef4e3d86
+      version: -1
+      name: Verify Error Result
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.errorHResult' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "304"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: errorHResult
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "304":
+    id: "304"
+    taskid: 917e8110-e279-48e7-8e28-9921f4a65df3
+    type: regular
+    task:
+      id: 917e8110-e279-48e7-8e28-9921f4a65df3
+      version: -1
+      name: Verify Context Error - Error Result
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.errorHResult' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.errorHResult' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "309":
+    id: "309"
+    taskid: 75d01912-5cab-4653-82a2-369ac81abd4e
+    type: condition
+    task:
+      id: 75d01912-5cab-4653-82a2-369ac81abd4e
+      version: -1
+      name: Verify Request Source
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.requestSource' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "310"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: requestSource
+            iscontext: true
+          right:
+            value:
+              simple: PublicApi
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "310":
+    id: "310"
+    taskid: 003036fc-5632-4a6f-8e9d-e4f0882731ec
+    type: regular
+    task:
+      id: 003036fc-5632-4a6f-8e9d-e4f0882731ec
+      version: -1
+      name: Verify Context Error - Request Source
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.requestSource' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.requestSource' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "313":
+    id: "313"
+    taskid: a56c6f71-2ff8-40a3-81dc-2faa51e480d7
+    type: condition
+    task:
+      id: a56c6f71-2ff8-40a3-81dc-2faa51e480d7
+      version: -1
+      name: Verify Troubleshoot Info
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.troubleshootInfo' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "314"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction
+                accessor: troubleshootInfo
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "314":
+    id: "314"
+    taskid: b91fd6bb-0a25-477f-89b9-18bd5acb00c8
+    type: regular
+    task:
+      id: b91fd6bb-0a25-477f-89b9-18bd5acb00c8
+      version: -1
+      name: Verify Context Error - Troubleshoot Info
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.troubleshootInfo' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.troubleshootInfo' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "315":
+    id: "315"
+    taskid: 7dd7faba-8930-41fb-89e2-48ca9e73b749
+    type: condition
+    task:
+      id: 7dd7faba-8930-41fb-89e2-48ca9e73b749
+      version: -1
+      name: Verify Commands Index
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.commands.index' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "316"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction.commands
+                accessor: index
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "316":
+    id: "316"
+    taskid: ac10107a-28e8-4fdd-83bc-c58fcb3533cf
+    type: regular
+    task:
+      id: ac10107a-28e8-4fdd-83bc-c58fcb3533cf
+      version: -1
+      name: Verify Context Error - Commands Index
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.commands.index' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.commands.index' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "319":
+    id: "319"
+    taskid: f82635a8-0b9b-4173-854a-8e56eec4c54b
+    type: condition
+    task:
+      id: f82635a8-0b9b-4173-854a-8e56eec4c54b
+      version: -1
+      name: Verify Commands End Time
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.commands.endTime' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "320"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction.commands
+                accessor: endTime
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1870,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "320":
+    id: "320"
+    taskid: c6985310-cd79-43e3-8775-51d68a05a833
+    type: regular
+    task:
+      id: c6985310-cd79-43e3-8775-51d68a05a833
+      version: -1
+      name: Verify Context Error - Commands End Time
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.commands.endTime' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.commands.endTime' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1870,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "321":
+    id: "321"
+    taskid: da1872c2-0a71-498c-863f-d6030a556eda
+    type: condition
+    task:
+      id: da1872c2-0a71-498c-863f-d6030a556eda
+      version: -1
+      name: Verify Commands Status
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.commands.commandStatus' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "322"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction.commands
+                accessor: commandStatus
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "322":
+    id: "322"
+    taskid: 61edcc18-e45e-4100-8030-0cb7bcb4d826
+    type: regular
+    task:
+      id: 61edcc18-e45e-4100-8030-0cb7bcb4d826
+      version: -1
+      name: Verify Context Error - Commands Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.commands.commandStatus' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.commands.commandStatus' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2260,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "323":
+    id: "323"
+    taskid: 127ad472-1b96-46ac-8bfc-e1578c561143
+    type: condition
+    task:
+      id: 127ad472-1b96-46ac-8bfc-e1578c561143
+      version: -1
+      name: Verify Commands Error
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.commands.errors' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "324"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction.commands
+                accessor: errors
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "324":
+    id: "324"
+    taskid: 82bcd6ed-55ee-46a7-8a5e-565dfe8b8b48
+    type: regular
+    task:
+      id: 82bcd6ed-55ee-46a7-8a5e-565dfe8b8b48
+      version: -1
+      name: Verify Context Error - Commands Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.commands.errors' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.commands.errors' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2650,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "325":
+    id: "325"
+    taskid: 58a57397-e8c5-4687-859e-ecb26e6435ca
+    type: condition
+    task:
+      id: 58a57397-e8c5-4687-859e-ecb26e6435ca
+      version: -1
+      name: Verify Command Type
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.commands.command.type' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "326"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction.commands.command
+                accessor: type
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3040,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "326":
+    id: "326"
+    taskid: d1643373-7191-4a30-8da8-22f719e5a155
+    type: regular
+    task:
+      id: d1643373-7191-4a30-8da8-22f719e5a155
+      version: -1
+      name: Verify Context Error - Command Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.commands.command.type' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.commands.command.type' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3040,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "327":
+    id: "327"
+    taskid: 10ca92e4-aac7-4a8f-8aaf-f6ec9033e929
+    type: condition
+    task:
+      id: 10ca92e4-aac7-4a8f-8aaf-f6ec9033e929
+      version: -1
+      name: Verify Commands Params Key
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.commands.command.params.key' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "328"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction.commands.command.params
+                accessor: key
+            iscontext: true
+          right:
+            value:
+              simple: Path
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3430,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "328":
+    id: "328"
+    taskid: f6114a43-02d6-4049-8d17-468b43a26506
+    type: regular
+    task:
+      id: f6114a43-02d6-4049-8d17-468b43a26506
+      version: -1
+      name: Verify Context Error - Commands Params Key
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.commands.command.params.key' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.commands.command.params.key' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3430,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "329":
+    id: "329"
+    taskid: 60fd2b9e-b1d7-4d0a-83a2-4c2b8dd490db
+    type: condition
+    task:
+      id: 60fd2b9e-b1d7-4d0a-83a2-4c2b8dd490db
+      version: -1
+      name: Verify Commands Params Value
+      description: |
+        Verify that the 'MicrosoftATP.LiveResponseAction.commands.errors' context key has been extracted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Verified':
+      - "289"
+      '#default#':
+      - "330"
+    separatecontext: false
+    conditions:
+    - label: ' Verified'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MicrosoftATP.LiveResponseAction.commands.command.params
+                accessor: value
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3820,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "330":
+    id: "330"
+    taskid: e1c95fc8-693a-4b7c-886b-bc32070fab74
+    type: regular
+    task:
+      id: e1c95fc8-693a-4b7c-886b-bc32070fab74
+      version: -1
+      name: Verify Context Error - Commands Params Value
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'MicrosoftATP.LiveResponseAction.commands.command.params.value' context key was not extracted properly. This may indicate that one or more of the following changes have been made to the 'MDE - Retrieve File' playbook:
+          1- The 'microsoft-atp-live-response-get-file' automation outputs have been modified and no longer contain the 'MicrosoftATP.LiveResponseAction.commands.command.params.value' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3820,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "332":
+    id: "332"
+    taskid: 302392ce-d584-4167-8f92-e5fe1b7dad2b
+    type: regular
+    task:
+      id: 302392ce-d584-4167-8f92-e5fe1b7dad2b
+      version: -1
+      name: Get Error Entries
+      description: Collect entries matching to the conditions in the war room
+      scriptName: GetEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "333"
+    scriptarguments:
+      categories:
+        simple: playbookErrors
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "333":
+    id: "333"
+    taskid: 5c2f901b-fa01-429b-8246-5d0807db7dbb
+    type: regular
+    task:
+      id: 5c2f901b-fa01-429b-8246-5d0807db7dbb
+      version: -1
+      name: Get Errors Content
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "334"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: Entry
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "334":
+    id: "334"
+    taskid: 6b7fdaae-9e67-4ae1-8af5-529ca260f069
+    type: condition
+    task:
+      id: 6b7fdaae-9e67-4ae1-8af5-529ca260f069
+      version: -1
+      name: Has 404 API Error?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "335"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: ErrorEntries
+            iscontext: true
+          right:
+            value:
+              simple: ActiveRequestAlreadyExists
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "335":
+    id: "335"
+    taskid: 9c91dc7f-19c6-4cd5-8923-91f11f231aee
+    type: regular
+    task:
+      id: 9c91dc7f-19c6-4cd5-8923-91f11f231aee
+      version: -1
+      name: Cancel Current Action
+      description: Cancels an action with an unfinished status.
+      script: '|||microsoft-atp-live-response-cancel-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "336"
+    scriptarguments:
+      comment:
+        simple: Retrieving file - XSOAR PB ${incident.id}
+      machine_action_id:
+        complex:
+          root: ErrorEntries
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: ErrorEntries
+                iscontext: true
+              right:
+                value:
+                  simple: ActiveRequestAlreadyExists
+              ignorecase: true
+          transformers:
+          - operator: RegexGroups
+            args:
+              flags: {}
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: action\sid\:\s(.*)\"\,\s
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "336":
+    id: "336"
+    taskid: b7bf5d90-8942-4f38-811a-2549f4045179
+    type: playbook
+    task:
+      id: b7bf5d90-8942-4f38-811a-2549f4045179
+      version: -1
+      name: MDE - Retrieve File
+      description: |-
+        This playbook is part of the ‘Malware Investigation And Response’ pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook uses the Live Response feature to retrieve a file from an endpoint. The playbook supports a supplied machine id as an input. Otherwise, it will take the Device ID incident field.
+        The playbook supports only one element to be retrieved for each task (if needed more then one - use the playbook loop feature).
+      playbookName: MDE - Retrieve File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      MachineID:
+        complex:
+          root: incident
+          accessor: deviceid
+      paths:
+        simple: C:\\Users\\Administrator\\Desktop\\test.txt
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2040,
+        "width": 9490,
+        "x": -4900,
+        "y": -2345
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0

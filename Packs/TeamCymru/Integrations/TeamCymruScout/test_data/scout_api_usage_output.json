@@ -1,0 +1,11 @@
+{
+    "command_name": "scout-api-usage",
+    "used_queries": 261,
+    "remaining_queries": 49739,
+    "query_limit": 50000,
+    "foundation_api_usage": {
+        "used_queries": 15,
+        "remaining_queries": 0,
+        "query_limit": 0
+    }
+}

@@ -1,0 +1,8 @@
+fromversion: 8.4.0
+name: Kiteworks Modeling Rule
+id: Kiteworks_ModelingRule
+tags:
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

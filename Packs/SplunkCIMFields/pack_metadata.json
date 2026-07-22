@@ -1,0 +1,28 @@
+{
+    "name": "SplunkScripts",
+    "description": "Splunk helper scripts.",
+    "support": "community",
+    "currentVersion": "1.1.5",
+    "author": "Farrukh Ahmed",
+    "url": "",
+    "email": "",
+    "created": "2021-08-19T22:10:45Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "linuxpakistan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

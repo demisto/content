@@ -1,0 +1,43 @@
+{
+    "id": "incident_irondefensefirsteventcreated",
+    "version": -1,
+    "modified": "2020-07-01T13:47:34.558501038-04:00",
+    "name": "IronDefense First Event Created",
+    "ownerOnly": false,
+    "placeholder": "",
+    "description": "",
+    "cliName": "irondefensefirsteventcreated",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "",
+    "fieldCalcScript": "",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": null,
+    "validationRegex": "",
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "IronDefense Alert Notification"
+    ],
+    "systemAssociatedTypes": null,
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": null,
+    "defaultRows": null,
+    "sla": 0,
+    "threshold": 72,
+    "breachScript": "",
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

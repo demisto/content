@@ -1,0 +1,4 @@
+{
+  "breakingChanges": true,
+  "breakingChangesNotes": "The integration parameter \"Access Token\" is renamed to \"credentials\" and \"Refresh Token\" is now treated as a password"
+}

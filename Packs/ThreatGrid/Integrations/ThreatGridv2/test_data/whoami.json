@@ -1,0 +1,24 @@
+{
+    "api_version": "api_version",
+    "id": "id",
+    "request_id": "request_id",
+    "data": {
+        "role": "data_role",
+        "properties": {
+            "ui-settings": {
+                "theme": "data_properties_ui-settings_theme"
+            },
+            "password-updated-at-millis": "data_properties_password-updated-at-millis"
+        },
+        "api_only": "data_api_only",
+        "integration_id": "data_integration_id",
+        "email": "data_email",
+        "organization_id": "data_organization_id",
+        "name": "data_name",
+        "login": "data_login",
+        "title": "data_title",
+        "api_key": "data_api_key",
+        "active": "data_active",
+        "device": "data_device"
+    }
+}

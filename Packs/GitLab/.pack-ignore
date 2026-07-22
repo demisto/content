@@ -1,0 +1,12 @@
+[file:README.md]
+ignore=RM104
+
+[file:GitLab.yml]
+ignore=PR101
+
+[file:GitlabModelingRules.yml]
+ignore=MR108
+
+[file:GitlabModelingRules_1_3.yml]
+ignore=MR108
+

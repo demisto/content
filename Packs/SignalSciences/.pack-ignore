@@ -1,0 +1,9 @@
+[file:SignalSciences.yml]
+ignore=IN126,IN135,BA124
+
+[file:README.md]
+ignore=RM106
+
+[known_words]
+waf
+

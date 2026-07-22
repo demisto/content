@@ -1,0 +1,12 @@
+[file:README.md]
+ignore=RM104
+
+[file:classifier-mapper-incoming-MicrosoftAdvancedThreatAnalytics.json]
+ignore=BA101,BA113
+
+[file:classifier-MicrosoftAdvancedThreatAnalytics.json]
+ignore=BA113,BA101
+
+[file:MicrosoftAdvancedThreatAnalytics.yml]
+ignore=MR108
+

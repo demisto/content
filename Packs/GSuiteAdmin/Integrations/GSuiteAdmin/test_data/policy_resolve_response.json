@@ -1,0 +1,32 @@
+{
+    "resolvedPolicies": 
+    [
+        {
+            "targetKey": 
+            {
+                "targetResource": "orgunits/03ph8a2z1kjba6k", 
+                "additionalTargetKeys": 
+                {
+                    "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"
+                }
+            }, 
+            "value": 
+            {
+                "policySchema": "chrome.users.apps.InstallType", 
+                "value": 
+                {
+                    "appInstallType": "BLOCKED"
+                }
+            }, 
+            "sourceKey": 
+            {
+                "targetResource": "orgunits/03ph8a2z1kjba6k"
+            }, 
+            "addedSourceKey": 
+            {
+                "targetResource": "orgunits/03ph8a2z1kjba6k"
+            }
+        }
+    ]
+}
+

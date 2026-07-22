@@ -1,0 +1,1053 @@
+from typing import Any
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+
+from CommonServerUserPython import *  # noqa
+
+""" IMPORTS """
+
+from inspect import getfullargspec
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+""" CONSTANTS """
+
+INFO = "info"
+ERROR = "error"
+DEBUG = "debug"
+MAX_RETRIES = 5
+MIRROR_LIMIT = 1000
+ABSOLUTE_MAX_FETCH = 200
+MAX_FETCH = arg_to_number(demisto.params().get("max_fetch")) or 25
+MAX_FETCH = min(MAX_FETCH, ABSOLUTE_MAX_FETCH)
+RETRIEVE_SCREENSHOTS = bool(demisto.params().get("retrieve_screenshots", True))
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+CBS_OUTGOING_DATE_FORMAT = "%d-%m-%Y %H:%M"
+CBS_INCOMING_DATE_FORMAT = "%d-%m-%Y %I:%M:%S %p"
+CBS_BASE_URL = "https://cbs.ctm360.com"
+CBS_API_ENDPOINT = "/api/v2"
+API = {
+    "FETCH": "/incidents/xsoar",
+    "GET_SCREENSHOT": "/incidents/x_platform/screenshots",
+    "CLOSE_INCIDENT": "/incidents/close_incident/",
+    "REQUEST_TAKEDOWN": "/incidents/request_takedown/",
+}
+LOGGING_PREFIX = "[CYBER-BLINDSPOT]"
+
+CBS_MODULE_DISPLAY_TO_TYPE = {
+    "Incidents": "incidents",
+    "Compromised Cards": "compromised_cards",
+    "Breached Credentials": "breached_credentials",
+    "Malware Logs": "malware_logs",
+    "Domain Infringement": "domain_infringement",
+    "Subdomain Infringement": "subdomain_infringement",
+    "Social Media Fraud": "social_media_fraud",
+    "Gambling Sites": "gambling_sites",
+    "Money Mules": "money_mules",
+}
+CBS_DEFAULT_MODULE_DISPLAY = "Incidents"
+CBS_DEFAULT_MODULE_TYPE = "incidents"
+
+DEFAULT_FIELDS = [
+    {"name": "first_seen", "description": "The creation date of the incident."},
+    {"name": "last_seen", "description": "The date the incident was last updated."},
+    {"name": "timestamp", "description": "The timestamp of when the record was created."},
+    {"name": "brand", "description": "The organization the incident belongs to."},
+    {"name": "status", "description": "The current state of affairs of the incident."},
+    {"name": "severity", "description": "The severity of the incident."},
+    {"name": "remarks", "description": "The remarks about the incident."},
+    {"name": "type", "description": "The incident type."},
+    {"name": "id", "description": "The unique ID for the incident record."},
+    {"name": "external_link", "description": "The external link to the remote platform."},
+]
+CBS_INCIDENT_FIELDS = [
+    {"name": "subject", "description": "The asset or title of the incident."},
+    {"name": "screenshots", "description": "The screenshot evidence if available."},
+    {"name": "class", "description": "The subject class."},
+    {"name": "coa", "description": "The possible course of action."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_CARD_FIELDS = [
+    {"name": "card_number", "description": "The compromised card's number."},
+    {"name": "cvv", "description": "The compromised card's Card Verification Value (CVV)."},
+    {"name": "expiry_month", "description": "The compromised card's expiration month."},
+    {"name": "expiry_year", "description": "The compromised card's expiration year."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_MALWARE_LOG_FIELDS = [
+    {"name": "masked_password", "description": "The masked password related to the breached data."},
+    {"name": "password", "description": "The password found in the breached data or compromised account."},
+    {"name": "software", "description": "The software related to the breached data."},
+    {"name": "user", "description": "The user related to the breached data."},
+    {"name": "user_domain", "description": "The domain of the user related to the breached data."},
+    {"name": "website", "description": "The website related to the breached data."},
+    {"name": "sources", "description": "The sources related to the breached data."},
+    {"name": "source_uri", "description": "The source URI related to the breached data."},
+    {"name": "domain", "description": "The domain related to the breached data or compromised device."},
+    {"name": "hostname", "description": "The hostname related to the breached data."},
+    {"name": "stealer_family", "description": "The family of the malware."},
+    {"name": "compromise_details", "description": "The details of the compromise."},
+    {"name": "date_compromised", "description": "The date the malware was compromised."},
+    {"name": "computer_name", "description": "The name of the computer that was compromised."},
+    {"name": "operating_system", "description": "The operating system of the computer that was compromised."},
+    {"name": "malware_path", "description": "The path of the malware."},
+    {"name": "url_path", "description": "The URL path of the malware."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_CRED_FIELDS = [
+    {"name": "breach_source", "description": "The source of breached data."},
+    {"name": "domain", "description": "The domain related to the breached data."},
+    {"name": "email", "description": "The email found in the breached data."},
+    {"name": "username", "description": "The username found in the breached data."},
+    {"name": "executive_name", "description": "The executive member's name related to the breached data."},
+    {"name": "password", "description": "The password found in the breached data."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_DOMAIN_INFRINGE_FIELDS = [
+    {"name": "confirmation_time", "description": "The time of infringement confirmation."},
+    {"name": "risks", "description": "The potential difficulties carried by the infringement."},
+    {"name": "incident_status", "description": "The status of the infringement incident."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_SMF_FIELDS = [
+    {"name": "platform", "description": "The social network platform for social media fraud findings."},
+    {"name": "subject", "description": "The subject URL or profile link."},
+    {"name": "risk_score", "description": "The numeric risk score from CBS."},
+    {"name": "risks", "description": "The risk indicators associated with the finding."},
+    {"name": "incident_status", "description": "The platform-specific incident status."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_MM_FIELDS = [
+    {"name": "money_mule_id", "description": "The CBS money mule finding ID."},
+    {"name": "account_identifier", "description": "The account identifier tied to the money mule."},
+    {"name": "suspect_names", "description": "The names associated with the money mule."},
+    {"name": "suspect_emails", "description": "The email addresses associated with the money mule."},
+    {"name": "suspect_phones", "description": "The phone numbers associated with the money mule."},
+    {"name": "transfer_amount", "description": "The transfer amount when present."},
+    {"name": "transfer_currency", "description": "The currency code for the transfer."},
+    {"name": "bank_account_holder_name", "description": "The name on the bank account."},
+    {"name": "bank_name", "description": "The bank name tied to the money mule."},
+    {"name": "bank_account_country", "description": "The country of the bank account."},
+    {"name": "bic", "description": "The Bank Identifier Code."},
+    *DEFAULT_FIELDS,
+]
+
+CBS_GS_FIELDS = [
+    {"name": "finding_id", "description": "The CBS gambling-site finding ID."},
+    {"name": "url", "description": "The primary gambling site URL."},
+    {"name": "submitted_url", "description": "The URL submitted to CBS for scanning."},
+    {"name": "landing_url", "description": "The landing page URL observed for the site."},
+    {"name": "title", "description": "The page title observed during scan."},
+    {"name": "resolving_ip", "description": "The resolved IP for the gambling site."},
+    {"name": "tags", "description": "The tags applied to the gambling site finding."},
+    {"name": "status_code", "description": "The HTTP status code from scan."},
+    {"name": "url_status", "description": "The URL reachability status."},
+    {"name": "scan_status", "description": "The scan completion status."},
+    {"name": "enrichment", "description": "The DNS enrichment payload."},
+    {"name": "external_links", "description": "The external links discovered on the gambling site."},
+    {"name": "internal_links", "description": "The internal links discovered on the gambling site."},
+    *DEFAULT_FIELDS,
+]
+
+
+MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}.get(
+    demisto.params().get("mirror_direction", "None"), None
+)
+
+
+def resolve_cbs_module(module_to_use: str | None = None) -> str:
+    """Resolve API module_type from instance config.
+
+    Pre-upgrade instances may omit module_to_use; treat missing/blank/unknown as Incidents.
+    """
+    if module_to_use is None:
+        module_to_use = demisto.params().get("module_to_use", CBS_DEFAULT_MODULE_DISPLAY)
+    if not module_to_use or not str(module_to_use).strip():
+        return CBS_DEFAULT_MODULE_TYPE
+    return CBS_MODULE_DISPLAY_TO_TYPE.get(module_to_use, CBS_DEFAULT_MODULE_TYPE)
+
+
+class Instance:
+    def __init__(self, **kwargs) -> None:
+        self.module: str = kwargs.get("module", "incidents")
+        self.list_prefix = "CyberBlindspot.IncidentList"
+        self.details_prefix = "CyberBlindspot.RemoteIncident"
+        match self.module:
+            case "compromised_cards":
+                self.mapping_fields = CBS_CARD_FIELDS
+            case "breached_credentials":
+                self.mapping_fields = CBS_CRED_FIELDS
+            case "malware_logs":
+                self.mapping_fields = CBS_MALWARE_LOG_FIELDS
+            case "domain_infringement":
+                self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
+            case "subdomain_infringement":
+                self.mapping_fields = CBS_DOMAIN_INFRINGE_FIELDS
+            case "social_media_fraud":
+                self.mapping_fields = CBS_SMF_FIELDS
+            case "money_mules":
+                self.mapping_fields = CBS_MM_FIELDS
+            case "gambling_sites":
+                self.mapping_fields = CBS_GS_FIELDS
+            case _:
+                self.mapping_fields = CBS_INCIDENT_FIELDS
+
+
+INSTANCE = Instance(module=resolve_cbs_module())
+
+
+INTEGRATION_INSTANCE = demisto.integrationInstance()
+
+
+""" CLIENT CLASS """
+
+
+class Client(BaseClient):
+    """Client class to interact with the service API
+
+    This Client implements API calls, and does not contain any XSOAR logic.
+    Should only do requests and return data.
+    It inherits from BaseClient defined in CommonServer Python.
+    Most calls use _http_request() that handles proxy, SSL verification, etc.
+    For this  implementation, no special attributes defined
+    """
+
+    def test_configuration(self, params: dict[str, Any]) -> list[dict[str, Any]]:
+        """Send request to test
+
+        :param params: Parameters to be sent in the request
+        :type params: dict[str, Any]
+        :return: List containing the incidents
+        :rtype: List[dict[str, Any]]
+        """
+
+        response = self._http_request(method="GET", url_suffix=CBS_API_ENDPOINT + API.get("FETCH", ""), params=params)
+        log(DEBUG, "at client's test function")
+        if response.get("statusCode") != 200:
+            raise DemistoException(f'Error received: {response.get("errors", "request was not successful")}')
+        return response.get("hits", [])
+
+    def get_screenshot_files(self, params: dict[str, Any]) -> list[dict[str, Any]]:
+        """Send request to get screenshot(s)
+
+        :param params: Parameters to be sent in the request
+        :type params: dict[str, Any]
+        :return: List of dictionaries containing file information
+        :rtype: list[dict[str, Any]]
+        """
+        log(DEBUG, "at client's get_screenshot_files function")
+        log(DEBUG, f"{params=}")
+        response = self._http_request(
+            method="POST",
+            retries=MAX_RETRIES,
+            backoff_factor=10,
+            status_list_to_retry=[400, 429, 500],
+            url_suffix=CBS_API_ENDPOINT + API.get("GET_SCREENSHOT", ""),
+            json_data=params,
+            params={"t": datetime.now().timestamp()},
+        )
+        log(DEBUG, f"{response=}")
+        return response.get("results", []) or []  # Return empty list if results is None
+
+    def fetch_incidents(self, params: dict[str, Any]) -> list[dict[str, Any]]:
+        """Send request to fetch list of incidents
+
+        :param params: Parameters to be sent in the request
+        :type params: dict[str, Any]
+        :return: List containing the incidents
+        :rtype: List[dict[str, Any]]
+        """
+        response = self._http_request(
+            method="GET",
+            retries=MAX_RETRIES,
+            backoff_factor=10,
+            status_list_to_retry=[400, 429, 500],
+            url_suffix=CBS_API_ENDPOINT + API.get("FETCH", ""),
+            params=params,
+        )
+        log(DEBUG, "at client's fetch function")
+        if response.get("statusCode") != 200:
+            raise DemistoException(f'Error received: {response.get("message")}')
+
+        incident_list = response.get("hits", [])
+        return incident_list
+
+    def fetch_incident(self, params: dict[str, Any]) -> dict[str, Any]:
+        """Send a request to fetch a certain incident
+
+        :param params: Parameters to be sent in the request
+        :type params: dict[str, Any]
+        :return: Dictionary containing the incident data
+        :rtype: dict[str, Any]
+        """
+        response = self._http_request(
+            method="GET",
+            retries=MAX_RETRIES,
+            backoff_factor=10,
+            status_list_to_retry=[400, 429, 500],
+            url_suffix=CBS_API_ENDPOINT + API.get("FETCH", ""),
+            params=params,
+        )
+        log(DEBUG, "at client's fetch function")
+
+        incident_list = response.get("hits", [])
+        if not incident_list:
+            return {}
+
+        return incident_list[0]
+
+    def close_incident(self, args: dict[str, Any]) -> dict[str, Any]:
+        """Send incident close request for a certain incident
+
+        :param args: Arguments to be sent in the request
+        :type args: dict[str, Any]
+        :return: Response from the remote server carrying the result of the request
+        :rtype: dict[str, Any]
+        """
+        response = self._http_request(
+            method="POST",
+            retries=MAX_RETRIES,
+            backoff_factor=10,
+            status_list_to_retry=[400, 429, 500],
+            url_suffix=CBS_API_ENDPOINT + API["CLOSE_INCIDENT"],
+            data=args,
+            params={"t": datetime.now().timestamp()},
+        )
+        log(DEBUG, f'Closing returned status {response.get("statusCode")}')
+
+        if response.get("statusCode") != 200:
+            log(ERROR, f'Incident could not be closed: Error Code {response.get("statusCode")}')
+        else:
+            log(INFO, response.get("message", ""))
+        return response
+
+    def request_takedown(self, args: dict[str, Any]) -> dict[str, Any]:
+        """Send incident takedown request for a certain incident
+
+        :param args: Arguments to be sent in the request
+        :type args: dict[str, Any]
+        :return: Response from the remote server carrying the result of the request
+        :rtype: dict[str, Any]
+        """
+
+        response = self._http_request(
+            method="POST",
+            retries=MAX_RETRIES,
+            backoff_factor=10,
+            status_list_to_retry=[400, 429, 500],
+            url_suffix=CBS_API_ENDPOINT + API["REQUEST_TAKEDOWN"],
+            data=args,
+            params={"t": datetime.now().timestamp()},
+        )
+        log(DEBUG, f'Takedown request returned status {response.get("statusCode")}')
+
+        if response.get("statusCode") != 200:
+            log(ERROR, f'Takedown Request Failed: Error Code {response.get("statusCode")}')
+        else:
+            log(INFO, response.get("message", ""))
+        return response
+
+
+""" HELPER FUNCTIONS """
+
+
+def log(level: str, msg: str):
+    {
+        "info": demisto.info,
+        "error": demisto.error,
+        "debug": demisto.debug,
+    }[level.lower()](f"{LOGGING_PREFIX} {msg}")
+
+
+def convert_to_demisto_severity(severity: str) -> int | float:
+    """Converts the CyberBlindspot incident severity level ('Unknown', 'Info', 'Low', 'Medium', 'High', 'Critical') to XSOAR
+    incident severity (0 to 4).
+
+    :param severity: severity as returned from the CyberBlindspot API
+    :type severity: ``str``
+    :return: _description_
+    :rtype: ``int | float``
+    """
+
+    return {
+        "informational": IncidentSeverity.INFO,
+        "info": IncidentSeverity.INFO,
+        "low": IncidentSeverity.LOW,
+        "medium": IncidentSeverity.MEDIUM,
+        "high": IncidentSeverity.HIGH,
+        "critical": IncidentSeverity.CRITICAL,
+        "fyi": IncidentSeverity.UNKNOWN,
+    }[severity.lower()]
+
+
+def convert_time_string(
+    time_string: str,
+    input_format_string: str,
+    output_format: str = "",
+    timestamp: bool = False,
+    is_utc=False,
+    in_iso_format=False,
+    **parser_args,
+) -> datetime | str | int:
+    """helper function to convert a time string into another format or get the timestamp from it
+
+    :param time_string: Input time string
+    :type time_string: ``str``
+    :param input_format_string: Format string of the input_time_string
+    :type input_format_string: ``str``
+    :param output_format: The format string to convert a time string into, defaults to ''
+    :type output_format: str, optional
+    :param timestamp: A flag to signal whether or not to return a timestamp, defaults to False
+    :type timestamp: bool, optional
+    :return: A datetime object, a time string or timestamp integer
+    :rtype: ``datetime|str|int``
+    """
+    try:
+        output = dateparser.parse(time_string, [input_format_string], **parser_args)
+        if not isinstance(output, datetime):
+            raise ValueError("The passed date string and/or format string is not valid")
+        if is_utc:
+            output = output.replace(tzinfo=timezone.utc)
+        if in_iso_format:
+            return output.isoformat()
+        if output_format:
+            return output.strftime(output_format)
+        elif timestamp:
+            return int(output.timestamp() * 1000)
+        else:
+            return output
+    except ValueError as err:
+        log(ERROR, f"An error was encountered at `convert_time_string()` {err=}")
+        return ""
+
+
+def normalize_timestamp(value: Any) -> Any:
+    """Normalize CBS record timestamp to epoch milliseconds.
+
+    CBS modules may return timestamp as millis (int), numeric string, or ISO datetime string.
+    Fetch cursor logic requires a consistent numeric value for sorting and date_from.
+    """
+    if value is None or value == "":
+        return value
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, int | float):
+        return int(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.isdigit():
+            return int(stripped)
+        parsed = convert_time_string(stripped, "", timestamp=True, is_utc=True)
+        if isinstance(parsed, int):
+            return parsed
+    return value
+
+
+def deduplicate_and_create_incidents(fetched_incidents: List, last_run_incident_identifiers: List[str]) -> tuple[list, list]:
+    """De-duplicates the fetched incidents and creates a list of actionable incidents.
+
+    :param fetched_incidents: Context of the events fetched.
+    :type fetched_incidents: List
+    :param last_run_incident_identifiers: List of ids from the events fetched in the last run.
+    :type last_run_incident_identifiers: List[str]
+
+    :return: Returns updated list of event ids and unique incidents that should be created.
+    :rtype: ``tuple[list,list]``
+    """
+    log(DEBUG, "at Dedup function")
+    incidents: List[dict[str, Any]] = []
+    new_incident_ids = []
+    for incident in fetched_incidents:
+        try:
+            incident_id = incident.get("id")
+            new_incident_ids.append(incident_id)
+        except Exception as e:
+            log(ERROR, f"Skipping insertion of current incident. Error while fetching ID from {incident=}. Error: {str(e)}")
+            continue
+        if last_run_incident_identifiers and incident_id in last_run_incident_identifiers:
+            log(INFO, f"Skipping insertion of current incident since it already exists. \n\n {incident=}")
+            continue
+        else:
+            log(DEBUG, "Creating unique incident")
+            unique_mapped_incident = map_and_create_incident(incident)
+            incidents.append(unique_mapped_incident)
+    log(DEBUG, f"{incidents[:1]=}")
+    return new_incident_ids, incidents
+
+
+def map_and_create_incident(unmapped_incident: dict) -> dict:
+    """Use dictionary of unmapped fetched incident to create a mapped dictionary
+
+    :param unmapped_incident: Fetched incident (unmapped)
+    :type unmapped_incident: ``dict``
+    :return: Incident in format ready for XSOAR
+    :rtype: ``dict``
+    """
+    unmapped_incident.pop("screenshots", "")
+    incident_id: str = unmapped_incident.pop("id", "")
+    mapped_severity = convert_to_demisto_severity(unmapped_incident.pop("severity", "low"))
+    mapped_incident = {
+        "name": unmapped_incident.pop("remarks", ""),
+        "occurred": convert_time_string(
+            unmapped_incident.pop("first_seen", ""), CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True
+        ),
+        "externalstatus": unmapped_incident.pop("status", "monitoring"),
+        "externallink": unmapped_incident.pop("external_link", ""),
+        "severity": mapped_severity,
+        "CustomFields": {
+            "cbs_type": unmapped_incident.pop("type", ""),
+            "cbs_module": INSTANCE.module,
+            "cbs_coa": unmapped_incident.pop("coa", ""),
+            "cbs_updated_date": convert_time_string(
+                unmapped_incident.pop("last_seen", ""), CBS_INCOMING_DATE_FORMAT, in_iso_format=True, is_utc=True
+            ),
+            **unmapped_incident,
+        },
+    }
+    if "timestamp" in mapped_incident["CustomFields"]:
+        mapped_incident["CustomFields"]["timestamp"] = normalize_timestamp(mapped_incident["CustomFields"]["timestamp"])
+    if MIRROR_DIRECTION:
+        mapped_incident["xsoar_mirroring"] = {
+            "mirror_direction": MIRROR_DIRECTION,
+            "mirror_id": incident_id,
+            "mirror_instance": INTEGRATION_INSTANCE,
+        }
+
+    mapped_incident["rawJson"] = json.dumps(mapped_incident)
+    return mapped_incident
+
+
+def to_snake_case(input_string: str) -> str:
+    """helper function to return passed strings in snake_case
+
+    :param input_string: Input string to change into snake case
+    :type input_string: ``str``
+    :return: A string in snake case
+    :rtype: ``str``
+    """
+    return "".join(["_" + i.lower() if i.isupper() else i for i in input_string]).lstrip("_")
+
+
+""" COMMAND FUNCTIONS """
+
+
+def test_module(client: Client, params) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: client to use
+
+    :return: `'ok'` if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    message: str = ""
+    args: dict[str, Any] = {}
+    try:
+        mirror_direction = params.get("mirror_direction", "")
+        first_fetch = params.get("first_fetch", "")
+        max_fetch = arg_to_number(params.get("max_fetch", ""))
+        date_from = params.get("date_from", "")
+        date_to = params.get("date_to", "")
+        api_key = params.get("api_key", {}).get("password", "")
+        if mirror_direction not in ["None", "Incoming", "Outgoing", "Incoming And Outgoing"]:
+            log(INFO, 'Invalid "Mirror Direction" Value')
+            raise DemistoException('Invalid "Mirroring Direction" Value')
+        if first_fetch and not dateparser.parse(first_fetch):
+            log(INFO, 'Invalid "First Fetch" Value')
+            raise DemistoException('Invalid "First Fetch" Value')
+        if max_fetch and (max_fetch <= 0 or max_fetch > ABSOLUTE_MAX_FETCH):
+            log(INFO, f'Invalid "Max Fetch" Value. Should be between 1 to {ABSOLUTE_MAX_FETCH}')
+            raise DemistoException(f'Invalid "Max Fetch" Value. Should be between 1 to {ABSOLUTE_MAX_FETCH}')
+        else:
+            args["max_hits"] = max_fetch
+        if date_from and not dateparser.parse(date_from, [CBS_OUTGOING_DATE_FORMAT]):
+            log(INFO, 'Invalid "Date From" Value (Does not match format "%d-%m-%Y %H:%M")')
+            raise DemistoException('Invalid "Date From" Value (Does not match format "%d-%m-%Y %H:%M")')
+        elif date_from:
+            args["date_from"] = convert_time_string(date_from, CBS_OUTGOING_DATE_FORMAT, timestamp=True)
+        if date_to and not dateparser.parse(date_to, [CBS_OUTGOING_DATE_FORMAT]):
+            log(INFO, 'Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")')
+            raise DemistoException('Invalid "Date To" Value (Does not match format "%d-%m-%Y %H:%M")')
+        elif date_to:
+            args["date_to"] = convert_time_string(date_to, CBS_OUTGOING_DATE_FORMAT, timestamp=True)
+        if not api_key:
+            log(INFO, 'Invalid "API Key" Value')
+            raise DemistoException('Invalid "API Key" Value')
+        args["module_type"] = resolve_cbs_module(params.get("module_to_use"))
+        incidents = client.test_configuration(args)
+        if max_fetch and len(incidents) > max_fetch:
+            log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
+            incidents = incidents[:: max_fetch - 1]
+        message = "ok"
+    except DemistoException as e:
+        expected_words = [
+            "Forbidden",
+            "Authorization",
+            "Mirroring Direction",
+            "First Fetch",
+            "Max Fetch",
+            "Date From",
+            "Date To",
+            "API Key",
+            "Module",
+            "does not match format '%d-%m-%Y %H:%M'",
+        ]
+        for word in expected_words:
+            log(DEBUG, "Exception in test_module()")
+            if word in str(e.message):
+                message = e.message
+            else:
+                raise e
+    return message
+
+
+def fetch_incidents(
+    client: Client, last_fetch_ids: list[str], params: dict[str, Any], last_run: dict[str, Any]
+) -> tuple[dict, list[dict]]:
+    """Helper function to call client's `fetch_incidents` function.
+
+    Args:
+        client (Client): client
+        last_fetch_ids (list[str]): The list of unique incident IDs that were fetched in the last run
+        params (dict[str, Any]): GET params to send with the fetch request
+
+    Returns:
+        tuple[dict, list[dict]]: The next run object and the list of incidents minus incidents from last run
+    """
+    incidents = client.fetch_incidents(params)
+
+    max_fetch = arg_to_number(params.get("max_hits")) or MAX_FETCH
+    if max_fetch and len(incidents) > max_fetch:
+        log(INFO, f"Incidents fetched exceed the limit, removing the excess {len(incidents) - max_fetch} incidents.")
+        incidents = incidents[:: max_fetch - 1]
+
+    if not incidents and not last_run:
+        log(INFO, "No incidents returned, and no last run data was found")
+        return {}, []
+
+    incident_ids, unique_incidents = deduplicate_and_create_incidents(incidents, last_fetch_ids)
+    log(INFO, f"Received {len(incidents) - len(unique_incidents)} duplicates incidents to skip.")
+    log(INFO, f"Calculated {len(incident_ids)} id(s).")
+
+    dates = sorted(
+        normalized
+        for incident in unique_incidents
+        if (normalized := normalize_timestamp(incident["CustomFields"].get("timestamp"))) not in (None, "")
+    )
+    last_fetched_timestamp = dates[-1] if dates else last_run.get("last_fetched_timestamp")
+
+    log(INFO, f"setting last fetched timestamp - {last_fetched_timestamp=}")
+    next_run = {"last_fetched_timestamp": last_fetched_timestamp, "last_fetch_ids": incident_ids}
+    return next_run, unique_incidents
+
+
+def build_fetch_params(demisto_params: dict[str, Any], last_run: dict[str, Any]) -> dict[str, Any]:
+    """Build API params for fetch-incidents."""
+    last_fetched_timestamp = last_run.get("last_fetched_timestamp", "")
+    if last_fetched_timestamp not in ("", None):
+        last_fetched_timestamp = normalize_timestamp(last_fetched_timestamp)
+    first_fetch = demisto_params.get("first_fetch", "7 days")
+    try:
+        dateparser.parse(f"{first_fetch} UTC")
+    except Exception:
+        log(DEBUG, "first_fetch is not parsable, setting to `7 days`")
+        first_fetch = "7 days"
+
+    if not last_fetched_timestamp:
+        log(DEBUG, f"Fetch is set to fetch from the {first_fetch} ago.")
+
+    params: dict[str, Any] = {
+        "date_field": "@timestamp",
+        "order": "asc",
+        "max_hits": MAX_FETCH,
+        "module_type": INSTANCE.module,
+        "date_from": last_fetched_timestamp
+        if last_fetched_timestamp
+        else convert_time_string(f"{first_fetch} UTC", "", timestamp=True),
+        "t": datetime.now().timestamp() * 1000,
+    }
+    if "domain_infringement" in INSTANCE.module:
+        params["finding_status"] = demisto_params.get("finding_status", "")
+        params["risk_score_min"] = demisto_params.get("risk_score_min", "")
+        params["risk_score_max"] = demisto_params.get("risk_score_max", "")
+    return params
+
+
+def get_remote_data_command(client: Client, args: dict):
+    """get-remote-data command: Returns an updated incident and error entry (if needed)
+
+    Args:
+        client: client
+        args (dict): The command arguments
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the incident
+            has been closed on CBS's end.
+        close_end_statuses (bool): Specifies whether "End Status" statuses on CBS should be closed when mirroring.
+
+    Returns:
+        GetRemoteDataResponse: The Response containing the updated incident to mirror and its entries
+    """
+    entries = []
+    updated_incident = {}
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
+    last_update = parse_date_string(remote_args.last_update)
+    last_update_ts = last_update.timestamp() * 1000 if isinstance(last_update, datetime) else -1
+
+    log(DEBUG, f"Performing get-remote-data command for the incident: {remote_incident_id}")
+
+    params = {"ticket_id": remote_incident_id, "module_type": INSTANCE.module, "t": datetime.now().timestamp() * 1000}
+
+    updated_incident = client.fetch_incident(params)
+    incident_updated_date = updated_incident.get("last_seen", "")
+    settings = {"TIMEZONE": "UTC"}
+    remote_incident_last_update_ts = convert_time_string(
+        incident_updated_date, CBS_INCOMING_DATE_FORMAT, timestamp=True, settings=settings
+    )
+    log(DEBUG, f"{updated_incident=}")
+    log(DEBUG, f"{last_update_ts=}")
+    log(DEBUG, f"{remote_incident_last_update_ts=}")
+    status = updated_incident.get("status", "").lower()
+
+    if status == "closed":
+        log(DEBUG, f"Incident seems to be {status}. Adding closing entry")
+        log(INFO, f"Updating incident {remote_incident_id} with status: {status}")
+        close_reason = f"Incident was {status} on CyberBlindspot."
+        entries.append(
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentClose": True, "closeReason": close_reason},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        )
+    elif status in ["disregarded", "unconfirmed"]:
+        log(DEBUG, f"Incident seems to be {status}. Adding entry")
+        log(INFO, f"Updating incident {remote_incident_id} with status: {status}")
+        note = f"Incident was {status} on CyberBlindspot. Not closed yet."
+        entries.append({"Type": EntryType.NOTE, "Contents": note, "ContentsFormat": EntryFormat.TEXT})
+    elif status == "auto_resolved":
+        log(DEBUG, "Incident seems to be resolved. Adding resolution entry")
+        log(INFO, f"Updating incident {remote_incident_id} with status: {status}")
+        note = "Incident was resolved through monitoring on CyberBlindspot. Not closed yet."
+        entries.append({"Type": EntryType.NOTE, "Contents": note, "ContentsFormat": EntryFormat.TEXT})
+    elif status == "resolved":
+        log(DEBUG, "Incident seems to be resolved. Adding resolution entry")
+        log(INFO, f"Updating incident {remote_incident_id} with status: {status}")
+        note = "Incident was resolved by response team on CyberBlindspot. Not closed yet."
+        entries.append({"Type": EntryType.NOTE, "Contents": note, "ContentsFormat": EntryFormat.TEXT})
+    elif status == "wip":
+        log(DEBUG, "Incident seems to be undergoing a process. Adding processing entry")
+        log(INFO, f"Updating incident {remote_incident_id} with status: {status}")
+        note = "Incident is undergoing a process on CyberBlindspot. Actions will be unavailable until processing is done."
+        entries.append({"Type": EntryType.NOTE, "Contents": note, "ContentsFormat": EntryFormat.TEXT})
+    elif status == "monitoring":
+        log(DEBUG, "Incident seems to be undergoing monitoring. Adding monitoring entry")
+        log(INFO, f"Updating incident {remote_incident_id} with status: {status}")
+        note = "Incident is being monitored on CyberBlindspot. Actions will be unavailable until monitoring is done."
+        entries.append({"Type": EntryType.NOTE, "Contents": note, "ContentsFormat": EntryFormat.TEXT})
+
+    else:
+        log(DEBUG, f'This status value `{updated_incident.get("status")}` for incident {remote_incident_id}. Had some issue')
+        return GetRemoteDataResponse([], [])
+    log(DEBUG, f"Updated incident {remote_incident_id}")
+    mapped_updated_incident = map_and_create_incident(updated_incident)
+    return GetRemoteDataResponse(mirrored_object=mapped_updated_incident, entries=entries)
+
+
+def get_modified_remote_data_command(client: Client, args):
+    """Gets the list of all incidents that have changed since a given timestamp
+
+    Args:
+        client: http Client
+        args (dict): The command arguments
+
+    Returns:
+        GetModifiedRemoteDataResponse: The response containing the list of ids of incidents changed
+    """
+    modified_incident_ids: list = []
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_timestamp = convert_time_string(remote_args.last_update, "", timestamp=True)
+    log(DEBUG, f"Performing get-modified-remote-data command with : {last_timestamp}({remote_args.last_update})")
+
+    params = {
+        "date_field": "last_seen",
+        "order": "asc",
+        "date_from": last_timestamp,
+        "max_hits": ABSOLUTE_MAX_FETCH,
+        "module_type": INSTANCE.module,
+        "t": datetime.now().timestamp() * 1000,
+    }
+    modified_incident_ids.extend(item["id"] for item in client.fetch_incidents(params))
+    if len(modified_incident_ids) >= MIRROR_LIMIT:
+        log(INFO, f"Warning: More than {MIRROR_LIMIT} incidents have been modified since the last update.")
+    return GetModifiedRemoteDataResponse(modified_incident_ids=modified_incident_ids)
+
+
+def update_remote_system_command(client: Client, args: dict):
+    parsed_args = UpdateRemoteSystemArgs(args)
+    log(DEBUG, f"Got the following update args:\n\n{parsed_args.entries=},")
+    log(DEBUG, f"\n\n{parsed_args.data=}, ")
+    log(DEBUG, f"\n\n{parsed_args.incident_changed=}, ")
+    log(DEBUG, f"\n\n{parsed_args.inc_status=}, ")
+    log(DEBUG, f"\n\n{parsed_args.remote_incident_id=}, ")
+    log(DEBUG, f"\n\n{parsed_args.delta=}")
+    if parsed_args.delta:
+        log(DEBUG, f"Got the following delta keys {str(list(parsed_args.delta.keys()))}")
+
+    remote_incident_id = parsed_args.remote_incident_id
+
+    try:
+        if parsed_args.incident_changed:
+            issue_status: str = parsed_args.inc_status
+            log(DEBUG, f"Incident {remote_incident_id} status changed to {issue_status}")
+            if issue_status == IncidentStatus.DONE:
+                log(DEBUG, f"Closing incident {remote_incident_id}")
+                client.close_incident({"ticket_id": remote_incident_id, "t": datetime.now().timestamp()})
+            else:
+                log(DEBUG, f"Modification to {remote_incident_id} is not configured for outgoing mirroring..")
+        else:
+            log(DEBUG, f"Incident {remote_incident_id} was not modified locally..")
+    except DemistoException as e:
+        if "Incident should be under Member Feedback or Monitoring to Close" in e.message:
+            remote_incident = client.fetch_incident({"ticket_id": remote_incident_id})
+            if remote_incident.get("status") is not None and remote_incident.get("status") == "WIP":
+                log(INFO, f"Incident {remote_incident_id} is undergoing a process..")
+
+    return remote_incident_id
+
+
+def get_mapping_fields_command():
+    incident_type_scheme = SchemeTypeMapping(type_name="CyberBlindspot Incident")
+    for field in INSTANCE.mapping_fields:
+        incident_type_scheme.add_field(name=field["name"], description=field["description"])
+
+    return GetMappingFieldsResponse([incident_type_scheme])
+
+
+def ctm360_cbs_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    if args.get("dateFrom"):
+        args["dateFrom"] = convert_time_string(args["dateFrom"], CBS_OUTGOING_DATE_FORMAT, timestamp=True)
+    if args.get("dateTo"):
+        args["dateTo"] = convert_time_string(args["dateTo"], CBS_OUTGOING_DATE_FORMAT, timestamp=True)
+    params = {to_snake_case(key): v for key, v in args.items()}
+    params |= {"date_field": "@timestamp", "t": datetime.now().timestamp()}
+    params |= {"module_type": INSTANCE.module}
+    result = client.fetch_incidents(params)
+    log(INFO, f"Received {len(result)} incidents")
+    if len(result) > 0:
+        result = [map_and_create_incident(item) for item in result]
+
+    return CommandResults(
+        outputs_prefix=INSTANCE.list_prefix,
+        outputs_key_field="id",
+        outputs=result,
+        readable_output=tableToMarkdown(INSTANCE.list_prefix, result, headers=result[0].keys(), is_auto_json_transform=True)
+        if len(result) > 0
+        else "No incidents within these dates",
+    )
+
+
+def ctm360_cbs_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    params = {to_snake_case(key): v for key, v in args.items()}
+    params["t"] = datetime.now().timestamp()
+    params |= {"module_type": INSTANCE.module}
+    result = client.fetch_incident(params)
+    log(INFO, f"Received {result}")
+    if result.get("timestamp", ""):
+        result["timestamp"] = str(normalize_timestamp(result["timestamp"]))
+
+    return CommandResults(
+        outputs_prefix=INSTANCE.details_prefix,
+        outputs_key_field="id",
+        outputs=result,
+        readable_output=tableToMarkdown(INSTANCE.details_prefix, result, headers=result.keys(), is_auto_json_transform=True)
+        if result.keys()
+        else "No incident with that ID",
+    )
+
+
+def ctm360_cbs_incident_request_takedown_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    params = {to_snake_case(key): v for key, v in args.items()}
+    result = client.request_takedown(params)
+    msg = result.get("message", "")
+    log(INFO, f'Request to takedown incident {args["ticketId"]} {"was " if result else "was un"}successful.')
+
+    return CommandResults(readable_output=msg)
+
+
+def ctm360_cbs_incident_close_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    params = {to_snake_case(key): v for key, v in args.items()}
+    result = client.close_incident(params)
+    msg = result.get("message", "")
+    log(INFO, f'Request to close incident {args["ticketId"]} {"was " if result else "was un"}successful.')
+
+    return CommandResults(readable_output=msg)
+
+
+def ctm360_cbs_incident_retrieve_screenshots_command(
+    client: Client, args: dict[str, Any]
+) -> CommandResults | list[dict[str, Any]] | dict[str, Any]:
+    """Get screenshot evidence for an incident
+
+    Args:
+        client (Client): CyberBlindspot client
+        args (dict[str, Any]): Command arguments
+
+    Returns:
+        CommandResults | list[dict[str, Any]] | dict[str, Any]: File results or error message
+    """
+    params = {to_snake_case(key): v for key, v in args.items()}
+    log(DEBUG, f"Getting screenshot evidence for {params=}")
+
+    try:
+        # Early returns for disabled screenshots
+        if not RETRIEVE_SCREENSHOTS:
+            log(INFO, "Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+            return CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+
+        # Get existing filenames from context
+        existing_files = demisto.context().get("InfoFile", [])
+        log(DEBUG, f"{existing_files=}")
+        if not isinstance(existing_files, list):
+            existing_files = [existing_files] if existing_files else []
+        existing_filenames = [d.get("Name") for d in existing_files if isinstance(d, dict) and d.get("Name")]
+
+        # Filter requested files that already exist in context
+        if "files" in params and isinstance(params["files"], list):
+            original_files = params["files"]
+            params["files"] = [
+                file_info
+                for file_info in original_files
+                if isinstance(file_info, dict) and file_info.get("filename") not in existing_filenames
+            ]
+
+            if not params["files"] and original_files:
+                return CommandResults(readable_output="All requested screenshots already exist in context")
+
+        # Make API call and handle errors
+        try:
+            results = client.get_screenshot_files(params) if params.get("files", True) else []
+            log(DEBUG, f"{results=}")
+        except Exception as e:
+            log(ERROR, f"Error calling get_screenshot_files: {str(e)}")
+            return CommandResults(readable_output=f"Failed to fetch screenshots from API: {str(e)}")
+
+        if not results:
+            return CommandResults(readable_output="No new screenshots to fetch")
+
+        # Process results
+        file_results = []
+        for file_data in results:
+            if not isinstance(file_data, dict):
+                continue
+
+            filename = file_data.get("filename")
+            filedata = file_data.get("filedata", {})
+
+            if not filename or not isinstance(filedata, dict) or "data" not in filedata:
+                continue
+
+            try:
+                data = bytes(filedata["data"])
+                file = fileResult(filename, data, file_type=EntryType.IMAGE)
+                if file:
+                    file_results.append(file)
+            except Exception as e:
+                log(ERROR, f"Failed to process file {filename}: {str(e)}")
+                continue
+
+        log(DEBUG, f"{file_results=}")
+        if not file_results:
+            return CommandResults(readable_output="No new screenshots to add to context")
+
+        log(INFO, f"Added {len(file_results)} new screenshot(s) to context")
+        return file_results
+
+    except Exception as e:
+        log(ERROR, f"Failed to get screenshot evidence: {str(e)}")
+        return CommandResults(readable_output=f"Failed to fetch screenshot(s): {str(e)}")
+
+
+""" MAIN FUNCTION """
+
+
+def main() -> None:
+    """main function, parses params and runs command functions
+
+    :return:
+    :rtype:
+    """
+    try:
+        log(DEBUG, "at main func")
+        demisto_args = demisto.args()
+        demisto_params = demisto.params()
+        demisto_command = demisto.command()
+
+        log(DEBUG, f"Command being called is {demisto_command}")
+        log(DEBUG, f"Demisto Args are {demisto_args=}")
+
+        client = Client(
+            base_url=CBS_BASE_URL,
+            verify=not demisto_params.get("insecure", False),
+            headers={"api-key": demisto_params.get("api_key", {}).get("password")},
+            proxy=demisto_params.get("proxy", False),
+        )
+
+        cbs_commands: dict[str, Any] = {
+            "test-module": test_module,
+            "get-mapping-fields": get_mapping_fields_command,
+            "get-remote-data": get_remote_data_command,
+            "get-modified-remote-data": get_modified_remote_data_command,
+            "update-remote-system": update_remote_system_command,
+            "ctm360-cbs-incident-list": ctm360_cbs_list_command,
+            "ctm360-cbs-incident-details": ctm360_cbs_details_command,
+            "ctm360-cbs-incident-request-takedown": ctm360_cbs_incident_request_takedown_command,
+            "ctm360-cbs-incident-close": ctm360_cbs_incident_close_command,
+            "ctm360-cbs-incident-retrieve-screenshots": ctm360_cbs_incident_retrieve_screenshots_command,
+        }
+
+        if demisto_command == "fetch-incidents":
+            log(DEBUG, "at fetch-incidents command")
+            last_run = demisto.getLastRun()
+            last_fetch_ids = last_run.get("last_fetch_ids", [])
+            params = build_fetch_params(demisto_params, last_run)
+
+            log(INFO, f"Will be fetching up to {MAX_FETCH} records.")
+            log(DEBUG, f"Calling fetch with the following: {params=}")
+            log(DEBUG, f"Mirroring set as: {MIRROR_DIRECTION}")
+
+            next_run, incidents = fetch_incidents(client, last_fetch_ids, params, last_run)
+            log(DEBUG, f"Fetched {len(incidents)} incidents, {next_run=}")
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
+        elif demisto_command == "test-module":
+            return_results(test_module(client, demisto_params))
+        else:
+            if getfullargspec(cbs_commands[demisto_command]).args:
+                return_results(cbs_commands[demisto_command](client, demisto_args))
+            else:
+                return_results(cbs_commands[demisto_command]())
+
+    # Log exceptions and return errors
+    except Exception as e:
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}", error=traceback.format_exc())
+
+
+""" ENTRY POINT """
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

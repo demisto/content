@@ -1,0 +1,52 @@
+{
+    "digital_guardian_arc_raw": {
+        "dg_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "inc_creator": {
+            "type": "string",
+            "is_array": false
+        },
+        "inc_assign": {
+            "type": "string",
+            "is_array": false
+        },
+        "inc_state": {
+            "type": "string",
+            "is_array": false
+        },
+        "dg_description": {
+            "type": "string",
+            "is_array": false
+        },
+        "inc_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "dg_comment": {
+            "type": "string",
+            "is_array": false
+        },
+        "inc_mtime": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "dg_guid": {
+            "type": "string",
+            "is_array": false
+        },
+        "inc_sev": {
+            "type": "string",
+            "is_array": false
+        },
+        "dg_utype": {
+            "type": "string",
+            "is_array": false
+        },
+        "dg_tenant": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

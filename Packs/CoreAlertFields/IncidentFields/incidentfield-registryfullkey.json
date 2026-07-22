@@ -1,0 +1,32 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "registryfullkey",
+    "closeForm": false,
+    "content": true,
+    "description": "If the alert triggered on registry modifications (the Event Type is Registry) this is the full registry key that triggered the alert. If not, then N/A.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_registryfullkey",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Registry Full Key",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+	"x2_fields": "action_registry_full_key"
+}

@@ -1,0 +1,495 @@
+id: URL Enrichment - Generic v2 - Test
+version: -1
+fromversion: 5.0.0
+name: URL Enrichment - Generic v2 - Test
+description: A test for the URL Enrichment - Generic v2 playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5914ab1a-3c9b-4dc4-823d-48ca4a545c29
+    type: start
+    task:
+      id: 5914ab1a-3c9b-4dc4-823d-48ca4a545c29
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 973cd0bc-a9ba-4f1b-844b-bfb180cb8c33
+    type: regular
+    task:
+      id: 973cd0bc-a9ba-4f1b-844b-bfb180cb8c33
+      version: -1
+      name: Clear context
+      description: Clear the context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2c8dc7b3-f971-4bd9-831d-588be67c9991
+    type: regular
+    task:
+      id: 2c8dc7b3-f971-4bd9-831d-588be67c9991
+      version: -1
+      name: Add URLs to context
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: URL
+      value:
+        simple: '["www.google.com", "http://www.yahoo.com", "https://www.facebook.com/"]'
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: d8e19622-14f6-43cb-8e06-07fa83281534
+    type: title
+    task:
+      id: d8e19622-14f6-43cb-8e06-07fa83281534
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 2980f80b-6deb-4f41-864a-7af5f6421db3
+    type: playbook
+    task:
+      id: 2980f80b-6deb-4f41-864a-7af5f6421db3
+      version: -1
+      name: URL Enrichment - Generic v2
+      description: |-
+        Enrich URL using one or more integrations.
+
+        URL enrichment includes:
+        * Verify URL SSL
+        * Threat information
+        * URL reputaiton
+        * Take URL screenshot
+      playbookName: URL Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "18"
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: a14839c2-bc2b-428c-8fc4-ea1ceac041f0
+    type: condition
+    task:
+      id: a14839c2-bc2b-428c-8fc4-ea1ceac041f0
+      version: -1
+      name: Verify DBotScore context fields
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e1012c01-4d82-4b7d-8cff-ce5b7941fe0c
+    type: regular
+    task:
+      id: e1012c01-4d82-4b7d-8cff-ce5b7941fe0c
+      version: -1
+      name: Make test fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      message:
+        simple: Not all DBotScore context fields were created.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1355
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b67e8e44-2e43-4a1f-86e3-c1da5a2149d8
+    type: condition
+    task:
+      id: b67e8e44-2e43-4a1f-86e3-c1da5a2149d8
+      version: -1
+      name: Verify URL screenshot
+      description: Verifies that at least one screenshot of the URLs has been created.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value:
+              simple: url.png
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: cd60a29e-5aa0-4f36-87c7-7699d0230de1
+    type: title
+    task:
+      id: cd60a29e-5aa0-4f36-87c7-7699d0230de1
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: fa472588-007d-45ff-8d09-1760bd19f9ac
+    type: title
+    task:
+      id: fa472588-007d-45ff-8d09-1760bd19f9ac
+      version: -1
+      name: Test Empty Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 7eface0f-b57f-4f31-8c28-6c88db3775f9
+    type: regular
+    task:
+      id: 7eface0f-b57f-4f31-8c28-6c88db3775f9
+      version: -1
+      name: Clear context
+      description: Clear the context for a fresh start of the test.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 332e6464-2a82-425e-8d96-ed0d693f89c3
+    type: playbook
+    task:
+      id: 332e6464-2a82-425e-8d96-ed0d693f89c3
+      version: -1
+      name: URL Enrichment - Generic v2
+      description: |-
+        Enrich URLs using one or more integrations.
+
+        URL enrichment includes:
+        * SSL verification for URLs
+        * Threat information
+        * Providing of URL screenshots
+        * URL Reputation using !url
+      playbookName: URL Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      Rasterize:
+        simple: "True"
+      URL:
+        complex:
+          root: URL
+          transformers:
+          - operator: uniq
+      VerifyURL:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1745,
+        "width": 1090,
+        "x": -90,
+        "y": -100
+      }
+    }
+  }
+inputs: []
+outputs: []

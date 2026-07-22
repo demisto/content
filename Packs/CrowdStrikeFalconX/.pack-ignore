@@ -1,0 +1,11 @@
+[file:README.md]
+ignore=RM104
+
+[known_words]
+X
+csfalconx
+FalconX
+
+# GR103 is temporary, see CIAC-11705
+[file:CrowdStrike_Falcon_X_-Test-Detonate_URL.yml]
+ignore=GR103

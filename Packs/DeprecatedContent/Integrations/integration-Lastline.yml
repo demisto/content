@@ -1,0 +1,1035 @@
+commonfields:
+  id: Lastline
+  version: -1
+deprecated: true
+name: Lastline
+display: Lastline (Deprecated)
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Deprecated. Provides threat analysts and incident response teams with the advanced malware isolation and inspection environment, needed to safely execute advanced malware samples and understand their behavior.
+configuration:
+- display: Server URL (e.g. https://analysis.lastline.com)
+  name: url
+  defaultvalue: https://analysis.lastline.com
+  type: 0
+  required: true
+- display: API Key for accessing Lastline APIs
+  name: api_key
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Token for accessing Lastline APIs
+  name: api_token
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Threshold
+  name: threshold
+  defaultvalue: "70"
+  type: 0
+  required: false
+script:
+  script: >-
+    //GLOBALS//
+
+    var LAST_LINE_DEFAULTS = {
+        interval:10,
+        timeout:0,
+        pushToPortal:true
+    };
+
+
+    LAST_LINE_DEFAULTS.threshold = params.threshold ? params.threshold : 70; // 70 is Lastline default
+
+
+    var SERVER_URL = params.url;
+
+    if (SERVER_URL[SERVER_URL.length - 1] !== '/') {
+        SERVER_URL += '/';
+    }
+
+    var MD5_REGEX = /\b[a-fA-F\d]{32}\b/m;
+
+    var SHA1_REGEX = /\b[a-fA-F\d]{40}\b/m;
+
+    var SHA256_REGEX = /\b[a-fA-F\d]{64}\b/m;
+
+
+    //HELPERS//
+
+    function dataToMd(data, threshold, filename) {
+        // print data report as markdown
+        var key;
+        var name;
+        if ('url' in data.analysis_subject) {
+            key='URL';
+            name = data.analysis_subject.url;
+        } else {
+            key='file';
+            if (filename) { //1st priority is user's choice
+                name = filename;
+            } else {
+                var filenameDq = dq(invContext, 'Lastline.Submission(val.UUID === "'+ data.task_uuid +'").Filename'); //2nd priority is the filename from the context
+                if (filenameDq && filenameDq[0]) {
+                    name = filenameDq;
+                } else {
+                    name = 'MD5:' + data.analysis_subject.md5;
+                }
+            }
+        }
+        var md = '';
+        if (data.score >= threshold) { //default is 70
+            name = name + ' :red_circle:';
+        }
+        md += '### Lastline analysis for ' + key + ': **' + name +'**\n';
+        md += '#### Score: ' + data.score  + "\n";
+        md += 'Task UUID: ' + data.task_uuid + "\n";
+        md += 'Submission Time: ' + data.submission + "\n";
+        if (Array.isArray(data.malicious_activity) && data.malicious_activity.length>0) {
+            md += '### Suspicious Activity: ' + "\n";
+            for (var i=0; i <= data.malicious_activity.length; i++) {
+                if (data.malicious_activity[i]) {
+                    md += '#### ' + data.malicious_activity[i] + "\n";
+                }
+            }
+        }
+        if (key == 'file') {
+            md += objToMd(data.analysis_subject);
+        }
+        md += "\n";
+        return md;
+    }
+
+
+    function doReq(method, path, parameters) {
+        // send http post request
+        if (!parameters) {
+            parameters = {};
+        }
+        parameters.key = params.api_key;
+        parameters.api_token = params.api_token;
+        var result = http(
+            SERVER_URL + path + encodeToURLQuery(parameters),
+            {
+                Headers: {'Content-Type': ['application/json']},
+                Method: method
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw  'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        if (obj.error_code) {
+            switch (obj.error_code) {
+                case 101:
+                    // file hash does not exist
+                    throw "File hash does not exist.";
+                case 106:
+                    // analysis report not ready
+                    throw "Analysis report is not ready yet.";
+                case 115:
+                    // reached api quota
+                    throw "You've reached your API call quota. Contact your Lastline representative.";
+                default:
+                    throw 'Error from Lastline. Error code: ' + obj.error_code + '. Error: ' + obj.error;
+            }
+        }
+        if (obj.success === 0) {
+            throw 'Error from Lastline: ' + obj.error;
+        }
+        return {body: result.Body, obj: obj};
+    }
+
+
+    function doFile(entry_id,parameters) {
+        // send http multipart request (post file)
+        if (!parameters) {
+            parameters = {};
+        }
+        parameters.key = params.api_key;
+        parameters.api_token=params.api_token;
+        var path = 'analysis/submit/file';
+        var result = httpMultipart(
+            SERVER_URL + path + encodeToURLQuery(parameters),
+            entry_id,
+            {
+                Method: 'POST',
+                Headers: {'Content-Type': ['application/json']}
+            },
+            params.insecure,
+            params.proxy
+        );
+        if (result.StatusCode < 200 && result.StatusCode > 299) {
+            throw 'Failed to perform request ' + path + ', request status code: ' + result.StatusCode;
+        }
+        var obj;
+        try {
+            obj = JSON.parse(result.Body);
+        } catch (ex) {
+            throw 'Error parsing reply - ' + result.Body + ' - ' + ex;
+        }
+        if (obj.error_code) {
+            switch (obj.error_code) {
+                case 101:
+                    // file hash does not exist
+                    throw "File hash does not exist.";
+                case 106:
+                    // analysis report not ready
+                    throw "Analysis report is not ready yet.";
+                case 115:
+                    // reached api quota
+                    throw "You've reached your API call quota. Contact your Lastline representative.";
+                default:
+                    throw 'Error from Lastline. Error code: ' + obj.error_code + '. Error: ' + obj.error;
+            }
+        }
+        return {body: result.Body, obj: obj};
+    }
+
+
+    function analysisPoll(uuid, threshold, timeout, interval) {
+        // poll for analysis report
+        if (!timeout) {
+            timeout = LAST_LINE_DEFAULTS.timeout;
+        }
+        if (!interval) {
+            interval = LAST_LINE_DEFAULTS.interval;
+        }
+        if (!threshold) {
+            threshold = LAST_LINE_DEFAULTS.threshold;
+        }
+        var result = doReq('POST', '/analysis/get', {uuid: uuid, full_report_score:threshold});
+        var waited=0;
+        while (!analysisReady(result.obj.data) && parseInt(timeout)>waited) {
+            wait(parseInt(interval));
+            waited+=interval;
+            result = doReq('POST', 'analysis/get', {uuid: uuid, full_report_score:threshold});
+        }
+        return result;
+    }
+
+
+    function analysisReady(data) {
+        // check if report is ready based on data content (score field is set)
+        return (data && 'score' in data);
+    }
+
+
+    //COMMANDS//
+
+    function FileUpload(file_id,threshold,timeout,interval,pushToPortal) {
+        // submit file for analysis
+        // optional - wait for analysis to copmplete and print results
+        // if not waiting - add uuid to context
+        if (!timeout) {
+            timeout = LAST_LINE_DEFAULTS.timeout;
+        }
+        if (!interval) {
+            interval = LAST_LINE_DEFAULTS.interval;
+        }
+        if (!threshold) {
+            threshold = LAST_LINE_DEFAULTS.threshold;
+        }
+        if (!pushToPortal) {
+            pushToPortal = LAST_LINE_DEFAULTS.pushToPortal;
+        }
+        var result = doFile(file_id, {
+            full_report_score: threshold,
+            push_to_portal: pushToPortal
+        });
+        var uuid = result.obj.data.task_uuid;
+        var ec = {};
+        ec.lastlineTasks = [{'file_id': file_id, 'uuid': uuid}]; //backward compatabillity
+
+        var filenameToUpload;
+        var filenameDq = dq(invContext, 'File(val.EntryID === "'+file_id +'").Name'); //1st priority is the filename from the context
+        if (filenameDq && filenameDq[0]) {
+            filenameToUpload = filenameDq;
+        } else {
+            filenameToUpload = file_id; //2nd priority for the file name is demisto's entryID
+        }
+
+        ec.Lastline = {};
+        ec.Lastline.Submission = {'Filename': filenameToUpload, 'UUID': uuid, 'Status': 'Analyzing'};
+        var md = '';
+        if (!analysisReady(result.obj.data) && timeout > 0) {
+            result = analysisPoll(uuid, timeout, interval);
+        }
+        if (analysisReady(result.obj.data)) {
+            ec.Lastline.Submission.Status = 'Completed';
+            md = dataToMd(result.obj.data, threshold, filenameToUpload);
+            var DBotScore = {
+                Indicator: result.obj.data.analysis_subject.md5,
+                Type: 'hash',
+                Vendor: 'Lastline',
+                Score: 0 //score will never be 0
+            };
+            if (result.obj.data.score > threshold) { //default is 70
+                var analysis = result.obj.data.analysis_subject;
+                addMalicious(ec, outputPaths.file, {
+                    MD5: analysis.md5,
+                    SHA1: analysis.sha1,
+                    SHA256: analysis.sha256,
+                    Malicious: {
+                        Vendor: 'Lastline',
+                        Description: 'Score above ' + threshold,
+                        Score: result.obj.data.score
+                    }
+                });
+                DBotScore.Score = 3;
+            } else if (result.obj.data.score > 30) { //hard-coded due to lastline doc, won't reach if score > threshold
+                DBotScore.Score = 2;
+            } else {
+                DBotScore.Score = 1;
+            }
+            ec.DBotScore = DBotScore;
+        } else {
+            md += '### Lastline analysis for file: **' + filenameToUpload +'**\n';
+            md += 'File submitted for analysis.\n';
+            md += 'Task UUID: ' + uuid + '\n';
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: result.obj,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                "Lastline.Submission(val.UUID==obj.UUID)": ec.Lastline.Submission,
+                "lastlineTasks(val.uuid==obj.uuid)": ec.lastlineTasks //backward compatabillity
+            }
+        };
+    }
+
+    function UrlUpload(url,threshold,timeout,interval, pushToPortal) {
+        // submit URL for analysis and get its report
+        // if analysis exists - return it immediately.
+        // if analysis does not exist - submit it and either wait or put task id into context
+        if (!timeout) {
+            timeout = LAST_LINE_DEFAULTS.timeout;
+        }
+        if (!interval) {
+            interval = LAST_LINE_DEFAULTS.interval;
+        }
+        if (!threshold) {
+            threshold = LAST_LINE_DEFAULTS.threshold;
+        }
+        if (!pushToPortal) {
+            pushToPortal = LAST_LINE_DEFAULTS.pushToPortal;
+        }
+        var result = doReq('POST', 'analysis/submit/url', {url: url, full_report_score:threshold, push_to_portal:pushToPortal});
+        var uuid = result.obj.data.task_uuid;
+        var ec = {};
+        ec.lastlineTasks = [{'url': url, 'uuid': uuid}]; //backward compatabillity
+        ec.Lastline = {};
+        ec.Lastline.Submission = [{'URL': url, 'UUID': uuid, 'Status': 'Analyzing'}];
+        var md = '';
+        if (!analysisReady(result.obj.data) && timeout > 0) {
+            result = analysisPoll(uuid,threshold,timeout,interval);
+        }
+        if (analysisReady(result.obj.data)) {
+            ec.Lastline.Submission.Status = 'Completed';
+            var DBotScore = {
+                Indicator: url,
+                Type: 'url',
+                Vendor: 'Lastline',
+                Score:0 //score will never be 0
+            };
+            md=dataToMd(result.obj.data,threshold);
+            if (result.obj.data.score > threshold) { //default is 70
+                addMalicious(ec, outputPaths.url, {
+                    Data: url,
+                    Malicious: {
+                        Vendor: 'Lastline',
+                        Description: 'Score above ' + threshold,
+                        Score: result.obj.data.score
+                    }
+                });
+                DBotScore.Score = 3;
+            } else if (result.obj.data.score > 30) { //hard-coded due to lastline doc, won't reach if score > threshold
+                DBotScore.Score = 2;
+            } else {
+                DBotScore.Score = 1;
+            }
+            ec.DBotScore = DBotScore;
+        } else {
+            md += '### Lastline analysis for url: **' + url +'**\n';
+            md += 'URL submitted for analysis.\n';
+            md += 'Task UUID: ' + uuid + '\n';
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: result.obj,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: {
+                "Lastline.Submission(val.UUID==obj.UUID)": ec.Lastline.Submission,
+                "lastlineTasks(val.uuid==obj.uuid)": ec.lastlineTasks //backward compatabillity
+            }
+        };
+    }
+
+
+    function HashGet(hash, threshold) {
+        // get file hash analysis.
+        // If hash is not known - return error
+        if (!threshold) {
+            threshold = LAST_LINE_DEFAULTS.threshold;
+        }
+        var fileParams={full_report_score:threshold};
+        if (MD5_REGEX.test(hash)) {
+            fileParams.md5=hash;
+        }
+        else if (SHA1_REGEX.test(hash)) {
+            fileParams.sha1=hash;
+        }
+        else if (SHA256_REGEX.test(hash)) {
+            fileParams.sha256=hash;
+        }
+        else {
+            throw 'Hash must be of the following: MD5, SHA1, SHA256.';
+        }
+        var md='';
+        var ec={};
+        // check if file hash exists
+        var result = doReq('POST','analysis/submit/file', fileParams);
+        if (result.obj.error_code == 101) {
+            throw 'File hash not found in Lastline';
+        }
+        var data = result.obj.data;
+        md += dataToMd(data,threshold);
+        var DBotScore = {
+            Indicator: hash,
+            Type: 'hash',
+            Vendor: 'Lastline',
+            Score: 0 //score will never be 0
+        };
+        if (result.obj.data.score > threshold) { //default is 70
+            var analysis = result.obj.data.analysis_subject;
+            addMalicious(ec, outputPaths.file, {
+                MD5: analysis.md5,
+                SHA1: analysis.sha1,
+                SHA256: analysis.sha256,
+                Type: analysis.mime_type,
+                Malicious: {
+                    Vendor: 'Lastline',
+                    Description: 'Score above ' + threshold,
+                    Score: result.obj.data.score
+                }
+            });
+            DBotScore.Score= 3;
+        } else if (result.obj.data.score > 30) { //hard-coded due to lastline doc, won't reach if score > threshold
+            DBotScore.Score= 2;
+        } else {
+            DBotScore.Score= 1;
+        }
+        ec.DBotScore = DBotScore;
+        return {
+            Type: entryTypes.note,
+            Contents: result.obj,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
+
+    function GetReport(uuid,threshold,timeout,interval) {
+        // get analysis report based on uuid
+        // if report not ready - either wait or return waiting message
+        if (!timeout) {
+            timeout = LAST_LINE_DEFAULTS.timeout;
+        }
+        if (!interval) {
+            interval = LAST_LINE_DEFAULTS.interval;
+        }
+        if (!threshold) {
+            threshold = LAST_LINE_DEFAULTS.threshold;
+        }
+        if (!uuid || uuid === '') {
+            throw 'No task UUID provided';
+        }
+
+        var ec = {};
+        var md = '';
+
+        var result = analysisPoll(uuid,threshold,timeout,interval);
+        var DBotScore = {Vendor: 'Lastline', Score: 0};
+        if (analysisReady(result.obj.data)) {
+
+            ec["Lastline.Submission(val.UUID===obj.UUID)"] = {
+                'UUID': uuid,
+                'Status': 'Completed',
+            };
+            var analysis = result.obj.data;
+
+            if('report' in result.obj.data) {
+                if ('analysis_subjects' in result.obj.data.report) {
+                    //mainly in file samples
+                    if ('yara_signatures' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].YaraSignatures = result.obj.data.report.analysis_subjects[0].yara_signatures;
+                    }
+                    if ('dns_queries' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].DNSqueries = result.obj.data.report.analysis_subjects[0].dns_queries;
+                    }
+                    if ('network_connections' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].NetworkConnections = result.obj.data.report.analysis_subjects[0].network_connections;
+                    }
+                    if ('downloaded_files' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].DownloadedFiles = result.obj.data.report.analysis_subjects[0].downloaded_files;
+                    }
+                    if ('process' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].Process = result.obj.data.report.analysis_subjects[0].process;
+                    }
+                    //mainly in pcap samples
+                    if ('domain_detections' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].DomainDetections = result.obj.data.report.analysis_subjects[0].domain_detections;
+                    }
+                    if ('ip_detections' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].IPdetections = result.obj.data.report.analysis_subjects[0].ip_detections;
+                    }
+                    if ('url_detections' in result.obj.data.report.analysis_subjects[0]) {
+                        ec["Lastline.Submission(val.UUID===obj.UUID)"].URLdetections = result.obj.data.report.analysis_subjects[0].url_detections;
+                    }
+                }
+            }
+            if ('url' in analysis) {
+                DBotScore.Type = 'url';
+                DBotScore.Indicator = analysis.url;
+                if (result.obj.data.score > threshold) { //default is 70
+                    addMalicious(ec, outputPaths.url, {
+                        Data: url,
+                        Malicious: {
+                            Vendor: 'Lastline',
+                            Description: 'Score above ' + threshold,
+                            Score: result.obj.data.score
+                        }
+                    });
+                    DBotScore.Score = 3;
+                } else if (result.obj.data.score > 30) { //hard-coded due to lastline doc, won't reach if score > threshold
+                    DBotScore.Score = 2;
+                } else {
+                    DBotScore.Score = 1;
+                }
+            } else {
+                DBotScore.Type = 'hash';
+                DBotScore.Indicator = analysis.md5;
+                if (result.obj.data.score > threshold) { //default is 70
+                    addMalicious(ec, outputPaths.file, {
+                        MD5: analysis.md5,
+                        SHA1: analysis.sha1,
+                        SHA256: analysis.sha256,
+                        Type: analysis.mime_type,
+                        Malicious: {
+                            Vendor: 'Lastline',
+                            Description: 'Score above ' + threshold,
+                            Score: result.obj.data.score
+                        }
+                    });
+                DBotScore.Score = 3;
+                } else if (result.obj.data.score > 30) { //hard-coded due to lastline doc, won't reach if score > threshold
+                    DBotScore.Score = 2;
+                } else {
+                    DBotScore.Score = 1;
+                }
+            }
+            md += dataToMd(result.obj.data,threshold);
+
+        } else {
+            md += '#### Report not ready.\n';
+            md += 'Task UUID: ' + uuid + '\n';
+        }
+        ec.DBotScore = DBotScore;
+
+        return {
+            Type: entryTypes.note,
+            Contents: result.obj,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
+
+
+    function CheckStatus(uuid) {
+        var result;
+        try {
+            result = doReq('POST', '/analysis/get', {uuid: uuid});
+        } catch (err) {
+            if (err == 'Analysis report is not ready yet.') {
+                return 'Report for Task UUID: ' + uuid + ' is not ready';
+            } else {
+                throw err;
+            }
+        }
+        var md = '#### Report ready for Task UUID: ' + uuid + '.\n';
+        var ec = {};
+        ec["Lastline.Submission(val.UUID===obj.UUID)"] = {
+                'UUID': uuid,
+                'Status': 'Completed',
+            };
+        return {
+            Type: entryTypes.note,
+            Contents: result,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+            EntryContext: ec
+        };
+    }
+
+
+
+    function GetTaskList(before, after) {
+        var headers = {};
+        headers.after = after; //mandatory field for lastline
+        if(before) { //optional
+            headers.before = before;
+        }
+        var result = doReq('POST', '/analysis/get_completed', headers);
+        var jbody = JSON.parse(result.body);
+        var md = '';
+        if (String(jbody.data.tasks).length > 0) {
+            md += '### Lastline completed tasks list:' + "\n";
+            md += objToMd(jbody.data.tasks);
+        } else {
+            md += 'No tasks were completed during the specified time range.';
+        }
+        return {
+            Type: entryTypes.note,
+            Contents: result.body,
+            ContentsFormat: formats.json,
+            HumanReadable: md,
+        };
+    }
+
+
+    // The command input arg holds the command sent from the user.
+
+    try {
+        switch (command) {
+            // This is the call made when pressing the integration test button.
+            case 'test-module':
+                UrlUpload('https://google.com');
+                return 'ok';
+
+            case 'file':
+                return HashGet(args.file, args.threshold);
+
+            case 'url': //deprecated
+                return UrlUpload(args.url, args.threshold, args.timeout, args.interval);
+            case 'lastline-upload-url':
+                return UrlUpload(args.url, args.threshold, 0, 0);
+
+            case 'lastline-upload': //deprecated
+                return FileUpload(args.file_id, args.threshold, args.timeout, args.interval);
+            case 'lastline-upload-file':
+                return FileUpload(args.EntryID, args.threshold, 0, 0, args.pushToPortal);
+
+            case 'lastline-get': //deprecated
+                if (!args.threshold) {
+                    args.threshold = LAST_LINE_DEFAULTS.threshold;
+                }
+                return GetReport(args.uuid, args.threshold, args.timeout, args.interval);
+            case 'lastline-get-report':
+                if (!args.threshold) {
+                    args.threshold = LAST_LINE_DEFAULTS.threshold;
+                }
+                var uuids = argToList(args.uuid);
+                var entries = [];
+                for (var i=0; i < uuids.length; i++) {
+                    var reportResponse = GetReport(uuids[i], args.threshold, 0, 0);
+                    if (reportResponse.error){
+                        return reportResponse.error;
+                    }
+                    entries.push(reportResponse);
+                }
+                return entries;
+
+            case 'lastline-check-status':
+                var uuids = argToList(args.uuid);
+                var entries = [];
+                for (var i=0; i < uuids.length; i++) {
+                    var reportResponse = CheckStatus(uuids[i]);
+                    entries.push(reportResponse);
+                }
+                return entries;
+
+            case 'lastline-get-task-list':
+                return GetTaskList(args.before, args.after);
+
+            default:
+                throw 'Unknown command - ' + command;
+        }
+    } catch (err) {
+      return {
+        'Type': entryTypes['error'],
+        'ContentsFormat': formats['text'],
+        'Contents': err
+      }
+    }
+  type: javascript
+  commands:
+  - name: lastline-get
+    deprecated: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The task UUID of the submitted Lastline analysis.
+    - name: timeout
+      description: The timeout (in seconds) to wait for an analysis to complete.
+      defaultValue: "0"
+    - name: interval
+      description: The interval (in seconds) to poll for the analysis status.
+      defaultValue: "10"
+    - name: threshold
+      description: The score threshold to identify a file as malicious.
+      defaultValue: "50"
+    outputs:
+    - contextPath: URL.Data
+      description: A list of malicious URLs identified by the Lastline analysis.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+      type: string
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor.
+      type: number
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+      type: string
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+      type: string
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: string
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor reporting the URL as malicious.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: This command is deprecated. Use the lastline-get-report command.
+  - name: url
+    deprecated: true
+    arguments:
+    - name: url
+      required: true
+      description: 'URL to analyze.'
+    - name: timeout
+      description: Timeout (in seconds) to wait for an analysis to complete.
+      defaultValue: "0"
+    - name: interval
+      description: Interval (in seconds) to poll for the analysis status.
+      defaultValue: "10"
+    - name: threshold
+      description: The score threshold that determines if the file is malicious. Lastline default is 70.
+      defaultValue: "70"
+    - name: pushToPortal
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to add the request to the Lastline portal.
+    outputs:
+    - contextPath: lastlineTasks
+      description: A list of the submitted Lastline analysis tasks.
+    - contextPath: URL.Data
+      description: A list of malicious URLs identified by the Lastline analysis.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor to made the decision.
+      type: string
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The Vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: Lastline.Submission.URL
+      description: The URL to upload.
+      type: string
+    - contextPath: Lastline.Submission.UUID
+      description: ID of the submission
+      type: string
+    description: This command is deprecated. Use the lastline-upload-url command.
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: File hash to check (MD5, SHA-1 or SHA-256).
+    - name: threshold
+      description: Score threshold that determines if the file is malicious.
+      defaultValue: "70"
+    outputs:
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+      type: string
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+      type: string
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: string
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: File.Type
+      description: The file type.
+      type: string
+    description: Checks the file reputation of the specified hash.
+  - name: lastline-upload
+    deprecated: true
+    arguments:
+    - name: file_id
+      required: true
+      description: The ID of the file ID to upload.
+    - name: threshold
+      description: The score threshold that determines if the file is malicious.
+      defaultValue: "70"
+    - name: timeout
+      description: The timeout (in seconds) to wait for the analysis to complete.
+      defaultValue: "0"
+    - name: interval
+      description: The interval (in seconds) to poll for the analysis status.
+      defaultValue: "10"
+    - name: pushToPortal
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to add the request to the Lastline portal.
+    outputs:
+    - contextPath: lastlineTasks.file_id
+      description: The ID of the file submitted to the Lastline analysis tasks.
+      type: string
+    - contextPath: lastlineTasks.uuid
+      description: The task UUID of the submitted Lastline analysis.
+      type: string
+    description: This command is deprecated. Use the lastline-upload-file command.
+  - name: lastline-upload-url
+    arguments:
+    - name: url
+      required: true
+      description: 'The URL to analyze. For example, https://www.demisto.com'
+    - name: threshold
+      description: The score threshold that determines if the file is malicious. Lastline default is 70.
+      defaultValue: "70"
+    outputs:
+    - contextPath: Lastline.Submission.URL
+      description: The URL to upload.
+      type: string
+    - contextPath: Lastline.Submission.UUID
+      description: The ID of the submission.
+      type: string
+    - contextPath: Lastline.Submission.Status
+      description: The status of the submission.
+      type: string
+    description: Submit URL for analysis.
+  - name: lastline-upload-file
+    arguments:
+    - name: EntryID
+      required: true
+      description: The entry ID of the file to upload.
+    - name: threshold
+      description: The score threshold that determines if the file is malicious. Lastline default is 70.
+      defaultValue: "70"
+    outputs:
+    - contextPath: Lastline.Submission.Filename
+      description: The file name of the submitted sample.
+      type: string
+    - contextPath: Lastline.Submission.UUID
+      description: The task UUID of the submitted sample.
+      type: string
+    - contextPath: Lastline.Submission.Status
+      description: The status of the submission.
+      type: string
+    description: Submits a URL for analysis.
+  - name: lastline-get-report
+    arguments:
+    - name: uuid
+      required: true
+      description: The task UUID of the submitted Lastline analysis.
+    - name: threshold
+      description: The score threshold that determines if the file is malicious. Lastline default is 70.
+    outputs:
+    - contextPath: URL.Data
+      description: A list of malicious URLs identified by the lastline analysis.
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision.
+      type: string
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason that the vendor made the decision.
+      type: string
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor.
+      type: number
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+      type: string
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+      type: string
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+      type: string
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor.
+      type: number
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: Lastline.Submission.Status
+      description: Status of the submission.
+      type: string
+    - contextPath: Lastline.Submission.YaraSignatures.name
+      description: Yara signatures name.
+      type: string
+    - contextPath: Lastline.Submission.YaraSignatures.score
+      description: The score according to the yara signatures (0 to 100).
+      type: number
+    - contextPath: Lastline.Submission.YaraSignatures.internal
+      description: Whether the signature is for internal usage only.
+      type: boolean
+    - contextPath: Lastline.Submission.DNSqueries
+      description: List of DNS queries executed by the analysis subject.
+      type: string
+    - contextPath: Lastline.Submission.NetworkConnections
+      description: A list of network connections executed by the analysis subject.
+      type: string
+    - contextPath: Lastline.Submission.DownloadedFiles
+      description: A list of files that were downloaded using the Microsoft Windows file-download API functions. Each element is a tuple of file-origin URL and a File element.
+      type: string
+    - contextPath: Lastline.Submission.Process
+      description: Information on a Windows process.
+    - contextPath: Lastline.Submission.Process.arguments
+      description: The argument of the process.
+      type: string
+    - contextPath: Lastline.Submission.Process.executable
+      description: The executable of the process.
+    - contextPath: Lastline.Submission.Process.executable.abs_path
+      description: The absolute path of the executable of the process.
+      type: string
+    - contextPath: Lastline.Submission.Process.executable.filename
+      description: The filename of the executable.
+      type: string
+    - contextPath: Lastline.Submission.Process.executable.yara_signature_hits
+      description: The Yara signature of the executable of the process.
+      type: string
+    - contextPath: Lastline.Submission.Process.executable.ext_info
+      description: The Executable information of the process.
+      type: unknown
+    - contextPath: Lastline.Submission.Process.process_id
+      description: The process ID.
+      type: string
+    - contextPath: File.Type
+      description: File type
+      type: string
+    description: Returns an analysis report.
+  - name: lastline-get-task-list
+    arguments:
+    - name: before
+      description: 'Tasks before in UTC format %Y-%m-%d %H:%M:%S. For example, 2018-07-08 12:00:00.'
+    - name: after
+      required: true
+      description: 'Tasks after in UTC format %Y-%m-%d %H:%M:%S. For example, 2018-07-10 12:00:00.'
+    description: Returns a list of tasks.
+  - name: lastline-check-status
+    arguments:
+    - name: uuid
+      required: true
+      description: The task UUID of the submitted Lastline analysis.
+      isArray: true
+    outputs:
+    - contextPath: Lastline.Submission.UUID
+      description: The task UUID of submitted sample.
+      type: string
+    - contextPath: Lastline.Submission.Status
+      description: The status of the submission.
+      type: string
+    description: Checks the status of a submission.
+tests:
+- No tests - deprecated
+fromversion: 5.0.0

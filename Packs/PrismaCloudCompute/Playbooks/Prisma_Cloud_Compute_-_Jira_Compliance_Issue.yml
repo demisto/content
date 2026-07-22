@@ -1,0 +1,794 @@
+id: Prisma Cloud Compute - Jira Compliance Issue
+version: -1
+name: Prisma Cloud Compute - Jira Compliance Issue
+description: |-
+  This playbook is a sub-playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
+  It creates a new Jira issue or updates an existing Jira issue for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7d89d80a-69cf-49d5-8f06-ee2f9cec00ef
+    type: start
+    task:
+      id: 7d89d80a-69cf-49d5-8f06-ee2f9cec00ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 2d4fc830-4bb3-4756-8beb-10d48f510f4e
+    type: condition
+    task:
+      id: 2d4fc830-4bb3-4756-8beb-10d48f510f4e
+      version: -1
+      name: Verify if Jira issue requires XLSX or a Markdown table
+      description: |-
+        This condition checks if one of the following is true:
+
+        - The markdown table with the compliance issues is too big (32,000 characters long or more)
+        - The value of the playbook input "AttachFileByDefault" is "True"
+
+        If one of the above is true, it will create the Jira issue with an attached file and not with a markdown table in the issue's description.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      XLSX:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: XLSX
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: incident.prismacloudcomputehostcomplianceissues
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: incident.prismacloudcomputehostcomplianceissues.complianceissues
+                      iscontext: true
+                    right:
+                      value:
+                        simple: filter
+                      iscontext: true
+                transformers:
+                - operator: IgnoreFieldsFromJson
+                  args:
+                    fields:
+                      value:
+                        simple: complianceissues
+                    json_object:
+                      value:
+                        simple: incident.prismacloudcomputehostcomplianceissues
+                - operator: JsonToTable
+                  args:
+                    headers: {}
+                    is_auto_json_transform: {}
+                    json_transform_properties: {}
+                    title: {}
+                - operator: replaceMatch
+                  args:
+                    regex:
+                      value:
+                        simple: <br>
+                    replaceWith:
+                      value:
+                        simple: "\\\\ \n"
+                - operator: strLength
+            iscontext: true
+          right:
+            value:
+              simple: "32000"
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AttachFileByDefault
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 9ced22dd-d7bf-48ad-8e95-4356a601a355
+    type: regular
+    task:
+      id: 9ced22dd-d7bf-48ad-8e95-4356a601a355
+      version: -1
+      name: Create a filter term for extracting relevant resources
+      description: This task will create a string which will be used as a filter in other tasks in order to extract only the relevant resources, based on the compliance issue ID, from the full list of affected resources.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: filter
+      value:
+        simple: (^|\n)${inputs.ComplianceIssueID} \(
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 53e40208-e5bb-4250-80b6-e6f574fa5e9f
+    type: title
+    task:
+      id: 53e40208-e5bb-4250-80b6-e6f574fa5e9f
+      version: -1
+      name: Create/Update a ticket with markdown table
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 00fbc82e-8f09-46e0-8045-4aca035f5237
+    type: title
+    task:
+      id: 00fbc82e-8f09-46e0-8045-4aca035f5237
+      version: -1
+      name: Create/Update a ticket with XLSX file
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 7823154f-ebf3-46e5-8628-1fc7513465b2
+    type: title
+    task:
+      id: 7823154f-ebf3-46e5-8628-1fc7513465b2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9e6964d3-4856-4dfc-88dc-9e085d5290e5
+    type: title
+    task:
+      id: 9e6964d3-4856-4dfc-88dc-9e085d5290e5
+      version: -1
+      name: Set ticket info in layout
+      description: commands.local.cmd.set.incident
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "29"
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 272b75d3-c647-4449-8f5c-b7a1f75f2ec4
+    type: regular
+    task:
+      id: 272b75d3-c647-4449-8f5c-b7a1f75f2ec4
+      version: -1
+      name: Show Ticketing Information tab in the layout
+      description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task sets a value in the “ ticketnumber” incident field, which will cause the “Ticketing Information” tab to be visible.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ticketnumber:
+        complex:
+          root: Ticket
+          accessor: Id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: e7af5051-d8b5-4b6e-8bf3-63238a238cbe
+    type: regular
+    task:
+      id: e7af5051-d8b5-4b6e-8bf3-63238a238cbe
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: aad3d9a6-3f9e-44bf-8547-24cf202ba444
+    type: regular
+    task:
+      id: aad3d9a6-3f9e-44bf-8547-24cf202ba444
+      version: -1
+      name: Set ticket info table grid field
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      columns:
+        simple: Ticketing System,Ticket ID,Ticket Number,Action,Title
+      context_path:
+        simple: TicketInfo
+      grid_id:
+        simple: prismacloudcomputeticketsinfo
+      keys:
+        simple: ticketingsystem,ticketid,ticketnumber,action,title
+      overwrite:
+        simple: "false"
+      sort_by:
+        simple: ticketid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 41f1c2b6-7753-4ecf-8a5d-8566f7399a9e
+    type: regular
+    task:
+      id: 41f1c2b6-7753-4ecf-8a5d-8566f7399a9e
+      version: -1
+      name: Prepare ticket info data
+      description: Prepare the data which will be displayed under the "Ticketing Information" tab in the incident's layout.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: TicketInfo
+      value:
+        simple: '{"ticketingsystem": "Jira", "ticketid": "${Ticket.Id}", "ticketnumber": "${Ticket.Key}",  "action": "${TicketAction}", "title":"Prisma Cloud Compute - compliance issues ID: ${inputs.ComplianceIssueID}"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 67eba448-770a-462b-81a3-81b3891f28ee
+    type: condition
+    task:
+      id: 67eba448-770a-462b-81a3-81b3891f28ee
+      description: ""
+      version: -1
+      name: Verify inputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      inputs-exist:
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: inputs-exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ComplianceIssueID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.JiraProjectName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.JiraIssueTypeName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: a98c54b8-ed9f-4578-8c91-3c95e03c769c
+    type: title
+    task:
+      id: a98c54b8-ed9f-4578-8c91-3c95e03c769c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 118ac2f8-72c9-4ff9-8d87-26c26667ab7d
+    type: condition
+    task:
+      id: 118ac2f8-72c9-4ff9-8d87-26c26667ab7d
+      version: -1
+      name: Is Jira V3 integration enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "33"
+      "yes":
+      - "32"
+    scriptarguments:
+      brandname:
+        simple: Jira V3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: ece6c7fa-3118-48f5-8e03-7f100420fb72
+    type: playbook
+    task:
+      id: ece6c7fa-3118-48f5-8e03-7f100420fb72
+      version: -1
+      name: Prisma Cloud Compute - Jira Ticket (XLSX)
+      playbookName: Prisma Cloud Compute - Jira Ticket (XLSX)
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      ComplianceIssueDescription:
+        complex:
+          root: inputs.ComplianceIssueDescription
+      ComplianceIssueID:
+        complex:
+          root: inputs.ComplianceIssueID
+      ComplianceIssueSeverity:
+        complex:
+          root: inputs.ComplianceIssueSeverity
+      Filter:
+        complex:
+          root: filter
+      JiraIssueTypeName:
+        complex:
+          root: inputs.JiraIssueTypeName
+      JiraProjectName:
+        complex:
+          root: inputs.JiraProjectName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: ecc56a85-bf38-4fe6-8bf4-95cc5a824b6c
+    type: playbook
+    task:
+      id: ecc56a85-bf38-4fe6-8bf4-95cc5a824b6c
+      version: -1
+      name: Prisma Cloud Compute - Jira Ticket (Markdown Table)
+      playbookName: Prisma Cloud Compute - Jira Ticket (Markdown Table)
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      ComplianceIssueDescription:
+        complex:
+          root: inputs.ComplianceIssueDescription
+      ComplianceIssueID:
+        complex:
+          root: inputs.ComplianceIssueID
+      ComplianceIssueSeverity:
+        complex:
+          root: inputs.ComplianceIssueSeverity
+      Filter:
+        complex:
+          root: filter
+      JiraIssueTypeName:
+        complex:
+          root: inputs.JiraIssueTypeName
+      JiraProjectName:
+        complex:
+          root: inputs.JiraProjectName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: b8289a7d-dcca-4a73-82a6-e621cd0579f3
+    type: condition
+    task:
+      id: b8289a7d-dcca-4a73-82a6-e621cd0579f3
+      version: -1
+      name: Check if Ticketing tab is already visible in the layout
+      description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task checks if the “Ticketing Information” tab is already visible or not, based on the value under the relevant incident field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: ticketnumber
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "32_27_inputs-exist": 0.57,
+      "34_32_yes": 0.47,
+      "34_33_no": 0.58,
+      "37_26_yes": 0.42,
+      "6_10_XLSX": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1995,
+        "width": 1050,
+        "x": 230,
+        "y": -520
+      }
+    }
+  }
+inputs:
+- key: ComplianceIssueID
+  value: {}
+  required: false
+  description: The compliance issue ID to open a Jira issue for.
+  playbookInputQuery:
+- key: ComplianceIssueDescription
+  value: {}
+  required: false
+  description: The compliance issue description.
+  playbookInputQuery:
+- key: ComplianceIssueSeverity
+  value: {}
+  required: false
+  description: The compliance issue severity.
+  playbookInputQuery:
+- key: AttachFileByDefault
+  value: {}
+  required: false
+  description: |-
+    Whether to create the Jira issue with an XLSX file by default.
+
+    Available options:
+
+    False - The playbook will create the issue with a markdown table containing the compliance issues. In case the table is too big (32,000 characters and above), it will create the Jira issue with an attached XLSX file.
+
+    True - The playbook will create the Jira issue with an attached XLSX file by default.
+  playbookInputQuery:
+- key: JiraProjectName
+  value: {}
+  required: false
+  description: 'Issue type name. For example: "Task".'
+  playbookInputQuery:
+- key: JiraIssueTypeName
+  value: {}
+  required: false
+  description: The project name with which to associate the issue.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

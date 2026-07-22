@@ -1,0 +1,250 @@
+id: PAN-OS URL Filtering enrichment - Test
+version: -1
+name: PAN-OS URL Filtering enrichment - Test
+description: testing the !url filtering of the integration
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 61c17b34-324d-4a8d-86f3-234a9d6f5b54
+    type: start
+    task:
+      id: 61c17b34-324d-4a8d-86f3-234a9d6f5b54
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+  "1":
+    id: "1"
+    taskid: f4015a04-9597-4dfb-8761-b0d2ccfde53e
+    type: regular
+    task:
+      id: f4015a04-9597-4dfb-8761-b0d2ccfde53e
+      version: -1
+      name: print a url to enrich
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: my url to enrich is https://www.amazon.com/
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+  "2":
+    id: "2"
+    taskid: 42a2f30d-fb69-44a0-801f-54150ade580e
+    type: regular
+    task:
+      id: 42a2f30d-fb69-44a0-801f-54150ade580e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+  "4":
+    id: "4"
+    taskid: cf819707-ae55-4aa9-8c9f-01a68decb78b
+    type: regular
+    task:
+      id: cf819707-ae55-4aa9-8c9f-01a68decb78b
+      version: -1
+      name: GetIndicatorDBotScore
+      description: Add into the incident's context the system internal DBot score for the input indicator
+      scriptName: GetIndicatorDBotScore
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      indicator:
+        simple: https://www.amazon.com/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+  "5":
+    id: "5"
+    taskid: 831976f0-615d-44c5-8e28-0e311bb397f2
+    type: condition
+    task:
+      id: 831976f0-615d-44c5-8e28-0e311bb397f2
+      version: -1
+      name: Check reputation is 1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+  "6":
+    id: "6"
+    taskid: 518c6bc5-4529-4cf5-8985-30235ac57250
+    type: title
+    task:
+      id: 518c6bc5-4529-4cf5-8985-30235ac57250
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1085
+        }
+      }
+    note: false
+    timertriggers: []
+  "7":
+    id: "7"
+    taskid: a856396f-7984-4015-8f97-975b5e630c2c
+    type: regular
+    task:
+      id: a856396f-7984-4015-8f97-975b5e630c2c
+      version: -1
+      name: print error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: reputation of https://www.amazon.com/ is not 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+  "8":
+    id: "8"
+    taskid: 48259692-2804-478e-874d-4a252711beba
+    type: regular
+    task:
+      id: 48259692-2804-478e-874d-4a252711beba
+      version: -1
+      name: Sleep 30 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1115,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: "6.1.0"

@@ -1,0 +1,31 @@
+{
+    "id": "14",
+    "ver": "2.5",
+    "result": {
+        "url": "/scan/result/urlrating",
+        "status": {
+            "code": 0,
+            "message": "OK"
+        },
+        "data": [
+            {
+                "url": "https://www.pokemon.com",
+                "start_ts": 1706075110,
+                "finish_ts": 1706075110,
+                "untrusted": 1,
+                "now": 1706090162,
+                "rating": "Clean",
+                "behavior_info": 0
+            },
+            {
+                "url": "http://pikachu.com",
+                "start_ts": 1706418963,
+                "finish_ts": 1706418963,
+                "untrusted": 1,
+                "now": 1706419077,
+                "rating": "Malicious",
+                "behavior_info": 0
+            }
+        ]
+    }
+}

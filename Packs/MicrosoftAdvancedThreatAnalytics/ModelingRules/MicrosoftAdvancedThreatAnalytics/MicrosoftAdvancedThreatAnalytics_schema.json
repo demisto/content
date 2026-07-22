@@ -1,0 +1,60 @@
+{
+    "microsoft_ata_raw": {
+      "app": {
+          "type": "string",
+          "is_array": false
+      },
+      "msg": {
+          "type": "string",
+          "is_array": false
+      },
+      "shost": {
+          "type": "string",
+          "is_array": false
+      },
+      "suser": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefName": {
+          "type": "string",
+          "is_array": false
+      },
+      "externalId": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefSeverity": {
+          "type": "string",
+          "is_array": false
+      },
+      "cefDeviceVendor": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceProduct": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceEventClassId": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "request": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

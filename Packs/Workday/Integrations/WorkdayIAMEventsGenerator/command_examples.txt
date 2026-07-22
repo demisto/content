@@ -1,0 +1,4 @@
+!workday-generate-hire-event user_email=testing@test.com first_name=John last_name=Smith
+!workday-generate-update-event user_email=panw@test.com city="Tel Aviv" title="Software Engineer"
+!workday-generate-terminate-event user_email=panw@testing.com
+!workday-generate-rehire-event user_email=panw@testing.com

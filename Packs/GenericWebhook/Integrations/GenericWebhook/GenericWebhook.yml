@@ -1,0 +1,96 @@
+category: Utilities
+provider: Open Source
+sectionorder:
+- Connect
+- Result
+- Collect
+commonfields:
+  id: Generic Webhook
+  version: -1
+configuration:
+- name: engine_placeholder
+  type: 23
+  section: Connect
+  hidden:
+  - xsoar_on_prem
+- display: Long running instance
+  defaultvalue: 'true'
+  name: longRunning
+  type: 8
+  hidden: true
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: "The username and password is required in Cortex XSOAR 8.5 and above. Using the `_header:` feature without using an engine will not work. The value should only use ASCII characters, and the length may have a limit depending on the server or framework. For additional information on restrictions, refer to the integration documentation."
+  display: Username
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the **Test** button more than once, a failure may occur mistakenly indicating that the port is already in use."
+  display: Listen Port
+  name: longRunningPort
+  type: 0
+  required: true
+  section: Connect
+- display: Certificate (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported.
+  name: certificate
+  type: 12
+  section: Connect
+  advanced: true
+  required: false
+- display: Private Key (Required for HTTPS)
+  additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
+  name: key
+  type: 14
+  section: Connect
+  advanced: true
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- additionalinfo: Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead.
+  display: Store sample events for mapping
+  name: store_samples
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: After adding the Generic Webhook settings, a unique link will be generated below.
+  section: Result
+  name: resultLink
+  type: 22
+  hidden:
+  - xsoar_on_prem
+description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
+display: Generic Webhook
+name: Generic Webhook
+script:
+  commands: []
+  dockerimage: demisto/fastapi:0.125.0.10158186
+  longRunning: true
+  longRunningPort: true
+  script: '-'
+  subtype: python3
+  type: python
+  isFetchSamples: true
+triggers:
+  - conditions:
+      - name: engine
+        operator: not_exists
+      - name: isEngineGroup
+        operator: not_exists
+    effects:
+      - name: longRunningPort
+        action:
+          hidden: true
+          required: false
+      - name: credentials
+        action:
+          required: true
+fromversion: 5.5.0
+tests:
+- Generic Webhook - Test

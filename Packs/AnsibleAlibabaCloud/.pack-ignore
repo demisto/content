@@ -1,0 +1,6 @@
+[known_words]
+ansii
+
+[file:AnsibleAlibabaCloud.yml]
+ignore=BA124
+

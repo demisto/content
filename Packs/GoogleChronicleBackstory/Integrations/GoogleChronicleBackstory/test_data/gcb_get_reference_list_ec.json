@@ -1,0 +1,14 @@
+{
+  "GoogleChronicleBackstory.ReferenceList(val.name == obj.name)": {
+    "name": "dummy",
+    "description": "demo list",
+    "createTime": "2021-10-28T17:12:49.957023Z",
+    "contentType": "PLAIN_TEXT",
+    "lines": [
+      "PCI",
+      "ITAR",
+      "HIPAA",
+      "SuperSercretSauce"
+    ]
+  }
+}

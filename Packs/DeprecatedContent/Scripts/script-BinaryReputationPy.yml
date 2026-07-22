@@ -1,0 +1,110 @@
+commonfields:
+  id: BinaryReputationPy
+  version: -1
+name: BinaryReputationPy
+script: >-
+  from time import sleep
+
+  # Look for various hashes in the incident
+
+  # Inspect labels and attachments for hashes and check the hash reputation
+
+  import re
+
+  strHashRegex = r'\b[a-fA-F\d]{32}\b'
+
+  # Iterate on all the labels and find hashes
+
+  hashRe = re.compile(strHashRegex, re.I)
+
+  hashes = set()
+
+  DEFAULT_WAIT = 5
+
+  maxwait = int(demisto.args()['maxwait']) if 'maxwait' in demisto.args() else DEFAULT_WAIT
+
+
+  inc = demisto.incidents()
+
+  if inc and 'labels' in inc[0]:
+      labels = inc[0]['labels']
+      if labels:
+          for t in labels:
+              for h in hashRe.finditer(t['value']):
+                  hashes.add(h.group(0))
+
+  # Find hashes in the details
+
+  for h in hashRe.finditer(demisto.incidents()[0]['details']):
+      hashes.add(h.group(0))
+  fileNames = []
+
+  if 'fileNames' in demisto.args():
+      fileNames = demisto.args()['fileNames'].split(',')
+  # Also get hashes of files in war room entries
+
+  entries = demisto.executeCommand('getEntries', {})
+
+  for entry in entries:
+      if entry['File'] and demisto.get(entry, 'FileMetadata.md5') and (len(fileNames) == 0 or entry['File'] in fileNames):
+          hashes.add(demisto.get(entry, 'FileMetadata.md5'))
+  badHashes = []
+
+  res = []
+
+  Malicious = False
+
+  for h in hashes:
+      Answered = False
+      rep = demisto.executeCommand('file', {'file': h})
+      for r in rep:
+          if r['Brand'] == 'virustotal':
+              wait = 0
+              while isError(r) and '204 (No Content)' in r['Contents'] and wait < maxwait:
+                  demisto.log('Encountered VirusTotal Free API key rate limit. Waiting 1 minute and trying again.')
+                  sleep(60)
+                  r = demisto.executeCommand('file', {'file': h, 'using-brand': 'virustotal'})[0]
+                  wait += 1
+              if wait > 0:
+                  demisto.log ('Waited '  + str(wait) + ' minutes to query VirusTotal for ' + h + '.')
+          if isError(r):
+              res.append(r)
+              continue
+          Answered = True
+          if positiveFile(r):
+              Malicious = True
+              badHashes.append(h)
+              res.append(shortFile(r))
+      if not Answered:
+          res.append( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "No reputation sources returned a valid answer for " + h } )
+  if Malicious:
+      res.extend(['yes', 'Found malicious hashes!'])
+      appendContext('bad_hashes', badHashes, dedup = True)
+  else:
+      res.extend(['No suspicious files found', 'no'])
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- hash
+- server
+- threat-intel
+- virustotal
+- xfe
+- wildfire
+comment: Deprecated. Get reputation for any hash or file in the incident details
+system: true
+args:
+- name: fileNames
+  default: true
+  description: If provided, checks only files whose names are in the list. The names should be comma-separated.
+- name: maxwait
+  description: Time to wait and poll if any Default 5 minutes.
+scripttarget: 0
+dependson:
+  must:
+  - file
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

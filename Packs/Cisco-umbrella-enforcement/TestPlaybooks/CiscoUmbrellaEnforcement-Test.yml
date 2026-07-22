@@ -1,0 +1,280 @@
+id: Cisco Umbrella Enforcement-Test
+version: -1
+name: Cisco Umbrella Enforcement-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d3fa006e-3d3c-4dfd-89e4-58681de95c5d
+    type: start
+    task:
+      id: d3fa006e-3d3c-4dfd-89e4-58681de95c5d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 2b57d819-ee2d-4daa-8fa1-c980f2ef8f3d
+    type: regular
+    task:
+      id: 2b57d819-ee2d-4daa-8fa1-c980f2ef8f3d
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 63a0c12d-50f5-4098-8171-afca23bb31c6
+    type: regular
+    task:
+      id: 63a0c12d-50f5-4098-8171-afca23bb31c6
+      version: -1
+      name: umbrella-domain-event-add
+      script: '|||umbrella-domain-event-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alert_time:
+        simple: "2013-02-08T09:30:26.0Z"
+      destination_domain:
+        simple: test1.com
+      destination_url:
+        simple: test1.com
+      device_id:
+        simple: ba6a59f4-e692-4724-ba36-c28132c761de
+      device_version:
+        simple: 13.7a
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2d281e0c-b8fe-4215-8fe0-b55653fa538c
+    type: regular
+    task:
+      id: 2d281e0c-b8fe-4215-8fe0-b55653fa538c
+      version: -1
+      name: umbrella-domains-list
+      script: '|||umbrella-domains-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 4023161b-846a-4492-8025-5f8fe4bb856f
+    type: condition
+    task:
+      id: 4023161b-846a-4492-8025-5f8fe4bb856f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: UmbrellaEnforcement.Domains.name
+            iscontext: true
+          right:
+            value:
+              simple: test1.com
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: f2e3ccdd-e8d0-4b4a-8b66-9e91ad30c681
+    type: regular
+    task:
+      id: f2e3ccdd-e8d0-4b4a-8b66-9e91ad30c681
+      version: -1
+      name: umbrella-domain-delete
+      description: Delete domain.
+      script: '|||umbrella-domain-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id: {}
+      name:
+        simple: test1.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 7bb77f4e-670d-43b4-87e8-a0d61bc101a6
+    type: title
+    task:
+      id: 7bb77f4e-670d-43b4-87e8-a0d61bc101a6
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 5190877d-7ae8-418b-85fa-d3eeeaf5987b
+    type: condition
+    task:
+      id: 5190877d-7ae8-418b-85fa-d3eeeaf5987b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: UmbrellaEnforcement.Domains.IsDeleted
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 390,
+        "x": 40,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

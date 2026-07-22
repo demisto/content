@@ -1,0 +1,902 @@
+id: DSPM Remediation for Empty storage asset
+version: -1
+name: DSPM Remediation for Empty storage asset
+description: This playbook is designed to remediate risks associated with empty storage assets across AWS, Azure, and GCP environments. It identifies the cloud provider for the asset and proceeds to delete the storage container or bucket accordingly. Additionally, it sends notifications via Slack to inform stakeholders about the status of the remediation process.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 06b38671-d650-4720-84e9-eb9f8aee5d67
+    type: start
+    task:
+      id: 06b38671-d650-4720-84e9-eb9f8aee5d67
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a5c038a9-1756-499f-8f16-966738e5a66c
+    type: regular
+    task:
+      id: a5c038a9-1756-499f-8f16-966738e5a66c
+      version: -1
+      name: Delete Google Cloud Storage bucket
+      description: Deletes a bucket.
+      script: Google Cloud Storage|||gcs-delete-bucket
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      bucket_name:
+        simple: ${incident.assetname}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c0378f31-a252-4ab6-871a-c5ad7c8af5a9
+    type: regular
+    task:
+      id: c0378f31-a252-4ab6-871a-c5ad7c8af5a9
+      version: -1
+      name: Delete AWS - S3 bucket
+      description: Delete AWS S3 bucket.
+      script: AWS - S3|||aws-s3-delete-bucket
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      bucket:
+        simple: ${incident.assetname}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: a1eb5f6f-ebee-4ea1-81a5-c7ec67da1c93
+    type: condition
+    task:
+      id: a1eb5f6f-ebee-4ea1-81a5-c7ec67da1c93
+      version: -1
+      name: Check the Cloud Provider of asset
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      AWS:
+      - "22"
+      Azure:
+      - "23"
+      GCP:
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: AWS
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.cloud}
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+    - label: Azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.cloud}
+            iscontext: true
+          right:
+            value:
+              simple: AZURE
+    - label: GCP
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${incident.cloud}
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2c9ea910-890d-4186-80b9-0c853a6e1e0f
+    type: condition
+    task:
+      id: 2c9ea910-890d-4186-80b9-0c853a6e1e0f
+      version: -1
+      name: Is AWS - S3 Integration Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "36"
+      "yes":
+      - "10"
+    scriptarguments:
+      brandname:
+        simple: AWS - S3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c7fd530d-4233-4e22-8947-a9bcebf16aad
+    type: condition
+    task:
+      id: c7fd530d-4233-4e22-8947-a9bcebf16aad
+      version: -1
+      name: Is Google Cloud Storage Integration Available?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "36"
+      "yes":
+      - "9"
+    scriptarguments:
+      brandname:
+        simple: Google Cloud Storage
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 76e43ba7-6b3a-414f-8db2-58d637dd5ebf
+    type: title
+    task:
+      id: 76e43ba7-6b3a-414f-8db2-58d637dd5ebf
+      version: -1
+      name: AWS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 817.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 83c3a1c8-fc36-46dd-8f90-9c9b22c97919
+    type: title
+    task:
+      id: 83c3a1c8-fc36-46dd-8f90-9c9b22c97919
+      version: -1
+      name: Azure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1482.5,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 569a6aae-5b59-4659-8231-4f694e18a42e
+    type: title
+    task:
+      id: 569a6aae-5b59-4659-8231-4f694e18a42e
+      version: -1
+      name: Google Cloud Provider (GCP)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 7e515977-87dc-4ff8-8580-6b61b6e802cd
+    type: condition
+    task:
+      id: 7e515977-87dc-4ff8-8580-6b61b6e802cd
+      version: -1
+      name: Have you encountered any errors with mitigating asset risk?
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
+      scriptName: DSPMCheckAndSetErrorEntries
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "26"
+      "yes":
+      - "33"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3c547aa7-ead0-4012-86a4-080512294767
+    type: regular
+    task:
+      id: 3c547aa7-ead0-4012-86a4-080512294767
+      version: -1
+      name: Updating DSPM risk - ${incident.riskFindingId} status to 'INVESTIGATING'.
+      description: Updates the status of a risk finding.
+      script: DSPM|||dspm-update-risk-finding-status
+      type: regular
+      iscommand: true
+      brand: DSPM
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      risk_finding_id:
+        simple: ${incident.riskfindingid}
+      riskFindingId:
+        simple: ${incident.riskfindingid}
+      status:
+        simple: INVESTIGATING
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 92f42624-1d64-47a0-8ad1-fdf547e4a6b7
+    type: condition
+    task:
+      id: 92f42624-1d64-47a0-8ad1-fdf547e4a6b7
+      version: -1
+      name: Have encountered any errors while updating risk status on DSPM portal?
+      description: This script checks for error entries based on provided entry IDs and returns "yes" if any errors are found or "no" if no errors are present. If errors are detected, it sets the error messages in the XSOAR context.
+      scriptName: DSPMCheckAndSetErrorEntries
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "30"
+      "yes":
+      - "32"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 660eb134-aa1f-43e1-813a-74854ef31c44
+    type: regular
+    task:
+      id: 660eb134-aa1f-43e1-813a-74854ef31c44
+      version: -1
+      name: Add incident for re-run
+      scriptName: DSPMIncidentList
+      type: regular
+      iscommand: false
+      brand: ""
+      description: "Add incident for re-run."
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      incident_data:
+        simple: ${incident_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 31a5148f-f0ec-460c-882f-a13306a5e1f5
+    type: title
+    task:
+      id: 31a5148f-f0ec-460c-882f-a13306a5e1f5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 11e31632-707b-40a9-8c7d-db93b0d4a20e
+    type: regular
+    task:
+      id: 11e31632-707b-40a9-8c7d-db93b0d4a20e
+      version: -1
+      name: Create Slack block for sending success message notification to user.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: "For XSOAR incident ID : ${incident.id} successfully deleted the bucket: ${incident_object.assetName} . Also updated risk: ${incident.riskfindingid} status to 'INVESTIGATION'.\nThanks. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 98f5d8bd-39a9-48a7-8f71-6a19b8be92b3
+    type: regular
+    task:
+      id: 98f5d8bd-39a9-48a7-8f71-6a19b8be92b3
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 44952f07-1ad8-4397-8bb7-b0c8db7129ba
+    type: regular
+    task:
+      id: 44952f07-1ad8-4397-8bb7-b0c8db7129ba
+      version: -1
+      name: Create Slack block for sending error message notification to user.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: "For XSOAR incident ID : ${incident.id} successfully deleted the bucket: ${incident_object.assetName}. \nBut while updating risk: ${incident.riskfindingid} status to 'INVESTIGATION' got error.\nThanks. "
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 8d07c51f-1039-4a0f-8553-699f0a08ae5c
+    type: regular
+    task:
+      id: 8d07c51f-1039-4a0f-8553-699f0a08ae5c
+      version: -1
+      name: Create Slack block for sending error message notification to user.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} got error while deleting the bucket: ${incident_object.assetName}.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9761d420-7935-4b68-8edb-6423a1be1688
+    type: regular
+    task:
+      id: 9761d420-7935-4b68-8edb-6423a1be1688
+      version: -1
+      name: Save the above slack block to the XSOAR list.
+      description: Set data in list
+      script: Builtin|||setList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      listData:
+        simple: ${slackBlock}
+      listName:
+        simple: 'slack block of Incident ID : ${incident.id}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: c6ac12fa-ce93-40a1-892f-deb00bc42b7d
+    type: regular
+    task:
+      id: c6ac12fa-ce93-40a1-892f-deb00bc42b7d
+      version: -1
+      name: Create Slack block for sending error message notification to user.
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: To remediate the ${incident.assetname} asset risk on ${incident.cloud} pack/integration is not configured on XSOAR instance.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1257.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 6f748f59-f693-46db-8ddd-d06359615948
+    type: regular
+    task:
+      id: 6f748f59-f693-46db-8ddd-d06359615948
+      version: -1
+      name: Deleting slack block from context data after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 81f5c242-80bb-4d88-859c-3e1a02d8f245
+    type: regular
+    task:
+      id: 81f5c242-80bb-4d88-859c-3e1a02d8f245
+      version: -1
+      name: Deleting slack block from context data after saving into xsoar list.
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: slackBlock
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 926aac14-f5ca-41d7-8509-9e0f8dd599fa
+    type: regular
+    task:
+      id: 926aac14-f5ca-41d7-8509-9e0f8dd599fa
+      version: -1
+      name: Create Slack block for Azure Empty Storage notification
+      description: This automation script overwrites the value of a specified list and sends a Slack notification to inform the user that they failed to respond to an incident notification in a timely manner. The notification includes a message indicating the end of the incident playbook and an invitation to reopen the incident if necessary.
+      scriptName: DSPMCreateSimpleSlackMessageBlock
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      incident_id:
+        simple: ${incident_object.incidentId}
+      incidentLink:
+        simple: ${demistoUrls.investigation}
+      list_name:
+        simple: ${block_list_name}
+      message:
+        simple: 'For XSOAR incident ID : ${incident.id} You need to delete the storage account -  ${incident.assetname} in order to remediate the risk. Thanks.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1482.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1930,
+        "width": 1812.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

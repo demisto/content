@@ -1,0 +1,100 @@
+commonfields:
+  id: RecordedFutureASI
+  version: -1
+name: RecordedFutureASI
+display: Recorded Future Attack Surface Intelligence
+category: Data Enrichment & Threat Intelligence
+provider: Mastercard
+sectionorder:
+- Connect
+- Collect
+description: Attack Surface Intelligence Risk Rules help security teams take risk and vulnerability prioritization to the next level by helping organizations identify the biggest weaknesses within their attack surface in mere seconds.
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: API Key
+  name: apikey
+  type: 4
+  required: false
+  hidden: true
+  section: Connect
+- display: API Key
+  name: credentials
+  type: 9
+  required: false
+  displaypassword: API Key
+  hiddenusername: true
+  section: Connect
+- display: Project ID
+  name: project_id
+  type: 4
+  required: true
+  additionalinfo: The Project ID to fetch issues from
+  section: Connect
+- display: Incident type
+  name: incidentType
+  type: 13
+  defaultvalue: Recorded Future ASI Alert
+  required: false
+  section: Collect
+- defaultvalue: 'Informational'
+  display: Minimum severity of alerts to fetch
+  name: min_severity
+  type: 15
+  required: false
+  options:
+  - Informational
+  - Moderate
+  - Critical
+  section: Collect
+- display: How to group new issues
+  name: issue_grouping
+  defaultvalue: "By Issue"
+  type: 15
+  required: false
+  options:
+  - By Host
+  - By Issue
+  section: Collect
+- defaultvalue: 'false'
+  display: Expand grouped By Host rules into separate Incidents (applicable if grouping By Host)
+  name: expand_issues
+  type: 8
+  required: false
+  section: Collect
+- additionalinfo: Maximum number of incidents per fetch
+  defaultvalue: '200'
+  display: Fetch limit
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+- defaultvalue: 24 hours
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+script:
+  script: '-'
+  type: python
+  commands:
+  - name: asi-project-issues-fetch
+    arguments:
+    - name: issues_start
+      description: timestamp to get incidents after.
+    - name: group_by_host
+      description: true/false whether to group incidents by changed host.
+    - name: expand_issues
+      description: true/false to make an incident per host & per new issue.
+    description: Gets the issues for a project from a particular snapshot (defaults to recent).
+  dockerimage: demisto/python3:3.12.11.4284848
+  isfetch: true
+  subtype: python3
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)
+defaultmapperin: Recorded Future ASI - Incoming Mapper

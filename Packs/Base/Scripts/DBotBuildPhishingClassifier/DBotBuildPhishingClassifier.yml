@@ -1,0 +1,90 @@
+args:
+- description: Additional text by which to query incidents.
+  name: query
+- defaultValue: Phishing
+  description: A comma-separated list of incident types by which to filter.
+  name: incidentTypes
+- description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
+  name: fromDate
+- description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page (valid strings example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
+  name: toDate
+- defaultValue: '3000'
+  description: The maximum number of incidents to fetch.
+  name: limit
+- auto: PREDEFINED
+  defaultValue: 'false'
+  description: Whether to query and fetch incident context.
+  name: includeContext
+  predefined:
+  - 'true'
+  - 'false'
+- auto: PREDEFINED
+  defaultValue: created
+  description: The incident field (created or modified) to specify for the date range.
+  name: timeField
+  predefined:
+  - created
+  - modified
+- description: The field name with the label. Supports a comma-separated list, the first non-empty value will be taken.
+  name: tagField
+  required: true
+- defaultValue: '15'
+  description: Sample text of which the total number of words are less than or equal to this number will be ignored.
+  name: removeShortTextThreshold
+- defaultValue: '0.99'
+  description: Remove emails with similarity greater than this threshold, range 0-1, where 1 is completly identical.
+  name: dedupThreshold
+- description: If non-empty, hash every word with this seed.
+  name: hashSeed
+- description: The model name to store in the system.
+  name: modelName
+- defaultValue: '*'
+  description: 'A comma-separated list of email tags values and mapping. The script considers only the tags specified in this field. You can map a label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communitcation" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious, external legit email:non-malicious.'
+  name: phishingLabels
+- defaultValue: emailsubject
+  description: Incident field name with the email subject.
+  name: emailsubject
+- defaultValue: emailbody
+  description: Incident field name with the email body (text).
+  name: emailbody
+- defaultValue: emailbodyhtml
+  description: Incident field name with the email body (html).
+  name: emailbodyhtml
+- auto: PREDEFINED
+  defaultValue: Any
+  description: The language of the input text. Default is "Any". Can be "Any", "English", "German", "French", "Spanish", "Portuguese", "Italian", "Dutch", or "Other". If "Any"  or "Other" is selected, the script preprocess the entire input, no matter what its acutual language is. If a specific language is selected, the script filters out any other language from the output text.
+  name: language
+  predefined:
+  - Any
+  - English
+  - German
+  - French
+  - Spanish
+  - Portuguese
+  - Italian
+  - Dutch
+  - Other
+- auto: PREDEFINED
+  defaultValue: auto
+  description: The training algorithm to use for training the model. Default is "auto". If "auto" is selected, the training algorithm will be chosen automatically based on the number of incidents per each label. Use "from_scratch" to train a new model from scratch, based on your incidents only. In general, "from_scratch" will perform better where the number of incidents is high (500 incidents or more per each verdict). "fine-tune" trains a model based on the out-of-the-box model. "fine-tune" will perform better when the number of incidents is relatively low. It's possible to train multiple models using different algorithms options, and compare their results.
+  name: trainingAlgorithm
+  predefined:
+  - auto
+  - from_scratch
+  - fine_tune
+comment: Create a phishing classifier using machine learning technique, based on email content.
+commonfields:
+  id: DBotBuildPhishingClassifier
+  version: -1
+name: DBotBuildPhishingClassifier
+script: '-'
+subtype: python3
+tags:
+- ml
+timeout: 12µs
+type: python
+dockerimage: demisto/python3:3.12.13.10404775
+tests:
+- Create Phishing Classifier V2 ML Test
+- DBotCreatePhishingClassifierV2FromFile-Test
+fromversion: 5.0.0

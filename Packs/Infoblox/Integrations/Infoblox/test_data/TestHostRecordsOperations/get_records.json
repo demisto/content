@@ -1,0 +1,62 @@
+{
+    "result": [
+        {
+            "_ref": "record:host/asdafafa:localhost.test/default",
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/asdafafa:some_ip/localhost.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "localhost.test",
+                    "ipv4addr": "someip"
+                },
+                {
+                    "_ref": "record:host_ipv4addr/asdafafa:some_ip2/localhost.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "localhost.test",
+                    "ipv4addr": "someip2"
+                }
+            ],
+            "name": "localhost.test",
+            "view": "default"
+        },
+        {
+            "_ref": "record:host/afgafaf:localdoman.localhost.test/default",
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/afgafaf:someip.100/localdoman.localhost.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "localdoman.localhost.test",
+                    "ipv4addr": "someip"
+                }
+            ],
+            "name": "localdoman.localhost.test",
+            "view": "default"
+        },
+        {
+            "_ref": "record:host/fqefqfcq:test/default",
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/fqefqfcq:some_ip/test/default",
+                    "configure_for_dhcp": false,
+                    "host": "test",
+                    "ipv4addr": "someip"
+                }
+            ],
+            "name": "test",
+            "view": "default"
+        },
+        {
+            "_ref": "record:host/asfdqasfdadcq:ciac-3607.test/default",
+            "ipv4addrs": [
+                {
+                    "_ref": "record:host_ipv4addr/asfdqasfdadcq:someip/ciac-3607.test/default",
+                    "configure_for_dhcp": false,
+                    "host": "ciac-3607.test",
+                    "ipv4addr": "someip"
+                }
+            ],
+            "name": "ciac-3607.test",
+            "view": "default"
+        }
+    ]
+}

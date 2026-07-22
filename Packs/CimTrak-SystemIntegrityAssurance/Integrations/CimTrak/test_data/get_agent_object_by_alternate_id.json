@@ -1,0 +1,103 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "agentObjectId": 1
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getAgentObjectIdByAlternateSystemId"
+        },
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [
+                    {
+                        "agentIsFilesystem": true,
+                        "agentObjectId": 1,
+                        "cancel": false,
+                        "children": 4,
+                        "connected": false,
+                        "contact": "",
+                        "createDate": "2021-10-23 16:08:51",
+                        "description": "",
+                        "events": 30,
+                        "inService": "",
+                        "intrusionSize": 0,
+                        "intrusions": 0,
+                        "location": "",
+                        "logsByDays": true,
+                        "name": "local",
+                        "objectId": 1,
+                        "objectPath": "DSK050->local",
+                        "objectStatus": 0,
+                        "objectSubType": 1,
+                        "objectType": 1,
+                        "parentId": 0,
+                        "requireNotes": false,
+                        "revisions": 0,
+                        "securityAdd": true,
+                        "securityEdit": true,
+                        "securityLock": true,
+                        "securityReport": true,
+                        "securityUnlock": true,
+                        "securityView": true,
+                        "templateId": 0,
+                        "url": "",
+                        "warnMinutes": 0
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getObject"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "agentIsFilesystem": true,
+                "agentObjectId": 1,
+                "cancel": false,
+                "children": 4,
+                "connected": false,
+                "contact": "",
+                "createDate": "2021-10-23 16:08:51",
+                "description": "",
+                "events": 30,
+                "inService": "",
+                "intrusionSize": 0,
+                "intrusions": 0,
+                "location": "",
+                "logsByDays": true,
+                "name": "local",
+                "objectId": 1,
+                "objectPath": "DSK050->local",
+                "objectStatus": 0,
+                "objectSubType": 1,
+                "objectType": 1,
+                "parentId": 0,
+                "requireNotes": false,
+                "revisions": 0,
+                "securityAdd": true,
+                "securityEdit": true,
+                "securityLock": true,
+                "securityReport": true,
+                "securityUnlock": true,
+                "securityView": true,
+                "templateId": 0,
+                "url": "",
+                "warnMinutes": 0
+            }
+        ],
+        "status": "success"
+    }
+}

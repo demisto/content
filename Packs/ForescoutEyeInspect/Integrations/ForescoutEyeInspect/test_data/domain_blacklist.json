@@ -1,0 +1,45 @@
+{
+    "total_count": 215,
+    "results": [
+        {
+            "domain_name": "028xmz.com",
+            "comment": "URL used by North-Korean Trojan COPPERHEDGE"
+        },
+        {
+            "domain_name": "0ffice.com",
+            "comment": "URL used by DarkHydrus: https://researchcenter.paloaltonetworks.com/2018/07/unit42-new-threat-actor-group-darkhydrus-targets-middle-east-government"
+        },
+        {
+            "domain_name": "0ffiice.com",
+            "comment": "URL used by DarkHydrus: https://researchcenter.paloaltonetworks.com/2018/07/unit42-new-threat-actor-group-darkhydrus-targets-middle-east-government"
+        },
+        {
+            "domain_name": "0utl00k.net",
+            "comment": "URL used by DarkHydrus: https://researchcenter.paloaltonetworks.com/2018/07/unit42-new-threat-actor-group-darkhydrus-targets-middle-east-government"
+        },
+        {
+            "domain_name": "0utlook.bid",
+            "comment": "URL used by DarkHydrus: https://researchcenter.paloaltonetworks.com/2018/07/unit42-new-threat-actor-group-darkhydrus-targets-middle-east-government"
+        },
+        {
+            "domain_name": "104.27.138.44-easypaper.org",
+            "comment": "URL used by Shamoon3 Wiper https://otx.alienvault.com/pulse/5c10d62e97d4215c088dfa2e"
+        },
+        {
+            "domain_name": "168wangpi.com",
+            "comment": "URL used by North-Korean Trojan COPPERHEDGE: https://www.us-cert.gov/ncas/analysis-reports/ar20-133a"
+        },
+        {
+            "domain_name": "33cow.com",
+            "comment": "URL used by North-Korean Trojan COPPERHEDGE: https://www.us-cert.gov/ncas/analysis-reports/ar20-133a"
+        },
+        {
+            "domain_name": "3x-tv.com",
+            "comment": "URL used by North-Korean Trojan COPPERHEDGE: https://www.us-cert.gov/ncas/analysis-reports/ar20-133a"
+        },
+        {
+            "domain_name": "44-easypaper.org",
+            "comment": "URL used by Shamoon3 Wiper https://otx.alienvault.com/pulse/5c10d62e97d4215c088dfa2e"
+        }
+    ]
+}

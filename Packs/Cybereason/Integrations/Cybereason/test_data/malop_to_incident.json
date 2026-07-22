@@ -1,0 +1,361 @@
+{
+    "simpleValues": {
+        "hasRansomwareSuspendedProcesses": {
+            "totalValues": 1,
+            "values": [
+                "false"
+            ]
+        },
+        "closerName": {
+            "totalValues": 1,
+            "values": [
+                null
+            ]
+        },
+        "decisionFeatureSet": {
+            "totalValues": 1,
+            "values": [
+                "Process.blackListedFileHash(Malop decision)"
+            ]
+        },
+        "comments": {
+            "totalValues": 2,
+            "values": [
+                {
+                    "commentId": "a2c71714-d2c0-42ae-a779-ac31048e4b20",
+                    "username": "example@example.com",
+                    "message": "ServiceNow Ticket ID: INC0043451, ServiceNow Ticket URL: https://dev105541.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number=INC0043451",
+                    "timestamp": 1671393980930,
+                    "empty": false
+                },
+                {
+                    "commentId": "e1a4bde9-df3b-4e06-a5d3-69687d9298ca",
+                    "username": "example@example.com",
+                    "message": "ServiceNow Ticket ID: INC5267545, ServiceNow Ticket URL: https://ven05269.service-now.com/nav_to.do?uri=incident.do?sysparm_query=number=INC5267545",
+                    "timestamp": 1671436942060,
+                    "empty": false
+                }
+            ]
+        },
+        "decisionFeature": {
+            "totalValues": 1,
+            "values": [
+                "Process.blackListedFileHash(Malop decision)"
+            ]
+        },
+        "customClassification": {
+            "totalValues": 1,
+            "values": [
+                "None"
+            ]
+        },
+        "detectionType": {
+            "totalValues": 1,
+            "values": [
+                "BLACKLIST"
+            ]
+        },
+        "creationTime": {
+            "totalValues": 1,
+            "values": [
+                "1671393898844"
+            ]
+        },
+        "isBlocked": {
+            "totalValues": 1,
+            "values": [
+                "true"
+            ]
+        },
+        "closeTime": {
+            "totalValues": 1,
+            "values": [
+                null
+            ]
+        },
+        "managementStatus": {
+            "totalValues": 1,
+            "values": [
+                "UNREAD"
+            ]
+        },
+        "rootCauseElementTypes": {
+            "totalValues": 1,
+            "values": [
+                "File"
+            ]
+        },
+        "malopStartTime": {
+            "totalValues": 1,
+            "values": [
+                "1671393769653"
+            ]
+        },
+        "rootCauseElementNames": {
+            "totalValues": 1,
+            "values": [
+                "bdata.bin"
+            ]
+        },
+        "malopLastUpdateTime": {
+            "totalValues": 1,
+            "values": [
+                "1671393898845"
+            ]
+        },
+        "allRansomwareProcessesSuspended": {
+            "totalValues": 1,
+            "values": [
+                "false"
+            ]
+        },
+        "rootCauseElementHashes": {
+            "totalValues": 1,
+            "values": [
+                "ec9d8f323d6a93e3fb83fb263d5aa291e16e9414"
+            ]
+        }
+    },
+    "elementValues": {
+        "suspects": {
+            "totalValues": 1,
+            "elementValues": [
+                {
+                    "elementType": "Process",
+                    "guid": "S-2-PC_TYvnPWzr9",
+                    "name": "bdata.bin",
+                    "hasSuspicions": true,
+                    "hasMalops": true,
+                    "elementValues": {},
+                    "simpleValues": {
+                        "hasMalops": {
+                            "totalValues": 1,
+                            "values": [
+                                "true"
+                            ]
+                        },
+                        "guid": {
+                            "totalValues": 1,
+                            "values": [
+                                "S-2-PC_TYvnPWzr9"
+                            ]
+                        },
+                        "hasSuspicions": {
+                            "totalValues": 1,
+                            "values": [
+                                "true"
+                            ]
+                        },
+                        "elementDisplayName": {
+                            "totalValues": 1,
+                            "values": [
+                                "bdata.bin"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 1,
+            "guessedTotal": 0
+        },
+        "filesToRemediate": {
+            "totalValues": 1,
+            "elementValues": [
+                {
+                    "elementType": "File",
+                    "guid": "S-2-PDz2gBCGMYIW",
+                    "name": "bdata.bin",
+                    "hasSuspicions": true,
+                    "hasMalops": false,
+                    "elementValues": {},
+                    "simpleValues": {
+                        "hasMalops": {
+                            "totalValues": 1,
+                            "values": [
+                                "false"
+                            ]
+                        },
+                        "guid": {
+                            "totalValues": 1,
+                            "values": [
+                                "S-2-PDz2gBCGMYIW"
+                            ]
+                        },
+                        "hasSuspicions": {
+                            "totalValues": 1,
+                            "values": [
+                                "true"
+                            ]
+                        },
+                        "elementDisplayName": {
+                            "totalValues": 1,
+                            "values": [
+                                "bdata.bin"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "totalSuspicious": 1,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+        },
+        "primaryRootCauseElements": {
+            "totalValues": 1,
+            "elementValues": [
+                {
+                    "elementType": "File",
+                    "guid": "S-2-PDz2gBCGMYIW",
+                    "name": "bdata.bin",
+                    "hasSuspicions": false,
+                    "hasMalops": false,
+                    "elementValues": {},
+                    "simpleValues": {
+                        "guid": {
+                            "totalValues": 1,
+                            "values": [
+                                "S-2-PDz2gBCGMYIW"
+                            ]
+                        },
+                        "elementDisplayName": {
+                            "totalValues": 1,
+                            "values": [
+                                "bdata.bin"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+        },
+        "affectedUsers": {
+            "totalValues": 1,
+            "elementValues": [
+                {
+                    "elementType": "User",
+                    "guid": "AAAAGEyVIOr2QjSA",
+                    "name": "microsoftwindow\\\\system",
+                    "hasSuspicions": false,
+                    "hasMalops": false,
+                    "elementValues": {},
+                    "simpleValues": {
+                        "hasMalops": {
+                            "totalValues": 1,
+                            "values": [
+                                "false"
+                            ]
+                        },
+                        "guid": {
+                            "totalValues": 1,
+                            "values": [
+                                "AAAAGEyVIOr2QjSA"
+                            ]
+                        },
+                        "hasSuspicions": {
+                            "totalValues": 1,
+                            "values": [
+                                "false"
+                            ]
+                        },
+                        "elementDisplayName": {
+                            "totalValues": 1,
+                            "values": [
+                                "microsoftwindow\\\\system"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+        },
+        "rootCauseElements": {
+            "totalValues": 1,
+            "elementValues": [
+                {
+                    "elementType": "File",
+                    "guid": "S-2-PDz2gBCGMYIW",
+                    "name": "bdata.bin",
+                    "hasSuspicions": false,
+                    "hasMalops": false,
+                    "elementValues": {},
+                    "simpleValues": {
+                        "guid": {
+                            "totalValues": 1,
+                            "values": [
+                                "S-2-PDz2gBCGMYIW"
+                            ]
+                        },
+                        "elementDisplayName": {
+                            "totalValues": 1,
+                            "values": [
+                                "bdata.bin"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+        },
+        "affectedMachines": {
+            "totalValues": 1,
+            "elementValues": [
+                {
+                    "elementType": "Machine",
+                    "guid": "S-2-PBCi55eyTiwX",
+                    "name": "microsoftwindowsserver2019datacenterfe80f85cdf802cbfe3de5",
+                    "hasSuspicions": false,
+                    "hasMalops": false,
+                    "elementValues": {},
+                    "simpleValues": {
+                        "hasMalops": {
+                            "totalValues": 1,
+                            "values": [
+                                "false"
+                            ]
+                        },
+                        "guid": {
+                            "totalValues": 1,
+                            "values": [
+                                "S-2-PBCi55eyTiwX"
+                            ]
+                        },
+                        "hasSuspicions": {
+                            "totalValues": 1,
+                            "values": [
+                                "false"
+                            ]
+                        },
+                        "elementDisplayName": {
+                            "totalValues": 1,
+                            "values": [
+                                "microsoftwindowsserver2019datacenterfe80f85cdf802cbfe3de5"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "totalSuspicious": 0,
+            "totalMalicious": 0,
+            "guessedTotal": 0
+        }
+    },
+    "suspicions": {},
+    "filterData": {
+        "sortInGroupValue": "",
+        "groupByValue": "MALICIOUS_INFECTION"
+    },
+    "isMalicious": false,
+    "suspicionCount": 0,
+    "guidString": "AAAA096WBtByORIM",
+    "labelsIds": [],
+    "malopPriority": null,
+    "suspect": false,
+    "malicious": false
+}

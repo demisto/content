@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mobile_device_command>
+    <uuid>a1e97e00-5c83-4381-9300-c1f5b7fe7327</uuid>
+    <command>DeviceLock</command>
+    <mobile_devices>
+        <mobile_device>
+            <id>114</id>
+            <management_id>abce4685-0038-416d-b50b-86839b440a98</management_id>
+            <status>Command sent</status>
+        </mobile_device>
+    </mobile_devices>
+</mobile_device_command>

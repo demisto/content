@@ -1,0 +1,6 @@
+!aws-securityhub-batch-update-findings finding_identifiers_id='arn:aws:securityhub:eu-west-1:123456789012:subscription/aws-foundational-security-best-practices/v/1.0.0/S3.1/finding/a2ee641f-aec2-4356-a1b6-656cce03be4e' finding_identifiers_product_arn='arn:aws:securityhub:eu-west-1::product/aws/securityhub' note_text=test note_updated_by=Demisto
+!aws-securityhub-disable-security-hub
+!aws-securityhub-enable-security-hub
+!aws-securityhub-get-findings
+!aws-securityhub-get-master-account
+!aws-securityhub-list-members

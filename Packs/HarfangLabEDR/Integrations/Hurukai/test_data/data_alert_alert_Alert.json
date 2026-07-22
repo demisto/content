@@ -1,0 +1,13 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "alert_time": "1970-01-01T00:00:00.000000Z",
+      "level": "high",
+      "id": "---unused---",
+      "rule_name": "---unused---"
+    }
+  ]
+}

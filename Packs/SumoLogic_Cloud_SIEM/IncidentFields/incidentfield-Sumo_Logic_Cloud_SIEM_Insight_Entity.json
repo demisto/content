@@ -1,0 +1,87 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Sumo Logic Insight"
+    ],
+    "id": "incident_sumologiccloudsieminsightentity",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "name": "Sumo Logic Cloud SIEM Insight Entity",
+    "ownerOnly": false,
+    "description": "Entity associated with Insight ",
+    "cliName": "sumologiccloudsieminsightentity",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Name of Entity",
+            "type": "shortText",
+            "required": true,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "value",
+            "displayName": "Value of Entity",
+            "type": "shortText",
+            "required": true,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "entitytype",
+            "displayName": "Type of Entity",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "hostname",
+            "displayName": "Entity Hostname",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72
+}

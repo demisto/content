@@ -1,0 +1,25 @@
+{
+ "dataType": "scripts",
+ "dateRange": {
+  "fromDate": "0001-01-01T00:00:00Z",
+  "fromDateLicense": "0001-01-01T00:00:00Z",
+  "period": {
+   "by": "",
+   "byFrom": "",
+   "byTo": "",
+   "field": "",
+   "fromValue": null,
+   "toValue": null
+  },
+  "toDate": "0001-01-01T00:00:00Z"
+ },
+ "description": "A line widget showing the creation date of the failed incidents.",
+ "id": "Line-Incident-Created-Date-Line",
+ "isPredefined": true,
+ "name": "Creation Date of Failed Incidents",
+ "query": "IncidentsCheck-Widget-CreationDate",
+ "size": 0,
+ "version": -1,
+ "widgetType": "line",
+ "fromVersion": "6.0.0"
+}

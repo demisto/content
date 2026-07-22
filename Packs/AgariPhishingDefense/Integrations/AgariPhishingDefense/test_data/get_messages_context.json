@@ -1,0 +1,108 @@
+{
+    "version": 1,
+    "status": "ok",
+    "code": 200,
+    "offset": 0,
+    "count": 4,
+    "messages": [
+        {
+            "attack_types": [
+                "spoof (Domain spoof)"
+            ],
+            "domain_tags": [
+                "partner"
+            ],
+            "has_attachment": "false",
+            "ip": "1.2.3.4",
+            "message_id": "<facpde2c87954f9c91c7a5d17f113412@BY2PR12MB0054.xyz.com>",
+            "id": "dec88d0a-2d1f-11eb-b8f1-0a8f2da72108",
+            "policy_ids": [
+                9014,
+                9008
+            ],
+            "authenticity": "0.08582551",
+            "to": "acoyle@xyz.com",
+            "timestamp_ms": "1606097246000",
+            "date": "2020-11-23T02:07:26+00:00",
+            "from": "Accounts@abc.com",
+            "from_domain": "abc.com",
+            "subject": "Please approve and forward expense report \"November Expenses\"",
+            "domain_reputation": "9.0",
+            "message_trust_score": "0.6",
+            "message_details_link": "https://apis.com/messages/dec88d0a-2d1f-11eb-b8f1-0a8f2da72108"
+        },
+        {
+            "attack_types": [
+                "spoof (Domain spoof)"
+            ],
+            "domain_tags": [
+                "internal"
+            ],
+            "has_attachment": "false",
+            "ip": "1.2.3.4",
+            "message_id": "<facpde2c87954f9c91c7a5d17f113413@BY2PR12MB0054.abc.com>",
+            "id": "de66aa4a-2d1f-11eb-b8f1-0a8f2da72108",
+            "policy_ids": [
+                9014,
+                9009
+            ],
+            "authenticity": "0.07902577",
+            "to": "aarmstrong@xyz.com",
+            "timestamp_ms": "1606097246000",
+            "date": "2020-11-23T02:07:26+00:00",
+            "from": "help@abc.com",
+            "from_domain": "abc.com",
+            "subject": "Please approve and forward expense report \"November Expenses\"",
+            "domain_reputation": "8.6",
+            "message_trust_score": "0.8",
+            "message_details_link": "https://apis.com/messages/de66aa4a-2d1f-11eb-b8f1-0a8f2da72108"
+        },
+        {
+            "attack_types": [
+                "dni (Display name impostor)"
+            ],
+            "has_attachment": "false",
+            "ip": "1.1.1.1",
+            "message_id": "<facpde2c87954f9c91c7a5d17f113414@BY2PR12MB0054.xyz.com>",
+            "ptr_name": "abc.xyz.edu",
+            "id": "df2541bc-2d1f-11eb-b8f1-0a8f2da72108",
+            "policy_ids": [
+                9014,
+                9010
+            ],
+            "authenticity": "1.0",
+            "to": "hsheng@xyz.com",
+            "timestamp_ms": "1606097247000",
+            "date": "2020-11-23T02:07:27+00:00",
+            "from": "Google Incorporation <tomislavs@abc.com>",
+            "from_domain": "abc.com",
+            "subject": "YOU ARE LUCKY THIS YEAR 2019 !!",
+            "domain_reputation": "8.3",
+            "message_trust_score": "0.5",
+            "message_details_link": "https://apis.com/messages/df2541bc-2d1f-11eb-b8f1-0a8f2da72108"
+        },
+        {
+            "attack_types": [
+                "dni (Display name impostor)"
+            ],
+            "has_attachment": "false",
+            "ip": "2.2.3.4",
+            "message_id": "<facpde2c87954f9c91c7a5d17f113415@BY2PR12MB0054.abc.com>",
+            "id": "df340814-2d1f-11eb-b8f1-0a8f2da72108",
+            "policy_ids": [
+                9014,
+                9010
+            ],
+            "authenticity": "1.0",
+            "to": "hsheng@xyz.com",
+            "timestamp_ms": "1606097247000",
+            "date": "2020-11-23T02:07:27+00:00",
+            "from": "CVS Cash <cvs.cash.now@abc.com>",
+            "from_domain": "abc.com",
+            "subject": "How often do you shop at CVS? 100 giftcard redeem",
+            "domain_reputation": "3.0",
+            "message_trust_score": "0.5",
+            "message_details_link": "https://apis.com/messages/df340814-2d1f-11eb-b8f1-0a8f2da72108"
+        }
+    ]
+}

@@ -1,0 +1,140 @@
+id: Test_HTMLtoMD
+version: -1
+name: Test_HTMLtoMD
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 980c0a0b-2112-44bf-8ef9-636f28d3a293
+    type: start
+    task:
+      id: 980c0a0b-2112-44bf-8ef9-636f28d3a293
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 72e78c42-3525-481f-8337-5a83de3d70da
+    type: regular
+    task:
+      id: 72e78c42-3525-481f-8337-5a83de3d70da
+      version: -1
+      name: HTMLtoMD
+      scriptName: HTMLtoMD
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      html:
+        simple: '<a href="http://demisto.com">Demisto</a>'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 60e5751f-ee8b-43de-84ad-8bdb113cb5a4
+    type: condition
+    task:
+      id: 60e5751f-ee8b-43de-84ad-8bdb113cb5a4
+      version: -1
+      name: Check Results
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: HTMLtoMD.Result
+            iscontext: true
+          right:
+            value:
+              simple: '[Demisto](http://demisto.com)'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 5431d576-f533-4429-8340-206e22384d20
+    type: regular
+    task:
+      id: 5431d576-f533-4429-8340-206e22384d20
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 655,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

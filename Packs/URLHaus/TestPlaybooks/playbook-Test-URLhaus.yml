@@ -1,0 +1,761 @@
+id: Test_URLhaus
+version: -1
+name: Test_URLhaus
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7403bdb7-d928-4a62-8796-5e54700f784c
+    type: start
+    task:
+      id: 7403bdb7-d928-4a62-8796-5e54700f784c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0f47f568-01f0-492b-8197-272bcd7a8b6f
+    type: regular
+    task:
+      id: 0f47f568-01f0-492b-8197-272bcd7a8b6f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "7"
+      - "9"
+      - "11"
+      - "19"
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 518702c7-bc82-4d98-8f36-0a59b4ea7b00
+    type: regular
+    task:
+      id: 518702c7-bc82-4d98-8f36-0a59b4ea7b00
+      version: -1
+      name: url - with data
+      description: Retrieve URL information from URLhaus
+      script: URLhaus|||url
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: http://ekamjewels.com/anklet/WQG1/?i=1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 87d3fb09-d061-4f97-8dd3-007288449c64
+    type: condition
+    task:
+      id: 87d3fb09-d061-4f97-8dd3-007288449c64
+      version: -1
+      name: verify url context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://ekamjewels.com/anklet/WQG1/?i=1
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://ekamjewels.com/anklet/WQG1/?i=1
+                accessor: Tags
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: URL
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: URL.Data
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://ekamjewels.com/anklet/WQG1/?i=1
+                accessor: Relationships
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7da63f01-6f56-45b2-8d4c-76bb1fa827ac
+    type: title
+    task:
+      id: 7da63f01-6f56-45b2-8d4c-76bb1fa827ac
+      version: -1
+      name: complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1555,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6806f683-a210-4065-8e48-1f77e7dd7d08
+    type: regular
+    task:
+      id: 6806f683-a210-4065-8e48-1f77e7dd7d08
+      version: -1
+      name: url - nonexisting
+      description: Retrieve URL information from URLhaus
+      script: URLhaus|||url
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      url:
+        simple: http://gfrewdfsersfsfersfgergre.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: cdb46a68-5d7f-4230-818e-d27ea734f3c3
+    type: condition
+    task:
+      id: cdb46a68-5d7f-4230-818e-d27ea734f3c3
+      version: -1
+      name: verify url nonexsiting
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: http://gfrewdfsersfsfersfgergre.com
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: URL
+            iscontext: true
+          right:
+            value:
+              simple: Relationships
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 594dcedd-37ad-429d-8357-d4ca07a76325
+    type: regular
+    task:
+      id: 594dcedd-37ad-429d-8357-d4ca07a76325
+      version: -1
+      name: domain - with data
+      description: Retrieve domain information from URLhaus
+      script: URLhaus|||domain
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain:
+        simple: chobemaster.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e4dd243b-b1f6-4d31-8d7d-577d608e22d5
+    type: condition
+    task:
+      id: e4dd243b-b1f6-4d31-8d7d-577d608e22d5
+      version: -1
+      name: verify domain context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: chobemaster.com
+                accessor: Score
+            iscontext: true
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: Domain
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Domain.Name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: chobemaster.com
+                accessor: Relationships
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f5d4cdec-a389-4855-86d4-3f5a746801f3
+    type: regular
+    task:
+      id: f5d4cdec-a389-4855-86d4-3f5a746801f3
+      version: -1
+      name: domain - no data
+      description: Retrieve domain information from URLhaus
+      script: URLhaus|||domain
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 8c96c519-967d-4033-8906-d10dc438088c
+    type: condition
+    task:
+      id: 8c96c519-967d-4033-8906-d10dc438088c
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: google.com
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 2b873867-7a06-47bd-84b7-2489241a659b
+    type: regular
+    task:
+      id: 2b873867-7a06-47bd-84b7-2489241a659b
+      version: -1
+      name: file - no data
+      description: Retrieve file information from URLhaus
+      script: URLhaus|||file
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      file:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
+      hash:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01
+      hash_type:
+        simple: SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 55e67095-536e-4528-8dbc-a2e1d55f0b71
+    type: condition
+    task:
+      id: 55e67095-536e-4528-8dbc-a2e1d55f0b71
+      version: -1
+      name: verify file context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+          right:
+            value:
+              simple: 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+          right:
+            value:
+              simple: 24576:la1QHwgJMrQqj/wAc6QORNx2nAjwkaMm0GV9igWwlnwXQBwfalj21X4GtZ+FdnZ8:vH5qloBMd8A
+      - - operator: isEqualString
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+          right:
+            value:
+              simple: dll
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.SHA256
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+                accessor: Relationships
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: "10"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e712eba5-814e-48b2-8f21-4f11698fc3bd
+    type: regular
+    task:
+      id: e712eba5-814e-48b2-8f21-4f11698fc3bd
+      version: -1
+      name: urlhaus-download-sample - w/o data
+      description: Download a malware sample from URLhaus
+      script: URLhaus|||urlhaus-download-sample
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      file:
+        simple: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337c
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ea005adb-20a5-41ae-8fe0-8c8b90797d29
+    type: regular
+    task:
+      id: ea005adb-20a5-41ae-8fe0-8c8b90797d29
+      version: -1
+      name: file - with data
+      description: Retrieve file information from URLhaus
+      script: URLhaus|||file
+      type: regular
+      iscommand: true
+      brand: URLhaus
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      file:
+        simple: 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+      hash:
+        simple: 01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b00
+      hash_type:
+        simple: SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e4e39cd8-ec97-46d5-8d6e-682f94ff2a97
+    type: condition
+    task:
+      id: e4e39cd8-ec97-46d5-8d6e-682f94ff2a97
+      version: -1
+      name: verify context
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: File
+            iscontext: true
+          right:
+            value:
+              simple: Size
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1780,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 2960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

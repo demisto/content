@@ -1,0 +1,364 @@
+id: generic-sql-oracle
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    itemVersion: 1.0.3
+    fromServerVersion: ""
+    toServerVersion: ""
+name: generic-sql-oracle
+description: The initial state of the table is that in each database there are 4 records.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 47cbc045-5b0e-4130-829f-a6860b093aaf
+    type: start
+    task:
+      id: 47cbc045-5b0e-4130-829f-a6860b093aaf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a187e2fb-f59a-4397-8928-e94f515de8f0
+    type: regular
+    task:
+      id: a187e2fb-f59a-4397-8928-e94f515de8f0
+      version: -1
+      name: Select query - show all test table
+      script: Generic SQL|||query
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      bind_variables_names: {}
+      bind_variables_values: {}
+      limit:
+        simple: "10"
+      query:
+        simple: select * from TestTable
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5cd9f801-b38f-4126-8d8c-0de8e7dc09ee
+    type: condition
+    task:
+      id: 5cd9f801-b38f-4126-8d8c-0de8e7dc09ee
+      version: -1
+      name: Select query check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.Result}
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 8e879057-5a8a-4f86-8f4e-4f7fcd8aa452
+    type: title
+    task:
+      id: 8e879057-5a8a-4f86-8f4e-4f7fcd8aa452
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f18bcc0d-d155-44d3-8424-9c139cb09ce8
+    type: regular
+    task:
+      id: f18bcc0d-d155-44d3-8424-9c139cb09ce8
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Query failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: abbd0818-8818-4025-8073-a18a097ccf17
+    type: regular
+    task:
+      id: abbd0818-8818-4025-8073-a18a097ccf17
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 438c6742-0fc6-4497-8170-af6d701f9cf4
+    type: regular
+    task:
+      id: 438c6742-0fc6-4497-8170-af6d701f9cf4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 09fb6682-1553-4498-8612-62a558bd87ae
+    type: regular
+    task:
+      id: 09fb6682-1553-4498-8612-62a558bd87ae
+      version: -1
+      name: Select query - a row where ID=22222
+      script: Generic SQL|||query
+      type: regular
+      iscommand: true
+      brand: Generic SQL
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      bind_variables_names:
+        simple: x
+      bind_variables_values:
+        simple: "22222"
+      limit:
+        simple: "10"
+      query:
+        simple: select * from TestTable where ID=:x
+      skip: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 2a2e2df7-0cda-43d9-8e05-c7baed0f72e1
+    type: condition
+    task:
+      id: 2a2e2df7-0cda-43d9-8e05-c7baed0f72e1
+      version: -1
+      name: Select query check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: ${GenericSQL.GenericSQL.Result}
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: b0b1cf41-89e3-45a2-8590-0838c45bf219
+    type: regular
+    task:
+      id: b0b1cf41-89e3-45a2-8590-0838c45bf219
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Query failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1370,
+        "width": 850,
+        "x": -20,
+        "y": -460
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: 2423b55c-3218-4119-8323-319df9820ea8
+fromversion: 5.0.0

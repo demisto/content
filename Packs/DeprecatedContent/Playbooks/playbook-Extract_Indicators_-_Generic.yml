@@ -1,0 +1,240 @@
+id: extract_indicators_-_generic
+version: -1
+name: Extract Indicators - Generic
+description: |-
+  Deprecated. We recommend using extractIndicators command instead.
+  Extract indicators from input data.
+starttaskid: "0"
+hidden: true
+fromversion: 5.0.0
+tasks:
+  "0":
+    id: "0"
+    taskid: b2850e0d-eaee-4b1d-8e45-b61bd06f6aa9
+    type: start
+    task:
+      id: b2850e0d-eaee-4b1d-8e45-b61bd06f6aa9
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+      - "4"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+  "2":
+    id: "2"
+    taskid: d693465a-260b-4aac-8a18-4a11c047481e
+    type: regular
+    task:
+      id: d693465a-260b-4aac-8a18-4a11c047481e
+      version: -1
+      name: Collect Hashes from Incident
+      description: ""
+      scriptName: ExtractHash
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      text:
+        simple: ${inputs.incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 963c3996-3eaf-457c-8c93-abee20d891e2
+    type: regular
+    task:
+      id: 963c3996-3eaf-457c-8c93-abee20d891e2
+      version: -1
+      name: Collect URLs from Incident
+      description: ""
+      scriptName: ExtractURL
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      text:
+        simple: ${inputs.incident}
+      urlRegex: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+  "4":
+    id: "4"
+    taskid: 4fe3f22e-7bec-4ed5-841c-9cd5808daf42
+    type: regular
+    task:
+      id: 4fe3f22e-7bec-4ed5-841c-9cd5808daf42
+      version: -1
+      name: Collect IPs from Incident
+      description: ""
+      scriptName: ExtractIP
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      text:
+        simple: ${inputs.incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+  "5":
+    id: "5"
+    taskid: a3089d6b-fce1-4d82-84d6-ecaaf3a55d10
+    type: title
+    task:
+      id: a3089d6b-fce1-4d82-84d6-ecaaf3a55d10
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    taskid: e4a19d6b-98be-49af-8202-fca71cfde7cd
+    type: regular
+    task:
+      id: e4a19d6b-98be-49af-8202-fca71cfde7cd
+      version: -1
+      name: Collect Domains from Incident
+      description: ""
+      scriptName: ExtractDomain
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      calcReputation:
+        simple: "false"
+      markAsIndicator: {}
+      text:
+        simple: ${inputs.incident}
+      tldList: {}
+      urlRegex: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 16f55051-63fa-467b-8533-163b68f310b5
+    type: regular
+    task:
+      id: 16f55051-63fa-467b-8533-163b68f310b5
+      version: -1
+      name: Collect Email Addresses from Incident
+      description: ""
+      scriptName: ExtractEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      text:
+        simple: ${inputs.incident}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 195
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: incident
+  value:
+    simple: ${incident}
+  required: false
+  description: ""
+outputs:
+- contextPath: File.MD5
+  description: Extracted MD5
+  type: string
+- contextPath: File.SHA1
+  description: Extracted SHA1
+  type: string
+- contextPath: File.SHA256
+  description: Extracted SHA256
+  type: string
+- contextPath: URL.Data
+  description: Extracted URLs
+  type: string
+- contextPath: IP.Address
+  description: Extracted IPs
+  type: string
+- contextPath: Domain.Name
+  description: Extracted domains
+  type: string
+- contextPath: Account.Email.Address
+  description: Extracted emails
+  type: string
+tests:
+- No tests - Deprecated
+deprecated: true

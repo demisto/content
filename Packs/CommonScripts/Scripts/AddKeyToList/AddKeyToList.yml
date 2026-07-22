@@ -1,0 +1,39 @@
+args:
+- description: List name.
+  name: listName
+  required: true
+- description: Key.
+  name: keyName
+  required: true
+- description: Key Value.
+  name: value
+  required: true
+- description: Append to key.
+  name: append
+  defaultValue: 'false'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: Allow duplicates in array keys.
+  name: allowDups
+  defaultValue: 'false'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+outputs: []
+comment: Adds/Replaces a key in key/value store backed by an XSOAR list.
+commonfields:
+  id: AddKeyToList
+  version: -1
+name: AddKeyToList
+script: '-'
+tags: []
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 5.0.0
+tests:
+- No tests

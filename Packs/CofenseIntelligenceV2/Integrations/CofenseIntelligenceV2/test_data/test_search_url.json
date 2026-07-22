@@ -1,0 +1,153 @@
+{"url_search_response": {
+    "success": true,
+    "data": {
+        "page": {
+            "currentPage": 0,
+            "currentElements": 1,
+            "totalPages": 1,
+            "totalElements": 1
+        },
+        "threats": [
+            {
+                "id": 247570,
+                "relatedSearchTags": [],
+                "feeds": [
+                    {
+                        "id": 23,
+                        "permissions": {
+                            "OWNER": false,
+                            "WRITE": false,
+                            "READ": true
+                        },
+                        "displayName": "Cofense"
+                    }
+                ],
+                "blockSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "impact": "Major",
+                        "ipDetail": {
+                            "ip": "127.0.0.1",
+                            "lookupOn": 1651075424493,
+                            "latitude": 39.1620,
+                            "longitude": -84.4569,
+                            "metroCode": 515,
+                            "timeZone": "America/New_York",
+                            "continentName": "North America",
+                            "continentCode": "NA",
+                            "countryName": "United States",
+                            "countryIsoCode": "US",
+                            "subdivisionName": "Ohio",
+                            "subdivisionIsoCode": "OH",
+                            "postalCode": "45201",
+                            "asn": 11003,
+                            "asnOrganization": "The Procter and Gamble Company",
+                            "isp": "The Procter and Gamble Company",
+                            "organization": "The Procter and Gamble Company"
+                        },
+                        "confidence": 100,
+                        "blockType": "URL",
+                        "role": "C2",
+                        "roleDescription": "Command and control location used by malware",
+                        "data": "url",
+                        "data_1": {
+                            "url": "url",
+                            "domain": "url",
+                            "path": "/amdf/",
+                            "protocol": "http",
+                            "host": "url"
+                        }
+                    },
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "impact": "Moderate",
+                        "confidence": 100,
+                        "blockType": "Domain Name",
+                        "role": "C2",
+                        "roleDescription": "Command and control location used by malware",
+                        "data": "url2",
+                        "data_1": "url2"
+                    }
+                ],
+                "campaignBrandSet": [
+                    {
+                        "totalCount": 1,
+                        "brand": {
+                            "id": 2051,
+                            "text": "None"
+                        }
+                    }
+                ],
+                "extractedStringSet": [],
+                "domainSet": [],
+                "senderEmailSet": [],
+                "executableSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "FormBook",
+                            "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                        },
+                        "vendorDetections": [],
+                        "fileName": "QUOTATION FOR PR2484.exe",
+                        "type": "Attachment",
+                        "ssdeep": "dummy",
+                        "severityLevel": "Major",
+                        "md5Hex": "f23e89543e8627182579f68c5916fd05",
+                        "sha1Hex": "418a672527adf6a337e98a6cc235d30d00066d48",
+                        "sha224Hex": "4f9b2df6afb87b6955e18591d51be1b3bde7fc353b342c3d02fe1879",
+                        "sha384Hex": "8c272cd22988e67532a941e6c4cf8cad74cc341aca38fb318e6747298812f92b3680b18a15e1f6dd596bf781d461bb69",
+                        "sha512Hex": "eafa756d3c36b2121403764652e9e6dfb3e9c04b188802e68ffba1506846e3cc24631431a15bbf9af6b176f3c16f195436949fd9d516290de2117fdf9fcab5b3",
+                        "fileNameExtension": "exe"
+                    }
+                ],
+                "senderIpSet": [],
+                "senderNameSet": [],
+                "spamUrlSet": [],
+                "subjectSet": [
+                    {
+                        "totalCount": 1,
+                        "subject": "RE: 레: 레: [Re] quotation"
+                    }
+                ],
+                "campaignLanguageSet": [
+                    {
+                        "languageDefinition": {
+                            "isoCode": "en",
+                            "name": "English",
+                            "nativeName": "English",
+                            "family": "Indo-European"
+                        }
+                    }
+                ],
+                "campaignScreenshotSet": [],
+                "lastPublished": 1651075411338,
+                "firstPublished": 1651075409064,
+                "label": "Quotation - FormBook",
+                "executiveSummary": "Quotation-themed campaign delivers FormBook.",
+                "hasReport": true,
+                "reportURL": "https://www.threathq.com/api/l/activethreatreport/247570/html",
+                "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/247570/html",
+                "threatDetailURL": "https://www.threathq.com/p42/search/default?m=247570",
+                "threatType": "MALWARE",
+                "deliveryMechanisms": [],
+                "secureEmailGatewaySet": [],
+                "malwareFamilySet": [
+                    {
+                        "familyName": "FormBook",
+                        "description": "FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications."
+                    }
+                ],
+                "naicsCodes": []
+            }
+        ]
+    }
+},
+  "mock_output": "{'Data': 'url', 'Threats': [{'id': 247570, 'relatedSearchTags': [], 'feeds': [{'id': 23, 'permissions': {'OWNER': False, 'WRITE': False, 'READ': True}, 'displayName': 'Cofense'}], 'blockSet': [{'malwareFamily': {'familyName': 'FormBook', 'description': 'FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.'}, 'impact': 'Major', 'ipDetail': {'ip': '127.0.0.1', 'lookupOn': 1651075424493, 'latitude': 39.162, 'longitude': -84.4569, 'metroCode': 515, 'timeZone': 'America/New_York', 'continentName': 'North America', 'continentCode': 'NA', 'countryName': 'United States', 'countryIsoCode': 'US', 'subdivisionName': 'Ohio', 'subdivisionIsoCode': 'OH', 'postalCode': '45201', 'asn': 11003, 'asnOrganization': 'The Procter and Gamble Company', 'isp': 'The Procter and Gamble Company', 'organization': 'The Procter and Gamble Company'}, 'confidence': 100, 'blockType': 'URL', 'role': 'C2', 'roleDescription': 'Command and control location used by malware', 'data': 'url', 'data_1': {'url': 'url', 'domain': 'url', 'path': '/amdf/', 'protocol': 'http', 'host': 'url'}}, {'malwareFamily': {'familyName': 'FormBook', 'description': 'FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.'}, 'impact': 'Moderate', 'confidence': 100, 'blockType': 'Domain Name', 'role': 'C2', 'roleDescription': 'Command and control location used by malware', 'data': 'url2', 'data_1': 'url2'}], 'campaignBrandSet': [{'totalCount': 1, 'brand': {'id': 2051, 'text': 'None'}}], 'extractedStringSet': [], 'domainSet': [], 'senderEmailSet': [], 'executableSet': [{'malwareFamily': {'familyName': 'FormBook', 'description': 'FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.'}, 'vendorDetections': [], 'fileName': 'QUOTATION FOR PR2484.exe', 'type': 'Attachment', 'ssdeep': 'dummy', 'severityLevel': 'Major', 'md5Hex': 'f23e89543e8627182579f68c5916fd05', 'sha1Hex': '418a672527adf6a337e98a6cc235d30d00066d48', 'sha224Hex': '4f9b2df6afb87b6955e18591d51be1b3bde7fc353b342c3d02fe1879', 'sha384Hex': '8c272cd22988e67532a941e6c4cf8cad74cc341aca38fb318e6747298812f92b3680b18a15e1f6dd596bf781d461bb69', 'sha512Hex': 'eafa756d3c36b2121403764652e9e6dfb3e9c04b188802e68ffba1506846e3cc24631431a15bbf9af6b176f3c16f195436949fd9d516290de2117fdf9fcab5b3', 'fileNameExtension': 'exe'}], 'senderIpSet': [], 'senderNameSet': [], 'spamUrlSet': [], 'subjectSet': [{'totalCount': 1, 'subject': 'RE: 레: 레: [Re] quotation'}], 'campaignLanguageSet': [{'languageDefinition': {'isoCode': 'en', 'name': 'English', 'nativeName': 'English', 'family': 'Indo-European'}}], 'campaignScreenshotSet': [], 'lastPublished': 1651075411338, 'firstPublished': 1651075409064, 'label': 'Quotation - FormBook', 'executiveSummary': 'Quotation-themed campaign delivers FormBook.', 'hasReport': True, 'reportURL': 'https://www.threathq.com/api/l/activethreatreport/247570/html', 'apiReportURL': 'https://www.threathq.com/apiv1/t3/malware/247570/html', 'threatDetailURL': 'https://www.threathq.com/p42/search/default?m=247570', 'threatType': 'MALWARE', 'deliveryMechanisms': [], 'secureEmailGatewaySet': [], 'malwareFamilySet': [{'familyName': 'FormBook', 'description': 'FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications.'}], 'naicsCodes': []}]}",
+  "mock_readable": "### Cofense URL Reputation for url url\n|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|\n|---|---|---|---|---|---|---|---|\n| 247570 | MALWARE | Malicious | Quotation-themed campaign delivers FormBook. | Quotation - FormBook | FormBook is a browser focused keylogger coded in ASM/C. It can record keystrokes, form input, clipboard contents, take screenshots, and recover stored credentials from many different applications. | 2022-04-27 16:03:31 | [https://www.threathq.com/api/l/activethreatreport/247570/html](https://www.threathq.com/api/l/activethreatreport/247570/html) |\n"
+}

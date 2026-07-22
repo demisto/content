@@ -1,0 +1,4 @@
+!xm-trigger-workflow recipients="Joey" subject="Major Emu Issue" body="The emu has escaped!"
+!xm-get-events status=ACTIVE propertyName=number#en propertyValue=INC0002231
+!xm-get-events request_id=5588db90-6b87-4662-9a2f-107d3bb233bf
+!xm-get-event event_id=33999001

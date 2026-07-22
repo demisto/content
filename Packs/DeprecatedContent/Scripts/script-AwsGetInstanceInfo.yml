@@ -1,0 +1,131 @@
+commonfields:
+  id: AwsGetInstanceInfo
+  version: -1
+name: AwsGetInstanceInfo
+deprecated: true
+script: >-
+  function markdownTableHeader(columnNames) {
+      var header="|";
+      var divider="|"
+      for (var idx=0;idx<columnNames.length;idx++) {
+          header += columnNames[idx] + "|";
+          divider+= "-|";
+      }
+      return header+"\n"+divider+"\n";
+  }
+
+  function formatSecurityGroupRule(id,name,dir,rule) {
+      var tmpSgTable="";
+      var tmpProtocol = (rule.ipProtocol == "-1") ? "All" : rule.ipProtocol.toUpperCase();
+
+      var tmpPort;
+      if (!rule.fromPort || rule.fromPort == "-1" || rule.fromPort == "0") {
+          tmpPort = "All";
+      } else  {
+          tmpPort = (rule.fromPort == rule.toPort) ? rule.fromPort : rule.fromPort + "-" + rule.toPort;
+      }
+
+      var ipRanges =  (Array.isArray(rule.ipRanges.item)) ? (rule.ipRanges.item) : new Array(rule.ipRanges.item);
+      for (var ipIdx=0;ipIdx<ipRanges.length;ipIdx++) {
+          tmpSgTable += "|" + name + " (" + id + ")|"+dir+"|"+tmpProtocol+"|"+tmpPort+"|" + ipRanges[ipIdx].cidrIp + "|\n";
+      }
+
+      return tmpSgTable;
+  }
+
+
+  var keysToPrint = ['privateIpAddress','instanceType','ipAddress','launchTime','privateDnsName','vpcId'];
+
+  var res = "";
+
+  var resCmd = executeCommand('get-instance-info', args);
+
+
+
+  if (resCmd[0].Contents.DescribeInstancesResponse.reservationSet.length===0) {
+      // instnce not found
+      return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Instance not found.' };
+  } else {
+      var instance = resCmd[0].Contents.DescribeInstancesResponse.reservationSet.item.instancesSet.item;
+
+      res += "---------\n### Instance ID " + instance.instanceId + " ("+ instance.instanceState.name + ")\n";
+      res += "\n#### Instance Information\n";
+
+      // print only relevant keys based on keysToPrint list, and only string values
+      var keys = Object.keys(instance);
+      var tmpKeys="|";
+      var tmpDivider="|";
+      var tmpValues="|";
+      for (var keysIdx=0; keysIdx<keys.length;keysIdx++) {
+          if (typeof instance[keys[keysIdx]] == "string" && keysToPrint.indexOf(keys[keysIdx])>=0) {
+              tmpKeys+=keys[keysIdx] + "|";
+              tmpDivider+="-|";
+              tmpValues+=instance[keys[keysIdx]] + "|";
+          }
+      }
+      res += tmpKeys + "\n" + tmpDivider + "\n" + tmpValues + "\n";
+
+      // print EBS volume data
+      res += "\n#### EBS Volumes\n";
+      var tmpVolTable=markdownTableHeader(['Volume ID','Size','Encrypted?','Snapshot ID']);
+      var volumes = instance.blockDeviceMapping.item;
+      volumes = (Array.isArray(volumes)) ? volumes : new Array(volumes);
+      for (var volIdx=0;volIdx<volumes.length;volIdx++) {
+          var resVolCmd = executeCommand('get-ebs-volume-info', {'volumeId' : volumes[volIdx].ebs.volumeId});
+          var volInfo = resVolCmd[0].Contents.DescribeVolumesResponse.volumeSet.item;
+
+          tmpVolTable += "|" + volInfo.volumeId + "|" + volInfo.size + "|" + volInfo.encrypted + "|" + volInfo.snapshotId + "|\n";
+      }
+      res += tmpVolTable;
+
+
+      // print security groups details (using get-sg-info command)
+      res += "\n#### Security Groups\n";
+      var tmpSgTable=markdownTableHeader(['Security Group','Direction','Protocol','Port','IP']);
+      var securityGroups = (Array.isArray(instance.networkInterfaceSet.item.groupSet.item)) ? instance.networkInterfaceSet.item.groupSet.item : new Array(instance.networkInterfaceSet.item.groupSet.item);
+      for (var sgIdx=0;sgIdx<securityGroups.length;sgIdx++) {
+          var resSgCmd = executeCommand('get-sg-info', {'sgId' : securityGroups[sgIdx].groupId});
+          var sg = resSgCmd[0].Contents.DescribeSecurityGroupsResponse.securityGroupInfo.item;
+          var inbound = (Array.isArray(sg.ipPermissions.item)) ? sg.ipPermissions.item : new Array(sg.ipPermissions.item);
+          for (var ruleIdx=0;ruleIdx<inbound.length;ruleIdx++) {
+              tmpSgTable += formatSecurityGroupRule(sg.groupId,sg.groupName,'Inbound',inbound[ruleIdx]);
+          }
+          var outbound = (Array.isArray(sg.ipPermissionsEgress.item)) ? sg.ipPermissionsEgress.item : new Array(sg.ipPermissionsEgress.item);
+          for (var ruleIdx=0;ruleIdx<outbound.length;ruleIdx++) {
+              tmpSgTable += formatSecurityGroupRule(sg.groupId,sg.groupName,'Outbound',outbound[ruleIdx]);
+          }
+      }
+      res += tmpSgTable;
+
+      // print instance tags
+      res += "\n#### Tags\n";
+      var tmpTagsTable = markdownTableHeader(['Key','Value']);
+      var tags = (Array.isArray(instance.tagSet.item)) ? instance.tagSet.item : new Array(instance.tagSet.item);
+      for (var tagIdx = 0; tagIdx<tags.length; tagIdx++) {
+          tmpTagsTable += "|" + tags[tagIdx].key + "|" + tags[tagIdx].value + "|\n";
+      }
+      res += tmpTagsTable;
+
+      return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: res } ;
+  }
+type: javascript
+tags:
+- Amazon Web Services
+system: true
+comment: Deprecated. Get AWS EC2 instance details
+args:
+- name: instanceId
+  default: true
+  description: AWS EC2 Instance ID
+- name: instanceName
+  description: AWS EC2 Instance Name
+scripttarget: 0
+dependson:
+  must:
+  - get-instance-info
+  - get-sg-info
+  - get-ebs-volume-info
+timeout: 0s
+tests:
+- No tests
+fromversion: 5.0.0

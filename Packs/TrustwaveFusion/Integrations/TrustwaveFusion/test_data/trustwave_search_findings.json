@@ -1,0 +1,55 @@
+{
+  "items": [
+    {
+      "child": false,
+      "classification": null,
+      "createdOn": "2021-09-17T16:26:11.731+00:00",
+      "customerId": 765432,
+      "customerName": "Sample Customer",
+      "destination": null,
+      "detail": "MCAS - Impossible travel activity",
+      "id": "765432:THREAT:@AXv0k6GhG2zTcaogE1vG",
+      "priority": 4,
+      "severity": 4,
+      "soarAction": null,
+      "source": null,
+      "sourceSystem": "LOG",
+      "status": {
+        "code": "R:1",
+        "description": "Security Incident"
+      },
+      "summary": "MS Graph Alert Detection Rule",
+      "type": "THREAT",
+      "updatedOn": "2021-12-08T17:17:56.504+00:00"
+    },
+    {
+      "child": false,
+      "classification": null,
+      "createdOn": "2021-10-26T22:33:17.567+00:00",
+      "customerId": 765432,
+      "customerName": "Sample Customer",
+      "destination": null,
+      "detail": "ASC, MSTIC - Windows registry persistence method detected pqa VM_RegistryPersistencyKey",
+      "id": "765432:THREAT:@AXy-u5fVt3G3ZYM6G5cH",
+      "priority": 2,
+      "severity": 2,
+      "soarAction": null,
+      "source": null,
+      "sourceSystem": "LOG",
+      "status": {
+        "code": "R:7",
+        "description": "False Positive"
+      },
+      "summary": "MS Graph Alert Detection Rule",
+      "type": "THREAT",
+      "updatedOn": "2021-12-16T17:21:31.384+00:00"
+    }
+  ],
+  "lastPageNumber": 328,
+  "pageNumber": 1,
+  "pageSize": 2,
+  "sorting": [
+    "createdOn"
+  ],
+  "totalCount": 655
+}

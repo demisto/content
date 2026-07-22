@@ -1,0 +1,459 @@
+id: Prisma Cloud Compute - Container Forensics
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Compute - Container Forensics
+description: |-
+  This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+  Gets the container profile and forensics.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 78849801-94db-4ca1-8b81-fdc547777e13
+    type: start
+    task:
+      id: 78849801-94db-4ca1-8b81-fdc547777e13
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0dce6302-4741-4387-89b8-ae752a0c605c
+    type: regular
+    task:
+      id: 0dce6302-4741-4387-89b8-ae752a0c605c
+      version: -1
+      name: Get container profile
+      description: Get information about the containers and their profile events. This command supports asterisks which allows you to get container profiles by filtering its fields according to a specific substring.
+      tags:
+      - forensics
+      script: '|||prisma-cloud-compute-profile-container-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      image:
+        complex:
+          root: inputs.Image
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 498dd99f-42a3-4732-8192-235613be6e21
+    type: regular
+    task:
+      id: 498dd99f-42a3-4732-8192-235613be6e21
+      version: -1
+      name: Get container forensics
+      description: Get runtime forensics data for a specific container on a specific host
+      tags:
+      - forensics
+      script: '|||prisma-cloud-compute-profile-container-forensic-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hostname:
+        complex:
+          root: inputs.Hostname
+      id:
+        complex:
+          root: PrismaCloudCompute.ProfileContainer._id
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: PrismaCloudCompute.ProfileContainer._id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.AlertCluster
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: fb0b1ecf-71f9-452a-8dab-c1814ddf98de
+    type: condition
+    task:
+      id: fb0b1ecf-71f9-452a-8dab-c1814ddf98de
+      description: ""
+      version: -1
+      name: Check alert type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      Container:
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: Container
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: inputs.AuditAlertType
+            iscontext: true
+          right:
+            value:
+              simple: container
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Image
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 39c41666-e0a5-4193-8283-ecbf57d35743
+    type: condition
+    task:
+      id: 39c41666-e0a5-4193-8283-ecbf57d35743
+      description: ""
+      version: -1
+      name: Check if defender type is server
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              complex:
+                root: inputs.DefenderType
+            iscontext: true
+          right:
+            value:
+              simple: server
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9cc4a280-94ad-4d29-81ca-743edd8fbcf0
+    type: title
+    task:
+      id: 9cc4a280-94ad-4d29-81ca-743edd8fbcf0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c0c53de6-3a0d-45ba-87cc-47aef8e36a5c
+    type: condition
+    task:
+      id: c0c53de6-3a0d-45ba-87cc-47aef8e36a5c
+      description: ""
+      version: -1
+      name: Forensic link exists?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ForensicLink
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2d178d2d-57f0-498a-89a3-7972faf323de
+    type: regular
+    task:
+      id: 2d178d2d-57f0-498a-89a3-7972faf323de
+      version: -1
+      name: Extract container id
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: ContainerID
+      value:
+        complex:
+          root: inputs.ForensicLink
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: container/
+              fields:
+                value:
+                  simple: "2"
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /forensic
+              fields:
+                value:
+                  simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5033cbbc-5694-4e86-8d06-20b0d00f8b7e
+    type: regular
+    task:
+      id: 5033cbbc-5694-4e86-8d06-20b0d00f8b7e
+      version: -1
+      name: Get container forensics
+      description: Get runtime forensics data for a specific container on a specific host
+      tags:
+      - forensics
+      script: '|||prisma-cloud-compute-profile-container-forensic-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      hostname:
+        complex:
+          root: inputs.Hostname
+      id:
+        complex:
+          root: ContainerID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_Container": 0.37,
+      "3_5_#default#": 0.16,
+      "4_1_#default#": 0.43,
+      "4_5_yes": 0.1,
+      "6_2_#default#": 0.28,
+      "6_7_yes": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 1040,
+        "x": 250,
+        "y": 90
+      }
+    }
+  }
+inputs:
+- key: AuditAlertType
+  value: {}
+  required: false
+  description: The audit alert type.
+  playbookInputQuery:
+- key: Image
+  value: {}
+  required: false
+  description: Image name.
+  playbookInputQuery:
+- key: DefenderType
+  value: {}
+  required: false
+  description: The defender type.
+  playbookInputQuery:
+- key: AlertCluster
+  value: {}
+  required: false
+  description: The alert's cluster name.
+  playbookInputQuery:
+- key: Hostname
+  value: {}
+  required: false
+  description: The hostname.
+  playbookInputQuery:
+- key: ForensicLink
+  value: {}
+  required: false
+  description: This link exists in audit runtime incidents.
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

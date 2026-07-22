@@ -1,0 +1,229 @@
+{
+ "defaultIncidentType": "TOPdesk Incident",
+ "description": "Maps incoming TOPdesk incidents fields.",
+ "feed": false,
+ "id": "TOPdesk-incoming-mapper",
+ "mapping": {
+  "TOPdesk Incident": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "TOPdesk Call Type": {
+     "complex": null,
+     "simple": "callType.name"
+    },
+    "TOPdesk Caller Branch Name": {
+     "complex": null,
+     "simple": "callerBranch.name"
+    },
+    "TOPdesk Caller Name": {
+     "complex": null,
+     "simple": "caller.dynamicName"
+    },
+    "TOPdesk Category": {
+     "complex": null,
+     "simple": "category.name"
+    },
+    "TOPdesk Creation Date": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "creationDate",
+      "transformers": [
+       {
+        "args": {
+         "add_utc_timezone": {
+          "isContext": false,
+          "value": null
+         },
+         "dayfirst": {
+          "isContext": false,
+          "value": null
+         },
+         "fuzzy": {
+          "isContext": false,
+          "value": null
+         },
+         "yearfirst": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "DateStringToISOFormat"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "TOPdesk Creator": {
+     "complex": null,
+     "simple": "creator.name"
+    },
+    "TOPdesk Duration": {
+     "complex": null,
+     "simple": "duration.name"
+    },
+    "TOPdesk Entry Type": {
+     "complex": null,
+     "simple": "entryType.name"
+    },
+    "TOPdesk Impact": {
+     "complex": null,
+     "simple": "impact.name"
+    },
+    "TOPdesk Number": {
+     "complex": null,
+     "simple": "number"
+    },
+    "TOPdesk Line": {
+     "complex": null,
+     "simple": "status"
+    },
+    "TOPdesk MainIncident": {
+     "complex": null,
+     "simple": "mainIncident"
+    },
+    "TOPdesk Modification Date": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "modificationDate",
+      "transformers": [
+       {
+        "args": {
+         "add_utc_timezone": {
+          "isContext": false,
+          "value": null
+         },
+         "dayfirst": {
+          "isContext": false,
+          "value": null
+         },
+         "fuzzy": {
+          "isContext": false,
+          "value": null
+         },
+         "yearfirst": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "DateStringToISOFormat"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "TOPdesk Modifier": {
+     "complex": null,
+     "simple": "modifier.name"
+    },
+    "TOPdesk Priority": {
+     "complex": null,
+     "simple": "priority.name"
+    },
+    "TOPdesk Processing Status": {
+     "complex": null,
+     "simple": "processingStatus.name"
+    },
+    "TOPdesk Subcategory": {
+     "complex": null,
+     "simple": "subcategory.name"
+    },
+    "TOPdesk Urgency": {
+     "complex": null,
+     "simple": "urgency.name"
+    },
+    "Ticket Closed Date": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "closedDate",
+      "transformers": [
+       {
+        "args": {
+         "add_utc_timezone": {
+          "isContext": false,
+          "value": null
+         },
+         "dayfirst": {
+          "isContext": false,
+          "value": null
+         },
+         "fuzzy": {
+          "isContext": false,
+          "value": null
+         },
+         "yearfirst": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "DateStringToISOFormat"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "Ticket Number": {
+     "complex": null,
+     "simple": "number"
+    },
+    "Ticket Opened Date": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "creationDate",
+      "transformers": [
+       {
+        "args": {
+         "add_utc_timezone": {
+          "isContext": false,
+          "value": null
+         },
+         "dayfirst": {
+          "isContext": false,
+          "value": null
+         },
+         "fuzzy": {
+          "isContext": false,
+          "value": null
+         },
+         "yearfirst": {
+          "isContext": false,
+          "value": null
+         }
+        },
+        "operator": "DateStringToISOFormat"
+       }
+      ]
+     },
+     "simple": ""
+    },
+    "dbotMirrorDirection": {
+     "simple": "mirror_direction"
+    },
+    "dbotMirrorId": {
+     "simple": "id"
+    },
+    "dbotMirrorInstance": {
+     "simple": "mirror_instance"
+    },
+    "dbotMirrorTags": {
+     "simple": "mirror_tags"
+    }
+   }
+  }
+ },
+ "name": "TOPdesk Incoming Mapper",
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

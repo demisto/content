@@ -1,0 +1,418 @@
+{
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_published",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_modified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Report Details",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Report",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "indicator",
+    "id": "Feedly Report",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 6,
+                        "i": "default-main-Feedly Report-default-main-Feedly Report-default-main-relationshipsTable",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "created",
+                                "width": 150
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "content",
+                                "width": 200
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "source",
+                                "width": 100
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "default-main-Feedly Report-default-main-Feedly Report-default-main-indicatorTimeline",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 11
+                    },
+                    {
+                        "h": 3,
+                        "i": "default-main-Feedly Report-default-main-Feedly Report-default-main-comments",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 13,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "default-main-Feedly Report-default-main-Feedly Report-default-main-5da57350-68fe-11ee-8ff4-09f497dbe082",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "description",
+                                "height": 44,
+                                "id": "969827c0-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 0,
+                                "listId": "default-main-5da57350-68fe-11ee-8ff4-09f497dbe082",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Description",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "default-main-Feedly Report-default-main-Feedly Report-default-main-6c41fd70-68fe-11ee-8ff4-09f497dbe082",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "published",
+                                "height": 22,
+                                "id": "dda787f0-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "e16ef030-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 1,
+                                "listId": "default-main-Feedly Report-default-main-6c41fd70-68fe-11ee-8ff4-09f497dbe082",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "91958060-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "e7848e30-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "f3e2e820-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "fa5d8980-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 5,
+                                "name": "Add tag",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "fd307fa0-68fe-11ee-8ff4-09f497dbe082",
+                                "index": 5,
+                                "listId": "default-main-Feedly Report-default-main-6c41fd70-68fe-11ee-8ff4-09f497dbe082",
+                                "name": "Remove tag",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "id": "indicator-quick-view-info",
+                "name": "Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "i": "indicator-quick-view-info-tags-section",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "published",
+                                "height": 22,
+                                "id": "22d78450-6900-11ee-8ff4-09f497dbe082",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "261a5340-6900-11ee-8ff4-09f497dbe082",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "2dfd1020-6900-11ee-8ff4-09f497dbe082",
+                                "index": 2,
+                                "listId": "indicator-quick-view-info-tags-section",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "29da1a60-6900-11ee-8ff4-09f497dbe082",
+                                "index": 3,
+                                "listId": "indicator-quick-view-info-tags-section",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tags",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-comments",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "indicator-quick-view-info-1685d490-6900-11ee-8ff4-09f497dbe082",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "1a365970-6900-11ee-8ff4-09f497dbe082",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 3,
+                        "i": "indicator-quick-view-info-36a7ff00-6900-11ee-8ff4-09f497dbe082",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Feedly Report",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.9.0",
+    "description": "Layout for the Feedly Report indicator type"
+}

@@ -1,0 +1,30 @@
+commonfields:
+  id: CPShowHosts
+  version: -1
+name: CPShowHosts
+script: >
+  resp = demisto.executeCommand('checkpoint', {'command': 'show-hosts'})
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], 'Contents.objects')
+      data = [{k: formatCell(row[k]) for k in row} for row in data]
+      if data:
+          demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': data} )
+      else:
+          demisto.results('No results.')
+type: python
+subtype: python2
+tags:
+- checkpoint
+comment: Deprecated. Show host objects configured in Checkpoint FW.
+system: true
+deprecated: true
+scripttarget: 0
+dependson:
+  must:
+  - checkpoint
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

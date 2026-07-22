@@ -1,0 +1,4 @@
+[INGEST:vendor="Github", product="github-audit", target_dataset="github_github_audit_raw", no_hit=keep]
+// Support only epoch date time format. For example: "1669420445734".
+filter to_string(created_at) ~= "\d{13}" 
+| alter _time = timestamp_seconds(to_integer(divide(created_at, 1000)));

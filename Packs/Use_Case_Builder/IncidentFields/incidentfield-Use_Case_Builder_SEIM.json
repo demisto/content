@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuilderseim",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuilderseim",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Builder SEIM",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "template": "# Analytics and SIEM\n## Top Use Cases:\n\n- Fetch Incidents with relevant filters\n- Create, close and delete incidents/events/cases\n- Update Incidents - Update status, assignees, Severity, SLA, etc.\n- Get events related to an incident/case for enrichment/investigation purposes.\n- Query SIEM (consider aggregating logs)\n\n\u003e **Please Note:** Will normally include the Fetch Incidents possibility for the instance. Can also include list-incidents or get-incident as integration commands. Important information for an Event/Incident\n\n## Analytics \u0026 SIEM Integration Example: [ArcSight ESM](https://xsoar.pan.dev/docs/reference/integrations/arc-sight-esm-v2)\n",
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

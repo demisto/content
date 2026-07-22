@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"The \"QRadar Build Query and Search\" playbook output context path was changed from QRadar.Search.Result.events to QRadar.SearchEvents.Events."}

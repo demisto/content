@@ -1,0 +1,808 @@
+id: Endpoint Enrichment - Generic v2
+version: -1
+fromversion: 5.0.0
+name: Endpoint Enrichment - Generic v2
+description: |-
+  Deprecated. Use "Endpoint Enrichment - Generic v2.1" playbook instead. Enrich an endpoint by hostname using one or more integrations.
+  Currently, the following integrations are supported:
+  - Active Directory
+  - McAfee ePolicy Orchestrator
+  - Carbon Black Enterprise Response
+  - Cylance Protect
+  - CrowdStrike Falcon Host
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 29bcd70f-1953-4061-84ce-4cde781ad9f7
+    type: start
+    task:
+      id: 29bcd70f-1953-4061-84ce-4cde781ad9f7
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
+    type: title
+    task:
+      id: 54895e0d-9904-4e62-8f45-ebd0d17ad5c9
+      version: -1
+      description: ""
+      name: Endpoint Products
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "18"
+      - "19"
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: c9799048-288a-40cc-8d2f-c561d0ea2f6b
+    type: condition
+    task:
+      id: c9799048-288a-40cc-8d2f-c561d0ea2f6b
+      version: -1
+      name: Is McAfee ePolicy Orchestrator enabled?
+      description: Checks if there is any active instance of the McAfee ePolicy Orchestrator integration enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: epo
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+    type: condition
+    task:
+      id: efeca58b-3c8f-40aa-8c2e-f9e84257b1bb
+      version: -1
+      name: Is there an endpoint to enrich?
+      description: Checks whether there is at least one endpoint to enrich (by hostname).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "24"
+      - "1"
+    scriptarguments:
+      value:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Hostname
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: b95011d0-fd23-4e65-8ea9-560c5aead197
+    type: title
+    task:
+      id: b95011d0-fd23-4e65-8ea9-560c5aead197
+      version: -1
+      description: ""
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 44a06d71-1772-47af-8d41-8c6dbdd149e7
+    type: regular
+    task:
+      id: 44a06d71-1772-47af-8d41-8c6dbdd149e7
+      version: -1
+      name: Get host information from ePO
+      description: Gets host information from McAfee ePolicy Orchestrator.
+      script: epo|||epo-find-system
+      type: regular
+      iscommand: true
+      brand: epo
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      searchText:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      verbose: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 996
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 9cee85fe-c940-400e-88e8-b0afb46fbb36
+    type: condition
+    task:
+      id: 9cee85fe-c940-400e-88e8-b0afb46fbb36
+      version: -1
+      name: Is Carbon Black Enterprise Response enabled?
+      description: Checks if there is any active instance of the Carbon Black Enterprise integration enabled. Response.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: carbonblack
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 6f8c1606-b44a-4a22-863d-c90276b71cf4
+    type: regular
+    task:
+      id: 6f8c1606-b44a-4a22-863d-c90276b71cf4
+      version: -1
+      name: Get host information from Carbon Black Enterprise Response
+      description: Gets host information from Carbon Black Enterprise Response.
+      script: carbonblack|||cb-sensor-info
+      type: regular
+      iscommand: true
+      brand: carbonblack
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      agent_id: {}
+      agent_version__in: {}
+      computer_name__like:
+        simple: ${inputs.Hostname}
+      core_count__gte: {}
+      core_count__lte: {}
+      cpu_count__gte: {}
+      cpu_count__lte: {}
+      created_at__gt: {}
+      created_at__lt: {}
+      domain__in: {}
+      encrypted_applications: {}
+      group_id: {}
+      group_id__in: {}
+      groupid: {}
+      hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      id__in: {}
+      id__nin: {}
+      include_decommissioned: {}
+      infected: {}
+      ip: {}
+      is_active: {}
+      is_decommissioned: {}
+      is_pending_uninstall: {}
+      is_uninstalled: {}
+      is_up_to_date: {}
+      last_active_date__gt: {}
+      last_active_date__lt: {}
+      limit: {}
+      machine_type__in: {}
+      network_status: {}
+      os_type: {}
+      os_type__in: {}
+      policy_id__in: {}
+      query: {}
+      registerd_at__gt: {}
+      registered_at__lt: {}
+      searchText:
+        simple: ${inputs.Hostname}
+      sensor: {}
+      skip: {}
+      total_memory__gte: {}
+      total_memory__lte: {}
+    reputationcalc: 1
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 996
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 216aed2b-2f34-4c5e-8c54-60b978218896
+    type: condition
+    task:
+      id: 216aed2b-2f34-4c5e-8c54-60b978218896
+      version: -1
+      name: Is CrowdStrike Falcon Host enabled?
+      description: Checks if there is any active instance of the CrowdStrike Falcon Host integration enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "25"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: FalconHost
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 1d8f2002-479e-45f0-80c2-866cea427467
+    type: condition
+    task:
+      id: 1d8f2002-479e-45f0-80c2-866cea427467
+      version: -1
+      name: Is Cylance Protect enabled?
+      description: Checks if there is any active instance of the Cylance Protect integration enabled.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "15"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: Cylance Protect
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 1453a615-b9c1-48bc-853a-63a71d3a145e
+    type: regular
+    task:
+      id: 1453a615-b9c1-48bc-853a-63a71d3a145e
+      version: -1
+      name: Get host information from Cylance Protect
+      description: Gets host information from Cylance Protect.
+      script: Cylance Protect|||cylance-protect-get-devices
+      type: regular
+      iscommand: true
+      brand: Cylance Protect
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      filters:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[{"Field":"device_name","Operator":"IsEqualTo","Value":"'
+              suffix:
+                value:
+                  simple: '"}]'
+      headers: {}
+      page_number: {}
+      page_size: {}
+      searchText:
+        simple: ${inputs.Hostname}
+      sorts: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 996
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: d9d617d9-2efd-466e-8ce7-190f8db83b95
+    type: title
+    task:
+      id: d9d617d9-2efd-466e-8ce7-190f8db83b95
+      version: -1
+      name: McAfee ePolicy Orchestrator
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "18":
+    id: "18"
+    taskid: 6cf08862-644d-479e-89ce-f9e173a8c562
+    type: title
+    task:
+      id: 6cf08862-644d-479e-89ce-f9e173a8c562
+      version: -1
+      description: ""
+      name: Carbon Black Enterprise Response
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "19":
+    id: "19"
+    taskid: 7c2eb34e-c326-438b-8a53-d57dc8872f92
+    type: title
+    task:
+      id: 7c2eb34e-c326-438b-8a53-d57dc8872f92
+      version: -1
+      description: ""
+      name: Cylance Protect
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 5d371f29-3a4c-43c5-8f71-b383db2e5320
+    type: title
+    task:
+      id: 5d371f29-3a4c-43c5-8f71-b383db2e5320
+      version: -1
+      description: ""
+      name: CrowdStrike Falcon Host
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 605
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: d55e2614-b89c-4e02-85ec-5e63ea3026aa
+    type: condition
+    task:
+      id: d55e2614-b89c-4e02-85ec-5e63ea3026aa
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks if there is any active instance of the Active Directory integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: activedir
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1226,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 827cb856-fb98-46fb-8932-1a2b03d3f928
+    type: regular
+    task:
+      id: 827cb856-fb98-46fb-8932-1a2b03d3f928
+      version: -1
+      name: Get host information from Active Directory
+      description: |-
+        Use Active Directory to retrieve detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN).
+        If no filters are specified, the result will show all computers.
+      scriptName: ADGetComputer
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      dn: {}
+      headers: {}
+      name:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      nestedSearch: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1226,
+          "y": 900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
+    type: title
+    task:
+      id: 9706cc39-d338-44cd-8ee1-efc5ea95b04d
+      version: -1
+      description: ""
+      name: Active Directory
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1226,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 71baffa3-cd35-4cb0-8f50-0bd4c45fbc70
+    type: playbook
+    task:
+      id: 71baffa3-cd35-4cb0-8f50-0bd4c45fbc70
+      version: -1
+      name: CrowdStrike Endpoint Enrichment
+      description: Enrich Endpoint with CrowdStrike
+      playbookName: CrowdStrike Endpoint Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.Hostname
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 996
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_25_yes": 0.54,
+      "10_4_#default#": 0.11,
+      "14_4_#default#": 0.18,
+      "22_4_#default#": 0.2,
+      "2_4_#default#": 0.11,
+      "3_4_#default#": 0.53,
+      "8_4_#default#": 0.19
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1325,
+        "width": 2336,
+        "x": -1226,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value:
+    complex:
+      root: Endpoint
+      accessor: Hostname
+      transformers:
+      - operator: uniq
+  required: false
+  description: The hostname of the endpoint to enrich.
+outputs:
+- contextPath: Endpoint
+  description: The endpoint object of the endpoint that was enriched.
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: The hostnames of the endpoints that were enriched.
+  type: string
+- contextPath: Endpoint.OS
+  description: The operating systems running on the endpoints that were enriched.
+  type: string
+- contextPath: Endpoint.IP
+  description: A list of the IP addresses of the endpoints.
+- contextPath: Endpoint.MAC
+  description: A list of the MAC addresses of the endpoints that were enriched.
+- contextPath: Endpoint.Domain
+  description: The domain names of the endpoints that were enriched.
+  type: string
+tests:
+- No Tests
+deprecated: true

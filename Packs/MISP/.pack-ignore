@@ -1,0 +1,14 @@
+[file:MISP_V2.yml]
+ignore=BA108,BA109
+
+[file:README.md]
+ignore=RM106
+
+[file:MISPV3_image.png]
+ignore=IM111
+
+[file:MISP_V2_image.png]
+ignore=IM111
+
+[known_words]
+MISP

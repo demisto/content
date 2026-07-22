@@ -1,0 +1,36 @@
+{
+    "QueryExecutionId": "b3c194e7-6580-421c-81fa-4b409e1ba04f",
+    "Query": "SELECT * FROM test_db.test_table",
+    "StatementType": "DML",
+    "ResultConfiguration": {
+        "OutputLocation": "s3://athena-queries-test/b3c194e7-6580-421c-81fa-4b409e1ba04f.csv"
+    },
+    "ResultReuseConfiguration": {
+        "ResultReuseByAgeConfiguration": {
+            "Enabled": false
+        }
+    },
+    "QueryExecutionContext": {},
+    "Status": {
+        "State": "SUCCEEDED",
+        "SubmissionDateTime": "2023-11-07T10:01:03",
+        "CompletionDateTime": "2023-11-07T10:01:04"
+    },
+    "Statistics": {
+        "EngineExecutionTimeInMillis": 1074,
+        "DataScannedInBytes": 86996,
+        "TotalExecutionTimeInMillis": 1296,
+        "QueryQueueTimeInMillis": 192,
+        "QueryPlanningTimeInMillis": 493,
+        "ServiceProcessingTimeInMillis": 30,
+        "ResultReuseInformation": {
+            "ReusedPreviousResult": false
+        }
+    },
+    "WorkGroup": "primary",
+    "EngineVersion": {
+        "SelectedEngineVersion": "AUTO",
+        "EffectiveEngineVersion": "Athena engine version 3"
+    },
+    "SubstatementType": "SELECT"
+}

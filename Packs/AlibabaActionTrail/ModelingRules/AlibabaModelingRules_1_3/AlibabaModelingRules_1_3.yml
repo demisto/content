@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: alibaba_ModelingRule
+name: Alibaba Modeling Rule
+rules: ''
+schema: ''
+tags: alibaba
+supportedModules:
+- xsiam

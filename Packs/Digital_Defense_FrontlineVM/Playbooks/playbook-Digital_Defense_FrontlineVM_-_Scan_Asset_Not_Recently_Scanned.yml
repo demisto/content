@@ -1,0 +1,250 @@
+id: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
+version: -1
+fromversion: 5.0.0
+name: Digital Defense FrontlineVM - Scan Asset Not Recently Scanned
+description: This playbook will pull the IP address from the details value of an incident and check if that asset has been scanned within the past 60 days. If not then it will prompt to perform a scan on the asset.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 88b9b394-6c20-4f43-89f0-2577b3b86c16
+    type: start
+    task:
+      id: 88b9b394-6c20-4f43-89f0-2577b3b86c16
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: a09127d0-c096-4b65-80f7-0b05efa3ccb0
+    type: regular
+    task:
+      id: a09127d0-c096-4b65-80f7-0b05efa3ccb0
+      version: -1
+      name: frontline-get-assets (scanned within last 60 days)
+      description: Gathering the ip from the incident details value, query FrontlineVM to check if the asset has been scanned within the past 60 days.
+      script: '|||frontline-get-assets'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      hostname: {}
+      ip_address:
+        simple: ${incident.details}
+      label_name: {}
+      max_days_since_scan:
+        simple: '60'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '2':
+    id: '2'
+    taskid: d54922c3-f992-4f0b-88e6-e754bd329bc6
+    type: condition
+    task:
+      id: d54922c3-f992-4f0b-88e6-e754bd329bc6
+      version: -1
+      name: Has been scanned within the last 60 days?
+      description: Checks if assets has been scanned within the last 60 days.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '4'
+      'yes':
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: 'yes'
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FrontlineVM.Hosts
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '3':
+    id: '3'
+    taskid: 1c6a8431-2d09-4128-8bae-f4a655a0c303
+    type: regular
+    task:
+      id: 1c6a8431-2d09-4128-8bae-f4a655a0c303
+      version: -1
+      name: Asset has already been scanned.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: |-
+          The following asset has already been scanned within the last 60 days:
+
+          ${FrontlineVM.Hosts}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '4':
+    id: '4'
+    taskid: f74b727d-f10f-4961-8c5a-4d3950117f88
+    type: condition
+    task:
+      id: f74b727d-f10f-4961-8c5a-4d3950117f88
+      version: -1
+      name: Asset has not been scanned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      No, do not perform scan:
+      - '5'
+      Yes, perform scan:
+      - '6'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Administrator
+      subject:
+        simple: Perform Scan on asset
+      body:
+        simple: "The following asset has not been scanned within the past 60 days.\nPerform scan on asset: \n\n${incident.details}"
+      methods:
+      - email
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+      replyOptions:
+      - Yes, perform scan
+      - No, do not perform scan
+  '5':
+    id: '5'
+    taskid: 94008e29-1942-4b20-8e4c-ace31eb09de2
+    type: regular
+    task:
+      id: 94008e29-1942-4b20-8e4c-ace31eb09de2
+      version: -1
+      name: Will not perform scan
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: "Admin chose not to perform a scan on asset: \n\n${incident.details}"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '6':
+    id: '6'
+    taskid: 768c960e-59fe-4595-8b7b-ab7d77c0b332
+    type: regular
+    task:
+      id: 768c960e-59fe-4595-8b7b-ab7d77c0b332
+      version: -1
+      name: Performing scan
+      description: When confirmed, will perform scan on asset provided by the incident.
+      script: '|||frontline-scan-asset'
+      type: regular
+      iscommand: true
+      brand: ''
+    scriptarguments:
+      ip_address:
+        simple: ${incident.details}
+      scan_policy: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 885,
+        "width": 1100,
+        "x": 160,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- Digital Defense FrontlineVM - Scan Asset Not Recently Scanned Test

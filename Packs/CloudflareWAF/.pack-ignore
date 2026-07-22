@@ -1,0 +1,7 @@
+[known_words]
+waf
+RequestHeaders
+
+[file:CloudflareWAF.yml]
+ignore=PR101,MR108
+

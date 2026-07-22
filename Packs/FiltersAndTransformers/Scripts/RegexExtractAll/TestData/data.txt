@@ -1,0 +1,11 @@
+<style type="text/css">
+.nomargin {margin-bottom: .5em;}
+.indent {margin-left: 3em;}
+</style>
+<p>Dear test@test.com,</p>
+<p>Demisto training case 9999 for user testtrainee@test.com has been completed.  You may access the case summary at <a href="https://somedomain/#/Details/9999">at this link</a></p>
+<p>–Us</p>
+<h3 class="nomargin">Trainee Information:</h3>
+<div class="indent">
+<b>Trainee</b>: testtrainee@test.com
+</div>

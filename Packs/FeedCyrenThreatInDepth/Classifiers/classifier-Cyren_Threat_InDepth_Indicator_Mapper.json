@@ -1,0 +1,899 @@
+{
+    "description": "This indicator mapper provides flexibility to gather Cyren's Threat Intelligence data the way they are needed it in the customer's process.",
+    "feed": true,
+    "id": "Cyren Threat InDepth Indicator Mapper",
+    "mapping": {
+        "ipRep": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Cyren City Name": {
+                    "complex": {
+                        "accessor": "geo_city",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Country Code": {
+                    "complex": {
+                        "accessor": "country_code",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Country Name": {
+                    "complex": {
+                        "accessor": "geo_country",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Categories": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Date": {
+                    "complex": {
+                        "accessor": "detection_ts",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Methods": {
+                    "complex": {
+                        "accessor": "detection_methods",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Feed Action": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "payload.action"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty",
+                                    "right": null
+                                }
+                            ]
+                        ],
+                        "root": "payload.action",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "+,=,-"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "add,update,remove"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Geo Location": {
+                    "complex": {
+                        "accessor": "geo_location",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Class": {
+                    "complex": {
+                        "accessor": "ip_class",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Intensity": {
+                    "complex": {
+                        "accessor": "intensity",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Risk": {
+                    "complex": {
+                        "accessor": "risk",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Object Type": {
+                    "complex": {
+                        "accessor": "object_type",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Port": {
+                    "complex": {
+                        "accessor": "port",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Protocol": {
+                    "complex": {
+                        "accessor": "protocol",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Source Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "source_tag",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "first_seen",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Geo Country": {
+                    "complex": {
+                        "accessor": "country_code",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Last Seen By Source": {
+                    "complex": {
+                        "accessor": "last_seen",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Port": {
+                    "complex": {
+                        "accessor": "port",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "ConvertToSingleElementArray"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "tags",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "unifiedFileRep": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyren Country Code": {
+                    "complex": {
+                        "accessor": "country_code",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Categories": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Date": {
+                    "complex": {
+                        "accessor": "detection_ts",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Methods": {
+                    "complex": {
+                        "accessor": "detection_methods",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Feed Action": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "payload.action"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty",
+                                    "right": null
+                                }
+                            ]
+                        ],
+                        "root": "payload.action",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "+,=,-"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "add,update,remove"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Class": {
+                    "complex": {
+                        "accessor": "ip_class",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Intensity": {
+                    "complex": {
+                        "accessor": "intensity",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Risk": {
+                    "complex": {
+                        "accessor": "risk",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Malware Family": {
+                    "complex": {
+                        "accessor": "family_name",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Object Type": {
+                    "complex": {
+                        "accessor": "object_type",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Port": {
+                    "complex": {
+                        "accessor": "port",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Protocol": {
+                    "complex": {
+                        "accessor": "protocol",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Source Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "source_tag",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "first_seen",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Geo Country": {
+                    "complex": {
+                        "accessor": "country_code",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Last Seen By Source": {
+                    "complex": {
+                        "accessor": "last_seen",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Malware Family": {
+                    "complex": {
+                        "accessor": "family_name",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Port": {
+                    "complex": {
+                        "accessor": "port",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "ConvertToSingleElementArray"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "tags",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "urlRep": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Cyren Country Code": {
+                    "complex": {
+                        "accessor": "country_code",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Categories": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Date": {
+                    "complex": {
+                        "accessor": "detection_ts",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Detection Methods": {
+                    "complex": {
+                        "accessor": "detection_methods",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Feed Action": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+                            [
+                                {
+                                    "ignoreCase": false,
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "payload.action"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty",
+                                    "right": null
+                                }
+                            ]
+                        ],
+                        "root": "payload.action",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "+,=,-"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "add,update,remove"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Class": {
+                    "complex": {
+                        "accessor": "ip_class",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Intensity": {
+                    "complex": {
+                        "accessor": "intensity",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren IP Risk": {
+                    "complex": {
+                        "accessor": "risk",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Industries": {
+                    "complex": {
+                        "accessor": "industry",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Object Type": {
+                    "complex": {
+                        "accessor": "object_type",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Phishing Brands": {
+                    "complex": {
+                        "accessor": "brand",
+                        "filters": [
+
+                        ],
+                        "root": "payload.detection",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Port": {
+                    "complex": {
+                        "accessor": "port",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Protocol": {
+                    "complex": {
+                        "accessor": "protocol",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Cyren Source Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "source_tag",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "First Seen By Source": {
+                    "complex": {
+                        "accessor": "first_seen",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Geo Country": {
+                    "complex": {
+                        "accessor": "country_code",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Last Seen By Source": {
+                    "complex": {
+                        "accessor": "last_seen",
+                        "filters": [
+
+                        ],
+                        "root": "payload",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Port": {
+                    "complex": {
+                        "accessor": "port",
+                        "filters": [
+
+                        ],
+                        "root": "payload.meta",
+                        "transformers": [
+                            {
+                                "args": {
+
+                                },
+                                "operator": "ConvertToSingleElementArray"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Tags": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "tags",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Cyren Threat InDepth Indicator Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

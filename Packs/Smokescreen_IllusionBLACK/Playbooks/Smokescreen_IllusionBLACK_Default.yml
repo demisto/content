@@ -1,0 +1,59 @@
+id: Smokescreen IllusionBLACK Default
+version: -1
+name: Smokescreen IllusionBLACK Default
+description: Enriches IllusionBLACK incidents with events related to the incident.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 4d5f9176-0600-47be-8fc4-043532654d78
+    type: start
+    task:
+      id: 4d5f9176-0600-47be-8fc4-043532654d78
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  '1':
+    id: '1'
+    taskid: 52d1089e-d0a9-45e4-8a06-66635ca9144c
+    type: regular
+    task:
+      id: 52d1089e-d0a9-45e4-8a06-66635ca9144c
+      version: -1
+      name: Get IllusionBLACK events for the incident
+      description: 'Fetches IllusionBLACK events from a llist of event IDs. '
+      script: Smokescreen IllusionBLACK|||illusionblack-get-event-by-id
+      type: regular
+      iscommand: true
+      brand: Smokescreen IllusionBLACK
+    scriptarguments:
+      id:
+        simple: ${inputs.event_ids}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 230\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 275,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
+  \    }\n  }\n}"
+inputs:
+- key: event_ids
+  value:
+    simple: ${incident.illusionblackevents}
+  required: true
+  description: IllusionBLACK event IDs for an incident
+outputs: []
+fromversion: 5.0.0
+tests:
+  - no tests

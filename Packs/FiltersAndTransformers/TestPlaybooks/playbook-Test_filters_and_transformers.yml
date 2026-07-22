@@ -1,0 +1,975 @@
+id: Test filters & transformers scripts
+version: -1
+name: Test filters & transformers scripts
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 712d2687-ee8e-4700-8f4f-f24ebebdfc72
+    type: start
+    task:
+      id: 712d2687-ee8e-4700-8f4f-f24ebebdfc72
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 50
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 61e960f0-4db5-438a-8a0b-3e66174fb8b4
+    type: title
+    task:
+      id: 61e960f0-4db5-438a-8a0b-3e66174fb8b4
+      version: -1
+      name: Test In Range
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 195
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fb305441-3c7e-4444-8bfb-f948446e42c1
+    type: condition
+    task:
+      id: fb305441-3c7e-4444-8bfb-f948446e42c1
+      version: -1
+      name: 4 In range [2,8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              simple: "4"
+          right:
+            value:
+              simple: 2,8
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 2a562322-ea30-4bfe-81f0-f663ba7a8901
+    type: title
+    task:
+      id: 2a562322-ea30-4bfe-81f0-f663ba7a8901
+      version: -1
+      name: Test Strip charecter
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 515
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0edffd88-96c1-4914-83d5-9cf1fc051e52
+    type: condition
+    task:
+      id: 0edffd88-96c1-4914-83d5-9cf1fc051e52
+      version: -1
+      name: -4 In range [-2, -8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              simple: "-4"
+          right:
+            value:
+              simple: -8,-2
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 09d65d6b-a120-47d1-8c9b-84e35ce027e4
+    type: condition
+    task:
+      id: 09d65d6b-a120-47d1-8c9b-84e35ce027e4
+      version: -1
+      name: 1 In range [2,8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: 2,8
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 340
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e24d965b-6a4f-462c-88f0-03a5ba634b64
+    type: condition
+    task:
+      id: e24d965b-6a4f-462c-88f0-03a5ba634b64
+      version: -1
+      name: panda In range [2, 8]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              simple: panda
+          right:
+            value:
+              simple: 2,8
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 340
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 823da6f5-7d4c-4c5b-859f-bb46ec3ab5e4
+    type: condition
+    task:
+      id: 823da6f5-7d4c-4c5b-859f-bb46ec3ab5e4
+      version: -1
+      name: 1 In range [28]
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: InRange
+          left:
+            value:
+              simple: "1"
+          right:
+            value:
+              simple: "28"
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 340
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 17e6a78a-3435-4a1c-8267-cccd89a33ba8
+    type: condition
+    task:
+      id: 17e6a78a-3435-4a1c-8267-cccd89a33ba8
+      version: -1
+      name: Test Strip Char
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: arg1
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '!~'
+            iscontext: true
+          right:
+            value:
+              simple: www.somedomain.com
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 835
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 937a9957-11ff-46e3-84dc-68c80a98ecd5
+    type: regular
+    task:
+      id: 937a9957-11ff-46e3-84dc-68c80a98ecd5
+      version: -1
+      name: Set arg1
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      key:
+        simple: arg1
+      value:
+        simple: ~!www.somedomain.com~~!!~
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 660
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 1b31968c-3217-42f8-87eb-cee9a6bc5d2c
+    type: title
+    task:
+      id: 1b31968c-3217-42f8-87eb-cee9a6bc5d2c
+      version: -1
+      name: Test Reverse
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "17"
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1010
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: a549f91e-5363-4442-8ac7-ecc58c2df651
+    type: regular
+    task:
+      id: a549f91e-5363-4442-8ac7-ecc58c2df651
+      version: -1
+      name: Set arg2 (multiple items)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: arg2
+      value:
+        simple: '["mars","jupiter","saturn"]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1155
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 575b7b03-81ff-40d6-8221-4398f7a57a55
+    type: condition
+    task:
+      id: 575b7b03-81ff-40d6-8221-4398f7a57a55
+      version: -1
+      name: Test Reverse List (multiple items)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    scriptarguments:
+      value:
+        simple: ${arg2}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: arg2
+                transformers:
+                - operator: ReverseList
+                - operator: join
+                  args:
+                    separator:
+                      value:
+                        simple: ','
+            iscontext: true
+          right:
+            value:
+              simple: saturn,jupiter,mars
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1330
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 4a3cd677-bc8a-400f-83d1-4380a16d630c
+    type: title
+    task:
+      id: 4a3cd677-bc8a-400f-83d1-4380a16d630c
+      version: -1
+      name: Finished
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2495
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b30df5c2-a79e-48fc-87d6-d73fc2b5c5ed
+    type: regular
+    task:
+      id: b30df5c2-a79e-48fc-87d6-d73fc2b5c5ed
+      version: -1
+      name: Set arg3 (single item)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      key:
+        simple: arg3
+      value:
+        simple: neptune
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1155
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: f2063ed1-b3df-482f-89a7-0293c55f7dc7
+    type: condition
+    task:
+      id: f2063ed1-b3df-482f-89a7-0293c55f7dc7
+      version: -1
+      name: Test Reverse List  (single item)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "27"
+    scriptarguments:
+      value:
+        simple: ${arg2}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: arg3
+                transformers:
+                - operator: ReverseList
+            iscontext: true
+          right:
+            value:
+              simple: neptune
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1330
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f03095f8-6797-4533-800a-4f08de939c89
+    type: regular
+    task:
+      id: f03095f8-6797-4533-800a-4f08de939c89
+      version: -1
+      name: Set arg4 (timestamp)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      key:
+        simple: arg4
+      value:
+        simple: "1525006939"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1650
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 5961bd52-4d40-4d21-8866-c25ee9e5fcb8
+    type: condition
+    task:
+      id: 5961bd52-4d40-4d21-8866-c25ee9e5fcb8
+      version: -1
+      name: Test Time Stamp To Date
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    scriptarguments:
+      value:
+        simple: ${arg2}
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: arg4
+                transformers:
+                - operator: TimeStampToDate
+            iscontext: true
+          right:
+            value:
+              simple: "2018-04-29T13:02:19.000Z"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1825
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 9efff73b-f021-4eed-8b67-6a0033c1c56a
+    type: title
+    task:
+      id: 9efff73b-f021-4eed-8b67-6a0033c1c56a
+      version: -1
+      name: Test Time Stamp To Date
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1505
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 2de0f812-cbb3-44a2-8e66-b309da95bae0
+    type: title
+    task:
+      id: 2de0f812-cbb3-44a2-8e66-b309da95bae0
+      version: -1
+      name: Test Where Field Equals
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2000
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 98821fd2-484b-45e7-8381-6ce4bbc4c67a
+    type: regular
+    task:
+      id: 98821fd2-484b-45e7-8381-6ce4bbc4c67a
+      version: -1
+      name: Set arg5 (collection)
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+      - "32"
+      - "35"
+    scriptarguments:
+      key:
+        simple: arg5
+      value:
+        simple: '[{"name": "192.0.1.82","type": "IP"},{"name": "myfile.exe","type": "File"},{"name": "false","type": "Bool"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2145
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 10a49e62-25f6-48c0-8abb-1f693b6e08f3
+    type: condition
+    task:
+      id: 10a49e62-25f6-48c0-8abb-1f693b6e08f3
+      version: -1
+      name: Test Where Field Equals without 'getField'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: arg5
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: IP
+                    field:
+                      value:
+                        simple: type
+                    getField: {}
+                - operator: Stringify
+            iscontext: true
+          right:
+            value:
+              simple: '{"name":"192.0.1.82","type":"IP"}'
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2320
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 875d567f-ad83-4b57-8371-9cd681991267
+    type: condition
+    task:
+      id: 875d567f-ad83-4b57-8371-9cd681991267
+      version: -1
+      name: Test Where Field Equals with 'getField'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: arg5
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: IP
+                    field:
+                      value:
+                        simple: type
+                    getField:
+                      value:
+                        simple: name
+            iscontext: true
+          right:
+            value:
+              simple: 192.0.1.82
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2320
+        }
+      }
+    continueonerrortype: ""
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 9571f6b6-2f0d-457f-8cd3-42cccc0b9ead
+    type: condition
+    task:
+      id: 9571f6b6-2f0d-457f-8cd3-42cccc0b9ead
+      version: -1
+      name: Test Where Field Equals with 'getField' with false value
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: arg5
+                transformers:
+                - operator: WhereFieldEquals
+                  args:
+                    equalTo:
+                      value:
+                        simple: Bool
+                    field:
+                      value:
+                        simple: type
+                    getField:
+                      value:
+                        simple: name
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2510,
+        "width": 2100,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

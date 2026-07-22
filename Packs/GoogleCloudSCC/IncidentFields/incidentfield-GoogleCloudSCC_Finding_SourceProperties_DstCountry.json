@@ -1,0 +1,33 @@
+{
+ "id": "incident_googlecloudsccfindingsourcepropertiesdstcountry",
+ "version": -1,
+ "modified": "2021-01-22T00:31:30.855891282+05:30",
+ "name": "GoogleCloudSCC Finding SourceProperties DstCountry",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccfindingsourcepropertiesdstcountry",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0",
+ "marketplaces": [
+    "xsoar"
+ ]
+}

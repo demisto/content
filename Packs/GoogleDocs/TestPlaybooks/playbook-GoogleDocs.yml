@@ -1,0 +1,229 @@
+id: GoogleDocs-test
+version: -1
+name: GoogleDocs-test
+description: This is a playbook for performing for testing all google docs commands. creation, update and get.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22f0dbca-6969-4bbb-8c8a-10a9e630abe3
+    type: start
+    task:
+      id: 22f0dbca-6969-4bbb-8c8a-10a9e630abe3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6f82bf5d-08f1-48a1-8339-97fe52549acd
+    type: regular
+    task:
+      id: 6f82bf5d-08f1-48a1-8339-97fe52549acd
+      version: -1
+      name: Create Test Doucment
+      description: Creates a document
+      script: GoogleDocs|||google-docs-create-document
+      type: regular
+      iscommand: true
+      brand: GoogleDocs
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      title:
+        simple: test_file
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 89d2975a-b137-4954-8b1e-4b7f6586f6c3
+    type: regular
+    task:
+      id: 89d2975a-b137-4954-8b1e-4b7f6586f6c3
+      version: -1
+      name: 'Get Document after creation '
+      description: Returns a document matching the given ID.
+      script: GoogleDocs|||google-docs-get-document
+      type: regular
+      iscommand: true
+      brand: GoogleDocs
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      document_id:
+        complex:
+          root: GoogleDocs
+          accessor: DocumentId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d139f296-1bea-42ca-8c2a-bddd44460664
+    type: regular
+    task:
+      id: d139f296-1bea-42ca-8c2a-bddd44460664
+      version: -1
+      name: Update document
+      description: Updates a document with a given ID
+      script: GoogleDocs|||google-docs-update-document
+      type: regular
+      iscommand: true
+      brand: GoogleDocs
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      actions:
+        simple: insertTable{1,7,9}
+      document_id:
+        simple: ${GoogleDocs.DocumentId}
+      required_revision_id:
+        simple: ${GoogleDocs.RevisionId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 8b41306c-2c7a-482e-8157-0adc25a15b90
+    type: regular
+    task:
+      id: 8b41306c-2c7a-482e-8157-0adc25a15b90
+      version: -1
+      name: Get document after update
+      description: Returns a document matching the given ID.
+      script: GoogleDocs|||google-docs-get-document
+      type: regular
+      iscommand: true
+      brand: GoogleDocs
+    scriptarguments:
+      document_id:
+        simple: ${GoogleDocs.DocumentId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 085e0629-5318-487c-8ec0-f353541c117c
+    type: regular
+    task:
+      id: 085e0629-5318-487c-8ec0-f353541c117c
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 940,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,18 @@
+[file:README.md]
+ignore=RM104
+
+[file:incidentfield-Email_Source_Domain.json]
+ignore=IF115
+
+[file:incidentfield-Email_Queue_ID.json]
+ignore=IF115
+
+[file:playbook-Phishing_Alerts_Investigation_6_5_README.md]
+ignore=RM106
+
+[file:playbook-Phishing_Alerts_Investigation_README.md]
+ignore=RM106
+
+# GR107 - This playbook uses deprecated Search And Delete Emails sub-playbook. The relevant team has been notified.
+[file:playbook-Phishing_Alerts_Investigation_6_5.yml]
+ignore=GR107

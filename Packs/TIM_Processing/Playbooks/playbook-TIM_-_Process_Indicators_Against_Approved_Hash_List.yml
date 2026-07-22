@@ -1,0 +1,432 @@
+id: TIM - Process Indicators Against Approved Hash List
+version: -1
+fromversion: 5.5.0
+marketplaces:
+- xsoar
+name: TIM - Process Indicators Against Approved Hash List
+description: This playbook checks if file hash indicators exist in
+  a Cortex XSOAR list. If the indicators exist in the list, they are tagged as approved_hash.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 962f88cb-45fc-47df-8cd7-9ccfe47142ac
+    type: start
+    task:
+      id: 962f88cb-45fc-47df-8cd7-9ccfe47142ac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: be3bc4a8-af76-4ac4-83c9-fd54cfb34458
+    type: title
+    task:
+      id: be3bc4a8-af76-4ac4-83c9-fd54cfb34458
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 2116b073-baf6-4ebb-84ae-4d003e8bf0d7
+    type: condition
+    task:
+      id: 2116b073-baf6-4ebb-84ae-4d003e8bf0d7
+      version: -1
+      name: Are there file hash results?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: playbookQuery.indicator_type
+            iscontext: true
+          right:
+            value:
+              simple: File
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "53":
+    id: "53"
+    taskid: c53273da-63ee-4f5b-88a8-9116f0b8ff9d
+    type: regular
+    task:
+      id: c53273da-63ee-4f5b-88a8-9116f0b8ff9d
+      version: -1
+      name: Add approved hash tag to indicators
+      description: Adds the 'approved_hash' tag to the relevant indicators.
+      script: Builtin|||appendIndicatorField
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        simple: approved_hash
+      indicatorsValues:
+        simple: ${List.In}
+      value:
+        simple: ${List.In}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "54":
+    id: "54"
+    taskid: 307fe282-7367-4646-8660-fad6d2330e69
+    type: condition
+    task:
+      id: 307fe282-7367-4646-8660-fad6d2330e69
+      version: -1
+      name: Is there an approved hash list?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ApprovedHashList
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "55":
+    id: "55"
+    taskid: 4722c563-d0ec-40a5-83ed-345ba6330fb5
+    type: regular
+    task:
+      id: 4722c563-d0ec-40a5-83ed-345ba6330fb5
+      version: -1
+      name: Run filter by list check on indicators
+      description: Checks whether the specified item is in a Cortex XSOAR list.
+      scriptName: FilterByList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+      - "57"
+    scriptarguments:
+      ignorecase:
+        simple: "yes"
+      listname:
+        simple: ${inputs.ApprovedHashList}
+      matchexact:
+        simple: "yes"
+      values:
+        simple: ${playbookQuery.value}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+  "56":
+    id: "56"
+    taskid: 17527acc-acec-4100-8f3b-f7e9f87ee0b8
+    type: regular
+    task:
+      id: 17527acc-acec-4100-8f3b-f7e9f87ee0b8
+      version: -1
+      name: Set values in list
+      description: Checks if the specified value exists in context. If the value exists,
+        it is set in context, otherwise no value is set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HashesInApprovedList
+      stringify: {}
+      value:
+        simple: ${List.In}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: e9779871-2ec6-4534-85c3-5ddec84debb7
+    type: regular
+    task:
+      id: e9779871-2ec6-4534-85c3-5ddec84debb7
+      version: -1
+      name: Set values not in list
+      description: Checks if the specified value exists in context. If the value exists,
+        it is set in context, otherwise no value is set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HashesNotInApprovedList
+      stringify: {}
+      value:
+        simple: ${List.NotIn}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": -610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: dd7beddc-7ee6-4190-8ea5-c5b87cc7d57e
+    type: condition
+    task:
+      id: dd7beddc-7ee6-4190-8ea5-c5b87cc7d57e
+      version: -1
+      name: Do values appear in approved hash list?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: List.In
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 482d4cb4-6726-4bb4-890e-73690433567e
+    type: regular
+    task:
+      id: 482d4cb4-6726-4bb4-890e-73690433567e
+      version: -1
+      name: Set values
+      description: Checks if the specified value exists in context. If the value exists,
+        it is set in context, otherwise no value is set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: HashesNotInApprovedList
+      stringify: {}
+      value:
+        complex:
+          root: playbookQuery
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: playbookQuery.indicator_type
+                iscontext: true
+              right:
+                value:
+                  simple: File
+          accessor: value
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 1580,
+        "x": -380,
+        "y": -1260
+      }
+    }
+  }
+inputs:
+- key: ApprovedHashList
+  value: {}
+  required: false
+  description: A Cortex XSOAR list containing approved hash values. Hash indicators that
+    appear in the list are tagged as approved.
+  playbookInputQuery: null
+- key: ""
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery:
+    query: ""
+    queryEntity: indicators
+    results: null
+    daterange:
+      fromdate: 0001-01-01T00:00:00Z
+      todate: 0001-01-01T00:00:00Z
+      period:
+        by: ""
+        byto: ""
+        byfrom: ""
+        tovalue: null
+        fromvalue: null
+        field: ""
+      fromdatelicenseval: 0001-01-01T00:00:00Z
+    runFromLastJobTime: false
+outputs:
+- contextPath: HashesInApprovedList
+  description: File hashes that are found in the approved_hash list.
+  type: string
+- contextPath: HashesNotInApprovedList
+  description: File hashes that are not found in the approved_hash list.
+  type: string
+quiet: true
+tests:
+- No test

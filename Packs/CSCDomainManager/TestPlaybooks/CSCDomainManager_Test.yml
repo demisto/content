@@ -1,0 +1,560 @@
+id: CSCDomainManager_Test
+version: -1
+name: CSCDomainManager_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd9e757a-7772-4460-83ed-aa77156bdae0
+    type: start
+    task:
+      id: fd9e757a-7772-4460-83ed-aa77156bdae0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0a19db37-a259-47db-8142-8effb8ff9795
+    type: regular
+    task:
+      id: 0a19db37-a259-47db-8142-8effb8ff9795
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6ec3ea48-1596-4f35-8b03-d6a1be319a6f
+    type: regular
+    task:
+      id: 6ec3ea48-1596-4f35-8b03-d6a1be319a6f
+      version: -1
+      name: csc-domains-search by domain_name
+      description: Gets the domains by the applied filters
+      script: '|||csc-domains-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      domain_name:
+        complex:
+          root: CSCDomainManager.Domain
+          accessor: qualifiedDomainName
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 253ece94-5c08-466f-8e55-7b8ff6c4c160
+    type: regular
+    task:
+      id: 253ece94-5c08-466f-8e55-7b8ff6c4c160
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8fc87e3c-c3ed-4b5f-8e9c-84f075d93c95
+    type: condition
+    task:
+      id: 8fc87e3c-c3ed-4b5f-8e9c-84f075d93c95
+      version: -1
+      name: Verify Results - domains search
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CSCDomainManager.Domain.qualifiedDomainName
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CSCDomainManager.Domain
+                accessor: qualifiedDomainName
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CSCDomainManager.Domain.domain
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CSCDomainManager.Domain
+                accessor: domain
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5b39d420-dcb1-46d0-8f1c-15e983a919f2
+    type: regular
+    task:
+      id: 5b39d420-dcb1-46d0-8f1c-15e983a919f2
+      version: -1
+      name: csc-domains-availability-check
+      script: CSCDomainManager|||csc-domains-availability-check
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      domain_name:
+        complex:
+          root: CSCDomainManager.Domain
+          accessor: qualifiedDomainName
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 69fd19fd-eed7-481d-841d-fec402988752
+    type: condition
+    task:
+      id: 69fd19fd-eed7-481d-841d-fec402988752
+      version: -1
+      name: Verify Results - availability check
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CSCDomainManager.Domain.Availability.result
+                accessor: code
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: DOMAIN_IN_PORTFOLIO
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CSCDomainManager.Domain.Availability.result.message
+            iscontext: true
+          right:
+            value:
+              simple: Domain already in portfolio
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: c4765886-a582-4844-893d-22f89c926cc5
+    type: condition
+    task:
+      id: c4765886-a582-4844-893d-22f89c926cc5
+      version: -1
+      name: Verify Results - configuration list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CSCDomainManager.Domain.Configuration.domain
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CSCDomainManager.Domain.Configuration
+                accessor: domain
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CSCDomainManager.Domain.Configuration.country
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CSCDomainManager.Domain.Configuration
+                accessor: country
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 71d93173-9e4f-414f-8f1b-ed320afdad9e
+    type: regular
+    task:
+      id: 71d93173-9e4f-414f-8f1b-ed320afdad9e
+      version: -1
+      name: csc-domains-search - no input
+      description: Gets the domains by the applied filters
+      script: CSCDomainManager|||csc-domains-search
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: aecec5d3-8b9a-4177-88e9-729daa6472b3
+    type: regular
+    task:
+      id: aecec5d3-8b9a-4177-88e9-729daa6472b3
+      version: -1
+      name: domain
+      script: CSCDomainManager|||domain
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      domain:
+        complex:
+          root: CSCDomainManager.Domain
+          accessor: qualifiedDomainName
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 7c58c1e5-4487-430b-8ac2-f4bac9a41f6e
+    type: condition
+    task:
+      id: 7c58c1e5-4487-430b-8ac2-f4bac9a41f6e
+      version: -1
+      name: Verify Results - domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CSCDomainManager.Domain
+                accessor: qualifiedDomainName
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 53ef4bdd-a77a-4923-8540-52b03d493362
+    type: regular
+    task:
+      id: 53ef4bdd-a77a-4923-8540-52b03d493362
+      version: -1
+      name: csc-domains-configuration-search - no input
+      description: Get configuration information for owned domains with optional filtering.
+      script: CSCDomainManager|||csc-domains-configuration-search
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 20238a83-f162-4179-8e9b-36279f64a2a8
+    type: regular
+    task:
+      id: 20238a83-f162-4179-8e9b-36279f64a2a8
+      version: -1
+      name: csc-domains-configuration-search by domain_name
+      description: Get configuration information for owned domains with optional filtering.
+      script: CSCDomainManager|||csc-domains-configuration-search
+      type: regular
+      iscommand: true
+      brand: CSCDomainManager
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      domain_name:
+        complex:
+          root: CSCDomainManager.Domain.Configuration
+          accessor: domain
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2425,
+        "width": 380,
+        "x": 480,
+        "y": -20
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

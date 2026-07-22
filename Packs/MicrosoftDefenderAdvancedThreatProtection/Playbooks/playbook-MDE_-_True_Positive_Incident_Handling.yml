@@ -1,0 +1,2053 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
+id: MDE - True Positive Incident Handling
+inputs:
+- description: 'The Cortex XSOAR investigation IDs to be closed. '
+  key: DupAlertIDsToBeClosed
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Add a comment to close an incident on the Microsoft Defender For Endpoint side.
+  key: Comment
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'XSOAR Incident #${incident.id}'
+- description: |-
+    Provide a reason for closing the incident. Choose one of the following:
+    "NotAvailable"/"Apt,Malware"/"SecurityPersonnel"/"SecurityTesting"/"UnwantedSoftware"/"Other"
+  key: Reason
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Choose From - "Unknown" / "TruePositive" / "FalsePositive"
+  key: Classification
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: 'Specify the ticket description for this section. '
+  key: TicketDescription
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Specify the banning tag name for the found indicators.
+  key: BlockTag
+  playbookInputQuery:
+  required: false
+  value:
+    simple: BlockTag
+- description: If you are using Jira, specify the Jira Project Key here (can be retrieved from the Jira console).
+  key: TicketProjectName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The name of the ticketing system to use, for example Jira or ServiceNow.
+  key: TicketingSystemToUse
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    Whether host isolation is allowed.
+  key: AutoIsolation
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: |-
+    Whether duplicate incidents should be closed as well in the Microsoft Defender for Endpoint integration instance.
+    The playbook looks for the world "Close" in this input.
+  key: CloseDuplicate
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The ID of the host for running an isolation process.
+  key: HostID
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.deviceid}
+- description: Enter the File SHA256 you want to block.
+  key: FileSha256
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.filesha256}
+- description: Enter the File SHA1 you want to remove from your protected endpoints.
+  key: FileSha1
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.filesha1}
+- key: ManuallyChooseIOCForHunting
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    This input will provide you the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.
+    If false, it will hunt for all IOCs detected in the incident.
+    Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: IP
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: IP value to be hunt on.
+  playbookInputQuery:
+- key: MD5
+  value:
+    complex:
+      root: File.MD5
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      transformers:
+      - operator: uniq
+  required: false
+  description: MD5 file value to be hunt upon.
+  playbookInputQuery:
+- key: URL_or_Domain
+  value:
+    complex:
+      root: Domain.Name
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Domain.Name
+            iscontext: true
+      transformers:
+      - operator: append
+        args:
+          item:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - operator: uniq
+  required: false
+  description: URL or domain to be hunt upon.
+  playbookInputQuery:
+name: MDE - True Positive Incident Handling
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "106"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 8b0086d0-9ebb-4369-8321-36545b6dada6
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 8b0086d0-9ebb-4369-8321-36545b6dada6
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": -180
+        }
+      }
+    continueonerrortype: ""
+  '27':
+    form:
+      description: ''
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ''
+        gridcolumns: []
+        id: '0'
+        label: ''
+        labelarg:
+          simple: Mark the indicators to block
+        options: []
+        optionsarg:
+        - simple: ${inputs.FileSha256}
+        placeholder: ''
+        readonly: false
+        required: false
+        tooltip: ''
+        type: multiSelect
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Generate alerts on this indicator?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "False"
+        - simple: "True"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      sender: ''
+      title: Indicators to block
+      totalanswers: 0
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ''
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - '72'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Confirms the indicators to block.
+      id: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
+      iscommand: false
+      name: Confirm Indicators to block
+      type: collection
+      version: -1
+    taskid: 1b0bf6d9-d7fe-4d22-88a6-c0e11ac94657
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1510
+        }
+      }
+    continueonerrortype: ""
+  '29':
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "86"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      indicatorsValues:
+        simple: ${Indicators to block.Answers.0}
+      tags:
+        simple: ${inputs.BlockTag}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.indicators
+      id: 0bda6212-cc57-479f-8f57-7154e95f96cd
+      iscommand: true
+      name: Tag Indicators
+      script: Builtin|||setIndicators
+      type: regular
+      version: -1
+    taskid: 0bda6212-cc57-479f-8f57-7154e95f96cd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1710,
+          "y": 1990
+        }
+      }
+    continueonerrortype: ""
+  '68':
+    id: '68'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "86"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: Allowed
+      indicator_description:
+        simple: 'Added by Cortex XSOAR - Incident #${incident.id}'
+      indicator_title:
+        simple: 'Added by Cortex XSOAR - Incident #${incident.id} '
+      indicator_type:
+        simple: FileSha256
+      indicator_value:
+        simple: ${Indicators to block.Answers.0}
+      severity:
+        simple: Informational
+      generate_alert:
+        simple: ${Indicators to block.Answers.1}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Creates a new indicator.
+      id: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
+      iscommand: true
+      name: Create IOC on Microsoft Defender For Endpoint
+      script: '|||microsoft-atp-sc-indicator-create'
+      type: regular
+      version: -1
+    taskid: 6a1c3010-89a0-4eb2-824f-5f8943a71ee3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 1990
+        }
+      }
+    continueonerrortype: ""
+  '72':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: Indicators to block.Answers.0
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: yes
+    id: '72'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "86"
+      yes:
+      - '68'
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Was a hash selected?
+      id: 83e10ad8-4cae-4707-8814-e7848604d2b9
+      iscommand: false
+      name: Was there any hash selected?
+      type: condition
+      version: -1
+    taskid: 83e10ad8-4cae-4707-8814-e7848604d2b9
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1660
+        }
+      }
+    continueonerrortype: ""
+  "74":
+    id: "74"
+    taskid: f2f50926-288f-41ad-8aa9-0d1536b4dd3b
+    type: regular
+    task:
+      id: f2f50926-288f-41ad-8aa9-0d1536b4dd3b
+      version: -1
+      name: Retrieve MDE alert ID based on Cortex XSOAR investigation
+      description: |-
+        Searches Cortex XSOAR incidents.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.DupAlertIDsToBeClosed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1470,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 645397ea-9836-4ae4-8ac3-c25e5fbd6d85
+    type: regular
+    task:
+      id: 645397ea-9836-4ae4-8ac3-c25e5fbd6d85
+      version: -1
+      name: Resolve MDE Alert
+      description: Update the properties of an alert entity.
+      script: '|||microsoft-atp-update-alert'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: alertid
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: incident.alertid
+                iscontext: true
+      classification:
+        simple: ${inputs.Classification}
+      comment:
+        simple: ${inputs.Comment}
+      determination:
+        simple: ${inputs.Reason}
+      status:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 2910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: aee236d4-9be6-430f-86fc-c231f4c9eb6f
+    type: title
+    task:
+      id: aee236d4-9be6-430f-86fc-c231f4c9eb6f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 3225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: ce9624e9-c5b7-44ce-88c8-e3fed9b8d8ea
+    type: regular
+    task:
+      id: ce9624e9-c5b7-44ce-88c8-e3fed9b8d8ea
+      version: -1
+      name: Close  Cortex XSOAR incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "76"
+    scriptarguments:
+      closeReason:
+        simple: ${inputs.Reason}
+      id:
+        complex:
+          root: foundIncidents
+          accessor: id
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: incident.id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 3075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 3792dd28-29b8-431c-83f7-26577d7f3e4c
+    type: condition
+    task:
+      id: 3792dd28-29b8-431c-83f7-26577d7f3e4c
+      version: -1
+      name: Approve isolation
+      description: Approve isolation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "91"
+      "Yes":
+      - "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2270,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Approve Endpoint Isolation
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: d38a1702-2396-40bc-867c-02ea3810009d
+    type: condition
+    task:
+      id: d38a1702-2396-40bc-867c-02ea3810009d
+      version: -1
+      name: Auto Isolate the endpoint
+      description: Auto isolates the endpoint.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "78"
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoIsolation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2060,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: df31ad43-5417-442f-8d24-39a88d44f6ec
+    type: title
+    task:
+      id: df31ad43-5417-442f-8d24-39a88d44f6ec
+      version: -1
+      name: IT Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "81"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 3fe89179-94c1-4efb-8f73-4361eb5fa713
+    type: condition
+    task:
+      id: 3fe89179-94c1-4efb-8f73-4361eb5fa713
+      version: -1
+      name: Is a ticketing system defined?
+      description: Is a ticketing system defined?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "82"
+      JIRA:
+      - "95"
+      SNOW:
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: SNOW
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: SNOW
+        - operator: containsString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
+    - label: JIRA
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: inputs.TicketingSystemToUse
+            iscontext: true
+          right:
+            value:
+              simple: JIRA
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 84429a60-2698-4b77-8c34-a424463316a9
+    type: title
+    task:
+      id: 84429a60-2698-4b77-8c34-a424463316a9
+      version: -1
+      name: Done auditing step
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 275501d8-cfce-4d9b-8992-0613b470fba0
+    type: title
+    task:
+      id: 275501d8-cfce-4d9b-8992-0613b470fba0
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 2c9317be-97a3-430e-86e9-82a2a8814094
+    type: title
+    task:
+      id: 2c9317be-97a3-430e-86e9-82a2a8814094
+      version: -1
+      name: Done block indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1480,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 78da17e3-6fd2-4e69-84d9-08186d9a475b
+    type: title
+    task:
+      id: 78da17e3-6fd2-4e69-84d9-08186d9a475b
+      version: -1
+      name: Done Remediation and Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "92"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
+    - fieldname: remediationsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: cd587978-6765-45c1-857c-52c75b9f06f6
+    type: title
+    task:
+      id: cd587978-6765-45c1-857c-52c75b9f06f6
+      version: -1
+      name: Isolate
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "79"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2060,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 52db898c-b3f1-4741-8461-d2f0cbb100dd
+    type: playbook
+    task:
+      id: 52db898c-b3f1-4741-8461-d2f0cbb100dd
+      version: -1
+      name: Microsoft Defender For Endpoint - Isolate Endpoint
+      description: This playbook accepts an endpoint ID, IP, or host name and isolates it using the Microsoft Defender For Endpoint integration.
+      playbookName: Microsoft Defender For Endpoint - Isolate Endpoint
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      Device_id:
+        simple: ${inputs.HostID}
+      Isolation_type:
+        simple: Full
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      scriptArguments:
+        Device_id:
+          simple: ${Endpoint.ID}
+        Isolation_type:
+          simple: Full
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2060,
+          "y": 1845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 778bac53-14d0-40af-8684-7da9bc08fd72
+    type: title
+    task:
+      id: 778bac53-14d0-40af-8684-7da9bc08fd72
+      version: -1
+      name: Done with isolating the infected device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2060,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 2be93393-e143-40a1-8936-feb2e924e664
+    type: title
+    task:
+      id: 2be93393-e143-40a1-8936-feb2e924e664
+      version: -1
+      name: Final Closure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "96"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 1283ccb8-b997-41d3-86b7-feee0bc40ac4
+    type: regular
+    task:
+      id: 1283ccb8-b997-41d3-86b7-feee0bc40ac4
+      version: -1
+      name: Open ServiceNow ticket
+      description: |-
+        This script wraps the generic create-record command in ServiceNow.
+        You can add fields that you want to create the record with as script arguments or in the
+        code.
+      script: ServiceNowCreateIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      description:
+        simple: ${inputs.TicketDescription}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 42a1ae0b-519e-4faf-8778-63f7daff544a
+    type: condition
+    task:
+      id: 42a1ae0b-519e-4faf-8778-63f7daff544a
+      version: -1
+      name: Is ServiceNow Available?
+      description: Returns 'yes' if the ServiceNow integration is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "93"
+    scriptarguments:
+      brandname:
+        simple: ServiceNow v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1010,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: fb4ef355-0555-4ed7-8e0a-4040505a602e
+    type: condition
+    task:
+      id: fb4ef355-0555-4ed7-8e0a-4040505a602e
+      version: -1
+      name: Is Jira Available?
+      description: Returns 'yes' if the Jira integration is enabled.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "102"
+    scriptarguments:
+      brandname:
+        simple: jira-v2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: d5fc2714-02c0-4e47-80ae-5e2a4e2a6a5b
+    type: condition
+    task:
+      id: d5fc2714-02c0-4e47-80ae-5e2a4e2a6a5b
+      version: -1
+      name: Additional Duplicate IDs were provided?
+      description: Were additional duplicate IDs provided?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "75"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DupAlertIDsToBeClosed
+            iscontext: true
+          right:
+            value: {}
+      - - operator: containsString
+          left:
+            value:
+              simple: inputs.CloseDuplicate
+            iscontext: true
+          right:
+            value:
+              simple: close
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 2560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: ff92e5c2-b758-4684-86a5-dc5aa1ec4cb1
+    type: regular
+    task:
+      id: ff92e5c2-b758-4684-86a5-dc5aa1ec4cb1
+      version: -1
+      name: Quarantine this file on an affected machine
+      description: Stops the execution of a file on a machine and deletes it.
+      script: '|||microsoft-atp-stop-and-quarantine-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      comment:
+        simple: Emergency containment
+      file_hash:
+        complex:
+          root: Confirm which SHA1 should be deleted.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+      machine_id:
+        simple: ${MicrosoftATP.FileMachine.Machines.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2530,
+          "y": 2010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 5d2fb472-4a58-4c37-8553-d02c648eada6
+    type: regular
+    task:
+      id: 5d2fb472-4a58-4c37-8553-d02c648eada6
+      version: -1
+      name: Get a list of devices associated with the malicious/suspicious SHA1 hashes
+      description: Gets a collection of machines related to a given file SHA1 hash.
+      script: '|||microsoft-atp-get-file-related-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      file_hash:
+        complex:
+          root: Confirm which SHA1 should be deleted.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2530,
+          "y": 1845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: ee0faebe-729e-49ba-8232-f23073a469cc
+    type: title
+    task:
+      id: ee0faebe-729e-49ba-8232-f23073a469cc
+      version: -1
+      name: Done with isolating the infected device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "88"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2530,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 88f6002a-7e69-45d4-88df-8b7748671d48
+    type: title
+    task:
+      id: 88f6002a-7e69-45d4-88df-8b7748671d48
+      version: -1
+      name: Remove File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2530,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 5f1c8035-785b-49df-8c06-4e830be6bac8
+    type: regular
+    task:
+      id: 5f1c8035-785b-49df-8c06-4e830be6bac8
+      version: -1
+      name: Open Jira Issue
+      description: Creates a new issue in Jira.
+      script: '|||jira-create-issue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      issueTypeName:
+        simple: ${inputs.Comment}
+      projectKey:
+        simple: ${inputs.TicketProjectName}
+      summary:
+        simple: ${inputs.TicketDescription}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -590,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 3afefbc3-2e9e-40f7-89a6-7ce0af8ab673
+    type: collection
+    task:
+      id: 3afefbc3-2e9e-40f7-89a6-7ce0af8ab673
+      version: -1
+      name: Confirm which SHA1 should be deleted
+      description: Confirms which SHA1 to delete.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2530,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Mark SHA1 to be deleted
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - simple: ${inputs.FileSha1}
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Confirm which SHA1 should be deleted
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 958843fb-e2d6-432e-875d-3a45bfdf9b5d
+    type: condition
+    task:
+      id: 958843fb-e2d6-432e-875d-3a45bfdf9b5d
+      version: -1
+      name: Was there any hash selected?
+      description: Was a hash selected?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "99"
+      "yes":
+      - "98"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Confirm which SHA1 should be deleted.Answers.0
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2740,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 55946c20-744d-4369-8476-1aa4630ce431
+    type: title
+    task:
+      id: 55946c20-744d-4369-8476-1aa4630ce431
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "108"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": -50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 416293fa-221b-42bb-80f0-2e26dfda43f2
+    type: playbook
+    task:
+      id: 416293fa-221b-42bb-80f0-2e26dfda43f2
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      IPAddress:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: inputs.MD5
+          transformers:
+          - operator: uniq
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA1:
+        complex:
+          root: inputs.FileSha1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        complex:
+          root: inputs.URL_or_Domain
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 508b2345-b411-4a43-8612-751ecd0cb67f
+    type: condition
+    task:
+      id: 508b2345-b411-4a43-8612-751ecd0cb67f
+      version: -1
+      name: Should the analyst choose the indicators to hunt?
+      description: Should the analyst choose the indicators to hunt?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "107"
+      No Hunting:
+      - "111"
+      "yes":
+      - "109"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ManuallyChooseIOCForHunting
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: No Hunting
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.ManuallyChooseIOCForHunting
+            iscontext: true
+          right:
+            value:
+              simple: No Threat Hunting
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 61158fa1-fcd4-4b00-83ea-00702a7f103f
+    type: collection
+    task:
+      id: 61158fa1-fcd4-4b00-83ea-00702a7f103f
+      version: -1
+      name: Specify IOCs to hunt upon
+      description: Specify IOCs to hunt upon.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2390,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: Analyst
+      subject:
+        simple: Specify IOCs to hunt upon
+      body:
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which IPs should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.IP
+            accessor: Address
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which SHA256 files should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FileSha256
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Which SHA1 files should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FileSha1
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Which MD5 files should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.MD5
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: Which URLs/Domains should be hunted for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.URL_or_Domain
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Specify IOCs to hunt upon
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: eaad906b-1fdf-4c31-8f3c-27855211d989
+    type: title
+    task:
+      id: eaad906b-1fdf-4c31-8f3c-27855211d989
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "89"
+      - "83"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: f1a37638-ddb7-498d-8ba9-9e4b448ca969
+    type: title
+    task:
+      id: f1a37638-ddb7-498d-8ba9-9e4b448ca969
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "110"
+      - "80"
+      - "100"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1770,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: remediationsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 47402b57-cd5d-44cb-8e0f-df13ae958f33
+    type: regular
+    task:
+      id: 47402b57-cd5d-44cb-8e0f-df13ae958f33
+      version: -1
+      name: Tag the threat hunting results as Evidence
+      description: |
+        Adds provided entries to the incident Evidence Board. In a playbook, can be positioned after a task to add the previous task's entries to the Evidence Board automatically (with no need to provide arguments).
+      scriptName: AddEvidence
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "113"
+    scriptarguments:
+      entryIDs:
+        simple: ${lastCompletedTaskEntries}
+      tags:
+        simple: Found additional assets
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: a79762f1-136f-4f4e-889b-127efbe67a01
+    type: regular
+    task:
+      id: a79762f1-136f-4f4e-889b-127efbe67a01
+      version: -1
+      name: Add 'Found additional assets' tag to the incident
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      appendTags:
+        simple: "true"
+      tags:
+        simple: Found additional assets
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2190,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 86356707-addf-4fcf-887e-aa224a0683c9
+    type: condition
+    task:
+      id: 86356707-addf-4fcf-887e-aa224a0683c9
+      version: -1
+      name: Are there any results?
+      description: Are there any results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "111"
+      "yes":
+      - "112"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Splunk
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: PANWHunting
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Microsoft365Defender
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1990,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: ec74ebda-f078-4368-8445-b8a73fb013e1
+    type: playbook
+    task:
+      id: ec74ebda-f078-4368-8445-b8a73fb013e1
+      version: -1
+      name: Threat Hunting - Generic
+      description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: - Splunk\n- Qradar\n- Pan-os \n- Cortex data lake \n- Autofocus\n- Microsoft 365 Defender"
+      playbookName: Threat Hunting - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      IPAddress:
+        simple: ${Specify IOCs to hunt upon.Answers.0}
+      MD5:
+        simple: ${Specify IOCs to hunt upon.Answers.3}
+      QRadarTimeFrame:
+        simple: LAST 7 DAYS
+      SHA1:
+        simple: ${Specify IOCs to hunt upon.Answers.2}
+      SHA256:
+        simple: ${Specify IOCs to hunt upon.Answers.1}
+      SplunkEarliestTime:
+        simple: -7d@d
+      SplunkLatestTime:
+        simple: now
+      URLDomain:
+        simple: ${Specify IOCs to hunt upon.Answers.4}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -2390,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3470,
+        "width": 2530,
+        "x": -2740,
+        "y": -180
+      }
+    }
+  }
+tests:
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender - ATP - Indicators SC Test
+fromversion: 6.5.0
+system: true
+marketplaces:
+- xsoar

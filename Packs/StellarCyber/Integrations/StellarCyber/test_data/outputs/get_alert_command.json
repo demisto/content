@@ -1,0 +1,62 @@
+{
+    "outputs": [
+        {
+            "alert_metadata": {
+                "description": "Proofpoint TAP reported that a suspicious email with the subject \"Action Required: info@example.com\" was sent from the email address \"srso+yf09=cw=testing.com=jane@testing.com\" to address(es) \"info@example.com.\"",
+                "display_name": "Proofpoint TAP messagesBlocked: Phishing",
+                "event_name_add_on": "messagesBlocked",
+                "framework_version": "v8",
+                "name": "proofpoint_tap-messagesblocked-initial_access-phishing",
+                "scope": "",
+                "subtype": {
+                    "display_name": "Proofpoint TAP: Phish",
+                    "name": "proofpoint_tap_phish"
+                },
+                "tactic": {
+                    "id": "TA0001",
+                    "name": "Initial Access"
+                },
+                "tags": [
+                    "Proofpoint TAP"
+                ],
+                "technique": {
+                    "id": "T1566",
+                    "name": "Phishing"
+                },
+                "ttps": [
+                    {
+                        "tactic": {
+                            "id": "TA0001",
+                            "name": "Initial Access"
+                        },
+                        "technique": {
+                            "id": "T1566",
+                            "name": "Phishing"
+                        }
+                    }
+                ],
+                "xdr_killchain_stage": "Initial Attempts",
+                "xdr_killchain_version": "v1"
+            },
+            "alert_id": "1710883791406342b1f41b2247774d60bf035a6f98e5ff21",
+            "alert_index": "stellar-index-v1-ser-5593fbd8b0444b1eaef5a89589d788d2-64486c346020c889507f32ae-2024.03.07-000033",
+            "tenant_id": "6aeb2aae7d8d4ef0820136f42d107db4",
+            "tenant_name": "QA-SPUTTA",
+            "detected_field": [
+                "email.from.address",
+                "email.sender.address"
+            ],
+            "detected_value": [
+                "srso+yf09=cw=testing.com=jane@testing.com",
+                "srso+yf09=cw=testing.com=jane@testing.com"
+            ],
+            "xdr_tactic_name": "Initial Access",
+            "xdr_tactic_id": "TA0001",
+            "xdr_technique_name": "Phishing",
+            "xdr_technique_id": "T1566",
+            "display_name": "Proofpoint TAP messagesBlocked: Phishing",
+            "description": "Proofpoint TAP reported that a suspicious email with the subject \"Action Required: info@example.com\" was sent from the email address \"srso+yf09=cw=testing.com=jane@testing.com\" to address(es) \"info@example.com.\"",
+            "alert_url": "https://test.example.com/alerts/alert/stellar-index-v1-ser-5593fbd8b0444b1eaef5a89589d788d2-64486c346020c889507f32ae-2024.03.07-000033/amsg/1710883791406342b1f41b2247774d60bf035a6f98e5ff21"
+        }
+    ]
+}

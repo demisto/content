@@ -1,0 +1,211 @@
+id: Active Directory - Get User Manager Details - Test
+version: -1
+fromversion: 5.0.0
+name: Active Directory - Get User Manager Details - Test
+description: A test playbook for the Active Directory - Get User Manager Email playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 15674a50-7154-4c1d-8f76-4a78b8069709
+    type: start
+    task:
+      id: 15674a50-7154-4c1d-8f76-4a78b8069709
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8ecfaffd-55cd-45e2-8667-f5cf68a029cf
+    type: playbook
+    task:
+      id: 8ecfaffd-55cd-45e2-8667-f5cf68a029cf
+      version: -1
+      name: Active Directory - Get User Manager Email
+      description: Takes an email address or a username of a user account in Active Directory, and returns the email address of his or her manager.
+      playbookName: Active Directory - Get User Manager Details
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      UserEmail:
+        simple: remove_me@demistodev.com
+      Username: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 0c8fdc71-228e-4ac1-8f93-be9455216705
+    type: condition
+    task:
+      id: 0c8fdc71-228e-4ac1-8f93-be9455216705
+      version: -1
+      name: Was the user manager found?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: UserManagerEmail
+            iscontext: true
+          right:
+            value:
+              simple: remove_manager@demistodev.com
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 47ed2c34-3501-415b-898a-b5a914ac1a69
+    type: title
+    task:
+      id: 47ed2c34-3501-415b-898a-b5a914ac1a69
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 599d04ab-61de-4715-83d3-405c0e9c6310
+    type: regular
+    task:
+      id: 599d04ab-61de-4715-83d3-405c0e9c6310
+      version: -1
+      name: Raise error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      message:
+        simple: The manager was not found. Check the demisto.local Active Directory instance. There should be a Remove Me user, and Donald Trump should be his manager. Trump should also have a specific email address configured.
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 6a3f59b1-16d5-478e-856b-3deada96e2dc
+    type: regular
+    task:
+      id: 6a3f59b1-16d5-478e-856b-3deada96e2dc
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.31,
+      "2_4_#default#": 0.4
+    },
+    "paper": {
+      "dimensions": {
+        "height": 855,
+        "width": 720,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

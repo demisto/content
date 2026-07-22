@@ -1,0 +1,12 @@
+{
+  "jamf_pro_raw": {
+    "event": {
+      "type": "string",
+      "is_array": false
+    },
+    "webhook": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "id": "hashRepSHA1",
+  "version": -1,
+  "regex": "\\b[a-fA-F\\d]{40}\\b",
+  "reputationCommand": "file",
+  "details": "File SHA-1",
+  "disabled": true,
+  "contextValue": "SHA1",
+  "contextPath": "File(val.SHA1 && val.SHA1 === obj.SHA1)",
+  "enhancementScriptNames": [
+    "FileReputation"
+  ],
+  "fromVersion": "5.0.0"
+}

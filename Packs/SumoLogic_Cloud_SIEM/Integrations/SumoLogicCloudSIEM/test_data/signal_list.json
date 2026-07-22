@@ -1,0 +1,57 @@
+{
+  "data": {
+    "hasNextPage": true,
+    "objects": [
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "contentType": "ANOMALY",
+        "description": "Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains. This has the advantage of making it much harder for defenders to block, track, or take over the command and control channel, as there could potentially be thousands of domains that malware can check for instructions. This technique is described in https://attack.mitre.org/techniques/T1483/.",
+        "entity": {
+          "id": "_ip-lab-1.2.3.4",
+          "ip": {"address": "1.2.3.4"},
+          "ipHostname": null,
+          "name": "1.2.3.4"
+        },
+        "id": "1f7aa24e-4074-5654-b0eb-7442dc0ead5a",
+        "name": "DNS DGA Lookup Behavior - NXDOMAIN Responses",
+        "recordCount": 20,
+        "recordTypes": [],
+        "ruleId": "THRESHOLD-S00044",
+        "severity": 1,
+        "stage": "Command and Control",
+        "suppressed": true,
+        "tags": ["_mitreAttackTactic:TA0011", "_mitreAttackTechnique:T1568"],
+        "timestamp": "2021-04-21T15:04:38.236000"
+      },
+      {
+        "allRecords": [
+          {}
+        ],
+        "artifacts": [],
+        "contentType": "ANOMALY",
+        "description": "Adversaries may make use of Domain Generation Algorithms (DGAs) to dynamically identify a destination for command and control traffic rather than relying on a list of static IP addresses or domains. This has the advantage of making it much harder for defenders to block, track, or take over the command and control channel, as there could potentially be thousands of domains that malware can check for instructions. This technique is described in https://attack.mitre.org/techniques/T1483/.",
+        "entity": {
+          "id": "_ip-lab-1.2.3.4",
+          "ip": {"address": "1.2.3.4"},
+          "ipHostname": null,
+          "name": "1.2.3.4"
+        },
+        "id": "9f3975ec-7a0e-5c3b-9b6c-98a6016e74bf",
+        "name": "DNS DGA Lookup Behavior - NXDOMAIN Responses",
+        "recordCount": 20,
+        "recordTypes": [],
+        "ruleId": "THRESHOLD-S00044",
+        "severity": 1,
+        "stage": "Command and Control",
+        "suppressed": true,
+        "tags": ["_mitreAttackTactic:TA0011", "_mitreAttackTechnique:T1568"],
+        "timestamp": "2021-04-21T15:04:12.860000"
+      }
+    ],
+    "total": 11
+  },
+  "errors": []
+}

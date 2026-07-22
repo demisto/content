@@ -1,0 +1,30 @@
+{
+ "id": "incident_googlecloudsccfindingsourcepropertieslastdevice",
+ "version": -1,
+ "modified": "2021-01-22T00:37:54.570626102+05:30",
+ "name": "GoogleCloudSCC Finding SourceProperties LastDevice",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccfindingsourcepropertieslastdevice",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

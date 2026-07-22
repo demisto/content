@@ -1,0 +1,10 @@
+[file:DBotPredictURLPhishing.yml]
+ignore=SC106,BA124
+
+[file:DBotUpdateLogoURLPhishing.yml]
+ignore=SC106
+
+[known_words]
+dbotupdatelogourlphishing
+dbotpredicturlphishing
+

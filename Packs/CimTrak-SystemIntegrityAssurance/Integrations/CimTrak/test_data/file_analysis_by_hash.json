@@ -1,0 +1,40 @@
+{
+    "posts": [
+        {
+            "reply": {
+                "errorCode": "",
+                "errorDescription": "",
+                "errorDetails": [],
+                "results": [
+                    {
+                        "analysisEngine": "VirusTotal",
+                        "analysisResults": {
+                            "resource": "B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769",
+                            "response_code": 0,
+                            "verbose_msg": "The requested resource is not among the finished, queued or pending scans"
+                        },
+                        "analysisSuccess": true
+                    }
+                ],
+                "status": "success"
+            },
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.fileAnalysisByHash"
+        }
+    ],
+    "response": {
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "analysisEngine": "VirusTotal",
+                "analysisResults": {
+                    "resource": "B47DD22BFE1E5554448262D0C8E6555496B1AA6685AF50F49A12AD82D1109769",
+                    "response_code": 0,
+                    "verbose_msg": "The requested resource is not among the finished, queued or pending scans"
+                },
+                "analysisSuccess": true
+            }
+        ],
+        "status": "success"
+    }
+}

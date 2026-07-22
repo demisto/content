@@ -1,0 +1,692 @@
+id: Enrich Custom IOCs - Dataminr Pulse
+version: -1
+name: Enrich Custom IOCs - Dataminr Pulse
+description: This playbook will enrich the Dataminr Pulse ReGenAI Incident's IOCs using custom reputation commands.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 88d1f8c7-e2c7-449b-862a-e6e46066b728
+    type: start
+    task:
+      id: 88d1f8c7-e2c7-449b-862a-e6e46066b728
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "75"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 7061ce28-3706-4f77-8e26-67aaf388bf16
+    type: title
+    task:
+      id: 7061ce28-3706-4f77-8e26-67aaf388bf16
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1423
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fae8cd43-3338-487d-8c0c-650663e99373
+    type: regular
+    task:
+      id: fae8cd43-3338-487d-8c0c-650663e99373
+      version: -1
+      name: Integration is not enabled.
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        simple: As an instance of Dataminr Pulse ReGenAI Integration is not active.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -550,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9081316b-02d6-4ebb-8b76-f02a72642374
+    type: condition
+    task:
+      id: 9081316b-02d6-4ebb-8b76-f02a72642374
+      version: -1
+      name: Is Dataminr Pulse ReGenAI integration enabled?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "61"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.brand
+                iscontext: true
+              right:
+                value:
+                  simple: Dataminr Pulse ReGenAI
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: modules.state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 9543d198-9e15-4992-8162-04a134081d20
+    type: regular
+    task:
+      id: 9543d198-9e15-4992-8162-04a134081d20
+      version: -1
+      name: Clearing Previous Inputs
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+      - "68"
+      - "70"
+    scriptarguments:
+      key:
+        simple: DataminrPulseThreatActorIndicator,DataminrPulseMalwareIndicator,DataminrPulseVulnerabilityIndicator
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: eed040d9-5140-43f2-86de-91cbbbb675ad
+    type: regular
+    task:
+      id: eed040d9-5140-43f2-86de-91cbbbb675ad
+      version: -1
+      name: dataminrpulse-vulnerability-enrich
+      description: Enrich the "Dataminr Pulse Vulnerability Indicator" custom indicator with relevant data.
+      script: '|||dataminrpulse-vulnerability-enrich'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      vulnerability_json_data:
+        complex:
+          root: inputs.vulnerability_indicators
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 41c5d357-3665-465b-83d1-e9c091d41793
+    type: regular
+    task:
+      id: 41c5d357-3665-465b-83d1-e9c091d41793
+      version: -1
+      name: dataminrpulse-malware-enrich
+      description: Enrich the "Dataminr Pulse Malware Indicator" custom indicator with relevant data.
+      script: '|||dataminrpulse-malware-enrich'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      malware_json_data:
+        complex:
+          root: inputs.malware_indicators
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 87534210-296b-4876-8140-1511e448a998
+    type: regular
+    task:
+      id: 87534210-296b-4876-8140-1511e448a998
+      version: -1
+      name: dataminrpulse-threat-actor-enrich
+      description: Enrich the "Dataminr Pulse Threat Actor Indicator" custom indicator with relevant data.
+      script: '|||dataminrpulse-threat-actor-enrich'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      threat_actor_json_data:
+        complex:
+          root: inputs.threat_actors_indicators
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 5beb7d6d-eec3-479b-80ae-d589d93a63ae
+    type: title
+    task:
+      id: 5beb7d6d-eec3-479b-80ae-d589d93a63ae
+      version: -1
+      name: Enrich Threat Actor
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "73"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 9650dbc5-c499-4bc0-8b5a-4e0bbf716d3d
+    type: title
+    task:
+      id: 9650dbc5-c499-4bc0-8b5a-4e0bbf716d3d
+      version: -1
+      name: Enrich Vulnerability
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 0b277946-451b-4db2-803a-9e5eb1c9d93e
+    type: title
+    task:
+      id: 0b277946-451b-4db2-803a-9e5eb1c9d93e
+      version: -1
+      name: Enrich Malware
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: a8bd2513-746f-4e43-879c-6ef6966ec5fb
+    type: condition
+    task:
+      id: a8bd2513-746f-4e43-879c-6ef6966ec5fb
+      version: -1
+      name: Is Malware Data Present?
+      description: Checking for the Malware data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.labels.malware_indicators
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: incident.labels.malware_indicators
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '[]'
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 04142972-c5ef-41f6-84c7-1558926510e3
+    type: condition
+    task:
+      id: 04142972-c5ef-41f6-84c7-1558926510e3
+      version: -1
+      name: Is Vulnerability Data Present?
+      description: Checking for the Vulnerability data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.labels.vulnerability_indicators
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: incident.labels.vulnerability_indicators
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '[]'
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: ba12f57f-f86a-4bd5-8770-8eff357e7d14
+    type: condition
+    task:
+      id: ba12f57f-f86a-4bd5-8770-8eff357e7d14
+      version: -1
+      name: Is Threat Actor Data Present?
+      description: Checking for the Threat Actor data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.labels.threat_actors_indicators
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: incident.labels.threat_actors_indicators
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '[]'
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 168d7a81-2169-44c5-8765-6a37a2c853aa
+    type: regular
+    task:
+      id: 168d7a81-2169-44c5-8765-6a37a2c853aa
+      version: -1
+      name: Create new indicators with "Dataminr Pulse Vulnerability Indicator" type
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      type:
+        simple: Dataminr Pulse Vulnerability Indicator
+      value:
+        complex:
+          root: incident.labels
+          accessor: vulnerability_indicators
+          transformers:
+          - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: c1f3d196-478d-4e7e-8701-b6e185636de7
+    type: playbook
+    task:
+      id: c1f3d196-478d-4e7e-8701-b6e185636de7
+      version: -1
+      name: Update Live Briefs - Dataminr Pulse
+      playbookName: Update Live Briefs - Dataminr Pulse
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_4_#default#": 0.57,
+      "5_61_yes": 0.59,
+      "71_2_#default#": 0.15,
+      "71_66_yes": 0.55,
+      "72_2_#default#": 0.15,
+      "72_74_yes": 0.52,
+      "73_2_#default#": 0.16,
+      "73_67_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1448,
+        "width": 2000,
+        "x": -550,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: vulnerability_indicators
+  value:
+    complex:
+      root: incident.labels
+      accessor: vulnerability_indicators
+  required: false
+  description: List of Vulnerability indicators.
+  playbookInputQuery:
+- key: malware_indicators
+  value:
+    complex:
+      root: incident.labels
+      accessor: malware_indicators
+  required: false
+  description: List of Malware indicators.
+  playbookInputQuery:
+- key: threat_actors_indicators
+  value:
+    complex:
+      root: incident.labels
+      accessor: threat_actors_indicators
+  required: false
+  description: List of threat actor indicators.
+  playbookInputQuery:
+outputs: []
+tests:
+- DataminrPulse-Test
+fromversion: 6.10.0
+marketplaces:
+- xsoar

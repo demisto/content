@@ -1,0 +1,102 @@
+{
+    "Commands": [
+        {
+            "CommandId": "CommandId",
+            "DocumentName": "AWS",
+            "DocumentVersion": "$DEFAULT",
+            "Comment": "test",
+            "ExpiresAfter": "2023-00",
+            "Parameters": {},
+            "InstanceIds": [
+                "i-"
+            ],
+            "Targets": [],
+            "RequestedDateTime": "2023-08-31T13:34:00.596000+03:00",
+            "Status": "Success",
+            "StatusDetails": "Success",
+            "OutputS3Region": "OutputS3Region",
+            "OutputS3BucketName": "",
+            "OutputS3KeyPrefix": "",
+            "MaxConcurrency": "50",
+            "MaxErrors": "0",
+            "TargetCount": 1,
+            "CompletedCount": 1,
+            "ErrorCount": 0,
+            "DeliveryTimedOutCount": 0,
+            "ServiceRole": "",
+            "NotificationConfig": {
+                "NotificationArn": "",
+                "NotificationEvents": [],
+                "NotificationType": ""
+            },
+            "CloudWatchOutputConfig": {
+                "CloudWatchLogGroupName": "",
+                "CloudWatchOutputEnabled": false
+            },
+            "TimeoutSeconds": 3600,
+            "AlarmConfiguration": {
+                "IgnorePollAlarmFailure": false,
+                "Alarms": []
+            },
+            "TriggeredAlarms": []
+        },
+        {
+            "CommandId": "CommandId",
+            "DocumentName": "AWS-",
+            "DocumentVersion": "1",
+            "Comment": "",
+            "ExpiresAfter": "2023-00",
+            "Parameters": {},
+            "InstanceIds": [],
+            "Targets": [
+                {
+                    "Key": "tag:Name",
+                    "Values": [
+                        "Values"
+                    ]
+                }
+            ],
+            "RequestedDateTime": "2023-08-31T12:06:45.879000+03:00",
+            "Status": "Success",
+            "StatusDetails": "NoInstancesInTag",
+            "OutputS3Region": "OutputS3Region",
+            "OutputS3BucketName": "",
+            "OutputS3KeyPrefix": "",
+            "MaxConcurrency": "50",
+            "MaxErrors": "0",
+            "TargetCount": 0,
+            "CompletedCount": 0,
+            "ErrorCount": 0,
+            "DeliveryTimedOutCount": 0,
+            "ServiceRole": "",
+            "NotificationConfig": {
+                "NotificationArn": "",
+                "NotificationEvents": [],
+                "NotificationType": ""
+            },
+            "CloudWatchOutputConfig": {
+                "CloudWatchLogGroupName": "",
+                "CloudWatchOutputEnabled": false
+            },
+            "TimeoutSeconds": 600,
+            "AlarmConfiguration": {
+                "IgnorePollAlarmFailure": false,
+                "Alarms": []
+            },
+            "TriggeredAlarms": []
+        }
+    ],
+    "ResponseMetadata": {
+        "RequestId": "",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Fri, 01 Sep 2023 14:43:49 GMT",
+            "content-type": "application/x-amz-json-1.1",
+            "content-length": "",
+            "connection": "keep-alive",
+            "x-amzn-requestid": ""
+        },
+        "RetryAttempts": 0
+    }
+}

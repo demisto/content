@@ -1,0 +1,116 @@
+{
+    "outputs": {
+        "not_deleted_with_name": {
+            "data": [
+                {
+                    "extendedData": null,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "accountId": 12321,
+                    "mustReadTerms": true,
+                    "name": "acme",
+                    "deletedAt": null,
+                    "showCloudAttacksDisclaimer": true,
+                    "showStudioDisclaimer": true,
+                    "deployments": [],
+                    "updatedAt": "2023-09-06T06:11:06.976Z",
+                    "isActive": true,
+                    "mustChangePassword": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "role": "viewer",
+                    "id": 1234323,
+                    "createdAt": "2023-09-06T06:10:27.720Z",
+                    "email": "acme@email.com",
+                    "description": null,
+                    "roles": {
+                        "read": true
+                    },
+                    "showCloneCustomizeDisclaimer": true
+                }
+            ]
+        },
+        "not_deleted_without_name": {
+            "data": [
+                {
+                    "extendedData": null,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "accountId": 12321,
+                    "mustReadTerms": true,
+                    "name": "acme",
+                    "deletedAt": null,
+                    "showCloudAttacksDisclaimer": true,
+                    "showStudioDisclaimer": true,
+                    "deployments": [],
+                    "updatedAt": "2023-09-06T06:11:06.976Z",
+                    "isActive": true,
+                    "mustChangePassword": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "role": "viewer",
+                    "id": 1234323,
+                    "createdAt": "2023-09-06T06:10:27.720Z",
+                    "email": "acme@email.com",
+                    "description": null,
+                    "roles": {
+                        "read": true
+                    },
+                    "showCloneCustomizeDisclaimer": true
+                }
+            ]
+        },
+        "deleted_with_name": {
+            "data": [
+                {
+                    "extendedData": null,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "accountId": 12321,
+                    "mustReadTerms": true,
+                    "name": "acme",
+                    "deletedAt": "2023-09-06T06:11:06.976Z",
+                    "showCloudAttacksDisclaimer": true,
+                    "showStudioDisclaimer": true,
+                    "deployments": [],
+                    "updatedAt": "2023-09-06T06:11:06.976Z",
+                    "isActive": true,
+                    "mustChangePassword": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "role": "viewer",
+                    "id": 1234323,
+                    "createdAt": "2023-09-06T06:10:27.720Z",
+                    "email": "acme@email.com",
+                    "description": null,
+                    "roles": {
+                        "read": true
+                    },
+                    "showCloneCustomizeDisclaimer": true
+                }
+            ]
+        },
+        "deleted_without_name": {
+            "data": [
+                {
+                    "extendedData": null,
+                    "showAdvancedAttacksDisclaimer": true,
+                    "accountId": 12321,
+                    "mustReadTerms": true,
+                    "name": "acme",
+                    "deletedAt": "2023-09-06T06:11:06.976Z",
+                    "showCloudAttacksDisclaimer": true,
+                    "showStudioDisclaimer": true,
+                    "deployments": [],
+                    "updatedAt": "2023-09-06T06:11:06.976Z",
+                    "isActive": true,
+                    "mustChangePassword": true,
+                    "showSimulationsBulkIgnoreMessage": true,
+                    "role": "viewer",
+                    "id": 1234323,
+                    "createdAt": "2023-09-06T06:10:27.720Z",
+                    "email": "acme@email.com",
+                    "description": null,
+                    "roles": {
+                        "read": true
+                    },
+                    "showCloneCustomizeDisclaimer": true
+                }
+            ]
+        }
+    }
+}

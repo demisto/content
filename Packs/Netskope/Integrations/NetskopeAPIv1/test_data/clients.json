@@ -1,0 +1,59 @@
+{
+    "status": "success",
+    "msg": "",
+    "data": [
+        {
+            "attributes": {
+                "_id": "TESTXSOAR",
+                "client_version": "91.0.6.812",
+                "device_id": "TESTXSOAR",
+                "host_info": {
+                    "device_make": "Parallels Software International Inc.",
+                    "device_model": "Parallels Virtual Platform",
+                    "hostname": "TESTXSOAR",
+                    "managementID": "",
+                    "nsdeviceuid": "725DAC1A-6654-3F3A-971E-C984FBE9FE5E",
+                    "os": "Windows",
+                    "os_version": "10.0 (2009)"
+                },
+                "last_event": {
+                    "actor": "System",
+                    "event": "Tunnel Up",
+                    "npa_status": "Steering Disabled",
+                    "status": "Enabled",
+                    "timestamp": 1642475967
+                },
+                "user_added_time": 1638994653,
+                "users": [
+                    {
+                        "_id": "0c6f3f867882c2d243a83310",
+                        "device_classification_status": "Not Configured",
+                        "last_event": {
+                            "actor": "System",
+                            "event": "Tunnel Up",
+                            "npa_status": "Steering Disabled",
+                            "status": "Enabled",
+                            "timestamp": 1642475967
+                        },
+                        "user_source": "Manual",
+                        "user_state": 0,
+                        "userkey": "W1Acv9LP05u2654lwRaD",
+                        "username": "test@goxsoar.com"
+                    },
+                    {
+                        "_id": "0c6f3f867882c2d243a83310",
+                        "device_classification_status": "Unknown",
+                        "last_event": {
+                            "actor": "System",
+                            "event": "Tunnel Down",
+                            "npa_status": "Disabled",
+                            "status": "Disabled",
+                            "timestamp": 1638995110
+                        },
+                        "userkey": "W1Acv9LP05u2654lwRaD"
+                    }
+                ]
+            }
+        }
+    ]
+}

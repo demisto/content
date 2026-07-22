@@ -1,0 +1,53 @@
+commonfields:
+  id: ValidateContent
+  version: -1
+name: ValidateContent
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Runs validation and linting using the Demisto SDK on content items, such as integrations, automations and content packs. This automation script is used as part of the content validation that runs as part of the contribution flow.
+enabled: true
+args:
+- description: Name of the file to validate.
+  name: filename
+- description: Base64 encoded contents of the file to validate.
+  name: data
+- description: ID of War Room file entry for the ZIP content pack or the integration/automation YAML.
+  name: entry_id
+- name: use_system_proxy
+  auto: PREDEFINED
+  predefined:
+  - yes
+  - no
+  description: Use system proxy settings to download required models from GitHub.
+  defaultValue: yes
+- name: trust_any_certificate
+  auto: PREDEFINED
+  predefined:
+  - yes
+  - no
+  description: Trust any certificate (not secure) to download required models from GitHub.
+  defaultValue: no
+outputs:
+- contextPath: ValidationResult.Name
+  description: Name of validated item.
+  type: String
+- contextPath: ValidationResult.Error
+  description: The validation error message.
+  type: String
+- contextPath: ValidationResult.Line
+  description: The line number of the code where the linting error was detected.
+  type: String
+- contextPath: ValidationResult.ErrorCode
+  description: The error code or the name of the linter that identified the issue.
+  type: String
+
+scripttarget: 0
+timeout: 600ns
+runas: DBotWeakRole
+fromversion: 5.5.0
+dockerimage: demisto/xsoar-tools:1.0.0.8457987
+tests:
+- ValidateContent - Test
+runonce: false

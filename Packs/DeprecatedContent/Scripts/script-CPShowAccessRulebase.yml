@@ -1,0 +1,50 @@
+commonfields:
+  id: CPShowAccessRulebase
+  version: -1
+name: CPShowAccessRulebase
+script: >2-
+
+  dArgs = {'command': 'show-access-rulebase'}
+
+  uid = demisto.get(demisto.args(),'uid')
+
+  if uid:
+      dArgs['uid'] = uid
+  else:
+      hostObjName = demisto.get(demisto.args(),'name')
+      if hostObjName:
+          dArgs['name'] = hostObjName
+
+  if 'uid' in dArgs or 'name' in dArgs:
+      resp = demisto.executeCommand('checkpoint', dArgs)
+      if isError(resp[0]):
+          demisto.results(resp)
+      else:
+          data = demisto.get(resp[0], 'Contents.rulebase')
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          if data:
+              demisto.results({'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': data} )
+          else:
+              demisto.results('No results.')
+  else:
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "You must provide name or uid." } )
+type: python
+subtype: python2
+tags:
+- checkpoint
+comment: Deprecated. Show items in an access rulebase configured in Checkpoint FW.
+system: true
+deprecated: true
+args:
+- name: name
+  default: true
+  description: Rulebase name. e.g. "Network"
+- name: uid
+  description: Rulebase uid. e.g. "c832198c-b48e-47db-bafd-ce2fdd5d3641"
+scripttarget: 0
+dependson:
+  must:
+  - checkpoint
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

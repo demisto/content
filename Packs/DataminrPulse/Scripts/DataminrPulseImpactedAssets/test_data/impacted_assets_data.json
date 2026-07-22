@@ -1,0 +1,34 @@
+{
+    "locationAssets": [
+        {
+            "name": "ExampleHQ",
+            "lng": 12.492231,
+            "lat": 41.890251,
+            "distanceFromEventLocation": 2.45,
+            "locationGroups": [
+                {
+                    "name": "Offices"
+                }
+            ]
+        }
+    ],
+    "thirdPartyAssets": [
+        {
+            "name": "VendorA",
+            "customerProvidedId": "DummyID1"
+        },
+        {
+            "name": "VendorB",
+            "customerProvidedId": "DummyID2"
+        }
+    ],
+    "travelSegments": [
+        {
+            "name": "Dummyhotel",
+            "lng": 2.492231,
+            "lat": 4.890251,
+            "distanceFromEventLocation": 1.95,
+            "travelType": "HOTEL"
+        }
+    ]
+}

@@ -1,0 +1,35 @@
+commonfields:
+  id: DemistoLinkIncidents
+  version: -1
+name: DemistoLinkIncidents
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Deprecated. No available replacement.
+enabled: true
+args:
+- name: masterID
+  required: true
+  default: true
+  description: Incident ID used for linking to other incidents.
+- name: otherIDs
+  required: true
+  description: Incidet IDs to link.
+- name: unlink
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Unlink incidents (default 'no').
+  defaultValue: "no"
+scripttarget: 0
+dependson:
+  must:
+  - core-api-post
+fromversion: 5.0.0
+marketplaces:
+- xsoar
+tests:
+- no test
+deprecated: true

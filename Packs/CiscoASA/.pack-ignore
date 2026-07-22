@@ -1,0 +1,12 @@
+[file:CiscoASA_image.png]
+ignore=IM111
+
+[file:CiscoASA.yml]
+ignore=PR101,MR108
+
+[file:CiscoASA_1_3.yml]
+ignore=MR108
+
+[file:CiscoASA_1_4.yml]
+ignore=MR108
+

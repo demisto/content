@@ -1,0 +1,143 @@
+commonfields:
+  id: Shodan
+  version: -1
+name: Shodan
+display: Shodan (Deprecated)
+deprecated: true
+category: Data Enrichment & Threat Intelligence
+image: data:image/png;base64,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
+description: Deprecated. use Shodan v2 instead. Search engine for Internet-connected devices.
+configuration:
+- display: Api Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Base url to Shodan API
+  name: baseUrl
+  defaultvalue: https://api.shodan.io
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: >-
+    var base = params.baseUrl;
+
+
+    var apiKey = params.apiKey;
+
+
+    var insecure = params.insecure;
+
+
+    var sendRequest = function(uri) {
+            var res = http(
+                    base+uri,
+                    {
+                        Method: 'GET'
+                    },
+                    insecure
+                );
+            if (res.StatusCode == 404) {
+                //null is returned while 404 returns error that stops playbook
+                return null;
+            }
+            if (res.StatusCode < 200 || res.StatusCode >= 300) {
+                throw 'Failed to use uri ' + uri + ', request status code: ' + res.StatusCode + ' and Body: ' + res.Body + '.';
+            }
+            return JSON.parse(res.Body);
+    };
+
+
+    // The command input arg holds the command sent from the user.
+
+    switch (command) {
+        // This is the call made when pressing the integration test button.
+        case 'test-module':
+            sendRequest('/shodan/ports?key='+apiKey+'&query=test');
+            return 'ok';
+        case 'search':
+            var urlArgs = {};
+            urlArgs.key = apiKey;
+            urlArgs.query = args.query;
+            urlArgs.page = args.page;
+            if ((args.factes) && (args.facets.length > 0)) {
+                urlArgs.factes = args.facets;
+            }
+            return sendRequest('/shodan/host/search'+encodeToURLQuery(urlArgs));
+        case 'ip':
+            var entries = [];
+            var res = sendRequest('/shodan/host/'+args.ip+'?key='+apiKey);
+            var md = '## Shodan IP Information\n';
+            if (res) {
+                var loc = res.data[0].location;
+                 md += tableToMarkdown('Data on IP Address '+ args.ip, res, ['city','country_name','org', 'isp','hostnames','asn','ports'] );
+                var output = {
+                    Address: res.ip_str,
+                    ASN: res.asn,
+                    Hostname: res.hostnames,
+                    Geo: {
+                        Country: res.country_name,
+                        Description: res.city + ', ' + res.region_code + ', ' + res.postal_code + ', ' + res.country_code,
+                        Location: loc.latitude + ', ' + loc.longitude
+                    }
+                };
+                entries.push({
+                    Type: entryTypes.note,
+                    ContentsFormat: formats.json,
+                    Contents: res,
+                    HumanReadable: md,
+                    EntryContext: {
+                        'IP(val.Address==obj.Address)': output
+                    }
+                });
+                entries.push({Type: entryTypes.map, Contents: {lat: parseFloat(loc.latitude), lng: parseFloat(loc.longitude)}, ContentsFormat: formats.json});
+            } else {
+                 md += '### No information found on IP address ' + args.ip;
+                 return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+            }
+            return entries;
+        default:
+            return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: 'Shodan: Unknown command.' };
+    }
+  type: javascript
+  commands:
+  - name: search
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: 'Shodan search query. The provided string is used to search the database of banners in Shodan, with the additional option to provide filters inside the search query using a "filter:value" format. For example, the following search query would find Apache webservers located in Germany: "apache country:DE"'
+    - name: facets
+      description: A comma-separated list of properties to get summary information on. Property names can also be in the format of "property:count", where "count" is the number of facets that will be returned for a property (i.e. "country:100" to get the top 100 countries for a search query)
+    - name: page
+      description: Result page number to be fetched. Each page contains up to 100 results.
+      defaultValue: "1"
+    description: Search Shodan using the same query syntax as the website and use facets to get summary information for different properties.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: Host IP address
+    outputs:
+    - contextPath: IP.ASN
+      description: Autonomous System Number (ASN) such as IP owner
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.Geo.Country
+      description: Country of given IP
+    - contextPath: IP.Geo.Description
+      description: 'Description of location '
+    - contextPath: IP.Geo.Location
+      description: Latitude and longitude of given IP
+    - contextPath: IP.Hostname
+      description: Hostname
+    description: Returns all services that have been found on the given host IP.
+tests:
+- No tests
+fromversion: 5.0.0

@@ -1,0 +1,33 @@
+{
+    "name": "Box",
+    "description": "Manage Box users",
+    "support": "xsoar",
+    "currentVersion": "3.2.19",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Identity and Access Management",
+        "IT Services"
+    ],
+    "tags": [
+        "Security",
+        "Compliance",
+        "Breach"
+    ],
+    "useCases": [],
+    "keywords": [
+        "box"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "defaultDataSource": "BoxEventsCollector",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

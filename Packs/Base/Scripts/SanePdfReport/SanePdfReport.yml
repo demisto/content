@@ -1,0 +1,58 @@
+args:
+- default: true
+  description: sane report json file contents base64.
+  name: sane_pdf_report_base64
+  required: true
+- defaultValue: portrait
+  description: orientation of the report.
+  name: orientation
+- defaultValue: A4
+  description: the paper size of the report.
+  name: paperSize
+- defaultValue: '4000'
+  description: timeout for the report generation execution time.
+  name: resourceTimeout
+- defaultValue: pdf
+  description: type of report generated.
+  name: reportType
+- description: customer's logo.
+  name: customerLogo
+- description: demito's logo.
+  name: demistoLogo
+- defaultValue: 'false'
+  description: flag to use headers in the report or not.
+  name: disableHeaders
+- defaultValue: '300'
+  description: table text max length.
+  name: tableTextMaxLength
+- defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
+  description: use server preformatted time string in time section.
+  name: forceServerFormattedTimeString
+- defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
+  description: add utf8 BOM to csv report.
+  name: addUtf8Bom
+comment: Parse Sane-json-reports and export them as pdf files (used internally).
+commonfields:
+  id: SanePdfReports
+  version: -1
+enabled: true
+name: SanePdfReports
+script: '-'
+subtype: python3
+tags:
+- sane-pdf-reports
+- sane-reports
+- pdf
+timeout: '0'
+type: python
+dockerimage: demisto/sane-pdf-reports:1.0.0.10737051
+runas: DBotWeakRole
+tests:
+- No Test
+fromversion: 5.5.0

@@ -1,0 +1,209 @@
+{
+	"data": {
+		"id": "0e682ecaa41a32ae3715fce74bac96d6d763bad6d149677e3a75fcf20c764113",
+		"type": "private_url",
+		"links": {
+			"self": "https://www.virustotal.com/api/v3/private/urls/0e682ecaa41a32ae3715fce74bac96d6d763bad6d149677e3a75fcf20c764113"
+		},
+		"attributes": {
+			"favicon": {
+				"raw_md5": "cbf0440f4af60a3f3ea4b875128c4b0c",
+				"dhash": "3333330b2b333333"
+			},
+			"last_http_response_headers": {
+				"cache-control": "s-maxage=60",
+				"content-encoding": "gzip",
+				"date": "Wed, 22 Jan 2025 15:41:27 GMT",
+				"referrer-policy": "unsafe-url",
+				"x-cache-hits": "2, 1",
+				"age": "45",
+				"x-served-by": "cache-ams21070-AMS, cache-chi-klot8100105-CHI",
+				"content-type": "text/html; charset=UTF-8",
+				"content-length": "54280",
+				"x-backend": "CONTENT",
+				"x-timer": "S1737560487.186373,VS0,VE2",
+				"accept-ranges": "bytes",
+				"x-cache": "HIT, HIT",
+				"vary": "Accept-Encoding, User-Agent"
+			},
+			"last_analysis_results": {
+				"Google Safebrowsing": {
+					"method": "blacklist",
+					"engine_name": "Google Safebrowsing",
+					"category": "harmless",
+					"result": "clean"
+				}
+			},
+			"trackers": {
+				"Amazon Associates": [
+					{
+						"url": "https://www.example.com",
+						"id": "",
+						"timestamp": 1737560484
+					}
+				],
+				"Criteo": [
+					{
+						"url": "https://www.example.com",
+						"id": "",
+						"timestamp": 1737560484
+					}
+				],
+				"Facebook Connect": [
+					{
+						"url": "",
+						"id": "",
+						"timestamp": 1737560484
+					}
+				],
+				"Google Analytics": [
+					{
+						"url": "https://www.example.com",
+						"id": "",
+						"timestamp": 1737560484
+					}
+				],
+				"Google Publisher Tags": [
+					{
+						"url": "https://www.example.com",
+						"id": "",
+						"timestamp": 1737560484
+					}
+				],
+				"Google Tag Manager": [
+					{
+						"url": "https://www.example.com",
+						"id": "G-V1WMLM3DL4",
+						"timestamp": 1737560484
+					},
+					{
+						"url": "https://www.example.com",
+						"id": "UA-181957286-2",
+						"timestamp": 1737560484
+					}
+				],
+				"Taboola": [
+					{
+						"url": "https://www.example.com",
+						"id": "",
+						"timestamp": 1737560484
+					},
+					{
+						"url": "https://www.example.com",
+						"id": "1171464",
+						"timestamp": 1737560484
+					}
+				]
+			},
+			"last_http_response_content_length": 243836,
+			"last_http_response_code": 200,
+			"last_http_response_content_sha256": "a71efb8e3bcd99e1c1360a43d29ecd2a8e3d56ee74b2cf254ec2d6cf80528022",
+			"last_final_url": "https://www.example.com",
+			"last_analysis_stats": {
+				"malicious": 0,
+				"suspicious": 0,
+				"undetected": 0,
+				"harmless": 1,
+				"timeout": 0
+			},
+			"redirection_chain": [
+				"https://www.example.com"
+			],
+			"gti_score_age_off_rescore_count": 0,
+			"expiration": 1737646884,
+			"tld": "com",
+			"url": "https://www.example.com",
+			"outgoing_links": [
+				"https://www.example.com"
+			],
+			"html_meta": {
+				"viewport": [
+					"width=device-width"
+				],
+				"title": [
+					"La portería del Barça, en pie de 'guerra' | Marca"
+				],
+				"description": [
+					"Flick no da por sentada ni la titularidad de Szczesny ni la de Iñaki Peña"
+				],
+				"robots": [
+					"index, follow, max-image-preview:large"
+				],
+				"date": [
+					"2025-01-22T15:19:11Z"
+				],
+				"article:modified_time": [
+					"2025-01-22T15:19:11Z"
+				],
+				"article:published_time": [
+					"2025-01-22T15:19:11Z"
+				],
+				"DC.date.issued": [
+					"2025-01-22T15:19:11Z"
+				],
+				"organization": [
+					"Unidad Editorial Información Deportiva S.L."
+				],
+				"article:section": [
+					"Barcelona"
+				],
+				"og:url": [
+					"https://www.example.com"
+				],
+				"og:type": [
+					"article"
+				],
+				"og:site_name": [
+					"MARCA"
+				],
+				"og:title": [
+					"La portería del Barça, en pie de 'guerra'"
+				],
+				"og:description": [
+					"Flick no da por sentada ni la titularidad de Szczesny ni la de Iñaki Peña"
+				],
+				"og:updated_time": [
+					"2025-01-22T15:19:11Z"
+				],
+				"fb:app_id": [
+					"1204085963868279"
+				],
+				"twitter:card": [
+					"summary_large_image"
+				],
+				"twitter:site": [
+					"@marca"
+				],
+				"twitter:creator": [
+					"@marca"
+				],
+				"twitter:title": [
+					"La portería del Barça, en pie de 'guerra'"
+				],
+				"twitter:description": [
+					"Flick no da por sentada ni la titularidad de Szczesny ni la de Iñaki Peña"
+				],
+				"og:image": [
+					"https://www.example.com"
+				],
+				"twitter:image": [
+					"https://www.example.com"
+				],
+				"mrf:sections": [
+					"futbol"
+				],
+				"mrf:tags": [
+					"sub-section:barcelona",
+					"contentType:article"
+				]
+			},
+			"tags": [
+				"iframes",
+				"trackers",
+				"third-party-cookies",
+				"external-resources"
+			],
+			"title": "La portería del Barça, en pie de 'guerra' | Marca"
+		}
+	}
+}

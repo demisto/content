@@ -1,0 +1,62 @@
+{
+    "name": "Azure Enrichment and Remediation",
+    "description": "Playbooks using multiple Azure content packs for enrichment and remediation purposes",
+    "support": "xsoar",
+    "currentVersion": "1.1.33",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
+    "dependencies": {
+        "AzureCompute": {
+            "mandatory": true,
+            "display_name": "Azure Compute"
+        },
+        "AzureLogAnalytics": {
+            "mandatory": false,
+            "display_name": "Azure Log Analytics"
+        },
+        "AzureNetworkSecurityGroups": {
+            "mandatory": false,
+            "display_name": "Azure Network Security Groups"
+        },
+        "AzureResourceGraph": {
+            "mandatory": false,
+            "display_name": "Azure Resource Graph"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MicrosoftGraphUser": {
+            "mandatory": true,
+            "display_name": "Microsoft Graph User"
+        }
+    },
+    "displayedImages": [
+        "MicrosoftGraphUser",
+        "CommonScripts",
+        "AzureCompute",
+        "AzureLogAnalytics",
+        "AzureNetworkSecurityGroups",
+        "AzureResourceGraph"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
+    ]
+}

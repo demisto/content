@@ -1,0 +1,7 @@
+{
+   "id":"16bac29f-17a4-4c3a-9370-8c5968c5ac7d",
+   "value":"changedvirus.exe",
+   "type":"process",
+   "scanMode":"onAccess",
+   "comment":"changed before demo"
+}

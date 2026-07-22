@@ -1,0 +1,39 @@
+commonfields:
+  id: RunSqlQuery
+  version: -1
+name: RunSqlQuery
+script: >
+  resp = demisto.executeCommand("query", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- sql
+comment: Deprecated. Query a relational DB using SQL
+system: true
+args:
+- name: query
+  required: true
+  default: true
+  description: SQL query to preform
+- name: limit
+  description: 'Limit amount of rows results to be displayed, Default: 100'
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - query
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,18 @@
+{"data": [
+      {
+        "cdfUid": "njazpLrEQwqeFDqk4yQCfg",
+        "cdfFieldKey": 1,
+        "cdfFieldName": "Asset Number",
+        "categoryCode": "ESNCOLUMN",
+        "cdfFieldValue": "No Asset Tag",
+        "type": "Text"
+      },
+      {
+        "cdfUid": "7PwIrjEXTAqvpb5WdV2w",
+        "cdfFieldKey": 3,
+        "cdfFieldName": "Assigned Username",
+        "categoryCode": "ESNCOLUMN",
+        "cdfFieldValue": "",
+        "type": "Text"
+      }
+  ]}

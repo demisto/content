@@ -1,0 +1,223 @@
+{
+    "incident_id": "6484",
+    "date": "2021-11-24T23:15:40Z",
+    "policy_names": [
+        "Abuse Report"
+    ],
+    "remediation_actions": [
+        "ALERT"
+    ],
+    "users": [
+        {
+            "user_name": "Admin",
+            "user_address": "demo@armorblox.dev",
+            "is_vip": false,
+            "department_name": "Engineering",
+            "job_title": "Manager"
+        },
+        {
+            "user_name": "John Doe",
+            "user_address": "john_doe@armorblox.dev",
+            "is_vip": false
+        }
+    ],
+    "events": [
+        {
+            "event_id": "9737",
+            "object_id": "92787871f612a87a246dfffc7a55aac87c35d1084dc2d92a02e818f9f3d98f43",
+            "from_name": "Tiffany Koss",
+            "from_address": "tiffany_koss@fake-joaquin.info",
+            "date": "2021-11-24T23:15:40Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "randomtext 24 Nov 15:15:40",
+            "to_users": [
+                "John Doe"
+            ],
+            "to_address": [
+                "john_doe@armorblox.dev"
+            ],
+            "affected_user": "John Doe",
+            "folder_category": "SPAM",
+            "scl_score": 5,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "ZHOQs7h8SMax3bCxZ77btg@ismtpd0073p1las1.sendgrid.net"
+        },
+        {
+            "event_id": "9735",
+            "object_id": "8618e6c5922f3dbd7d92a70f602c17150d09097ea6522593823f5aac044c8341",
+            "from_name": "Drake Hammes",
+            "from_address": "drake_hammes@fake-donny.org",
+            "date": "2021-11-24T23:15:30Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "randomtext 24 Nov 15:15:30",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "demo@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": 5,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "IJWZC9WxS9GHKPNelKCPIA@geopod-ismtpd-4-1"
+        },
+        {
+            "event_id": "9736",
+            "object_id": "ba564f6c3a484800cf410eac605fd4fc196a9f5d4e6e179cc4955d78dbd9cf08",
+            "from_name": "Melissa Dach",
+            "from_address": "melissa_dach@fake-bessie.com",
+            "date": "2021-11-24T23:15:20Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "randomtext 24 Nov 15:15:19",
+            "to_users": [
+                "John Doe"
+            ],
+            "to_address": [
+                "john_doe@armorblox.dev"
+            ],
+            "affected_user": "John Doe",
+            "folder_category": "SPAM",
+            "scl_score": 5,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "WloRAaQbQtuv2hMKf5f2AQ@geopod-ismtpd-1-1"
+        },
+        {
+            "event_id": "9734",
+            "object_id": "364927478a747d47d88fc18b87a4cf4ab8f132a50a1fd1b2c7f4a77fd57e83f9",
+            "from_name": "Admin",
+            "from_address": "demo@armorblox.dev",
+            "date": "2021-11-24T23:15:04Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "FW: randomtext 24 Nov 15:14:50",
+            "to_users": [
+                "Armorblox Abuse Mailbox"
+            ],
+            "to_address": [
+                "demo@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": -1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "SJ0PR02MB7743A165338D03112AB9CA76B6619@SJ0PR02MB7743.namprd02.prod.outlook.com"
+        },
+        {
+            "event_id": "9733",
+            "object_id": "1ee1f2c20c556b3d12fa37c54761030100126e5aa162f485951c594951eb2397",
+            "from_name": "Melissa Dach",
+            "from_address": "melissa_dach@fake-bessie.com",
+            "date": "2021-11-24T23:14:50Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "randomtext 24 Nov 15:14:50",
+            "to_users": [
+                "Admin"
+            ],
+            "to_address": [
+                "demo@armorblox.dev"
+            ],
+            "affected_user": "Admin",
+            "folder_category": "SPAM",
+            "scl_score": 5,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "COZgZQYlT8aQXL7GwjQ0Cg@ismtpd0050p1las1.sendgrid.net"
+        }
+    ],
+    "total_count": "5",
+    "resolutionState": "OPEN_INCIDENT_RESOLUTION_STATE",
+    "tagged": false,
+    "object_type": "CONTENT_MAIL",
+    "remediated_by": "ARMORBLOX",
+    "reporters": [
+        {
+            "user_name": "Admin",
+            "user_address": "demo@armorblox.dev",
+            "is_vip": false,
+            "department_name": "Engineering",
+            "job_title": "Manager"
+        }
+    ],
+    "created_date": "2021-11-24T23:15:04Z",
+    "incident_type": "ABUSE_INCIDENT_TYPE",
+    "research_status": "TRUE_POSITIVE",
+    "earliest_subject": "randomtext 24 Nov 15:14:50",
+    "earliest_abuse_subject": "FW: randomtext 24 Nov 15:14:50",
+    "abuse_events": [
+        {
+            "event_id": "9732",
+            "object_id": "718a34b75d76525ea9e8c3c82c8cc97c3015934129818fc12d518beb39c1e95e",
+            "from_name": "Admin",
+            "from_address": "demo@armorblox.dev",
+            "date": "2021-11-24T23:15:04Z",
+            "event_action": {
+                "action": "ALERT"
+            },
+            "object_type": "CONTENT_MAIL",
+            "title": "FW: randomtext 24 Nov 15:14:50",
+            "to_users": [
+                "Armorblox Abuse Mailbox"
+            ],
+            "to_address": [
+                "demo@armorblox.dev"
+            ],
+            "affected_user": "Armorblox Abuse Mailbox",
+            "folder_category": "UNCATEGORIZED",
+            "scl_score": -1,
+            "action_status": "DONE",
+            "has_eml": false,
+            "message_id": "SJ0PR02MB7743A165338D03112AB9CA76B6619@SJ0PR02MB7743.namprd02.prod.outlook.com"
+        }
+    ],
+    "abuse_total_count": "1",
+    "app_name": "MICROSOFT_OUTLOOK",
+    "senders": [
+        "tiffany_koss@fake-joaquin.info",
+        "drake_hammes@fake-donny.org",
+        "melissa_dach@fake-bessie.com"
+    ],
+    "external_senders": [
+        "tiffany_koss@fake-joaquin.info",
+        "drake_hammes@fake-donny.org",
+        "melissa_dach@fake-bessie.com"
+    ],
+    "match_types": [
+        {
+            "match": "SAME_CONTENT",
+            "configured": true
+        },
+        {
+            "match": "SUBJECT",
+            "configured": true
+        },
+        {
+            "match": "SENDER",
+            "configured": true
+        }
+    ],
+    "pause_match": false,
+    "status_counts": {
+        "done_count": "0",
+        "process_count": "0",
+        "error_count": "0"
+    }
+}

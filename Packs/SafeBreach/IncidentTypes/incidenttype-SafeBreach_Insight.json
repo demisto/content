@@ -1,0 +1,21 @@
+{
+    "autorun": true,
+    "color": "#753ffa",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "disabled": false,
+    "hours": 0,
+    "hoursR": 0,
+    "id": "SafeBreach Insight",
+    "locked": false,
+    "name": "SafeBreach Insight",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "layout": "SafeBreach Insight",
+    "fromVersion": "5.0.0"
+}

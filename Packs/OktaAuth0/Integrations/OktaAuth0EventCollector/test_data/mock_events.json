@@ -1,0 +1,72 @@
+[
+    {
+        "date": "2023-07-03T09:35:27.211Z",
+        "type": "seccft",
+        "description": "",
+        "connection_id": "",
+        "client_name": "API Explorer Application",
+        "ip": "1.2.3.4",
+        "user_agent": "Python Requests 2.28.0 / Other 0.0.0",
+        "user_id": "",
+        "user_name": "",
+        "log_id": "1",
+        "_id": "1",
+        "isMobile": false
+    },
+    {
+        "date": "2023-07-03T09:35:28.046Z",
+        "type": "seccft",
+        "description": "",
+        "connection_id": "",
+        "client_name": "API Explorer Application",
+        "ip": "1.2.3.4",
+        "user_agent": "Python Requests 2.28.0 / Other 0.0.0",
+        "user_id": "",
+        "user_name": "",
+        "log_id": "2",
+        "_id": "2",
+        "isMobile": false
+    },
+    {
+        "date": "2023-07-03T09:35:26.333Z",
+        "type": "seccft",
+        "description": "",
+        "connection_id": "",
+        "client_name": "API Explorer Application",
+        "ip": "1.2.3.4",
+        "user_agent": "Python Requests 2.28.0 / Other 0.0.0",
+        "user_id": "",
+        "user_name": "",
+        "log_id": "3",
+        "_id": "3",
+        "isMobile": false
+    },
+    {
+        "date": "2023-07-03T09:35:28.683Z",
+        "type": "seccft",
+        "description": "",
+        "connection_id": "",
+        "client_name": "API Explorer Application",
+        "ip": "1.2.3.4",
+        "user_agent": "Python Requests 2.28.0 / Other 0.0.0",
+        "user_id": "",
+        "user_name": "",
+        "log_id": "4",
+        "_id": "4",
+        "isMobile": false
+    },
+    {
+        "date": "2023-07-03T09:36:28.683Z",
+        "type": "seccft",
+        "description": "",
+        "connection_id": "",
+        "client_name": "API Explorer Application",
+        "ip": "1.2.3.4",
+        "user_agent": "Python Requests 2.28.0 / Other 0.0.0",
+        "user_id": "",
+        "user_name": "",
+        "log_id": "5",
+        "_id": "5",
+        "isMobile": false
+    }
+]

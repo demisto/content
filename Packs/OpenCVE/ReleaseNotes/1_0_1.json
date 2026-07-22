@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Changed the outputs path in opencve-get-product-cves, opencve-get-vendor-cves, cve commands"
+}

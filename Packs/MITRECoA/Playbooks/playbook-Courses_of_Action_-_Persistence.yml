@@ -1,0 +1,711 @@
+id: Courses of Action - Persistence
+name: Courses of Action - Persistence
+description: "This playbook handles MITRE ATT&CK Techniques using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team. It utilizes each of the sub-playbooks for specific techniques that belong to this phase (tactic) according to the MITRE ATT&CK kill chain. The sub-playbook called depends on the technique input.\n \n***Disclaimer: This playbook does not simulate an attack using the specified techniques, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\n \nTactic:\n- TA0003: Persistence\n\nMITRE ATT&CK Description: \nThe adversary is trying to maintain their foothold.\n\nPersistence consists of techniques that adversaries use to keep access to systems across restarts, changed credentials, and other interruptions that could cut off their access. Techniques used for persistence include any access, action, or configuration changes that let them maintain their foothold on systems, such as replacing or hijacking legitimate code or adding startup code.\n\nPossible playbook triggers:\n- The playbook can be used as a part of the “Courses of Action - Collection” playbook to remediate techniques based on kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, that can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+inputs:
+- description: Mitre ATT&CK ID of a technique.
+  key: technique
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances.
+  key: pre_post
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The device group for which to return addresses (Panorama instances).
+  key: device-group
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Tag for which to filter the rules.
+  key: tag
+  playbookInputQuery:
+  required: false
+  value: {}
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+- contextPath: Persistence.ProductList
+  description: Products used for remediation.
+  type: unknown
+starttaskid: "0"
+system: true
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "7"
+      - "8"
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cf55be19-99e8-4d66-8af4-e54a522726f8
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: cf55be19-99e8-4d66-8af4-e54a522726f8
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1543.003
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0d9fe73f-f8a9-4418-825e-b8931a92afe5
+      iscommand: false
+      name: Windows Service
+      description: ""
+      type: condition
+      version: -1
+    taskid: 0d9fe73f-f8a9-4418-825e-b8931a92afe5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 190
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 595f9069-3611-4cdd-8e62-47f3276f95b8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 595f9069-3611-4cdd-8e62-47f3276f95b8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1078
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "7"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 884ed9ca-648a-4d32-8442-ba183bb37300
+      iscommand: false
+      name: Valid Accounts
+      description: ""
+      type: condition
+      version: -1
+    taskid: 884ed9ca-648a-4d32-8442-ba183bb37300
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 190
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1547
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 19d2afc3-5290-45e8-85bf-211e2fb350cc
+      iscommand: false
+      name: Boot or Logon Autostart Execution
+      description: ""
+      type: condition
+      version: -1
+    taskid: 19d2afc3-5290-45e8-85bf-211e2fb350cc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 190
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: db5fdae5-c4f1-451f-8f38-20c1e94f3585
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1543.003 - Windows Service
+      playbookId: MITRE ATT&CK CoA - T1543.003 - Windows Service
+      type: playbook
+      version: -1
+      description: ''
+    taskid: db5fdae5-c4f1-451f-8f38-20c1e94f3585
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 360
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: c75fe19b-91aa-4352-8d3f-bac99e18cd08
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1547.001 - Registry Run Keys Startup Folder
+      playbookId: MITRE ATT&CK CoA - T1547.001 - Registry Run Keys Startup Folder
+      type: playbook
+      version: -1
+      description: ''
+    taskid: c75fe19b-91aa-4352-8d3f-bac99e18cd08
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 360
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            value:
+              simple: T1547.001
+          operator: inList
+          right:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.technique
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ','
+                  operator: split
+      label: "yes"
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4cb716fb-56a2-4705-8936-0ecbbd0e6cb2
+      iscommand: false
+      name: Registry Run Keys Startup Folder
+      description: ""
+      type: condition
+      version: -1
+    taskid: 4cb716fb-56a2-4705-8936-0ecbbd0e6cb2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 190
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ApplyToRule:
+        complex:
+          root: inputs.ApplyToRule
+      device-group:
+        complex:
+          root: inputs.device-group
+      pre_post:
+        complex:
+          root: inputs.pre_post
+      rule_name:
+        complex:
+          root: inputs.rule_name
+      tag:
+        complex:
+          root: inputs.tag
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f5acb62-a622-4ed8-8c9b-50dcc00f4e5a
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1078 - Valid Accounts
+      playbookId: MITRE ATT&CK CoA - T1078 - Valid Accounts
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 1f5acb62-a622-4ed8-8c9b-50dcc00f4e5a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 360
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 64f09143-c169-455f-8eb3-261b6a138f3f
+      iscommand: false
+      name: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
+      playbookId: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 64f09143-c169-455f-8eb3-261b6a138f3f
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 360
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Persistence.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: bfca9199-7818-49d4-8e56-1ec121786fc0
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: bfca9199-7818-49d4-8e56-1ec121786fc0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 540
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Persistence.Products
+      value:
+        simple: '["Cortex XSOAR","PAN-OS"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 2bc031ef-116d-4674-8bf5-ae3fc03f6849
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 2bc031ef-116d-4674-8bf5-ae3fc03f6849
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 540
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Persistence.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 54c5c6eb-b4ad-4973-8a4d-52a17de8e7db
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 54c5c6eb-b4ad-4973-8a4d-52a17de8e7db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 540
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Persistence.Products
+      value:
+        simple: Cortex XDR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9804aac0-f93d-49af-8411-9b942cd07f27
+      iscommand: false
+      name: Set remediation products
+      script: Set
+      type: regular
+      version: -1
+    taskid: 9804aac0-f93d-49af-8411-9b942cd07f27
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 540
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      persistenceremediationproducts:
+        complex:
+          root: Persistence
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 66d2e143-13ad-466f-8a46-a29e6e72bf53
+      iscommand: true
+      name: Set Persistence Remediation products to the layout
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 66d2e143-13ad-466f-8a46-a29e6e72bf53
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 710
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a6a3cdee-98c4-4dcf-8daa-e4730d53a370
+      iscommand: false
+      name: Set techniques information to the layout
+      description: ""
+      type: title
+      version: -1
+    taskid: a6a3cdee-98c4-4dcf-8daa-e4730d53a370
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 890
+        }
+      }
+  "20":
+    fieldMapping:
+    - incidentfield: Remediated Techniques
+      output:
+        complex:
+          root: Handled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    - incidentfield: Techniques to Handle
+      output:
+        complex:
+          root: Unhandled
+          transformers:
+          - args:
+              title: {}
+            operator: JsonToTable
+    id: "20"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Unhandled.Techniques
+      stringify: {}
+      value:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: TechniquesList
+              operator: notIn
+              right:
+                iscontext: true
+                value:
+                  simple: Handled.Techniques
+          root: TechniquesList
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      id: 9e20071d-ea6d-48a5-80a0-3effeffbf641
+      iscommand: false
+      name: Set techniques information to the layout
+      script: SetAndHandleEmpty
+      type: regular
+      version: -1
+    taskid: 9e20071d-ea6d-48a5-80a0-3effeffbf641
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 1040
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_3_#default#": 0.29,
+      "1_3_#default#": 0.54,
+      "7_3_#default#": 0.48,
+      "8_3_#default#": 0.28
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1225,
+        "width": 1720,
+        "x": -230,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

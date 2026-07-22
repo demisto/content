@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Grafana Alert",
+    "description": "Classifies Grafana's alerts",
+    "feed": false,
+    "id": "Grafana Alert",
+    "keyTypeMap": {
+        "Grafana Alert": "Grafana Alert"
+    },
+    "name": "Grafana Alert Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -1,0 +1,164 @@
+category: Authentication & Identity Management
+commonfields:
+  id: Authentication
+  version: -1
+configuration:
+- defaultvalue: https://example.com
+  display: Server URL (e.g. https://example.com)
+  name: url
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Fetches credentials
+  name: isFetchCredentials
+  required: false
+  type: 8
+description: Integration Template
+display: Authentication
+name: Authentication
+script:
+  commands:
+  - deprecated: false
+    description: Lists all accounts.
+    execution: false
+    name: authentication-list-accounts
+    outputs:
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: The account Name.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      description: The username associated with the account.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Whether the account is locked.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The account ID to lock.
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Locks the specified account.
+    execution: false
+    name: authentication-lock-account
+    outputs:
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: The account name.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      description: The username associated with the account.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Whether the account is locked.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The account ID to lock.
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Locks the specified account.
+    execution: false
+    name: authentication-unlock-account
+    outputs:
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: The account Name.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      description: The username associated with the account.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Whether the account is locked.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The account ID to lock.
+      isArray: false
+      name: account_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Resets the specified account.
+    execution: false
+    name: authentication-reset-account
+    outputs:
+    - contextPath: AuthenticationIntegration.Account.Name
+      description: The account name.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.Username
+      description: The username associated with the account.
+      type: String
+    - contextPath: AuthenticationIntegration.Account.IsLocked
+      description: Whether the account is locked.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the vault to lock.
+      isArray: false
+      name: vault_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Locks the specified vault.
+    execution: false
+    name: authentication-lock-vault
+    outputs:
+    - contextPath: AuthenticationIntegration.Vault.ID
+      description: The ID of the vault.
+      type: String
+    - contextPath: AuthenticationIntegration.Vault.IsLocked
+      description: Whether the vault is locked.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the vault to unlock.
+      isArray: false
+      name: vault_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Unlocks the specified vault.
+    execution: false
+    name: authentication-unlock-vault
+    outputs:
+    - contextPath: AuthenticationIntegration.Vault.ID
+      description: The ID of the vault.
+      type: String
+    - contextPath: AuthenticationIntegration.Vault.IsLocked
+      description: Whether the vault is locked.
+      type: Boolean
+  - arguments:
+    - default: false
+      isArray: false
+      name: vault_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of all vaults.
+    execution: false
+    name: authentication-list-vaults
+    outputs:
+    - contextPath: AuthenticationIntegration.Vault.ID
+      description: The ID of the vault.
+      type: String
+    - contextPath: AuthenticationIntegration.Vault.IsLocked
+      description: Whether the vault is locked.
+      type: Boolean
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3

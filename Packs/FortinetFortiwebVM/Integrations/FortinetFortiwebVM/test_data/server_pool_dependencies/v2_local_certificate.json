@@ -1,0 +1,26 @@
+{
+    "results": [
+        {
+            "_id": "certificate",
+            "name": "certificate",
+            "q_ref": 0,
+            "cert_type": "local",
+            "pkey_type": 1,
+            "can_delete": true,
+            "can_view": true,
+            "can_download": false,
+            "can_config": true,
+            "is_default": false,
+            "hsm": "disable",
+            "comments": "",
+            "status": "OK",
+            "issuer": "test",
+            "validFrom": "2023-04-23 08:47:47  GMT",
+            "validTo": "2024-04-22 08:47:47  GMT",
+            "version": 3,
+            "subject": "test",
+            "serialNumber": "test ",
+            "extension": "test"
+        }
+    ]
+}

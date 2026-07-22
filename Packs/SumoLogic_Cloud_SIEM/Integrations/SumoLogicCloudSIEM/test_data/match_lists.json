@@ -1,0 +1,64 @@
+{
+  "data": {
+    "hasNextPage": true,
+    "objects": [
+      {
+        "created": "2021-04-22T16:52:29.633903+00:00",
+        "createdBy": "obfuscated@email.com",
+        "defaultTtl": 0,
+        "description": "Hosts that are known to be involved with specific administrative or privileged activity on the network. Can be used for tracking hosts that are operated by admins and other privileged users, or are often the source of restricted, privileged or suspicious authorized actions, and so on. This sort of tracking is useful for baselining activity and as a result, surfacing more suspicious activity.",
+        "id": "173",
+        "lastUpdated": "2021-04-22T16:52:29.790615+00:00",
+        "lastUpdatedBy": "obfuscated@email.com",
+        "name": "admin_ips",
+        "targetColumn": "SrcIp"
+      },
+      {
+        "created": "2019-11-27T22:21:47.708159+00:00",
+        "createdBy": "obfuscated@email.com",
+        "defaultTtl": null,
+        "description": "Network authentication servers, including Active Directory, LDAP, Kerberos, RADIUS/TACACS, NIS servers.",
+        "id": "24",
+        "lastUpdated": "2020-07-28T22:28:20.052869+00:00",
+        "lastUpdatedBy": "obfuscated@email.com",
+        "name": "auth_servers",
+        "targetColumn": "Ip"
+      },
+      {
+        "created": "2021-03-15T18:26:34.681225+00:00",
+        "createdBy": "obfuscated@email.com",
+        "defaultTtl": null,
+        "description": "Clone of auth_servers list for directional address matches",
+        "id": "162",
+        "lastUpdated": "2021-03-15T18:26:34.791523+00:00",
+        "lastUpdatedBy": "obfuscated@email.com",
+        "name": "auth_servers_dst",
+        "targetColumn": "DstIp"
+      },
+      {
+        "created": "2019-11-28T05:11:07.844609+00:00",
+        "createdBy": "obfuscated@email.com",
+        "defaultTtl": null,
+        "description": "Clone of auth_servers list for directional address matches",
+        "id": "25",
+        "lastUpdated": "2021-03-15T18:24:50.564760+00:00",
+        "lastUpdatedBy": "obfuscated@email.com",
+        "name": "auth_servers_src",
+        "targetColumn": "SrcIp"
+      },
+      {
+        "created": "2020-10-02T18:28:10.082274+00:00",
+        "createdBy": "obfuscated@email.com",
+        "defaultTtl": null,
+        "description": "User",
+        "id": "123",
+        "lastUpdated": "2020-10-02T18:41:38.970364+00:00",
+        "lastUpdatedBy": "obfuscated@email.com",
+        "name": "Test_default",
+        "targetColumn": "Username"
+      }
+    ],
+    "total": 72
+  },
+  "errors": []
+}

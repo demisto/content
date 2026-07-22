@@ -1,0 +1,804 @@
+id: PAN-OS Create Or Edit Rule Test
+version: -1
+name: PAN-OS Create Or Edit Rule Test
+description: Used in the palo_alto_panorama_test_pb Test playbook, hence skipped in the pack ignore.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2a61000b-48d7-443f-80ec-c403b1777347
+    type: start
+    task:
+      id: 2a61000b-48d7-443f-80ec-c403b1777347
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 15afee65-dc02-43f9-8a0a-2dd7cf4176cb
+    type: regular
+    task:
+      id: 15afee65-dc02-43f9-8a0a-2dd7cf4176cb
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: a6b35b49-1dbc-4d69-8d56-efa0b363bdd6
+    type: title
+    task:
+      id: a6b35b49-1dbc-4d69-8d56-efa0b363bdd6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 3910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: feae7714-eb8f-4072-807e-9136ae373793
+    type: regular
+    task:
+      id: feae7714-eb8f-4072-807e-9136ae373793
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: b80be511-9f8f-4316-82f0-c27e6f70b668
+    type: regular
+    task:
+      id: b80be511-9f8f-4316-82f0-c27e6f70b668
+      version: -1
+      name: Get Rules
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: 436257bb-b1ff-4c10-8a43-89d542bd9e61
+    type: condition
+    task:
+      id: 436257bb-b1ff-4c10-8a43-89d542bd9e61
+      version: -1
+      name: Check the rule does not exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "31"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: Panorama.SecurityRule.Name
+            iscontext: true
+          right:
+            value:
+              simple: inputs.rule_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 196bb267-5b16-45e5-807e-f99430704363
+    type: regular
+    task:
+      id: 196bb267-5b16-45e5-807e-f99430704363
+      version: -1
+      name: Get Rules
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 5dcaea20-db75-4cf8-8d1a-f81f6b45fff9
+    type: condition
+    task:
+      id: 5dcaea20-db75-4cf8-8d1a-f81f6b45fff9
+      version: -1
+      name: Check if the rule defined
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "32"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: inputs.rule_name
+            iscontext: true
+          right:
+            value:
+              simple: Panorama.SecurityRule.Name
+            iscontext: true
+          ignorecase: true
+      - - operator: in
+          left:
+            value:
+              simple: inputs.ip
+            iscontext: true
+          right:
+            value:
+              simple: Panorama.SecurityRule.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: 971cdd47-6022-4c4c-8499-e8fb587b356a
+    type: regular
+    task:
+      id: 971cdd47-6022-4c4c-8499-e8fb587b356a
+      version: -1
+      name: delete rule
+      script: '|||pan-os-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      device-group: {}
+      pre_post:
+        simple: pre-rulebase
+      rulename:
+        simple: ${inputs.rule_name}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "20":
+    id: "20"
+    taskid: 99878968-df56-4013-878a-44a7acc4eca1
+    type: regular
+    task:
+      id: 99878968-df56-4013-878a-44a7acc4eca1
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "21":
+    id: "21"
+    taskid: 77167e48-76f6-4f85-81a7-ea6228116138
+    type: playbook
+    task:
+      id: 77167e48-76f6-4f85-81a7-ea6228116138
+      version: -1
+      name: PAN-OS - Create Or Edit Rule
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      action-type:
+        simple: drop
+      element-to-add:
+        simple: ${inputs.ip}
+      inbound-or-outbound-rule:
+        simple: inbound
+      log-forwarding-object-name: {}
+      pre-post-rulebase:
+        simple: pre-rulebase
+      relative-rule-name: {}
+      rule-position:
+        simple: bottom
+      rule_name:
+        simple: ${inputs.rule_name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "22":
+    id: "22"
+    taskid: 02797e88-7d24-46ce-8e35-7e09641f4379
+    type: regular
+    task:
+      id: 02797e88-7d24-46ce-8e35-7e09641f4379
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "23":
+    id: "23"
+    taskid: 665bc2ec-00fc-43f9-8be9-0ad69023b96e
+    type: playbook
+    task:
+      id: 665bc2ec-00fc-43f9-8be9-0ad69023b96e
+      version: -1
+      name: PAN-OS - Create Or Edit Rule
+      playbookName: PAN-OS - Create Or Edit Rule
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      action-type:
+        simple: drop
+      element-to-add:
+        simple: ${inputs.ip2}
+      inbound-or-outbound-rule:
+        simple: inbound
+      log-forwarding-object-name: {}
+      pre-post-rulebase:
+        simple: pre-rulebase
+      relative-rule-name: {}
+      rule-position:
+        simple: bottom
+      rule_name:
+        simple: ${inputs.rule_name}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "24":
+    id: "24"
+    taskid: cb6871c1-99ef-43c5-8b37-9055827b302c
+    type: regular
+    task:
+      id: cb6871c1-99ef-43c5-8b37-9055827b302c
+      version: -1
+      name: Get Rules
+      script: '|||pan-os-list-rules'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      pre_post:
+        simple: pre-rulebase
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "25":
+    id: "25"
+    taskid: 0d78612b-eb17-40ae-89f1-2bd4fad76a91
+    type: condition
+    task:
+      id: 0d78612b-eb17-40ae-89f1-2bd4fad76a91
+      version: -1
+      name: Check if the rule defined
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: inputs.rule_name
+            iscontext: true
+          right:
+            value:
+              simple: Panorama.SecurityRule.Name
+            iscontext: true
+      - - operator: in
+          left:
+            value:
+              simple: inputs.ip2
+            iscontext: true
+          right:
+            value:
+              simple: Panorama.SecurityRule.Source
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "26":
+    id: "26"
+    taskid: c25f7083-d802-4b71-8e45-fd3bef801cd8
+    type: playbook
+    task:
+      id: c25f7083-d802-4b71-8e45-fd3bef801cd8
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "27":
+    id: "27"
+    taskid: c6f6d0af-2dee-4917-8bab-babe2deb1f54
+    type: playbook
+    task:
+      id: c6f6d0af-2dee-4917-8bab-babe2deb1f54
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "28":
+    id: "28"
+    taskid: dda11fe1-c718-4296-838d-7db20fe4ce6f
+    type: playbook
+    task:
+      id: dda11fe1-c718-4296-838d-7db20fe4ce6f
+      version: -1
+      name: PAN-OS Commit Configuration
+      playbookName: PAN-OS Commit Configuration
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "29":
+    id: "29"
+    taskid: 9bbc0144-d51e-45c1-87ee-41c178262570
+    type: regular
+    task:
+      id: 9bbc0144-d51e-45c1-87ee-41c178262570
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "30":
+    id: "30"
+    taskid: 50cedc3a-a6d1-449a-8266-5d219cd164c0
+    type: regular
+    task:
+      id: 50cedc3a-a6d1-449a-8266-5d219cd164c0
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "31":
+    id: "31"
+    taskid: 53b7e44f-9f6b-402b-8427-aaa00573563d
+    type: regular
+    task:
+      id: 53b7e44f-9f6b-402b-8427-aaa00573563d
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message:
+        simple: rule with the name ${inputs.rule_name} already exists in panorama
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -490,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "32":
+    id: "32"
+    taskid: 79336487-36e7-44af-893b-3e7ae767420a
+    type: regular
+    task:
+      id: 79336487-36e7-44af-893b-3e7ae767420a
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message:
+        simple: rule with the name ${inputs.rule_name} and source ${inputs.ip} was not found in panorama
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 3410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "33":
+    id: "33"
+    taskid: 822e452f-ff45-4ba5-8642-550e0e8802cf
+    type: regular
+    task:
+      id: 822e452f-ff45-4ba5-8642-550e0e8802cf
+      version: -1
+      name: PrintErrorEntry
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      message:
+        simple: rule with the name ${inputs.rule_name} and source ${inputs.ip2} was not found in panorama
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 3640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "14_10_yes": 0.59,
+      "25_9_yes": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3925,
+        "width": 1610,
+        "x": -490,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: rule_name
+  value:
+    simple: pan_test_rule
+  required: false
+  description: ""
+- key: ip
+  value:
+    simple: 1.1.1.1
+  required: false
+  description: ""
+- key: ip2
+  value:
+    simple: 3.3.3.3
+  required: false
+  description: ""
+outputs: []
+fromversion: "6.1.0"

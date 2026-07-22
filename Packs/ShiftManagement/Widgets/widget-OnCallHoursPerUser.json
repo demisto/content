@@ -1,0 +1,13 @@
+{
+    "id": "OnCallHoursPerUser",
+    "version": -1,
+    "name": "On-Call Hours Per User",
+    "dataType": "scripts",
+    "widgetType": "bar",
+    "query": "GetOnCallHoursPerUser",
+    "isPredefined": true,
+    "size": 0,
+    "category": "",
+    "fromVersion": "5.5.0",
+    "description": "Displays number of on-call hours per user."
+}

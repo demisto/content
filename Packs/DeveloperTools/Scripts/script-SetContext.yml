@@ -1,0 +1,26 @@
+commonfields:
+  id: SetContext
+  version: -1
+name: SetContext
+script: >-
+  demisto.setContext(demisto.args()['key'], demisto.args()['value'])
+type: python
+subtype: python2
+tags:
+- Utility
+comment: Deprecated. No available replacement. Sets key/value pair in incident's context.
+system: true
+deprecated: true
+args:
+- name: key
+  required: true
+  default: true
+  description: The key to set
+- name: value
+  required: true
+  description: The value to set
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

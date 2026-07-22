@@ -1,0 +1,352 @@
+id: Cofense Triage v2 Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Cofense Triage v2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3c435c1f-2d7f-4fe3-8b3b-d7f4c2f67265
+    type: start
+    task:
+      id: 3c435c1f-2d7f-4fe3-8b3b-d7f4c2f67265
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 83a5e3b3-042b-4f1d-8901-7f0db5aee4e2
+    type: regular
+    task:
+      id: 83a5e3b3-042b-4f1d-8901-7f0db5aee4e2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 9279da5f-9965-4504-8e34-f2c5e55cf67a
+    type: regular
+    task:
+      id: 9279da5f-9965-4504-8e34-f2c5e55cf67a
+      version: -1
+      name: Get repot by ID
+      description: 'Retrieve a report by it''s ID number '
+      script: '|||cofense-get-report-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      report_id:
+        simple: "5790"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0294486d-bf5a-4fc0-8138-f9f8bd803118
+    type: regular
+    task:
+      id: 0294486d-bf5a-4fc0-8138-f9f8bd803118
+      version: -1
+      name: Get attachment
+      description: 'Retrieve attachment by it''s ID number '
+      script: '|||cofense-get-attachment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      attachment_id:
+        simple: "10336"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 48b30a59-0f00-4dc4-8c3e-438ce56588bf
+    type: regular
+    task:
+      id: 48b30a59-0f00-4dc4-8c3e-438ce56588bf
+      version: -1
+      name: Search reports
+      description: query for different reports
+      script: '|||cofense-search-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      created_at: {}
+      file_hash: {}
+      max_matches: {}
+      reported_at: {}
+      reporter: {}
+      subject: {}
+      url: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d6d68063-3db4-4459-8596-74a96f91196d
+    type: regular
+    task:
+      id: d6d68063-3db4-4459-8596-74a96f91196d
+      version: -1
+      name: Get reporter
+      description: Retrieves Email address of the reporter by ID
+      script: '|||cofense-get-reporter'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      reporter_id:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 35c6b67b-1ca4-40af-870d-2025de3344e4
+    type: title
+    task:
+      id: 35c6b67b-1ca4-40af-870d-2025de3344e4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: bcde1016-8d2d-4ff7-8081-237314795db7
+    type: regular
+    task:
+      id: bcde1016-8d2d-4ff7-8081-237314795db7
+      version: -1
+      name: Get Report By PNG
+      description: 'Retrieves a report by the report ID number and displays as PNG '
+      script: '|||cofense-get-report-png-by-id'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      report_id:
+        simple: "5790"
+      set_white_bg: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 4496f8e2-ae76-4590-87fb-6a3655efb2e4
+    type: regular
+    task:
+      id: 4496f8e2-ae76-4590-87fb-6a3655efb2e4
+      version: -1
+      name: Cofense Threat Indicators
+      description: Threat Indicators that are designated by analysts as malicious,
+        suspicious or benign
+      script: '|||cofense-get-threat-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      end_date: {}
+      level:
+        simple: Malicious
+      start_date:
+        simple: "2020-03-01"
+      type:
+        simple: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 218fa40b-1deb-4b4a-8bc8-741218c0c6c6
+    type: regular
+    task:
+      id: 218fa40b-1deb-4b4a-8bc8-741218c0c6c6
+      version: -1
+      name: cofense-search-inbox-reports
+      description: Searches Cofense Triage inbox for reported email
+      script: '|||cofense-search-inbox-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      created_at: {}
+      file_hash: {}
+      max_matches: {}
+      number_of_pages: {}
+      reported_at: {}
+      reporter: {}
+      subject: {}
+      url: {}
+      verbose: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+sourceplaybookid: Cofense Triage Test v2

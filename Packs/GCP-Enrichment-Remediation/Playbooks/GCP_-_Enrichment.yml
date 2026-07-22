@@ -1,0 +1,712 @@
+id: GCP - Enrichment
+version: -1
+name: GCP - Enrichment
+description: Given the IP address this playbook enriches GCP and Firewall information.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cf94767e-9a02-4195-81a0-c98908e861d3
+    type: start
+    task:
+      id: cf94767e-9a02-4195-81a0-c98908e861d3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c78214ad-5706-4e3c-8875-16d144d946f6
+    type: title
+    task:
+      id: c78214ad-5706-4e3c-8875-16d144d946f6
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2335
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6787c539-18a1-4005-8c43-55a8304fa5b2
+    type: condition
+    task:
+      id: 6787c539-18a1-4005-8c43-55a8304fa5b2
+      version: -1
+      name: Is Google Cloud Compute enabled and is Input value defined?
+      description: Determines if the Google Cloud Compute integration instance is configured and Input values are defined to pull enrichment data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Google Cloud Compute
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.GcpIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: be6a419e-4dbc-474d-8125-9aecc128c3b3
+    type: regular
+    task:
+      id: be6a419e-4dbc-474d-8125-9aecc128c3b3
+      version: -1
+      name: Lookup VM Instance information associated with IP
+      description: Retrieves instance information based on public IP in your project across all regions and zones.
+      script: Google Cloud Compute|||gcp-compute-aggregated-list-instances-by-ip
+      type: regular
+      iscommand: true
+      brand: Google Cloud Compute
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ip:
+        complex:
+          root: inputs.GcpIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2dea940d-629f-4a53-843d-e8538e7a7ef3
+    type: condition
+    task:
+      id: 2dea940d-629f-4a53-843d-e8538e7a7ef3
+      version: -1
+      name: Was there a GCP instance?
+      description: Check whether the last command returned GCP Instance information or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: GoogleCloudCompute.Instances
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: ec812d60-047e-4c13-8787-34685201ac9d
+    type: condition
+    task:
+      id: ec812d60-047e-4c13-8787-34685201ac9d
+      version: -1
+      name: Is GCP - IAM enabled?
+      description: Determines if the GCP-IAM integration instance is configured.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GCP-IAM
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 9ab50a15-c8cc-454d-86d6-4011a6a099bb
+    type: regular
+    task:
+      id: 9ab50a15-c8cc-454d-86d6-4011a6a099bb
+      version: -1
+      name: Lookup project owner
+      description: Retrieves the IAM access control policy for the specified project.
+      script: GCP-IAM|||gcp-iam-project-iam-policy-get
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      project_name:
+        complex:
+          root: GCPProject
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: projects/
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f3a7d4ee-6d8a-41c1-8ce3-44c90e79887c
+    type: regular
+    task:
+      id: f3a7d4ee-6d8a-41c1-8ce3-44c90e79887c
+      version: -1
+      name: Create GCP project hierarchy
+      description: Determine GCP project hierarchy by looking up parent objects until the organization level is reached.
+      type: regular
+      iscommand: false
+      brand: ""
+      script: GCPProjectHierarchy
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      project_id:
+        simple: ${GCPProject}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1805
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 374934bd-82d4-4c68-834a-b116608856a7
+    type: regular
+    task:
+      id: 374934bd-82d4-4c68-834a-b116608856a7
+      version: -1
+      name: Lookup tagbindings
+      description: List tag bindings (key value pair) applied to a project/folder/organization object.
+      script: GCP-IAM|||gcp-iam-tagbindings-list
+      type: regular
+      iscommand: true
+      brand: GCP-IAM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      parent:
+        complex:
+          root: GCPHierarchy
+          accessor: number
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: //cloudresourcemanager.googleapis.com/
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 2145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: efacd623-877b-4147-87f9-c713be40ccd5
+    type: condition
+    task:
+      id: efacd623-877b-4147-87f9-c713be40ccd5
+      version: -1
+      name: Was there results?
+      description: Checks if an output was returned from the last task.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GCPHierarchy
+                accessor: number
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      network_tags:
+        simple: ${GoogleCloudCompute.Instances.tags.items}
+      network_url:
+        complex:
+          accessor: network
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.natIP
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.GcpIP
+          root: GoogleCloudCompute.Instances.networkInterfaces
+      port:
+        simple: ${inputs.port}
+      project_id:
+        simple: ${GCPProject}
+      protocol:
+        simple: ${inputs.protocol}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Determine potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
+
+        Considerations:
+        - At this time this automation only finds potential offending rules and not necessarily the rule that is matching traffic.
+      id: 56f41c15-7d0c-4156-8a3e-0c22925e8bcb
+      iscommand: false
+      name: GCPOffendingFirewallRule
+      script: GCPOffendingFirewallRule
+      type: regular
+      version: -1
+    taskid: 56f41c15-7d0c-4156-8a3e-0c22925e8bcb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1220
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.port
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.protocol
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check whether we have the inputs requested for GCPOffendingFirewallRule script
+      id: cff8414e-9ece-425b-8935-d4d2ea526aba
+      iscommand: false
+      name: Do we have enough information to find GCP potential offending firewall rule?
+      type: condition
+      version: -1
+    taskid: cff8414e-9ece-425b-8935-d4d2ea526aba
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 890
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: GCPProject
+      value:
+        complex:
+          accessor: network
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: GoogleCloudCompute.Instances.networkInterfaces.accessConfigs.natIP
+              operator: isEqualString
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.GcpIP
+          root: GoogleCloudCompute.Instances.networkInterfaces
+          transformers:
+          - args:
+              from:
+                value:
+                  simple: projects/
+              to:
+                value:
+                  simple: /global
+            operator: ExtractInbetween
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 93add12e-d442-4184-80b2-5f6c1c67a5b1
+      iscommand: false
+      name: Set GCP project to temp context
+      script: Set
+      type: regular
+      version: -1
+    taskid: 93add12e-d442-4184-80b2-5f6c1c67a5b1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 725
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instance:
+        complex:
+          accessor: name
+          root: GoogleCloudCompute.Instances
+          transformers:
+          - operator: uniq
+      project_id:
+        simple: ${GCPProject}
+      zone:
+        complex:
+          accessor: zone
+          root: GoogleCloudCompute.Instances
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (?<=zones\/)[^$]+
+              unpack_matches: {}
+            operator: RegexExtractAll
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Google Cloud Compute
+      description: Returns the specified instance resource. Gets a list of available instances by making a list() request.
+      id: aa2c2401-139e-4209-8a56-3f8fd5e3326a
+      iscommand: true
+      name: Get network tags information.
+      script: Google Cloud Compute|||gcp-compute-get-instance
+      type: regular
+      version: -1
+    taskid: aa2c2401-139e-4209-8a56-3f8fd5e3326a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 820,
+          "y": 1050
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {
+      "9_23_yes": 0.52
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2320,
+        "width": 750,
+        "x": 450,
+        "y": 80
+      }
+    }
+  }
+inputs:
+- key: GcpIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: true
+  description: GCP IP in alert
+  playbookInputQuery:
+- description: Port to match traffic on for firewall rules.
+  key: port
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${alert.remoteport}
+- description: Protocol to match traffic on for firewall rules.
+  key: protocol
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${alert.protocol}
+outputs:
+- contextPath: GoogleCloudCompute.Instances
+  description: GCP VM Instances information.
+  type: unknown
+- contextPath: GCPIAM.Policy
+  description: GCP IAM information.
+  type: unknown
+- contextPath: GCPIAM.TagBindings
+  description: Project/Folder/Organization level tags.
+  type: unknown
+- contextPath: GCPHierarchy
+  description: GCP project hierarchy information.
+  type: unknown
+- contextPath: GCPOffendingFirewallRule
+  description: One or more potential offending firewall rules in GCP based on port, protocol and possibly target tags (network tags).
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

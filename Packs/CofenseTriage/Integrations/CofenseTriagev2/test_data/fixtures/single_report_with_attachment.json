@@ -1,0 +1,58 @@
+[
+	{
+		"id": 13363,
+		"cluster_id": null,
+		"reporter_id": 5331,
+		"location": "Processed",
+		"primary_recipe_id": null,
+		"recipe_name": null,
+		"processing_operator_id": 2,
+		"created_at": "2020-03-19T16:43:09.715Z",
+		"updated_at": "2020-03-19T16:46:17.781Z",
+		"reported_at": "2020-03-19T16:42:22.000Z",
+		"processed_at": "2020-03-19T16:43:29.808Z",
+		"report_subject": "suspicious subject",
+		"report_headers": "X-Triage-Various-Headers: value=555\nDate: Thu, 19 Mar 2020 16:43:09 +0000\r\nFrom: sender@example.com\r\nTo: recipient@example.com\r\nMessage-ID: <5555>\r\nSubject: suspicious subject",
+		"report_body": "From: Sender <sender@example.com>\r\nReply-To: \"sender@example.com\" <sender@example.com>\r\nDate: Wednesday, March 18, 2020 at 3:34 PM\r\nTo: recipient@example.com\r\nSubject: suspicious subject\r\n<HTML>click on this link! trust me! <a href=\"http://example.com/malicious\">here</a></HTML>",
+		"md5": "111",
+		"sha256": "222",
+		"category_id": 7,
+		"match_priority": 1,
+		"tags": [],
+		"reporter_phishme_reports_count": 0,
+		"suspect_received_at": "2020-03-19T16:42:23.000Z",
+		"suspect_from_address": "sender@example.com",
+		"email_attachments": [
+			{
+				"id": 18054,
+				"report_id": 13363,
+				"decoded_filename": "image003.png",
+				"content_type": "image/png; name=image003.png",
+				"size_in_bytes": 7286,
+				"email_attachment_payload": {
+					"id": 7082,
+					"md5": "123",
+					"sha256": "1234",
+					"mime_type": "image/png; charset=binary"
+				}
+			}
+		],
+		"email_urls": [
+			{
+				"url": "http://example.com/malicious"
+			}
+		],
+		"rules": [
+			{
+				"id": 6417,
+				"name": "highly_effective_rule",
+				"reports_count": 33,
+				"active": true,
+				"created_at": "2019-04-11T17:15:53.940Z",
+				"updated_at": "2019-04-11T17:15:53.940Z",
+				"priority": 1,
+				"author_name": "Cofense"
+			}
+		]
+	}
+]

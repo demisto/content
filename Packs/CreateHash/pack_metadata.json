@@ -1,0 +1,24 @@
+{
+    "name": "CreateHash (Deprecated)",
+    "description": "Deprecated. CreateHash script moved to CommonScripts pack.",
+    "support": "community",
+    "currentVersion": "1.0.3",
+    "author": "Joerg Stephan",
+    "url": "",
+    "email": "",
+    "hidden": true,
+    "created": "2021-12-06T11:19:01Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "johestephan"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

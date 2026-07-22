@@ -1,0 +1,49 @@
+commonfields:
+  id: LocateAttachment
+  version: -1
+name: LocateAttachment
+script: >-
+  entries = demisto.executeCommand('getEntries', {})
+
+  typefilter = demisto.get(demisto.args(), 'typefilter')
+
+  namefilter = demisto.get(demisto.args(), 'namefilter')
+
+  for e in entries:
+      filetype = demisto.get(e, 'FileMetadata.info')
+      filename = demisto.get(e, 'File')
+      if filetype:
+          if typefilter and not typefilter.lower() in filetype.lower():
+              continue
+          if namefilter and not namefilter.lower() in filename.lower():
+              continue
+          demisto.setContext('AttachmentEntryID', e['ID'])
+          demisto.setContext('AttachmentMD5', demisto.get(e, 'FileMetadata.md5'))
+          demisto.setContext('AttachmentFileType', demisto.get(e, 'FileMetadata.info'))
+          demisto.results('yes')
+          sys.exit()
+  demisto.results('no')
+type: python
+subtype: python2
+tags:
+- email
+- Condition
+comment: Deprecated. Identify whether the incident includes an attached file. Optional typefilter argument can be used to only match if the filetype includes that string. Same for filename. Filetype is according to the linux "file" command (filemagic format identification).
+system: true
+deprecated: true
+args:
+- name: typefilter
+  description: (Optional) Substring of the filetype to match
+- name: namefilter
+  default: true
+  description: (Optional) Substring of the file name to match
+scripttarget: 0
+dependson: {}
+timeout: 0s
+outputs:
+- contextPath: yes
+  description: if there incident has an attached file
+- contextPath: no
+  description: if incident does not contain an attached file
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

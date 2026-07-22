@@ -1,0 +1,596 @@
+{
+    "data": [
+        {
+            "id": "0110ff87-b919-41b9-b772-7fbf775b4343",
+            "name": "Win10 - Cylance",
+            "accountId": 3475543660,
+            "isEnabled": true,
+            "isCritical": true,
+            "isExfiltration": false,
+            "isInfiltration": false,
+            "isMailTarget": false,
+            "isMailAttacker": false,
+            "isPreExecutor": true,
+            "useSystemUser": true,
+            "externalIp": "8.8.8.8",
+            "internalIp": "172.31.42.76",
+            "hostname": "Cylance-Win10-Demisto",
+            "labels": null,
+            "connectionType": "AUTOMATIC",
+            "frameworkVersion": "1.3.82",
+            "nodeInfo": {
+                "MACHINE_INFO": {
+                    "SYSTEM_CHECKS": {
+                        "PRE_EXECUTION": {
+                            "tls_callback_32": true,
+                            "tls_callback_64": true,
+                            "RESULT": true,
+                            "dll_load_32": true,
+                            "dll_load_64": true
+                        }
+                    },
+                    "OS": {
+                        "SIMULATOR_TYPE": "EP",
+                        "TYPE": "WINDOWS",
+                        "OTHER": {},
+                        "VERSION": "10.0.18362",
+                        "SIMULATOR_SUB_TYPE": "HOST",
+                        "RELEASE": "10",
+                        "ARCH": "64"
+                    },
+                    "SYSTEM": {
+                        "PCAP_DRIVERS": false,
+                        "UPTIME": 234,
+                        "DISKS": [
+                            {
+                                "DEVICE": "C:\\",
+                                "MOUNT": "C:\\",
+                                "TOTAL": 53132406784,
+                                "USED": 27815251968,
+                                "FREE": 25317154816
+                            }
+                        ],
+                        "CPU": {
+                            "COUNT": 2,
+                            "PERCENT": 0
+                        },
+                        "MEMORY": {
+                            "AVAILABLE": 2424197120,
+                            "TOTAL": 4294557696,
+                            "USED": 1870360576,
+                            "FREE": 2424197120
+                        }
+                    }
+                },
+                "NETWORK_INFO": {
+                    "ROUTES": [
+                        {
+                            "INTERFACE": "Ethernet",
+                            "NETMASK": "0.0.0.0",
+                            "NAME": "0.0.0.0",
+                            "GATEWAY": "172.31.32.1"
+                        }
+                    ],
+                    "INTERFACES": [
+                        {
+                            "RX_PACKETS": 6498577330,
+                            "NAME": "Ethernet",
+                            "MAC": "02:d8:34:93:b0:da",
+                            "IPv4": [
+                                {
+                                    "IP": "172.31.42.76",
+                                    "NETMASK": "255.255.240.0"
+                                }
+                            ],
+                            "IPv6": [
+                                {
+                                    "IP": "fe80::405c:a82d:e7b8:5b49%6",
+                                    "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                                }
+                            ],
+                            "TX_BYTES": 10034593,
+                            "TX_PACKETS": 9679692
+                        }
+                    ],
+                    "HOSTNAME": "Cylance-Win10-Demisto",
+                    "CONNECTED_INTERFACE": {
+                        "RX_PACKETS": 6498577330,
+                        "NAME": "Ethernet",
+                        "MAC": "02:d8:34:93:b0:da",
+                        "IPv4": [
+                            {
+                                "IP": "172.31.42.76",
+                                "NETMASK": "255.255.240.0"
+                            }
+                        ],
+                        "IPv6": [
+                            {
+                                "IP": "fe80::405c:a82d:e7b8:5b49%6",
+                                "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                            }
+                        ],
+                        "TX_BYTES": 10034593,
+                        "TX_PACKETS": 9679692
+                    }
+                }
+            },
+            "tunnel": null,
+            "connectionUrl": null,
+            "lastHealthcheck": {},
+            "cloudProxyUrl": null,
+            "version": "Orion.2020Q2.8 v20200607_161457",
+            "simulatorVersion": "3.19.0",
+            "createdAt": "2020-01-09T11:36:07.000Z",
+            "updatedAt": "2020-06-21T09:03:21.000Z",
+            "deletedAt": null,
+            "assets": [
+                2
+            ],
+            "simulationUsers": [],
+            "updates": {}
+        },
+        {
+            "id": "3714b3ec-6c35-48cb-92b8-6aff9df72c33",
+            "name": "Network-Simulator",
+            "accountId": 3475543660,
+            "isEnabled": true,
+            "isCritical": false,
+            "isExfiltration": true,
+            "isInfiltration": true,
+            "isMailTarget": false,
+            "isMailAttacker": false,
+            "isPreExecutor": false,
+            "useSystemUser": true,
+            "externalIp": "8.8.8.8",
+            "internalIp": "8.8.8.8",
+            "hostname": "Network-Simulator",
+            "labels": null,
+            "connectionType": "MANUAL",
+            "frameworkVersion": "1.3.82",
+            "nodeInfo": {
+                "MACHINE_INFO": {
+                    "SYSTEM_CHECKS": {
+                        "PRE_EXECUTION": {
+                            "RESULT": false
+                        }
+                    },
+                    "OS": {
+                        "SIMULATOR_TYPE": "VA",
+                        "TYPE": "LINUX",
+                        "OTHER": {
+                            "DIST": "Ubuntu 18.04 bionic"
+                        },
+                        "VERSION": "18.04",
+                        "SIMULATOR_SUB_TYPE": "NETWORK",
+                        "RELEASE": "4.15.0-1021-aws",
+                        "ARCH": "64"
+                    },
+                    "SYSTEM": {
+                        "PCAP_DRIVERS": true,
+                        "UPTIME": 501,
+                        "DISKS": [
+                            {
+                                "DEVICE": "/dev/nvme0n1p1",
+                                "MOUNT": "/",
+                                "TOTAL": 62385840128,
+                                "USED": 6474276864,
+                                "FREE": 55894786048
+                            },
+                            {
+                                "DEVICE": "/dev/loop0",
+                                "MOUNT": "/snap/core/9066",
+                                "TOTAL": 98566144,
+                                "USED": 98566144,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop2",
+                                "MOUNT": "/snap/amazon-ssm-agent/1566",
+                                "TOTAL": 18874368,
+                                "USED": 18874368,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop3",
+                                "MOUNT": "/snap/amazon-ssm-agent/1480",
+                                "TOTAL": 18874368,
+                                "USED": 18874368,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop4",
+                                "MOUNT": "/snap/core/9289",
+                                "TOTAL": 101842944,
+                                "USED": 101842944,
+                                "FREE": 0
+                            }
+                        ],
+                        "CPU": {
+                            "COUNT": 2,
+                            "PERCENT": 0
+                        },
+                        "MEMORY": {
+                            "AVAILABLE": 3609452544,
+                            "TOTAL": 4086681600,
+                            "USED": 196632576,
+                            "FREE": 2441330688
+                        }
+                    }
+                },
+                "NETWORK_INFO": {
+                    "ROUTES": [
+                        {
+                            "INTERFACE": "ens5",
+                            "NETMASK": "0.0.0.0",
+                            "NAME": "0.0.0.0",
+                            "GATEWAY": "172.31.0.1"
+                        }
+                    ],
+                    "INTERFACES": [
+                        {
+                            "RX_PACKETS": 1192803280,
+                            "NAME": "ens5",
+                            "MAC": "02:39:1b:d9:38:d4",
+                            "IPv4": [
+                                {
+                                    "IP": "8.8.8.8",
+                                    "NETMASK": "255.255.240.0"
+                                }
+                            ],
+                            "IPv6": [
+                                {
+                                    "IP": "fe80::39:1bff:fed9:38d4%ens5",
+                                    "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                                }
+                            ],
+                            "TX_BYTES": 5310704,
+                            "TX_PACKETS": 5037905
+                        }
+                    ],
+                    "HOSTNAME": "Network-Simulator",
+                    "CONNECTED_INTERFACE": {
+                        "RX_PACKETS": 1192803280,
+                        "NAME": "ens5",
+                        "MAC": "02:39:1b:d9:38:d4",
+                        "IPv4": [
+                            {
+                                "IP": "8.8.8.8",
+                                "NETMASK": "255.255.240.0"
+                            }
+                        ],
+                        "IPv6": [
+                            {
+                                "IP": "fe80::39:1bff:fed9:38d4%ens5",
+                                "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                            }
+                        ],
+                        "TX_BYTES": 5310704,
+                        "TX_PACKETS": 5037905
+                    }
+                }
+            },
+            "tunnel": "{}",
+            "connectionUrl": "https://34.242.133.73:65000",
+            "lastHealthcheck": {},
+            "cloudProxyUrl": null,
+            "version": "Orion.2020Q2.8 v20200607_161457",
+            "simulatorVersion": "3.19.0",
+            "createdAt": "2019-11-26T09:52:15.000Z",
+            "updatedAt": "2020-06-21T09:01:11.000Z",
+            "deletedAt": null,
+            "assets": [],
+            "simulationUsers": [],
+            "updates": {}
+        },
+        {
+            "id": "372dc152-4b0b-4d92-9966-a51cdd115000",
+            "name": "ubuntu18-num1",
+            "accountId": 3475543660,
+            "isEnabled": true,
+            "isCritical": true,
+            "isExfiltration": false,
+            "isInfiltration": false,
+            "isMailTarget": false,
+            "isMailAttacker": false,
+            "isPreExecutor": false,
+            "useSystemUser": true,
+            "externalIp": "8.8.8.8",
+            "internalIp": "8.8.8.8",
+            "hostname": "ubuntu18-num1",
+            "labels": null,
+            "connectionType": "AUTOMATIC",
+            "frameworkVersion": "1.3.82",
+            "nodeInfo": {
+                "MACHINE_INFO": {
+                    "SYSTEM_CHECKS": {
+                        "PRE_EXECUTION": {
+                            "RESULT": false
+                        }
+                    },
+                    "OS": {
+                        "SIMULATOR_TYPE": "EP",
+                        "TYPE": "LINUX",
+                        "OTHER": {
+                            "DIST": "Ubuntu 18.04 bionic"
+                        },
+                        "VERSION": "18.04",
+                        "SIMULATOR_SUB_TYPE": "HOST",
+                        "RELEASE": "4.15.0-1032-aws",
+                        "ARCH": "64"
+                    },
+                    "SYSTEM": {
+                        "PCAP_DRIVERS": true,
+                        "UPTIME": 4967,
+                        "DISKS": [
+                            {
+                                "DEVICE": "/dev/xvda1",
+                                "MOUNT": "/",
+                                "TOTAL": 8259014656,
+                                "USED": 3576008704,
+                                "FREE": 4666228736
+                            },
+                            {
+                                "DEVICE": "/dev/loop2",
+                                "MOUNT": "/snap/amazon-ssm-agent/1480",
+                                "TOTAL": 18874368,
+                                "USED": 18874368,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop0",
+                                "MOUNT": "/snap/amazon-ssm-agent/1566",
+                                "TOTAL": 18874368,
+                                "USED": 18874368,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop3",
+                                "MOUNT": "/snap/core/9066",
+                                "TOTAL": 98566144,
+                                "USED": 98566144,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop4",
+                                "MOUNT": "/snap/core/9289",
+                                "TOTAL": 101842944,
+                                "USED": 101842944,
+                                "FREE": 0
+                            }
+                        ],
+                        "CPU": {
+                            "COUNT": 2,
+                            "PERCENT": 0
+                        },
+                        "MEMORY": {
+                            "AVAILABLE": 3527352320,
+                            "TOTAL": 4135096320,
+                            "USED": 313569280,
+                            "FREE": 502489088
+                        }
+                    }
+                },
+                "NETWORK_INFO": {
+                    "ROUTES": [
+                        {
+                            "INTERFACE": "eth0",
+                            "NETMASK": "0.0.0.0",
+                            "NAME": "0.0.0.0",
+                            "GATEWAY": "172.31.32.1"
+                        }
+                    ],
+                    "INTERFACES": [
+                        {
+                            "RX_PACKETS": 99532432320,
+                            "NAME": "eth0",
+                            "MAC": "0a:1b:8e:c9:d6:a2",
+                            "IPv4": [
+                                {
+                                    "IP": "8.8.8.8",
+                                    "NETMASK": "255.255.240.0"
+                                }
+                            ],
+                            "IPv6": [
+                                {
+                                    "IP": "fe80::81b:8eff:fec9:d6a2%eth0",
+                                    "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                                }
+                            ],
+                            "TX_BYTES": 109609294,
+                            "TX_PACKETS": 143063546
+                        }
+                    ],
+                    "HOSTNAME": "ubuntu18-num1",
+                    "CONNECTED_INTERFACE": {
+                        "RX_PACKETS": 99532432320,
+                        "NAME": "eth0",
+                        "MAC": "0a:1b:8e:c9:d6:a2",
+                        "IPv4": [
+                            {
+                                "IP": "8.8.8.8",
+                                "NETMASK": "255.255.240.0"
+                            }
+                        ],
+                        "IPv6": [
+                            {
+                                "IP": "fe80::81b:8eff:fec9:d6a2%eth0",
+                                "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                            }
+                        ],
+                        "TX_BYTES": 109609294,
+                        "TX_PACKETS": 143063546
+                    }
+                }
+            },
+            "tunnel": null,
+            "connectionUrl": null,
+            "lastHealthcheck": {},
+            "cloudProxyUrl": null,
+            "version": "Orion.2020Q2.8 v20200607_161457",
+            "simulatorVersion": "3.19.0",
+            "createdAt": "2019-11-26T09:54:07.000Z",
+            "updatedAt": "2020-06-21T09:01:01.000Z",
+            "deletedAt": null,
+            "assets": [
+                2
+            ],
+            "simulationUsers": [],
+            "updates": {}
+        },
+        {
+            "id": "8b7d152a-ce20-46af-ba9f-131339b1297f",
+            "name": "ubuntu18-num2",
+            "accountId": 3475543660,
+            "isEnabled": true,
+            "isCritical": true,
+            "isExfiltration": false,
+            "isInfiltration": false,
+            "isMailTarget": false,
+            "isMailAttacker": false,
+            "isPreExecutor": false,
+            "useSystemUser": true,
+            "externalIp": "8.8.8.8",
+            "internalIp": "8.8.8.8",
+            "hostname": "ubuntu18-num2",
+            "labels": null,
+            "connectionType": "AUTOMATIC",
+            "frameworkVersion": "1.3.82",
+            "nodeInfo": {
+                "MACHINE_INFO": {
+                    "SYSTEM_CHECKS": {
+                        "PRE_EXECUTION": {
+                            "RESULT": false
+                        }
+                    },
+                    "OS": {
+                        "SIMULATOR_TYPE": "EP",
+                        "TYPE": "LINUX",
+                        "OTHER": {
+                            "DIST": "Ubuntu 18.04 bionic"
+                        },
+                        "VERSION": "18.04",
+                        "SIMULATOR_SUB_TYPE": "HOST",
+                        "RELEASE": "4.15.0-1032-aws",
+                        "ARCH": "64"
+                    },
+                    "SYSTEM": {
+                        "PCAP_DRIVERS": true,
+                        "UPTIME": 4967,
+                        "DISKS": [
+                            {
+                                "DEVICE": "/dev/xvda1",
+                                "MOUNT": "/",
+                                "TOTAL": 8259014656,
+                                "USED": 3575627776,
+                                "FREE": 4666609664
+                            },
+                            {
+                                "DEVICE": "/dev/loop3",
+                                "MOUNT": "/snap/amazon-ssm-agent/1480",
+                                "TOTAL": 18874368,
+                                "USED": 18874368,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop1",
+                                "MOUNT": "/snap/amazon-ssm-agent/1566",
+                                "TOTAL": 18874368,
+                                "USED": 18874368,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop2",
+                                "MOUNT": "/snap/core/9066",
+                                "TOTAL": 98566144,
+                                "USED": 98566144,
+                                "FREE": 0
+                            },
+                            {
+                                "DEVICE": "/dev/loop4",
+                                "MOUNT": "/snap/core/9289",
+                                "TOTAL": 101842944,
+                                "USED": 101842944,
+                                "FREE": 0
+                            }
+                        ],
+                        "CPU": {
+                            "COUNT": 2,
+                            "PERCENT": 0
+                        },
+                        "MEMORY": {
+                            "AVAILABLE": 3521265664,
+                            "TOTAL": 4135092224,
+                            "USED": 319651840,
+                            "FREE": 455725056
+                        }
+                    }
+                },
+                "NETWORK_INFO": {
+                    "ROUTES": [
+                        {
+                            "INTERFACE": "eth0",
+                            "NETMASK": "0.0.0.0",
+                            "NAME": "0.0.0.0",
+                            "GATEWAY": "172.31.32.1"
+                        }
+                    ],
+                    "INTERFACES": [
+                        {
+                            "RX_PACKETS": 99393763526,
+                            "NAME": "eth0",
+                            "MAC": "0a:ba:89:10:78:f8",
+                            "IPv4": [
+                                {
+                                    "IP": "8.8.8.8",
+                                    "NETMASK": "255.255.240.0"
+                                }
+                            ],
+                            "IPv6": [
+                                {
+                                    "IP": "fe80::8ba:89ff:fe10:78f8%eth0",
+                                    "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                                }
+                            ],
+                            "TX_BYTES": 109685408,
+                            "TX_PACKETS": 143103135
+                        }
+                    ],
+                    "HOSTNAME": "ubuntu18-num2",
+                    "CONNECTED_INTERFACE": {
+                        "RX_PACKETS": 99393763526,
+                        "NAME": "eth0",
+                        "MAC": "0a:ba:89:10:78:f8",
+                        "IPv4": [
+                            {
+                                "IP": "8.8.8.8",
+                                "NETMASK": "255.255.240.0"
+                            }
+                        ],
+                        "IPv6": [
+                            {
+                                "IP": "fe80::8ba:89ff:fe10:78f8%eth0",
+                                "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                            }
+                        ],
+                        "TX_BYTES": 109685408,
+                        "TX_PACKETS": 143103135
+                    }
+                }
+            },
+            "tunnel": null,
+            "connectionUrl": null,
+            "lastHealthcheck": {},
+            "cloudProxyUrl": null,
+            "version": "Orion.2020Q2.8 v20200607_161457",
+            "simulatorVersion": "3.19.0",
+            "createdAt": "2019-11-26T09:54:05.000Z",
+            "updatedAt": "2020-06-21T09:01:23.000Z",
+            "deletedAt": null,
+            "assets": [
+                2
+            ],
+            "simulationUsers": [],
+            "updates": {}
+        }
+    ]
+}

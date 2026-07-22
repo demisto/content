@@ -1,0 +1,368 @@
+id: playbook-SafeBreach-Test
+version: -1
+name: playbook-SafeBreach-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5c871e96-6cc4-4252-864c-fdc44bc4415c
+    type: start
+    task:
+      id: 5c871e96-6cc4-4252-864c-fdc44bc4415c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 06ed4cbf-6e36-4b66-8bb9-987134c0bb15
+    type: regular
+    task:
+      id: 06ed4cbf-6e36-4b66-8bb9-987134c0bb15
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: e4b0b3e3-d707-400e-8e7d-3cb1e9d5373c
+    type: regular
+    task:
+      id: e4b0b3e3-d707-400e-8e7d-3cb1e9d5373c
+      version: -1
+      name: safebreach-get-insights
+      script: '|||safebreach-get-insights'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 06e244bb-b35f-4f1e-810c-4e38d3fe6ed2
+    type: regular
+    task:
+      id: 06e244bb-b35f-4f1e-810c-4e38d3fe6ed2
+      version: -1
+      name: safebreach-get-remediation-data
+      script: '|||safebreach-get-remediation-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      insightId:
+        complex:
+          root: SafeBreach
+          accessor: Insight.Id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 296177a0-65b0-48de-8b08-a1f9038523e0
+    type: regular
+    task:
+      id: 296177a0-65b0-48de-8b08-a1f9038523e0
+      version: -1
+      name: safebreach-rerun-insight
+      description: Reruns a specific SafeBreach Insight related simulations in your environment.
+      script: SafeBreach v2|||safebreach-rerun-insight
+      type: regular
+      iscommand: true
+      brand: SafeBreach v2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      insightIds:
+        complex:
+          root: SafeBreach
+          accessor: Insight.Id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 1cec7719-0083-4c51-8287-5ac0a26d3bc5
+    type: regular
+    task:
+      id: 1cec7719-0083-4c51-8287-5ac0a26d3bc5
+      version: -1
+      name: safebreach-get-indicators
+      script: '|||safebreach-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      insightCategory: {}
+      insightDataType: {}
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 69e8ca45-4ca7-4c29-86d5-b30b3dc1707b
+    type: regular
+    task:
+      id: 69e8ca45-4ca7-4c29-86d5-b30b3dc1707b
+      version: -1
+      name: safebreach-get-test-status
+      script: '|||safebreach-get-test-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      testId:
+        complex:
+          root: SafeBreach
+          accessor: Test.Id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: efcd560e-f4d7-4269-83a9-caed3a130b35
+    type: regular
+    task:
+      id: efcd560e-f4d7-4269-83a9-caed3a130b35
+      version: -1
+      name: safebreach-get-simulation
+      script: '|||safebreach-get-simulation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      simulationId:
+        simple: 5dc919e10d29b3b6df5e983fe7b62838
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 8cf6aeea-7cff-416d-84e0-4f3da80f224d
+    type: regular
+    task:
+      id: 8cf6aeea-7cff-416d-84e0-4f3da80f224d
+      version: -1
+      name: safebreach-rerun-simulation
+      script: '|||safebreach-rerun-simulation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      simulationId:
+        simple: 5dc919e10d29b3b6df5e983fe7b62838
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d005b9cd-db84-4c01-881b-b096d0eca169
+    type: title
+    task:
+      id: d005b9cd-db84-4c01-881b-b096d0eca169
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 31cc09fa-2871-4776-8b53-40c3ff8e5648
+    type: regular
+    task:
+      id: 31cc09fa-2871-4776-8b53-40c3ff8e5648
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)
+description: Deprecated. No available replacement.

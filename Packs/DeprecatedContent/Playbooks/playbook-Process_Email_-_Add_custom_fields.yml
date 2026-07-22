@@ -1,0 +1,653 @@
+id: process_email_-_add_custom_fields
+version: -1
+name: Process Email - Add custom fields
+fromversion: 5.0.0
+description: Deprecated. We recommend using Process Email - Generic playbook instead. Process email - Add email data to a phishing incident's custom fields
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 7c0a6113-ccc4-4b67-8ae0-5b6ebed288fb
+    type: start
+    task:
+      id: 7c0a6113-ccc4-4b67-8ae0-5b6ebed288fb
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+      - "7"
+      - "10"
+      - "12"
+      - "14"
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    taskid: 51c33209-bc37-4492-87cf-8fcccf9b5dec
+    type: condition
+    task:
+      id: 51c33209-bc37-4492-87cf-8fcccf9b5dec
+      version: -1
+      name: Does an "Email Subject" custom field exist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: emailsubject
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    taskid: 2115cdff-522d-4787-822c-39684be05294
+    type: title
+    task:
+      id: 2115cdff-522d-4787-822c-39684be05294
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 545
+        }
+      }
+  "3":
+    id: "3"
+    taskid: 0c93975e-3aef-49f0-8c4e-ca0e5b837898
+    type: regular
+    task:
+      id: 0c93975e-3aef-49f0-8c4e-ca0e5b837898
+      version: -1
+      name: Set "Email Subject"
+      description: ""
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      addLabels: {}
+      customFieldName:
+        simple: emailsubject
+      customFieldValue:
+        complex:
+          root: inputs.Email
+          accessor: Subject
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+  "5":
+    id: "5"
+    taskid: 48cda3ef-9cf7-444e-87ac-8cc1e6302f2a
+    type: condition
+    task:
+      id: 48cda3ef-9cf7-444e-87ac-8cc1e6302f2a
+      version: -1
+      name: Does a "CC" custom field exist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: emailcc
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    taskid: 4a357b97-fd01-4da9-87dc-d1795652ce12
+    type: condition
+    task:
+      id: 4a357b97-fd01-4da9-87dc-d1795652ce12
+      version: -1
+      name: Does a "To:" custom field exist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: emailto
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 195
+        }
+      }
+  "8":
+    id: "8"
+    taskid: fa753dda-6035-42bb-8d90-18af31bd895a
+    type: regular
+    task:
+      id: fa753dda-6035-42bb-8d90-18af31bd895a
+      version: -1
+      name: Set "To"
+      description: ""
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      addLabels: {}
+      customFieldName:
+        simple: emailto
+      customFieldValue:
+        complex:
+          root: inputs.Email
+          accessor: To
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 370
+        }
+      }
+  "9":
+    id: "9"
+    taskid: ec368e0b-8b64-49c3-8b8c-af1d7a773ad4
+    type: regular
+    task:
+      id: ec368e0b-8b64-49c3-8b8c-af1d7a773ad4
+      version: -1
+      name: Set "CC"
+      description: ""
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      addLabels: {}
+      customFieldName:
+        simple: emailcc
+      customFieldValue:
+        complex:
+          root: inputs.Email
+          accessor: CC
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 611.5,
+          "y": 370
+        }
+      }
+  "10":
+    id: "10"
+    taskid: 3959ccdf-067d-43ea-807d-71d3635e3978
+    type: condition
+    task:
+      id: 3959ccdf-067d-43ea-807d-71d3635e3978
+      version: -1
+      name: Does a "From:" custom field exist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: emailfrom
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 195
+        }
+      }
+  "11":
+    id: "11"
+    taskid: f6b002e9-c9fe-43e6-8319-669a6697a7c6
+    type: regular
+    task:
+      id: f6b002e9-c9fe-43e6-8319-669a6697a7c6
+      version: -1
+      name: Set "From"
+      description: ""
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      addLabels: {}
+      customFieldName:
+        simple: emailfrom
+      customFieldValue:
+        complex:
+          root: inputs.Email
+          accessor: From
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 370
+        }
+      }
+  "12":
+    id: "12"
+    taskid: 198613e7-6e07-4bd2-8085-7cda8c281351
+    type: condition
+    task:
+      id: 198613e7-6e07-4bd2-8085-7cda8c281351
+      version: -1
+      name: Does a "Body HTML" custom field exist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: emailbodyhtml
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2055,
+          "y": 195
+        }
+      }
+  "13":
+    id: "13"
+    taskid: 4ca85e8d-5140-4bc6-8ed3-07cddb3c1eb1
+    type: regular
+    task:
+      id: 4ca85e8d-5140-4bc6-8ed3-07cddb3c1eb1
+      version: -1
+      name: Set "Body HTML"
+      description: ""
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      addLabels: {}
+      customFieldName:
+        simple: emailbodyhtml
+      customFieldValue:
+        complex:
+          root: inputs.Email
+          accessor: HTML
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1942.5,
+          "y": 370
+        }
+      }
+  "14":
+    id: "14"
+    taskid: 04f3e7dd-bd46-4116-8cac-89670de53cba
+    type: condition
+    task:
+      id: 04f3e7dd-bd46-4116-8cac-89670de53cba
+      version: -1
+      name: Does a "Body" custom field exist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: emailbody
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2505,
+          "y": 195
+        }
+      }
+  "15":
+    id: "15"
+    taskid: 8712254a-0732-41a4-813a-504bc8def0e4
+    type: regular
+    task:
+      id: 8712254a-0732-41a4-813a-504bc8def0e4
+      version: -1
+      name: Set "Body"
+      description: ""
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      addLabels: {}
+      customFieldName:
+        simple: emailbody
+      customFieldValue:
+        complex:
+          root: inputs.Email
+          accessor: Text
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2392.5,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    taskid: 2d95654e-96a8-4b29-8d0e-9c1bcbbfe884
+    type: condition
+    task:
+      id: 2d95654e-96a8-4b29-8d0e-9c1bcbbfe884
+      version: -1
+      name: Does a "Body Format" custom field exist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: general.isExists
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: emailbodyformat
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2935,
+          "y": 195
+        }
+      }
+  "17":
+    id: "17"
+    taskid: db38aa5c-6c21-48b1-8289-eaabee90a7b4
+    type: regular
+    task:
+      id: db38aa5c-6c21-48b1-8289-eaabee90a7b4
+      version: -1
+      name: Set "Body Format"
+      description: ""
+      scriptName: IncidentSet
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      addLabels: {}
+      customFieldName:
+        simple: emailbodyformat
+      customFieldValue:
+        complex:
+          root: inputs.Email
+          accessor: Format
+          transformers:
+          - operator: general.join
+            args:
+              separator:
+                value:
+                  simple: ', '
+      details: {}
+      labels: {}
+      name: {}
+      owner: {}
+      playbook: {}
+      severity: {}
+      stage: {}
+      type: {}
+      updatePlaybookForType: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3047.5,
+          "y": 370
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 3377.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Email
+  value:
+    complex:
+      root: Email
+  required: true
+  description: Email object to extract
+outputs: []
+tests:
+- No tests
+deprecated: true

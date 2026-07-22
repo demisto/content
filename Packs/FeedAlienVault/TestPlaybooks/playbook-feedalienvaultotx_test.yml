@@ -1,0 +1,177 @@
+elasticcommonfields: {}
+id: playbook-feedalienvaultotx_test
+version: -1
+fromversion: 5.5.0
+name: playbook-feedalienvaultotx_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 40d9dc3f-6965-4daf-896a-e29adcd6192e
+    type: start
+    task:
+      id: 40d9dc3f-6965-4daf-896a-e29adcd6192e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: e3844421-bfe3-4e07-84d9-ad5a3e6415d4
+    type: regular
+    task:
+      id: e3844421-bfe3-4e07-84d9-ad5a3e6415d4
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c7b7ffc3-ecde-4153-8ad9-c9abf4e91db9
+    type: regular
+    task:
+      id: c7b7ffc3-ecde-4153-8ad9-c9abf4e91db9
+      version: -1
+      name: alienvaultotx-get-indicators
+      script: '|||alienvaultotx-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      begin_date:
+        simple: 5 years
+      extend-context:
+        simple: Indicator=.[0]
+      limit:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 99699b53-f2cf-4a83-8edd-2a4e8fa7c792
+    type: title
+    task:
+      id: 99699b53-f2cf-4a83-8edd-2a4e8fa7c792
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 84a97e80-81af-4b49-8cf7-31997243633b
+    type: condition
+    task:
+      id: 84a97e80-81af-4b49-8cf7-31997243633b
+      version: -1
+      name: Test indicators
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.value
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator.type
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

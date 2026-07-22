@@ -1,0 +1,13 @@
+{
+    "meta": {
+        "query_time": 1.77e-7,
+        "powered_by": "crowdstrike-api-gateway",
+        "trace_id": "dummy"
+    },
+    "errors": [
+        {
+            "code": 500,
+            "message": "Internal Server Error: Please provide trace-id='dummy' to support"
+        }
+    ]
+}

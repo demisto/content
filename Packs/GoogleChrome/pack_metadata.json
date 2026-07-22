@@ -1,0 +1,30 @@
+{
+    "name": "Google Chrome",
+    "description": "The official browser from Google. Chrome is a cross-platform web browser which brings you the best of Google.",
+    "support": "xsoar",
+    "currentVersion": "1.0.9",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Google",
+        "google",
+        "Chrome",
+        "chrome",
+        "Browser",
+        "browser"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "- The `LongRunning` option is no longer used in the integration.\n- The `Fetch History` output format has been changed.\n - The `Hurukai alert mapper` name and ID has been changed to `Hurukai - Incoming mapper`.\n"
+}

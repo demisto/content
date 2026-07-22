@@ -1,0 +1,2 @@
+[INGEST:vendor="armis", product="security", target_dataset="armis_security_raw" , no_hit=keep]
+alter _time = time;

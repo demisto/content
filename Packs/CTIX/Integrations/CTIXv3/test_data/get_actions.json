@@ -1,0 +1,31 @@
+{
+	"next": "actions/?page=2&page_size=1&actions_type=manual&object_type=indicator",
+	"page_size": 1,
+	"previous": null,
+	"results": [
+	  {
+		"action_name": "Update Analyst Score",
+		"action_type": "manual",
+		"actioned_by": {
+		  "email": "dummy.email@test.com",
+		  "first_name": "test",
+		  "id":"40ab0f84-fb39-4444-95b2-cd155f574aa2",
+		  "last_name": "singh"
+		},
+		"actioned_on": 1651646873,
+		"app_name": "CTIX",
+		"app_response": {
+		  
+		},
+		"app_type": "ctix",
+		"id": "e8fe8d27-6329-4c0b-a3c0-be104be4de55",
+		"object_id": "19176d96-716d-48aa-af15-dfeff22e72e2",
+		"object_type": "indicator",
+		"rule_id": null,
+		"rule_name": null,
+		"source_id": null,
+		"tool": null
+	  }
+	],
+	"total": 38459
+  }

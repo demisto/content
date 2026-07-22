@@ -1,0 +1,548 @@
+id: SafeBreach - Compare and Validate Insight Indicators
+version: -1
+name: SafeBreach - Compare and Validate Insight Indicators
+description: Deprecated. No available replacement.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+    type: start
+    task:
+      id: 89e3fa5b-8365-4fe1-839e-1582e2bf8d10
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: b4d9deb2-20a0-41c6-8468-28a787ee6576
+    type: title
+    task:
+      id: b4d9deb2-20a0-41c6-8468-28a787ee6576
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4c83f511-be99-4817-85c4-26e71e9992d9
+    type: regular
+    task:
+      id: 4c83f511-be99-4817-85c4-26e71e9992d9
+      version: -1
+      name: Set indicators after validation
+      description: Sets "IndicatorsAfterValidation" with indicator values from insight context "SafeBreach.Insight.RawRemediationData".
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IndicatorsAfterValidation
+      stringify: {}
+      value:
+        complex:
+          root: SafeBreach
+          accessor: Insight.RawRemediationData
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e4f80bc6-3574-4a50-80e2-d9ee781b6430
+    type: regular
+    task:
+      id: e4f80bc6-3574-4a50-80e2-d9ee781b6430
+      version: -1
+      name: Set the remediation indicator values
+      description: Extract values from indicators and set to "IndicatorsAfterValidationFiltered".
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+      - "15"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IndicatorsAfterValidationFiltered
+      stringify: {}
+      value:
+        complex:
+          root: IndicatorsAfterValidation
+          accessor: value
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 4abdae0b-141e-4b4b-80bd-9202af12ea34
+    type: regular
+    task:
+      id: 4abdae0b-141e-4b4b-80bd-9202af12ea34
+      version: -1
+      name: Extract the remediated indicators
+      description: Extracts the remediated list of indicators and sets "RemediatedIndicators".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      append: {}
+      key:
+        simple: RemediatedIndicators
+      stringify: {}
+      value:
+        complex:
+          root: IndicatorsBeforeValidationFiltered
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: IndicatorsBeforeValidationFiltered
+                iscontext: true
+              right:
+                value:
+                  simple: IndicatorsAfterValidationFiltered
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: f16c4b9e-0a79-4115-8af2-b7b7336dcccc
+    type: regular
+    task:
+      id: f16c4b9e-0a79-4115-8af2-b7b7336dcccc
+      version: -1
+      name: Extract the not remediated indicators
+      description: Extracts the not-remediated list of indicators and sets "NotRemediatedIndicators".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      append: {}
+      key:
+        simple: NotRemediatedIndicators
+      stringify: {}
+      value:
+        complex:
+          root: IndicatorsBeforeValidationFiltered
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: IndicatorsBeforeValidationFiltered
+                iscontext: true
+              right:
+                value:
+                  simple: IndicatorsAfterValidationFiltered
+                iscontext: true
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 0300ef33-eb9f-418e-8cd0-72ada99f74f4
+    type: regular
+    task:
+      id: 0300ef33-eb9f-418e-8cd0-72ada99f74f4
+      version: -1
+      name: Set indicators remediation status as Remediated
+      description: Update status of XSOAR indicators with SafeBreach Remediation Status "Remediated".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      safebreachremediationstatus:
+        simple: Remediated
+      value:
+        complex:
+          root: RemediatedIndicators
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 06a22d2a-16a4-4622-87e4-76fd9e1a5aad
+    type: regular
+    task:
+      id: 06a22d2a-16a4-4622-87e4-76fd9e1a5aad
+      version: -1
+      name: Set indicators remediation status as Not Remediated
+      description: Update status of XSOAR indicators with SafeBreach Remediation Status "Not Remediated".
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      safebreachremediationstatus:
+        simple: Not Remediated
+      value:
+        complex:
+          root: NotRemediatedIndicators
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b79c6b09-0af6-42cd-8cf2-448c041607af
+    type: regular
+    task:
+      id: b79c6b09-0af6-42cd-8cf2-448c041607af
+      version: -1
+      name: Get insight remediation data
+      description: Gets remediation data for a specific SafeBreach Insight.
+      script: '|||safebreach-get-remediation-data'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      insightId:
+        complex:
+          root: SafeBreach
+          accessor: Insight.Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 71672b76-abf9-4c4b-8982-c315fff6a2fa
+    type: regular
+    task:
+      id: 71672b76-abf9-4c4b-8982-c315fff6a2fa
+      version: -1
+      name: 'Map input insight to context '
+      description: Maps the SafeBreach Insight received as an input to "SafeBreach.Insight" context.
+      scriptName: ChangeContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      capitalize: {}
+      inplace: {}
+      input:
+        complex:
+          root: inputs.Insight
+      output_key:
+        simple: SafeBreach.Insight
+      replace_dict: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: bc1a107d-3bec-45db-8862-e49745b16f34
+    type: regular
+    task:
+      id: bc1a107d-3bec-45db-8862-e49745b16f34
+      version: -1
+      name: Filter for indicators before the validation
+      description: Maps the indicators passed as an input parameter to "IndicatorsBeforeValidationFiltered".
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      append: {}
+      key:
+        simple: IndicatorsBeforeValidationFiltered
+      stringify: {}
+      value:
+        complex:
+          root: inputs.IndicatorsBefore
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d748db03-563b-4213-8b13-a089963b3ae2
+    type: condition
+    task:
+      id: d748db03-563b-4213-8b13-a089963b3ae2
+      version: -1
+      name: Is there a remediated indicator?
+      description: Checks whether there are indicators that were remediated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Remediated Indicators Exist:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: Remediated Indicators Exist
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IndicatorsBeforeValidationFiltered
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: IndicatorsBeforeValidationFiltered
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IndicatorsAfterValidationFiltered
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 150,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 017a55d0-28e1-48d8-8dac-4725c638c40a
+    type: condition
+    task:
+      id: 017a55d0-28e1-48d8-8dac-4725c638c40a
+      version: -1
+      name: Is there a not remediated indicator?
+      description: Checks whether there are indicators that need to be still remediated.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Not Remediated Indicators Exist:
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: Not Remediated Indicators Exist
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: IndicatorsBeforeValidationFiltered
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: IndicatorsBeforeValidationFiltered
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IndicatorsAfterValidationFiltered
+                      iscontext: true
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 940,
+        "x": 150,
+        "y": -510
+      }
+    }
+  }
+inputs:
+- key: IndicatorsBefore
+  value: {}
+  required: true
+  description: Indicator values extracted from a SafeBreach Insight before remediation.
+  playbookInputQuery:
+- key: Insight
+  value: {}
+  required: true
+  description: SafeBreach insight object to verify the remediation for.
+  playbookInputQuery:
+outputs:
+- contextPath: RemediatedIndicators
+  description: List of indicators that were remediated
+  type: Array
+- contextPath: NotRemediatedIndicators
+  description: List of indicators that were not remediated
+  type: Array
+quiet: true
+fromversion: 5.5.0
+tests:
+- No tests (deprecated)
+deprecated: true

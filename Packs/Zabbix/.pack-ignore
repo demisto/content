@@ -1,0 +1,5 @@
+[file:Zabbix_image.png]
+ignore=IM111
+
+[file:Zabbix.yml]
+ignore=IN153,RM110

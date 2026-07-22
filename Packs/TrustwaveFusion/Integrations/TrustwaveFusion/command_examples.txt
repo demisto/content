@@ -1,0 +1,15 @@
+!trustwave-get-ticket id="INA1976568"
+!trustwave-add-ticket-comment id=INA1051028 comment="test from xsoar"
+!trustwave-close-ticket id="INA1051028" comment="Comment"
+
+!trustwave-get-finding id="765432:THREAT:@AXv0k6GhG2zTcaogE1vG"
+!trustwave-search-findings limit="2" summary="MS Graph Alert Detection Rule" type=threat updatedSince=2021-12-08T17:17:56.000+00:00
+
+!trustwave-get-asset id="765432:DNA#DEVICE:AW2X-hCmXdgvNlcDpVGf"
+
+!trustwave-search-tickets limit=2 type=INCIDENT 
+
+!trustwave-get-updated-tickets fetch_limit=2 since=2021-12-09T16:43:48.000+00:00
+
+!trustwave-search-assets limit=2 type="DEVICE" name="host.example.com"
+

@@ -1,0 +1,468 @@
+{
+    "id": "Proofpoint TAP",
+    "version": -1,
+    "fromDate": "0001-01-01T00:00:00Z",
+    "toDate": "0001-01-01T00:00:00Z",
+    "period": {
+        "by": "",
+        "byTo": "",
+        "byFrom": "days",
+        "toValue": null,
+        "fromValue": 7,
+        "field": ""
+    },
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "name": "Proofpoint TAP",
+    "layout": [
+        {
+            "id": "31372130-b09e-11eb-be5d-2be9346b7e07",
+            "forceRange": true,
+            "x": 0,
+            "y": 0,
+            "i": "31372130-b09e-11eb-be5d-2be9346b7e07",
+            "w": 12,
+            "h": 2,
+            "widget": {
+                "id": "68ed7af3-eda1-4bca-8090-a1752734634f",
+                "version": 1,
+                "modified": "2021-05-09T11:11:39.421375123+03:00",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Proofpoint TAP Total Events",
+                "prevName": "Proofpoint TAP Total Events",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "sourceBrand:\"Proofpoint TAP v2\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "rawType"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "ee459130-b09e-11eb-be5d-2be9346b7e07",
+            "forceRange": true,
+            "x": 0,
+            "y": 2,
+            "i": "ee459130-b09e-11eb-be5d-2be9346b7e07",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "4a7b0e8c-6ee8-4ec0-8320-081a72c5097d",
+                "version": 1,
+                "modified": "2021-05-09T11:15:38.358449867+03:00",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Proofpoint TAP Clicks Events",
+                "prevName": "Proofpoint TAP Clicks Events",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "sourceBrand:\"Proofpoint TAP v2\" type:\"Proofpoint TAP - Click Blocked\" or type:\"Proofpoint TAP - Click Permitted\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 7,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "rawType"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "5a803ef0-b0b7-11eb-af2b-f3bae05642fa",
+            "forceRange": true,
+            "x": 0,
+            "y": 4,
+            "i": "5a803ef0-b0b7-11eb-af2b-f3bae05642fa",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "7e3c5b00-6e78-45b5-82fd-5ab7d4e17488",
+                "version": 1,
+                "modified": "2021-05-09T14:11:40.776569425+03:00",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Most Attacked Mailboxed based on Proofpoint TAP AttackIndex",
+                "prevName": "Most Attacked Mailboxed based on Proofpoint TAP AttackIndex",
+                "dataType": "scripts",
+                "widgetType": "column",
+                "query": "ProofpointTAPMostAttackedUsers",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "days",
+                        "toValue": 0,
+                        "fromValue": 14,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": []
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "7905e580-b0b9-11eb-af2b-f3bae05642fa",
+            "forceRange": true,
+            "x": 6,
+            "y": 4,
+            "i": "7905e580-b0b9-11eb-af2b-f3bae05642fa",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "0ca5a07a-f220-4433-8a0f-5fd43d510f9a",
+                "version": 1,
+                "modified": "2021-05-09T14:26:49.172753838+03:00",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Proofpoint TAP Top Clickers",
+                "prevName": "Proofpoint TAP Top Clickers",
+                "dataType": "scripts",
+                "widgetType": "column",
+                "query": "ProofpointTapTopClickers",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "days",
+                        "toValue": 0,
+                        "fromValue": 14,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "tableColumns": []
+                },
+                "size": 0,
+                "category": ""
+            }
+        },
+        {
+            "id": "e2ebbab0-b0b9-11eb-af2b-f3bae05642fa",
+            "forceRange": true,
+            "x": 6,
+            "y": 2,
+            "i": "e2ebbab0-b0b9-11eb-af2b-f3bae05642fa",
+            "w": 6,
+            "h": 2,
+            "widget": {
+                "id": "4ae6ad62-a651-45bb-8234-3d467d19193f",
+                "version": 1,
+                "modified": "2021-05-09T11:16:59.709973961+03:00",
+                "sortValues": null,
+                "packID": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "name": "Proofpoint TAP Message Events",
+                "prevName": "Proofpoint TAP Message Events",
+                "dataType": "incidents",
+                "widgetType": "pie",
+                "query": "sourceBrand:\"Proofpoint TAP v2\" type:\"Proofpoint TAP - Message Blocked\" or type:\"Proofpoint TAP - Message Delivered\"",
+                "sort": null,
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "days",
+                        "byFrom": "days",
+                        "toValue": 0,
+                        "fromValue": 14,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "rawType"
+                    ],
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "size": 0,
+                "category": ""
+            }
+        }
+    ],
+    "fromVersion": "5.0.0",
+    "description": "",
+    "isPredefined": true
+}

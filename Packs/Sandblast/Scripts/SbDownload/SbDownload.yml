@@ -1,0 +1,26 @@
+commonfields:
+  id: SbDownload
+  version: -1
+name: SbDownload
+script: ''
+type: python
+subtype: python2
+tags:
+- sandblast
+comment: 'Deprecated. Use Check Point Threat Emulation (SandBlast) instead. Query, upload and download data using Check Point Sandblast on cloud.'
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: File id to download
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - sandblast-download
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (deprecated)
+deprecated: true

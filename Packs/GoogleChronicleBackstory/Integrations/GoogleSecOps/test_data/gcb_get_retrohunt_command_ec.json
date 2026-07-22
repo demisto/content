@@ -1,0 +1,13 @@
+{
+    "GoogleChronicleBackstory.RetroHunt(val.retrohuntId == obj.retrohuntId)": {
+        "retrohuntId": "oh_dummy_retrohunt_id",
+        "ruleId": "ru_dummy_rule_id",
+        "versionId": "ru_dummy_rule_id@v_dummy_revision_id",
+        "eventStartTime": "2025-07-01T10:00:00Z",
+        "eventEndTime": "2025-07-08T10:00:00Z",
+        "retrohuntStartTime": "2025-07-08T12:00:00.000000Z",
+        "retrohuntEndTime": "2025-07-08T12:15:00.000000Z",
+        "state": "DONE",
+        "progressPercentage": 100
+    }
+}

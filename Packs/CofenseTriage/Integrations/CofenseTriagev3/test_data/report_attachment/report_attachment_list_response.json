@@ -1,0 +1,102 @@
+{
+  "data": [
+    {
+      "id": "30339",
+      "type": "attachments",
+      "links": {
+        "self": "https://triage.example.com/api/public/v2/attachments/30339"
+      },
+      "attributes": {
+        "filename": "Invoice.xlsm",
+        "size": 100000,
+        "is_child": false,
+        "created_at": "2023-04-09T13:25:28.540Z",
+        "updated_at": "2023-04-09T13:25:28.540Z"
+      },
+      "relationships": {
+        "attachment_payload": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachments/30339/relationships/attachment_payload",
+            "related": "https://triage.example.com/api/public/v2/attachments/30339/attachment_payload"
+          },
+          "data": {
+            "type": "attachment_payloads",
+            "id": "1452"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachments/30339/relationships/parent",
+            "related": "https://triage.example.com/api/public/v2/attachments/30339/parent"
+          },
+          "data": null
+        },
+        "report": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachments/30339/relationships/report",
+            "related": "https://triage.example.com/api/public/v2/attachments/30339/report"
+          },
+          "data": {
+            "type": "reports",
+            "id": "47024"
+          }
+        }
+      }
+    },
+    {
+      "id": "30340",
+      "type": "attachments",
+      "links": {
+        "self": "https://triage.example.com/api/public/v2/attachments/30340"
+      },
+      "attributes": {
+        "filename": "docProps/app.xml",
+        "size": 700,
+        "is_child": true,
+        "created_at": "2023-04-09T13:25:29.249Z",
+        "updated_at": "2023-04-09T13:25:29.249Z"
+      },
+      "relationships": {
+        "attachment_payload": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachments/30340/relationships/attachment_payload",
+            "related": "https://triage.example.com/api/public/v2/attachments/30340/attachment_payload"
+          },
+          "data": {
+            "type": "attachment_payloads",
+            "id": "74"
+          }
+        },
+        "parent": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachments/30340/relationships/parent",
+            "related": "https://triage.example.com/api/public/v2/attachments/30340/parent"
+          },
+          "data": {
+            "type": "attachments",
+            "id": "30339"
+          }
+        },
+        "report": {
+          "links": {
+            "self": "https://triage.example.com/api/public/v2/attachments/30340/relationships/report",
+            "related": "https://triage.example.com/api/public/v2/attachments/30340/report"
+          },
+          "data": {
+            "type": "reports",
+            "id": "47024"
+          }
+        }
+      }
+    }
+  ],
+  "meta": {
+    "record_count": 16,
+    "page_count": 8
+  },
+  "links": {
+    "first": "https://triage.example.com/api/public/v2/reports/47024/attachments?page%5Bnumber%5D=1&page%5Bsize%5D=2",
+    "next": "https://triage.example.com/api/public/v2/reports/47024/attachments?page%5Bnumber%5D=2&page%5Bsize%5D=2",
+    "last": "https://triage.example.com/api/public/v2/reports/47024/attachments?page%5Bnumber%5D=8&page%5Bsize%5D=2"
+  }
+}

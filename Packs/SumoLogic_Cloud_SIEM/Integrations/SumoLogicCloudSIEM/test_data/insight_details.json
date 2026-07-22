@@ -1,0 +1,109 @@
+{
+  "data": {
+    "artifacts": [],
+    "assignedTo": null,
+    "assignee": null,
+    "closed": "2021-03-23T20:06:51.511505",
+    "closedBy": "obfuscated@email.com",
+    "created": "2021-02-22T16:28:25.003256",
+    "description": "Initial Access, Command and Control, Defense Evasion, Execution",
+    "entity": {
+      "hostname": "testcomputer.somedomain.net",
+      "id": "_hostname-testcomputer.somedomain.net",
+      "name": "testcomputer.somedomain.net"
+    },
+    "id": "00853cdd-763e-3e31-a2e4-f74277922f9f",
+    "lastUpdated": "2021-03-23T20:06:51.565599",
+    "lastUpdatedBy": null,
+    "name": "Command and Control with Defense Evasion and Execution",
+    "readableId": "INSIGHT-220",
+    "SumoUrl":"https://test.us2.sumologic.com/sec/insight/INSIGHT-220",
+    "recordSummaryFields": [
+      {
+        "fieldName": "description",
+        "fieldValue": "A new process has been created",
+        "recordCount": 4
+      },
+      {
+        "fieldName": "device_hostname",
+        "fieldValue": "testcomputer.somedomain.net",
+        "recordCount": 4
+      },
+      {
+        "fieldName": "user_username",
+        "fieldValue": "system",
+        "recordCount": 1
+      }
+    ],
+    "relatedEntities": [],
+    "resolution": "No Action",
+    "severity": "HIGH",
+    "signals": [
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "From FireEye Red Team Tool Countermeasures: This alert looks for renamed msbuild.exe process executions based on common command line arguments used for msbuild.exe. Attackers frequently use msbuild.exe (or renamed versions of this binary) to execute arbitrary CSharp payloads written to disk most commonly as .csproj files (though any file with an extension ending in \"proj\" will work) either referenced on the command line or located in the same directory as the msbuild.exe binary. The XML payload on disk should be acquired and examined to determine the functionality of the payload.",
+        "id": "4f15f768-4f32-50bf-bd0b-0241494bcff7",
+        "name": "Renamed MSBUILD.EXE by Arguments",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-S00475",
+        "severity": 5,
+        "stage": "Defense Evasion",
+        "tags": [],
+        "timestamp": "2021-02-22T16:24:07.126000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "DevToolsLauncher.exe has a switch 'LaunchForDeploy' that takes the location of another bianry to launch.  Attackers have abused this ability to launch their own non-trusted code.",
+        "id": "9e2499a5-00c0-5905-ae98-8f48ea07a8cd",
+        "name": "Suspicious use of Dev-Tools-Launcher",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-S00342",
+        "severity": 3,
+        "stage": "Execution",
+        "tags": [],
+        "timestamp": "2021-02-22T16:27:51"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "From FireEye Red Team Tool Countermeasures: This rule identifies suspicious child processes of SolarWinds.Orion.Core.BusinessLayer.dll that may be evidence of the SUNBURST backdoor. The behavior of SolarWinds.Orion.Core.BusinessLayer.dll is dependent on per-enterprise configuration, so additional tuning may be required to exclude legitimate activity in a given environment. SUNBURST is a backdoor that has the ability to spawn and kill processes, write and delete files, set and create registry keys, gather system information, and disable a set of forensic analysis tools and services.",
+        "id": "2feb362d-3cbd-5a14-a93e-211db7753417",
+        "name": "Solarwinds Suspicious Child Processes",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-S00480",
+        "severity": 5,
+        "stage": "Initial Access",
+        "tags": [],
+        "timestamp": "2021-02-22T16:24:07.126000"
+      },
+      {
+        "artifacts": [],
+        "contentType": "RULE",
+        "description": "Detects a suspicious command line execution that includes an URL and AppData string in the command line parameters as used by several droppers.",
+        "id": "2b449e56-f6e8-5306-980a-447a8c026b77",
+        "name": "Command Line Execution with Suspicious URL and AppData Strings",
+        "recordCount": 1,
+        "recordTypes": [],
+        "ruleId": "MATCH-U01342",
+        "severity": 3,
+        "stage": "Command and Control",
+        "tags": [],
+        "timestamp": "2021-02-22T16:24:07.126000"
+      }
+    ],
+    "source": "ALGORITHM",
+    "status": {"displayName": "Closed", "name": "closed"},
+    "tags": [],
+    "teamAssignedTo": null,
+    "timeToDetection": 257.877256,
+    "timeToRemediation": 2518706.508249,
+    "timeToResponse": 2514902.315041,
+    "timestamp": "2021-02-22T16:27:51"
+  },
+  "errors": []
+}

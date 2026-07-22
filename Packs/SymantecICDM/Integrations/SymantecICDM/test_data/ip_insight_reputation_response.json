@@ -1,0 +1,33 @@
+{
+    "network": "8.8.8.8",
+    "threatRiskLevel": {
+        "level": 2
+    },
+    "categorization": {
+        "categories": [
+            {
+                "id": 96,
+                "name": "Web Infrastructure"
+            }
+        ]
+    },
+    "reputation": "GOOD",
+    "prevalence": "Medium",
+    "firstSeen": "2023-07-10",
+    "lastSeen": "2023-12-18",
+    "targetOrgs": {
+        "topCountries": [
+            "hk",
+            "jp",
+            "tn",
+            "cn",
+            "us"
+        ],
+        "topIndustries": [
+            null,
+            "Retail",
+            "Real Estate",
+            "Manufacturing"
+        ]
+    }
+}

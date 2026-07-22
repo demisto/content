@@ -1,0 +1,83 @@
+commonfields:
+  id: IncidentSet
+  version: -1
+name: IncidentSet
+fromversion: 5.0.0
+script: >-
+  res = []
+
+  dArgs = {}
+
+  inArgs= demisto.args()
+
+  if demisto.get(inArgs, 'owner'):
+      res += demisto.executeCommand("setOwner", {'owner': inArgs['owner']})
+  if demisto.get(inArgs, 'stage'):
+      res += demisto.executeCommand("setStage", {'stage': inArgs['stage']})
+  if demisto.get(inArgs, 'name'):
+      dArgs['name'] = inArgs['name']
+  if demisto.get(inArgs, 'details'):
+      dArgs['details'] = inArgs['details']
+  if demisto.get(inArgs, 'severity'):
+      dArgs['severity'] = inArgs['severity']
+  if demisto.get(inArgs, 'labels'):
+      dArgs['labels'] = inArgs['labels']
+  if demisto.get(inArgs, 'addLabels'):
+      dArgs['addLabels'] = inArgs['addLabels']
+  if demisto.get(inArgs, 'customFieldName'):
+      v = demisto.get(inArgs, 'customFieldValue')
+      if v:
+          dArgs['customFields'] = json.dumps({demisto.get(inArgs, 'customFieldName'): v})
+  if demisto.get(inArgs, 'type'):
+      dArgs['type'] = inArgs['type']
+      if (not demisto.get(inArgs, 'updatePlaybookForType') or demisto.get(inArgs, 'updatePlaybookForType') == 'yes') and not demisto.get(inArgs, 'playbook'):
+          dArgs['replacePlaybook'] = 'yes'
+  if dArgs:
+      res += demisto.executeCommand("setIncident", dArgs)
+  if demisto.get(inArgs, 'playbook'):
+      res += demisto.executeCommand("setPlaybook", {'name': inArgs['playbook']})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- management
+comment: Deprecated. Modify incident info such as name, owner, type, etc.
+system: true
+args:
+- name: owner
+  description: Incident owner - must be an existing user in the platform
+- name: playbook
+  description: Assigned new playbook name
+- name: stage
+  description: Incident stage - must be from a predefined list of stages
+- name: details
+  description: Incident details
+- name: severity
+  auto: PREDEFINED
+  predefined:
+  - unknown
+  - low
+  - medium
+  - high
+  - critical
+  description: The severity to set. Can be "unknown", "low","medium","high" or "critical".
+- name: type
+  description: Incident type
+- name: name
+  default: true
+  description: Incident name
+- name: updatePlaybookForType
+  description: Should we also update the playbook according to the new given type. Can be yes or no. Default is yes.
+- name: labels
+  description: 'Set and override the labels for the incident. Labels expected format is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+- name: addLabels
+  description: 'Add to the list of labels for the incident. Labels expected format is [{"labelName": "labelValue"}, {"labelName1": "labelValue1"}] (JSON).'
+- name: customFieldName
+  description: Name for a custom field you want to change
+- name: customFieldValue
+  description: The value you want to set for the field specified in customFieldName
+scripttarget: 0
+dependson: {}
+timeout: 0s
+deprecated: true
+dockerimage: demisto/python:2.7.18.20958

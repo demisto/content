@@ -1,0 +1,8 @@
+[file:incidentfield-isthedatasubjecttodpia.json]
+ignore=BA113
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:1_0_12.md]
+ignore=RN113,RN114

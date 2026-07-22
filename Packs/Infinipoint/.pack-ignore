@@ -1,0 +1,12 @@
+[file:classifier-mapper-incoming-Infinipoint.json]
+ignore=BA101
+
+[file:Infinipoint_image.png]
+ignore=IM111
+
+[known_words]
+infinipoint
+
+[file:classifier-Infinipoint.json]
+ignore=BA101
+

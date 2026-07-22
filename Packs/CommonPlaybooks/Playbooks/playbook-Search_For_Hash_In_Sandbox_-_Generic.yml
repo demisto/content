@@ -1,0 +1,1343 @@
+id: Search For Hash In Sandbox - Generic
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Search For Hash In Sandbox - Generic
+description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 568ce337-1ee9-443e-8022-0fc40fff04aa
+    type: start
+    task:
+      id: 568ce337-1ee9-443e-8022-0fc40fff04aa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ' '
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "1":
+    id: "1"
+    taskid: ee043234-3d7b-4195-8ca7-1cbde477e677
+    type: condition
+    task:
+      id: ee043234-3d7b-4195-8ca7-1cbde477e677
+      version: -1
+      name: Is Falcon Intelligence Sandbox enabled?
+      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "35"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: CrowdStrike Falcon X
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "3":
+    id: "3"
+    taskid: 33f97f6a-5963-423c-8db6-fcaefc5a8a31
+    type: condition
+    task:
+      id: 33f97f6a-5963-423c-8db6-fcaefc5a8a31
+      version: -1
+      name: Is WildFire enabled?
+      description: Returns 'yes' if the WildFire-v2 integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "35"
+      "yes":
+      - "5"
+      - "23"
+    scriptarguments:
+      brandname:
+        simple: WildFire-v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2130,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "5":
+    id: "5"
+    taskid: e2d75750-8dec-4e9f-8ef3-94cbf5bedb8f
+    type: regular
+    task:
+      id: e2d75750-8dec-4e9f-8ef3-94cbf5bedb8f
+      version: -1
+      name: Search for hash in Wildfire
+      description: Searches for a specific hash in the WildFire sandbox.
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      extended_data:
+        simple: "true"
+      format:
+        simple: xml
+      sha256:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1930,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "6":
+    id: "6"
+    taskid: 23a14477-9a87-48a9-8ab4-0a03a72b8209
+    type: regular
+    task:
+      id: 23a14477-9a87-48a9-8ab4-0a03a72b8209
+      version: -1
+      name: Search for hash in Falcon Intelligence Sandbox
+      description: Finds sandbox reports by providing an FQL filter and paging details.
+      script: '|||cs-fx-find-reports'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      hashes:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "7":
+    id: "7"
+    taskid: ca8852d8-fa26-4061-8673-2e0f0710b967
+    type: condition
+    task:
+      id: ca8852d8-fa26-4061-8673-2e0f0710b967
+      version: -1
+      name: Is there a hash to check?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Is there a hash to check?
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "1"
+      - "3"
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "9":
+    id: "9"
+    taskid: 0eb7ea1e-8067-4c3c-8d44-9fa64f71e7ad
+    type: title
+    task:
+      id: 0eb7ea1e-8067-4c3c-8d44-9fa64f71e7ad
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "13":
+    id: "13"
+    taskid: 0cc08ef9-5225-44a8-8221-553bb90807b1
+    type: regular
+    task:
+      id: 0cc08ef9-5225-44a8-8221-553bb90807b1
+      version: -1
+      name: Get full report from Falcon Intelligence Sandbox
+      description: Gets a full report from the Falcon Intelligence Sandbox.
+      script: '|||cs-fx-get-full-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      extended_data:
+        simple: "true"
+      ids:
+        complex:
+          root: csfalconx.resource
+          accessor: resources
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 700
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Falcon Intelligence Sandbox report
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "16":
+    id: "16"
+    taskid: 776cf8da-d5f6-4fcc-8c46-be9bda455b2e
+    type: condition
+    task:
+      id: 776cf8da-d5f6-4fcc-8c46-be9bda455b2e
+      version: -1
+      name: Are there MITRE findings?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Are there MITRE findings?
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource.sandbox.mitre_attacks
+                accessor: attack_id
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: csfalconx.resource.sandbox.mitre_attacks.parent.attack_id
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "18":
+    id: "18"
+    taskid: 1f8f4125-0530-470e-81a3-2458a5159ba0
+    type: playbook
+    task:
+      id: 1f8f4125-0530-470e-81a3-2458a5159ba0
+      version: -1
+      name: Mitre Attack - Extract Technique Information From ID
+      description: |-
+        This playbook accepts as input MITRE techniques IDs.
+        It returns the MITRE technique name and full technique data using the MITRE integration.
+      playbookName: Mitre Attack - Extract Technique Information From ID
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      TechniqueID:
+        complex:
+          root: csfalconx.resource.sandbox.mitre_attacks
+          accessor: attack_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1790,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "23":
+    id: "23"
+    taskid: 398e10df-835c-4362-8812-bfc35b7b2cc8
+    type: regular
+    task:
+      id: 398e10df-835c-4362-8812-bfc35b7b2cc8
+      version: -1
+      name: Get Wildfire PDF report
+      description: Gets a PDF report of search results for hashes in the WildFire sandbox.
+      script: '|||wildfire-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      format:
+        simple: pdf
+      sha256:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+      execution-timeout:
+        simple: "900"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2330,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "24":
+    id: "24"
+    taskid: 93e1ecdb-1db8-4189-8aea-f455c87ebab2
+    type: regular
+    task:
+      id: 93e1ecdb-1db8-4189-8aea-f455c87ebab2
+      version: -1
+      name: Rasterize PDF
+      description: Converts a PDF file to an image file.
+      script: '|||rasterize-pdf'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2370,
+          "y": 700
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Wildfire report
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "25":
+    id: "25"
+    taskid: 41001a52-b698-414c-8561-a9f8a3c2d620
+    type: condition
+    task:
+      id: 41001a52-b698-414c-8561-a9f8a3c2d620
+      version: -1
+      name: Is there a report to rasterize?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: Is there a report to rasterize?
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: InfoFile.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pdf
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "26":
+    id: "26"
+    taskid: 157ba2a0-d8e3-4d38-8360-d1dac15d5ec6
+    type: condition
+    task:
+      id: 157ba2a0-d8e3-4d38-8360-d1dac15d5ec6
+      version: -1
+      name: Is JoeSecurity Sandbox enabled?
+      description: Returns 'yes' if the JoeSecurity Sandbox integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "35"
+      "yes":
+      - "27"
+    scriptarguments:
+      brandname:
+        simple: JoeSecurityV2
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3dda4898-5efa-4139-88c6-9c39a271ee7e
+    type: regular
+    task:
+      id: 3dda4898-5efa-4139-88c6-9c39a271ee7e
+      version: -1
+      name: Search for hash in Joe Sandbox
+      description: Search through all analyses.
+      script: '|||joe-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      query:
+        complex:
+          root: inputs.FileSha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d9c0d67b-34c9-4adf-85f9-6108aaf34809
+    type: regular
+    task:
+      id: d9c0d67b-34c9-4adf-85f9-6108aaf34809
+      version: -1
+      name: Get a full report from Joe Sandbox - JSON
+      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+      script: '|||joe-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      type:
+        simple: json
+      webid:
+        complex:
+          root: Joe.Analysis
+          accessor: webid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 700
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Joe Sandbox report - Json Format
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: ded9ca0b-1c63-4d2d-8a66-2c8665e30fe2
+    type: condition
+    task:
+      id: ded9ca0b-1c63-4d2d-8a66-2c8665e30fe2
+      version: -1
+      name: Any results from the Joe search?
+      description: Any results from the Joe search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "28"
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Joe.Analysis
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: c21fdd06-e54d-4576-8765-7800c60bf729
+    type: regular
+    task:
+      id: c21fdd06-e54d-4576-8765-7800c60bf729
+      version: -1
+      name: Get a full report from Joe Sandbox - PDF
+      description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
+      script: '|||joe-download-report'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      type:
+        simple: pdf
+      webid:
+        complex:
+          root: Joe.Analysis
+          accessor: webid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 700
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Joe Sandbox report - PDF Format
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a429b558-2253-4679-8686-168073e28073
+    type: regular
+    task:
+      id: a429b558-2253-4679-8686-168073e28073
+      version: -1
+      name: Rasterize PDF
+      description: Converts a PDF file to an image file.
+      script: '|||rasterize-pdf'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 860
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Wildfire report
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 8896119d-cd9b-423d-8c92-f8c27079232e
+    type: regular
+    task:
+      id: 8896119d-cd9b-423d-8c92-f8c27079232e
+      version: -1
+      name: Extract Indicators from the report
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      entryID:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: json
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: c3db939d-366a-4355-8e39-75aa4154b464
+    type: regular
+    task:
+      id: c3db939d-366a-4355-8e39-75aa4154b464
+      version: -1
+      name: Enrich Mitre Attack Techniques information.
+      description: Looks up the reputation of the indicator.
+      script: '|||attack-pattern'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      attack_pattern:
+        complex:
+          root: ExtractedIndicators.Attack_Pattern
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: ExtractedIndicators.Attack_Pattern
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 1dda1f08-ff0a-4138-872e-86870368aad6
+    type: title
+    task:
+      id: 1dda1f08-ff0a-4138-872e-86870368aad6
+      version: -1
+      name: Integration is not available
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2780,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 0db7cd2f-8ed8-4e79-81bc-a58a8218ac62
+    type: condition
+    task:
+      id: 0db7cd2f-8ed8-4e79-81bc-a58a8218ac62
+      version: -1
+      name: Are there MITRE findings?
+      description: Are there MITRE findings?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators.Attack_Pattern
+                filters:
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 980,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 8c5159e3-6276-4da1-8de1-0616f8fe62a1
+    type: title
+    task:
+      id: 8c5159e3-6276-4da1-8de1-0616f8fe62a1
+      version: -1
+      name: Set Unfound Hashes to Context
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 33a49df6-9764-4640-8477-ad4aaf91741d
+    type: regular
+    task:
+      id: 33a49df6-9764-4640-8477-ad4aaf91741d
+      version: -1
+      name: Set Detected Hashes - WildFire
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DetectedHashes
+      value:
+        complex:
+          root: WildFire.Report
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: WildFire.Report.Status
+                iscontext: true
+              right:
+                value:
+                  simple: Success
+              ignorecase: true
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: b139aa96-52d4-47f6-8730-16dfb5d5f02a
+    type: regular
+    task:
+      id: b139aa96-52d4-47f6-8730-16dfb5d5f02a
+      version: -1
+      name: Set Detected Hashes - Falcon Intelligence Sandbox
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DetectedHashes
+      value:
+        complex:
+          root: csfalconx.resource.FindReport
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: csfalconx.resource.FindReport.reportIds
+                iscontext: true
+          accessor: sha256
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: c0730703-6695-42d7-8e08-40409c3863b2
+    type: regular
+    task:
+      id: c0730703-6695-42d7-8e08-40409c3863b2
+      version: -1
+      name: Set Detected Hashes - JoeSecurity Sandbox
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DetectedHashes
+      value:
+        complex:
+          root: Joe.Analysis.sha256
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Joe.Analysis.sha256
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: ad2952cc-821c-4ef7-8774-54c42c8be887
+    type: regular
+    task:
+      id: ad2952cc-821c-4ef7-8774-54c42c8be887
+      version: -1
+      name: Set Non-Found Hashes
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: NonFoundHashes
+      value:
+        complex:
+          root: inputs.FileSha256
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: inputs.FileSha256
+                iscontext: true
+              right:
+                value:
+                  simple: DetectedHashes
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2140,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: f00bb93e-66f8-41da-86a8-8532905b405c
+    type: condition
+    task:
+      id: f00bb93e-66f8-41da-86a8-8532905b405c
+      version: -1
+      name: Any results from the Falcon Intelligence Sandbox search?
+      description: Any results from the Falcon Intelligence Sandbox search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: csfalconx.resource
+                accessor: resources
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1410,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_35_no": 0.13,
+      "1_6_yes": 0.65,
+      "26_27_yes": 0.6,
+      "26_35_no": 0.12,
+      "30_43_#default#": 0.16,
+      "36_34_yes": 0.63,
+      "36_43_#default#": 0.35,
+      "3_35_no": 0.34,
+      "3_5_yes": 0.68,
+      "45_40_#default#": 0.22
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2085,
+        "width": 2640,
+        "x": 520,
+        "y": -170
+      }
+    }
+  }
+inputs:
+- key: FileSha256
+  value: {}
+  required: false
+  description: The SHA256 hash to search for.
+  playbookInputQuery:
+outputs:
+- contextPath: AttackPattern
+  description: The MITRE Attack pattern information.
+  type: unknown
+- contextPath: MITREATTACK
+  description: Full MITRE data for the attack pattern.
+  type: unknown
+- contextPath: NonFoundHashes
+  description: A list of hashes that are not found in the sandboxes.
+  type: string
+- contextPath: WildFire.Report
+  description: The results of the Wildfire report.
+  type: string
+- contextPath: csfalconx.resource.sandbox
+  description: The results of the Falcon Intelligence Sandbox report.
+  type: string
+- contextPath: DetectedHashes
+  description: A list of hashes that were detected by the sandboxes.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+system: true
+marketplaces:
+- xsoar

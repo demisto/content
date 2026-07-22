@@ -1,0 +1,8 @@
+[file:F5_ASM.yml]
+ignore=BA108,BA109
+
+[file:F5Firewall_image.png]
+ignore=IM111
+
+[file:F5_ASM_image.png]
+ignore=IM111

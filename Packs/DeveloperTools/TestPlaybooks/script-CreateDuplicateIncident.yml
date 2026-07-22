@@ -1,0 +1,43 @@
+commonfields:
+  id: CreateDuplicateIncident
+  version: -1
+name: CreateDuplicateIncident
+script: >
+  import json
+
+  from dateutil.parser import parse
+
+  from datetime import timedelta
+
+
+  incident = demisto.incidents()[0]
+
+
+  def get_labels_map(labels):
+      labels_map = []
+      for x in labels:
+          labels_map.append({x['type']: x['value']})
+      return labels_map
+  old_time = (parse(incident['occurred']) - timedelta(hours=1)).isoformat()#.strftime("%Y-%m-%dT%H:%M:%S%z")
+
+  duplicate_incident = {
+      'name': incident['name'],
+      'details': incident['details'],
+      'severity': incident['severity'],
+      'customFields': incident['CustomFields'],
+      'labels': get_labels_map(incident['labels']),
+      'occurred': old_time
+  }
+
+
+  res = demisto.executeCommand("createNewIncident", duplicate_incident)
+
+  demisto.results(res)
+type: python
+subtype: python3
+tags: []
+comment: Create duplicate incident to the current incident.
+enabled: true
+scripttarget: 0
+dockerimage: demisto/python3:3.10.8.35482
+fromversion: 5.0.0

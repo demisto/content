@@ -1,0 +1,11 @@
+[file:CrowdStrikeFalconIntel_v2.yml]
+ignore=BA108,BA109
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:FalconIntel_image.png]
+ignore=IM111
+
+[known_words]
+CrowdStrikeApiModule

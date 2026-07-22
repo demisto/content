@@ -1,0 +1,7 @@
+[file:ZeroFox.yml]
+ignore=IN126
+
+[known_words]
+zerofox
+CTI
+hashes

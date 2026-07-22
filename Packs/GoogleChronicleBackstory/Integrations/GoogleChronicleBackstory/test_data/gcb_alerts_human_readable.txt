@@ -1,0 +1,118 @@
+{
+  "alerts": [
+    {
+      "asset": {
+        "hostname": "svetla"
+      },
+      "alertInfos": [
+        {
+          "name": "Command Shell Launched by Office Applications",
+          "sourceProduct": "Tanium",
+          "severity": "Medium",
+          "timestamp": "2019-08-12T20:25:57Z"
+        },
+        {
+          "name": "Suspicious PowerShell Process Ancestry",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2019-08-12T20:24:31Z"
+        },
+        {
+          "name": "Suspicious PowerShell Process Ancestry",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2019-08-12T21:24:31Z"
+        }
+      ]
+    },
+    {
+      "asset": {
+        "hostname": "dc12"
+      },
+      "alertInfos": [
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2019-12-30T18:49:33.923249Z"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2020-01-16T18:49:33.923249Z"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2020-02-16T18:49:33Z"
+        },
+        {
+          "name": "Suspicious PowerShell Process Ancestry",
+          "sourceProduct": "Tanium",
+          "severity": "Unspecified",
+          "timestamp": "2019-08-12T21:24:31Z"
+        }
+      ]
+    }
+  ],
+
+  "userAlerts": [
+    {
+      "user": {
+        "username": "svetla"
+      },
+      "alertInfos": [
+        {
+          "name": "Command Shell Launched by Office Applications",
+          "sourceProduct": "Tanium",
+          "timestamp": "2019-08-12T20:25:57Z",
+          "rawLog": "ZHVtbXkgZGF0YSAx"
+        },
+        {
+          "name": "Suspicious PowerShell Process Ancestry",
+          "sourceProduct": "Tanium",
+          "timestamp": "2019-08-12T20:24:31Z",
+          "rawLog": "ZHVtbXkgZGF0YSAy"
+        },
+        {
+          "name": "Suspicious PowerShell Process Ancestry",
+          "sourceProduct": "Tanium",
+          "timestamp": "2019-08-12T21:24:31Z",
+          "rawLog": "ZHVtbXkgZGF0YSAz"
+        }
+      ]
+    },
+    {
+      "user": {
+        "username": "dc12"
+      },
+      "alertInfos": [
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "timestamp": "2019-12-30T18:49:33.923249Z",
+          "rawLog": "ZHVtbXkgZGF0YSA0"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "timestamp": "2020-01-16T18:49:33.923249Z",
+          "rawLog": "ZHVtbXkgZGF0YSA1"
+        },
+        {
+          "name": "Possible Bitsadmin Exfiltration",
+          "sourceProduct": "Tanium",
+          "timestamp": "2020-02-16T18:49:33Z",
+          "rawLog": ""
+        },
+        {
+          "name": "Suspicious PowerShell Process Ancestry",
+          "sourceProduct": "Tanium",
+          "timestamp": "2019-08-12T21:24:31Z"
+        }
+      ]
+    }
+  ]
+}

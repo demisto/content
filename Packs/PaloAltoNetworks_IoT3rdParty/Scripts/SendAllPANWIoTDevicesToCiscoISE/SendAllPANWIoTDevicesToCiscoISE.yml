@@ -1,0 +1,29 @@
+args:
+- description: Name of the active Cisco ISE integration instance.
+  name: active_ise_instance
+  required: true
+- default: true
+  defaultValue: PANW IoT 3rd Party Integration Instance
+  description: Name of the configured PANW IoT 3rd Party integration instance.
+  name: panw_iot_3rd_party_instance
+  required: true
+comment: Gets all available devices from the IoT cloud and updates or creates them on Cisco ISE using the custom attributes.
+commonfields:
+  id: SendAllPANWIoTDevicesToCiscoISE
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: SendAllPANWIoTDevicesToCiscoISE
+runas: DBotWeakRole
+runonce: true
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- PANW IoT 3rd Party Integration
+- Cisco ISE
+timeout: 362.88ms
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

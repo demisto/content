@@ -1,0 +1,27 @@
+{
+  "count": 1,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "id": "9ab5474a-3da2-4910-9d59-9a1f11a2193e",
+      "domain": "$anon100-2.com",
+      "ips": {
+        "153.228.75.31": null,
+        "235.125.130.90": null
+      },
+      "risk_rank": 0,
+      "vuln_count": 0,
+      "cname_chain": null,
+      "domain_types": [
+        {
+          "service_type": "CBSP",
+          "provider": "Incapsula",
+          "service": null,
+          "description": null
+        }
+      ],
+      "discovery_date": "2021-03-07"
+    }
+  ]
+}

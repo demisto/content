@@ -1,0 +1,5 @@
+[file:ThreatCrowd_v2.yml]
+ignore=BA108,BA109
+
+[file:ThreatCrowd_image.png]
+ignore=IM111

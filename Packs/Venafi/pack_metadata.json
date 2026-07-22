@@ -1,0 +1,26 @@
+{
+    "name": "CyberArk Certificate Manager Self-Hosted",
+    "description": "Retrieves information about certificates stored in Venafi.",
+    "support": "xsoar",
+    "currentVersion": "2.0.15",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

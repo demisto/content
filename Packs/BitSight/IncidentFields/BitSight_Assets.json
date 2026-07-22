@@ -1,0 +1,32 @@
+{
+    "id": "incident_bitsightassets",
+    "version": -1,
+    "modified": "2021-02-24T11:40:21.806631852Z",
+    "name": "BitSight Assets",
+    "ownerOnly": false,
+    "placeholder": "Assets information of Bitsight ",
+    "description": "Assets information of Bitsight ",
+    "cliName": "bitsightassets",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

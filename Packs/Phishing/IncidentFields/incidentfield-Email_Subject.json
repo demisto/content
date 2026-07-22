@@ -1,0 +1,43 @@
+{
+    "id": "incident_emailsubject",
+    "version": -1,
+    "modified": "2018-08-23T18:31:06.378224888+03:00",
+    "name": "Email Subject",
+    "ownerOnly": false,
+    "cliName": "emailsubject",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": true,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Phishing",
+        "Phishing Alerts",
+        "Trend Micro CAS Event",
+        "Email Communication",
+        "FireEye NX IPS Event",
+        "FireEye NX Alert",
+        "FireEye EX Alert",
+        "Symantec DLP Network Incident"
+    ],
+    "systemAssociatedTypes": [
+        "Phishing",
+        "Phishing Alerts",
+        "Email Communication",
+        "Symantec DLP Network Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}

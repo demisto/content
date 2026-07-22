@@ -1,0 +1,609 @@
+id: Prisma Cloud - RQL Execution
+version: -1
+name: Prisma Cloud - RQL Execution
+description: This playbook enables Prisma Cloud RQL Execution from the alert layout.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ff36aa70-80f6-4192-810f-5850aa751f09
+    type: start
+    task:
+      id: ff36aa70-80f6-4192-810f-5850aa751f09
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 50db390f-1b68-4cd7-8550-4c7c4f356073
+    type: collection
+    task:
+      id: 50db390f-1b68-4cd7-8550-4c7c4f356073
+      version: -1
+      name: Provide Query Details
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      extend-context:
+        simple: answers=
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which type of query would you like to execute?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Network
+        - simple: Event
+        - simple: Config
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Query
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please provide the query you wish to execute
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Time Range Unit
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: hour
+        - simple: day
+        - simple: week
+        - simple: month
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Choose one of the following options: Hour, Day, Week, Month'
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Time Range Value
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Please provide a number
+        readonly: false
+      title: Please Provide Query Details
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6eeec754-6ff9-4b4e-810b-2b853ea93f52
+    type: condition
+    task:
+      id: 6eeec754-6ff9-4b4e-810b-2b853ea93f52
+      version: -1
+      name: Prisma Cloud Search Type
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      Config:
+      - "7"
+      Event:
+      - "9"
+      Network:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Network
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Please Provide Query Details.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Network
+          ignorecase: true
+    - label: Config
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Please Provide Query Details.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Config
+          ignorecase: true
+    - label: Event
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Please Provide Query Details.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Event
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 18b8562b-1164-437e-8713-a0a9e52c1c68
+    type: regular
+    task:
+      id: 18b8562b-1164-437e-8713-a0a9e52c1c68
+      version: -1
+      name: Prisma Cloud Network Search
+      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returned, use "limit search records to" at the end of the RQL query, followed by one of these options: 1, 10, 100, 1000, and 10,000.'
+      script: '|||prisma-cloud-network-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      query:
+        simple: ${Please Provide Query Details.Answers.1}
+      time_range_unit:
+        simple: ${Please Provide Query Details.Answers.2}
+      time_range_value:
+        simple: ${Please Provide Query Details.Answers.3}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 094e97f8-49ad-4b53-82e2-a248aa619bce
+    type: condition
+    task:
+      id: 094e97f8-49ad-4b53-82e2-a248aa619bce
+      version: -1
+      name: Has results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Network.Connection
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 27b8410b-e99b-40dc-8573-2f34f649b0eb
+    type: regular
+    task:
+      id: 27b8410b-e99b-40dc-8573-2f34f649b0eb
+      version: -1
+      name: Prisma Cloud Search Results
+      description: Accepts a JSON object and returns a markdown.
+      scriptName: JsonToTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      extend-context:
+        simple: queryresults=
+      value:
+        complex:
+          root: PrismaCloud.Network
+          accessor: Connection
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PrismaCloud.Event
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PrismaCloud.Config
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Custom Query Results
+      output:
+        simple: ${queryresults}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 9f80e7e7-2894-40df-8a91-ecc09fdec20d
+    type: title
+    task:
+      id: 9f80e7e7-2894-40df-8a91-ecc09fdec20d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6edfdfae-f643-4fcb-81e4-35f94cf0936f
+    type: regular
+    task:
+      id: 6edfdfae-f643-4fcb-81e4-35f94cf0936f
+      version: -1
+      name: Prisma Cloud Config Search
+      description: Search the configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      query:
+        simple: ${Please Provide Query Details.Answers.1}
+      time_range_unit:
+        simple: ${Please Provide Query Details.Answers.2}
+      time_range_value:
+        simple: ${Please Provide Query Details.Answers.3}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e137f693-4538-44b4-82df-abefc606651e
+    type: condition
+    task:
+      id: e137f693-4538-44b4-82df-abefc606651e
+      version: -1
+      name: Has results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Config
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e819ede2-af35-4c64-8a1f-efb1382866a1
+    type: regular
+    task:
+      id: e819ede2-af35-4c64-8a1f-efb1382866a1
+      version: -1
+      name: Prisma Cloud Event Search
+      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to reduce the returned data, set the "include_resource_json" argument to "false".
+      script: '|||prisma-cloud-event-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      query:
+        simple: ${Please Provide Query Details.Answers.1}
+      time_range_unit:
+        simple: ${Please Provide Query Details.Answers.2}
+      time_range_value:
+        simple: ${Please Provide Query Details.Answers.3}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: fc290c37-d2fd-4f55-8a86-829a559a948d
+    type: condition
+    task:
+      id: fc290c37-d2fd-4f55-8a86-829a559a948d
+      version: -1
+      name: Has results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Event
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: d27e6dac-e2b6-441d-82a8-544d7a67d53a
+    type: regular
+    task:
+      id: d27e6dac-e2b6-441d-82a8-544d7a67d53a
+      version: -1
+      name: Delete Old Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Please Provide Query Details,queryresults,PrismaCloud.Event,PrismaCloud.Config,PrismaCloud.Network
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1295,
+        "width": 1290,
+        "x": 10,
+        "y": -110
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

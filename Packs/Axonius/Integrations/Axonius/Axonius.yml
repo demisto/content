@@ -1,0 +1,964 @@
+sectionorder:
+- Connect
+- Collect
+category: Data Enrichment & Threat Intelligence
+provider: Axonius
+commonfields:
+  id: Axonius
+  version: -1
+configuration:
+- display: Server URL (e.g. https://example.net)
+  name: ax_url
+  required: true
+  section: Connect
+  type: 0
+- display: API Key
+  displaypassword: API Secret
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+description: This integration is for fetching information about assets in Axonius.
+display: Axonius
+name: Axonius
+script:
+  commands:
+  - arguments:
+    - description: The name of the devices saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-devices.
+      name: saved_query_name
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather device info by saved query.
+    name: axonius-get-devices-by-savedquery
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The name of the users saved query within Axonius. See https://docs.axonius.com/docs/saved-queries-users.
+      name: saved_query_name
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather user info by saved query.
+    name: axonius-get-users-by-savedquery
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Users.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Users.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Users.username
+      description: Username of the asset.
+      type: String
+    - contextPath: Axonius.Users.mail
+      description: Email address of the asset.
+      type: String
+    - contextPath: Axonius.Users.is_admin
+      description: If the asset has admin privileges.
+      type: Boolean
+    - contextPath: Axonius.Users.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Users.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The user email address to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather user info by email address.
+    name: axonius-get-users-by-mail
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Users.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Users.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Users.username
+      description: Username of the asset.
+      type: String
+    - contextPath: Axonius.Users.mail
+      description: Email address of the asset.
+      type: String
+    - contextPath: Axonius.Users.is_admin
+      description: If the asset has admin privileges.
+      type: Boolean
+    - contextPath: Axonius.Users.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Users.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The user email address to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather user info by email address using regex.
+    name: axonius-get-users-by-mail-regex
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Users.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Users.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Users.username
+      description: Username of the asset.
+      type: String
+    - contextPath: Axonius.Users.mail
+      description: Email address of the asset.
+      type: String
+    - contextPath: Axonius.Users.is_admin
+      description: If the asset has admin privileges.
+      type: Boolean
+    - contextPath: Axonius.Users.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Users.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The username to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather user info by username.
+    name: axonius-get-users-by-username
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Users.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Users.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Users.username
+      description: Username of the asset.
+      type: String
+    - contextPath: Axonius.Users.mail
+      description: Email address of the asset.
+      type: String
+    - contextPath: Axonius.Users.is_admin
+      description: If the asset has admin privileges.
+      type: Boolean
+    - contextPath: Axonius.Users.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Users.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The username to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather user info by username using regex.
+    name: axonius-get-users-by-username-regex
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Users.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Users.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Users.username
+      description: Username of the asset.
+      type: String
+    - contextPath: Axonius.Users.mail
+      description: Email address of the asset.
+      type: String
+    - contextPath: Axonius.Users.is_admin
+      description: If the asset has admin privileges.
+      type: Boolean
+    - contextPath: Axonius.Users.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Users.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The hostname to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather device info by hostname.
+    name: axonius-get-devices-by-hostname
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The hostname to search for within Axonius using regex.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather device info by hostname using regex.
+    name: axonius-get-devices-by-hostname-regex
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The IP address to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather device info by IP address.
+    name: axonius-get-devices-by-ip
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The IP address to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather device info by IP address using regex.
+    name: axonius-get-devices-by-ip-regex
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The MAC address to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather device info by MAC address.
+    name: axonius-get-devices-by-mac
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The MAC address to search for within Axonius.
+      name: value
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather device info by MAC address using regex.
+    name: axonius-get-devices-by-mac-regex
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: Name of tag to add.
+      name: tag_name
+      required: true
+    - description: IDs of assets.
+      isArray: true
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: Type of Asset. Device or User.
+      name: type
+      predefined:
+      - devices
+      - users
+      required: true
+    description: Add tag to assets.
+    name: axonius-add-tag
+    outputs:
+    - contextPath: Axonius.assets.updates
+      description: Number of assets updated.
+      type: Number
+  - arguments:
+    - description: Name of tag to remove.
+      name: tag_name
+      required: true
+    - description: IDs of assets.
+      isArray: true
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: Type of Asset. Devices or Users.
+      isArray: true
+      name: type
+      predefined:
+      - devices
+      - users
+    description: Remove tag from assets.
+    name: axonius-remove-tag
+    outputs:
+    - contextPath: Axonius.asset.updates
+      description: Number of assets updated.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of Asset. Device or User.
+      isArray: true
+      name: type
+      predefined:
+      - devices
+      - users
+      required: true
+    description: Get all saved query of a given asset type.
+    name: axonius-get-saved-queries
+    outputs:
+    - contextPath: Axonius.Devices.saved_queries
+      description: Saved queries.
+      type: Unknown
+    - contextPath: Axonius.Users.saved_queries
+      description: Saved queries.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      description: Type of Asset. Device or User.
+      isArray: true
+      name: type
+      predefined:
+      - devices
+      - users
+      required: true
+    description: Get all tags of a given asset type.
+    name: axonius-get-tags
+    outputs:
+    - contextPath: Axonius.tags
+      description: Axonius Tags.
+      type: Unknown
+  - arguments:
+    - description: The AQL query to filter devices by.
+      name: query
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather devices info by AQL query.
+    name: axonius-get-devices-by-aql
+    outputs:
+    - contextPath: Axonius.Devices.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Devices.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Devices.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Devices.hostname
+      description: The hostnames of the assset.
+      type: String
+    - contextPath: Axonius.Devices.name
+      description: The names of the asset.
+      type: String
+    - contextPath: Axonius.Devices.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Devices.network_interfaces_macs
+      description: The MAC addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.network_interfaces_ips
+      description: The IP addresses of the asset.
+      type: String
+    - contextPath: Axonius.Devices.os_type
+      description: The OS type (Windows, Linux, macOS,...).
+      type: String
+    - contextPath: Axonius.Devices.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The AQL query to filter users by.
+      name: query
+      required: true
+    - description: The maximum number of results to return.
+      name: max_results
+      defaultValue: "50"
+    - description: Comma separated list of Axonius fields to return.
+      isArray: true
+      name: fields
+    description: Gather users info by AQL query.
+    name: axonius-get-users-by-aql
+    outputs:
+    - contextPath: Axonius.Users.adapter_list_length
+      description: The number of adapters with information about the asset.
+      type: Number
+    - contextPath: Axonius.Users.adapters
+      description: The specific adapter names with asset information.
+      type: String
+    - contextPath: Axonius.Users.internal_axon_id
+      description: The internal unique Axonius identifier for the asset.
+      type: String
+    - contextPath: Axonius.Users.username
+      description: Username of the asset.
+      type: String
+    - contextPath: Axonius.Users.mail
+      description: Email address of the asset.
+      type: String
+    - contextPath: Axonius.Users.is_admin
+      description: If the asset has admin privileges.
+      type: Boolean
+    - contextPath: Axonius.Users.last_seen
+      description: Last seen date/time of the asset.
+      type: Date
+    - contextPath: Axonius.Users.labels
+      description: Tags assigned to the asset.
+      type: String
+  - arguments:
+    - description: The note to add.
+      name: note
+      required: true
+    - description: IDs of assets.
+      isArray: true
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: Type of Asset. Device or User.
+      name: type
+      predefined:
+      - devices
+      - users
+      required: true
+    description: Add note to assets.
+    name: axonius-add-note
+    outputs:
+    - contextPath: Axonius.assets.updates
+      description: Number of assets updated.
+      type: Number
+  - arguments:
+    - description: >
+        The asset type to fetch (e.g. devices, users, vulnerability_instances).
+        See axonius-get-asset-types for all supported values.
+      name: asset_type
+      required: true
+    - description: The AQL filter string to narrow the returned assets.
+      name: query
+    - description: A comma-separated list of fields to include in the response.
+      isArray: true
+      name: fields
+    - description: A comma-separated list of fields to exclude from the response.
+      isArray: true
+      name: fields_to_exclude
+    - defaultValue: "50"
+      description: >
+        The number of assets to request per page (1–2000). Keep this value small for
+        large asset types (e.g. vulnerability_instances) to avoid XSOAR context
+        size limits (~10 MB).
+      name: page_size
+    - description: The maximum number of assets to return from the page (defaults to page_size).
+      name: limit
+    - description: >
+        The pagination cursor returned from a previous call as Axonius.Assets.next_token.
+        Pass this value to retrieve the next page of results.
+      name: next_token
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to include metadata in the response.
+      name: include_metadata
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to include detailed asset data in the response.
+      name: include_details
+      predefined:
+      - "true"
+      - "false"
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to use a cached response entry if available.
+      name: use_cache_entry
+      predefined:
+      - "true"
+      - "false"
+    description: >
+      Fetch assets of any type using the Axonius v2 API
+      (POST /api/v2/assets/{asset_type}). Supports all asset types including
+      vulnerability_instances. Use next_token for pagination.
+      Large responses (>10 MB) may be stored as a downloadable
+      file by XSOAR instead of being written to the context.
+      NOTE: All calls write to the fixed context key Axonius.Assets regardless
+      of asset_type. If a playbook calls this command more than once with
+      different asset types, each call overwrites the previous result.
+      To avoid data loss, store or transform the context output
+      (e.g. using Set) before issuing a second call with a different type.
+    name: axonius-get-assets
+    outputs:
+    - contextPath: Axonius.Assets.asset_type
+      description: The asset type that was queried.
+      type: String
+    - contextPath: Axonius.Assets.assets
+      description: The list of asset records returned by the query.
+      type: Unknown
+    - contextPath: Axonius.Assets.count
+      description: The number of assets returned in this page.
+      type: Number
+    - contextPath: Axonius.Assets.total_count
+      description: The total number of assets matching the query (when available).
+      type: Number
+    - contextPath: Axonius.Assets.next_token
+      description: The pagination cursor for the next page of results. Pass this as next_token in the next call.
+      type: String
+  - arguments: []
+    description: Return the list of all available asset types in the Axonius instance (GET /api/v2/assets/asset_types).
+    name: axonius-get-asset-types
+    outputs:
+    - contextPath: Axonius.AssetTypes.asset_type
+      description: The asset type name.
+      type: String
+    - contextPath: Axonius.AssetTypes
+      description: The list of available asset types.
+      type: Unknown
+  - arguments:
+    - defaultValue: "1"
+      description: The page number to retrieve (1-indexed).
+      name: page
+    - defaultValue: "50"
+      description: The number of entries to return per page.
+      name: page_size
+    - description: The maximum number of entries to return (defaults to page_size).
+      name: limit
+    description: List custom data management entries (GET /api/v2/custom_data_management).
+    name: axonius-get-custom-data
+    outputs:
+    - contextPath: Axonius.CustomData.id
+      description: The custom data entry unique identifier.
+      type: String
+    - contextPath: Axonius.CustomData
+      description: The list of custom data entries.
+      type: Unknown
+  - arguments:
+    - description: >
+        The JSON string representing the custom data payload to create.
+        Refer to Axonius API documentation for the required schema.
+      name: payload
+      required: true
+    description: Create a new custom data entry (POST /api/v2/custom_data_management).
+    name: axonius-create-custom-data
+    outputs:
+    - contextPath: Axonius.CustomData
+      description: The created custom data entry.
+      type: Unknown
+  - arguments:
+    - description: The ID of the custom data entry to delete.
+      name: id
+      required: true
+    description: Delete a custom data entry by ID (DELETE /api/v2/custom_data_management/{id}).
+    execution: true
+    name: axonius-delete-custom-data
+    outputs:
+    - contextPath: Axonius.CustomData.id
+      description: The ID of the deleted custom data entry.
+      type: String
+    - contextPath: Axonius.CustomData.deleted
+      description: The flag indicating whether the entry was deleted.
+      type: Boolean
+  - arguments:
+    - defaultValue: "1"
+      description: The page number to retrieve (1-indexed).
+      name: page
+    - defaultValue: "50"
+      description: The number of enforcements to return per page.
+      name: page_size
+    - description: The maximum number of enforcements to return (defaults to page_size).
+      name: limit
+    description: List enforcement sets (GET /api/v2/enforcements).
+    name: axonius-get-enforcements
+    outputs:
+    - contextPath: Axonius.Enforcements.uuid
+      description: The enforcement unique identifier.
+      type: String
+    - contextPath: Axonius.Enforcements.name
+      description: The enforcement name.
+      type: String
+    - contextPath: Axonius.Enforcements
+      description: The full list of enforcement objects.
+      type: Unknown
+  - arguments:
+    - description: The UUID of the enforcement to run.
+      name: enforcement_id
+      required: true
+    description: Trigger an enforcement run (POST /api/v2/enforcements/{enforcement_id}/run).
+    name: axonius-run-enforcement
+    outputs:
+    - contextPath: Axonius.Enforcements.enforcement_id
+      description: The ID of the enforcement that was triggered.
+      type: String
+    - contextPath: Axonius.Enforcements.triggered
+      description: The flag indicating whether the enforcement was triggered successfully.
+      type: Boolean
+  - arguments:
+    - description: The asset type to filter queries by (e.g. devices, users).
+      name: asset_type
+    - defaultValue: "1"
+      description: The page number to retrieve (1-indexed).
+      name: page
+    - defaultValue: "50"
+      description: The number of queries to return per page.
+      name: page_size
+    - description: The maximum number of queries to return (defaults to page_size).
+      name: limit
+    description: List saved queries (GET /api/v2/queries).
+    name: axonius-get-queries
+    outputs:
+    - contextPath: Axonius.Queries.uuid
+      description: The query unique identifier.
+      type: String
+    - contextPath: Axonius.Queries.name
+      description: The query name.
+      type: String
+    - contextPath: Axonius.Queries
+      description: The full list of query objects.
+      type: Unknown
+  - arguments:
+    - description: The name for the new saved query.
+      name: name
+      required: true
+    - description: The AQL filter string for the query.
+      name: query
+      required: true
+    - defaultValue: devices
+      description: The asset type this query applies to.
+      name: asset_type
+    - description: The optional description for the query.
+      name: description
+    description: Create a new saved query (POST /api/v2/queries).
+    name: axonius-create-query
+    outputs:
+    - contextPath: Axonius.Queries.uuid
+      description: The UUID of the created query.
+      type: String
+    - contextPath: Axonius.Queries.name
+      description: The name of the created query.
+      type: String
+    - contextPath: Axonius.Queries
+      description: The created query object.
+      type: Unknown
+  - arguments:
+    - description: The UUID of the query to delete.
+      name: query_id
+      required: true
+    description: Delete a saved query (DELETE /api/v2/queries/{query_id}).
+    execution: true
+    name: axonius-delete-query
+    outputs:
+    - contextPath: Axonius.Queries.query_id
+      description: The ID of the deleted query.
+      type: String
+    - contextPath: Axonius.Queries.deleted
+      description: The flag indicating whether the query was deleted.
+      type: Boolean
+  - arguments:
+    - description: The optional AQL filter applied before grouping.
+      name: query
+    - description: The team name to filter vulnerability instances by.
+      name: team_name
+    - auto: PREDEFINED
+      description: Whether to filter by urgency on vulnerability instances.
+      name: urgent
+      predefined:
+      - "true"
+      - "false"
+    - defaultValue: "10"
+      description: The number of top CVEs to return (sorted by affected_hosts_count descending).
+      name: top_n
+    - defaultValue: "100"
+      description: The number of records per page when fetching all instances.
+      name: page_size
+    description: >
+      Fetch all vulnerability instances, flatten them, group by CVE ID, and
+      return the Top N CVEs sorted by affected host count. Computes
+      average_cvss_score per CVE. Outputs as Axonius.GroupedVulnerabilities
+      keyed by cve_id.
+    name: axonius-get-grouped-vulnerabilities
+    outputs:
+    - contextPath: Axonius.GroupedVulnerabilities.cve_id
+      description: The CVE identifier.
+      type: String
+    - contextPath: Axonius.GroupedVulnerabilities.affected_hosts_count
+      description: The number of hosts affected by this CVE.
+      type: Number
+    - contextPath: Axonius.GroupedVulnerabilities.average_cvss_score
+      description: The average CVSS score across all instances of this CVE.
+      type: Number
+  dockerimage: demisto/axonius:1.1.0.8767810
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests
+fromversion: 5.0.0

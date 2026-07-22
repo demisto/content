@@ -1,0 +1,75 @@
+Delivered-To: fake_mail_receiver@test.com
+Received: by 2002:a5e:c913:0:0:0:0:0 with SMTP id z19csp1921096iol;
+        Sun, 10 Apr 2022 05:43:06 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwl9exbaFmMu/DWiV53Bt0CQHE0vxoO2zPXycu00lZh7ba9vM7QLuP7/vK7D13NEdreWKSE
+X-Received: by 2002:a81:2592:0:b0:2d1:1210:275e with SMTP id l140-20020a812592000000b002d11210275emr22471756ywl.80.1649594586292;
+        Sun, 10 Apr 2022 05:43:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1649594586; cv=none;
+        d=google.com; s=arc-20160816;
+        b=G0ui7xn+6irl0ASxLtbjliUIuMiZH4HjMmzHbLPdOT43WzZeE5xqsQvRKUoiRFkAiT
+         UpfUCh3/rgAP24Tlin05k77YNwoYEyoKVPCUL+RTWZcNfv6iXQhvPHKsw5qEA3NfNojZ
+         79wfFs/EPzgjj1qJS/EwSu9yGpdA4pDjJYt1thAJ7A/N9HNIVzNPZuD0WHzECXdoXKDF
+         bMCuXEC+mLbOidLsLdfeDLzHNqJeQ7w5wr3Nu4gXdUm9q1BGhAuOqoI4mzgMQGRzoWBK
+         gvygJzSjsPA3iCDewp1a6GPHIVv/JsareIVM90NzRZTOvPAP8Ms9j48aeT+5nETo5QLU
+         nmRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=to:subject:message-id:date:from:mime-version;
+        bh=HBJGflhpGG2dn1+RLz1CW00X/pP/oCWNiVDQokEZjoQ=;
+        b=RmAteB1LotVhCa6dZxc32h7eZ9xGXkmvhr3U6hize2ku/+KD546IyjVGSb89tjqnsy
+         SXV5GUupZVkMao+DkDqtKzODsijQ0eY5Au8kF4Tf59B5g2kv3SdykHvrvzEW1ysaVNWG
+         FAcHw3fUBZvAVyolgKC/0nIXbrfqlcmUfdCMGpaA9YFuf+7IfzTezL4YMtnFJkPH7jG6
+         yLLNzsA6UikK3RPbH2Fgw4AbKZG3MAglGTTx6TfczMZ0cuENNI5KJjFSLpoG+SbpK60y
+         smkdFsBWGpHQQow/vvowkz0WzROofJu4OhQw2fOFm8a9jwA2cD4iTtuReZWyLSofhIdy
+         O2+Q==
+ARC-Authentication-Results: i=1; mx.google.com;
+       spf=pass (google.com: domain of fake_mail_sender@test.com designates 209.85.128.198 as permitted sender) smtp.mailfrom=fake_mail_sender@test.com;
+       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com
+Return-Path: <fake_mail_sender@test.com>
+Received: from mail-yw1-f198.google.com (mail-yw1-f198.google.com. [209.85.128.198])
+        by mx.google.com with ESMTPS id o17-20020a5b0511000000b00633994044f9si2635179ybp.355.2022.04.10.05.43.06
+        for <fake_mail_receiver@test.com>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Apr 2022 05:43:06 -0700 (PDT)
+Received-SPF: pass (google.com: domain of fake_mail_sender@test.com designates 209.85.128.198 as permitted sender) client-ip=209.85.128.198;
+Authentication-Results: mx.google.com;
+       spf=pass (google.com: domain of fake_mail_sender@test.com designates 209.85.128.198 as permitted sender) smtp.mailfrom=fake_mail_sender@test.com;
+       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=paloaltonetworks.com
+Received: by mail-yw1-f198.google.com with SMTP id 00721157ae682-2d7eaa730d9so113047147b3.13
+        for <fake_mail_receiver@test.com>; Sun, 10 Apr 2022 05:43:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=HBJGflhpGG2dn1+RLz1CW00X/pP/oCWNiVDQokEZjoQ=;
+        b=0IdxCEPBwAc2Y93B2+DTrImAk9YWDI3KGDWwAecbFMeKFJDaTradQYVRKLuyHDkdLX
+         DDhsvWCNUW9DQSN0SxHPOexqSU8Ca7TS5HjdeLbeU1YcQj1ZgMZ4puPzl0lcdrxg0xAY
+         GzZ0Y0WjEpAYGeSDIyhbBqXclYid/57SPsMXTN1t+flzH0XY5w6hi5WZzXG5iA+eY2Tp
+         O7T/bXVHrS1b3IGTdpICpUqZvbhpqftEJi8cSA01gr0+c+zChoTUSb4V+2WLKU4ma+9a
+         yXBiCgkeiEvEBlS0IZJo0GZ1vA+dqhtoK/6ENGY2kJuIYLjsxfzbBDf/ZotPo9KE1iYz
+         yXAA==
+X-Gm-Message-State: AOAM533M03MQMWveqTtaSEyymZ1E+27d1SzkXMJSOvhMRLbWv2Gu8hKg
+	APkBpfwrTzRdYKcaVkvIGdJcucoWjvT+29Y9IcItSfrjo7XiskAvDvxDqoIPIaqe7KlUKAreuV8
+	nkjvPe0fp/2JloAFU97LHyBk2zz5itIfrxFkHoDpNvJZ3wdhNlxwh
+X-Received: by 2002:a25:aba6:0:b0:641:3b6f:41ac with SMTP id v35-20020a25aba6000000b006413b6f41acmr1982115ybi.3.1649594585713;
+        Sun, 10 Apr 2022 05:43:05 -0700 (PDT)
+X-Received: by 2002:a25:aba6:0:b0:641:3b6f:41ac with SMTP id
+ v35-20020a25aba6000000b006413b6f41acmr1982100ybi.3.1649594585428; Sun, 10 Apr
+ 2022 05:43:05 -0700 (PDT)
+MIME-Version: 1.0
+From: test sender <fake_mail_sender@test.com>
+Date: Sun, 10 Apr 2022 15:42:29 +0300
+Message-ID: <CAPz_z5hBQLj98G50S_ST8UDRiW8b0Umtd1K-iVWPDTFKbzhN4g@mail.gmail.com>
+Subject: test email object
+To: test receiver <fake_mail_receiver@test.com>
+Content-Type: multipart/alternative; boundary="00000000000049d09105dc4c2b77"
+
+--00000000000049d09105dc4c2b77
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+This is a test mail
+
+--00000000000049d09105dc4c2b77
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+--00000000000049d09105dc4c2b77--

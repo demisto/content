@@ -1,0 +1,4 @@
+!phishtank-reload
+!phishtank-status
+!url url=https://login.rakuten.co.jp.reise
+!url url=http://komonghjpl[.]000webhostapp.com

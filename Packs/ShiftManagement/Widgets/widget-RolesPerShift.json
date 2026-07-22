@@ -1,0 +1,11 @@
+{
+  "id": "RolesPerShift",
+  "name": "Roles Per Shift",
+  "dataType": "scripts",
+  "widgetType": "text",
+  "query": "GetRolesPerShift",
+  "version": -1,
+  "description": "Roles per shift 24x7",
+  "isPredefined": true,
+  "fromVersion": "5.5.0"
+}

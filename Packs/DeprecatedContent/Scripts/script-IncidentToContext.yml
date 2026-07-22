@@ -1,0 +1,101 @@
+commonfields:
+  id: IncidentToContext
+  version: -1
+name: IncidentToContext
+script: >-
+  # These comments are required to make sure that all pre-defined labels are selectable in the playbook
+
+  # demisto.setContext('Label/Application', '')
+
+  # demisto.setContext('Label/Database', '')
+
+  # demisto.setContext('Label/Directory', '')
+
+  # demisto.setContext('Label/Email', '')
+
+  # demisto.setContext('Label/Email/cc', '')
+
+  # demisto.setContext('Label/Email/from', '')
+
+  # demisto.setContext('Label/Email/format', '')
+
+  # demisto.setContext('Label/Email/html', '')
+
+  # demisto.setContext('Label/Email/text', '')
+
+  # demisto.setContext('Label/Email/subject', '')
+
+  # demisto.setContext('Label/Email/attachments', '')
+
+  # demisto.setContext('Label/Email/headers', '')
+
+  # demisto.setContext('Label/IP', '')
+
+  # demisto.setContext('Label/System', '')
+
+  # demisto.setContext('Label/URL', '')
+
+  # demisto.setContext('Label/User', '')
+
+  # demisto.setContext('Label/Brand', '')
+
+  # demisto.setContext('Label/Instance', '')
+
+  i = demisto.incidents()[0]
+
+  demisto.setContext('id', i['id'])
+
+  demisto.setContext('created', i['created'])
+
+  demisto.setContext('modified', i['modified'])
+
+  demisto.setContext('occurred', i['occurred'])
+
+  demisto.setContext('dueDate', i['dueDate'])
+
+  demisto.setContext('name', i['name'])
+
+  demisto.setContext('owner', i['owner'])
+
+  demisto.setContext('type', i['type'])
+
+  demisto.setContext('severity', i['severity'])
+
+  demisto.setContext('phase', i['phase'])
+
+  demisto.setContext('status', i['status'])
+
+  demisto.setContext('details', i['details'])
+
+  # Setting initial score based on severity. Severity "Unknown" yields score 0.
+
+  score = i['severity'] * 25
+
+  demisto.setContext('score', score)
+
+  if 'labels' in i and i['labels']:
+      labels = {}
+      for l in i['labels']:
+          name = 'Label/' + l['type']
+          labels[name] = [l['value']] + (labels[name] if name in labels else [])
+      for k, v in labels.iteritems():
+          demisto.setContext(k, v if len(v) > 1 else v[0])
+
+  if 'CustomFields' in i and i['CustomFields']:
+      for key in i['CustomFields'].keys():
+          demisto.setContext(key, i['CustomFields'][key])
+
+  demisto.results('Incident context set')
+type: python
+subtype: python2
+args: []
+tags:
+- infra
+comment: Deprecated. Inserts incident info and labels into context for use inside playbooks.
+system: true
+deprecated: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

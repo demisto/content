@@ -1,0 +1,304 @@
+{
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "aliases": [
+                "aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad.rl.zip"
+            ],
+            "category": "archive",
+            "classification": "malicious",
+            "classification_origin": {
+                "sha1": "aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad",
+                "sha256": "43d51f009bf94707556031b9688e84bb85df2c59854fba8fcb90be6c0d19e1d1",
+                "sha512": "8a1c9512fa167b938ea31c047a48dd6ec36d9b22443bc4ee6b97a116e16ff33427645ac76349f531cd9a672b4fffc3c4c92d1c82d2a71241915c1499336fd221",
+                "md5": "8521e64c683e47c1db64d80577513016",
+                "imphash": "c57e34b759dff2e57f71960b2fdb93da"
+            },
+            "classification_reason": "antivirus",
+            "classification_result": "Win32.Trojan.Delf",
+            "classification_source": 513,
+            "extracted_file_count": 85,
+            "file_size": 607237,
+            "file_subtype": "Archive",
+            "file_type": "Binary",
+            "id": 3065,
+            "identification_name": "ZIP",
+            "identification_version": "Generic",
+            "local_first_seen": "2022-12-19T11:39:10.929115Z",
+            "local_last_seen": "2022-12-19T11:46:40.855554Z",
+            "md5": "a322205db6c3b1c451725b84f1d010cc",
+            "riskscore": 10,
+            "sha1": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6",
+            "sha256": "d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2",
+            "sha512": "d1fd72d5a52d75f23836016772e8895d901fa5a1cb1f9b25ba455db6cccbd97e9daf43fde4f8bb77b43c0b5c4937405d51dece20cda7fa7db7600715c7769554",
+            "summary": {
+                "id": 3065,
+                "sha1": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6",
+                "indicators": [
+                    {
+                        "priority": 4,
+                        "category": 22,
+                        "description": "The file is password-protected or contains a password-protected file.",
+                        "relevance": 0,
+                        "reasons": [
+                            {
+                                "propagated": false,
+                                "category": "Tag Match",
+                                "description": "Matched password tag"
+                            }
+                        ],
+                        "id": 1177
+                    },
+                    {
+                        "priority": 4,
+                        "category": 22,
+                        "description": "The file is encrypted or contains an encrypted file.",
+                        "relevance": 0,
+                        "reasons": [
+                            {
+                                "propagated": false,
+                                "category": "Tag Match",
+                                "description": "Matched encrypted tag"
+                            }
+                        ],
+                        "id": 1178
+                    }
+                ],
+                "unpacking_status": {
+                    "failed": 0,
+                    "success": 1,
+                    "partial": 0
+                }
+            },
+            "tags": {
+                "ticore": [
+                    "antivirus",
+                    "entropy-high",
+                    "contains-pe",
+                    "indicator-file",
+                    "encrypted",
+                    "password"
+                ],
+                "user": []
+            },
+            "ticloud": {
+                "classification": "goodware",
+                "riskscore": 5,
+                "first_seen": "2022-12-19T11:39:11Z",
+                "last_seen": "2022-12-19T11:48:23Z",
+                "classification_result": null,
+                "classification_reason": "antivirus"
+            },
+            "ticore": {
+                "info": {
+                    "statistics": {
+                        "file_stats": [
+                            {
+                                "type": "Binary",
+                                "subtype": "Archive",
+                                "count": 1,
+                                "identifications": [
+                                    {
+                                        "count": 1,
+                                        "name": "ZIP:Generic"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Binary",
+                                "subtype": "None",
+                                "count": 38,
+                                "identifications": [
+                                    {
+                                        "count": 38,
+                                        "name": "IconResource:Generic"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Image",
+                                "subtype": "None",
+                                "count": 38,
+                                "identifications": [
+                                    {
+                                        "count": 38,
+                                        "name": "ICO:Generic"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "PE",
+                                "subtype": "Exe",
+                                "count": 1,
+                                "identifications": [
+                                    {
+                                        "count": 1,
+                                        "name": "Unknown"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Text",
+                                "subtype": "None",
+                                "count": 7,
+                                "identifications": [
+                                    {
+                                        "count": 7,
+                                        "name": "Unknown"
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "Text",
+                                "subtype": "XML",
+                                "count": 1,
+                                "identifications": [
+                                    {
+                                        "count": 1,
+                                        "name": "Unknown"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "file": {
+                        "file_type": "Binary",
+                        "file_subtype": "Archive",
+                        "size": 607237,
+                        "entropy": 7.999701516776105,
+                        "hashes": [
+                            {
+                                "name": "md5",
+                                "value": "a322205db6c3b1c451725b84f1d010cc"
+                            },
+                            {
+                                "name": "rha0",
+                                "value": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6"
+                            },
+                            {
+                                "name": "sha1",
+                                "value": "a94775deb818a4d68635eeed3d16abc7f7b8bdd6"
+                            },
+                            {
+                                "name": "sha256",
+                                "value": "d3d8091a287c8aee0ee5c54838540e714f22eef7cbeb65eb2b6af42116f5d5f2"
+                            },
+                            {
+                                "name": "sha512",
+                                "value": "d1fd72d5a52d75f23836016772e8895d901fa5a1cb1f9b25ba455db6cccbd97e9daf43fde4f8bb77b43c0b5c4937405d51dece20cda7fa7db7600715c7769554"
+                            },
+                            {
+                                "name": "ssdeep",
+                                "value": "12288:CugvoBN+tBSSX/56xDYoZOF0rm48uyJAC9HazaUuM2G0kUZpevP:CugO+f/5wP4sT8Dy4a2UuM25kopg"
+                            }
+                        ],
+                        "proposed_filename": null
+                    },
+                    "identification": {
+                        "success": true,
+                        "name": "ZIP",
+                        "version": "Generic",
+                        "author": "ReversingLabs"
+                    },
+                    "unpacking": {
+                        "status": 2,
+                        "warnings": [
+                            "Contains encrypted entries"
+                        ]
+                    },
+                    "properties": [
+                        {
+                            "name": "totalEntries",
+                            "value": "1"
+                        },
+                        {
+                            "name": "containsEncryptedFiles",
+                            "value": "true"
+                        },
+                        {
+                            "name": "password",
+                            "value": "infected"
+                        },
+                        {
+                            "name": "encryptionType",
+                            "value": "ZipCrypto"
+                        }
+                    ]
+                },
+                "application": {},
+                "protection": {},
+                "security": {},
+                "behaviour": {},
+                "certificate": {},
+                "document": {},
+                "email": {},
+                "mobile": {},
+                "media": {},
+                "web": {},
+                "strings": [],
+                "interesting_strings": [],
+                "classification": {
+                    "propagated": true,
+                    "classification": 3,
+                    "factor": 5,
+                    "result": "Win32.Trojan.Delf",
+                    "scan_results": [
+                        {
+                            "ignored": false,
+                            "type": 1,
+                            "classification": 3,
+                            "factor": 5,
+                            "name": "Antivirus (based on the RCA Classify)",
+                            "version": "2.72",
+                            "result": "Win32.Trojan.Delf",
+                            "rca_factor": 10
+                        }
+                    ],
+                    "propagation_source": {
+                        "name": "sha1",
+                        "value": "aeb8cb59f158ca853a41c55ca3cfa14c0bf1baad"
+                    },
+                    "rca_factor": 10
+                },
+                "indicators": [
+                    {
+                        "priority": 4,
+                        "category": 22,
+                        "description": "The file is password-protected or contains a password-protected file.",
+                        "relevance": 0,
+                        "reasons": [
+                            {
+                                "propagated": false,
+                                "category": "Tag Match",
+                                "description": "Matched password tag"
+                            }
+                        ],
+                        "id": 1177
+                    },
+                    {
+                        "priority": 4,
+                        "category": 22,
+                        "description": "The file is encrypted or contains an encrypted file.",
+                        "relevance": 0,
+                        "reasons": [
+                            {
+                                "propagated": false,
+                                "category": "Tag Match",
+                                "description": "Matched encrypted tag"
+                            }
+                        ],
+                        "id": 1178
+                    }
+                ],
+                "story": "This file (SHA1: a94775deb818a4d68635eeed3d16abc7f7b8bdd6) was identified as an encrypted ZIP archive. There are 85 extracted files.",
+                "signatures": null,
+                "browser": {},
+                "software_package": {},
+                "attack": [],
+                "malware": {}
+            }
+        }
+    ]
+}

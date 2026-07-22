@@ -1,0 +1,42 @@
+{
+    "successful_update_just_name": {
+        "args": {
+            "deployment_id": 122,
+            "deployment_name": "acme",
+            "updated_deployment_description": "updated_deployment_description",
+            "updated_deployment_name": "updated_deployment_name",
+            "updated_simulators_for_deployment": "'0000000-0000-0000-0000-0000000,1111111-1111-1111-1111-11111111'"
+        },
+        "command": "safebreach-update-deployment"
+    },
+    "successful_update_just_ID": {
+        "args": {
+            "deployment_id": 122,
+            "deployment_name": "",
+            "updated_deployment_description": "updated_deployment_description",
+            "updated_deployment_name": "updated_deployment_name",
+            "updated_simulators_for_deployment": "'0000000-0000-0000-0000-0000000,1111111-1111-1111-1111-11111111'"
+        },
+        "command": "safebreach-update-deployment"
+    },
+    "successful_update_both_name_and_id": {
+        "args": {
+            "deployment_id": 122,
+            "deployment_name": "acme",
+            "updated_deployment_description": "updated_deployment_description",
+            "updated_deployment_name": "updated_deployment_name",
+            "updated_simulators_for_deployment": "'0000000-0000-0000-0000-0000000,1111111-1111-1111-1111-11111111'"
+        },
+        "command": "safebreach-update-deployment"
+    },
+    "failed_update": {
+        "args": {
+            "deployment_id": 128,
+            "deployment_name": "acme1234",
+            "updated_deployment_description": "updated_deployment_description",
+            "updated_deployment_name": "updated_deployment_name",
+            "updated_simulators_for_deployment": "'0000000-0000-0000-0000-0000000,1111111-1111-1111-1111-11111111'"
+        },
+        "command": "safebreach-update-deployment"
+    }
+}

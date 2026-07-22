@@ -1,0 +1,168 @@
+commonfields:
+  id: TaniumShowPendingActions
+  version: -1
+name: TaniumShowPendingActions
+deprecated: true
+script: >
+  // An example script for asking Tanium a question
+
+
+  /* name - The name of the Saved-Question in Tanium server (mandatory if no 'id' was specified)
+
+  For example:
+      Computer Name
+      User Information
+      Adobe Acrobat Versions
+      BIOS Information
+      CPU Utilization Over 75%
+      Installed Applications
+      ...
+  */
+
+  // id - The ID of the Saved-Question in Tanium server (mandatory if no 'name' was specified)
+
+  // timeout - seconds to wait on each iteration while waiting for the question's result
+
+
+  var fieldsToDisplay = ["name", "package_spec","comment"]; //, "approver"];
+
+
+  var requestPendingObjects = "<object_list>\
+                  <saved_actions/>\
+              </object_list>\
+              <options>\
+                  <row_start>0</row_start>\
+                  <row_count>200</row_count>\
+                  <cache_expiration>300</cache_expiration>\
+                  <cache_sort_fields>name,-id</cache_sort_fields>\
+                  <include_user_details>1</include_user_details>\
+                  <use_json>1</use_json>\
+                  <cache_filters>\
+                      <filter>\
+                          <field>approved_flag</field>\
+                          <value>0</value>\
+                          <type>Numeric</type>\
+                          <operator>eq</operator>\
+                      </filter>\
+                  </cache_filters>\
+              </options>";
+
+
+  // Format a saved action as a table row, filtering unwanted fields.
+
+  function formatAsRow(jsonSavedAction,fieldsToDisplay) {
+    d = {};
+    for(var i=0;i<fieldsToDisplay.length;i++) {
+      field = fieldsToDisplay[i];
+      // If the returned json has that field, add it to the row.
+      if (Object.keys(jsonSavedAction).indexOf(field)>-1) {
+          if (typeof(jsonSavedAction[field]) === 'string') {
+              d[field] = jsonSavedAction[field];
+          } else {
+              d[field] = jsonSavedAction[field];
+          }
+      }
+
+      //for(var j=0;j<jsonSavedAction.length;j++)
+    }
+    for (var k in jsonSavedAction)
+
+
+    return d;
+  }
+
+
+  var getObjArgs = {};
+
+  getObjArgs["object-data"] = requestPendingObjects;
+
+
+  var res = executeCommand('tn-get-object', getObjArgs);
+
+  var entry = {
+      Type: 1,
+      ContentsFormat: 'json',
+      Contents: [],
+      ReadableContentsFormat: formats.markdown,
+      HumanReadable: ""
+  };
+
+
+  responseData = res[0].Contents.Envelope.Body.return.result_object;
+
+  respObj = JSON.parse(responseData);
+
+  var savedActions = [];
+
+  nResultObjects = respObj.result_objects.length;
+
+  for (var i=0; i < nResultObjects; i++) {
+      resultObj = respObj.result_objects[i];
+      nItems = resultObj.saved_actions.length;
+
+      for (var j=0; j < nItems; j++) {
+          // Skip any items not named saved_actions - e.g. skip cache_info item
+          if ("saved_action" in resultObj.saved_actions[j] ) {
+              savedActions.push(resultObj.saved_actions[j].saved_action);
+          }
+      }
+  }
+
+
+  // Display found pending actions as table
+
+  if (savedActions.length === 0)
+    return "No saved actions were found.";
+  else {
+      if (args.fulljson === "true")
+          return savedActions;
+      else {
+          for (var i=0; i < savedActions.length; i++)
+              entry.Contents.push(formatAsRow(savedActions[i],fieldsToDisplay));
+
+          entry.HumanReadable = tableToMarkdown("Tanium pending actions", cleanObject(entry.Contents), null);
+          savedActions = cleanObject(savedActions);
+          var actionsForContext = [];
+          for (var s in savedActions) {
+            actionsForContext.push({
+              State: "Pending",
+              Name: savedActions[s].name,
+              Comment: savedActions[s].comment,
+              AvailableTime: savedActions[s].package_spec.available_time,
+              ID: savedActions[s].package_spec.id,
+              PackageName: savedActions[s].package_spec.name
+            });
+          }
+          entry.EntryContext = {
+                    'Tanium.Action(val.ID == obj.ID)': actionsForContext
+                }
+          return entry;
+      }
+  }
+type: javascript
+tags:
+- tanium
+comment: Deprecated. Send a request for a formatted result of a saved question. To receive the most up to date data, run the same command twice. See https://kb.tanium.com/SOAP for more information
+args:
+- name: fulljson
+  default: true
+  description: If true - returns full json for each task instead of a table summary.
+outputs:
+- contextPath: Tanium.Action.Name
+  description: Action name
+- contextPath: Tanium.Action.State
+  description: Action state
+- contextPath: Tanium.Action.Comment
+  description: Tanium comment
+- contextPath: Tanium.Action.PackageName
+  description: Tanium package name
+- contextPath: Tanium.Action.PackageID
+  description: Tanium package id
+- contextPath: Tanium.Action.AvailableTime
+  description: Tanium available time
+scripttarget: 0
+dependson:
+  must:
+  - tn-get-object
+timeout: 0s
+fromversion: 5.0.0

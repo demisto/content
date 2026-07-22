@@ -1,0 +1,12 @@
+[
+    [
+        "foo.bar@baz.test",
+        "valerie@fr.baz.test"
+    ],
+    null,
+    [
+        "foo.bar@baz.test",
+        "valerie@fr.baz.test"
+    ],
+    null
+]

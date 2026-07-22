@@ -1,0 +1,35 @@
+args:
+- auto: PREDEFINED
+  default: true
+  description: Closing Reason for manual overriding.
+  name: closing_user
+  predefined:
+  - Closing Reason for manual overriding
+- default: true
+  description: Closing Notes for manual overriding.
+  name: closing_notes
+- default: true
+  description: aaa.
+  name: closing_reason
+comment: Deprecated. No available replacement.
+commonfields:
+  id: ArcannaFeedbackPostProcessing
+  version: -1
+enabled: true
+name: ArcannaFeedbackPostProcessing
+script: '-'
+subtype: python3
+tags:
+- post-processing
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.10.14.98471
+runas: DBotWeakRole
+dependson:
+  should:
+  - Arcanna.AI|||arcanna-send-event
+  - Arcanna.AI|||arcanna-get-event-status
+fromversion: 5.5.0
+deprecated: true
+tests:
+- No tests (auto formatted)

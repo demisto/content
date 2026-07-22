@@ -1,0 +1,21 @@
+{
+    "meta": {
+      "totalCount": 2
+    },
+    "data": [
+      {
+        "senderList": [
+          "t2@test.com",
+          "t1@test.com",
+          "t3@test.com"
+        ],
+        "recipientAddress": "test@test.com"
+      },
+      {
+        "senderList": [
+          "t4@test.com"
+        ],
+        "recipientAddress": "t1@test.com"
+      }
+    ]
+  }

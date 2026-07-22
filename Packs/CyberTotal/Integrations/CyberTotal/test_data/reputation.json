@@ -1,0 +1,26 @@
+{
+  "scan_time": 1594217477,
+  "url": "https://test.com/app/intelligence/2e11509eb3034aabaf3c006425050247",
+  "basic": {
+    "BasicInfo": {"md5": "e594b31feb5f31c2bf611593f1651354"},
+    "reputation": {
+      "avVenders": [
+        {
+          "detected": true,
+          "result": "malicious",
+          "name": "test_av1"
+        },
+        {
+          "detected": false,
+          "result": "clean site",
+          "name": "test_av2"
+        }
+      ]
+    },
+    "score": {
+      "severity": 9,
+      "confidence": 3,
+      "threat": "High"
+    }
+  }
+}

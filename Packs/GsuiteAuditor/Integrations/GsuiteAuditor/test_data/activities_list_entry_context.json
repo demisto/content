@@ -1,0 +1,80 @@
+{
+  "readable_output": "### Total Retrieved Activities: 1\n|Time|Application Name|Email|ProfileId|IpAddress|Events|\n|---|---|---|---|---|---|\n| 2021-08-17T03:01:02.653Z | admin |  |  |  | {'type': 'LICENSES_SETTINGS', 'name': 'USER_LICENSE_REVOKE', 'parameters': [{'name': 'USER_EMAIL', 'value': 'admin@admin.com'}, {'name': 'PRODUCT_NAME', 'value': 'Google Workspace'}, {'name': 'OLD_VALUE', 'value': 'G Suite Business'}]} |\n",
+  "outputs": {
+    "GSuite.ActivitySearch": [
+      {
+        "id": {
+          "time": "2021-08-17T03:01:02.653Z",
+          "uniqueQualifier": "-7041622916518163767",
+          "applicationName": "admin",
+          "customerId": "000"
+        },
+        "actor": {
+          "callerType": "KEY",
+          "key": "SYSTEM"
+        },
+        "events": [
+          {
+            "type": "LICENSES_SETTINGS",
+            "name": "USER_LICENSE_REVOKE",
+            "parameters": [
+              {
+                "name": "USER_EMAIL",
+                "value": "admin@admin.com"
+              },
+              {
+                "name": "PRODUCT_NAME",
+                "value": "Google Workspace"
+              },
+              {
+                "name": "OLD_VALUE",
+                "value": "G Suite Business"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "GSuite.PageToken.ActivitySearch": {}
+  },
+  "raw_response": {
+    "etag": "\"UU7ZVXZP4ba7JkjgJfj1hAMrbEvzbxchfTG8hqR_ZdI/GFO8XQAECGa7vdHpORj9OqWqXkU\"",
+    "items": [
+      {
+        "actor": {
+          "callerType": "KEY",
+          "key": "SYSTEM"
+        },
+        "etag": "\"UU7ZVXZP4ba7JkjgJfj1hAMrbEvzbxchfTG8hqR_ZdI/_kv_RgBYss1V6BGnCp5mkyahw_s\"",
+        "events": [
+          {
+            "name": "USER_LICENSE_REVOKE",
+            "parameters": [
+              {
+                "name": "USER_EMAIL",
+                "value": "admin@admin.com"
+              },
+              {
+                "name": "PRODUCT_NAME",
+                "value": "Google Workspace"
+              },
+              {
+                "name": "OLD_VALUE",
+                "value": "G Suite Business"
+              }
+            ],
+            "type": "LICENSES_SETTINGS"
+          }
+        ],
+        "id": {
+          "applicationName": "admin",
+          "customerId": "000",
+          "time": "2021-08-17T03:01:02.653Z",
+          "uniqueQualifier": "-7041622916518163767"
+        },
+        "kind": "admin#reports#activity"
+      }
+    ],
+    "kind": "admin#reports#activities"
+  }
+}

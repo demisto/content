@@ -1,0 +1,234 @@
+{
+  "CaseId": "7f40decf-7247-4f4d-bba7-90b134f8f91b",
+  "UpdatedDate": "2022-10-17T08:09:13+00:00",
+  "IOCs": [
+    {
+      "IocId": "56d47e44-18ac-42a7-8c81-94cf7e9d0442",
+      "Value": "DRAFT_BL_114172022.pdf.vbs",
+      "Type": "Filename",
+      "Risk": "Informational",
+      "TLP": "white",
+      "CreationDate": "2022-10-17T06:55:32+00:00",
+      "ExternalLinks": [
+        {
+          "source_name": "Bazaar Abuse.ch",
+          "url": "https://bazaar.abuse.ch/sample/b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5/"
+        }
+      ],
+      "Description": "'DRAFT_BL_114172022.pdf.vbs' is a Informational Filename.\nThe targeted language is da.\nWe advised to use this IoC in informational mode.",
+      "Relations": [],
+      "Tags": [],
+      "TTP": [],
+      "Families": [],
+      "Campaigns": [],
+      "Categories": [],
+      "ThreatActor": [],
+      "TargetedSectors": [],
+      "TargetedOrganizations": [],
+      "TargetedPlatforms": [],
+      "TargetedCountries": [],
+      "Vulnerabilities": [],
+      "KillChainPhases": [],
+      "MetaData": {
+        "cwe": [],
+        "descriptions": [],
+        "lang": "da",
+        "usageMode": "informational"
+      },
+      "UsageMode": "informational"
+    },
+    {
+      "IocId": "ffcfe936-f561-4267-a265-4d670a3de6f6",
+      "Value": "pttpostu.xyz",
+      "Type": "Host",
+      "Risk": "Suspicious",
+      "TLP": "green",
+      "CreationDate": "2023-09-26T12:56:08+00:00",
+      "ModificationDate": "2023-09-26T13:19:29+00:00",
+      "ExternalLinks": [
+        {
+          "source_name": "openphish",
+          "url": "https://openphish.com/"
+        }
+      ],
+      "Description": "'pttpostu.xyz' is a Suspicious Host.\nThis Host is linked to a phishing attack.\nWe advised to use this IoC in detection mode.",
+      "Relations": [],
+      "Tags": [
+        "potential suspicious domain",
+        "phishing",
+        "html/phishing.gen trojan",
+        "phishing.html.doc"
+      ],
+      "TTP": [],
+      "Families": [],
+      "Campaigns": [],
+      "Categories": [
+        "phishing"
+      ],
+      "ThreatActor": [],
+      "TargetedSectors": [],
+      "TargetedOrganizations": [],
+      "TargetedPlatforms": [],
+      "TargetedCountries": [],
+      "Vulnerabilities": [],
+      "KillChainPhases": [],
+      "MetaData": {
+        "cwe": [],
+        "descriptions": [],
+        "filetype": "HTML document, ASCII text, with very long lines",
+        "geo": "SC",
+        "geo_country_name": "United States",
+        "geo_country_official_name": "United States of America",
+        "size": 3.1982421875,
+        "usageMode": "detection"
+      },
+      "UsageMode": "detection"
+    },
+    {
+      "IocId": "9d8364d1-6cc1-4bc8-86b0-32af792cfb2e",
+      "Value": "http://103.38.236.46/ntpvip.exe",
+      "Type": "URL",
+      "Risk": "Suspicious",
+      "TLP": "green",
+      "CreationDate": "2023-09-26T12:46:45+00:00",
+      "ModificationDate": "2023-09-26T13:10:25+00:00",
+      "ExternalLinks": [
+        {
+          "source_name": "URLHaus Abuse.ch",
+          "url": "https://urlhaus.abuse.ch/url/2714251/"
+        }
+      ],
+      "Description": "'http://103.38.236.46/ntpvip.exe' is a Suspicious URL. It is linked to a PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows file with a size of 137.5322265625 KB.\nThis URL is linked to a malware attack.\nThe related TTPs are: T1140, T1047, T1547.001, T1213, T1033, T1053.005, T1620, T1027, T1082, T1083, T1560.002, T1012, T1057, T1614.001, T1056.001, T1112.\nWe advised to use this IoC in detection mode.",
+      "Relations": [],
+      "Tags": [
+        "trojan/win.agent",
+        "lis_pe_malware_asyncrat_4_20230609_409de6e7d6404b289ae3d1954af1b310",
+        "high entropy : potentially packed",
+        "lis_pe_malware_asyncrat_4_20230609_87bc0aae1ff54eb7b90c5c20ee5f38b5",
+        "lis_pe_malware_samsam_3_20230609_0da322a5d199477ea47f79a7725d1b88",
+        "lis_pe_malware_asyncrat_7_20230713_df503a111baa41c88ce3377a91f91d64",
+        "lis_pe_malware_3_20230302_938ba1f81c36434f916109c5fb216e0d",
+        "lis_pe_malware_asyncrat_3_20230714_35605a746824427fb982590a5a9e2560",
+        "troj/venomrat-a",
+        "w32/trojan.iml.gen!eldorado",
+        "lis_pe_malware_asyncrat_3_20230302_009a470787e94a0ea8ef1f51dded0c6f",
+        "lis_pe_malware_asyncrat_4_20230714_53c5ece0c846462f8b4e72651b09d62c",
+        "trojan.generickdz.102657",
+        "trojan ( 700000121 )",
+        "lis_pe_3_20230714_e9c931114aed47acb4ef988f0bd25b70",
+        "lis_pe_malware_asyncrat_3_20230608_8c8ef5d8c0a34b4facf3fc6a241567cd",
+        "lis_pe_malware_asyncrat_4_20230907_f3a7052342504c6384bdb040a1b97645",
+        "genericrxvs-nq!f93c6cb12717",
+        "lis_pe_malware_asyncrat_3_20230302_21176e40164d4b12b9d11c3373c9ab59",
+        "heur:trojan.msil.agent.gen",
+        "lis_pe_malware_asyncrat_4_20230907_895ede075a0e43afb105c22d3bc9d185",
+        "lis_pe_malware_samsam_3_20230302_636f7f07f8674b6ebebfcd5ebc401520",
+        "lis_pe_malware_asyncrat_3_20230809_2e700226b05041be86a054fcee6ab004",
+        "win/malicious_confidence_100",
+        "lis_pe_malware_5_20230808_ddbcd5c4987b421bba5fc206c192a354",
+        "lis_pe_malware_samsam_3_20230303_9602b76075c84fef82edfec042ebdf6a",
+        "a variant of msil/agent.cfq trojan",
+        "backdoor.agent",
+        "lis_pe_malware_4_20230909_800276bda3a54872ae5f35c0281a3990",
+        "lis_pe_malware_asyncrat_6_20230609_5e21d80499ad4e6e9f2b055ec4fc0d70",
+        "lis_pe_malware_samsam_6_20230808_7fd8acd8e4154cc4935b9cada46f570f",
+        "lis_pe_malware_asyncrat_3_20230302_b419d250e1ab4d368e3cafb071ddb5c1",
+        "lis_pe_malware_asyncrat_9_20230713_01915f6384b04754b9e96e5b54b3ae9b",
+        "asyncrat",
+        "lis_pe_malware_samsam_3_20230609_6ba6ffd8d0204375bd2ce780d5e2303f",
+        "lis_pe_malware_samsam_3_20230712_7d5f2ea0e27047468570e92fd8866a97",
+        "tr/agent.gzxwq",
+        "win.packed.razy-9807129-0",
+        "lis_pe_malware_asyncrat_3_20230714_6311f412da1340a1a2f18167b6153d48",
+        "lis_pe_malware_samsam_5_20230714_c42f2fe555e44f0797fa9a8dc4989413",
+        "lis_pe_malware_asyncrat_4_20230909_1fe83e2bc7704faca4b881c91eb2500c",
+        "lis_pe_malware_asyncrat_9_20230302_f644c209e14d443883e7f5310433a334",
+        "lis_pe_malware_asyncrat_4_20230808_d0e1d6d36e914e0aa6ffabef0ac3dff0",
+        "lis_pe_malware_asyncrat_6_20230607_0767865f17fc434e98c714abe556d383",
+        "lis_pe_malware_samsam_3_20230809_aad47d52c9404b61a194b034b8ee4a26",
+        "lis_pe_malware_3_20230714_734179f69c414f2d8c13c5825906c450",
+        "lis_pe_malware_asyncrat_3_20230609_c60fe8bac4734f5aad9f288a84c4ce7b",
+        "malware",
+        "lis_pe_malware_asyncrat_4_20230808_c3e71df0606442489b443dffd9c36067"
+      ],
+      "TTP": [
+        "T1140",
+        "T1047",
+        "T1547.001",
+        "T1213",
+        "T1033",
+        "T1053.005",
+        "T1620",
+        "T1027",
+        "T1082",
+        "T1083",
+        "T1560.002",
+        "T1012",
+        "T1057",
+        "T1614.001",
+        "T1056.001",
+        "T1112"
+      ],
+      "Families": [],
+      "Campaigns": [],
+      "Categories": [
+        "malware"
+      ],
+      "ThreatActor": [],
+      "TargetedSectors": [],
+      "TargetedOrganizations": [],
+      "TargetedPlatforms": [
+        "windows"
+      ],
+      "TargetedCountries": [],
+      "Vulnerabilities": [],
+      "KillChainPhases": [
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "Discovery"
+        },
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "Execution"
+        },
+        {
+          "kill_chain_name": "mitre-pre-attack",
+          "phase_name": "Credential Access"
+        },
+        {
+          "kill_chain_name": "mitre-pre-attack",
+          "phase_name": "Collection"
+        },
+        {
+          "kill_chain_name": "mitre-attack",
+          "phase_name": "Defense Evasion"
+        },
+        {
+          "kill_chain_name": "mitre-pre-attack",
+          "phase_name": "Persistence"
+        },
+        {
+          "kill_chain_name": "mitre-pre-attack",
+          "phase_name": "Privilege Escalation"
+        }
+      ],
+      "MetaData": {
+        "cwe": [],
+        "descriptions": [],
+        "filetype": "PE32 executable (GUI) Intel 80386 Mono/.Net assembly, for MS Windows",
+        "imphash": "3:rGsLdAIEK:tf",
+        "proc_arch": [
+          "x86"
+        ],
+        "prog_lang": [],
+        "size": 137.5322265625,
+        "ssdeep": "3072:yUmcxV4x7PMVhrfqXH1bpLQaObeNT2YTlJZtrNtU9+/BY:ylx7PMVRfqXVbh/NT2YTJ5NJ",
+        "tslh": "T1DBD3AE813B88891AF5AE067978F25B461EF8EE176002DD1E6CC434CD5F77AC589072EB",
+        "usageMode": "detection"
+      },
+      "UsageMode": "detection"
+    }
+  ],
+  "RelatedData": [],
+  "Description": "The threat report contains 3 indicators with a medium confidence average. The category of the threat is malware. "
+}

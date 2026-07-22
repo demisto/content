@@ -1,0 +1,80 @@
+{
+    "ip_address": "192.168.1.2",
+    "hostname": "forescout-eyeinspect",
+    "open_ports": [
+        "443"
+    ],
+    "cc_version": "4.3.21",
+    "health_status": {
+        "cpu_load_avg_1_min": {
+            "name": "",
+            "level": "NORMAL",
+            "current_value": "26.25%"
+        },
+        "memory_usage": {
+            "name": "",
+            "level": "NORMAL",
+            "current_value": "72.72%"
+        },
+        "disk_usage": [
+            {
+                "name": "/",
+                "level": "NORMAL",
+                "current_value": "7%"
+            }
+        ],
+        "net_if_status": [
+            {
+                "name": "ens100",
+                "level": "NORMAL",
+                "current_value": "Running"
+            },
+            {
+                "name": "docker0",
+                "level": "NORMAL",
+                "current_value": "Not running"
+            },
+            {
+                "name": "br-1b2f3d8eaa75",
+                "level": "NORMAL",
+                "current_value": "Running"
+            },
+            {
+                "name": "ens180",
+                "level": "NORMAL",
+                "current_value": "Running"
+            },
+            {
+                "name": "vethf0ed647",
+                "level": "NORMAL",
+                "current_value": "Running"
+            },
+            {
+                "name": "veth34eab01",
+                "level": "NORMAL",
+                "current_value": "Running"
+            },
+            {
+                "name": "vethfb6c609",
+                "level": "NORMAL",
+                "current_value": "Running"
+            }
+        ],
+        "analytics_db_used_mem": {
+            "name": "",
+            "current_value": "4.7 GiB"
+        },
+        "message_queue_used_mem": {
+            "name": "",
+            "current_value": "637.3 MiB"
+        },
+        "relational_db_used_mem": {
+            "name": "silentdefense",
+            "current_value": "430.0 MiB"
+        },
+        "web_server_used_mem": {
+            "name": "",
+            "current_value": "4.3 GiB"
+        }
+    }
+}

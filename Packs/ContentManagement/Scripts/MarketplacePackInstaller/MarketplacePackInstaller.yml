@@ -1,0 +1,38 @@
+args:
+- description: Information about the packs to install including pack ID and version.
+  isArray: true
+  name: packs_data
+  required: true
+- description: The key in which the pack ID is stored.
+  name: pack_id_key
+  required: true
+- description: The key in which the pack version is stored. Enter "latest" to update all packs to the latest version.
+  name: pack_version_key
+  required: true
+commonfields:
+  id: MarketplacePackInstaller
+  version: -1
+name: MarketplacePackInstaller
+comment: Deprecated. Use ContentPackInstaller instead.
+outputs:
+- contextPath: ConfigurationSetup.MarketplacePackInstaller.packname
+  description: The name of the pack.
+  type: Unknown
+- contextPath: ConfigurationSetup.MarketplacePackInstaller.packversion
+  description: The version of the pack.
+  type: Unknown
+- contextPath: ConfigurationSetup.MarketplacePackInstaller.installationstatus
+  description: The installation status of the pack.
+  type: Unknown
+script: '-'
+subtype: python3
+deprecated: true
+tags:
+- configuration
+- Content Management
+timeout: 600ns
+type: python
+dockerimage: demisto/xsoar-tools:1.0.0.32653
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

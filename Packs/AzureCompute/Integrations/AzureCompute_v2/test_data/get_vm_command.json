@@ -1,0 +1,185 @@
+{
+    "id": "/subscriptions/aabbccd-123a-123d-a1a1-123aaabb123b/resourceGroups/fake-rg-1/providers/Microsoft.Compute/virtualMachines/test-vm-1",
+    "location": "westeurope",
+    "name": "test-vm-1",
+    "properties": {
+        "additionalCapabilities": {
+            "hibernationEnabled": false
+        },
+        "applicationProfile": {
+            "galleryApplications": [
+                {
+                    "enableAutomaticUpgrade": false,
+                    "manuallyManaged": false,
+                    "packageReferenceId": "/subscriptions/aabbccd-123a-123d-a1a1-123aaabb123b/resourceGroups/fake-profile/providers/Microsoft.Compute/galleries/xdr/applications/linux-xdr/versions/8.3.0",
+                    "treatFailureAsDeploymentFailure": false
+                }
+            ]
+        },
+        "diagnosticsProfile": {
+            "bootDiagnostics": {
+                "enabled": true
+            }
+        },
+        "hardwareProfile": {
+            "vmSize": "Standard_D2s_v3"
+        },
+        "instanceView": {
+            "bootDiagnostics": {},
+            "computerName": "test-vm-1",
+            "disks": [
+                {
+                    "name": "test-vm-1_disk1_aaabbbbbccccc123123123123123",
+                    "statuses": [
+                        {
+                            "code": "ProvisioningState/succeeded",
+                            "displayStatus": "Provisioning succeeded",
+                            "level": "Info",
+                            "time": "2023-12-21T00:00:00.9991605+00:00"
+                        }
+                    ]
+                }
+            ],
+            "extensions": [
+                {
+                    "name": "enablevmAccess",
+                    "statuses": [
+                        {
+                            "code": "ProvisioningState/succeeded",
+                            "displayStatus": "Provisioning succeeded",
+                            "level": "Info",
+                            "message": "Enable succeeded."
+                        }
+                    ],
+                    "type": "Microsoft.OSTCExtensions.VMAccessForLinux",
+                    "typeHandlerVersion": "1.5.18"
+                }
+            ],
+            "hyperVGeneration": "V2",
+            "osName": "ubuntu",
+            "osVersion": "20.04",
+            "statuses": [
+                {
+                    "code": "ProvisioningState/succeeded",
+                    "displayStatus": "Provisioning succeeded",
+                    "level": "Info",
+                    "time": "2024-08-20T00:00:00.6656328+00:00"
+                },
+                {
+                    "code": "PowerState/running",
+                    "displayStatus": "VM running",
+                    "level": "Info"
+                }
+            ],
+            "vmAgent": {
+                "extensionHandlers": [
+                    {
+                        "status": {
+                            "code": "ProvisioningState/succeeded",
+                            "displayStatus": "Ready",
+                            "level": "Info",
+                            "message": "Plugin enabled"
+                        },
+                        "type": "Microsoft.OSTCExtensions.VMAccessForLinux",
+                        "typeHandlerVersion": "1.5.18"
+                    },
+                    {
+                        "status": {
+                            "code": "ProvisioningState/succeeded",
+                            "displayStatus": "Ready",
+                            "level": "Info",
+                            "message": "Plugin enabled"
+                        },
+                        "type": "Microsoft.CPlat.Core.VMApplicationManagerLinux",
+                        "typeHandlerVersion": "1.0.13"
+                    }
+                ],
+                "statuses": [
+                    {
+                        "code": "ProvisioningState/succeeded",
+                        "displayStatus": "Ready",
+                        "level": "Info",
+                        "message": "Guest Agent is running",
+                        "time": "2024-08-27T15:43:14+00:00"
+                    }
+                ],
+                "vmAgentVersion": "1.1.1.9"
+            }
+        },
+        "networkProfile": {
+            "networkInterfaces": [
+                {
+                    "id": "/subscriptions/aabbccd-123a-123d-a1a1-123aaabb123b/resourceGroups/fake-rg-1/providers/Microsoft.Network/networkInterfaces/test-vm-0000_z1",
+                    "properties": {
+                        "deleteOption": "Detach"
+                    }
+                }
+            ]
+        },
+        "osProfile": {
+            "adminUsername": "azureuser",
+            "allowExtensionOperations": true,
+            "computerName": "test-vm-1",
+            "linuxConfiguration": {
+                "disablePasswordAuthentication": true,
+                "enableVMAgentPlatformUpdates": false,
+                "patchSettings": {
+                    "assessmentMode": "ImageDefault",
+                    "patchMode": "ImageDefault"
+                },
+                "provisionVMAgent": true
+            },
+            "requireGuestProvisionSignal": true,
+            "secrets": []
+        },
+        "provisioningState": "Succeeded",
+        "storageProfile": {
+            "dataDisks": [],
+            "diskControllerType": "SCSI",
+            "imageReference": {
+                "exactVersion": "20.04.202312080",
+                "offer": "0001-com-ubuntu-server-focal",
+                "publisher": "canonical",
+                "sku": "20_04-lts-gen2",
+                "version": "latest"
+            },
+            "osDisk": {
+                "caching": "ReadWrite",
+                "createOption": "FromImage",
+                "deleteOption": "Delete",
+                "diskSizeGB": 30,
+                "managedDisk": {
+                    "id": "/subscriptions/aabbccd-123a-123d-a1a1-123aaabb123b/resourceGroups/fake-rg-1/providers/Microsoft.Compute/disks/test-vm-1_disk1_d2f1bf7581b64d3191c7dc0569f22516",
+                    "storageAccountType": "Premium_LRS"
+                },
+                "name": "test-vm-1_disk1_aaabbbbbccccc123123123123123",
+                "osType": "Linux"
+            }
+        },
+        "timeCreated": "2023-12-21T00:00:00.6553161+00:00",
+        "vmId": "aabbccd-123a-123d-a1a1-123aaabb123b"
+    },
+    "resources": [
+        {
+            "id": "/subscriptions/aabbccd-123a-123d-a1a1-123aaabb123b/resourceGroups/fake-rg-1/providers/Microsoft.Compute/virtualMachines/test-vm-1/extensions/enablevmAccess",
+            "location": "westeurope",
+            "name": "enablevmAccess",
+            "properties": {
+                "autoUpgradeMinorVersion": true,
+                "provisioningState": "Succeeded",
+                "publisher": "Microsoft.OSTCExtensions",
+                "type": "VMAccessForLinux",
+                "typeHandlerVersion": "1.5"
+            },
+            "type": "Microsoft.Compute/virtualMachines/extensions"
+        }
+    ],
+    "tags": {
+        "owner": "fake@email.com",
+        "env": "dev"
+    },
+    "type": "Microsoft.Compute/virtualMachines",
+    "zones": [
+        "1"
+    ]
+}

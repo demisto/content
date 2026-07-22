@@ -1,0 +1,358 @@
+id: Code42 File Search v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Code42 File Search v2
+description: This playbook searches for files via Code42 security events by either MD5 or SHA256 hash. The data is output to the Code42.FileEvents context for use.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d045a003-2e7f-4f47-80c7-3882baf399b6
+    type: start
+    task:
+      id: d045a003-2e7f-4f47-80c7-3882baf399b6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+    type: condition
+    task:
+      id: 746c1a4e-7084-45f1-86e6-e9764ffbbf5c
+      version: -1
+      name: Is Code42 Integration Active?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Code42
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+    type: condition
+    task:
+      id: 935cb1d6-e328-4a8e-888f-347c3b33ce11
+      version: -1
+      name: Does SHA256 Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SHA256
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+    type: condition
+    task:
+      id: 1d0dfb1f-6874-41e9-8593-fca2a96c58c4
+      version: -1
+      name: Does MD5 Exist?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 14d6c356-1a5d-49b6-881e-b2fb9e32e2b8
+    type: regular
+    task:
+      id: 14d6c356-1a5d-49b6-881e-b2fb9e32e2b8
+      version: -1
+      name: Code42 Search by SHA256
+      description: Search for Code42 Incydr File Events.
+      script: Code42|||code42-file-events-search
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      add-to-context:
+        simple: "true"
+      hash:
+        simple: ${inputs.SHA256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 399b0873-d519-4067-88cb-beb5b7558f80
+    type: regular
+    task:
+      id: 399b0873-d519-4067-88cb-beb5b7558f80
+      version: -1
+      name: Code42 Search by MD5
+      description: Search for Code42 Incydr File Events.
+      script: Code42|||code42-file-events-search
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      add-to-context:
+        simple: "true"
+      hash:
+        simple: ${inputs.MD5}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+    type: title
+    task:
+      id: 7f03d6ab-3bb8-4bd5-867b-fe853fa38684
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 855,
+        "width": 860,
+        "x": 40,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: MD5 hash to search for
+  playbookInputQuery:
+- key: SHA256
+  value:
+    complex:
+      root: File
+      accessor: SHA256
+      transformers:
+      - operator: uniq
+  required: false
+  description: SHA256 hash to search for
+  playbookInputQuery:
+outputs:
+- contextPath: Code42.FileEvents
+  description: Returned File Results.
+  type: unknown
+- contextPath: Code42.FileEvents.timestamp
+  description: The timestamp when the event occurred.
+- contextPath: Code42.FileEvents.event
+  description: Summary information about the event, including date observed, event type, and event source.
+- contextPath: Code42.FileEvents.user
+  description: Details about the user associated with the event (if any).
+- contextPath: Code42.FileEvents.destination
+  description: Details about the destination target of the event (if any).
+- contextPath: Code42.FileEvents.process
+  description: Details about the CPU process involved in the event (if any).
+- contextPath: Code42.FileEvents.risk
+  description: Details overall risk severity for the event and lists all associated risk indicators.
+- contextPath: Code42.FileEvents.git
+  description: Details about git repository involved in event (if any).
+- contextPath: Code42.FileEvents.report
+  description: Details about Salesforce reports involved in the event (if any).
+- contextPath: Code42.FileEvents.file
+  description: Details about file metadata for file involved in the event (if any).
+- contextPath: Code42.FileEvents.source
+  description: Info about the origin of a file involved in the event (if any).
+- contextPath: File
+  description: The file object.
+  type: unknown
+- contextPath: File.Name
+  description: File name.
+- contextPath: File.Path
+  description: File path.
+- contextPath: File.Size
+  description: File size in bytes.
+- contextPath: File.MD5
+  description: MD5 hash of file.
+- contextPath: File.SHA256
+  description: SHA256 hash of file.
+- contextPath: File.Hostname
+  description: Hostname where file event was captured.
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

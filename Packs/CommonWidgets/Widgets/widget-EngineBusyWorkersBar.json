@@ -1,0 +1,18 @@
+{
+ "id": "engine-busy-workers-bar",
+ "version": -1,
+ "description": "Current number of busy workers per engine",
+ "fromVersion": "5.0.0",
+ "modified": "2018-03-14T17:42:44.919467+02:00",
+ "name": "Busy Workers Count per Engine",
+ "dataType": "system",
+ "widgetType": "bar",
+ "query": "engine.workers.busy-workers",
+ "isPredefined": true,
+ "params": {
+  "groupBy": [
+   "engine"
+  ]
+ },
+ "size": 61
+}

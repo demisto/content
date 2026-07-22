@@ -1,0 +1,50 @@
+commonfields:
+  id: 7b02fa0f-94ff-48c7-8350-b4e353702e73
+  version: -1
+name: VMRay
+script: >-
+  import json
+
+  import time
+
+  res = []
+
+  entry_id = demisto.args()['entry_id']
+
+  try:
+    data = demisto.executeCommand("upload_sample", {"entry_id":entry_id})[0]["Contents"]["data"]
+    if data:
+        open_jobs = data["jobs"]
+        sample_id = data["samples"]
+        if sample_id:
+            sample_id = data["samples"][0]["sample_id"]
+            demisto.executeCommand("scheduleEntry", {"command": "!vmray_getResults sample_id={} ".format(str(sample_id)), "cron": "*/1 * * * *"})
+        else:
+            res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                            "Contents": "Could not extract result list from response: " + str(data["errors"][0]["error_msg"])})
+        demisto.results(res)
+
+  except Exception as ex:
+    res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(entry_id)})
+type: python
+subtype: python2
+tags:
+- file
+comment: Deprecated. use "Detonate File - VMRay playbook instead"
+enabled: true
+args:
+- name: entry_id
+  default: true
+  description: The ID of a file entry to upload
+scripttarget: 0
+dependson:
+  must:
+  - VMRay|||upload_sample
+runas: DBotWeakRole
+timeout: 0s
+deprecated: true
+tests:
+- No tests
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

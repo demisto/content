@@ -1,0 +1,620 @@
+commonfields:
+  id: LightCyber Magna
+  version: -1
+name: LightCyber Magna
+display: Palo Alto Networks Magnifier (Deprecated)
+deprecated: true
+category: Network Security
+image: data:image/png;base64,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
+description: Deprecated. Magnifier Behavioral Analytics empowers organizations to quickly find and stop the stealthiest network threats.
+detaileddescription: By default only Confirmed indicators trigger as Demisto incidents. Enable "Fetch Suspicious indicators" to also trigger "Suspicious" level LightCyber indicators.
+configuration:
+- display: Server (e.g. https://3.4.5.6)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Authentication
+  name: authentication
+  defaultvalue: ""
+  type: 9
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch "Suspicious" indicators
+  name: fetchsuspicious
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+script:
+  script: >-
+    var fixUrl = function(base) {
+      res = base;
+      if (base && base[base.length - 1] != '/') {
+          res = res + '/';
+      }
+      return res;
+    };
+
+
+    var buildArgs = function(args) {
+        sArgs = Object.keys(args).map(function(key) {
+            return [key, args[key]].map(encodeURIComponent).join("=");
+        }).join("&");
+        if (sArgs) {
+            return '?' + sArgs;
+        } else {
+            return '';
+        }
+    };
+
+
+    var parseResponse = function(resp) {
+      if (resp.StatusCode === 200) {
+          try {
+              return JSON.parse(resp.Body);
+          } catch (e) {
+              return resp.Body;
+          }
+      } else {
+        err = resp.Status;
+        if (resp.Body) {
+            err += '\n' + resp.Body;
+        }
+        throw err;
+      }
+
+    };
+
+    var Base64 = {
+      _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+      encode: function(input) {
+        var output = "";
+        var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+        var i = 0;
+        while (i < input.length) {
+          chr1 = input.charCodeAt(i++);
+          chr2 = input.charCodeAt(i++);
+          chr3 = input.charCodeAt(i++);
+          enc1 = chr1 >> 2;
+          enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+          enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+          enc4 = chr3 & 63;
+          if (isNaN(chr2)) {
+            enc3 = enc4 = 64;
+          } else if (isNaN(chr3)) {
+            enc4 = 64;
+          }
+          output = output + this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) + this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+        }
+
+        return output;
+      }
+    };
+
+
+
+    var loadCSV = function(csvData) {
+      var data = [];
+      var rows = csvData.split('\r\n');
+      var headers = rows[0].split(',');
+      for(var i = 1; i < rows.length; i++) {
+        var cells = rows[i].split(',');
+        if (cells.join('') === '') {
+            continue;
+        }
+        var obj = {};
+        for(var j = 0; j < cells.length; j++) {
+            obj[headers[j]] = cells[j];
+        }
+        data.push(obj);
+      }
+      return {results: data};
+    };
+
+
+    var doGet = function(qArgs, qParams, auth, raw, suffix) {
+      url = fixUrl(qParams.server) + suffix + buildArgs(qArgs);
+      res = http(
+          url,
+          {
+              Method: 'GET',
+              Headers: {'Authorization': [auth]}
+          },
+          qParams.insecure
+      );
+      if (raw) {
+          return res;
+      } else {
+          return parseResponse(res);
+      }
+    };
+
+
+    var doGetCSV = function(qArgs, qParams, auth, suffix) {
+      url = fixUrl(qParams.server) + suffix + encodeToURLQuery(qArgs);
+      resp = http(
+          url,
+          {
+              Method: 'GET',
+              Headers: {'Authorization': [auth]}
+          },
+          qParams.insecure
+      );
+
+      if (resp.StatusCode === 200) {
+        return loadCSV(resp.Body);
+      } else {
+        err = resp.Status;
+        if (resp.Body) {
+            err += '\n' + resp.Body;
+        }
+        throw err;
+      }
+    };
+
+
+    var doPost = function(body, qParams, auth, raw, suffix) {
+      var url = fixUrl(qParams.server) + suffix;
+      var res = http(
+          url, // URL
+          { // HTTP Request Headers
+              Method: 'POST',
+              Headers: {'Authorization': [auth]},
+              Body: ((body && body !== '') ? (JSON.stringify(body)) : '')
+          },
+          qParams.insecure
+      );
+      if (raw) {
+          return res;
+      } else {
+          return parseResponse(res);
+      }
+    };
+
+
+    var getIndicators = function(qArgs, qParams, auth) {
+        return doGetCSV(qArgs, qParams, auth, 'api/reports/indicators');
+    };
+
+
+    var getEntities = function(qArgs, qParams, auth) {
+        return doGetCSV(qArgs, qParams, auth, 'api/reports/entities');
+    };
+
+
+    var getIndicatorsByHostId = function(qArgs, qParams, auth, filterIds) {
+        if (!filterIds || filterIds.length === 0){
+            return {};
+        } else {
+            var indicators = getIndicators(qArgs, qParams, auth);
+            var indByHostId = {};
+            var hostId;
+            for(var i = 0; i < indicators.length; i++) {
+                hostId = indicators[i].HostId;
+                // Only include hostIds that appear in filterIds
+                if (filterIds.indexOf(hostId) >= 0) {
+                    if (indByHostId[hostId]) {
+                        indByHostId[hostId].push(indicators[i]);
+                    } else {
+                        indByHostId[hostId] = [indicators[i]];
+                    }
+                }
+            }
+            return indByHostId;
+        }
+    };
+
+
+
+    var createIncidentFromEntity = function(entity) {
+            var keys = Object.keys(entity);
+            var labels = [];
+            for (var i = 0; i<keys.length; i++) {
+                labels.push({'type': keys[i], 'value': entity[keys[i]]});
+            }
+
+            var eid = 'Unknown';
+            if (entity['Entity Type'] === 'host') {
+                if (entity.Hostname) {
+                    eid = entity.Hostname;
+                } else if (entity.IP) {
+                    eid = entity.IP;
+                } else {
+                    eid = entity['Entity ID'];
+                }
+            } else {
+                if (entity.Username) {
+                    eid = entity.Username;
+                } else {
+                    eid = entity['Entity ID'];
+                }
+            }
+
+            return {
+                "name": 'LightCyber: ' + entity['Entity Type'] + ' {' + eid + '} - ' + entity['Final Status'],
+                "labels": labels,
+                "details": JSON.stringify(entity),
+                "rawJSON": JSON.stringify(entity)
+            };
+        };
+
+    var getIncidents = function(qArgs, qParams, auth) {
+        var inc = [];
+        var last = getLastRun().highestLastDetected;
+        if (!last) {
+            last = '';
+        }
+        var data = getEntities(qArgs, qParams, auth);
+        if (data && data.results) {
+            var entities = data.results;
+            var highest = last;
+            var hostIds = {};
+            for (var i = 0; i < entities.length; i++) {
+                if ( entities[i].Status === 'Confirmed' || (qParams.fetchsuspicious && entities[i].Status === 'Suspicious') ) {
+                    if (entities[i]['Last Detected'] > last) {
+                        hostIds[entities[i]['Entity Id']] = '';
+                        inc.push(createIncidentFromEntity(entities[i]));
+                    }
+                    if (entities[i]['Last Detected'] > highest) {
+                        highest = entities[i]['Last Detected'];
+                    }
+                }
+            }
+            if (highest > last) {
+                setLastRun({'highestLastDetected': highest});
+            }
+
+            return JSON.stringify(inc);
+        } else {
+            return '';
+        }
+    };
+
+
+    delete args.using
+
+    delete args['using-brand']
+
+    // Currently API only supports Basic auth.
+
+    u = params.authentication.identifier;
+
+    p = params.authentication.password;
+
+    auth = 'Basic ' + Base64.encode(u + ':' + p);
+
+
+    // The command input arg holds the command sent from the user.
+
+    switch (command) {
+      // This is the call made when pressing the integration test button.
+      case 'test-module':
+          resp = doGet(args, params, auth, true, 'api/version');
+          if (resp.StatusCode === 200) {
+              return 'ok';
+          } else if (resp.Status) {
+              return resp.Status;
+          } else {
+              return resp;
+          }
+          break;
+      case 'fetch-incidents':
+          return getIncidents(args, params, auth);
+
+        case "lcm-host-opened-ports":
+            return doGetCSV(args, params, auth, "api/precompute/v1/open_ports_preset");
+        case "lcm-host-suspicious-artifacts":
+            return doGetCSV(args, params, auth, "api/precompute/v1/host_suspicious_artifacts");
+        case "lcm-host-processes":
+            return doGetCSV(args, params, auth, "api/precompute/v1/host_process_list");
+        case "lcm-host-loaded-modules":
+            return doGetCSV(args, params, auth, "api/precompute/v1/host_loaded_dlls");
+        case "lcm-host-processes-internet-connections":
+            return doGetCSV(args, params, auth, "api/precompute/v1/external_flows_with_md5");
+        case "lcm-host-autoruns":
+            return doGetCSV(args, params, auth, "api/precompute/v1/host_autoruns_preset");
+      case 'lcm-version':
+          return doGet(args, params, auth, false, 'api/version');
+      case 'lcm-indicators':
+          return getIndicators(args, params, auth);
+      case 'lcm-entities':
+          return getEntities(args, params, auth);
+      case 'lcm-hosts':
+          var data = doGet(args, params, auth, false, 'api/hosts');
+          return {results: data};
+      case 'lcm-domain':
+          return doGet(args, params, auth, false, 'api/domains/' + args.name);
+      case 'lcm-hostbyip':
+          var data = doGet(args, params, auth, false, 'api/hosts/by_ip/' + args.ip);
+          return {results: data};
+      case 'lcm-hostbyname':
+          var data = doGet(args, params, auth, false, 'api/hosts/by_name/' + args.name);
+          return {results: data};
+      case 'lcm-hostbyid':
+          var data = doGet(args, params, auth, false, 'api/hosts/' + args.id);
+          return {results: data};
+      case 'lcm-pathfinder-scan':
+          return doPost('', params, auth, false, 'api/hosts/' + args.id + '/scan');
+      case 'lcm-executablebymd5':
+          return doGet(args, params, auth, false, 'api/executables/' + args.md5);
+      case 'lcm-executablebyname':
+          return doGet(args, params, auth, false, 'api/executables/by_name/' + args.name);
+      case 'lcm-sandbox-report':
+          return doGet(args, params, auth, false, 'api/executables/' + args.md5 + '/report');
+      case 'lcm-host-artifacts':
+          return doGet(args, params, auth, false, 'api/hosts/' + args.id + '/archive');
+      case 'lcm-resolve-host':
+          return doPost(args.reason ? args.reason : '', params, auth, false, 'api/hosts/' + args.id + '/resolve');
+      case 'lcm-unresolve-host':
+          return doPost('', params, auth, false, 'api/hosts/' + args.id + '/unresolve');
+      case 'lcm-set-host-comment':
+          return doPost(args.comment, params, auth, false, 'api/hosts/' + args.id + '/comment');
+      case 'lcm-acknowledge-host':
+          return doPost('', params, auth, false, 'api/hosts/' + args.id + '/acknowledge');
+      case 'lcm-resolve-user':
+          return doPost(args.reason ? args.reason : '', params, auth, false, 'api/users/' + args.name + '/resolve');
+      case 'lcm-unresolve-user':
+          return doPost('', params, auth, false, 'api/users/' + args.name + '/unresolve');
+      case 'lcm-set-user-comment':
+          return doPost(args.comment, params, auth, false, 'api/users/' + args.name + '/comment');
+      case 'lcm-acknowledge-user':
+          return doPost('', params, auth, false, 'api/users/' + args.name + '/acknowledge');
+      case 'lcm-daily-report':
+          return doGet(args, params, auth, false, 'api/daily_report');
+      case 'lcm-indicatorsforentity':
+          return getIndicatorsByHostId(args, params, auth, args.id);
+      default:
+          return 'Unrecognized command: ' + command;
+    }
+  type: javascript
+  commands:
+  - name: lcm-version
+    deprecated: true
+    arguments: []
+    description: Show product version
+  - name: lcm-entities
+    deprecated: true
+    arguments: []
+    description: Show all entities reported in alerts
+  - name: lcm-indicators
+    deprecated: true
+    arguments: []
+    description: Show all indicators reported in alerts
+  - name: lcm-hosts
+    deprecated: true
+    arguments: []
+    description: Get a list of all hosts in the system which are a part of an indicator (either source or destination).
+  - name: lcm-hostbyip
+    deprecated: true
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to find
+    description: Get a specific host record by IP address (similar to user "find host" feature)
+  - name: lcm-hostbyname
+    deprecated: true
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: Name to find
+    description: Get a specific host record by host name (similar to user "find host" feature)
+  - name: lcm-pathfinder-scan
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: ID of host to scan
+    description: Initiate a manual pathfinder scan on the host.
+  - name: lcm-sandbox-report
+    deprecated: true
+    arguments:
+    - name: md5
+      required: true
+      default: true
+      description: The md5 for which to retrieve the report
+    description: Download HTML sandbox report for the given MD5
+  - name: lcm-daily-report
+    deprecated: true
+    arguments: []
+    description: Returns the daily report (normally sent by email)
+  - name: lcm-host-artifacts
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: ID of the host whose suspicious artifacts to download.
+    description: Download a zip containing the suspicious artifacts of the host.
+  - name: lcm-resolve-host
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    - name: reason
+      description: Reason for resolving the host
+    description: Resolve a host
+  - name: lcm-unresolve-host
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    description: Un-resolve a host
+  - name: lcm-set-host-comment
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    - name: comment
+      required: true
+      description: The new comment to set for the host
+    description: Change the host comment
+  - name: lcm-acknowledge-host
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The host's ID
+    description: Acknowledge all changes on a host (resets purple track changes marks)
+  - name: lcm-resolve-user
+    deprecated: true
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    - name: reason
+      description: Reason for resolving the user
+    description: Resolve a user
+  - name: lcm-unresolve-user
+    deprecated: true
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    description: Un-resolve a user
+  - name: lcm-set-user-comment
+    deprecated: true
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    - name: comment
+      required: true
+      description: The new comment to set for the user
+    description: Change the user's comment
+  - name: lcm-acknowledge-user
+    deprecated: true
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: User's name
+    description: Acknowledge all changes on a user (resets purple track changes marks)
+  - name: lcm-domain
+    deprecated: true
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: Domain name
+    description: Get a specific domain record by domain name
+  - name: lcm-executablebymd5
+    deprecated: true
+    arguments:
+    - name: md5
+      required: true
+      default: true
+      description: Executable's md5
+    description: Get a specific executable record (by MD5)
+  - name: lcm-executablebyname
+    deprecated: true
+    arguments:
+    - name: name
+      required: true
+      default: true
+      description: Executable's name
+    description: Get a specific executable record (by name)
+  - name: lcm-indicatorsforentity
+    deprecated: true
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: Host ID
+    description: Get indicators for a specific detected host
+  - name: lcm-host-opened-ports
+    deprecated: true
+    arguments:
+    - name: sort
+      description: How to sort the results
+    - name: host_id
+      required: true
+      description: Host id as presented in LightCyber Magna
+    description: Shows the used ports in this host
+  - name: lcm-host-suspicious-artifacts
+    deprecated: true
+    arguments:
+    - name: sort
+      description: "Sort results by this column"
+      defaultValue: final_score
+    - name: host_id
+      required: true
+      default: true
+      description: Host id as presented in LightCyber Magna
+    description: Returns all the suspicious artifacts of this host
+  - name: lcm-host-processes
+    deprecated: true
+    arguments:
+    - name: time
+      description: "Timestamp to search"
+    - name: sort
+      description: "Sort results by this column"
+      defaultValue: -score_e
+    - name: host_id
+      required: true
+      default: true
+      description: Host id as presented in LightCyber Magna
+    description: Returns all the running processes in the host
+  - name: lcm-host-loaded-modules
+    deprecated: true
+    arguments:
+    - name: sort
+      description: "Sort results by this column"
+      defaultValue: final_score
+    - name: host_id
+      required: true
+      default: true
+      description: Host id as presented in LightCyber Magna
+    description: Returns all the modules of this host
+  - name: lcm-host-processes-internet-connections
+    deprecated: true
+    arguments:
+    - name: time
+      description: "Timestamp to search"
+    - name: sort
+      description: "Sort results by this column"
+      defaultValue: process_sig
+    - name: src_host_id
+      required: true
+      default: true
+      description: Host id as presented in LightCyber Magna
+    description: Returns all the processes that established internet connection in this host
+  - name: lcm-host-autoruns
+    deprecated: true
+    arguments:
+    - name: sort
+      description: "Sort results by this column"
+      defaultValue: final_score
+    - name: host_id
+      required: true
+      default: true
+      description: Host id as presented in LightCyber Magna
+    description: Returns all installed autoruns programs in this host
+  isfetch: true
+tests:
+- No test
+fromversion: 5.0.0

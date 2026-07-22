@@ -1,0 +1,16 @@
+{
+    "result": [
+        {
+            "id": "5",
+            "target_type": "url",
+            "target_value": "https://facebook.com",
+            "comment": "Used for API testing"
+        },
+        {
+            "id": "6",
+            "target_type": "sha256",
+            "target_value": "8c12399112cfd22e7d44845ee457b7cf1be7a1a8b780d5a47a70cdbdad9da270"
+        }
+    ],
+    "next": "YmxhY2tsaXN0OzA5ZDcwM2Q2LTNmNTItNGY4Mi05YjJlLTQzYzA0ZTY0MjYyZTs3Ow=="
+}

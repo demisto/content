@@ -1,0 +1,46 @@
+{
+    "Type": 1,
+    "Contents": [
+        {
+            "url": "https://www.demisto-news.com",
+            "urlClassifications": "NEWS_AND_MEDIA",
+            "urlClassificationsWithSecurityAlert": ""
+        },
+        {
+            "url": "https://www.demisto-search.com",
+            "urlClassifications": "WEB_SEARCH",
+            "urlClassificationsWithSecurityAlert": ""
+        }
+    ],
+    "ContentsFormat": "json",
+    "ReadableContentsFormat": "markdown",
+    "HumanReadable": "### Zscaler URL Lookup\n|url|urlClassifications|\n|---|---|\n| https://www.demisto-news.com | NEWS_AND_MEDIA |\n| https://www.demisto-search.com | WEB_SEARCH |\n",
+    "EntryContext": {
+        "URL(val.Data && val.Data == obj.Data)": [
+            {
+                "Address": "https://www.demisto-news.com",
+                "Data": "https://www.demisto-news.com",
+                "urlClassifications": "NEWS_AND_MEDIA"
+            },
+            {
+                "Address": "https://www.demisto-search.com",
+                "Data": "https://www.demisto-search.com",
+                "urlClassifications": "WEB_SEARCH"
+            }
+        ],
+        "DBotScore": [
+            {
+                "Indicator": "https://www.demisto-news.com",
+                "Score": 1,
+                "Type": "url",
+                "Vendor": "Zscaler"
+            },
+            {
+                "Indicator": "https://www.demisto-search.com",
+                "Score": 1,
+                "Type": "url",
+                "Vendor": "Zscaler"
+            }
+        ]
+    }
+}

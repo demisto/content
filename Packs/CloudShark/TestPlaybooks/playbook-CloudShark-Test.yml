@@ -1,0 +1,500 @@
+id: CloudShark - Test Playbook
+version: -1
+name: CloudShark - Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89658211-3651-40bb-89f9-820a299ff30b
+    type: start
+    task:
+      id: 89658211-3651-40bb-89f9-820a299ff30b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: d3c88dfb-cf79-4445-89c0-e99bc38aece5
+    type: regular
+    task:
+      id: d3c88dfb-cf79-4445-89c0-e99bc38aece5
+      version: -1
+      name: cloudshark-upload
+      description: Upload a capture file to CloudShark
+      script: CloudShark|||cloudshark-upload
+      type: regular
+      iscommand: true
+      brand: CloudShark
+    nexttasks:
+      '#none#':
+      - "2"
+      - "3"
+    scriptarguments:
+      additional_tags:
+        simple: demisto,cloudshark,test
+      file:
+        simple: ${File.EntryID}
+      filename:
+        simple: demisto_integration_test.pcapng
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: f12eed24-fb82-4565-8153-c93dcaa7baa4
+    type: condition
+    task:
+      id: f12eed24-fb82-4565-8153-c93dcaa7baa4
+      version: -1
+      name: Check Capture ID Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: ${CloudShark.CaptureID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 6661ea6f-ea95-4997-8042-077389806c7f
+    type: condition
+    task:
+      id: 6661ea6f-ea95-4997-8042-077389806c7f
+      version: -1
+      name: Check URL Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    scriptarguments:
+      value:
+        simple: ${URL.Data}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 8b5f2a6b-d1a9-4731-88f1-a1b2d92f3eda
+    type: title
+    task:
+      id: 8b5f2a6b-d1a9-4731-88f1-a1b2d92f3eda
+      version: -1
+      name: CloudShark Upload
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 010a4065-ebbd-42c6-87b7-6604521255ec
+    type: title
+    task:
+      id: 010a4065-ebbd-42c6-87b7-6604521255ec
+      version: -1
+      name: CloudShark Download
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 6cc07b81-765f-4da5-82ca-e932c70be3de
+    type: regular
+    task:
+      id: 6cc07b81-765f-4da5-82ca-e932c70be3de
+      version: -1
+      name: cloudshark-download
+      description: Download a capture file from CloudShark
+      script: CloudShark|||cloudshark-download
+      type: regular
+      iscommand: true
+      brand: CloudShark
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      capture_id:
+        simple: ${CloudShark.CaptureID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: 7ea53467-1762-4ea1-848b-deec6860306a
+    type: title
+    task:
+      id: 7ea53467-1762-4ea1-848b-deec6860306a
+      version: -1
+      name: CloudShark Info
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 52d55988-9e1d-44e4-8f33-fc4224cc1807
+    type: condition
+    task:
+      id: 52d55988-9e1d-44e4-8f33-fc4224cc1807
+      version: -1
+      name: Check  File Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    scriptarguments:
+      value:
+        simple: ${File}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 91d6ab8a-30fb-4356-8fc8-0469c969ac10
+    type: regular
+    task:
+      id: 91d6ab8a-30fb-4356-8fc8-0469c969ac10
+      version: -1
+      name: cloudshark-info
+      description: Retrieve meta-infomation of capture on CloudShark
+      script: CloudShark|||cloudshark-info
+      type: regular
+      iscommand: true
+      brand: CloudShark
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      capture_id:
+        simple: ${CloudShark.CaptureID}
+      filename: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 10e39b8b-b7ac-47e4-890b-94bae7a272e6
+    type: condition
+    task:
+      id: 10e39b8b-b7ac-47e4-890b-94bae7a272e6
+      version: -1
+      name: Check Capture Info Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    scriptarguments:
+      value:
+        simple: ${CloudShark.CaptureInfo}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: 7a076e13-c043-4f37-86d3-5068e9fc010b
+    type: title
+    task:
+      id: 7a076e13-c043-4f37-86d3-5068e9fc010b
+      version: -1
+      name: CloudShark Delete
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "14":
+    id: "14"
+    taskid: c84d6fa6-3f2c-4636-8f7b-9e94f8357bd7
+    type: regular
+    task:
+      id: c84d6fa6-3f2c-4636-8f7b-9e94f8357bd7
+      version: -1
+      name: cloudshark-delete
+      description: Delete capture file from CloudShark
+      script: CloudShark|||cloudshark-delete
+      type: regular
+      iscommand: true
+      brand: CloudShark
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      capture_id:
+        simple: ${CloudShark.CaptureID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "15":
+    id: "15"
+    taskid: 0b23c917-f209-4ea0-8490-53f7b5f8ae47
+    type: condition
+    task:
+      id: 0b23c917-f209-4ea0-8490-53f7b5f8ae47
+      version: -1
+      name: Check Delete Result Exists
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    scriptarguments:
+      value:
+        simple: ${CloudShark.Result}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "16":
+    id: "16"
+    taskid: 9ce9beea-8d84-42d3-89dc-e169713bbaee
+    type: regular
+    task:
+      id: 9ce9beea-8d84-42d3-89dc-e169713bbaee
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "17":
+    id: "17"
+    taskid: e428256d-7286-4f65-8cc0-b064edc66f9b
+    type: regular
+    task:
+      id: e428256d-7286-4f65-8cc0-b064edc66f9b
+      version: -1
+      name: Download Test PCAP
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      body: {}
+      filename:
+        simple: capture.pcap
+      headers: {}
+      insecure: {}
+      method:
+        simple: GET
+      password: {}
+      proxy: {}
+      saveAsFile:
+        simple: "yes"
+      unsecure: {}
+      url:
+        simple: https://github.com/demisto/content/raw/master/TestData/TestPcapPost.pcap
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2795,
+        "width": 1040,
+        "x": 120,
+        "y": -360
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: ""
+outputs: []
+fromversion: 5.0.0

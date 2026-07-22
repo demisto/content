@@ -1,0 +1,30 @@
+{
+    "id": "USTA Account Takeover Prevention",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "playbookId": "USTA Account Takeover Prevention Employee Credential Incident",
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "USTA Account Takeover Prevention",
+    "prevName": "USTA Account Takeover Prevention",
+    "color": "#02111A",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "USTA Account Takeover Victim Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    }
+}

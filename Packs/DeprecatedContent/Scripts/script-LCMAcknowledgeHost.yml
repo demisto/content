@@ -1,0 +1,55 @@
+commonfields:
+  id: LCMAcknowledgeHost
+  version: -1
+name: LCMAcknowledgeHost
+script: >
+  import re
+
+  ID_REGEX = r'Id: ([a-zA-Z0-9\-]+)'
+
+
+  dArgs = demisto.args()
+
+  resp = demisto.executeCommand("LCMHosts", dArgs)
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  elif  resp[0]['Contents'] == 'No results.':
+      demisto.results('Host not found in LightCyber.')
+  else:
+      demisto.log(str(resp))
+      hosts = resp[0]['Contents']
+      if isinstance(hosts, list) and len(hosts) == 1 :
+          reMatch = re.search(ID_REGEX, hosts[0]['HostId'], re.I)
+          if reMatch and len(reMatch.groups()) > 0:
+              hostID = reMatch.group(1)
+          if hostID:
+              resp = demisto.executeCommand("lcm-acknowledge-host", {'id': hostID})
+              if isError(resp[0]) or resp[0]['Contents'] != 'No result returned':
+                  demisto.results(resp)
+              else:
+                  demisto.results('Done')
+          else:
+              demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Could not extract host ID.' } )
+      else:
+          demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : 'Results weren\'t a single host: ' + str(resp)[:3000] } )
+type: python
+subtype: python2
+tags:
+- lightcyber
+comment: Deprecated. This script is deprecated. LightCyber Magna is no longer available.
+system: true
+deprecated: true
+args:
+- name: name
+  default: true
+  description: The host's name
+- name: ip
+  description: The host's IP address
+scripttarget: 0
+dependson:
+  must:
+  - lcm-acknowledge-host
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

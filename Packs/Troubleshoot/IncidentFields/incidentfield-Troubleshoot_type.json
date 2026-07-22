@@ -1,0 +1,33 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Integration Troubleshooting"
+ ],
+ "caseInsensitive": true,
+ "cliName": "troubleshoottype",
+ "closeForm": false,
+ "content": true,
+ "description": "Pick configuration if you have problem with configuring the integration. Pick command for troubleshooting running a command.",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_troubleshoottype",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Troubleshoot type",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "selectValues": [
+  "I'm unable to configure an instance",
+  "I have a problem with running a command"
+ ],
+ "sla": 0,
+ "system": false,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

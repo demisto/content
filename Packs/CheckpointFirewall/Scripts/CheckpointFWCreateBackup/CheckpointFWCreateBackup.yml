@@ -1,0 +1,39 @@
+commonfields:
+  id: CheckpointFWCreateBackup
+  version: -1
+name: CheckpointFWCreateBackup
+script: ''
+type: python
+subtype: python2
+tags:
+- checkpoint
+comment: Deprecated. Use ssh command instead. Connect to a Check Point firewall appliance using SSH and trigger a task to
+  create a configuration backup of the device. The user account being used to access
+  the device must be set to use the SSH shell and not the built-in Check Point CLI.
+  For more information, consult the CheckPoint documentation.
+enabled: true
+args:
+- name: devices
+  required: true
+  default: true
+  description: List of RemoteAccess instances of the Check Point firewall appliances
+    to back up.
+outputs:
+- contextPath: CheckpointBackup.DeviceName
+  description: Name of the backed-up device.
+- contextPath: CheckpointBackup.System
+  description: System that was backed up.
+- contextPath: CheckpointBackup.Status
+  description: Status of the backup process.
+- contextPath: CheckpointBackup.Path
+  description: Path of the backup file.
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - ssh
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests
+dockerimage: demisto/python:2.7.18.27799

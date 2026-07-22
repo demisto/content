@@ -1,0 +1,30 @@
+{
+ "id": "incident_otsecuritysubstationlocation",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2021-11-29T06:36:45.975750149Z",
+ "name": "OTSecurity Substation Location",
+ "ownerOnly": false,
+ "cliName": "otsecuritysubstationlocation",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "OTSecurity Rogue Device Found"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": true,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72
+}

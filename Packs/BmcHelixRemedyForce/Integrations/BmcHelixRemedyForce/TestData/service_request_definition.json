@@ -1,0 +1,25 @@
+{
+    "input_data": {
+        "Result": {
+            "Id": "SOME_ID",
+            "Fields": [
+                {
+                    "Name": "title",
+                    "Value": "SERVICE_REQUEST_DEF_NAME"
+                }
+            ],
+            "Questions": [
+                {
+                    "Id": "QUESTION_ID",
+                    "Text": "QUESTION",
+                    "IsRequired": true
+                }
+            ]
+        }
+    },
+    "expected_output": {
+        "Service Request Definition Id": "SOME_ID",
+        "Service Request Definition Name": "SERVICE_REQUEST_DEF_NAME",
+        "Questions": "Id: QUESTION_ID\nQuestion: QUESTION\nIs Required: Yes"
+    }
+}

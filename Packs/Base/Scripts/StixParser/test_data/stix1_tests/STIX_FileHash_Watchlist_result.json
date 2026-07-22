@@ -1,0 +1,38 @@
+[
+    {
+        "value": "e61fcc6a06420106fa6642ef833b9c38",
+        "indicator_type": "File",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "e61fcc6a06420106fa6642ef833b9c38",
+            "htype": "md5",
+            "type": "File",
+            "indicator_ref": "example:Observable-c9ca84dc-4542-4292-af54-3c5c914ccbbc",
+            "value": "e61fcc6a06420106fa6642ef833b9c38"
+        }
+    },
+    {
+        "value": "abcdef1234567890abcdef1234567890",
+        "indicator_type": "File",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "abcdef1234567890abcdef1234567890",
+            "htype": "md5",
+            "type": "File",
+            "indicator_ref": "example:Observable-c9ca84dc-4542-4292-af54-3c5c914ccbbc",
+            "value": "abcdef1234567890abcdef1234567890"
+        }
+    },
+    {
+        "value": "00112233445566778899aabbccddeeff",
+        "indicator_type": "File",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "00112233445566778899aabbccddeeff",
+            "htype": "md5",
+            "type": "File",
+            "indicator_ref": "example:Observable-c9ca84dc-4542-4292-af54-3c5c914ccbbc",
+            "value": "00112233445566778899aabbccddeeff"
+        }
+    }
+]

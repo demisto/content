@@ -1,0 +1,9 @@
+[INGEST:vendor="box", product="box", target_dataset="box_box_raw", no_hit=keep]
+filter created_at ~= "\d{4}-\d{2}-\d{2}T"
+| alter 
+    tmp_create_at_string = to_string(created_at)
+| alter 
+    tmp_parse_created = parse_timestamp("%Y-%m-%dT%H:%M:%S%Ez", tmp_create_at_string)
+| alter 
+    _time = tmp_parse_created
+| fields -tmp_create_at_string, tmp_parse_created;

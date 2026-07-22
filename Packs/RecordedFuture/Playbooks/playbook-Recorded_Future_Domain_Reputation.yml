@@ -1,0 +1,338 @@
+id: Recorded Future Domain Reputation
+version: -1
+name: Recorded Future Domain Reputation
+description: Domain reputation using Recorded Future SOAR enrichment
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 46eaf52b-f22e-4d99-8b97-f389db8f5d5c
+    type: start
+    task:
+      id: 46eaf52b-f22e-4d99-8b97-f389db8f5d5c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 844d9fad-8cb7-4877-8d6e-cc55f81657d3
+    type: condition
+    task:
+      id: 844d9fad-8cb7-4877-8d6e-cc55f81657d3
+      version: -1
+      name: Is there a domain to get reputation of?
+      description: Checks whether the playbook's input contains at least one domain
+        name for which to get the reputation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: a53e5ad6-3d5a-47fc-8afc-e4a1a66fe039
+    type: title
+    task:
+      id: a53e5ad6-3d5a-47fc-8afc-e4a1a66fe039
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: ef521fa4-102a-472b-8ed9-2e9afde09347
+    type: condition
+    task:
+      id: ef521fa4-102a-472b-8ed9-2e9afde09347
+      version: -1
+      name: Is Recorded Future API enabled?
+      description: Checks if there is an active instance of the Recorded Future API
+        integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Recorded Future v2
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: f70a438e-3494-4fa6-859a-a304ff7e553f
+    type: regular
+    task:
+      id: f70a438e-3494-4fa6-859a-a304ff7e553f
+      version: -1
+      name: Get domain reputation from Recorded Future
+      description: Get a quick indication of the risk associated with a domain.
+      script: Recorded Future v2|||domain
+      type: regular
+      iscommand: true
+      brand: Recorded Future v2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: d402c8af-de3f-4ff0-8e3a-3bdfe2366d02
+    type: title
+    task:
+      id: d402c8af-de3f-4ff0-8e3a-3bdfe2366d02
+      version: -1
+      name: Get reputation using Recorded Future API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 7843cabc-fd9a-4730-8427-5b2abdaebbe4
+    type: regular
+    task:
+      id: 7843cabc-fd9a-4730-8427-5b2abdaebbe4
+      version: -1
+      name: setIndicator
+      description: Change the properties of an indicator
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      recordedfutureriskrules:
+        simple: ${RecordedFuture.Domain.rules}
+      value:
+        simple: ${inputs.Domain}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_24_#default#": 0.57,
+      "26_24_#default#": 0.55,
+      "26_28_yes": 0.61
+    },
+    "paper": {
+      "dimensions": {
+        "height": 895,
+        "width": 890,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value:
+    complex:
+      root: Domain
+      accessor: Name
+  required: false
+  description: The domain name to get reputation of.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested
+  type: string
+- contextPath: DBotScore.Type
+  description: Indicator type
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: Domain.Malicious.Vendor
+  description: For malicious domains, the vendor that made the decision
+  type: string
+- contextPath: Domain.Malicious.Description
+  description: For malicious domains, the reason that the vendor made the decision
+  type: string
+- contextPath: Domain.Name
+  description: Domain name
+  type: string
+- contextPath: RecordedFuture.Domain.riskScore
+  description: Recorded Future Domain Risk Score
+  type: number
+- contextPath: RecordedFuture.Domain.riskLevel
+  description: Recorded Future Domain Risk Level
+  type: string
+- contextPath: RecordedFuture.Domain.Evidence.rule
+  description: Recorded Future Risk Rule Name
+  type: string
+- contextPath: RecordedFuture.Domain.Evidence.mitigation
+  description: Recorded Future Risk Rule Mitigation
+  type: string
+- contextPath: RecordedFuture.Domain.Evidence.description
+  description: Recorded Future Risk Rule description
+  type: string
+- contextPath: RecordedFuture.Domain.Evidence.timestamp
+  description: Recorded Future Risk Rule timestamp
+  type: date
+- contextPath: RecordedFuture.Domain.Evidence.level
+  description: Recorded Future Risk Rule Level
+  type: number
+- contextPath: RecordedFuture.Domain.Evidence.ruleid
+  description: Recorded Future Risk Rule ID
+  type: string
+- contextPath: RecordedFuture.Domain.name
+  description: Domain name
+  type: string
+- contextPath: RecordedFuture.Domain.maxRules
+  description: Maximum count of Recorded Future Domain Risk Rules
+  type: number
+- contextPath: RecordedFuture.Domain.ruleCount
+  description: Number of triggered Recorded Future Domain Risk Rules
+  type: number
+tests:
+- Recorded Future Test Playbook
+fromversion: 5.0.0

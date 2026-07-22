@@ -1,0 +1,31 @@
+{
+    "id": "indicator_sigmaruleid",
+    "version": -1,
+    "modified": "2024-07-15T10:02:49.620191586Z",
+    "name": "Sigma Rule ID",
+    "ownerOnly": false,
+    "cliName": "sigmaruleid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Sigma Rule"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,723 @@
+description: Test user profile data
+id: Okta IAM - Test Playbook
+inputs:
+- description: Test user profile data.
+  key: userprofile
+  playbookInputQuery:
+  required: true
+  value:
+    simple: '{"email": "testdemisto2222@paloaltonetworks.com", "username": "testdemisto2222@paloaltonetworks.com",
+      "givenname": "test", "surname": "demisto", "locationregion": "Americas"}'
+name: Okta IAM - Test Playbook
+outputs: []
+sourceplaybookid: 266bcc20-b5f3-4a64-8d93-af843bd24add
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5483ca45-e762-4b44-8a90-f60fcd971fe3
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5483ca45-e762-4b44-8a90-f60fcd971fe3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 50
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      allow-enable:
+        simple: "false"
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a user.
+      id: 12ee7903-3e9f-459e-88da-b7a7052eccbc
+      iscommand: true
+      name: Create User
+      script: '|||iam-create-user'
+      type: regular
+      version: -1
+    taskid: 12ee7903-3e9f-459e-88da-b7a7052eccbc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 370
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Retrieves a single user resource.
+      id: a73ce3ef-3371-4a1c-8c6f-46d8d191746f
+      iscommand: true
+      name: Get User
+      script: '|||iam-get-user'
+      type: regular
+      version: -1
+    taskid: a73ce3ef-3371-4a1c-8c6f-46d8d191746f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 720
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      allow-enable:
+        simple: "false"
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      id: f26ddaa7-5840-464a-8c93-36fb500a2a1e
+      iscommand: true
+      name: Update User
+      script: '|||iam-update-user'
+      type: regular
+      version: -1
+    taskid: f26ddaa7-5840-464a-8c93-36fb500a2a1e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1070
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Disable an active user.
+      id: 78f7c019-b713-46c2-840a-008f54b298a1
+      iscommand: true
+      name: Disable User
+      script: '|||iam-disable-user'
+      type: regular
+      version: -1
+    taskid: 78f7c019-b713-46c2-840a-008f54b298a1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1420
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      allow-enable:
+        simple: "true"
+      user-profile:
+        complex:
+          root: inputs.userprofile
+          transformers:
+          - operator: ParseJSON
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Updates an existing user with the data passed in the user-profile
+        argument.
+      id: 250b5717-4a37-4704-8911-4cc31fc1965c
+      iscommand: true
+      name: Enable User Using Update Command
+      script: '|||iam-update-user'
+      type: regular
+      version: -1
+    taskid: 250b5717-4a37-4704-8911-4cc31fc1965c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1770
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9615d31d-7053-4e37-8516-feaec9b597f8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 9615d31d-7053-4e37-8516-feaec9b597f8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2135
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 416df34b-3198-43ee-8304-977d74e499aa
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 416df34b-3198-43ee-8304-977d74e499aa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 195
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: IAM.Vendor.success
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: ${.=false}
+      - - left:
+            iscontext: true
+            value:
+              simple: IAM.Vendor.success
+          operator: containsGeneral
+          right:
+            value:
+              simple: ${.=true}
+      label: "yes"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6ddc9da5-a42b-4d07-80ba-d677659e2ce5
+      iscommand: false
+      name: Create/Update user success?
+      type: condition
+      version: -1
+    taskid: 6ddc9da5-a42b-4d07-80ba-d677659e2ce5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 545
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: get
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: containsGeneral
+          right:
+            value:
+              simple: ${.=true}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: get
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: ${.=false}
+      label: "yes"
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 03bf5bca-5520-41ee-8a0a-45727731b68b
+      iscommand: false
+      name: Get user success?
+      type: condition
+      version: -1
+    taskid: 03bf5bca-5520-41ee-8a0a-45727731b68b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 397.5,
+          "y": 895
+        }
+      }
+  "16":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: update
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: containsGeneral
+          right:
+            value:
+              simple: ${.=true}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: update
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: ${.=false}
+      label: "yes"
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a3205adb-66de-41cf-89cd-7f4295f4b9d5
+      iscommand: false
+      name: Update user success?
+      type: condition
+      version: -1
+    taskid: a3205adb-66de-41cf-89cd-7f4295f4b9d5
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 285,
+          "y": 1245
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: disable
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: containsGeneral
+          right:
+            value:
+              simple: ${.=true}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: disable
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: ${.=false}
+      label: "yes"
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 40d1c3c0-effe-4753-8dd6-248798631943
+      iscommand: false
+      name: Disable user success?
+      type: condition
+      version: -1
+    taskid: 40d1c3c0-effe-4753-8dd6-248798631943
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1595
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: enable
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: containsGeneral
+          right:
+            value:
+              simple: ${.=true}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: IAM.Vendor.action
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: enable
+                root: IAM.Vendor
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: success
+                  operator: getField
+          operator: notContainsGeneral
+          right:
+            value:
+              simple: ${.=false}
+      label: "yes"
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 07c5a884-8569-405a-8723-ae1cf6dd0bf6
+      iscommand: false
+      name: Enable user success?
+      type: condition
+      version: -1
+    taskid: 07c5a884-8569-405a-8723-ae1cf6dd0bf6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1945
+        }
+      }
+  "19":
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: |-
+          The following instances failed:
+          ${IAM.Vendor(val.success == false)}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 9ab9c744-1dea-41a7-8220-8cf0d2d128c1
+      iscommand: false
+      name: Print Error Entry
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 9ab9c744-1dea-41a7-8220-8cf0d2d128c1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2120
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2165,
+        "width": 1035,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.0.0

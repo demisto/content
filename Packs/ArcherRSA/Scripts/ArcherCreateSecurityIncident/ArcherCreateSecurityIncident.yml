@@ -1,0 +1,36 @@
+commonfields:
+  id: ArcherCreateSecurityIncident
+  version: -1
+name: ArcherCreateSecurityIncident
+script: ''
+type: python
+subtype: python2
+tags: []
+comment: Deprecated. No available replacement.
+enabled: true
+args:
+- name: description
+  description: Incident Description
+- name: dateTimeOccurred
+  description: 'The occurrence time of the incident. For example: DateTimeOccurred="3/23/2018 7:00 AM"'
+- name: dateTimeIdentified
+  description: 'The identifying time of the incident. For example: DateTimeIdentified="3/23/2018 7:00 AM"'
+- name: dateTimeReported
+  description: 'The reporting time of the incident. For example: DateTimeReported="3/23/2018 7:00 AM"'
+- name: executiveSummary
+  description: The Executive Summary of the incident
+- name: incidentReport
+  description: The incident's report
+outputs:
+- contextPath: Archer.Record.Id
+  description: The content Id of the new record
+  type: number
+scripttarget: 0
+dependson:
+  must:
+  - archer-create-record
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (auto formatted)

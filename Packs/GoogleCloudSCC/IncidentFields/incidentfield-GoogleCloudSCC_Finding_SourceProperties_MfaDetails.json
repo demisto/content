@@ -1,0 +1,30 @@
+{
+ "id": "incident_googlecloudsccfindingsourcepropertiesmfadetails",
+ "version": -1,
+ "modified": "2021-01-22T12:50:10.537411353+05:30",
+ "name": "GoogleCloudSCC Finding SourceProperties MfaDetails",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccfindingsourcepropertiesmfadetails",
+ "type": "markdown",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

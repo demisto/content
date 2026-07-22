@@ -1,0 +1,21 @@
+{
+    "id": 431,
+    "revisionId": 15,
+    "type": "openioc",
+    "typeVersion": "1.0",
+    "isSchemaValid": true,
+    "intrinsicId": "test1",
+    "md5": "12345678test",
+    "name": "VIRUS TEST",
+    "description": "Generic indicator for the virus test.",
+    "size": 5930,
+    "alertCount": 0,
+    "compiled": null,
+    "unresolvedAlertCount": 0,
+    "labelIds": [],
+    "sourceId": 1,
+    "mitreAttack": null,
+    "platforms": null,
+    "createdAt": "2021-04-14T16:45:57.316Z",
+    "updatedAt": "2021-04-18T11:36:56.448Z"
+}

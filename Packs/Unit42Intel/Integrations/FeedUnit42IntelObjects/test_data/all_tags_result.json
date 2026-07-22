@@ -1,0 +1,64 @@
+{
+  "tags": [
+    {
+      "comments": 2,
+      "tag_groups": [
+        {
+          "tag_group_name": "PotentiallyUnwantedProgram",
+          "description": "PUPs, or Potentially Unwanted Programs, are programs that may include adware, advertising, toolbars, and pop-ups that are unrelated to the software you downloaded. PUPs often come bundled with other software that you installed."
+        }
+      ],
+      "tag_definition_id": 38866,
+      "tag_name": "mocktag",
+      "public_tag_name": "Mock.mocktag",
+      "count": 1081,
+      "lasthit": "2021-03-31 17:50:24",
+      "description": "some description",
+      "tag_definition_status_id": 1,
+      "tag_definition_scope_id": 4,
+      "tag_class_id": 3,
+      "source": "Some Source",
+      "created_at": "2016-01-01 00:00:00",
+      "updated_at": "2021-03-15 19:27:21",
+      "last_comment": "2021-02-12 03:54:03",
+      "tagstatus": "enable",
+      "customer_name": "some customer",
+      "tag_class": "malware_family",
+      "tag_definition_status": "enabled",
+      "tag_definition_scope": "mock",
+      "up_votes": 12,
+      "down_votes": 0,
+      "total_searches": 2
+    },
+    {
+      "comments": 2,
+      "tag_groups": [
+        {
+          "tag_group_name": "PotentiallyUnwantedProgram",
+          "description": "PUPs, or Potentially Unwanted Programs, are programs that may include adware, advertising, toolbars, and pop-ups that are unrelated to the software you downloaded. PUPs often come bundled with other software that you installed."
+        }
+      ],
+      "tag_definition_id": 38867,
+      "tag_name": "mocktag1",
+      "public_tag_name": "Mock.mocktag1",
+      "count": 1081,
+      "lasthit": "2021-03-31 17:50:24",
+      "description": "some description",
+      "tag_definition_status_id": 1,
+      "tag_definition_scope_id": 4,
+      "tag_class_id": 3,
+      "source": "Some Source",
+      "created_at": "2016-01-01 00:00:00",
+      "updated_at": "2021-03-15 19:27:21",
+      "last_comment": "2021-02-12 03:54:03",
+      "tagstatus": "enable",
+      "customer_name": "some customer",
+      "tag_class": "malware_family",
+      "tag_definition_status": "enabled",
+      "tag_definition_scope": "mock",
+      "up_votes": 12,
+      "down_votes": 0,
+      "total_searches": 2
+    }
+  ]
+}

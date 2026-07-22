@@ -1,0 +1,485 @@
+id: ExtractDomainFromUrlAndEmail-Test
+version: -1
+name: ExtractDomainFromUrlAndEmail-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0dafe8b1-f28a-44b9-8787-b7c63367ab39
+    type: start
+    task:
+      id: 0dafe8b1-f28a-44b9-8787-b7c63367ab39
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: c2e7b8d9-8a9a-466d-8e55-eb861251a112
+    type: regular
+    task:
+      id: c2e7b8d9-8a9a-466d-8e55-eb861251a112
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "5"
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: a1797403-7512-47a0-80b2-c412810e0d11
+    type: regular
+    task:
+      id: a1797403-7512-47a0-80b2-c412810e0d11
+      version: -1
+      name: ExtractDomainFromUrlAndEmail - test single input
+      description: Extract Domain from a URL or Email
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      input:
+        simple: example@hotmail.com  # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 51eb753f-4e67-4b77-8afe-5a02bdeeed07
+    type: regular
+    task:
+      id: 51eb753f-4e67-4b77-8afe-5a02bdeeed07
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: hotmail.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 5c86aa95-360d-4c8e-8a80-d58b1fcc965a
+    type: title
+    task:
+      id: 5c86aa95-360d-4c8e-8a80-d58b1fcc965a
+      version: -1
+      name: Verify Unicode
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: a6296894-a85e-4192-87d0-d8b9605e7243
+    type: regular
+    task:
+      id: a6296894-a85e-4192-87d0-d8b9605e7243
+      version: -1
+      name: ExtractDomainFromUrlAndEmail - test multiple input
+      description: Extract Domain from a URL or Email
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    scriptarguments:
+      input:
+        simple: https://typora.io/, example@macmillan.com  # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 05b9c288-40c3-44f5-8418-44d419e09cbc
+    type: regular
+    task:
+      id: 05b9c288-40c3-44f5-8418-44d419e09cbc
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      substring:
+        simple: typora.io
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: ebb5c282-8427-497d-824e-bdca1679e858
+    type: regular
+    task:
+      id: ebb5c282-8427-497d-824e-bdca1679e858
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      substring:
+        simple: macmillan.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: d268011c-b205-4aff-82db-ed08659f0061
+    type: regular
+    task:
+      id: d268011c-b205-4aff-82db-ed08659f0061
+      version: -1
+      name: ExtractDomainFromUrlAndEmail - test with URLs that need unescaping
+      description: Extract Domain from a URL or Email
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+      - "10"
+      - "11"
+    scriptarguments:
+      input:
+        simple: https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=ywDJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzrBLaWI&s=zroN7KQdBCPBOfhOmv5SP1DDzZKZ1y9I3x4STS5PbHA&e=, hxxps://www[.]demisto[.]com, https://emea01.safelinks.protection.outlook.com/?url=https%3A%2F%2Ftwitter.com%2FPhilipsBeLux&data=02|01||cb2462dc8640484baf7608d638d2a698|1a407a2d76754d178692b3ac285306e4|0|0|636758874714819880&sdata=dnJiphWFhnAKsk5Ps0bj0p%2FvXVo8TpidtGZcW6t8lDQ%3D&reserved=0%3E%5bcid:image003.gif@01CF4D7F.1DF62650%5d%3C # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: dc5bba83-fd49-4300-8421-88bddd45a8e3
+    type: regular
+    task:
+      id: dc5bba83-fd49-4300-8421-88bddd45a8e3
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      substring:
+        simple: getpostman.com # disable-secrets-detection
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 3fc40fc8-ef89-455e-8a84-818d532a0e9f
+    type: regular
+    task:
+      id: 3fc40fc8-ef89-455e-8a84-818d532a0e9f
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+      substring:
+        simple: demisto.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "11":
+    id: "11"
+    taskid: 6c2cfbc0-24ee-49f8-8efb-79698caa628d
+    type: regular
+    task:
+      id: 6c2cfbc0-24ee-49f8-8efb-79698caa628d
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      humanReadableEntryId:
+        complex:
+          root: lastCompletedTaskEntries
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "2"
+      substring:
+        simple: twitter.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "12":
+    id: "12"
+    taskid: 89b14742-cec7-4325-8b43-86c0e35fcf06
+    type: regular
+    task:
+      id: 89b14742-cec7-4325-8b43-86c0e35fcf06
+      version: -1
+      name: Extract from unicode url
+      description: Extract Domain(s) from URL(s) and/or Email(s)
+      scriptName: ExtractDomainFromUrlAndEmail
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      input:
+        simple: www.bücher.de
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1130,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: af759e58-3832-4cb6-8342-124b0bc79d9f
+    type: regular
+    task:
+      id: af759e58-3832-4cb6-8342-124b0bc79d9f
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      humanReadableEntryId:
+        simple: ${lastCompletedTaskEntries}
+      substring:
+        simple: bücher
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1120,
+        "width": 2530,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,0 +1,6 @@
+[file:GoogleSafeBrowsing_image.png]
+ignore=IM111
+
+[file:GoogleSafeBrowsingV2.yml]
+ignore=IN145
+

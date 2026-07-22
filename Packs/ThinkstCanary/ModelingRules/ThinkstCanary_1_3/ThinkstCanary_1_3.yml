@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: thinkst_canary_modeling_rule
+name: Thinkst Canary Modeling Rule
+rules: ''
+schema: ''
+tags: Thinkst Canary
+supportedModules:
+- xsiam

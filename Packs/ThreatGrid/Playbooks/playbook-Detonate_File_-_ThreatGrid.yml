@@ -1,0 +1,585 @@
+id: detonate_file_-_threatgrid
+version: -1
+name: Detonate File - ThreatGrid
+description: Deprecated. Use Detonate File - ThreatGrid v2 instead.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+    type: start
+    task:
+      id: 29dcbc1e-0bb0-45f1-82ed-eb65b6ce039d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1378d2a9-9fcc-47d0-817f-9d9145740752
+    type: condition
+    task:
+      id: 1378d2a9-9fcc-47d0-817f-9d9145740752
+      version: -1
+      name: Is ThreatGrid enabled?
+      description: Verify that there is a valid instance of ThreatGrid is enabled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Threat Grid
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+    type: title
+    task:
+      id: e6a670a6-eff4-4b16-883b-f08e7d7e7bd3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 80dc5945-a851-469d-8445-3930393aa5d0
+    type: regular
+    task:
+      id: 80dc5945-a851-469d-8445-3930393aa5d0
+      version: -1
+      name: ThreatGrid Get Samples State
+      description: Get the sample state.
+      script: '|||threat-grid-get-samples-state'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ids:
+        complex:
+          root: ThreatGrid
+          accessor: Sample.ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 754b0562-8ec3-4c58-8345-748d9cd51a72
+    type: regular
+    task:
+      id: 754b0562-8ec3-4c58-8345-748d9cd51a72
+      version: -1
+      name: Set file to context
+      description: Set the file object into context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append: {}
+      key:
+        simple: File
+      value:
+        complex:
+          root: inputs.File
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 97fcf073-c63a-42d4-8e65-ba6d4814d859
+    type: playbook
+    task:
+      id: 97fcf073-c63a-42d4-8e65-ba6d4814d859
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continually running the command in Step #2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      Ids:
+        complex:
+          root: ThreatGrid
+          accessor: Sample.ID
+      Interval:
+        complex:
+          root: inputs.Interval
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: threat-grid-get-samples-state
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: ThreatGrid.Sample(val.State!=='succ' && val.State!=='fail').ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 93e193f6-a438-4349-861c-f0f99b4b3997
+    type: condition
+    task:
+      id: 93e193f6-a438-4349-861c-f0f99b4b3997
+      version: -1
+      name: Is there a file to detonate?
+      description: Checks whether there's a file to detonate - if not then the detonation is skipped
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 5eb99a51-d296-41dd-8a6e-93fceabc767f
+    type: condition
+    task:
+      id: 5eb99a51-d296-41dd-8a6e-93fceabc767f
+      version: -1
+      name: Is the file type supported?
+      description: Will not continue the execution if file type is not supported.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+          ignorecase: true
+        - operator: match
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+          ignorecase: true
+        - operator: match
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+          right:
+            value:
+              simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 701d7a32-0c81-4fd3-83c9-fbc7aa6efd30
+    type: condition
+    task:
+      id: 701d7a32-0c81-4fd3-83c9-fbc7aa6efd30
+      version: -1
+      name: Is the file size bigger than 0?
+      description: Check that fail size is bigger than 0
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 4fe8b8b6-097b-42e5-8d2a-7d7693101c90
+    type: regular
+    task:
+      id: 4fe8b8b6-097b-42e5-8d2a-7d7693101c90
+      version: -1
+      name: ThreatGrid Upload File
+      description: Submits a sample to threat grid for analysis
+      script: '|||threat-grid-upload-sample'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      file-id:
+        complex:
+          root: File
+          filters:
+          - - operator: greaterThan
+              left:
+                value:
+                  simple: File.Size
+                iscontext: true
+              right:
+                value:
+                  simple: "0"
+          - - operator: match
+              left:
+                value:
+                  simple: File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+            - operator: match
+              left:
+                value:
+                  simple: File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:EXE|DLL|JAR|JS|PDF|DOC|DOCX|RTF|XLS|PPT|PPTX|XML|ZIP|VBN|SEP|XZ|GZ|BZ2|TAR|MHTML|SWF|LNK|URL|MSI|JTD|JTT|JTDC|JTTC|HWP|HWT|HWPX|BAT|HTA|PS1|VBS|WSF|JSE|VBE|CHM)\b
+              ignorecase: true
+          accessor: EntryID
+      filename:
+        complex:
+          root: inputs.FileName
+      playbook: {}
+      private:
+        complex:
+          root: inputs.Private
+      tags:
+        complex:
+          root: inputs.Tags
+      vm:
+        complex:
+          root: inputs.VM
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_6_#default#": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 830,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: File object of the file to detonate.
+  playbookInputQuery:
+- key: FileName
+  value:
+    simple: file-detonated-via-demisto
+  required: false
+  description: Name of the file to detonate.
+  playbookInputQuery:
+- key: VM
+  value: {}
+  required: false
+  description: The VM to use (string)
+  playbookInputQuery:
+- key: playbook
+  value:
+    simple: default
+  required: false
+  description: Name of the Threat Grid playbook to apply to this sample run
+  playbookInputQuery:
+- key: Private
+  value:
+    simple: "True"
+  required: false
+  description: If the value is set to 'False', the sample will not be private. Any value other than 'False' will set the sample to private.
+  playbookInputQuery:
+- key: Source
+  value: {}
+  required: false
+  description: a string used for identifying the source of the detonation (user defined)
+  playbookInputQuery:
+- key: Tags
+  value: {}
+  required: false
+  description: A comma-separated list of tags applied to this sample.
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery:
+outputs:
+- contextPath: File.Malicious
+  description: The File malicious description
+  type: unknown
+- contextPath: File.Malicious.Vendor
+  description: For malicious files, the vendor that made the decision
+  type: string
+- contextPath: File.Type
+  description: File type e.g. "PE"
+  type: string
+- contextPath: File.Size
+  description: File size
+  type: number
+- contextPath: File.MD5
+  description: MD5 hash of the file
+  type: string
+- contextPath: File.Name
+  description: Filename
+  type: string
+- contextPath: File.SHA1
+  description: SHA1 hash of the file
+  type: string
+- contextPath: File
+  description: The File object
+  type: unknown
+- contextPath: File.SHA256
+  description: SHA256 hash of the file
+  type: string
+- contextPath: DBotScore
+  description: The DBotScore object
+  type: unknown
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested
+  type: string
+- contextPath: DBotScore.Type
+  description: The type of the indicator
+  type: string
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score
+  type: string
+- contextPath: DBotScore.Score
+  description: The actual score
+  type: number
+- contextPath: ThreatGrid.Sample.State
+  description: The sample state.
+- contextPath: ThreatGrid.Sample.ID
+  description: The sample ID.
+fromversion: 5.0.0
+deprecated: true
+tests:
+- No tests (deprecated)

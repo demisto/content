@@ -1,0 +1,32 @@
+{
+    "id": "incident_fileupload",
+    "version": -1,
+    "modified": "2023-01-17T16:46:34.542615631Z",
+    "name": "File Upload",
+    "ownerOnly": false,
+    "description": "Used to upload files to incidents in a way that would make them distinguishable from the rest of the incident files. This field can be used, for example, to execute commands on manually uploaded files with the click of an incident layout button.",
+    "cliName": "fileupload",
+    "type": "attachments",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "marketplaces": [
+        "xsoar"
+    ],
+    "fromVersion": "6.8.0"
+}

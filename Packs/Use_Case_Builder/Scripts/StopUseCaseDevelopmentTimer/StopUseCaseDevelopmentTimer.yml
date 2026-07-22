@@ -1,0 +1,18 @@
+commonfields:
+  id: StopUseCaseDevelopmentTimer
+  version: -1
+comment: ''
+dockerimage: demisto/python3:3.12.8.3296088
+enabled: true
+name: StopUseCaseDevelopmentTimer
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- field-change-triggered
+type: python
+fromversion: 6.10.0
+tests:
+- Run all tests

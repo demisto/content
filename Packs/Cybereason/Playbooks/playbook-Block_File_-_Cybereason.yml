@@ -1,0 +1,197 @@
+id: Block File - Cybereason
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block File - Cybereason
+description: This playbook accepts an MD5 hash and blocks the file using the Cybereason
+  integration.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 5e4385e3-76c2-48e2-80a4-c3798cdae027
+    type: start
+    task:
+      id: 5e4385e3-76c2-48e2-80a4-c3798cdae027
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '6':
+    id: '6'
+    taskid: 9cf85355-9028-4a01-8304-3a371020c9b3
+    type: condition
+    task:
+      id: 9cf85355-9028-4a01-8304-3a371020c9b3
+      version: -1
+      name: Is Cybereason integration enabled?
+      description: Checks if Cybereason is enabled.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      yes:
+      - '8'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cybereason
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 200\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '8':
+    id: '8'
+    taskid: 0f02e921-eb9a-47bd-8d9c-93759602036f
+    type: condition
+    task:
+      id: 0f02e921-eb9a-47bd-8d9c-93759602036f
+      version: -1
+      name: Is there an MD5 to block?
+      description: Checks if there is a value for the MD5 input field. This task does
+        not verify that the value is actually an MD5 hash, just that a value exists
+        in the MD5 field.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '9'
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MD5
+            iscontext: true
+    view: "{\n  \"position\": {\n    \"x\": 520,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '9':
+    id: '9'
+    taskid: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
+    type: title
+    task:
+      id: 2c14bf01-7fd9-45f8-8554-86d0c1332d81
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 265,\n    \"y\": 710\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  '10':
+    id: '10'
+    taskid: 907db366-4c70-4890-8184-071b0fbc5508
+    type: regular
+    task:
+      id: 907db366-4c70-4890-8184-071b0fbc5508
+      version: -1
+      name: Cybereason Prevent File
+      description: Prevent malop process file
+      script: Cybereason|||cybereason-prevent-file
+      type: regular
+      iscommand: true
+      brand: Cybereason
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      md5:
+        complex:
+          root: inputs.MD5
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 760,\n    \"y\": 540\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+system: true
+view: "{\n  \"linkLabelsPosition\": {\n    \"6_8_yes\": 0.55,\n    \"6_9_#default#\"\
+  : 0.65,\n    \"8_10_yes\": 0.59,\n    \"8_9_#default#\": 0.35\n  },\n  \"paper\"\
+  : {\n    \"dimensions\": {\n      \"height\": 725,\n      \"width\": 875,\n    \
+  \  \"x\": 265,\n      \"y\": 50\n    }\n  }\n}"
+inputs:
+- key: MD5
+  value:
+    complex:
+      root: File
+      filters:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Malicious
+            iscontext: true
+      accessor: MD5
+      transformers:
+      - operator: uniq
+  required: false
+  description: The MD5 hash of the file to block.
+  playbookInputQuery:
+outputs:
+- contextPath: CbResponse.BlockedHashes.LastBlock.Time
+  description: Last block time.
+- contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
+  description: Last block hostname.
+- contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
+  description: Last block sensor ID.
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

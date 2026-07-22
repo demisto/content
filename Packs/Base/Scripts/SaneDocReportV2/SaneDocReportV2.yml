@@ -1,0 +1,35 @@
+args:
+- default: true
+  description: sane report json file contents base64
+  name: sane_docx_report_base64
+  required: true
+- defaultValue: portrait
+  description: orientation of the report
+  name: orientation
+- defaultValue: A4
+  description: The paper size for the report.
+  name: paperSize
+- description: Custom logo image.
+  name: customerLogo
+- description: The logo for XSOAR.
+  name: demistoLogo
+comment: Parse Sane-json-reports and export them as docx files (used internally).
+commonfields:
+  id: SaneDocReports
+  version: -1
+enabled: true
+name: SaneDocReports
+script: '-'
+tags:
+- sane-doc-reports
+- sane-reports
+- docx
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/sane-doc-reports:1.0.0.24118
+runas: DBotWeakRole
+tests:
+- No Test
+deprecated: true
+fromversion: 5.5.0

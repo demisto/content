@@ -1,0 +1,68 @@
+commonfields:
+  id: SendEmail
+  version: -1
+name: SendEmail
+script: >-
+  from string import Template
+
+  dArgs = demisto.args()
+
+  if 'htmlBody' in dArgs:
+      dArgs['htmlBody'] = Template(dArgs['htmlBody'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
+  elif 'body' in dArgs:
+      dArgs['body'] = Template(dArgs['body'].replace('\\n', '\n')).safe_substitute(recipient=dArgs['to'])
+  elif 'noteEntryID' in dArgs:
+      entry = demisto.executeCommand( 'getEntry', { 'id' : demisto.args()['noteEntryID'] } )[0]
+      if isError(entry):
+          demisto.results(entry)
+          sys.exit()
+      else:
+          dArgs['body'] = entry['Contents']
+  else:
+      dArgs['body'] = ''
+  if 'subject' in dArgs:
+      if demisto.incidents():
+          dArgs['subject'] = Template(dArgs['subject']).safe_substitute(name=demisto.incidents()[0]['name'])
+  else:
+      dArgs['subject'] = 'No subject'
+  demisto.results(demisto.executeCommand('send-mail', dArgs))
+type: python
+subtype: python2
+tags:
+- response
+- email
+- server
+comment: Deprecated. please use the send-mail command instead Send an email with the specified parameters. Attachments are provided as a comma-separated list of entry IDs. Example usage -  !SendEmail subject="File from war room" body="Please see the attached file. --DBot" to=jane@acme.com cc=john@acme.com attachIDs=89@3,46@3
+system: true
+args:
+- name: to
+  required: true
+  default: true
+  description: Email addresses for the 'to' field
+- name: cc
+  description: Email addresses for the 'cc' field
+- name: bcc
+  description: Email addresses for the 'bcc' field
+- name: subject
+  required: true
+  description: Subject for the email to be sent
+- name: body
+  description: The contents (body) of the email to be sent
+- name: attachIDs
+  description: 'A comma-separated list of IDs of war room entries that contain files. Used to attach files to the outgoing email. Example: attachIDs=15@8,19@8'
+- name: htmlBody
+  description: Send an html formatted email - overrides "body" argument, cannot use both.
+- name: noteEntryID
+  description: Send the textual contents of an entry
+- name: replyTo
+  description: The address to reply to
+scripttarget: 0
+dependson:
+  must:
+  - send-mail
+timeout: 0s
+deprecated: true
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

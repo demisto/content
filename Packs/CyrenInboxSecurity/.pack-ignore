@@ -1,0 +1,15 @@
+[file:CyrenInboxSecurity_image.png]
+ignore=IM111
+
+[file:classifier-Cyren_Inbox_Security_Classifier.json]
+ignore=BA101
+
+[file:CyrenFindSimilarIncidents.yml]
+ignore=BA124
+
+[file:CyrenShowThreatIndicators.yml]
+ignore=BA124
+
+# GR103 is temporary, see CIAC-11656
+[file:layoutscontainer-Cyren_Inbox_Security_layout.json]
+ignore=GR103

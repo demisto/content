@@ -1,0 +1,213 @@
+{
+	"id": "CybelAngel",
+	"version": -1,
+	"type": "mapping-incoming",
+	"name": "CybelAngel",
+	"description": "",
+	"defaultIncidentType": "CybelAngel",
+	"definitionId": "",
+	"fromVersion": "6.0.0",
+	"feed": false,
+	"mapping": {
+		"CybelAngel": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"CybelAngel Abstract": {
+					"simple": "abstract"
+				},
+				"CybelAngel Abuse Email": {
+					"simple": "abuse_email"
+				},
+				"CybelAngel Analysis": {
+					"simple": "analysis"
+				},
+				"CybelAngel Asset Urls": {
+					"simple": "asset_urls"
+				},
+				"CybelAngel Board": {
+					"simple": "board"
+				},
+				"CybelAngel City": {
+					"simple": "city"
+				},
+				"CybelAngel Country Code": {
+					"simple": "country_code"
+				},
+				"CybelAngel Created At": {
+					"simple": "created_at"
+				},
+				"CybelAngel Detected At": {
+					"simple": "detected_at"
+				},
+				"CybelAngel Domain Registered At": {
+					"simple": "domain_registered_at"
+				},
+				"CybelAngel IP": {
+					"simple": "ip"
+				},
+				"CybelAngel Incident ID": {
+					"simple": "incident_id"
+				},
+				"CybelAngel Incident Type": {
+					"simple": "incident_type"
+				},
+				"CybelAngel Investigation ID": {
+					"simple": "investigation_id"
+				},
+				"CybelAngel Keywords": {
+					"simple": "keywords"
+				},
+				"CybelAngel Language": {
+					"simple": "language"
+				},
+				"CybelAngel Liveness": {
+					"simple": "liveness"
+				},
+				"CybelAngel Location": {
+					"simple": "location"
+				},
+				"CybelAngel MX Servers": {
+					"simple": "mx_servers"
+				},
+				"CybelAngel Machine Name": {
+					"simple": "machine_name"
+				},
+				"CybelAngel Malware Location": {
+					"simple": "malware_location"
+				},
+				"CybelAngel Malware Name": {
+					"simple": "malware_name"
+				},
+				"CybelAngel Module": {
+					"simple": "module"
+				},
+				"CybelAngel NS Servers": {
+					"simple": "ns_servers"
+				},
+				"CybelAngel Origins": {
+					"simple": "origins"
+				},
+				"CybelAngel Port": {
+					"simple": "port"
+				},
+				"CybelAngel Registrant Email": {
+					"simple": "registrant_email"
+				},
+				"CybelAngel Registrant Name": {
+					"simple": "registrant_name"
+				},
+				"CybelAngel Report Content": {
+					"simple": "report_content"
+				},
+				"CybelAngel Report Type": {
+					"simple": "report_type"
+				},
+				"CybelAngel Risks": {
+					"simple": "risks"
+				},
+				"CybelAngel Samples": {
+					"simple": "samples"
+				},
+				"CybelAngel Screenshots": {
+					"simple": "screenshots"
+				},
+				"CybelAngel Sender": {
+					"simple": "sender"
+				},
+				"CybelAngel Sent At": {
+					"simple": "sent_at"
+				},
+				"CybelAngel Severity": {
+					"simple": "severity"
+				},
+				"CybelAngel Solved At": {
+					"simple": "solved_at"
+				},
+				"CybelAngel Source": {
+					"simple": "source"
+				},
+				"CybelAngel Stream": {
+					"simple": "stream"
+				},
+				"CybelAngel Suggestions": {
+					"simple": "suggestions"
+				},
+				"CybelAngel Tags": {
+					"simple": "tags"
+				},
+				"CybelAngel Threat": {
+					"simple": "threat"
+				},
+				"CybelAngel Title": {
+					"simple": "title"
+				},
+				"CybelAngel Updated At": {
+					"simple": "updated_at"
+				},
+				"CybelAngel User Session": {
+					"simple": "user_session"
+				},
+				"CybelAngel UserGroups": {
+					"simple": "usergroups"
+				},
+				"CybelAngel Volume": {
+					"simple": "volume"
+				},
+				"CybelAngel WHOIS": {
+					"simple": "whois"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"CybelAngel Abstract": {
+					"simple": "abstract"
+				},
+				"CybelAngel Abuse Email": {
+					"simple": "abuse_email"
+				},
+				"CybelAngel Analysis": {
+					"simple": "analysis"
+				},
+				"CybelAngel Asset Urls": {
+					"simple": "asset_urls"
+				},
+				"CybelAngel Board": {
+					"simple": "board"
+				},
+				"CybelAngel Created At": {
+					"simple": "created_at"
+				},
+				"CybelAngel Detected At": {
+					"simple": "detected_at"
+				},
+				"CybelAngel Domain Registered At": {
+					"simple": "domain_registered_at"
+				},
+				"CybelAngel Incident ID": {
+					"simple": "incident_id"
+				},
+				"CybelAngel Keywords": {
+					"complex": {
+						"filters": [],
+						"root": "keywords",
+						"transformers": []
+					}
+				},
+				"CybelAngel Machine Name": {
+					"simple": "machine_name"
+				},
+				"CybelAngel Malware Location": {
+					"simple": "malware_location"
+				},
+				"CybelAngel Malware Name": {
+					"simple": "malware_name"
+				},
+				"CybelAngel NS Servers": {
+					"simple": "ns_servers"
+				}
+			}
+		}
+	}
+}

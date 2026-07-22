@@ -1,0 +1,6 @@
+[file:AWSSagemaker.yml]
+ignore=BA124
+
+[known_words]
+sagemaker
+

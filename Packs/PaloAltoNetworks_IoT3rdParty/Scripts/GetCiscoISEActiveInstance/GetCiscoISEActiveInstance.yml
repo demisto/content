@@ -1,0 +1,23 @@
+comment: Determines which configured Cisco ISE instance is in active/primary state and returns the name of the instance.
+commonfields:
+  id: GetCiscoISEActiveInstance
+  version: -1
+dockerimage: demisto/python3:3.10.12.63474
+enabled: true
+name: GetCiscoISEActiveInstance
+outputs:
+- contextPath: PaloAltoIoTIntegrationBase.ActiveNodeInstance
+  description: Returns the instance name of the active Cisco ISE node.
+- contextPath: PaloAltoIoTIntegrationBase.NodeErrorStatus
+  description: Returns the node's error status if no active Cisco ISE nodes are found.
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- PANW IoT 3rd Party Integration
+- Cisco ISE
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

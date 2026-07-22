@@ -1,0 +1,47 @@
+[
+  {
+    "id": 978,
+    "agentUuid": "00437744-8a46-4467-8811-987fead6697f",
+    "processName": "firefox.exe",
+    "processPath": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "parentProcessName": "",
+    "parentProcessPath": "",
+    "commandLine": "\"C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe\" ",
+    "username": "jsmith",
+    "firstSeenTime": "2021-05-31T16:27:34.645Z",
+    "lastSeenTime": "2021-05-31T16:27:34.645Z",
+    "lastEndTime": "2021-05-31T16:27:46.753Z",
+    "seenCount": 1,
+    "activeCount": 0
+  },
+  {
+    "id": 979,
+    "agentUuid": "00437744-8a46-4467-8811-987fead6697f",
+    "processName": "firefox.exe",
+    "processPath": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "parentProcessName": "",
+    "parentProcessPath": "",
+    "commandLine": "\"C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe\"",
+    "username": "jsmith",
+    "firstSeenTime": "2021-05-31T16:27:35.604Z",
+    "lastSeenTime": "2021-05-31T16:28:08.062Z",
+    "lastEndTime": "2021-05-31T16:28:11.253Z",
+    "seenCount": 3,
+    "activeCount": 1
+  },
+  {
+    "id": 989,
+    "agentUuid": "00437744-8a46-4467-8811-987fead6697f",
+    "processName": "firefox.exe",
+    "processPath": "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+    "parentProcessName": "",
+    "parentProcessPath": "",
+    "commandLine": "%FIREFOX_PARAMS%",
+    "username": "jsmith",
+    "firstSeenTime": "2021-05-31T16:28:09.785Z",
+    "lastSeenTime": "2021-05-31T16:29:11.836Z",
+    "lastEndTime": "2021-05-31T16:30:15.459Z",
+    "seenCount": 8,
+    "activeCount": 6
+  }
+]

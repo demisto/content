@@ -1,0 +1,221 @@
+{
+    "id": 1197,
+    "hostname": "WIN-GNVEC8UIKUD",
+    "description": "Machine Windows de démonstration",
+    "last_communication": "2019-09-13T09:14:34.000Z",
+    "reboot_required": false,
+    "addresses": [
+      "WIN-GNVEC8UIKUD"
+    ],
+    "updates_count": 9,
+    "boot_at": null,
+    "category": "server",
+    "created_at": "2019-09-10T14:59:23.000Z",
+    "cve_announcements_count": 1699,
+    "analyzed_at": "2022-06-08T07:57:47.440Z",
+    "prioritized_cve_announcements_count": 645,
+    "status": "server_vulnerable",
+    "cve_announcements": [
+      {
+        "cve_code": "CVE-2017-8759",
+        "score": 7.8,
+        "environmental_score": 7.6,
+        "epss": 0.9716,
+        "ignored": false,
+        "active": false,
+        "detected_at": "2019-09-10T15:15:09.000Z",
+        "fixed_at": "2020-09-20T11:39:29.000Z",
+        "published": "2017-09-12T23:29:12.193Z",
+        "prioritized": true
+      },
+      {
+        "cve_code": "CVE-2016-3238",
+        "score": 8.1,
+        "environmental_score": 7.7,
+        "epss": 0.14148,
+        "ignored": false,
+        "active": false,
+        "detected_at": "2019-09-10T15:15:24.000Z",
+        "fixed_at": "2019-09-12T04:10:32.000Z",
+        "published": "2016-07-12T23:59:01.103Z",
+        "prioritized": false
+      },
+      {
+        "cve_code": "CVE-2024-5687",
+        "score": 5.3,
+        "environmental_score": 5.6,
+        "epss": null,
+        "ignored": false,
+        "active": true,
+        "detected_at": "2024-06-17T20:08:46.367Z",
+        "fixed_at": null,
+        "published": "2024-06-11T11:15:50.260Z",
+        "prioritized": false
+      }
+    ],
+    "security_issues": [
+      {
+        "id": 44,
+        "sid": "PENTEST-2021-REF-1",
+        "level": "level_critical",
+        "title": "Résultat d'un test d'intrusion",
+        "description": "Description technique du résultat de test d'intrusion",
+        "editable": true,
+        "detected_at": "2020-11-12T14:56:17.241Z",
+        "status": "ignored"
+      }
+    ],
+    "os": {
+      "key": "windows_2012_r2",
+      "name": "Windows Server 2012 R2",
+      "arch": null,
+      "eol": "2023-10-10",
+      "short_name": "Windows 2012 R2",
+      "type": "Os::Windows"
+    },
+    "environment": {
+      "id": 34,
+      "name": "High",
+      "confidentiality_requirement": "confidentiality_requirement_high",
+      "integrity_requirement": "integrity_requirement_high",
+      "availability_requirement": "availability_requirement_high",
+      "ceiling_cvss_v3": null
+    },
+    "groups": [
+      {
+        "id": 807,
+        "name": "APP_Apache",
+        "description": null,
+        "color": "#12AFCB"
+      },
+      {
+        "id": 808,
+        "name": "APP_BaseDeDonnees",
+        "description": null,
+        "color": "#12AFCB"
+      },
+      {
+        "id": 768,
+        "name": "AmazonWebServices",
+        "description": null,
+        "color": "#12AFCB"
+      }
+    ],
+    "compliance_repositories": [],
+    "updates": [
+      {
+        "id": 428477,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB4041085",
+          "type": "Packages::Kb",
+          "version": "dc4eb637-5391-4ca8-8f08-98584d61effa"
+        },
+        "current": null,
+        "cve_announcements": [
+          "CVE-2015-2479",
+          "CVE-2015-2480",
+          "CVE-2015-2481",
+          "CVE-2017-0248",
+          "CVE-2017-0160"
+        ]
+      },
+      {
+        "id": 428478,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB2993939",
+          "type": "Packages::Kb",
+          "version": "0fa166a3-3d8f-4880-8e41-9eb1e5473d87"
+        },
+        "current": null,
+        "cve_announcements": [
+          "CVE-2014-4075"
+        ]
+      },
+      {
+        "id": 428480,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB890830",
+          "type": "Packages::Kb",
+          "version": "d0bf3ffb-d01a-4877-b5df-be5d48ff898c"
+        },
+        "current": null,
+        "cve_announcements": []
+      },
+      {
+        "id": 428482,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB2993937",
+          "type": "Packages::Kb",
+          "version": "25678293-12ec-432b-b5f1-998f9e723457"
+        },
+        "current": null,
+        "cve_announcements": [
+          "CVE-2014-4075"
+        ]
+      },
+      {
+        "id": 428484,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB4054519",
+          "type": "Packages::Kb",
+          "version": "da014f40-f4dc-4fce-9ce5-4e79ab15279b"
+        },
+        "current": null,
+        "cve_announcements": [
+          "CVE-2015-0079"
+        ]
+      },
+      {
+        "id": 428502,
+        "ignored": false,
+        "patchable": true,
+        "target": {
+          "vendor": null,
+          "product": "KB4516067",
+          "type": "Packages::Kb",
+          "version": "2d058d3d-0701-4064-a0a6-def4fbfe961d"
+        },
+        "current": null,
+        "cve_announcements": [
+          "CVE-2018-12126",
+          "CVE-2018-12130"
+        ]
+      },
+      {
+        "id": 443016,
+        "ignored": false,
+        "patchable": false,
+        "target": {
+          "vendor": null,
+          "product": "Mozilla Firefox 66.0 (x64 fr)",
+          "type": "Packages::WinApp",
+          "version": "127"
+        },
+        "current": {
+          "vendor": null,
+          "product": "Mozilla Firefox 66.0 (x64 fr)",
+          "type": "Packages::WinApp",
+          "version": "66.0"
+        },
+        "cve_announcements": [
+          "CVE-2020-12387",
+          "CVE-2020-12388"
+        ]
+      }
+    ]
+  }

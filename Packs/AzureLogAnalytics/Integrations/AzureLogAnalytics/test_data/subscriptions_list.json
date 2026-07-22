@@ -1,0 +1,52 @@
+{
+    "value": [
+        {
+            "id": "/subscriptions/1234",
+            "subscriptionId": "1234",
+            "tenantId": "1122",
+            "displayName": "Example Subscription",
+            "state": "Enabled",
+            "subscriptionPolicies": {
+                "locationPlacementId": "Internal_2014-09-01",
+                "quotaId": "Internal_2014-09-01",
+                "spendingLimit": "Off"
+            },
+            "authorizationSource": "RoleBased",
+            "managedByTenants": [
+                {
+                    "tenantId": "9012"
+                }
+            ],
+            "tags": {
+                "tagKey1": "tagValue1",
+                "tagKey2": "tagValue2"
+            }
+        },
+        {
+            "id": "/subscriptions/5678",
+            "subscriptionId": "5678",
+            "tenantId": "2211",
+            "displayName": "Example Subscription2",
+            "state": "Enabled",
+            "subscriptionPolicies": {
+                "locationPlacementId": "Internal_2014-09-01",
+                "quotaId": "Internal_2014-09-01",
+                "spendingLimit": "Off"
+            },
+            "authorizationSource": "RoleBased",
+            "managedByTenants": [
+                {
+                    "tenantId": "9012"
+                },
+                {
+                    "tenantId": "2109"
+                }
+            ],
+            "tags": {
+                "tagKey1": "tagValue1",
+                "tagKey2": "tagValue2"
+            }
+        }
+    ],
+    "nextLink": ""
+}

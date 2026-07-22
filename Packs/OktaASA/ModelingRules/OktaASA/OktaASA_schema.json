@@ -1,0 +1,32 @@
+{
+    "okta_asa_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        },
+        "client": {
+            "type": "string",
+            "is_array": false
+        },
+        "server": {
+            "type": "string",
+            "is_array": false
+        },
+        "project": {
+            "type": "string",
+            "is_array": false
+        },
+        "group": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+  }

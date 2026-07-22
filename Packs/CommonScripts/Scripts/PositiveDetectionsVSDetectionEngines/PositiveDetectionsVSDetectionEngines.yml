@@ -1,0 +1,21 @@
+comment: Shows a bar chart of the number of Positive Detections out of overall detections.
+fromversion: 5.0.0
+args:
+- description: Indicator with detections custom fields.
+  name: indicator
+  required: true
+commonfields:
+  id: PositiveDetectionsVSDetectionEngines
+  version: -1
+enabled: true
+name: PositiveDetectionsVSDetectionEngines
+script: '-'
+tags:
+- dynamic-indicator-section
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.13.10404775
+runas: DBotWeakRole
+tests:
+- No test
+subtype: python3

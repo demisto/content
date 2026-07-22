@@ -1,0 +1,8 @@
+name: Microsoft DHCP Parsing Rule
+id: Microsoft_DHCPParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

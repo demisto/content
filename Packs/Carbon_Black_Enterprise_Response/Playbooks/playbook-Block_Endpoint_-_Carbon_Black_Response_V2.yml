@@ -1,0 +1,252 @@
+deprecated: true
+id: Block Endpoint - Carbon Black Response V2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Block Endpoint - Carbon Black Response V2
+description: Deprecated. Use the `Block Endpoint - Carbon Black Response V2.1` playbook instead. Carbon Black Response - isolates an endpoint for a given hostname.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 73040a0e-cca5-4197-8089-f46650317040
+    type: start
+    task:
+      id: 73040a0e-cca5-4197-8089-f46650317040
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 8d840b85-2255-4771-8047-1cffd0133d56
+    type: regular
+    task:
+      id: 8d840b85-2255-4771-8047-1cffd0133d56
+      version: -1
+      name: Get host information from Carbon Black Enterprise Response
+      description: Display information about the given sensor.
+      script: '|||cb-sensor-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      groupid: {}
+      hostname:
+        simple: ${inputs.Hostname}
+      ip: {}
+      sensor:
+        simple: ${inputs.Sensor_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 8a7b3b07-16d1-4953-897b-dde82b8153f3
+    type: regular
+    task:
+      id: 8a7b3b07-16d1-4953-897b-dde82b8153f3
+      version: -1
+      name: Isolate endpoint
+      description: Isolate the endpoint from the network.
+      script: '|||cb-quarantine-device'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      sensor:
+        simple: ${CbResponse.Sensors.CbSensorID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d35be2d6-6709-40d0-846e-dc9aef142e30
+    type: title
+    task:
+      id: d35be2d6-6709-40d0-846e-dc9aef142e30
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: d338c691-a845-4f21-841e-5482255c63f6
+    type: condition
+    task:
+      id: d338c691-a845-4f21-841e-5482255c63f6
+      version: -1
+      name: Is Carbon Black Enterprise Response enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: carbonblack-v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 179cbf36-32ef-47d3-8d77-2bac9a797283
+    type: condition
+    task:
+      id: 179cbf36-32ef-47d3-8d77-2bac9a797283
+      version: -1
+      name: 'Is the endpoint ready for isolation? '
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CbResponse.Sensors.Isolated
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "5_4_#default#": 0.79,
+      "7_3_yes": 0.64,
+      "7_4_#default#": 0.25
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 722.5,
+        "x": -180,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: {}
+  required: false
+  description: The hostname to isolate.
+  playbookInputQuery:
+- key: Sensor_id
+  value: {}
+  required: false
+  description: The sensor ID of the endpoint.
+  playbookInputQuery:
+outputs:
+- contextPath: CbResponse.Sensors.CbSensorID
+  description: Carbon Black Response Sensors IDs that are isolated.
+- contextPath: Endpoint
+  description: The isolated endpoint.
+- contextPath: CbResponse.Sensors.Status
+  description: Sensor status.
+  type: unknown
+- contextPath: CbResponse.Sensors.Isolated
+  description: Is sensor isolated.
+  type: unknown
+- contextPath: Endpoint.Hostname
+  description: Endpoint hostname.
+  type: unknown
+tests:
+- Carbon Black Response Test
+- CBFindIP - Test
+fromversion: 5.5.0

@@ -1,0 +1,8 @@
+fromversion: 8.4.0
+id: Akamai_WAF_ModelingRule
+name: Akamai WAF Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

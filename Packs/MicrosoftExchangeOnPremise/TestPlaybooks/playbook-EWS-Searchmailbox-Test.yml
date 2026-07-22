@@ -1,0 +1,947 @@
+id: EWS search-mailbox test
+version: -1
+name: EWS search-mailbox test
+description: Test search and move commands for ews and o365.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f37f2377-0308-4b9c-81f0-0a1b2b471c4c
+    type: start
+    task:
+      id: f37f2377-0308-4b9c-81f0-0a1b2b471c4c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e01275fd-036b-4e0f-8185-039d334bced3
+    type: title
+    task:
+      id: e01275fd-036b-4e0f-8185-039d334bced3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 60cb5b86-06ed-4876-8dd9-8dec6a9bb6ea
+    type: regular
+    task:
+      id: 60cb5b86-06ed-4876-8dd9-8dec6a9bb6ea
+      version: -1
+      name: Send Email (ews v2)
+      script: 'EWS v2|||send-mail'
+      type: regular
+      iscommand: true
+      brand: EWS v2
+      description: Sends an email using EWS.
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      body:
+        simple: 384868fafe3ef9190a8a5e59c5c195c
+      from:
+        simple: demistoadmin@demisto.int
+      subject:
+        simple: EWS search-mailbox test
+      to:
+        simple: demistoadmin@demisto.int
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 978964c1-17d8-43a2-8ca5-c64ce6bbdfd7
+    type: regular
+    task:
+      id: 978964c1-17d8-43a2-8ca5-c64ce6bbdfd7
+      version: -1
+      name: Wait For Email
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 322aa042-ae0e-4a44-8bd5-0a2443b4e27f
+    type: regular
+    task:
+      id: 322aa042-ae0e-4a44-8bd5-0a2443b4e27f
+      version: -1
+      name: Delete email from inbox
+      script: EWS v2|||ews-delete-items
+      type: regular
+      iscommand: true
+      brand: "EWS v2"
+      description: Delete items from mailbox.
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      delete-type:
+        simple: hard
+      item-ids:
+        simple: ${EWS.Items.itemId}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3460
+        }
+      }
+    note: false
+    timertriggers: []
+    continueonerrortype: ""
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: fa38c987-bb3f-4c18-8e53-925deff10b1c
+    type: regular
+    task:
+      id: fa38c987-bb3f-4c18-8e53-925deff10b1c
+      version: -1
+      name: Search Item In Inbox/test
+      script: 'EWS v2|||ews-search-mailbox'
+      type: regular
+      iscommand: true
+      brand: "EWS v2"
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      limit:
+        simple: "1"
+      query:
+        simple: body:384868fafe3ef9190a8a5e59c5c195c
+      folder-path:
+        simple: Inbox/Test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 34afebc3-ef52-488d-8087-70e5b09ba012
+    type: regular
+    task:
+      id: 34afebc3-ef52-488d-8087-70e5b09ba012
+      version: -1
+      name: Wait
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2935
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: ccd1f742-b3db-4a8f-8d7c-c5f752d98f6a
+    type: regular
+    task:
+      id: ccd1f742-b3db-4a8f-8d7c-c5f752d98f6a
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: ebea068d-29f8-4775-89b4-33ae345f7b40
+    type: regular
+    task:
+      id: ebea068d-29f8-4775-89b4-33ae345f7b40
+      version: -1
+      name: Search Item In "Sent Items" (o365)
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: EWSO365|||ews-search-mailbox
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      limit:
+        simple: "1"
+      query:
+        simple: body:384868fafe3ef9190a8a5e59c5c195c
+      folder-path:
+        simple: Sent items
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 641af685-0ccb-42de-81d8-e42f1a1aa93a
+    type: regular
+    task:
+      id: 641af685-0ccb-42de-81d8-e42f1a1aa93a
+      version: -1
+      name: Move (ews v2)
+      description: Move an item to different folder in the mailbox.
+      script: EWS v2|||ews-move-item
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      item-id:
+        simple: ${EWS.Items.itemId}
+      target-folder-path:
+        simple: Inbox/Test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b2114585-1ef6-4e2f-81d5-a733ecc1f8bf
+    type: regular
+    task:
+      id: b2114585-1ef6-4e2f-81d5-a733ecc1f8bf
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e8c1d094-07e6-4882-88e8-23454a6cb658
+    type: regular
+    task:
+      id: e8c1d094-07e6-4882-88e8-23454a6cb658
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 32630e20-8123-49a3-84ed-35c0ef3d5b1e
+    type: regular
+    task:
+      id: 32630e20-8123-49a3-84ed-35c0ef3d5b1e
+      version: -1
+      name: Search Item In sent-items
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      folder-path:
+        simple: Sent Items
+      limit:
+        simple: "1"
+      query:
+        simple: body:384868fafe3ef9190a8a5e59c5c195c
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 097eb61d-086e-4cb2-8706-fb787c58360c
+    type: regular
+    task:
+      id: 097eb61d-086e-4cb2-8706-fb787c58360c
+      version: -1
+      name: Delete email from sent items
+      description: Delete items from mailbox.
+      script: EWS v2|||ews-delete-items
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      delete-type:
+        simple: hard
+      item-ids:
+        simple: ${EWS.Items.itemId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3985
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 0bd79810-9b68-492c-8fc8-602d964e71c6
+    type: regular
+    task:
+      id: 0bd79810-9b68-492c-8fc8-602d964e71c6
+      version: -1
+      name: Send Email (o365)
+      description: Sends an email.
+      script: EWSO365|||send-mail
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      body:
+        simple: 384868fafe3ef9190a8a5e59c5c195c
+      from:
+        simple: testbox@demistodev.onmicrosoft.com
+      subject:
+        simple: EWS search-mailbox test
+      to:
+        simple: testbox@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c9aae28e-51ab-4fd5-84f8-229b2dc173b2
+    type: regular
+    task:
+      id: c9aae28e-51ab-4fd5-84f8-229b2dc173b2
+      version: -1
+      name: Wait For Email
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      seconds:
+        simple: "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: a58ab584-2b32-43cd-88fc-1d263b2dcd21
+    type: regular
+    task:
+      id: a58ab584-2b32-43cd-88fc-1d263b2dcd21
+      version: -1
+      name: Search Item In Inbox (ews v2)
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: EWS v2|||ews-search-mailbox
+      type: regular
+      iscommand: true
+      brand: EWS v2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      limit:
+        simple: "1"
+      query:
+        simple: body:384868fafe3ef9190a8a5e59c5c195c
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 266a3431-ffac-4ce0-8a0f-90c02370f86b
+    type: regular
+    task:
+      id: 266a3431-ffac-4ce0-8a0f-90c02370f86b
+      version: -1
+      name: Move (o365)
+      description: Move an item to different folder in the mailbox.
+      script: EWSO365|||ews-move-item
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      item-id:
+        simple: ${EWS.Items.itemId}
+      target-folder-path:
+        simple: for_test_playbook-do not delete
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 40d5f1ef-6530-458f-8d28-4815f82c481f
+    type: regular
+    task:
+      id: 40d5f1ef-6530-458f-8d28-4815f82c481f
+      version: -1
+      name: Wait 90 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      seconds:
+        simple: "90"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 48e40e80-13b9-43d2-84c6-c49252673b8e
+    type: regular
+    task:
+      id: 48e40e80-13b9-43d2-84c6-c49252673b8e
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 22a118a2-16b3-4d43-8143-7258568ab0af
+    type: regular
+    task:
+      id: 22a118a2-16b3-4d43-8143-7258568ab0af
+      version: -1
+      name: Delete email (o365)
+      description: Delete items from mailbox.
+      script: EWSO365|||ews-delete-items
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      delete-type:
+        simple: hard
+      item-ids:
+        simple: ${EWS.Items.itemId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: c64fbfeb-5174-4e7c-8036-e26fc6a5dc69
+    type: regular
+    task:
+      id: c64fbfeb-5174-4e7c-8036-e26fc6a5dc69
+      version: -1
+      name: Search Item In for_test_playbook-do not delete
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+      script: EWSO365|||ews-search-mailbox
+      type: regular
+      iscommand: true
+      brand: EWSO365
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      folder-path:
+        simple: for_test_playbook-do not delete
+      limit:
+        simple: "1"
+      query:
+        simple: body:384868fafe3ef9190a8a5e59c5c195c
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 7aeb2a57-363d-4919-83e9-bda34b9ef7c0
+    type: title
+    task:
+      id: 7aeb2a57-363d-4919-83e9-bda34b9ef7c0
+      version: -1
+      name: o365
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a028e8b6-0ad3-4efc-8f47-0181a1bb4c1a
+    type: title
+    task:
+      id: a028e8b6-0ad3-4efc-8f47-0181a1bb4c1a
+      version: -1
+      name: ews v2
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 1f708aa7-9eea-4dd0-8bfe-fce34190989e
+    type: regular
+    task:
+      id: 1f708aa7-9eea-4dd0-8bfe-fce34190989e
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4175,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

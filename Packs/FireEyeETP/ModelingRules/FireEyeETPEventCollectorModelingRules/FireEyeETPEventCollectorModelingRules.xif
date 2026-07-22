@@ -1,0 +1,75 @@
+
+
+[MODEL: dataset ="fireeye_etp_raw"]
+filter event_type in ("alert")
+
+| alter
+    sender_headres_check = json_extract_scalar(attributes, "$.email.headers.from"),
+    sender_smtp_check = json_extract_scalar(attributes, "$.email.smtp.mail_from"),
+    recipient_headers_check = json_extract_scalar(attributes, "$.email.headers.to"),
+    recipient_smtp_check = json_extract_scalar(attributes, "$.email.smtp.rcpt_to"),
+    extract_ip = to_string(json_extract_scalar(attributes, "$.email.source_ip")),
+    outcome_status = json_extract_scalar(attributes, "$.email.status")
+| alter
+    parsed_status = if(outcome_status in ("accepted", "deleted","delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)"), XDM_CONST.OUTCOME_SUCCESS, outcome_status in ("permanent failure", "rejected"), XDM_CONST.OUTCOME_FAILED, outcome_status in ("permanent failure", "processing"), XDM_CONST.OUTCOME_UNKNOWN, outcome_status = null, null, to_string(outcome_status)),
+    src_ip_v4 = if(extract_ip !~= ":", extract_ip, null),
+    src_ip_v6 = if(extract_ip ~= ":", extract_ip, null)
+| alter
+    xdm.alert.description = attributes ->ati,
+    xdm.event.type = json_extract_scalar(attributes, "$.meta.alert_type"),
+    xdm.alert.original_threat_name = json_extract_scalar(attributes, "$.meta.last_malware"),
+    xdm.event.id = json_extract_scalar(attributes, "$.meta.legacy_id"),
+    xdm.event.original_event_type = to_string(attributes -> alert.alert_type[]),
+    xdm.target.module.md5 = json_extract_scalar(attributes, "$.alert.malware_md5"),
+    xdm.observer.type = json_extract_scalar(attributes, "$.alert.product"),
+    xdm.target.module.sha256 = json_extract_scalar(attributes, "$.alert.sha256"),
+    xdm.email.attachment.filename = json_extract_scalar(attributes, "$.email.attachment"),
+    xdm.email.message_id = json_extract_scalar(attributes, "$.email.etp_message_id"),
+    xdm.email.cc = arraycreate(json_extract_scalar(attributes, "$.email.headers.cc")),
+    xdm.email.sender = coalesce(sender_headres_check, sender_smtp_check),
+    xdm.email.subject = json_extract_scalar(attributes, "$.email.headers.subject"),
+    xdm.email.recipients = arraycreate(coalesce(recipient_headers_check, recipient_smtp_check)),
+    xdm.source.ipv4 = src_ip_v4,
+    xdm.source.ipv6 = src_ip_v6,
+    xdm.event.outcome = parsed_status,
+    xdm.event.outcome_reason = outcome_status,
+    xdm.email.delivery_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%S", json_extract_scalar(attributes, "$.email.timestamp.accepted")),
+    xdm.network.http.url = links ->detail;
+
+filter event_type in ("trace")
+
+| alter
+    extract_ip_v4 = regextract(attributes -> senderIP, "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"),
+    reason_reject_check =  attributes -> rejectionReason,
+    reason_remediate_action_check = attributes->remediateAction,
+    reason_yara_check = attributes->yaraRulesAction,
+    outcome_status = attributes->status
+| alter
+    has_attachment = if(json_extract_scalar(attributes, "$.hasAttachment") != null,"Existing Attachment", "No Attachment"),
+    parsed_status = if(outcome_status in ("accepted", "deleted","delivered", "delivered (retroactive)", "dropped", "dropped oob", "dropped (oob retroactive)"), XDM_CONST.OUTCOME_SUCCESS, outcome_status in ("permanent failure", "rejected"), XDM_CONST.OUTCOME_FAILED, outcome_status in ("permanent failure", "processing"), XDM_CONST.OUTCOME_UNKNOWN, outcome_status = null, null, to_string(outcome_status))
+| alter
+    xdm.event.type = event_type,
+	xdm.email.sender = attributes -> senderHeader,
+	xdm.email.recipients = attributes -> recipientHeader[],
+	xdm.email.subject = attributes -> subject,
+	xdm.email.attachment.filename = has_attachment,
+	xdm.email.attachment.size = to_integer(attributes -> messageSize),
+	xdm.source.host.ipv4_addresses = extract_ip_v4,
+	xdm.network.http.url = attributes -> domain,
+	xdm.event.tags = attributes->tags[],
+	xdm.network.rule = attributes->riskwareRules,
+	xdm.event.operation = coalesce(parsed_status, reason_remediate_action_check, reason_yara_check, reason_reject_check);
+
+filter event_type in ("activity")
+
+| alter
+    extract_ip_v4 = arrayindex(regextract(attributes -> user_ip, "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"), 0)
+| alter
+    xdm.event.type = event_type,
+    xdm.source.user.identifier = attributes->user_email_id,
+    xdm.source.ipv4 = extract_ip_v4,
+    xdm.event.operation_sub_type = attributes->details_values.Verify_Envelope_From_Equal,
+    xdm.source.user_agent = attributes->user_agent,
+    xdm.event.outcome = attributes->user_action,
+    xdm.event.outcome_reason = attributes->user_action_text,
+    xdm.event.description = attributes->details;

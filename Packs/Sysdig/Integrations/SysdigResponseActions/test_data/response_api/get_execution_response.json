@@ -1,0 +1,25 @@
+{
+  "id": "b137bf86-399f-43f7-8d2b-53060af4da9f",
+  "callerId": "test_kill_container_07",
+  "actionType": "KILL_CONTAINER",
+  "executionContext": {
+    "container.id": "123456789012",
+    "host.id": "abc123456789"
+  },
+  "parameters": {
+    "container.id": "123456789012",
+    "host.id": "abc123456789"
+  },
+  "outputs": {
+    "container.id": "123456789012",
+    "host.id": "abc123456789"
+  },
+  "failure": {
+    "failureReason": "forbidden",
+    "logMessage": "Could not execute the action."
+  },
+  "status": "COMPLETED",
+  "userId": 1234,
+  "createdAt": "2020-01-01T00:00:00Z",
+  "updatedAt": "2020-01-01T00:00:00Z"
+}

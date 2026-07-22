@@ -1,0 +1,8 @@
+name: Semperis DSP Parsing Rule
+id: Semperis_DSP_ParsingRule
+fromversion: 8.3.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

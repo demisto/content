@@ -1,0 +1,433 @@
+id: Block IOCs from CSV - External Dynamic List
+version: -1
+fromversion: 5.0.0
+name: Block IOCs from CSV - External Dynamic List
+starttaskid: "0"
+description: Deprecated. Use Generic Export Indicators Service instead.
+deprecated: true
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: df8911f6-01d1-466a-8d01-d6196375945f
+    type: start
+    task:
+      id: df8911f6-01d1-466a-8d01-d6196375945f
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 03ec5404-fb6f-48fc-879d-ae8411b5d753
+    type: regular
+    task:
+      id: 03ec5404-fb6f-48fc-879d-ae8411b5d753
+      version: -1
+      name: Parse indicators CSV
+      description: This script will parse a CSV file and place the unique IPs, Domains and Hashes into the context.
+      scriptName: ParseCSV
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      codec: {}
+      domains:
+        complex:
+          root: inputs.DomainColumn
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.DomainColumn
+                iscontext: true
+      entryID:
+        complex:
+          root: File
+          accessor: EntryID
+      file:
+        complex:
+          root: File
+          accessor: Name
+      hashes:
+        complex:
+          root: inputs.FileColumn
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.FileColumn
+                iscontext: true
+      ips:
+        complex:
+          root: inputs.IPColumn
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.IPColumn
+                iscontext: true
+      parseAll: {}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: d6cc76f7-2d52-4258-8aa5-a53edf1d6c08
+    type: condition
+    task:
+      id: d6cc76f7-2d52-4258-8aa5-a53edf1d6c08
+      version: -1
+      name: Is there a CSV to parse?
+      description: "Checks whether there is a CSV file to parse."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: csv
+                    ignorecase: true
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: text/csv
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 0f8b61fe-bd84-439a-8acc-51a166db74b8
+    type: playbook
+    task:
+      id: 0f8b61fe-bd84-439a-8acc-51a166db74b8
+      version: -1
+      name: PAN-OS - Block IP and URL - External Dynamic List
+      playbookName: PAN-OS - Block IP and URL - External Dynamic List
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+      IPListName:
+        complex:
+          root: inputs.IPListName
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      URL: {}
+      URLListName: {}
+      ip-pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      ip-rule-position:
+        complex:
+          root: inputs.rule-position
+      url-pre-post-rulebase: {}
+      url-rule-position: {}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: dc5e29d5-1804-4572-8cda-ae15cb80cf18
+    type: title
+    task:
+      id: dc5e29d5-1804-4572-8cda-ae15cb80cf18
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "10":
+    id: "10"
+    taskid: 8c250efa-29b1-4041-8494-26b5bff72aab
+    type: condition
+    task:
+      id: 8c250efa-29b1-4041-8494-26b5bff72aab
+      version: -1
+      name: Are there indicators to block?
+      description: "Checks whether there are indicators to block."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IP
+                accessor: Address
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Domain
+                accessor: Name
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: File.EntryID
+                      iscontext: true
+                accessor: MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "13":
+    id: "13"
+    taskid: e4adf03b-652b-462b-8eda-f925a74df230
+    type: playbook
+    task:
+      id: e4adf03b-652b-462b-8eda-f925a74df230
+      version: -1
+      name: PAN-OS - Block Domain - External Dynamic List
+      playbookName: PAN-OS - Block Domain - External Dynamic List
+      description: ""
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+      DomainListName:
+        complex:
+          root: inputs.DomainListName
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      pre-post-rulebase:
+        complex:
+          root: inputs.pre-post-rulebase
+      rule-position:
+        complex:
+          root: inputs.rule-position
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_5_yes": 0.59,
+      "10_7_#default#": 0.42,
+      "4_3_yes": 0.55,
+      "4_7_#default#": 0.27
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1095,
+        "width": 1070,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IPColumn
+  value: {}
+  required: false
+  description: The column number that contains IPs. (First column is column 0).
+- key: DomainColumn
+  value: {}
+  required: false
+  description: The column number that contains domains. (First column is column 0).
+- key: FileColumn
+  value: {}
+  required: false
+  description: The column number that contains hashes. (First column is column 0).
+- key: IPListName
+  value:
+    simple: Demisto Remediation - IP EDL
+  required: false
+  description: IP address list from the instance context with which to override the remote file.
+- key: DomainListName
+  value:
+    simple: Demisto Remediation - Domain EDL
+  required: false
+  description: Domain list from the instance context with which to override the remote file.
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: EDL server IP address.
+- key: LogForwarding
+  value: {}
+  required: false
+  description: Log Forwarding object name.
+- key: AutoCommit
+  value:
+    simple: "No"
+  required: false
+  description: |-
+    This input establishes whether to commit the configuration automatically.
+    Yes - Commit automatically.
+    No - Commit manually.
+- key: pre-post-rulebase
+  value:
+    simple: pre-rulebase
+  required: false
+  description: Either pre-rulebase or post-rulebase,  according to the rule structure.
+- key: rule-position
+  value:
+    simple: top
+  required: false
+  description: |-
+    The position of the rule in the ruleset. Valid values are:
+      * top
+      * bottom
+      * before
+      * after
+outputs: []
+marketplaces:
+- xsoar
+tests:
+- No Test
+

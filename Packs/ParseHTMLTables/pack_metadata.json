@@ -1,0 +1,21 @@
+{
+    "name": "ParseHTMLTables (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "Masahiko Inoue",
+    "url": "",
+    "email": "",
+    "created": "2021-11-11T05:05:52Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "spearmin10"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -1,0 +1,18 @@
+[
+    {
+        "groupId": "1234",
+        "name": "Employee Group",
+        "sgt": 1000,
+        "description": "Group of XYZ Corp Employees",
+        "policyObjects": [
+            {
+                "id": "2345",
+                "name": "Example Policy Object"
+            }
+        ],
+        "isDefaultGroup": false,
+        "requiredIpMappings": [],
+        "createdAt": "2019-06-27T21:34:25.253480Z",
+        "updatedAt": "2019-06-27T21:34:25.253480Z"
+    }
+]

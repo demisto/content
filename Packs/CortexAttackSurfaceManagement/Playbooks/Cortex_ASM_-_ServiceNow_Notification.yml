@@ -1,0 +1,329 @@
+id: Cortex ASM - ServiceNow Notification
+version: -1
+name: Cortex ASM - ServiceNow Notification
+description: This playbook is used to create ServiceNow tickets directed toward service owners to notify them of their internet exposures.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b2dad0cb-d59b-4656-8b00-45e7bf43e237
+    type: start
+    task:
+      id: b2dad0cb-d59b-4656-8b00-45e7bf43e237
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0dfcbaac-1689-4433-82a2-361344c6503f
+    type: title
+    task:
+      id: 0dfcbaac-1689-4433-82a2-361344c6503f
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: dd4851db-4755-4535-8057-c794b7836d2a
+    type: regular
+    task:
+      id: dd4851db-4755-4535-8057-c794b7836d2a
+      version: -1
+      name: Create ServiceNow alert
+      description: Creates new ServiceNow ticket.
+      script: ServiceNow v2|||servicenow-create-ticket
+      type: regular
+      iscommand: true
+      brand: ServiceNow v2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      description:
+        complex:
+          root: inputs.OwnerNotificationBody
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ${predescription}
+              suffix:
+                value:
+                  simple: inputs.RemediationGuidance
+                iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: <br>
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '["'
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"]'
+            operator: replace
+          - args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ','
+              toReplace:
+                value:
+                  simple: '","'
+            operator: replace
+      extend-context:
+        simple: 'ServiceNowDomain=.={"url": val.result.sys_domain.link.split(''api/now'')[0]}'
+      short_description:
+        complex:
+          root: alert
+          accessor: name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Cortex ASM Alert: '
+              suffix: {}
+      ticket_type:
+        complex:
+          root: inputs.NotificationTicketType
+      contact_type:
+        simple: ASM
+      correlation_id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 89c90893-467e-4394-8e3e-46c4e5afc691
+    type: regular
+    task:
+      id: 89c90893-467e-4394-8e3e-46c4e5afc691
+      version: -1
+      name: Set notification grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      type: regular
+      iscommand: false
+      brand: Builtin
+      script: GridFieldSetup
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      gridfield:
+        simple: asmnotification
+      keys:
+        simple: type,value,url,timestamp
+      val1:
+        simple: ServiceNow
+      val2:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: ID
+      val3:
+        complex:
+          root: ServiceNowDomain
+          accessor: url
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: nav_to.do?uri=incident.do?sysparm_query=number=
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ServiceNow.Ticket.Number
+                iscontext: true
+      val4:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: CreatedOn
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: predescription
+      stringify:
+        simple: "true"
+      value:
+        simple: |+
+          Source: ASM
+
+          Alert ID: ${alert.id}
+
+          Cloud: ${alert.asmprovider}
+
+          Severity: ${alert.severity}
+
+          IP address: ${alert.remoteip}
+
+          Hostname: ${alert.hostname}
+
+          Tags: ${alert.tags}
+
+          Attack surface rule: ${alert.asmattacksurfaceruleid.[0]}
+
+          Excluded: ${alert.excluded}
+
+          External ID: ${alert.external_id}
+
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 80795fa8-8410-446c-8ce9-0ebe1d09a0b7
+      iscommand: false
+      name: Set predescription field
+      script: Set
+      type: regular
+      version: -1
+    taskid: 80795fa8-8410-446c-8ce9-0ebe1d09a0b7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 815,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: OwnerNotificationBody
+  value: {}
+  required: true
+  description: Body of the notification (email or ticket) sent to the potential service owner.
+  playbookInputQuery:
+- key: NotificationTicketType
+  value: {}
+  required: true
+  description: The ticket type used by ticketing systems. The default is "incident" because ticketing systems such as ServiceNow and Cherwell use it as default.
+  playbookInputQuery:
+- key: RemediationGuidance
+  value: {}
+  required: true
+  description: Remediation Guidance of the Attack Surface Rule.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - OwnerNotificationBody
+  - NotificationTicketType
+  - RemediationGuidance
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs: []

@@ -1,0 +1,753 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Use Case Development Dashboard",
+    "layout": [
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "80b53f20-e90a-11ed-9dc5-d18c030adc58",
+            "id": "80b53f20-e90a-11ed-9dc5-d18c030adc58",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "f25359c7-b251-4ec2-8a0d-7f5317f5e2db",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-02T16:58:01.584372626Z",
+                "name": "Use Cases in Development",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Purpose",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Priority",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Development Stage",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Builder Development Deadline",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "Use Cases in Development",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Use Case Builder\" and name:* -usecasedevelopmentstage:Backlog",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "id",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "98a54890-e9d8-11ed-89fb-098b546fbc23",
+            "id": "98a54890-e9d8-11ed-89fb-098b546fbc23",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "7cc07ab5-9d9a-4cdb-8e84-b28076c38ec9",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-03T17:33:18.58663052Z",
+                "name": "Use Cases In Development",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": null
+                            },
+                            "#229d80": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": null
+                            },
+                            "#EF9700": {
+                                "value": null
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Use Cases On Track",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "usecasedevelopmentstage:\"In Development\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 2,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "2576ef80-e9d9-11ed-89fb-098b546fbc23",
+            "id": "2576ef80-e9d9-11ed-89fb-098b546fbc23",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "8639b80a-defb-4cdc-87a9-5552876d7787",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-03T17:37:14.70517792Z",
+                "name": "Use Cases In Pre-Production",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#295AFF": {
+                                "value": 0
+                            },
+                            "#989898": {
+                                "value": null
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Use Cases In Pre-Production",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "usecasedevelopmentstage:\"Pre-Production\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 6,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "a1e94db0-e9d9-11ed-88d1-1b92199ecf23",
+            "id": "a1e94db0-e9d9-11ed-88d1-1b92199ecf23",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "daf6585b-9054-4a97-8964-bd8d29c31aa0",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-03T17:40:43.593110369Z",
+                "name": "Use Cases in Backlog",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#989898": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Use Cases in Backlog",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "usecasedevelopmentstage:Backlog",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "d12fcfe0-e9d9-11ed-88d1-1b92199ecf23",
+            "id": "d12fcfe0-e9d9-11ed-88d1-1b92199ecf23",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "4ddb6197-0d97-443d-8a23-b8ab7b8ad0b2",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-03T17:42:03.111242147Z",
+                "name": "Use Cases in Testing",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#897E0C": {},
+                            "#FF8411": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Use Cases in Testing",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "usecasedevelopmentstage:Testing",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "07968240-e9da-11ed-88d1-1b92199ecf23",
+            "id": "07968240-e9da-11ed-88d1-1b92199ecf23",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "f9c8e06a-ec71-4cce-86c2-b985b8782016",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-03T17:43:34.15792639Z",
+                "name": "Use Cases in Production",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#4de406": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Use Cases in Production",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "usecasedevelopmentstage:Production",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": true,
+            "h": 1,
+            "i": "530b9ed0-e9e0-11ed-92dd-49ea3c46bbfe",
+            "id": "530b9ed0-e9e0-11ed-92dd-49ea3c46bbfe",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "771d8d3c-3e32-4a57-8809-653a6fab354d",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-02T17:28:39.120477676Z",
+                "name": "Average Development Completion Time (FTTV)",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "keys": [
+                        "avg|usecasedevelopmenttimer.totalDuration"
+                    ],
+                    "yAxisLabel": ""
+                },
+                "prevName": "Use Case Development",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job and type:\"Use Case Builder\" and usecasedevelopmenttimer.runStatus:ended",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "duration"
+            },
+            "x": 8,
+            "y": 1
+        },
+        {
+            "forceRange": true,
+            "h": 1,
+            "i": "23c92b70-eb79-11ed-9be9-692c79ef43e4",
+            "id": "23c92b70-eb79-11ed-9be9-692c79ef43e4",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "73e20f61-9424-4d77-8dfb-03ea6cb976d3",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-05T19:15:02.720743756Z",
+                "name": "Average Time of Active Use Cases in Development",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "keys": [
+                        "avg|({now} - (usecasedevelopmenttimer.startDate))"
+                    ]
+                },
+                "prevName": "Use Case Time Spent in Testing",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Use Case Builder\" and usecasedevelopmenttimer.runStatus:running",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "duration"
+            },
+            "x": 4,
+            "y": 1
+        },
+        {
+            "forceRange": true,
+            "h": 1,
+            "i": "00984b50-eb82-11ed-919b-ef7416136a6e",
+            "id": "00984b50-eb82-11ed-919b-ef7416136a6e",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "7fa10cdb-238f-4c0b-8499-018fee6a7914",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-05T20:18:26.085348807Z",
+                "name": "Average Use Case Backlog Time",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "keys": [
+                        "sum|({now} - usecasebacklogtimer.startDate)"
+                    ]
+                },
+                "prevName": "Use Case Backlog Time",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job type:\"Use Case Builder\" and usecasebacklogtimer.runStatus:running",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "duration"
+            },
+            "x": 0,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "6c8736f0-eb82-11ed-919b-ef7416136a6e",
+            "id": "6c8736f0-eb82-11ed-919b-ef7416136a6e",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "5a0b3769-30e4-472c-8e09-0acec3073528",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-05T20:21:27.924465562Z",
+                "name": "Total Use Cases",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Total Use Cases",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Use Case Builder\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 10,
+            "y": 0
+        },
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "32cf39a0-ee96-11ed-a36d-7dd73b093604",
+            "id": "32cf39a0-ee96-11ed-a36d-7dd73b093604",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "f25359c7-b251-4ec2-8a0d-7f5317f5e2db",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-05-02T16:58:01.584372626Z",
+                "name": "Use Cases in Backlog",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Purpose",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Priority",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Development Stage",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Use Case Builder Development Deadline",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "Use Cases in Development",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Use Case Builder\" and name:* and usecasedevelopmentstage:Backlog",
+                "shouldCommit": false,
+                "size": 5,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "id",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 5
+        }
+    ],
+    "name": "Use Case Development Dashboard",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 180,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "description": "",
+    "isPredefined": true
+}

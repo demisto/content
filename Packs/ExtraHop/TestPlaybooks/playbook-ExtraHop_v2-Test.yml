@@ -1,0 +1,1086 @@
+id: ExtraHop_v2-Test
+version: -1
+name: ExtraHop_v2-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a7c1d25b-dd84-4954-8731-de2b840f405e
+    type: start
+    task:
+      id: a7c1d25b-dd84-4954-8731-de2b840f405e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6915fe53-0a4d-4a3e-85f6-4a3af5714f8d
+    type: condition
+    task:
+      id: 6915fe53-0a4d-4a3e-85f6-4a3af5714f8d
+      version: -1
+      name: Verify get Protocol Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+      '#default#':
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.Device.Id
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 63386b0e-7f29-4ef0-88e5-45689bbbe5cd
+    type: title
+    task:
+      id: 63386b0e-7f29-4ef0-88e5-45689bbbe5cd
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 760ad71c-6e29-4a11-8dd9-93d7b7525260
+    type: regular
+    task:
+      id: 760ad71c-6e29-4a11-8dd9-93d7b7525260
+      version: -1
+      name: Packet search
+      description: Search for specific packets in Reveal(x).
+      script: '|||extrahop-packets-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a170c061-4772-4864-8a47-b93510cbc6ee
+    type: condition
+    task:
+      id: a170c061-4772-4864-8a47-b93510cbc6ee
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 631c0490-0d6a-489b-8a5b-77bce12262d8
+    type: regular
+    task:
+      id: 631c0490-0d6a-489b-8a5b-77bce12262d8
+      version: -1
+      name: Get watchlist
+      description: Get all devices on the watchlist in Reveal(x).
+      script: '|||extrahop-watchlist-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ba07eee5-c921-4ac4-8137-ac6c91aba9a4
+    type: regular
+    task:
+      id: ba07eee5-c921-4ac4-8137-ac6c91aba9a4
+      version: -1
+      name: Get peers
+      description: Get all peers for a device from Reveal(x).
+      script: '|||extrahop-peers-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    scriptarguments:
+      ip_or_id:
+        complex:
+          root: ${ExtraHop.Device
+          accessor: id}
+          transformers:
+          - operator: FirstArrayElement
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0145caae-3bf2-455a-8b28-40fba2982602
+    type: condition
+    task:
+      id: 0145caae-3bf2-455a-8b28-40fba2982602
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: ExtraHop.Device
+                accessor: Id
+            iscontext: true
+          right:
+            value: {}
+        - operator: isExists
+          left:
+            value:
+              complex:
+                root: ExtraHop.Device
+                accessor: Macaddr
+            iscontext: true
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: eea07452-d480-430b-89a3-8e0dfffc3737
+    type: condition
+    task:
+      id: eea07452-d480-430b-89a3-8e0dfffc3737
+      version: -1
+      name: 'Verify Output '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.Device.macaddr
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Device.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Device.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Device.url
+            iscontext: true
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: e7ee2b84-a235-433c-8f59-95fa2c7c3e4c
+    type: regular
+    task:
+      id: e7ee2b84-a235-433c-8f59-95fa2c7c3e4c
+      version: -1
+      name: Device Search
+      description: Search for devices in Reveal(x).
+      script: '|||extrahop-devices-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: dac65838-9fa8-422b-8f2a-fdf7694e4e59
+    type: condition
+    task:
+      id: dac65838-9fa8-422b-8f2a-fdf7694e4e59
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Device.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Device.macaddr
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Device.display_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Device.url
+            iscontext: true
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f7b02280-4f57-48ec-8e6a-ad8a5b8f5238
+    type: regular
+    task:
+      id: f7b02280-4f57-48ec-8e6a-ad8a5b8f5238
+      version: -1
+      name: Alert Rules Get
+      description: Get all alert rules from Reveal(x).
+      script: '|||extrahop-alert-rules-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "19"
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 1d61ff68-3a87-41e4-8db3-4fb67b828b41
+    type: condition
+    task:
+      id: 1d61ff68-3a87-41e4-8db3-4fb67b828b41
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Alert.id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Alert.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Alert.name
+            iscontext: true
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4361b16e-643f-4aa5-8fa0-672f1c03359c
+    type: regular
+    task:
+      id: 4361b16e-643f-4aa5-8fa0-672f1c03359c
+      version: -1
+      name: Extrahop activity map  command
+      description: Get a link to a live activity map in Reveal(x).
+      script: '|||extrahop-activity-map-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ip_or_id:
+        complex:
+          root: ${ExtraHop.Device.id}
+          transformers:
+          - operator: FirstArrayElement
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c915384d-7a83-4bd2-8436-e0a6e34136d4
+    type: condition
+    task:
+      id: c915384d-7a83-4bd2-8436-e0a6e34136d4
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.ActivityMap.url
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4362c5fc-461e-4b7d-801b-66fc2b9667ab
+    type: regular
+    task:
+      id: 4362c5fc-461e-4b7d-801b-66fc2b9667ab
+      version: -1
+      name: ExtraHop get protocols
+      description: Get all active network protocols for a device from Reveal(x).
+      script: '|||extrahop-protocols-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip_or_id:
+        complex:
+          root: ${ExtraHop.Device
+          accessor: id}
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0849bd58-e9e7-48e9-8395-d6aeb9a084d9
+    type: condition
+    task:
+      id: 0849bd58-e9e7-48e9-8395-d6aeb9a084d9
+      version: -1
+      name: No protocols found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ExtraHop.Device.client_protocols
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 6afb428b-da12-41a5-8306-5108fad7c3e3
+    type: condition
+    task:
+      id: 6afb428b-da12-41a5-8306-5108fad7c3e3
+      version: -1
+      name: No peers found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ExtraHop.Device
+                accessor: Id
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              complex:
+                root: ExtraHop.Device
+                accessor: Macaddr
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 6fa8d4da-d031-46ff-8478-da6e8fafe58f
+    type: regular
+    task:
+      id: 6fa8d4da-d031-46ff-8478-da6e8fafe58f
+      version: -1
+      name: Detection list
+      description: Retrieves the detections from the ExtraHop platform.
+      script: '|||extrahop-detections-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 6e11700b-c271-4655-8f42-203fd1d67bcb
+    type: condition
+    task:
+      id: 6e11700b-c271-4655-8f42-203fd1d67bcb
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Detections.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Detections.risk_score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Detections.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Detections.start_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExtraHop.Detections.description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 36ecb53a-637c-4209-83f8-df6e96b98051
+    type: regular
+    task:
+      id: 36ecb53a-637c-4209-83f8-df6e96b98051
+      version: -1
+      name: Metrics list
+      description: Retrieves metrics information collected about every object identified by the ExtraHop system.
+      script: '|||extrahop-metrics-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      cycle:
+        simple: 24hr
+      from_time:
+        simple: -30m
+      metric_category:
+        complex:
+          root: metric_category
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: custom
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: dns_server
+      metric_specs:
+        complex:
+          root: dummy
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: |-
+                    [
+                            {
+                                "name": "event_count"
+                            }
+                        ]
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "name": "req_rectype"
+                        }
+                      ]
+      object_ids:
+        simple: "0"
+      object_type:
+        complex:
+          root: object_type
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: application
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: device
+      until_time:
+        simple: "0"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 2c880a9a-90ea-489e-8a4c-73ac07944a8e
+    type: condition
+    task:
+      id: 2c880a9a-90ea-489e-8a4c-73ac07944a8e
+      version: -1
+      name: Verify Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.Metrics.cycle
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.Metrics.node_id
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.Metrics.clock
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.Metrics.from
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ExtraHop.Metrics.until
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: c1b50dc5-ad62-4f65-8dfb-3b13aa2bd814
+    type: regular
+    task:
+      id: c1b50dc5-ad62-4f65-8dfb-3b13aa2bd814
+      version: -1
+      name: 'Add tag devices '
+      description: Add or remove a tag from devices in Reveal(x).
+      script: '|||extrahop-devices-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      add:
+        complex:
+          root: ${ExtraHop.Device
+          accessor: id}
+          transformers:
+          - operator: FirstArrayElement
+      tag:
+        simple: tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: af1deaeb-fe9c-4257-8d00-9408344a0686
+    type: regular
+    task:
+      id: af1deaeb-fe9c-4257-8d00-9408344a0686
+      version: -1
+      name: 'Remove tag devices '
+      description: Add or remove a tag from devices in Reveal(x).
+      script: '|||extrahop-devices-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      remove:
+        complex:
+          root: ${ExtraHop.Device
+          accessor: id}
+          transformers:
+          - operator: FirstArrayElement
+      tag:
+        simple: tag
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4060,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.5.0
+description: ExtraHop Test Playbook

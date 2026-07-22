@@ -1,0 +1,37 @@
+args:
+- description: The action to make. If update is chosen and the key does not exist, a new key will be added.
+  name: action
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - update
+  - remove
+- description: The key to set.
+  name: key
+  required: true
+- description: The value to set.
+  name: value
+comment: Edit the server configuration (under *settings/troubleshooting*). You can either add a new configuration or update and remove an existing one.
+commonfields:
+  id: EditServerConfig
+  version: -1
+name: EditServerConfig
+script: '-'
+timeout: '0'
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 6.0.0
+tests:
+- TestEditServerConfig
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- cloud_posture
+- xsiam
+- edr

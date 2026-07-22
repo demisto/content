@@ -1,0 +1,546 @@
+id: Relationships scripts - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Relationships scripts - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b85cc5b7-d01b-462b-81f9-f310aff9c333
+    type: start
+    task:
+      id: b85cc5b7-d01b-462b-81f9-f310aff9c333
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: aaad1ea7-bb3c-4bb5-856b-3cb3b6b83514
+    type: regular
+    task:
+      id: aaad1ea7-bb3c-4bb5-856b-3cb3b6b83514
+      version: -1
+      name: Create Relationships
+      description: '[Enter a description of the script, including what function it
+        performs and any important information users need to know, for example required
+        permissions.]'
+      scriptName: CreateIndicatorRelationship
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      create_indicator:
+        simple: "true"
+      description:
+        simple: Test Relationships
+      entity_a:
+        simple: 1.1.1.1
+      entity_a_type:
+        simple: IP
+      entity_b:
+        simple: google.com,google1.com
+      entity_b_type:
+        simple: Domain
+      relationship:
+        simple: contains
+      source_reliability:
+        simple: C - Fairly reliable
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e00c01d4-52c6-4deb-8701-9efc3caebf60
+    type: regular
+    task:
+      id: e00c01d4-52c6-4deb-8701-9efc3caebf60
+      version: -1
+      name: Search For Relationships of indicator
+      description: This automation outputs the indicator relationships to context
+        according to the provided query. Using the entities, entityTypes, relationships
+        argument. All arguments will be with the AND operator. For example using the
+        following arguments entities=8.8.8.8 entities_types=Domain will provide just
+        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      scriptName: SearchIndicatorRelationships
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entities:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e3ab54ce-0705-4493-8d78-ebca2e0621b6
+    type: condition
+    task:
+      id: e3ab54ce-0705-4493-8d78-ebca2e0621b6
+      version: -1
+      name: Check basic relationships exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.EntityA
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.EntityB
+            iscontext: true
+          right:
+            value:
+              simple: google.com
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.EntityAType
+            iscontext: true
+          right:
+            value:
+              simple: IP
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.EntityBType
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 58b564aa-6013-47e4-8c3a-6eacf452788e
+    type: regular
+    task:
+      id: 58b564aa-6013-47e4-8c3a-6eacf452788e
+      version: -1
+      name: Delete Relationships
+      description: This automation allows to delete a relationship between indicator
+        objects based on the relationship id.
+      scriptName: DeleteIndicatorRelationships
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      ids:
+        simple: ${Relationships.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 9d526545-06e1-45e7-8800-a9ffec3dd992
+    type: regular
+    task:
+      id: 9d526545-06e1-45e7-8800-a9ffec3dd992
+      version: -1
+      name: Search for deleted Relationship
+      description: This automation outputs the indicator relationships to context
+        according to the provided query. Using the entities, entityTypes, relationships
+        argument. All arguments will be with the AND operator. For example using the
+        following arguments entities=8.8.8.8 entities_types=Domain will provide just
+        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      scriptName: SearchIndicatorRelationships
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      entities:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f4ff4eaa-5127-402f-8c7a-fd2d4c4bcb06
+    type: condition
+    task:
+      id: f4ff4eaa-5127-402f-8c7a-fd2d4c4bcb06
+      version: -1
+      name: Check if Deleted
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: Relationships
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b2426126-b6de-4e4d-8bdb-7f17426c76e2
+    type: regular
+    task:
+      id: b2426126-b6de-4e4d-8bdb-7f17426c76e2
+      version: -1
+      name: Search For Relationships of indicator with verbose
+      description: This automation outputs the indicator relationships to context
+        according to the provided query. Using the entities, entityTypes, relationships
+        argument. All arguments will be with the AND operator. For example using the
+        following arguments entities=8.8.8.8 entities_types=Domain will provide just
+        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      scriptName: SearchIndicatorRelationships
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      entities:
+        simple: 1.1.1.1
+      verbose:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ff2806fc-1c47-4eba-871c-3a728c5a3116
+    type: condition
+    task:
+      id: ff2806fc-1c47-4eba-871c-3a728c5a3116
+      version: -1
+      name: Check Relationships exists  with verbose
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.Brand
+            iscontext: true
+          right:
+            value:
+              simple: XSOAR
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.Type
+            iscontext: true
+          right:
+            value:
+              simple: IndicatorToIndicator
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.Description
+            iscontext: true
+          right:
+            value:
+              simple: Test Relationships
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Relationships.Reliability
+            iscontext: true
+          right:
+            value:
+              simple: C - Fairly reliable
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 57096967-a0d9-43e1-89b0-52c0ef56d529
+    type: regular
+    task:
+      id: 57096967-a0d9-43e1-89b0-52c0ef56d529
+      version: -1
+      name: Delete Context for delete search
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 9387df25-5a9d-4f94-8f3f-775612b1bbe4
+    type: title
+    task:
+      id: 9387df25-5a9d-4f94-8f3f-775612b1bbe4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 7fc16a96-465e-4940-85f6-b4c41abdd8de
+    type: regular
+    task:
+      id: 7fc16a96-465e-4940-85f6-b4c41abdd8de
+      version: -1
+      name: sleep 10
+      description: Sleep for 10 seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 614b7854-0cd6-4d95-8edb-a8968df56e6a
+    type: regular
+    task:
+      id: 614b7854-0cd6-4d95-8edb-a8968df56e6a
+      version: -1
+      name: sleep 10
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2135,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0

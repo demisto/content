@@ -1,0 +1,28 @@
+commonfields:
+  id: AccessdataCheckProcessExistsInSnapshot
+  version: -1
+name: AccessdataCheckProcessExistsInSnapshot
+script: '-'
+type: python
+subtype: python3
+tags: []
+comment: Deprecated. No available replacement.
+deprecated: true
+enabled: true
+args:
+- name: process
+  required: true
+  description: The process name that needs to be checked.
+- name: filepath
+  required: true
+  description: Path of the file with processes.
+outputs:
+- contextPath: Accessdata.Process.Exists
+  description: ""
+  type: boolean
+scripttarget: 0
+runas: DBotWeakRole
+tests:
+- No test
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.6.33415

@@ -1,0 +1,28 @@
+{
+    "alertInput": {
+        "input": [],
+        "processorTaskInput": [],
+        "aggregationTaskInput": []
+    },
+    "targetId": "",
+    "displayName": "Testing-Via-XSOAR",
+    "targetDisplayName": "",
+    "targetType": "",
+    "type": "PAN XSOAR",
+    "application": {},
+    "meta": {
+        "created": "2020-12-11T16:08:09.867-06:00",
+        "location": "http://localhost:8088/iiq/scim/v2/Alerts/0a000001764519c9817653d8dc8b0a7a",
+        "version": "W/\"1607724489867\"",
+        "resourceType": "Alert"
+    },
+    "schemas": [
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:AlertInput",
+        "urn:ietf:params:scim:schemas:sailpoint:1.0:Alert"
+    ],
+    "name": "0000000011",
+    "attributes": [],
+    "id": "0a000001764519c9817653d8dc8b0a7a",
+    "nativeId": "",
+    "actions": []
+}

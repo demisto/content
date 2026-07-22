@@ -1,0 +1,2589 @@
+{
+    "description": "Layout for Symantec EDR event",
+    "detailsV2": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "1vduzkpmlh",
+                "name": "Case info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "externalid",
+                                "height": 22,
+                                "id": "148e82f0-9e6a-11ee-bd6f-f971f312e560",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "deviceid",
+                                "height": 22,
+                                "id": "d5ea6dd0-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicename",
+                                "height": 22,
+                                "id": "9ee12f50-9426-11ee-bc0b-f5cc44fa5a62",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "deviceusername",
+                                "height": 22,
+                                "id": "eb9b6850-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicelocalip",
+                                "height": 22,
+                                "id": "bbc349f0-9426-11ee-bc0b-f5cc44fa5a62",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "deviceexternalip",
+                                "height": 22,
+                                "id": "0214bbe0-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 5,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicemacaddress",
+                                "height": 22,
+                                "id": "a9c61dc0-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "destinationmacaddress",
+                                "height": 22,
+                                "id": "b369eb90-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "devicename",
+                                "height": 22,
+                                "id": "4fc4b170-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "deviceosname",
+                                "height": 22,
+                                "id": "cf28d860-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "usersid",
+                                "height": 22,
+                                "id": "1c5c5580-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "domainname",
+                                "height": 22,
+                                "id": "9650bb60-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "destinationport",
+                                "height": 22,
+                                "id": "2ecddc70-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "hostname",
+                                "height": 22,
+                                "id": "5804db20-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 3,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "sourceport",
+                                "height": 22,
+                                "id": "25e6cef0-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 4,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "sourcehostname",
+                                "height": 22,
+                                "id": "3e18a7f0-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "sourceip",
+                                "height": 22,
+                                "id": "a0347860-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 6,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "symantecedrlogname",
+                                "height": 22,
+                                "id": "36506d60-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 8,
+                                "listId": "1vduzkpmlh-swtuqptgvs-075ee440-cc9a-11e9-afca-8792f3871db0",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "EDR Events Details",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "1cc0c4a0-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 0,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "87e18ad0-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 22,
+                                "id": "6f002ff0-9428-11ee-bc0b-f5cc44fa5a62",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "eventtype",
+                                "height": 22,
+                                "id": "78bb19b0-9e64-11ee-8a58-6d0c64908e54",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "symantecedreventtypeid",
+                                "height": 22,
+                                "id": "d393f680-942e-11ee-9483-1bbef3aecb84",
+                                "index": 3,
+                                "listId": "1vduzkpmlh-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "43cfe2d0-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "42f03130-9bee-11e9-9a3f-8b4b2158e260",
+                                "index": 5,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "20430d90-9bd7-11e9-ba23-8723b1f1df6b",
+                                "index": 6,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "4fd2b640-a7d6-11e9-8433-9f52f2917950",
+                                "index": 7,
+                                "listId": "fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "930bb7a0-a866-11e9-aeb8-c3448b5d692d",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "e92b52b0-a863-11e9-aeb8-c3448b5d692d",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "isVisible": true,
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "readOnly": true,
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "1vduzkpmlh-748e6490-9ffb-11ed-b78f-59e522afc468",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-87cf1de0-a165-11ed-8782-a99a4744710c",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "techniqueid",
+                                "height": 22,
+                                "id": "551e8e50-958c-11ee-ad31-fbc81b92caf4",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-87cf1de0-a165-11ed-8782-a99a4744710c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "technique",
+                                "height": 22,
+                                "id": "5c62c140-958c-11ee-ad31-fbc81b92caf4",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-87cf1de0-a165-11ed-8782-a99a4744710c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "tacticid",
+                                "height": 22,
+                                "id": "67745a80-94c9-11ee-96a4-a3e66d2ee23f",
+                                "index": 2,
+                                "listId": "1vduzkpmlh-87cf1de0-a165-11ed-8782-a99a4744710c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tactic",
+                                "height": 22,
+                                "id": "6b6a6940-958c-11ee-ad31-fbc81b92caf4",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "EDR Events Attacks",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 2,
+                        "i": "1vduzkpmlh-f235c660-a166-11ed-8782-a99a4744710c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Malicious or Suspicious Indicators",
+                        "query": "reputation:Bad or reputation:Suspicious",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 1,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "swtuqptgvs",
+                "name": "Investigation",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-swtuqptgvs-2ff499e0-cc9a-11e9-afca-8792f3871db0",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "symantecedreventactor",
+                                "height": 106,
+                                "id": "31c29e60-9f33-11ed-a47f-5fb484fa7cb5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Event Actor",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-491c8df0-9f33-11ed-a47f-5fb484fa7cb5",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "symantecedreventactorfile",
+                                "height": 106,
+                                "id": "a318e6a0-9f33-11ed-a47f-5fb484fa7cb5",
+                                "index": 0,
+                                "listId": "1vduzkpmlh-491c8df0-9f33-11ed-a47f-5fb484fa7cb5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Event Actor File",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-4af3bef0-9f33-11ed-a47f-5fb484fa7cb5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "symantecedreventactoruser",
+                                "height": 106,
+                                "id": "a6033550-9f33-11ed-a47f-5fb484fa7cb5",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Event User",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-aa1dedb0-9f33-11ed-a47f-5fb484fa7cb5",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "processid",
+                                "height": 22,
+                                "id": "ba1d3360-958c-11ee-ad31-fbc81b92caf4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "processpath",
+                                "height": 22,
+                                "id": "bd32b0c0-958c-11ee-ad31-fbc81b92caf4",
+                                "index": 1,
+                                "listId": "1vduzkpmlh-aa1dedb0-9f33-11ed-a47f-5fb484fa7cb5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "processmd5",
+                                "height": 22,
+                                "id": "bbd96250-958c-11ee-ad31-fbc81b92caf4",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "processsha256",
+                                "height": 22,
+                                "id": "ca7bdfe0-958c-11ee-ad31-fbc81b92caf4",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Event Process",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-8148eea0-9427-11ee-bc0b-f5cc44fa5a62",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "filename",
+                                "height": 22,
+                                "id": "9d9e59a0-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filepath",
+                                "height": 22,
+                                "id": "9fc3d1b0-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filemd5",
+                                "height": 22,
+                                "id": "a32684b0-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filesha256",
+                                "height": 22,
+                                "id": "a57b2310-9427-11ee-bc0b-f5cc44fa5a62",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "EDR Event File",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-38f340e0-9429-11ee-bc0b-f5cc44fa5a62",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "symantecedrantivirus",
+                                "height": 22,
+                                "id": "52597b30-9429-11ee-bc0b-f5cc44fa5a62",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SymantecEDR Antivirus",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-5ed8f1b0-9429-11ee-bc0b-f5cc44fa5a62",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailfrom",
+                                "height": 22,
+                                "id": "07cb41d0-a4ae-11ee-bbb9-81a8326b7b68",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailsentsuccessfully",
+                                "height": 22,
+                                "id": "0c126160-a4ae-11ee-bbb9-81a8326b7b68",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SymantecEDR Receiver",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 9
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-90322740-9429-11ee-bc0b-f5cc44fa5a62",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailto",
+                                "height": 22,
+                                "id": "e3db94a0-a4ad-11ee-bbb9-81a8326b7b68",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "emailsenderip",
+                                "height": 22,
+                                "id": "e7f143f0-a4ad-11ee-bbb9-81a8326b7b68",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SymantecEDR Sender",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-aaf4e450-9429-11ee-bc0b-f5cc44fa5a62",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SymantecEDR Intrusion",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-ce9eaee0-9429-11ee-bc0b-f5cc44fa5a62",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "SymantecEDR Threat",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-f00b3350-958c-11ee-ad31-fbc81b92caf4",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "registryvaluetype",
+                                "height": 22,
+                                "id": "1704c520-958d-11ee-ad31-fbc81b92caf4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "registryvalue",
+                                "height": 22,
+                                "id": "18a7edd0-958d-11ee-ad31-fbc81b92caf4",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "registrykey",
+                                "height": 22,
+                                "id": "1a1623d0-958d-11ee-ad31-fbc81b92caf4",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Registry",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "1vduzkpmlh-362a8e30-958d-11ee-ad31-fbc81b92caf4",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "rulename",
+                                "height": 22,
+                                "id": "4701ed20-958d-11ee-ad31-fbc81b92caf4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "4afb3ad0-958d-11ee-ad31-fbc81b92caf4",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Enriched Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas",
+                "hidden": false
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_reminder",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_attachment",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_accountmemberof",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_accountstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionaldata",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionalindicators",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentsid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alerttypeid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_app",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appchannelname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appmessage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_asn",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assigneduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assignmentgroup",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_birthday",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_caller",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_categories",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_changed",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_childprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_classification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudaccountid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudinstanceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_commandline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_country",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycode",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycodenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationhostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detecteduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceinternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicelocalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemacaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceou",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_domainname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dsts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpoint",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_escalation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalconfidence",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externallink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalseverity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstarttime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsystemid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filemd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filenames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filerelationships",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesize",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_firstname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_fullname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_hostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incidentlink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incomingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_investigationstage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_isactive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastmirroredintime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_logsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lowlevelcategoriesevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_macaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_md5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniquename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mobiledevicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofrelatedincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofsimilarfiles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_objective",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel2",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel3",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orgunit",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_os",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ostype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_osversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_outgoingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentcmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesscmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessfilepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessids",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesspath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesssha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phonenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_pid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_policyactions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcreationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processsha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocolnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryhive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registrykey",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvalue",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvaluetype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_renderedhtml",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_rulename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_scenario",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha512",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidentsdbot",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatedby",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcehostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcepriority",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcestatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_srcs",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ssdeep",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_state",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_subcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tactic",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_teamname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_technique",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_techniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenantname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatfamilyname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedhostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketacknowledgeddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketcloseddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketnumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketopeneddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urls",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urlsslverification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usecasedescription",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_useraccountcontrol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_users",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usersid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_verdict",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_xdrmanualseverity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_xdrmodificationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_xdrstarred",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Symantec EDR Event layout",
+    "name": "Symantec EDR Event layout",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceinstance",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phase",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_roles",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_accountmemberof",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_accountstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionaldata",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_additionalindicators",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentsid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_agentversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alertsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_alerttypeid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_app",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appchannelname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_appmessage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_asn",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assigneduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_assignmentgroup",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_birthday",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_caller",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_categories",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_changed",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_childprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_classification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudaccountid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cloudinstanceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_cmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_commandline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_containmentsla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_country",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycode",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_countrycodenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationhostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationnetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectedips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detecteduser",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionsla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_detectionurl",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceinternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicelocalip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemacaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_devicename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceosversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceou",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_deviceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_domainname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dsts",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_endpoint",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_escalation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_eventtype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalconfidence",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalendtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externallink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalseverity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstarttime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsubcategoryname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_externalsystemid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filehash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filemd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filenames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filepaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filerelationships",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_filesize",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_firstname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_fullname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_hostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incidentlink",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_incomingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_investigationstage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_isactive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastmirroredintime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lastname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_logsource",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_lowlevelcategoriesevents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_macaddress",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_md5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretacticname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mitretechniquename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_mobiledevicemodel",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofrelatedincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_numberofsimilarfiles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_objective",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel2",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orglevel3",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_orgunit",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_os",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ostype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_osversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_outgoingmirrorerror",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentcmdline",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocess",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesscmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessfilepath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessids",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocessname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesspath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_parentprocesssha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_phonenumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_pid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_policyactions",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcmd",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processcreationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processmd5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpath",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processpaths",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_processsha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_protocolnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryhive",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registrykey",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvalue",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_registryvaluetype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_relatedendpoints",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_remediationsla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_renderedhtml",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_rulename",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_scenario",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sha512",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidents",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_similarincidentsdbot",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatedby",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcecreatetime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceexternalips",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcehostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetwork",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcenetworks",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceport",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcepriority",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcestatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_srcs",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ssdeep",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_state",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_subcategory",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tactic",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tacticid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_teamname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_technique",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_techniqueid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenantname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatfamilyname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedhostnames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threathuntingdetectedip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_threatname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketacknowledgeddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketcloseddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketnumber",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_ticketopeneddate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_timetoassignment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_triagesla",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urls",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_urlsslverification",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usecasedescription",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_useraccountcontrol",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_users",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_usersid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_verdict",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_xdrmanualseverity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_xdrmodificationtime",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_xdrstarred",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels"
+            }
+        ]
+    },
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

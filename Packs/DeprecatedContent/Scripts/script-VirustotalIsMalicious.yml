@@ -1,0 +1,83 @@
+commonfields:
+  id: dbbdc2e4-6105-4ee9-8e83-563a4b991a89
+  version: -1
+name: VirustotalIsMalicious
+deprecated: true
+script: >-
+  from time import sleep
+
+  threshold = int(demisto.args()['threshold']) if 'threshold' in demisto.args() else 3
+
+  retries = int(demisto.args()['retries']) if 'retries' in demisto.args() else 10
+
+  h = demisto.args()['hash']
+
+
+  res = []
+
+  resp = demisto.executeCommand('file', {'file': h, 'using-brand': 'virustotal'})
+
+
+  # Handle VT rate limit
+
+  if isError(resp[0]) and '204 (No Content)' in resp[0]['Contents']:
+      tries = 0
+      while isError(resp[0]) and '204 (No Content)' in resp[0]['Contents'] and tries < retries:
+          tries += 1
+          demisto.log('[*] Encountered VirusTotal Free API key rate limit. Waiting 1 minute and trying again.')
+          sleep(60)
+          resp = demisto.executeCommand('file', {'file': h, 'using-brand': 'virustotal'})
+      if tries > 0:
+          demisto.log ('[**] Waited '  + str(tries) + ' minutes to query VirusTotal for ' + h + '.')
+
+  # If result is still an error, handle that
+
+  if isError(resp[0]):
+      if 'The requested resource is not among the finished, queued or pending scans' in resp[0]['Contents']:
+          demisto.results('Virustotal contains no results for hash ' + h + '.')
+      else:
+          demisto.results(resp)
+
+  else:
+      data = demisto.get(resp[0], 'Contents')
+      if data:
+          if data['positives'] > threshold:
+              res.append('yes')
+          else:
+              res.append('no')
+          del data['response_code']
+          scans = data.pop('scans')
+          scanTable = []
+          for s in scans:
+              d = scans[s].copy()
+              if d.pop('detected'):
+                  d['Source'] = s
+                  scanTable.append(d)
+          res += [{ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : data } ]
+          res += [{ "Type" : entryTypes["note"], "ContentsFormat" : formats["table"], "Contents" : scanTable }]
+
+      else:
+          res.append('No results.')
+      demisto.results(res)
+type: python
+subtype: python2
+tags:
+- virustotal
+comment: Deprecated. Query Virustotal with a file hash
+system: true
+args:
+- name: hash
+  required: true
+  default: true
+  description: If provided, checks only files whose names are in the list. The names should be comma-separated.
+- name: threshold
+  description: If not set, uses default from Common / CommonUser thresholds[vtPositives]
+- name: retries
+  description: Maximum retries if hit the rate limitation on the Virustotal key (will retry every 1min)
+scripttarget: 0
+dependson:
+  must:
+  - VirusTotal|||file
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

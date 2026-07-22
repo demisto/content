@@ -1,0 +1,9 @@
+{
+  "id": "HashiCorpVaultLinux",
+  "name": "HashiCorp Vault (Linux)",
+  "os_type": "AGENT_OS_LINUX",
+  "profile_type": "STANDARD",
+  "content_global_id": "HashiCorpVaultLinux",
+  "from_xdr_version": "3.10.0",
+  "yaml_template": ""
+}

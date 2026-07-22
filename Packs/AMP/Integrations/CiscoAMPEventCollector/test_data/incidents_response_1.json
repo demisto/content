@@ -1,0 +1,133 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self",
+            "next": "metadata_links_next"
+        },
+        "results": {
+            "total": 1000,
+            "current_item_count": 500,
+            "index": 0,
+            "items_per_page": 500
+        }
+    },
+    "data": [
+        {
+            "id": 6159258594551267599,
+            "timestamp": 1699400707,
+            "date": "2023-11-07T23:45:07+00:00",
+            "event_type": "Threat Detected",
+            "event_type_id": 1090519054,
+            "connector_guid": "data[0]_connector_guid",
+            "group_guids": [
+                "data[0]_group_guids_0"
+            ],
+            "severity": "Medium",
+            "computer": {
+                "connector_guid": "data[0]_computer_connector_guid",
+                "hostname": "data[0]_computer_hostname",
+                "external_ip": "data[0]_computer_external_ip",
+                "active": "data[0]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[0]_computer_network_addresses[0]_ip",
+                        "mac": "data[0]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[0]_computer_links_computer",
+                    "trajectory": "data[0]_computer_links_trajectory",
+                    "group": "data[0]_computer_links_group"
+                }
+            }
+        },
+        {
+            "id": 6159258594551267598,
+            "timestamp": 1699400607,
+            "date": "2023-11-07T23:44:07+00:00",
+            "event_type": "Threat Detected",
+            "event_type_id": 1090519054,
+            "connector_guid": "data[0]_connector_guid",
+            "group_guids": [
+                "data[0]_group_guids_0"
+            ],
+            "severity": "Medium",
+            "computer": {
+                "connector_guid": "data[0]_computer_connector_guid",
+                "hostname": "data[0]_computer_hostname",
+                "external_ip": "data[0]_computer_external_ip",
+                "active": "data[0]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[0]_computer_network_addresses[0]_ip",
+                        "mac": "data[0]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[0]_computer_links_computer",
+                    "trajectory": "data[0]_computer_links_trajectory",
+                    "group": "data[0]_computer_links_group"
+                }
+            }
+        },
+        {
+            "id": 6159258594551267597,
+            "timestamp": 1699400507,
+            "date": "2023-11-07T23:43:07+00:00",
+            "event_type": "Threat Detected",
+            "event_type_id": 1090519054,
+            "connector_guid": "data[0]_connector_guid",
+            "group_guids": [
+                "data[0]_group_guids_0"
+            ],
+            "severity": "Medium",
+            "computer": {
+                "connector_guid": "data[0]_computer_connector_guid",
+                "hostname": "data[0]_computer_hostname",
+                "external_ip": "data[0]_computer_external_ip",
+                "active": "data[0]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[0]_computer_network_addresses[0]_ip",
+                        "mac": "data[0]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[0]_computer_links_computer",
+                    "trajectory": "data[0]_computer_links_trajectory",
+                    "group": "data[0]_computer_links_group"
+                }
+            }
+        },
+        {
+            "id": 6159258594551267596,
+            "timestamp": 1699400407,
+            "date": "2023-11-07T23:42:07+00:00",
+            "event_type": "Threat Detected",
+            "event_type_id": 1090519054,
+            "connector_guid": "data[0]_connector_guid",
+            "group_guids": [
+                "data[0]_group_guids_0"
+            ],
+            "severity": "Medium",
+            "computer": {
+                "connector_guid": "data[0]_computer_connector_guid",
+                "hostname": "data[0]_computer_hostname",
+                "external_ip": "data[0]_computer_external_ip",
+                "active": "data[0]_computer_active",
+                "network_addresses": [
+                    {
+                        "ip": "data[0]_computer_network_addresses[0]_ip",
+                        "mac": "data[0]_computer_network_addresses[0]_mac"
+                    }
+                ],
+                "links": {
+                    "computer": "data[0]_computer_links_computer",
+                    "trajectory": "data[0]_computer_links_trajectory",
+                    "group": "data[0]_computer_links_group"
+                }
+            }
+        }
+    ]
+}

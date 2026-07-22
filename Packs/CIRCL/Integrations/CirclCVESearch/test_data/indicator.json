@@ -1,0 +1,83 @@
+{
+	"CVE(val.ID && val.ID == obj.ID)": {
+		"ID": "CVE-2020-17106",
+		"CVSS": {
+			"Score": 9.3,
+			"Vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C",
+			"Table": [
+				{
+					"metrics": "availability",
+					"value": "COMPLETE"
+				},
+				{
+					"metrics": "confidentiality",
+					"value": "COMPLETE"
+				},
+				{
+					"metrics": "integrity",
+					"value": "COMPLETE"
+				},
+				{
+					"metrics": "authentication",
+					"value": "NONE"
+				},
+				{
+					"metrics": "complexity",
+					"value": "MEDIUM"
+				},
+				{
+					"metrics": "vector",
+					"value": "NETWORK"
+				}
+			]
+		},
+		"Published": "2020-11-11T07:15:00",
+		"Modified": "2020-11-19T21:04:00",
+		"Description": "HEVC Video Extensions Remote Code Execution Vulnerability This CVE ID is unique from CVE-2020-17107, CVE-2020-17108, CVE-2020-17109, CVE-2020-17110.",
+		"Relationships": [
+			{
+				"Relationship": "targets",
+				"EntityA": "CVE-2020-17106",
+				"EntityAType": "cve",
+				"EntityB": "Microsoft",
+				"EntityBType": "identity"
+			},
+			{
+				"Relationship": "targets",
+				"EntityA": "CVE-2020-17106",
+				"EntityAType": "cve",
+				"EntityB": "Hevc video extensions",
+				"EntityBType": "software"
+			}
+		],
+		"Tags": [
+            "Hevc video extensions",
+            "Microsoft",
+			"Application"
+		],
+		"Publications": [
+			{
+				"source": "Circl.lu",
+				"title": "CVE-2020-17106",
+				"link": "https://portal.msrc.microsoft.com/en-US/security-guidance/advisory/CVE-2020-17106",
+				"timestamp": null
+			}
+		],
+		"vulnerableproduct": [
+			{
+				"cpe": "cpe:2.3:a:microsoft:hevc_video_extensions:*:*:*:*:*:*:*:*"
+			}
+		],
+		"vulnerableconfigurations": [
+			{
+				"cpe": "cpe:2.3:a:microsoft:hevc_video_extensions:*:*:*:*:*:*:*:*"
+			}
+		]
+	},
+	"DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": {
+		"Indicator": "CVE-2020-17106",
+		"Type": "cve",
+		"Vendor": null,
+		"Score": 0
+	}
+}

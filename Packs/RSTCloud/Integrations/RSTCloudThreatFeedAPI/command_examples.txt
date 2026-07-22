@@ -1,0 +1,6 @@
+!ip ip=1.2.3.4 threshold=50
+!domain domain="domain-name-to-check.com" threshold=40
+!url url="https://domain.mx/testurl" threshold=30
+!file file="f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2" threshold=5
+!rst-submit-fp ioc="thisisnotamaliciousdomain.com" description="a decent website"
+!rst-submit-new ioc="thisisamaliciouswebsite.com" description="a user downloaded a trojan"

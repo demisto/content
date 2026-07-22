@@ -1,0 +1,8 @@
+id: Corelight_Zeek_ParsingRule
+name: Corelight Zeek Parsing Rules
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''
+supportedModules:
+- xsiam

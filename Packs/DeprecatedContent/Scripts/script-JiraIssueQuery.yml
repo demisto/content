@@ -1,0 +1,42 @@
+commonfields:
+  id: JiraIssueQuery
+  version: -1
+name: JiraIssueQuery
+deprecated: true
+script: >2
+
+  resp = demisto.executeCommand("jira-issue-query", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- jira
+comment: Deprecated. Query Jira issues
+system: true
+args:
+- default: true
+  description: JQL query string
+  name: query
+  required: true
+- description: The index of the first issue to return (0-based) - format int
+  name: startAt
+- description: the maximum number of issues to return (defaults to 50). The maximum allowable value is dictated by the JIRA property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated.
+  name: maxResults
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - jira-issue-query
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

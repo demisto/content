@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtiasmissueentitytype",
+    "version": -1,
+    "modified": "2025-09-23T15:12:03.198346647+05:30",
+    "name": "GTI ASM Issue Entity Type",
+    "ownerOnly": false,
+    "description": "Type of the affected entity (e.g., domain, IP, asset).",
+    "cliName": "gtiasmissueentitytype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Google Threat Intelligence ASM Issue"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,733 @@
+id: Cisco ASA - Test Playbook
+version: -1
+name: Cisco ASA - Test Playbook
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 3dc8d612-f2a3-41e2-886f-ef1f239bb0f3
+    type: start
+    task:
+      id: 3dc8d612-f2a3-41e2-886f-ef1f239bb0f3
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 50\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: cd20cfd4-94b6-4a6a-826b-88abaf6c7d54
+    type: regular
+    task:
+      id: cd20cfd4-94b6-4a6a-826b-88abaf6c7d54
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 195\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: b04c0637-41e8-4e2a-88a6-4aa00d213cdf
+    type: regular
+    task:
+      id: b04c0637-41e8-4e2a-88a6-4aa00d213cdf
+      version: -1
+      name: Create Rule
+      description: Create a rule.
+      script: '|||cisco-asa-create-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      destination:
+        simple: 2.2.2.2
+      interface_type:
+        simple: Global
+      permit:
+        simple: 'False'
+      source:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1070\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: bdb11b78-f843-4bcc-8b12-06a5dbc108ba
+    type: regular
+    task:
+      id: bdb11b78-f843-4bcc-8b12-06a5dbc108ba
+      version: -1
+      name: Get Rule Data
+      description: Get a specific rule by its ID
+      script: '|||cisco-asa-get-rule-by-id'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      interface_name:
+        simple: ${CiscoASA.Rules.Interface}
+      interface_type:
+        simple: ${CiscoASA.Rules.InterfaceType}
+      rule_id:
+        simple: ${CiscoASA.Rules.ID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1245\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 37d7434f-e4ba-47c3-891e-21fb26ab1c83
+    type: condition
+    task:
+      id: 37d7434f-e4ba-47c3-891e-21fb26ab1c83
+      version: -1
+      name: Verify Rule
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '5'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Source
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Dest
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1420\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: f541b99d-106e-4375-80ca-753344aecf35
+    type: regular
+    task:
+      id: f541b99d-106e-4375-80ca-753344aecf35
+      version: -1
+      name: Edit Rule
+      description: Edit an existing rule.
+      script: '|||cisco-asa-edit-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      destination:
+        simple: 3.3.3.3
+      interface_name:
+        simple: ${CiscoASA.Rules.Interface}
+      interface_type:
+        simple: ${CiscoASA.Rules.InterfaceType}
+      rule_id:
+        simple: ${CiscoASA.Rules.ID}
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1595\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 52515afc-3fae-478e-88f0-1c8d75de6a82
+    type: condition
+    task:
+      id: 52515afc-3fae-478e-88f0-1c8d75de6a82
+      version: -1
+      name: Verify Rule Edited
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Dest
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Source
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1770\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: defa2da0-07d3-4e80-8a73-769c6b969433
+    type: regular
+    task:
+      id: defa2da0-07d3-4e80-8a73-769c6b969433
+      version: -1
+      name: Delete Rule
+      description: Delete a rule.
+      script: '|||cisco-asa-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    scriptarguments:
+      interface_name:
+        complex:
+          root: ${CiscoASA
+          accessor: Rules.Interface}
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: '1'
+              to:
+                value:
+                  simple: '2'
+      interface_type:
+        simple: Global
+      rule_id:
+        complex:
+          root: ${CiscoASA
+          accessor: Rules.ID}
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: '1'
+              to:
+                value:
+                  simple: '2'
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 1945\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - "26"
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 68293ee2-83c5-4f9b-8d9d-021699408c48
+    type: regular
+    task:
+      id: 68293ee2-83c5-4f9b-8d9d-021699408c48
+      version: -1
+      name: List rules
+      description: Gets a list all rules for the supplied interface.
+      script: '|||cisco-asa-list-rules'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    scriptarguments:
+      interface_type:
+        simple: Global
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 370\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 7137276e-19d3-45a5-86ac-2cb3bb2c0a99
+    type: condition
+    task:
+      id: 7137276e-19d3-45a5-86ac-2cb3bb2c0a99
+      version: -1
+      name: Does rule exist
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '11'
+      yes:
+      - '10'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Source
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Dest
+            iscontext: true
+          right:
+            value:
+              simple: 2.2.2.2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoASA.Rules.Permit
+            iscontext: true
+          right:
+            value:
+              simple: 'false'
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 545\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: f7186d3e-ead3-4ce7-8bac-112c6dc88b1b
+    type: regular
+    task:
+      id: f7186d3e-ead3-4ce7-8bac-112c6dc88b1b
+      version: -1
+      name: Delete Rule
+      description: Deletes a rule.
+      script: '|||cisco-asa-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      interface_type:
+        simple: Global
+      rule_id:
+        complex:
+          root: CiscoASA.Rules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoASA.Rules.Source
+                iscontext: true
+              right:
+                value:
+                  simple: 1.1.1.1
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoASA.Rules.Permit
+                iscontext: true
+              right:
+                value:
+                  simple: 'false'
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: CiscoASA.Rules.Dest
+                iscontext: true
+              right:
+                value:
+                  simple: 2.2.2.2
+          accessor: ID
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": -30,\n    \"y\": 720\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: a208a3cc-1b36-45b4-841a-e1d5434a199d
+    type: regular
+    task:
+      id: a208a3cc-1b36-45b4-841a-e1d5434a199d
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: "{\n  \"position\": {\n    \"x\": 162.5,\n    \"y\": 895\n  }\n}"
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: bab38cfc-5ecb-407c-8cd6-8de6f15317a9
+    type: regular
+    task:
+      id: bab38cfc-5ecb-407c-8cd6-8de6f15317a9
+      version: -1
+      name: cisco-asa-write-memory
+      description: The write memory command saves the running configuration to the default location for the startup configuration.
+      script: Cisco ASA|||cisco-asa-write-memory
+      type: regular
+      iscommand: true
+      brand: Cisco ASA
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: bfeefc4a-cdab-4de1-808c-f3c6f313d593
+    type: regular
+    task:
+      id: bfeefc4a-cdab-4de1-808c-f3c6f313d593
+      version: -1
+      name: cisco-asa-list-user-object
+      script: Cisco ASA|||cisco-asa-list-user-object
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 96346056-ee8c-40ad-80f6-2a0be94473ff
+    type: regular
+    task:
+      id: 96346056-ee8c-40ad-80f6-2a0be94473ff
+      version: -1
+      name: cisco-asa-list-security-object-group
+      script: Cisco ASA|||cisco-asa-list-security-object-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7bcfdf0b-8e45-4604-889b-0105b2565279
+    type: regular
+    task:
+      id: 7bcfdf0b-8e45-4604-889b-0105b2565279
+      version: -1
+      name: cisco-asa-list-time-range
+      script: Cisco ASA|||cisco-asa-list-time-range
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 4ffebd28-4569-4870-8b6d-920d6fa14fec
+    type: regular
+    task:
+      id: 4ffebd28-4569-4870-8b6d-920d6fa14fec
+      version: -1
+      name: cisco-asa-list-local-user
+      script: Cisco ASA|||cisco-asa-list-local-user
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: e1d51cf3-f409-44f1-8f57-e2fedd4c8094
+    type: regular
+    task:
+      id: e1d51cf3-f409-44f1-8f57-e2fedd4c8094
+      version: -1
+      name: cisco-asa-list-local-user-group
+      script: Cisco ASA|||cisco-asa-list-local-user-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: d137b91f-84f3-4330-88b3-f5e10800e1f4
+    type: regular
+    task:
+      id: d137b91f-84f3-4330-88b3-f5e10800e1f4
+      version: -1
+      name: cisco-asa-list-network-object-group
+      script: Cisco ASA|||cisco-asa-list-network-object-group
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: ba0da38a-7909-432c-8894-fe3455b7a5d4
+    type: title
+    task:
+      id: ba0da38a-7909-432c-8894-fe3455b7a5d4
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3545,
+        "width": 572.5,
+        "x": -30,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

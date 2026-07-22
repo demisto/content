@@ -1,0 +1,8 @@
+fromversion: 8.5.0
+id: proofpoint_email_security_ParsingRule
+name: Proofpoint Email Security Parsing Rule
+rules: ''
+samples: ''
+tags: []
+supportedModules:
+- xsiam

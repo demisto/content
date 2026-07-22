@@ -1,0 +1,31 @@
+{
+  "Name": "test_1",
+  "Priority": 0,
+  "Statement": {
+    "OrStatement": {
+      "Statements": [
+        {
+          "GeoMatchStatement": {
+            "CountryCodes": [
+              "AX",
+              "AS"
+            ]
+          }
+        },
+        {
+          "IPSetReferenceStatement": {
+            "ARN": "ip_arn"
+          }
+        }
+      ]
+    }
+  },
+  "Action": {
+    "Allow": {}
+  },
+  "VisibilityConfig": {
+    "SampledRequestsEnabled": true,
+    "CloudWatchMetricsEnabled": true,
+    "MetricName": "test_1"
+  }
+}

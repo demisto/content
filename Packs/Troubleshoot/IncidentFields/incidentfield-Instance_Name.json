@@ -1,0 +1,31 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Integration Troubleshooting"
+ ],
+ "caseInsensitive": true,
+ "cliName": "instancename",
+ "closeForm": false,
+ "content": true,
+ "description": "Name of the instance to troubleshoot",
+ "editForm": true,
+ "fieldCalcScript": "TroubleshootInstanceField",
+ "group": 0,
+ "hidden": false,
+ "id": "incident_instancename",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Instance Name",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "singleSelect",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "5.0.0"
+}

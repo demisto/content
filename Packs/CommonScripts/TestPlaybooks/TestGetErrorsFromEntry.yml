@@ -1,0 +1,228 @@
+id: TestGetErrorsFromEntry
+inputs: []
+name: TestGetErrorsFromEntry
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 104b0138-ecd6-4959-8bbc-a43bd759ebba
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 104b0138-ecd6-4959-8bbc-a43bd759ebba
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    continueonerror: true
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: ${k}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 331b07c0-962d-4842-83a0-d25727da556c
+      iscommand: false
+      name: Print error three times
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 331b07c0-962d-4842-83a0-d25727da556c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+      id: 301f41ae-fe40-4ff0-8e83-c1e355da03a0
+      iscommand: false
+      name: Get Errors From Entry
+      script: GetErrorsFromEntry
+      type: regular
+      version: -1
+    taskid: 301f41ae-fe40-4ff0-8e83-c1e355da03a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ErrorEntries
+          operator: hasLength
+          right:
+            value:
+              simple: "3"
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 14a9ed35-d680-40d2-8849-1703c3350a26
+      iscommand: false
+      name: Verify 3 error entries
+      type: condition
+      version: -1
+    taskid: 14a9ed35-d680-40d2-8849-1703c3350a26
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 30efc9c0-123a-4ecf-8476-861284478818
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 30efc9c0-123a-4ecf-8476-861284478818
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: k
+      value:
+        simple: '["error 1", "error 2", "error 3"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 57c975c7-d8ab-4bfb-8150-2194c71215fb
+      iscommand: false
+      name: Set a key with three values
+      script: Set
+      type: regular
+      version: -1
+    taskid: 57c975c7-d8ab-4bfb-8150-2194c71215fb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.9.0
+description: ''

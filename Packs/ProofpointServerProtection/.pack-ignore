@@ -1,0 +1,6 @@
+[file:README.md]
+ignore=RM104,RM102
+
+[file:ProofpointServerProtection.yml]
+ignore=BA124
+

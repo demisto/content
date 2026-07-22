@@ -1,0 +1,38 @@
+{
+    "name": "WALLIX Bastion",
+    "description": "Centralized Control and Monitoring of Privileged Access to Sensitive Assets.",
+    "support": "partner",
+    "currentVersion": "3.1.4",
+    "author": "WALLIX",
+    "url": "https://www.wallix.com/privileged-access-management/",
+    "email": "cs@wallix.com",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [
+        "Compliance",
+        "IT",
+        "IAM"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Identity and Access Management",
+        "Compliance"
+    ],
+    "keywords": [
+        "wallix",
+        "wab",
+        "bastion",
+        "pam",
+        "privileged access management"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

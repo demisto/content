@@ -1,0 +1,144 @@
+commonfields:
+  id: PostgreSQL
+  version: -1
+name: PostgreSQL
+display: PostgreSQL (Deprecated)
+category: Database
+deprecated: true
+image: data:image/png;base64,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
+description: Deprecated. Use The Generic SQL integration instead.
+configuration:
+- display: Database host
+  name: host
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Database port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Database username
+  name: user
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Database User password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Database name
+  name: dbname
+  defaultvalue: ""
+  type: 0
+  required: true
+script:
+  script: >
+    import psycopg2
+
+
+    def closeConnection(conn, cur = None):
+        if cur is not None:
+          cur.close()
+
+        if conn is not None:
+          conn.close()
+
+    def pgsqlConnect():
+        connectionString = "dbname='" + demisto.params()['dbname'] +"' ";
+        connectionString +="user='" + demisto.params()['user'] +"' ";
+        connectionString +="host='" + demisto.params()['host'] +"' ";
+        connectionString +="port='" + str(demisto.params()['port']) +"' ";
+        connectionString +="password='" + demisto.params()['password'] +"'";
+        try:
+            conn = psycopg2.connect(connectionString)
+            conn.autocommit = True
+        except Exception as e:
+            demisto.results(e.message)
+            return None
+        return conn
+
+    if demisto.command() == 'test-module':
+        try:
+            conn = pgsqlConnect()
+        except Exception as e:
+            demisto.results(e.message)
+            sys.exit(0)
+        finally:
+            closeConnection(conn)
+        demisto.results('ok')
+        sys.exit(0)
+
+    if demisto.command() == 'pgsql-query':
+        conn = pgsqlConnect()
+        cur = None
+        rows = []
+        try:
+            cur = conn.cursor()
+            cur.execute(demisto.args()['query'])
+            # try to fetch rows
+            try:
+                rows = cur.fetchall()
+                colnames = [desc[0] for desc in cur.description]
+            except Exception as e:
+                if e.message != 'no results to fetch':
+                    demisto.results({
+                        'Type' : entryTypes['error'],
+                        'ContentsFormat' : formats['text'],
+                        'Contents' : e.message
+                    })
+                    sys.exit(0)
+        except Exception as e:
+            demisto.results({
+                'Type' : entryTypes['error'],
+                'ContentsFormat' : formats['text'],
+                'Contents' : e.message
+            })
+            sys.exit(0)
+        finally:
+            closeConnection(conn)
+
+        if(len(rows) == 0):
+            demisto.results({
+                'Type' : entryTypes['note'],
+                'ContentsFormat' : formats['text'],
+                'Contents' : "No rows returned"
+            })
+            sys.exit(0)
+
+        contents = []
+        table = [];
+        table.append(colnames);
+
+        for row in rows:
+            obj = {}
+            tableRow = [];
+            for x in range(0,len(colnames)):
+                obj[colnames[x]]=str(row[x])
+                tableRow.append(str(row[x]))
+            contents.append(obj)
+            table.append(tableRow)
+
+        demisto.results({
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': contents,
+            "ReadableContentsFormat": formats['table'],
+            "HumanReadable": table
+        });
+        sys.exit(0)
+  type: python
+  subtype: python2
+  commands:
+  - name: pgsql-query
+    arguments:
+    - name: query
+      required: true
+      default: true
+      description: SQL Statement
+    description: Query PostgreSQL database
+  dockerimage: demisto/psycopg2
+tests:
+- No tests - test was moved to NonCircleTests
+fromversion: 5.0.0

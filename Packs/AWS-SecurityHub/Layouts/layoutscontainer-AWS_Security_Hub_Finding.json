@@ -1,0 +1,552 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 22,
+                                "id": "21f67860-9b16-11ed-9539-190e91a3cd3c",
+                                "index": 2,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "alertid",
+                                "height": 22,
+                                "id": "de008d30-9b15-11ed-9539-190e91a3cd3c",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "region",
+                                "height": 22,
+                                "id": "d75da350-9b15-11ed-9539-190e91a3cd3c",
+                                "index": 4,
+                                "listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 53,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 53,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "externalstarttime",
+                                "height": 53,
+                                "id": "b4680d90-9b15-11ed-9539-190e91a3cd3c",
+                                "index": 2,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 53,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 53,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "detectionupdatetime",
+                                "height": 53,
+                                "id": "4422f1c0-9b16-11ed-9539-190e91a3cd3c",
+                                "index": 2,
+                                "listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "description": "",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "accountid",
+                                "height": 22,
+                                "id": "90233b80-9b15-11ed-9539-190e91a3cd3c",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 22,
+                                "id": "c3729bc0-9b15-11ed-9539-190e91a3cd3c",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "comment",
+                                "height": 22,
+                                "id": "abd54520-9b16-11ed-9539-190e91a3cd3c",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Investigation Data",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 6,
+                        "hideName": false,
+                        "i": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubproviderupdatedat",
+                                "height": 53,
+                                "id": "4617adc0-a225-11ed-a53f-e3c6f0d30610",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubgeneratorid",
+                                "height": 53,
+                                "id": "237405c0-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 1,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubproductarn",
+                                "height": 53,
+                                "id": "2c78d470-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 2,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubseverity",
+                                "height": 106,
+                                "id": "66e04e90-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 3,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubworkflowstatus",
+                                "height": 53,
+                                "id": "843687c0-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 4,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubproductname",
+                                "height": 53,
+                                "id": "95dd2820-9b19-11ed-9539-190e91a3cd3c",
+                                "index": 5,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubcompanyname",
+                                "height": 53,
+                                "id": "c787a770-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 6,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubthreatintelindicators",
+                                "height": 106,
+                                "id": "5718d6c0-b1c6-11ed-99d6-19c0ff503d72",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubvulnerabilities",
+                                "height": 106,
+                                "id": "5cb489d0-b1c6-11ed-99d6-19c0ff503d72",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubcriticality",
+                                "height": 22,
+                                "id": "220c4250-bb2b-11ed-ab72-cf5fafeb5c4f",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubresources",
+                                "height": 106,
+                                "id": "3475a900-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 9,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubschemaversion",
+                                "height": 53,
+                                "id": "5b8078e0-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 10,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubremediation",
+                                "height": 106,
+                                "id": "aa4c53d0-9b19-11ed-9539-190e91a3cd3c",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubconfidence",
+                                "height": 53,
+                                "id": "70d54840-a22c-11ed-a53f-e3c6f0d30610",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubthreats",
+                                "height": 106,
+                                "id": "1d4f1390-9b1a-11ed-9539-190e91a3cd3c",
+                                "index": 13,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubuserdefinedfields",
+                                "height": 106,
+                                "id": "37e45800-9b1a-11ed-9539-190e91a3cd3c",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubverificationstate",
+                                "height": 53,
+                                "id": "4362b230-9b1a-11ed-9539-190e91a3cd3c",
+                                "index": 15,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubrelatedfindings",
+                                "height": 106,
+                                "id": "4e273240-9b1a-11ed-9539-190e91a3cd3c",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubtypes",
+                                "height": 53,
+                                "id": "72cc5eb0-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 17,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubaction",
+                                "height": 106,
+                                "id": "8e67a170-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 18,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubcompliance",
+                                "height": 106,
+                                "id": "fde0c540-9b18-11ed-9539-190e91a3cd3c",
+                                "index": 19,
+                                "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubrecordstate",
+                                "height": 53,
+                                "id": "9f694f40-9b19-11ed-9539-190e91a3cd3c",
+                                "index": 20,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubproviderfields",
+                                "height": 106,
+                                "id": "19e4dbf0-9b19-11ed-9539-190e91a3cd3c",
+                                "index": 21,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubmalware",
+                                "height": 106,
+                                "id": "202162e0-9b19-11ed-9539-190e91a3cd3c",
+                                "index": 22,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubnetworkpath",
+                                "height": 106,
+                                "id": "26fa02c0-9b19-11ed-9539-190e91a3cd3c",
+                                "index": 23,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubproductfields",
+                                "height": 106,
+                                "id": "4761c1b0-9b19-11ed-9539-190e91a3cd3c",
+                                "index": 24,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "AWS Security Hub Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "AWS Security Hub Finding",
+    "name": "AWS Security Hub Finding",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "description": "",
+    "marketplaces": ["xsoar"]
+}

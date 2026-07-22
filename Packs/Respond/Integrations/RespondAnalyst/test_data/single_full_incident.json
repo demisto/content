@@ -1,0 +1,96 @@
+[
+  {
+    "id": "5",
+    "dateCreated": "1591374017577",
+    "eventCount": 30,
+    "firstEventTime": "1590576695714",
+    "lastEventTime": "1591345217592",
+    "title": "Worm Infection with Int - Int & Ext Network C2 Malware",
+    "attackStage": "AttackObjective",
+    "assetClass": "Critical",
+    "probabilityBucket": "VeryHigh",
+    "status": "Closed",
+    "priority": "High",
+    "internalSystems": [
+      {
+        "hostname": "test_server25"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "system1"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      },
+      {
+        "hostname": "None"
+      }
+    ],
+    "internalSystemsCount": 15,
+    "feedback": {
+      "newStatus": "NonActionable",
+      "status": "Bad",
+      "newSelectedOptions": [
+        {
+          "id": "4",
+          "key": "unmonitoredAssets",
+          "value": "true"
+        },
+        {
+          "id": "19",
+          "key": "scopedCorrectly",
+          "value": "No"
+        }
+      ],
+      "timeGiven": "1594074534086",
+      "optionalText": "new text",
+      "userId": "user1",
+      "closedAt": "1594065777284",
+      "closedBy": "user1"
+    },
+    "userIds": [],
+    "tags": [
+      {
+        "label": "Suspicious External System Attributes"
+      },
+      {
+        "label": "Multiple Network IPS Signatures Triggered by Same Internal Asset"
+      },
+      {
+        "label": "Malware Not Successfully Removed by Endpoint Protection Agent"
+      }
+    ]
+  }
+]

@@ -1,0 +1,21 @@
+[
+  {
+    "BucketName": "test_bucket",
+    "PolicyId": "1",
+    "PolicyVersion": "1.0.0",
+    "Sid": "Sid_1",
+    "Action": "action_1",
+    "Principal": "principal_1",
+    "Resource": "resource_1",
+    "Effect": "effect_1"},
+  {
+    "BucketName": "test_bucket",
+    "PolicyId": "1",
+    "PolicyVersion": "1.0.0",
+    "Sid": "Sid_2",
+    "Action": "action_2",
+    "Principal": "principal_2",
+    "Resource": "resource_2",
+    "Effect": "effect_2"
+  }
+]

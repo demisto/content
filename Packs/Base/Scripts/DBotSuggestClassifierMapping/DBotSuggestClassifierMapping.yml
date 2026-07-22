@@ -1,0 +1,29 @@
+args:
+- description: The incident samples (raw events).
+  name: incidentSamples
+  required: true
+- description: Incidents fields to consider on matching.
+  name: incidentFields
+- description: The current mapper.
+  name: currentMapper
+- description: The type of the incident samples.
+  name: incidentSamplesType
+  predefined:
+  - ''
+comment: Deprecated. No available replacement. Suggests a classifier mapping based on an advanced name matching algorithm.
+commonfields:
+  id: DBotSuggestClassifierMapping
+  version: -1
+name: DBotSuggestClassifierMapping
+script: '-'
+subtype: python2
+tags:
+- ml
+timeout: '0'
+type: python
+deprecated: true
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.1.26972
+

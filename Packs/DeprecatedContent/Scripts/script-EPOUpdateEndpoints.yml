@@ -1,0 +1,81 @@
+commonfields:
+  id: EPOUpdateEndpoints
+  version: -1
+name: EPOUpdateEndpoints
+script: >
+  res = []
+
+
+  endpoints = demisto.get(demisto.args(), 'endpoints')
+
+  if not endpoints:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"], "Contents": "Received empty endpoints list!"})
+  else:
+      endpoints = ','.join(endpoints) if isinstance(endpoints, list) else endpoints
+      eposerver = demisto.get(demisto.args(), 'eposerver')
+      # Find the VSEContentUpdateDemisto Client Task
+      dArgsFind = {"using": eposerver,
+                   "command": "clienttask.find",
+                   "params": "searchText=VSEContentUpdateDemisto"
+                   }
+      repoVersions = {}
+      resCmdFind = demisto.executeCommand('epo-command', dArgsFind)
+      try:
+          for entry in resCmdFind:
+              if isError(entry):
+                  res = resCmdFind
+                  break
+              else:
+                  taskId = demisto.get(entry, 'Contents.response')[0]['objectId']
+                  dArgsUpdate = {"using": eposerver,
+                                 "command": "clienttask.run",
+                                 "params": "names=" + endpoints + "&productId=EPOAGENTMETA&taskId=%d" % taskId
+                                 }
+                  for optarg in ['retryAttempts', 'retryIntervalInSeconds', 'abortAfterMinutes', 'stopAfterMinutes', 'randomizationInterval']:
+                      v = None
+                      v = demisto.get(demisto.args(), optarg)
+                      if v:
+                          dArgsUpdate["params"] += ('&' + optarg + '=' + v)
+
+                  demisto.log(dArgsUpdate["params"])
+                  resCmdUpdate = demisto.executeCommand('epo-command', dArgsUpdate)
+                  demisto.setContext('agentupdateresults', json.dumps(resCmdUpdate[0]['Contents']))
+                  res += resCmdUpdate
+
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdFind)})
+
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- epo
+comment: Deprecated. Trigger an ePO Client Task to update AV signatures for specific endpoints
+system: true
+deprecated: true
+args:
+- name: endpoints
+  required: true
+  default: true
+  description: Names of endpoints to update
+- name: eposerver
+  required: true
+  description: ePO instance to use
+- name: retryAttempts
+  description: Number of times the server will attempt to send the task to the client. Defaults to 1.
+- name: retryIntervalInSeconds
+  description: Retry interval in seconds. Defaults to 30.
+- name: abortAfterMinutes
+  description: Maximum number of minutes before aborting all attempts. Defaults to 5.
+- name: stopAfterMinutes
+  description: Maximum duration in minutes the client task is allowed to run. Defaults to 20.
+- name: randomizationInterval
+  description: Duration in minutes over which to randomly spread task execution. Defaults to 0 (execute on all clients immediately).
+scripttarget: 0
+dependson:
+  must:
+  - epo-command
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

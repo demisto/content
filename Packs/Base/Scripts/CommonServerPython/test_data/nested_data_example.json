@@ -1,0 +1,31 @@
+{
+  "name": "Active Directory Query",
+  "changelog": {
+    "1.0.4": {
+      "path": "",
+      "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\nFixed an issue where the ***ad-get-user*** command caused performance issues because the *limit* argument was not defined.\n",
+      "displayName": "1.0.4 - R124496",
+      "released": "2020-09-23T17:43:26Z"
+    },
+    "1.0.5": {
+      "path": "",
+      "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed several typos.\n- Updated the Docker image to: *demisto/ldap:1.0.0.11282*.\n",
+      "displayName": "1.0.5 - 132259",
+      "released": "2020-10-01T17:48:31Z"
+    },
+    "1.0.6": {
+      "path": "",
+      "releaseNotes": "\n#### Integrations\n##### Active Directory Query v2\n- Fixed an issue where the DN parameter within query in the ***search-computer*** command was incorrect.\n- Updated the Docker image to *demisto/ldap:1.0.0.12410*.\n",
+      "displayName": "1.0.6 - 151676",
+      "released": "2020-10-19T14:35:15Z"
+    }
+  },
+  "nested": {
+    "item1": {
+      "a": 1,
+      "b": 2,
+      "c": 3,
+      "d": 4
+    }
+  }
+}

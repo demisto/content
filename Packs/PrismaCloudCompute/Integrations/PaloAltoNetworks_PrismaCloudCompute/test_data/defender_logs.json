@@ -1,0 +1,12 @@
+[
+    {
+        "level": "DEBUG",
+        "log": "defender.go:2042 Received upload logs message: \u0026{DestLogs:defender_1680202037.tar.gz Lines:2}",
+        "time": "2023-03-30T18:47:17.49Z"
+    },
+    {
+        "level": "DEBUG",
+        "log": "ws.go:517 Received message with type uploadLogs",
+        "time": "2023-03-30T18:47:17.489Z"
+    }
+]

@@ -1,0 +1,35 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "categories",
+    "closeForm": false,
+    "content": true,
+    "description": "The categories for the incident.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_categories",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Categories",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "openEnded": true,
+    "marketplaces": [
+		"xsoar"
+	]
+}

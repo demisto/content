@@ -1,0 +1,52 @@
+{
+  "DBotScore": {
+    "Indicator": "0.0.0.0",
+    "Type": "ip",
+    "Vendor": "Google Chronicle Backstory",
+    "Score": 3,
+    "Reliability": "B - Usually reliable"
+  },
+  "IP(val.Address && val.Address == obj.Address)": {
+    "Address": "0.0.0.0",
+    "Malicious": {
+      "Vendor": "Google Chronicle Backstory",
+      "Description": "Found in malicious data set"
+    }
+  },
+  "GoogleChronicleBackstory.IP(val.IoCQueried && val.IoCQueried == obj.IoCQueried)": {
+    "IoCQueried": "0.0.0.0",
+    "Sources": [
+      {
+        "Address": [
+          {
+            "IpAddress": "0.0.0.0",
+            "Port": [
+              80
+            ]
+          }
+        ],
+        "Category": "Known CnC for Mobile specific Family",
+        "ConfidenceScore": 70,
+        "FirstAccessedTime": "2018-12-05T00:00:00Z",
+        "LastAccessedTime": "2019-04-10T00:00:00Z",
+        "Severity": "High"
+      },
+      {
+        "Address": [
+          {
+            "Domain": "puknews.com"
+          },
+          {
+            "IpAddress": "0.0.0.0",
+            "Port": [44902,65178]
+          }
+        ],
+        "Category": "BlockedObject",
+        "ConfidenceScore": "Low",
+        "FirstAccessedTime": "1970-01-01T00:00:00Z",
+        "LastAccessedTime": "2020-01-30T01:25:09Z",
+        "Severity": "n/a"
+      }
+    ]
+  }
+}

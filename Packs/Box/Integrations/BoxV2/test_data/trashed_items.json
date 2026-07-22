@@ -1,0 +1,17 @@
+{
+  "entries": [
+    {
+      "id": 12345,
+      "etag": 1,
+      "type": "file",
+      "sequence_id": 3,
+      "name": "Contract.pdf",
+      "sha1": "85136C79CBF9FE36BB9D05D0639C70C265C18D37",
+      "file_version": {
+        "id": 12345,
+        "type": "file_version",
+        "sha1": "134b65991ed521fcfe4724b7d814ab8ded5185dc"
+      }
+    }
+  ]
+}

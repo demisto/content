@@ -1,0 +1,945 @@
+id: Test-AnsibleCiscoIOS
+version: -1
+name: Test-AnsibleCiscoIOS
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5beac53-e9ec-4d0c-8d53-da90e723661c
+    type: start
+    task:
+      id: c5beac53-e9ec-4d0c-8d53-da90e723661c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+    type: regular
+    task:
+      id: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "33"
+      - "34"
+      - "35"
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 420a1805-664f-42b7-8103-e2eb487295e7
+    type: title
+    task:
+      id: 420a1805-664f-42b7-8103-e2eb487295e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: e58aab7f-301a-47d1-8a57-974bcaa8c0d7
+    type: regular
+    task:
+      id: e58aab7f-301a-47d1-8a57-974bcaa8c0d7
+      version: -1
+      name: ios-facts
+      description: |-
+        Collect facts from remote devices running Cisco IOS
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_facts_module.html
+      script: '|||ios-facts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      gather_network_resources: {}
+      gather_subset: {}
+      host:
+        simple: ${inputs.host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 48252377-1e14-4049-8c61-e5cb3cdfa9f2
+    type: condition
+    task:
+      id: 48252377-1e14-4049-8c61-e5cb3cdfa9f2
+      version: -1
+      name: check ios-facts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoIOS.IosFacts.net_serialnum
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 0d2d4c4b-cb59-4ece-8692-95b00cbe913d
+    type: regular
+    task:
+      id: 0d2d4c4b-cb59-4ece-8692-95b00cbe913d
+      version: -1
+      name: ios-banner (absent)
+      description: |-
+        Manage multiline banners on Cisco IOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html
+      script: '|||ios-banner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      banner:
+        simple: login
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: absent
+      text: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 2339bd5b-3ebb-408a-8314-3ddeb132c1b3
+    type: regular
+    task:
+      id: 2339bd5b-3ebb-408a-8314-3ddeb132c1b3
+      version: -1
+      name: ios-banner
+      description: |-
+        Manage multiline banners on Cisco IOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html
+      script: '|||ios-banner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      banner:
+        simple: login
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: present
+      text:
+        simple: Test Playbook Banner
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 7fc40d97-df5a-4ecb-894b-95bdf1087c6c
+    type: regular
+    task:
+      id: 7fc40d97-df5a-4ecb-894b-95bdf1087c6c
+      version: -1
+      name: ios-command
+      description: |-
+        Run commands on remote devices running Cisco IOS
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_command_module.html
+      script: '|||ios-command'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      commands:
+        simple: show version
+      host:
+        simple: ${inputs.host}
+      interval: {}
+      match: {}
+      retries: {}
+      wait_for: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 34714171-3ddc-4b8c-81e7-ce3d63e9e6e6
+    type: regular
+    task:
+      id: 34714171-3ddc-4b8c-81e7-ce3d63e9e6e6
+      version: -1
+      name: Generate random password
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "12"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "True"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: badcae31-96e5-42ce-8526-994ccef08e06
+    type: regular
+    task:
+      id: badcae31-96e5-42ce-8526-994ccef08e06
+      version: -1
+      name: ios-user (absent)
+      description: |-
+        Manage the aggregate of local users on Cisco IOS device
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html
+      script: '|||ios-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      aggregate: {}
+      configured_password: {}
+      hashed_password: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: testplaybook
+      nopassword: {}
+      password_type: {}
+      privilege: {}
+      purge: {}
+      sshkey: {}
+      state:
+        simple: absent
+      update_password: {}
+      view: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 4a910815-ca61-48bc-8367-9a8b41fcfeab
+    type: regular
+    task:
+      id: 4a910815-ca61-48bc-8367-9a8b41fcfeab
+      version: -1
+      name: ios-user
+      description: |-
+        Manage the aggregate of local users on Cisco IOS device
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html
+      script: '|||ios-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      aggregate: {}
+      configured_password:
+        simple: ${RandomString}
+      hashed_password: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: testplaybook
+      nopassword: {}
+      password_type: {}
+      privilege: {}
+      purge: {}
+      sshkey: {}
+      state:
+        simple: present
+      update_password: {}
+      view: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 8aeac540-974d-4f65-8114-683b8e8e7e07
+    type: title
+    task:
+      id: 8aeac540-974d-4f65-8114-683b8e8e7e07
+      version: -1
+      name: interfaces
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: 0aed2c31-074e-4988-8f43-c7814d7830b8
+    type: title
+    task:
+      id: 0aed2c31-074e-4988-8f43-c7814d7830b8
+      version: -1
+      name: info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 0436af67-7399-4dbc-8609-dd7ce07bf831
+    type: title
+    task:
+      id: 0436af67-7399-4dbc-8609-dd7ce07bf831
+      version: -1
+      name: banner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 84d3e5f9-0d5a-439b-85d5-7a70e09d06a1
+    type: title
+    task:
+      id: 84d3e5f9-0d5a-439b-85d5-7a70e09d06a1
+      version: -1
+      name: command
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: 985f8f5b-b41b-4a9d-8f0e-6121d36c3c37
+    type: title
+    task:
+      id: 985f8f5b-b41b-4a9d-8f0e-6121d36c3c37
+      version: -1
+      name: user
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 7903db20-fa62-44da-82cd-4cc9a8dd5238
+    type: regular
+    task:
+      id: 7903db20-fa62-44da-82cd-4cc9a8dd5238
+      version: -1
+      name: ios-interfaces
+      description: |-
+        Manages interface attributes of Cisco IOS network devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html
+      script: '|||ios-interfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      config:
+        simple: '{{ [{''name'': ''GigabitEthernet0/2'', ''description'': ''Configured
+          and Merged by Ansible Network'', ''enabled'': True}, {''name'': ''GigabitEthernet0/3'',
+          ''description'': ''Configured and Merged by Ansible Network'', ''mtu'':
+          2800, ''enabled'': False, ''speed'': 100, ''duplex'': ''full''}] }}'
+      host:
+        simple: ${inputs.host}
+      state: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 50c2913b-1158-4833-852c-8fae4420417c
+    type: regular
+    task:
+      id: 50c2913b-1158-4833-852c-8fae4420417c
+      version: -1
+      name: ios-interfaces (deleted)
+      description: |-
+        Manages interface attributes of Cisco IOS network devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html
+      script: '|||ios-interfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      config:
+        simple: '{{ [{''name'': ''GigabitEthernet0/2'', ''description'': ''Configured
+          and Merged by Ansible Network'', ''enabled'': True}, {''name'': ''GigabitEthernet0/3'',
+          ''description'': ''Configured and Merged by Ansible Network'', ''mtu'':
+          2800, ''enabled'': False, ''speed'': 100, ''duplex'': ''full''}] }}'
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: deleted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: d331e28b-2961-4a18-8724-703f1cc33b6b
+    type: condition
+    task:
+      id: d331e28b-2961-4a18-8724-703f1cc33b6b
+      version: -1
+      name: check ios-banner
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoIOS.IosBanner.status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: bb922b08-7189-4fd1-8cf0-ac062ffde15a
+    type: condition
+    task:
+      id: bb922b08-7189-4fd1-8cf0-ac062ffde15a
+      version: -1
+      name: check ios-command
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: CiscoIOS.IosCommand.stdout.[0]
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 13fca7c4-24ce-46f2-8028-f718c7de6d41
+    type: condition
+    task:
+      id: 13fca7c4-24ce-46f2-8028-f718c7de6d41
+      version: -1
+      name: check ios-user
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoIOS.IosUser.commands.[0]
+            iscontext: true
+          right:
+            value:
+              simple: username testplaybook secret ********
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 46ac5ed6-5696-4dd9-8f73-5df276b6218d
+    type: regular
+    task:
+      id: 46ac5ed6-5696-4dd9-8f73-5df276b6218d
+      version: -1
+      name: ios-user (absent)
+      description: |-
+        Manage the aggregate of local users on Cisco IOS device
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_user_module.html
+      script: '|||ios-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      aggregate: {}
+      configured_password: {}
+      hashed_password: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: testplaybook
+      nopassword: {}
+      password_type: {}
+      privilege: {}
+      purge: {}
+      sshkey: {}
+      state:
+        simple: absent
+      update_password: {}
+      view: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: 3edd1b4b-f58f-40d5-8365-1a2e96cf2e17
+    type: condition
+    task:
+      id: 3edd1b4b-f58f-40d5-8365-1a2e96cf2e17
+      version: -1
+      name: check ios-interfaces
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: CiscoIOS.IosInterfaces.after.[2].description
+            iscontext: true
+          right:
+            value:
+              simple: Configured and Merged by Ansible Network
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: f5980ca2-7103-45f1-8f0c-63e0081789b0
+    type: regular
+    task:
+      id: f5980ca2-7103-45f1-8f0c-63e0081789b0
+      version: -1
+      name: ios-interfaces (deleted)
+      description: |-
+        Manages interface attributes of Cisco IOS network devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_interfaces_module.html
+      script: '|||ios-interfaces'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      config:
+        simple: '{{ [{''name'': ''GigabitEthernet0/2'', ''description'': ''Configured
+          and Merged by Ansible Network'', ''enabled'': True}, {''name'': ''GigabitEthernet0/3'',
+          ''description'': ''Configured and Merged by Ansible Network'', ''mtu'':
+          2800, ''enabled'': False, ''speed'': 100, ''duplex'': ''full''}] }}'
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: deleted
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 706d9437-a9bf-4df4-8c5f-3e89de94aaeb
+    type: regular
+    task:
+      id: 706d9437-a9bf-4df4-8c5f-3e89de94aaeb
+      version: -1
+      name: ios-banner (absent)
+      description: |-
+        Manage multiline banners on Cisco IOS devices
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ios_banner_module.html
+      script: '|||ios-banner'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      banner:
+        simple: login
+      host:
+        simple: ${inputs.host}
+      state:
+        simple: absent
+      text: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1925,
+        "width": 2260,
+        "x": -430,
+        "y": -490
+      }
+    }
+  }
+inputs:
+- key: host
+  value:
+    simple: 192.168.1.19
+  required: true
+  description: Host to run tests against
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: 3a6dd8ad-15e6-46c1-8110-8132245ac2eb
+fromversion: 6.0.0
+description: Test playbook for Ansible Cisco IOS

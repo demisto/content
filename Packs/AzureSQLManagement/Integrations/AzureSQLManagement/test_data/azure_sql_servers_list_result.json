@@ -1,0 +1,21 @@
+{
+    "value": [
+        {
+            "kind": "v12.0",
+            "properties": {
+                "administratorLogin": "admin",
+                "version": "12.0",
+                "state": "Ready",
+                "fullyQualifiedDomainName": "sql.database.windows.net",
+                "privateEndpointConnections": [],
+                "publicNetworkAccess": "Enabled",
+                "restrictOutboundNetworkAccess": "Disabled"
+            },
+            "location": "eastus",
+            "tags": {},
+            "id": "/subscriptions/1234567890/resourceGroups/integration/providers/Microsoft.Sql/servers/integration",
+            "name": "integration",
+            "type": "Microsoft.Sql/servers"
+        }
+    ]
+}

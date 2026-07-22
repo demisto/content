@@ -1,0 +1,145 @@
+{
+ "id": "Cymulate_v2-mapper",
+ "name": "Cymulate_v2 - Incoming Mapper",
+ "description": "Maps incoming Cymulate alert fields.",
+ "fromVersion": "6.0.0",
+ "feed": false,
+ "type": "mapping-incoming",
+ "mapping": {
+  "Cymulate": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Cymulate Agentless": {
+     "complex": null,
+     "simple": "agentless"
+    },
+    "Cymulate Analysis": {
+     "complex": null,
+     "simple": "analysis"
+    },
+    "Cymulate Attack Type": {
+     "complex": null,
+     "simple": "attackType"
+    },
+    "Cymulate Attack Vector": {
+     "complex": null,
+     "simple": "AttackVector"
+    },
+    "Cymulate Description": {
+     "complex": null,
+     "simple": "description"
+    },
+    "Cymulate Input": {
+     "complex": null,
+     "simple": "input"
+    },
+    "Cymulate Last Action": {
+     "complex": null,
+     "simple": "last_action"
+    },
+    "Cymulate Module": {
+     "complex": null,
+     "simple": "module"
+    },
+    "Cymulate Source": {
+     "complex": null,
+     "simple": "source"
+    },
+    "Cymulate Source Email Address": {
+     "complex": null,
+     "simple": "source_email_address"
+    },
+    "Cymulate Status": {
+     "complex": null,
+     "simple": "cymulateStatus"
+    },
+    "Cymulate Template Name": {
+     "complex": null,
+     "simple": "templateName"
+    },
+    "Cymulate Test Case": {
+     "complex": null,
+     "simple": "testcase"
+    },
+    "Cymulate URL": {
+     "complex": null,
+     "simple": "url"
+    },
+    "Email Source": {
+     "complex": null,
+     "simple": "Source_Email_Address"
+    },
+    "Event Type": {
+     "complex": null,
+     "simple": "module"
+    },
+    "MD5": {
+     "complex": null,
+     "simple": "md5"
+    },
+    "Cymulate Mitigation Details": {
+     "complex": null,
+     "simple": "Mitigation_Details"
+    },
+    "SHA256": {
+     "complex": null,
+     "simple": "sha256"
+    },
+    "SHA1": {
+     "complex": null,
+     "simple": "sha1"
+    },
+    "Source Username": {
+     "complex": null,
+     "simple": "user"
+    },
+    "State": {
+     "complex": null,
+     "simple": "cymulateStatus"
+    },
+    "name": {
+     "complex": null,
+     "simple": "name"
+    },
+    "source": {
+     "complex": null,
+     "simple": "source"
+    }
+   }
+  },
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "Email Source": {
+     "complex": null,
+     "simple": "Source_Email_Address"
+    },
+    "Event Type": {
+     "complex": null,
+     "simple": "module"
+    },
+    "MD5": {
+     "complex": null,
+     "simple": "md5"
+    },
+    "Cymulate Mitigation Details": {
+     "complex": null,
+     "simple": "Mitigation_Details"
+    },
+    "SHA256": {
+     "complex": null,
+     "simple": "sha256"
+    },
+    "Source Username": {
+     "complex": null,
+     "simple": "user"
+    },
+    "State": {
+     "complex": null,
+     "simple": "cymulateStatus"
+    }
+   }
+  }
+ },
+ "version": -1
+}

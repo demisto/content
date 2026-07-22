@@ -1,0 +1,36 @@
+{
+    "responseEnvelope": {
+        "requestId": "00000000-0000-0000-0000-000000000000",
+        "responseCode": 200,
+        "responseText": "",
+        "additionalText": "",
+        "recordsNumber": 2,
+        "scrollId": ""
+    },
+    "responseData": [
+        {
+            "listid": "0",
+            "listitem": {
+                "listid": "0",
+                "listname": "whitelist",
+                "created_at": "2024-10-08T14:40:19.611763",
+                "listitemid": "0000000000000000",
+                "created_by": "a@b.test",
+                "listitemname": "www3.example.com"
+            },
+            "listname": "whitelist"
+        },
+        {
+            "listid": "0",
+            "listitem": {
+                "listid": "0",
+                "listname": "whitelist",
+                "created_at": "2024-10-08T14:47:47.647926",
+                "listitemid": "0000000000000000",
+                "created_by": "a@b.test",
+                "listitemname": "www5.example.com"
+            },
+            "listname": "whitelist"
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+[file:Nmap_image.png]
+ignore=IM111
+
+[known_words]
+nmap
+xpanse
+
+[file:Nmap.yml]
+ignore=BA124
+

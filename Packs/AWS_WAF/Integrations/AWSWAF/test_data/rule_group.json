@@ -1,0 +1,50 @@
+{
+    "RuleGroup": {
+        "Name": "nme",
+        "Id": "id",
+        "Capacity": 100,
+        "ARN": "string",
+        "Description": "string",
+        "Rules": [
+            {
+                "Name": "test_1",
+                "Priority": 2,
+                "Statement": {    "IPSetReferenceStatement": {
+      "ARN": "ip_arn"
+    }},
+                "Action": {
+                    "Block": {}},
+
+                "VisibilityConfig": {
+                    "SampledRequestsEnabled": false,
+                    "CloudWatchMetricsEnabled": false,
+                    "MetricName": "string"
+                }
+
+            },
+                      {
+                "Name": "test_2",
+                "Priority": 1,
+                "Statement": {    "IPSetReferenceStatement": {
+      "ARN": "ip_arn"
+    }},
+                "Action": {
+                    "Block": {}},
+
+                "VisibilityConfig": {
+                    "SampledRequestsEnabled": false,
+                    "CloudWatchMetricsEnabled": false,
+                    "MetricName": "string"
+                }
+
+            }
+        ],
+        "VisibilityConfig": {
+            "SampledRequestsEnabled": false,
+            "CloudWatchMetricsEnabled": false,
+            "MetricName": "string"
+        }
+
+    },
+    "LockToken": "lockToken"
+}

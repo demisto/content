@@ -1,0 +1,19 @@
+commonfields:
+  id: DemistoLeaveAllInvestigations
+  version: -1
+name: DemistoLeaveAllInvestigations
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Deprecated. No available replacement.
+enabled: true
+scripttarget: 0
+runas: DBotWeakRole
+dependson:
+  must:
+  - core-api-post
+tests:
+- No test
+fromversion: 5.0.0
+deprecated: true

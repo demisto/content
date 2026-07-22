@@ -1,0 +1,10 @@
+{
+    "outputs": {
+        "fail": {},
+        "success": {
+            "data": {
+                "secret": "1234dsfdgfghgjg4"
+            }
+        }
+    }
+}

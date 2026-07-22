@@ -1,0 +1,6 @@
+[INGEST:vendor="citrix", product="adc", target_dataset="citrix_adc_raw", no_hit=keep]
+// Support only date time of format: MM/dd/yyyy:hh:mm:ss GMT. For example: "01/16/2021:19:00:00 GMT".
+filter _raw_log ~= "\s\d{2}\/\d{2}\/\d{4}\:\d{2}\:\d{2}\:\d{2}\sGMT\s"
+| alter tmp_timestamp = arrayindex(regextract(_raw_log,"\s(\d{2}\/\d{2}\/\d{4}\:\d{2}\:\d{2}\:\d{2})\sGMT\s"),0)
+| alter _time = if(tmp_timestamp != null, parse_timestamp("%m/%d/%Y:%H:%M:%S", tmp_timestamp), _insert_time)
+| fields -tmp_timestamp;

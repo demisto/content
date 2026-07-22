@@ -1,0 +1,10 @@
+[file:playbook-NIST_-_Lessons_Learned.yml]
+ignore=BA101
+
+[file:layoutscontainer-NIST.json]
+ignore=BA101
+[file:incidentfield-NIST_corrective_actions.json]
+ignore=IF100
+
+[file:incidentfield-NIST_staff_lessons_next_time.json]
+ignore=IF100

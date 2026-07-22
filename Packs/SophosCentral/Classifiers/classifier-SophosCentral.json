@@ -1,0 +1,21 @@
+{
+	"defaultIncidentType": "",
+	"description": "Classifies Sophos Central incidents",
+	"id": "Sophos Central - Classifier",
+	"keyTypeMap": {
+		"high": "Sophos Central Incident",
+		"medium": "Sophos Central Incident",
+		"low": "Sophos Central Incident"
+	},
+	"name": "Sophos Central - Classifier",
+	"propagationLabels": [
+		"all"
+	],
+	"transformer": {
+		"complex": null,
+		"simple": "severity"
+	},
+	"type": "classification",
+	"fromVersion": "6.0.0",
+	"version": -1
+}

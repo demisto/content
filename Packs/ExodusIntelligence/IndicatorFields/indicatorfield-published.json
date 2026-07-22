@@ -1,0 +1,31 @@
+{
+    "id": "indicator_xipublishdate",
+    "version": -1,
+    "modified": "2022-08-19T13:55:39.781709688Z",
+    "name": "XI Publish Date",
+    "ownerOnly": false,
+    "cliName": "xipublishdate",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Exodus Intelligence"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

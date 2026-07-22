@@ -1,0 +1,157 @@
+id: ContentPackInstaller_Test
+version: -1
+name: ContentPackInstaller_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f91eae48-342e-4dd5-88aa-a452c551c7cd
+    type: start
+    task:
+      id: f91eae48-342e-4dd5-88aa-a452c551c7cd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "1":
+    id: "1"
+    taskid: 59534ffa-0b1c-458d-8844-002806bb009c
+    type: regular
+    task:
+      id: 59534ffa-0b1c-458d-8844-002806bb009c
+      version: -1
+      name: ContentPackInstaller
+      description: Marketplace packs installer for the content management pack.
+      scriptName: ContentPackInstaller
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      pack_id_key:
+        simple: packid
+      pack_version_key:
+        simple: packversion
+      packs_data:
+        simple: '[{"packid":"Base","packversion":"latest"}]'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "2":
+    id: "2"
+    taskid: 4c33e8d7-715f-43cb-8e88-8c5e204ffaf7
+    type: title
+    task:
+      id: 4c33e8d7-715f-43cb-8e88-8c5e204ffaf7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "3":
+    id: "3"
+    taskid: 08068af9-f6ff-439e-819f-7716cde4f9f9
+    type: regular
+    task:
+      id: 08068af9-f6ff-439e-819f-7716cde4f9f9
+      version: -1
+      name: ContentPackInstaller Common Types
+      description: Content packs installer from marketplace.
+      scriptName: ContentPackInstaller
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      pack_id_key:
+        simple: packid
+      pack_version_key:
+        simple: packversion
+      packs_data:
+        simple: '[{"packid":"CommonTypes","packversion":"3.4.7"}]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: Test for MarketPlaceInstaller automation.

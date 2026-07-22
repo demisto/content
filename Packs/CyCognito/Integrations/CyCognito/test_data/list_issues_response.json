@@ -1,0 +1,156 @@
+{
+  "raw_response": [
+    {
+        "affected_asset": "ip/127.0.0.1",
+        "last_detected": "2022-03-24T04:26:03.296Z",
+        "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+        "potential_threat": "Information Gathering",
+        "tags": [],
+        "id": "issue/127.0.0.1-test1",
+        "organizations": [
+            "Acme Interior Design"
+        ],
+        "issue_status": "normal",
+        "issue_id": "test1",
+        "first_detected": "2021-07-25T16:57:01.565Z",
+        "summary": "| This is dummy data.",
+        "resolved_at": null,
+        "investigation_status": "uninvestigated",
+        "severity_score": 8,
+        "locations": [
+            "IND"
+        ],
+        "detection_complexity": "HTTP Request",
+        "exploitation_method": "Access",
+        "title": "Exposed Online Storage/Bucket with Data",
+        "exploitation_score": 2,
+        "issue_type": "Exposed Data",
+        "comment": null,
+        "severity": "high",
+        "remediation_steps": [
+            "Config bucket to allow access only from specific IPs."
+        ],
+        "potential_impact": [
+            "Loss of integrity",
+            "Loss of confidentiality",
+            "Reputation damage"
+        ]
+    },
+    {
+        "affected_asset": "ip/127.0.0.2",
+        "last_detected": "2022-03-24T04:26:03.296Z",
+        "references": [
+      "https://example2.com",
+      "https://example3.com"
+    ],
+        "potential_threat": "Information Gathering",
+        "tags": [],
+        "id": "issue/issue/127.0.0.1-test",
+        "organizations": [
+            "Acme Interior Design"
+        ],
+        "issue_status": "normal",
+        "issue_id": "test",
+        "first_detected": "2021-07-25T16:57:01.565Z",
+        "summary": "| This is dummy data.",
+        "resolved_at": null,
+        "investigation_status": "uninvestigated",
+        "severity_score": 8,
+        "locations": [
+            "IND"
+        ],
+        "detection_complexity": "HTTP Request",
+        "exploitation_method": "Access",
+        "title": "Exposed Online Storage/Bucket with Data",
+        "exploitation_score": 2,
+        "issue_type": "Exposed Data",
+        "comment": null,
+        "severity": "high",
+        "remediation_steps": [
+            "Config bucket to allow access only from specific IPs."
+        ],
+        "potential_impact": [
+            "Loss of integrity",
+            "Loss of confidentiality",
+            "Reputation damage"
+        ]
+    }
+],
+  "outputs": [
+    {
+        "affected_asset": "ip/127.0.0.1",
+        "last_detected": "2022-03-24T04:26:03.296Z",
+        "references": [
+      "https://example1.com",
+      "https://example2.com"
+    ],
+        "potential_threat": "Information Gathering",
+        "id": "issue/127.0.0.1-test1",
+        "organizations": [
+            "Acme Interior Design"
+        ],
+        "issue_status": "normal",
+        "issue_id": "test1",
+        "first_detected": "2021-07-25T16:57:01.565Z",
+        "summary": "| This is dummy data.",
+        "investigation_status": "uninvestigated",
+        "severity_score": 8,
+        "locations": [
+            "IND"
+        ],
+        "detection_complexity": "HTTP Request",
+        "exploitation_method": "Access",
+        "title": "Exposed Online Storage/Bucket with Data",
+        "exploitation_score": 2,
+        "issue_type": "Exposed Data",
+        "severity": "high",
+        "remediation_steps": [
+            "Config bucket to allow access only from specific IPs."
+        ],
+        "potential_impact": [
+            "Loss of integrity",
+            "Loss of confidentiality",
+            "Reputation damage"
+        ]
+    },
+    {
+        "affected_asset": "ip/127.0.0.2",
+        "last_detected": "2022-03-24T04:26:03.296Z",
+        "references": [
+      "https://example2.com",
+      "https://example3.com"
+    ],
+        "potential_threat": "Information Gathering",
+        "id": "issue/issue/127.0.0.1-test",
+        "organizations": [
+            "Acme Interior Design"
+        ],
+        "issue_status": "normal",
+        "issue_id": "test",
+        "first_detected": "2021-07-25T16:57:01.565Z",
+        "summary": "| This is dummy data.",
+        "investigation_status": "uninvestigated",
+        "severity_score": 8,
+        "locations": [
+            "IND"
+        ],
+        "detection_complexity": "HTTP Request",
+        "exploitation_method": "Access",
+        "title": "Exposed Online Storage/Bucket with Data",
+        "exploitation_score": 2,
+        "issue_type": "Exposed Data",
+        "severity": "high",
+        "remediation_steps": [
+            "Config bucket to allow access only from specific IPs."
+        ],
+        "potential_impact": [
+            "Loss of integrity",
+            "Loss of confidentiality",
+            "Reputation damage"
+        ]
+    }
+]
+}

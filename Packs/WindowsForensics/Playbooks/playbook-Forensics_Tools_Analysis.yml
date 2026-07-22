@@ -1,0 +1,366 @@
+id: Forensics Tools Analysis
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Forensics Tools Analysis
+description: This playbook allows the user to analyze forensic evidence acquired from
+  a host, such as registry files and PCAP files.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: acce8559-139e-4003-85dd-c85838101584
+    type: start
+    task:
+      id: acce8559-139e-4003-85dd-c85838101584
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3c8917c3-3fd7-4042-8a9d-7702e13239c1
+    type: playbook
+    task:
+      id: 3c8917c3-3fd7-4042-8a9d-7702e13239c1
+      version: -1
+      name: Registry Parse Data Analysis
+      description: This playbook leverages the Registry Parse automation to perform
+        registry analysis and extract forensic artifacts. The automation includes
+        common registry objects to extract which are useful for analyzing a registry
+        or a user provides registry path to parse.
+      playbookName: Registry Parse Data Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      RegistryData:
+        simple: All
+      RegistryFileEntryID:
+        simple: ${inputs.RegistryEntryId}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 81cf33ce-5720-4545-81e4-bf8617668511
+    type: title
+    task:
+      id: 81cf33ce-5720-4545-81e4-bf8617668511
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d9314b03-bd13-42f6-8ee4-e9ec0948e236
+    type: condition
+    task:
+      id: d9314b03-bd13-42f6-8ee4-e9ec0948e236
+      version: -1
+      name: Is there a PCAP file to analyze?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.PcapEntryID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 840,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 85e48460-6d6f-423f-8bfe-1e691ebfe3b2
+    type: condition
+    task:
+      id: 85e48460-6d6f-423f-8bfe-1e691ebfe3b2
+      version: -1
+      name: Is there a registry file to analyze?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.RegistryEntryId
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 409db5ba-ecff-46f7-8f20-0348efa7600c
+    type: playbook
+    task:
+      id: 409db5ba-ecff-46f7-8f20-0348efa7600c
+      version: -1
+      name: PCAP Search
+      description: This playbook is used to parse and search within PCAP files. Supported
+        file types are pcap, cap, pcapng. The playbook can handle one PCAP file per
+        incident. The user inputs which objects the playbook should search for in
+        the PCAP. The values to search are IP addresses, CIDR ranges, and TCP or UDP
+        ports or protocols. In the event that more than one input type was specified,
+        specify in the QueryOperator input (such as IP addresses and TCP ports) if
+        the PCAP filter query will use an AND or an OR operator between the inputs.  Another
+        option is to use advanced filters just like in Wireshark to use refined filters
+        or for objects not specified in other inputs. Additional inputs allow the
+        user to provide the WPA password for decrypting 802.11 (wireless) traffic
+        and adding an RSA certificate to decrypt SSL traffic. To display the results
+        within the relevant incident fields, the playbook needs to run in a PCAP Analysis
+        incident type. For handling of PCAP files larger than 30 MB, refer to the
+        PcapMinerV2 documentation.
+      playbookName: PCAP Search
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      PcapFileEntryID:
+        simple: ${inputs.PcapEntryID}
+      QueryOperator:
+        simple: and
+      RsaDecryptKeyEntryID:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: incident.pcapencryptionkey.name
+                iscontext: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: key
+          accessor: EntryID
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1120,
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 41788e56-5404-4ac0-8daf-99c7ea845fcb
+    type: title
+    task:
+      id: 41788e56-5404-4ac0-8daf-99c7ea845fcb
+      version: -1
+      name: PCAP Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 960,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 79705b63-e6e5-42f6-847c-09dcca2037cd
+    type: title
+    task:
+      id: 79705b63-e6e5-42f6-847c-09dcca2037cd
+      version: -1
+      name: Registry Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -40,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_10_yes": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 845,
+        "width": 1700,
+        "x": -200,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: PcapEntryID
+  value: {}
+  required: false
+  description: The entryid for the PCAP file to analyze.
+  playbookInputQuery: null
+- key: RegistryEntryId
+  value: {}
+  required: false
+  description: The entryid for the registry file to analyze.
+  playbookInputQuery: null
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

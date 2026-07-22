@@ -1,0 +1,26 @@
+{
+  "devices": {
+    "device_list": [
+      {
+        "ip_address": "156.112.68.177",
+        "date": null,
+        "internal": true,
+        "external": true
+      },
+      {
+        "ip_address": "156.112.68.176",
+        "date": null,
+        "internal": false,
+        "external": true
+      },
+      {
+        "ip_address": "156.112.68.175",
+        "date": null,
+        "internal": false,
+        "external": true
+      }
+    ],
+    "result_count": 3,
+    "return_count": 3
+  }
+}

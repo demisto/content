@@ -1,0 +1,67 @@
+{
+ "id": "incident_urlsslverification",
+ "version": -1,
+ "modified": "2019-09-25T11:28:36.680381434Z",
+ "name": "URL SSL Verification",
+ "ownerOnly": false,
+ "placeholder": "",
+ "description": "Indicates whether the URLs passed the SSL certificate verification.",
+ "cliName": "urlsslverification",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "script": "",
+ "fieldCalcScript": "",
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "selectValues": [],
+ "validationRegex": "",
+ "useAsKpi": true,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+
+ ],
+ "systemAssociatedTypes": null,
+ "associatedToAll": true,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "url",
+   "displayName": "URL",
+   "type": "url",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  },
+  {
+   "key": "sslverified",
+   "displayName": "SSL Verified",
+   "type": "boolean",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": [
+
+ ],
+ "sla": 0,
+ "threshold": 72,
+ "breachScript": "",
+ "fromVersion": "5.0.0"
+}

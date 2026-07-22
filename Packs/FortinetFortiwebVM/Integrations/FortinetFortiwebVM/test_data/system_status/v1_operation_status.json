@@ -1,0 +1,115 @@
+{
+    "name": "FortiWeb-VM",
+    "network": [
+        {
+            "id": "port1",
+            "name": "port1",
+            "label": 1,
+            "alias": "",
+            "ip_netmask": "192.168.30.137/24",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 48926,
+            "rx": 870000,
+            "link": "Up"
+        },
+        {
+            "id": "port2",
+            "name": "port2",
+            "label": 2,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 847748,
+            "link": "Up"
+        },
+        {
+            "id": "port3",
+            "name": "port3",
+            "label": 3,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 852756,
+            "link": "Up"
+        },
+        {
+            "id": "port4",
+            "name": "port4",
+            "label": 4,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 842507,
+            "link": "Up"
+        },
+        {
+            "id": "port5",
+            "name": "port5",
+            "label": 5,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 842531,
+            "link": "Up"
+        },
+        {
+            "id": "port6",
+            "name": "port6",
+            "label": 6,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 842475,
+            "link": "Up"
+        },
+        {
+            "id": "port7",
+            "name": "port7",
+            "label": 7,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 842469,
+            "link": "Up"
+        },
+        {
+            "id": "port8",
+            "name": "port8",
+            "label": 8,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 846341,
+            "link": "Up"
+        },
+        {
+            "id": "port9",
+            "name": "port9",
+            "label": 9,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 843596,
+            "link": "Up"
+        },
+        {
+            "id": "port10",
+            "name": "port10",
+            "label": 10,
+            "alias": "",
+            "ip_netmask": "0.0.0.0/0",
+            "speedDuplex": "10000 Mbps/Full Duplex",
+            "tx": 278,
+            "rx": 846813,
+            "link": "Up"
+        }
+    ]
+}

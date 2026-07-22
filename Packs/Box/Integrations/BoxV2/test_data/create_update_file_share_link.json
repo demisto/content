@@ -1,0 +1,19 @@
+{
+  "type": "file",
+  "id": "742246263170",
+  "etag": "5",
+  "shared_link": {
+    "url": "https://app.box.com/s/o62qyp8shjy24rw0l1zdqfoisw4mryas",
+    "download_url": "https://app.box.com/shared/static/o62qyp8shjy24rw0l1zdqfoisw4mryas.jpeg",
+    "effective_access": "open",
+    "effective_permission": "can_preview",
+    "is_password_enabled": false,
+    "download_count": 0,
+    "preview_count": 0,
+    "access": "open",
+    "permissions": {
+      "can_preview": true,
+      "can_download": false
+    }
+  }
+}

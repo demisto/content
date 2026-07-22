@@ -1,0 +1,9 @@
+[file:GoogleResourceManager.yml]
+ignore=BA124
+
+[file:GoogleResourceManager_image.png]
+ignore=IM111
+
+[file:Packs/GoogleResourceManager/Integrations/GoogleResourceManager/README.md]
+ignore=RM112
+

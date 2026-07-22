@@ -1,0 +1,915 @@
+id: Process Email - Generic for Rasterize
+version: -1
+name: Process Email - Generic for Rasterize
+description: Add email details to the relevant context entities and handle the case where original emails are attached.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9662860e-93bf-4e61-8cfa-fc2e0464e923
+    type: start
+    task:
+      id: 9662860e-93bf-4e61-8cfa-fc2e0464e923
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 0e6b4935-34bf-4cf3-82c8-e649ae20d08b
+    type: condition
+    task:
+      id: 0e6b4935-34bf-4cf3-82c8-e649ae20d08b
+      version: -1
+      name: Do we have original emails attached?
+      description: Check if we have any attachments with relevant attachment types like eml or rfc822
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "16"
+      "yes":
+      - "3"
+    scriptarguments:
+      value:
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": -65
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: afe8d0d3-11f3-43f0-8e7f-b9c8fc0290d4
+    type: regular
+    task:
+      id: afe8d0d3-11f3-43f0-8e7f-b9c8fc0290d4
+      version: -1
+      name: Add original email details to context
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: Email
+      value:
+        simple: '${inputs={To: val[''Email''], CC: val[''Email/cc''], From: val[''Email/from''], Subject: val[''Email/subject''], Text: val[''Email/text''], HTML: val[''Email/html''], Headers: val[''Email/headers''], Format: val[''Email/format'']}}'
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 556e374e-37e4-4139-88c7-5e0ba32fb375
+    type: regular
+    task:
+      id: 556e374e-37e4-4139-88c7-5e0ba32fb375
+      version: -1
+      name: Add original email attachments to context
+      description: Parses an email from an EML or MSG file and populates all relevant context data to investigate the email. Also extracts indicators from the email messages.
+      scriptName: ParseEmailFiles
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      entryid:
+        simple: ${inputs.File(val.Type.toLowerCase().indexOf('rfc 822 mail') >= 0 || val.Type.toLowerCase().indexOf('smtp mail') >= 0 || val.Type.toLowerCase().indexOf('cdfv2 microsoft outlook message') >= 0 || val.Type.toLowerCase().indexOf('news or mail') >= 0 || (val.Type.toLowerCase().indexOf('composite document file v2 document') >= 0 && val.Extension.toLowerCase() == 'msg') || (val.Extension.toLowerCase() == 'eml' && val.Type.toLowerCase().indexOf('text') >= 0 && val.Type.toLowerCase().indexOf('crlf') >= 0)).EntryID}
+    reputationcalc: 2
+    results:
+    - AttachmentName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 630,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d063aee7-bd5b-438d-8a4a-94cc1edb1c59
+    type: condition
+    task:
+      id: d063aee7-bd5b-438d-8a4a-94cc1edb1c59
+      version: -1
+      name: Is there an HTML label in the email?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: HTML
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0b6e72c6-20d3-4d15-8b5e-a987bd78566b
+    type: regular
+    task:
+      id: 0b6e72c6-20d3-4d15-8b5e-a987bd78566b
+      version: -1
+      name: Render HTML to an image
+      tags:
+      - email_html_image
+      script: Rasterize|||rasterize-email
+      type: regular
+      iscommand: true
+      brand: Rasterize
+      description: Converts the body of an email to an image file or a PDF file.
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      htmlBody:
+        complex:
+          root: Email
+          accessor: HTML
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 70a11d5a-e9c2-4730-8b2e-098e4e99002a
+    type: title
+    task:
+      id: 70a11d5a-e9c2-4730-8b2e-098e4e99002a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 91d48bc0-6e0d-4056-8c8d-fbd7eeaeedf1
+    type: title
+    task:
+      id: 91d48bc0-6e0d-4056-8c8d-fbd7eeaeedf1
+      version: -1
+      name: Advance features
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 9c0334f7-5887-443a-8ec1-ac90fe9c930f
+    type: regular
+    task:
+      id: 9c0334f7-5887-443a-8ec1-ac90fe9c930f
+      version: -1
+      name: Set incident with the Email object data
+      description: Updates Demisto incident fields using data from the email object. Also extracts indicators from the email message.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      attachmentcount:
+        complex:
+          root: Email
+          accessor: |
+            Attachment.Count
+      attachmentextension:
+        complex:
+          root: Email
+          accessor: Attachment.Extension
+      attachmenthash:
+        complex:
+          root: Email
+          accessor: Attachment.Hash
+      attachmentid:
+        complex:
+          root: Email
+          accessor: Attachment.ID
+      attachmentitem:
+        complex:
+          root: Email
+          accessor: Attachment.Item
+      attachmentname:
+        complex:
+          root: Email
+          accessor: Attachment.Name
+      attachmentsize:
+        complex:
+          root: Email
+          accessor: Attachment.Size
+      attachmenttype:
+        complex:
+          root: Email
+          accessor: Attachment.Type
+      deleteEmptyField:
+        simple: "True"
+      emailbcc:
+        complex:
+          root: Email
+          accessor: BCC
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailbody:
+        complex:
+          root: Email
+          accessor: Text
+          transformers:
+          - operator: Stringify
+      emailbodyformat:
+        complex:
+          root: Email
+          accessor: BodyFormat
+      emailbodyhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: Stringify
+      emailcc:
+        complex:
+          root: Email
+          accessor: CC
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailclientname:
+        complex:
+          root: Email
+          accessor: ClientName
+      emailfrom:
+        complex:
+          root: Email
+          accessor: From
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailimage:
+        complex:
+          root: Email
+          accessor: Image
+      emailinreplyto:
+        complex:
+          root: Email
+          accessor: InReplyTo
+      emailkeywords:
+        complex:
+          root: Email
+          accessor: Keywords
+      emailmessageid:
+        complex:
+          root: Email
+          accessor: ID
+      emailreceived:
+        complex:
+          root: Email
+          accessor: Received
+      emailreplyto:
+        complex:
+          root: Email
+          accessor: ReplyTo
+      emailreturnpath:
+        complex:
+          root: Email
+          accessor: ReturnPath
+      emailsenderip:
+        complex:
+          root: Email
+          accessor: SenderIP
+      emailsize:
+        complex:
+          root: Email
+          accessor: Size
+      emailsource:
+        complex:
+          root: Email
+          accessor: Source
+      emailsubject:
+        complex:
+          root: Email
+          accessor: Subject
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailto:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      emailtocount:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: uniq
+          - operator: count
+      emailurlclicked:
+        complex:
+          root: EmailUrlClicked
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 60f67981-7615-4864-80bb-eae7da76cab7
+    type: condition
+    task:
+      id: 60f67981-7615-4864-80bb-eae7da76cab7
+      version: -1
+      name: Should retrieve the original email?
+      description: If True, retrieve the original email in the thread
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.GetOriginalEmail
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 0fc34082-2223-41f1-8672-16a74fce0431
+    type: playbook
+    task:
+      id: 0fc34082-2223-41f1-8672-16a74fce0431
+      version: -1
+      name: Get Original Email - Generic v2
+      description: |-
+        This v2 playbook is used inside the phishing flow. The inputs in this version do not use labels and also allow the user to supply an email brand.
+        Note: You must have the necessary permissions in your email service to execute a global search.
+
+        To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
+        - EWS: eDiscovery
+        - Gmail: Google Apps Domain-Wide Delegation of Authority
+        - MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
+        - EmailSecurityGateway retrieves EML files from:
+            * FireEye EX
+            * FireEye CM
+            * Proofpoint Protection Server
+            * Mimecast
+      playbookName: Get Original Email - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 345093db-d1cc-4bcb-843d-e7a302bb9d79
+    type: condition
+    task:
+      id: 345093db-d1cc-4bcb-843d-e7a302bb9d79
+      version: -1
+      name: Was the original email retrieved?
+      description: Is there an email object in the context?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b7582ae5-f7cd-4a41-80e2-f54f92bb308c
+    type: regular
+    task:
+      id: b7582ae5-f7cd-4a41-80e2-f54f92bb308c
+      version: -1
+      name: Set incident with the Email object data
+      description: Updates Demisto incident fields using data from the email object.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      attachmentcount:
+        complex:
+          root: Email
+          accessor: |
+            Attachment.Count
+      attachmentextension:
+        complex:
+          root: Email
+          accessor: Attachment.Extension
+      attachmenthash:
+        complex:
+          root: Email
+          accessor: Attachment.Hash
+      attachmentid:
+        complex:
+          root: Email
+          accessor: Attachment.ID
+      attachmentitem:
+        complex:
+          root: Email
+          accessor: Attachment.Item
+      attachmentname:
+        complex:
+          root: Email
+          accessor: Attachment.Name
+      attachmentsize:
+        complex:
+          root: Email
+          accessor: Attachment.Size
+      attachmenttype:
+        complex:
+          root: Email
+          accessor: Attachment.Type
+      deleteEmptyField:
+        simple: "True"
+      emailbcc:
+        complex:
+          root: Email
+          accessor: HeadersMap.BCC
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailbody:
+        complex:
+          root: Email
+          accessor: Text
+          transformers:
+          - operator: Stringify
+      emailbodyformat:
+        complex:
+          root: Email
+          accessor: BodyFormat
+      emailbodyhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: Stringify
+      emailcc:
+        complex:
+          root: Email
+          accessor: CC
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailclientname:
+        complex:
+          root: Email
+          accessor: ClientName
+      emailfrom:
+        complex:
+          root: Email
+          accessor: From
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailimage:
+        complex:
+          root: Email
+          accessor: Image
+      emailinreplyto:
+        complex:
+          root: Email
+          accessor: InReplyTo
+      emailkeywords:
+        complex:
+          root: Email
+          accessor: Keywords
+      emailmessageid:
+        complex:
+          root: Email
+          accessor: HeadersMap.Message-ID
+          transformers:
+          - operator: uniq
+      emailreplyto:
+        complex:
+          root: Email
+          accessor: HeadersMap.Reply-To
+          transformers:
+          - operator: uniq
+      emailreturnpath:
+        complex:
+          root: Email
+          accessor: HeadersMap.Return-Path
+          transformers:
+          - operator: uniq
+      emailsenderip:
+        complex:
+          root: Email
+          accessor: SenderIP
+          transformers:
+          - operator: uniq
+      emailsize:
+        complex:
+          root: Email
+          accessor: Size
+          transformers:
+          - operator: uniq
+      emailsource:
+        complex:
+          root: Email
+          accessor: Source
+          transformers:
+          - operator: uniq
+      emailsubject:
+        complex:
+          root: Email
+          accessor: Subject
+          transformers:
+          - operator: uniq
+          - operator: Stringify
+      emailto:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: uniq
+      emailtocount:
+        complex:
+          root: Email
+          accessor: To
+          transformers:
+          - operator: uniq
+          - operator: count
+      emailurlclicked:
+        complex:
+          root: EmailUrlClicked
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    continueonerrortype: ""
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_2_#default#": 0.73,
+      "18_13_yes": 0.72,
+      "18_2_#default#": 0.47,
+      "4_5_yes": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2015,
+        "width": 1310,
+        "x": -60,
+        "y": -280
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    complex:
+      root: File
+  required: false
+  description: An EML or MSG file with
+  playbookInputQuery:
+- key: Email
+  value:
+    complex:
+      root: incident
+      accessor: labels.Email
+  required: false
+  description: The receiving email address
+  playbookInputQuery:
+- key: Email/cc
+  value:
+    complex:
+      root: incident
+      accessor: labels.CC
+  required: false
+  description: CC addresses
+  playbookInputQuery:
+- key: Email/from
+  value:
+    complex:
+      root: incident
+      accessor: labels.Email/from
+  required: false
+  description: The originator of the email
+  playbookInputQuery:
+- key: Email/subject
+  value:
+    complex:
+      root: incident
+      accessor: labels.Email/subject
+  required: false
+  description: The email’s subject
+  playbookInputQuery:
+- key: Email/text
+  value:
+    complex:
+      root: incident
+      accessor: labels.Email/text
+  required: false
+  description: The email’s text
+  playbookInputQuery:
+- key: Email/html
+  value:
+    complex:
+      root: incident
+      accessor: labels.Email/html
+  required: false
+  description: The emai’sl html
+  playbookInputQuery:
+- key: Email/headers
+  value:
+    complex:
+      root: incident
+      accessor: labels.Email/headers
+  required: false
+  description: The email’s headers
+  playbookInputQuery:
+- key: Email/format
+  value:
+    complex:
+      root: incident
+      accessor: labels.Email/format
+  required: false
+  description: The email’s format
+  playbookInputQuery:
+- key: GetOriginalEmail
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Retrieve the original email in the thread. Default is "False".
+
+    You must have the necessary permissions in your email service to execute global search.
+
+    - EWS: eDiscovery
+    - Gmail: Google Apps Domain-Wide Delegation of Authority
+  playbookInputQuery:
+outputs:
+- contextPath: Email.HTML
+  description: Email 'html' body if exists.
+  type: string
+- contextPath: Email
+  description: Email object.
+  type: unknown
+- contextPath: Email.CC
+  description: Email 'cc' addresses.
+  type: string
+- contextPath: Email.From
+  description: Email 'from' sender.
+  type: string
+- contextPath: Email.Subject
+  description: Email subject.
+  type: string
+- contextPath: Email.To
+  description: Email 'to' addresses.
+  type: string
+- contextPath: Email.Text
+  description: Email 'text' body if exists.
+  type: string
+- contextPath: Email.Headers
+  description: The full email headers as a single string.
+  type: string
+- contextPath: Email.Attachments
+  description: The list of attachment names in the email.
+  type: string
+- contextPath: Email.Format
+  description: The format of the email if available.
+  type: string
+- contextPath: File
+  description: The File object.
+  type: unknown
+fromversion: 6.0.0

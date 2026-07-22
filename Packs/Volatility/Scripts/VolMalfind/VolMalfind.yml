@@ -1,0 +1,29 @@
+commonfields:
+  id: VolMalfind
+  version: -1
+name: VolMalfind
+script: ''
+type: javascript
+tags:
+- memory
+- forensics
+- volatility
+- server
+comment: Volatility script for command ldrmodules
+system: true
+args:
+- name: memdump
+  required: true
+  description: Path to memory dump file on the system being used
+- name: system
+  required: true
+  description: System with Volatility installed to be used for the analysis
+- name: pid
+  required: true
+  description: Process ID to pass to volatility as a parameter of the ldrmodules command
+- name: profile
+  description: Volatility profile to use
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

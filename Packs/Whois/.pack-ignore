@@ -1,0 +1,8 @@
+[file:README.md]
+ignore=RM102
+
+[known_words]
+UTC
+
+[tests_require_network]
+Whois

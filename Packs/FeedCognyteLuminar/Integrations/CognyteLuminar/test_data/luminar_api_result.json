@@ -1,0 +1,48 @@
+{
+    "type": "bundle",
+    "id": "bundle--5c26a2cc-904b-4154-914c-e9c483639e9e",
+    "objects": [
+        {
+            "type": "identity",
+            "spec_version": "2.1",
+            "id": "identity--85703d68-d9cf-4249-9786-e16beb4d647f",
+            "created": "2022-03-28T06:26:46.761Z",
+            "modified": "2022-03-28T06:26:46.761Z",
+            "name": "Luminar"
+        },
+        {
+            "type": "indicator",
+            "spec_version": "2.1",
+            "id": "indicator--ace538f2-bc52-4bbb-ba2a-1fb9681ce660",
+            "created": "2016-01-04T00:00:00.000Z",
+            "modified": "2016-01-04T00:00:00.000Z",
+            "name": "SkyWyder",
+            "pattern": "[file:hashes.MD5 = 'a85a93b4fe56d00c81f1b618031f24d9']",
+            "created_by_ref": "identity--85703d68-d9cf-4249-9786-e16beb4d647f",
+            "pattern_type": "stix",
+            "indicator_types": [
+                "malicious-activity"
+            ],
+            "valid_from": "2016-01-04T00:00:00.000Z"
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--3f03a7d0-ec68-4255-ae32-442acc248a53",
+            "created": "2016-01-04T00:00:00.000Z",
+            "modified": "2016-01-04T00:00:00.000Z",
+            "relationship_type": "indicates",
+            "source_ref": "indicator--954bcb70-31be-4df1-b308-3675c5deabd2",
+            "target_ref": "malware--5300d960-f4ca-44b0-93e7-56acdc6831ae"
+        },
+        {
+            "type": "user-account",
+            "spec_version": "2.1",
+            "id": "user-account--bd17839f-6b12-4735-96f5-426e60b725c6",
+            "credential": "91331-16831950097502",
+            "account_login": "dillionjas@7-eleven.com",
+            "display_name": "dillionjas@7-eleven.com"
+        }
+
+    ]
+}

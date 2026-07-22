@@ -1,0 +1,152 @@
+{
+    "result": {
+        "hits": [
+            {
+                "host_v1": {
+                    "resource": {
+                        "ip": "127.0.0.1",
+                        "location": {
+                            "continent": "Asia",
+                            "country": "Turkey",
+                            "country_code": "TR",
+                            "city": "Erzurum",
+                            "postal_code": "25010",
+                            "timezone": "Europe/Istanbul",
+                            "province": "Erzurum",
+                            "coordinates": {
+                                "latitude": 39.90861,
+                                "longitude": 41.27694
+                            }
+                        },
+                        "autonomous_system": {
+                            "asn": 9121,
+                            "description": "Company Inc",
+                            "bgp_prefix": "127.0.0.1/17",
+                            "name": "Company Inc",
+                            "country_code": "TR"
+                        },
+                        "whois": {
+                            "network": {
+                                "handle": "COMPANY-HANDLE",
+                                "name": "Company Inc",
+                                "cidrs": [
+                                    "127.0.0.1/17"
+                                ],
+                                "created": "2005-10-03T00:00:00Z",
+                                "updated": "2010-07-27T00:00:00Z"
+                            },
+                            "organization": {
+                                "handle": "ORG-HANDLE",
+                                "name": "Company Inc",
+                                "address": "Company Address\nCity\nCountry",
+                                "abuse_contacts": [
+                                    {
+                                        "handle": "ABUSE-HANDLE",
+                                        "name": "Abuse Role",
+                                        "email": "admin@example.com"
+                                    }
+                                ],
+                                "admin_contacts": [
+                                    {
+                                        "handle": "ADMIN-HANDLE-1",
+                                        "name": "John Doe"
+                                    },
+                                    {
+                                        "handle": "ADMIN-HANDLE-2",
+                                        "name": "Jane Doe"
+                                    },
+                                    {
+                                        "handle": "ADMIN-HANDLE-3",
+                                        "name": "John Smith",
+                                        "email": "admin@example.com"
+                                    },
+                                    {
+                                        "handle": "ADMIN-HANDLE-4",
+                                        "name": "Jane Smith",
+                                        "email": "admin@example.com"
+                                    }
+                                ]
+                            }
+                        },
+                        "services": [
+                            {
+                                "port": 1024,
+                                "protocol": "HTTP",
+                                "transport_protocol": "tcp",
+                                "ip": "127.0.0.1",
+                                "scan_time": "2026-01-14T11:11:15Z",
+                                "banner": "admin@example.com",
+                                "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                "ja4tscan": {
+                                    "scan_time": "2026-01-11T19:18:06Z",
+                                    "fingerprint": "65535_2-4-8-1-3_1452_6_1-2-4-8-16"
+                                },
+                                "endpoints": [
+                                    {
+                                        "hostname": "127.0.0.1",
+                                        "port": 1024,
+                                        "path": "/",
+                                        "endpoint_type": "HTTP",
+                                        "transport_protocol": "tcp",
+                                        "scan_time": "2026-01-14T11:11:15Z",
+                                        "banner": "admin@example.com",
+                                        "banner_hash_sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+                                        "http": {
+                                            "uri": "https://example.com",
+                                            "protocol": "HTTP/1.0",
+                                            "status_code": 401,
+                                            "status_reason": "Unauthorized",
+                                            "headers": {
+                                                "Connection": {
+                                                    "headers": [
+                                                        "close"
+                                                    ]
+                                                },
+                                                "Content-Length": {
+                                                    "headers": [
+                                                        "0"
+                                                    ]
+                                                },
+                                                "Content-Type": {
+                                                    "headers": [
+                                                        "text/xml; charset=\"utf-8\""
+                                                    ]
+                                                },
+                                                "WWW-Authenticate": {
+                                                    "headers": [
+                                                        "admin@example.com"
+                                                    ]
+                                                }
+                                            },
+                                            "supported_versions": [
+                                                "HTTP/1.0"
+                                            ]
+                                        },
+                                        "ip": "127.0.0.1"
+                                    }
+                                ]
+                            }
+                        ],
+                        "service_count": 1,
+                        "dns": {
+                            "reverse_dns": {
+                                "resolve_time": "2026-01-12T23:38:51Z",
+                                "names": [
+                                    "127.0.0.1.dynamic.example.com"
+                                ]
+                            }
+                        }
+                    },
+                    "extensions": {},
+                    "matched_services": [
+                        {
+                            "protocol": "HTTP",
+                            "port": 1024,
+                            "transport_protocol": "tcp"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

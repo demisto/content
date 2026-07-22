@@ -1,0 +1,285 @@
+{
+    "totalResults": 5,
+    "startIndex": 1,
+    "schemas": [
+        "urn:ietf:params:scim:api:messages:2.0:ListResponse"
+    ],
+    "Resources": [
+        {
+            "taskSchedule": "Check expired mitigations daily",
+            "partitioned": false,
+            "completed": "2020-12-07T00:09:53.207-06:00",
+            "type": "System",
+            "launched": "2020-12-07T00:09:53.151-06:00",
+            "pendingSignoffs": 0,
+            "meta": {
+                "created": "2020-12-07T00:09:53.180-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/TaskResults/7f00000175891f4b81763bd2181c1d5f",
+                "lastModified": "2020-12-07T00:09:53.213-06:00",
+                "version": "W/\"1607321393213\"",
+                "resourceType": "TaskResult"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult"
+            ],
+            "name": "Check expired mitigations daily",
+            "host": "Server13511",
+            "messages": [],
+            "attributes": [
+                {
+                    "value": "0",
+                    "key": "expired"
+                },
+                {
+                    "value": "0",
+                    "key": "identities"
+                }
+            ],
+            "id": "7f00000175891f4b81763bd2181c1d5f",
+            "completionStatus": "Success",
+            "taskDefinition": "Check Expired Mitigations",
+            "terminated": false,
+            "launcher": "System"
+        },
+        {
+            "taskSchedule": "Check expired work items daily",
+            "partitioned": false,
+            "completed": "2020-12-07T00:09:53.254-06:00",
+            "type": "System",
+            "launched": "2020-12-07T00:09:53.206-06:00",
+            "pendingSignoffs": 0,
+            "meta": {
+                "created": "2020-12-07T00:09:53.237-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/TaskResults/7f00000175891f4b81763bd218551d60",
+                "lastModified": "2020-12-07T00:09:53.260-06:00",
+                "version": "W/\"1607321393260\"",
+                "resourceType": "TaskResult"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult"
+            ],
+            "name": "Check expired work items daily",
+            "host": "Server13511",
+            "messages": [],
+            "attributes": [
+                {
+                    "value": "0",
+                    "key": "expirations"
+                },
+                {
+                    "value": "0",
+                    "key": "reminders"
+                },
+                {
+                    "value": "0",
+                    "key": "escalations"
+                },
+                {
+                    "value": "0",
+                    "key": "total"
+                },
+                {
+                    "value": "0",
+                    "key": "emailsSuppressed"
+                },
+                {
+                    "value": "0",
+                    "key": "totalWorkItems"
+                },
+                {
+                    "value": "0",
+                    "key": "totalCertItems"
+                },
+                {
+                    "value": "0",
+                    "key": "pushes"
+                }
+            ],
+            "id": "7f00000175891f4b81763bd218551d60",
+            "completionStatus": "Success",
+            "taskDefinition": "Check Expired Work Items",
+            "terminated": false,
+            "launcher": "System"
+        },
+        {
+            "taskSchedule": "Check sunset requests for notifications daily",
+            "partitioned": false,
+            "completed": "2020-12-07T00:09:53.305-06:00",
+            "type": "System",
+            "launched": "2020-12-07T00:09:53.260-06:00",
+            "pendingSignoffs": 0,
+            "meta": {
+                "created": "2020-12-07T00:09:53.293-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/TaskResults/7f00000175891f4b81763bd2188c1d61",
+                "lastModified": "2020-12-07T00:09:53.312-06:00",
+                "version": "W/\"1607321393312\"",
+                "resourceType": "TaskResult"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult"
+            ],
+            "name": "Check sunset requests for notifications daily",
+            "host": "Server13511",
+            "messages": [],
+            "attributes": [
+                {
+                    "value": "0",
+                    "key": "sent"
+                }
+            ],
+            "id": "7f00000175891f4b81763bd2188c1d61",
+            "completionStatus": "Success",
+            "taskDefinition": "Check Sunset Requests",
+            "terminated": false,
+            "launcher": "System"
+        },
+        {
+            "taskSchedule": "Perform Identity Request Maintenance",
+            "partitioned": false,
+            "completed": "2020-12-07T03:03:11.877-06:00",
+            "type": "System",
+            "launched": "2020-12-07T03:03:11.825-06:00",
+            "pendingSignoffs": 0,
+            "meta": {
+                "created": "2020-12-07T03:03:11.850-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/TaskResults/7f00000175891f4b81763c70c3ea1d7d",
+                "lastModified": "2020-12-07T03:03:11.884-06:00",
+                "version": "W/\"1607331791884\"",
+                "resourceType": "TaskResult"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult"
+            ],
+            "name": "Perform Identity Request Maintenance",
+            "host": "Server13511",
+            "messages": [],
+            "attributes": [
+                {
+                    "value": "0",
+                    "key": "requestsPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "requestsScanned"
+                }
+            ],
+            "id": "7f00000175891f4b81763c70c3ea1d7d",
+            "completionStatus": "Success",
+            "taskDefinition": "Perform Identity Request Maintenance",
+            "terminated": false,
+            "launcher": "System"
+        },
+        {
+            "taskSchedule": "Perform maintenance",
+            "partitioned": false,
+            "completed": "2020-12-07T16:40:00.066-06:00",
+            "type": "System",
+            "launched": "2020-12-07T16:40:00.027-06:00",
+            "pendingSignoffs": 0,
+            "meta": {
+                "created": "2020-12-07T16:40:00.039-06:00",
+                "location": "http://localhost:8088/iiq/scim/v2/TaskResults/7f00000175891f4b81763f5c92272044",
+                "lastModified": "2020-12-07T16:40:00.068-06:00",
+                "version": "W/\"1607380800068\"",
+                "resourceType": "TaskResult"
+            },
+            "schemas": [
+                "urn:ietf:params:scim:schemas:sailpoint:1.0:TaskResult"
+            ],
+            "name": "Perform maintenance",
+            "host": "Server13511",
+            "messages": [],
+            "attributes": [
+                {
+                    "value": "0",
+                    "key": "inactiveWorkItemsForwarded"
+                },
+                {
+                    "value": "0",
+                    "key": "historiesPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "syslogEventsPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "workflowEvents"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationsArchived"
+                },
+                {
+                    "value": "0",
+                    "key": "requestsPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationsFinishFailures"
+                },
+                {
+                    "value": "0",
+                    "key": "remediationsScanned"
+                },
+                {
+                    "value": "0",
+                    "key": "workflowsProcessed"
+                },
+                {
+                    "value": "0",
+                    "key": "attachmentsPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationArchivesPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationsPhased"
+                },
+                {
+                    "value": "0",
+                    "key": "provisioningTransactionsPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationsAutomaticallyClosed"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationItemsAutomaticallyDecided"
+                },
+                {
+                    "value": "0",
+                    "key": "scopesDenormalized"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationItemsPhased"
+                },
+                {
+                    "value": "0",
+                    "key": "taskResultsPruned"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationsFinished"
+                },
+                {
+                    "value": "0",
+                    "key": "workflowsInterrupted"
+                },
+                {
+                    "value": "0",
+                    "key": "certificationsPruned"
+                }
+            ],
+            "id": "7f00000175891f4b81763f5c92272044",
+            "completionStatus": "Success",
+            "taskDefinition": "Perform Maintenance",
+            "terminated": false,
+            "launcher": "System"
+        }
+    ]
+}

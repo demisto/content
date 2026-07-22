@@ -1,0 +1,29 @@
+!edgescan-asset-delete id=176
+!edgescan-asset-get-assets detail_level=5
+!edgescan-asset-get-query id=167 active_licence=null asset_status=onboarding blocked_status=unblocked
+!edgescan-asset-update id=167 name="Edgebank - Juiceshop - Updated" priority=4
+!edgescan-host-get-query os_name=Linux asset_id=5 id=6 
+!edgescan-host-get id=5
+!edgescan-host-get-hosts
+!edgescan-host-get-export
+!edgescan-host-update id=150 label=somelabel
+!edgescan-user-get-users
+!edgescan-user-get id=586
+!edgescan-user-reset-email id=606
+!edgescan-user-get-permissions id=606
+!edgescan-user-unlock-account id=606
+!edgescan-vulnerabilities-get
+!edgescan-vulnerabilities-get-details id=52493
+!edgescan-vulnerabilities-risk-accept id=52496 value=true
+!edgescan-vulnerabilities-retest id=52496
+!edgescan-asset-get id=164
+!edgescan-host-get id=123
+!edgescan-host-get-query os_name="Linux" label="server" status="active" 
+!edgescan-user-create username=test email=test@example.com first_name=John is_super=false last_name=Doe mfa_enabled=true phone_number=+48123123123 mfa_method=sms
+!edgescan-user-delete id=613
+!edgescan-user-get id=606
+!edgescan-user-get-query account_locked=false email=user1@example.com email_confirmed=true first_name=John last_name=Doe mfa_enabled=true mfa_method=sms phone_number=00480700772772
+!edgescan-user-lock-account id=606
+!edgescan-vulnerabilities-get-export
+!edgescan-vulnerabilities-get-query id=52517 asset_id=165 severity=3 cvss_score=6.8 location=api.edgebank.com threat=3 asset_name="Edgebank API" risk=3 status=open
+!edgescan-asset-create id=168 authenticatied=false name=EdgescanTest priority=4 type=net   

@@ -1,0 +1,9 @@
+[file:AnsibleCiscoIOS.yml]
+ignore=BA124,IN145
+
+[file:README.md]
+ignore=RM113
+
+[known_words]
+ansii
+

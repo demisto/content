@@ -1,0 +1,109 @@
+{
+    "result": [
+        {
+            "type_id": 8007,
+            "severity_id": 1,
+            "device_time": "2023-02-25T05:15:53.229Z",
+            "device_end_time": "2023-02-25T05:16:53.328Z",
+            "log_time": "2023-02-25T05:18:51.736Z",
+            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "device_name": "WIN-TFB8L7BI77H",
+            "device_ip": "127.0.0.1",
+            "device_os_name": "Windows Server 2019 ",
+            "user_name": "NETWORK SERVICE",
+            "user_domain": "NT AUTHORITY",
+            "user_sid": "S-1-5-20",
+            "internal_ip": "127.0.0.1",
+            "external_ip": "8.8.8.8",
+            "source_ip": "8.8.8.8",
+            "source_port": [
+                57452
+            ],
+            "target_ip": "8.8.8.8",
+            "target_port": [
+                80
+            ],
+            "data_source_url": "http://ctldl.windowsupdate.com/msdownload/update/v3/static/trustedr/en/pinrulesstl.cab?25508a4a8dfacb3b",
+            "data_source_url_domain": "ctldl.windowsupdate.com",
+            "data_direction": 2,
+            "device_domain": "WORKGROUP",
+            "operation": 3,
+            "event_actor": {
+                "pid": 2888,
+                "uid": "52D97C3B-A235-F1ED-821C-98261F32744E",
+                "cmd_line": "C:\\Windows\\system32\\svchost.exe -k NetworkService -p -s CryptSvc",
+                "start_time": "2023-02-01T13:36:36.003Z",
+                "signature_level_id": 60,
+                "integrity_id": 6,
+                "user": {
+                    "name": "NETWORK SERVICE",
+                    "sid": "S-1-5-20"
+                },
+                "file": {
+                    "name": "svchost.exe",
+                    "md5": "4dd18f001ac31d5f48f50f99e4aa1761",
+                    "modified": "2023-02-01T07:31:42.543Z",
+                    "path": "c:\\windows\\system32\\svchost.exe",
+                    "normalized_path": "CSIDL_SYSTEM\\svchost.exe",
+                    "signature_company_name": "Microsoft Windows Publisher",
+                    "signature_value_ids": [
+                        3,
+                        5
+                    ],
+                    "sha2": "2b105fb153b1bcd619b95028612b3a93c60b953eef6837d3bb0099e4207aaf6b",
+                    "original_name": "svchost.exe"
+                },
+                "xattributes": {
+                    "symc_injected": false,
+                    "is_trusted": false
+                }
+            },
+            "enriched_data": {
+                "rule_name": "eHTTPNetworkProtocol",
+                "suspicion_score": 50,
+                "category_name": "Generic Data to be sent to ATP",
+                "category_id": 201,
+                "rule_description": "Network activity over HTTP detected"
+            },
+            "connection": {
+                "uid": "4000486770828200160",
+                "bytes_download": 8228,
+                "bytes_upload": 196
+            },
+            "edr_data_protocols": [
+                "HTTP",
+                "FILE_CAB"
+            ],
+            "edr_files": [
+                "pinrulesstl.cab"
+            ],
+            "attacks": [
+                {
+                    "technique_uid": "T1041",
+                    "technique_name": "Exfiltration Over C2 Channel",
+                    "tactic_ids": [
+                        10
+                    ],
+                    "tactic_uids": [
+                        "TA0010"
+                    ]
+                },
+                {
+                    "technique_uid": "T1105",
+                    "technique_name": "Ingress Tool Transfer",
+                    "tactic_ids": [
+                        11
+                    ],
+                    "tactic_uids": [
+                        "TA0011"
+                    ]
+                }
+            ],
+            "ref_uid": "A55C17DE-C2D1-4F37-B54B-334811C06611",
+            "uuid": "79bf3bd0-b4cb-11ed-dcda-00000002791c",
+            "log_name": "epmp_events-fdr-2023-02-25"
+        }
+    ],
+    "next": "MTAwLDIwMjMtMDItMjNUMTI6MDE6MzAuNTE5Wg==",
+    "total": 36268
+}

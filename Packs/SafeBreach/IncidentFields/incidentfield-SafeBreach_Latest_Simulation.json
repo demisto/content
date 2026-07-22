@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachlatestsimulation",
+    "closeForm": false,
+    "content": true,
+    "description": "The latest simulation time related to this Insight",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachlatestsimulation",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Latest Simulation",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

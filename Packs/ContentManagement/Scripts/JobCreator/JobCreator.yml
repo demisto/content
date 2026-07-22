@@ -1,0 +1,27 @@
+args:
+- default: true
+  description: The name of the job to configure.
+  name: job_name
+  required: true
+commonfields:
+  id: JobCreator
+  version: -1
+name: JobCreator
+comment: Job Creator for the Content Management pack.
+outputs:
+- contextPath: ConfigurationSetup.Jobs.creationstatus
+  description: The creation status of the job.
+  type: Unknown
+script: '-'
+subtype: python3
+tags:
+- configuration
+- Content Management
+timeout: '0'
+type: python
+dockerimage: demisto/xsoar-tools:1.0.0.1902141
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+marketplaces:
+- xsoar

@@ -1,0 +1,119 @@
+{
+    "human_readable": "### Akamai WAF - list dns zones command\n|metadata|zones|\n|---|---|\n| contractIds: C-0N7RAC7<br>page: 1<br>pageSize: 3<br>showAll: false<br>totalElements: 17 | {'activationState': 'ACTIVE', 'aliasCount': 1, 'contractId': 'K-0N7RAK71', 'lastActivationDate': '2021-01-03T12:00:00Z', 'lastModifiedBy': 'jdupont', 'lastModifiedDate': '2021-01-03T12:00:00Z', 'signAndServe': 'false', 'type': 'PRIMARY', 'versionId': 'ae02357c-693d-4ac4-b33d-8352d9b7c786', 'zone': 'example.com'},<br>{'activationState': 'ACTIVE', 'contractId': 'K-0N7RAK71', 'lastModifiedBy': 'jsmith', 'lastModifiedDate': '2021-05-21T19:45:00Z', 'target': 'example.com', 'type': 'ALIAS', 'versionId': '19f38d0d-d8cb-4ac1-a7c9-ab8d82d8ca06', 'zone': 'example.com'},<br>{'activationState': 'ERROR', 'aliasCount': 1, 'comment': 'Initial add', 'contractId': 'K-0N7RAK71', 'lastActivationDate': '2021-01-03T12:00:00Z', 'lastModifiedBy': 'jperez', 'lastModifiedDate': '2021-12-11T03:21:00Z', 'masters': ['192.0.2.215', '192.0.2.37'], 'signAndServe': 'false', 'tsigKey': {'algorithm': 'hmac-sha512', 'name': 'other.com.akamai.com.', 'secret': 'Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=='}, 'type': 'SECONDARY', 'versionId': '7949b2db-ac43-4773-a3ec-dc93202142fd', 'zone': 'other.com'} |\n",
+    "context_entry": {
+        "Akamai.EdgeDns.Zones": {
+            "metadata": {
+                "contractIds": [
+                    "C-0N7RAC7"
+                ],
+                "page": 1,
+                "pageSize": 3,
+                "showAll": "false",
+                "totalElements": 17
+            },
+            "zones": [
+                {
+                    "activationState": "ACTIVE",
+                    "aliasCount": 1,
+                    "contractId": "K-0N7RAK71",
+                    "lastActivationDate": "2021-01-03T12:00:00Z",
+                    "lastModifiedBy": "jdupont",
+                    "lastModifiedDate": "2021-01-03T12:00:00Z",
+                    "signAndServe": "false",
+                    "type": "PRIMARY",
+                    "versionId": "ae02357c-693d-4ac4-b33d-8352d9b7c786",
+                    "zone": "example.com"
+                },
+                {
+                    "activationState": "ACTIVE",
+                    "contractId": "K-0N7RAK71",
+                    "lastModifiedBy": "jsmith",
+                    "lastModifiedDate": "2021-05-21T19:45:00Z",
+                    "target": "example.com",
+                    "type": "ALIAS",
+                    "versionId": "19f38d0d-d8cb-4ac1-a7c9-ab8d82d8ca06",
+                    "zone": "example.com"
+                },
+                {
+                    "activationState": "ERROR",
+                    "aliasCount": 1,
+                    "comment": "Initial add",
+                    "contractId": "K-0N7RAK71",
+                    "lastActivationDate": "2021-01-03T12:00:00Z",
+                    "lastModifiedBy": "jperez",
+                    "lastModifiedDate": "2021-12-11T03:21:00Z",
+                    "masters": [
+                        "192.0.2.215",
+                        "192.0.2.37"
+                    ],
+                    "signAndServe": "false",
+                    "tsigKey": {
+                        "algorithm": "hmac-sha512",
+                        "name": "other.com.akamai.com.",
+                        "secret": "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+                    },
+                    "type": "SECONDARY",
+                    "versionId": "7949b2db-ac43-4773-a3ec-dc93202142fd",
+                    "zone": "other.com"
+                }
+            ]
+        }
+    },
+    "raw_response": {
+        "metadata": {
+            "contractIds": [
+                "C-0N7RAC7"
+            ],
+            "page": 1,
+            "pageSize": 3,
+            "showAll": "false",
+            "totalElements": 17
+        },
+        "zones": [
+            {
+                "activationState": "ACTIVE",
+                "aliasCount": 1,
+                "contractId": "K-0N7RAK71",
+                "lastActivationDate": "2021-01-03T12:00:00Z",
+                "lastModifiedBy": "jdupont",
+                "lastModifiedDate": "2021-01-03T12:00:00Z",
+                "signAndServe": "false",
+                "type": "PRIMARY",
+                "versionId": "ae02357c-693d-4ac4-b33d-8352d9b7c786",
+                "zone": "example.com"
+            },
+            {
+                "activationState": "ACTIVE",
+                "contractId": "K-0N7RAK71",
+                "lastModifiedBy": "jsmith",
+                "lastModifiedDate": "2021-05-21T19:45:00Z",
+                "target": "example.com",
+                "type": "ALIAS",
+                "versionId": "19f38d0d-d8cb-4ac1-a7c9-ab8d82d8ca06",
+                "zone": "example.com"
+            },
+            {
+                "activationState": "ERROR",
+                "aliasCount": 1,
+                "comment": "Initial add",
+                "contractId": "K-0N7RAK71",
+                "lastActivationDate": "2021-01-03T12:00:00Z",
+                "lastModifiedBy": "jperez",
+                "lastModifiedDate": "2021-12-11T03:21:00Z",
+                "masters": [
+                    "192.0.2.215",
+                    "192.0.2.37"
+                ],
+                "signAndServe": "false",
+                "tsigKey": {
+                    "algorithm": "hmac-sha512",
+                    "name": "other.com.akamai.com.",
+                    "secret": "Ok1qR5IW1ajVka5cHPEJQIXfLyx5V3PSkFBROAzOn21JumDq6nIpoj6H8rfj5Uo+Ok55ZWQ0Wgrf302fDscHLw=="
+                },
+                "type": "SECONDARY",
+                "versionId": "7949b2db-ac43-4773-a3ec-dc93202142fd",
+                "zone": "other.com"
+            }
+        ]
+    }
+}

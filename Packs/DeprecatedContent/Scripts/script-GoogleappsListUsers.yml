@@ -1,0 +1,64 @@
+commonfields:
+  id: GoogleappsListUsers
+  version: -1
+name: GoogleappsListUsers
+script: >2
+
+  import re
+
+
+  args = demisto.args()
+
+  for key in args.keys():
+      args[re.sub(r'([A-Z])',lambda x:'-'+x.group(1).lower(),key)] = args.pop(key)
+  resp = demisto.executeCommand("googleapps-list-users", args)
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]) for k in row} for row in data]
+          demisto.results({"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- google apps
+comment: Deprecated. Retrieves a paginated list of either deleted users or all users in a domain
+system: true
+args:
+- name: domain
+  default: true
+  description: The domain name. Use this field to get fields from only one domain. To return all domains for a customer account, use the customer query parameter instead. Either the customer or the domain parameter must be provided.
+- name: customer
+  description: The unique ID for the customers Google account, by default will use the value in the integration page. In case of a multi-domain account, to fetch all groups for a customer, fill this field instead of domain. As an account administrator, you can also use the my_customer alias to represent your accounts customerId. The customerId is also returned as part of the Users resource. Either the customer or the domain parameter must be provided.
+- name: viewTypePublicDomain
+  auto: PREDEFINED
+  description: Whether to fetch the administrator-only or domain-wide public view of the user, will use admin_view(Results include both administrator-only and domain-public fields for the user) by default, if true will use "domain_public"(Results only include fields for the user that are publicly visible to other users in the domain)
+- name: maxResults
+  description: Maximum number of results to return. Default is 100. Maximum is 500. Acceptable values are 1 to 500, inclusive.
+- name: customFieldMask
+  description: A comma-separated list of schema names. All fields from these schemas are fetched. This should only be set when projection=custom.
+- name: event
+  description: 'Event sets the optional parameter "event": Event on which subscription is intended (if subscribing), Possible values: add/delete/makeAdmin/undelete/update'
+- name: query
+  description: Query string search. Should be of the form "". Complete documentation is at https://developers.google.com/admin-sdk/directory/v1/guides/search-users
+- name: projection
+  description: 'What subset of fields to fetch for this user, Acceptable values are: "basic": Do not include any custom fields for the user. (default), "custom": Include custom fields from schemas requested in customFieldMask, "full": Include all fields associated with this user.'
+- name: showDeleted
+  auto: PREDEFINED
+  description: If set to true, retrieves the list of deleted users. Default is false.
+- name: sortOrder
+  description: 'Whether to return results in ascending or descending order. possible values : ASCENDING/DESCENDING'
+scripttarget: 0
+dependson:
+  must:
+  - googleapps-list-users
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,29 @@
+{
+    "autorun": false,
+    "closureScript": "SumoLogicCloseLinkSignalIncidents",
+    "color": "#295AFF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "All"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Sumo Logic Insight",
+    "layout": "Sumo Logic Insight",
+    "locked": false,
+    "name": "Sumo Logic Insight",
+    "onChangeRepAlg": 0,
+    "preProcessingScript": "",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.2.0"
+}

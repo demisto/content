@@ -1,0 +1,15 @@
+[file:IllusiveNetworks.yml]
+ignore=IN126,MR108
+
+[file:classifier-mapper-incoming-IllusiveNetworks.json]
+ignore=BA101
+
+[file:incidentfield-Illusive_Networks_Events_Number.json]
+ignore=IF100
+
+[file:classifier-IllusiveNetworks.json]
+ignore=BA101
+
+[file:IllusiveNetworks_1_3.yml]
+ignore=MR108
+

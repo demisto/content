@@ -1,0 +1,27 @@
+[
+  {
+    "objects": [
+      {
+        "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82",
+        "created": "2017-01-20T00:00:00.000Z",
+        "definition_type": "tlp",
+        "definition": {
+          "tlp": "amber"
+        },
+        "type": "marking-definition",
+        "spec_version": "2.1"
+      },
+      {
+        "id": "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da",
+        "created": "2017-01-20T00:00:00.000Z",
+        "definition_type": "tlp",
+        "definition": {
+          "tlp": "green"
+        },
+        "type": "marking-definition",
+        "spec_version": "2.1"
+      }
+    ],
+    "more": false
+  }
+]

@@ -1,0 +1,12 @@
+[file:README.md]
+ignore=RM106
+
+[file:FeedAlienVaultOTXTaxii_image.png]
+ignore=IM111
+
+[file:FeedAlienVaultReputation_image.png]
+ignore=IM111
+
+[file:FeedAlienVaultReputation.yml]
+ignore=BA124
+

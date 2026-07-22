@@ -1,0 +1,99 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Exabeam Platform - Incoming Mapper",
+    "mapping": {
+        "Exabeam Platform Case": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "alertId"
+                },
+                "Alert Name": {
+                    "simple": "alertName"
+                },
+                "Assigned User": {
+                    "simple": "assignee"
+                },
+                "Destination IPs": {
+                    "simple": "destIps"
+                },
+                "External ID": {
+                    "simple": "caseId"
+                },
+                "Exabeam Destination Hosts": {
+                    "simple": "destHosts"
+                },
+                "Exabeam Products": {
+                    "simple": "products"
+                },
+                "Exabeam Rules": {
+                    "complex": {
+                        "filters": [],
+                        "root": "rules",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Exabeam Source Hosts": {
+                    "simple": "srcHosts"
+                },
+                "Exabeam Vendors": {
+                    "simple": "vendors"
+                },
+                "External Start Time": {
+                    "simple": "ingestTimestamp"
+                },
+                "Investigation Stage": {
+                    "simple": "stage"
+                },
+                "Last Modified On": {
+                    "simple": "lastModifiedTimestamp"
+                },
+                "MITRE Tactic ID": {
+                    "simple": "mitres.tacticKey"
+                },
+                "MITRE Tactic Name": {
+                    "simple": "mitres.tactic"
+                },
+                "MITRE Technique ID": {
+                    "simple": "mitres.techniqueKey"
+                },
+                "MITRE Technique Name": {
+                    "simple": "mitres.technique"
+                },
+                "Risk Score": {
+                    "simple": "riskScore"
+                },
+                "Source Create time": {
+                    "simple": "caseCreationTimestamp"
+                },
+                "Source IPs": {
+                    "simple": "srcIps"
+                },
+                "Source Priority": {
+                    "simple": "priority"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "Use Case Description": {
+                    "simple": "useCases"
+                },
+                "Users": {
+                    "simple": "users"
+                },
+                "occurred": {
+                    "simple": "approxLogTime"
+                }
+            }
+        }
+    },
+    "name": "Exabeam Platform - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

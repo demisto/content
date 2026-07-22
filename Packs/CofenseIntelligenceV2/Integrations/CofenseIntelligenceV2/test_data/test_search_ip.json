@@ -1,0 +1,402 @@
+{
+  "ip_search_response": {
+    "success": true,
+    "data": {
+        "threats": [
+            {
+                "id": 11908,
+                "relatedSearchTags": [],
+                "feeds": [
+                    {
+                        "id": 23,
+                        "permissions": {
+                            "WRITE": false,
+                            "OWNER": false,
+                            "READ": true
+                        },
+                        "displayName": "Cofense"
+                    }
+                ],
+                "blockSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "Loki Bot",
+                            "description": "Information stealer focusing on theft of stored password and cryptocurrency wallet data"
+                        },
+                        "ipDetail": {
+                            "ip": "127.0.0.1",
+                            "lookupOn": 1000000000000,
+                            "latitude": 34.0355,
+                            "longitude": -118.4298,
+                            "metroCode": 111,
+                            "timeZone": "America/Los_Angeles",
+                            "continentName": "North America",
+                            "continentCode": "NA",
+                            "countryName": "United States",
+                            "countryIsoCode": "US",
+                            "subdivisionName": "California",
+                            "subdivisionIsoCode": "CA",
+                            "postalCode": "11111",
+                            "asn": 22222,
+                            "asnOrganization": "Acme, Inc.",
+                            "isp": "Acme",
+                            "organization": "Acme"
+                        },
+                        "impact": "Major",
+                        "confidence": 0,
+                        "blockType": "IPv4 Address",
+                        "roleDescription": "Command and control location used by malware",
+                        "role": "C2",
+                        "data": "127.0.0.1",
+                        "data_1": "127.0.0.1"
+                    }
+                ],
+                "campaignBrandSet": [
+                    {
+                        "totalCount": 1,
+                        "brand": {
+                            "id": 2051,
+                            "text": "None"
+                        }
+                    }
+                ],
+                "extractedStringSet": [],
+                "domainSet": [],
+                "senderEmailSet": [],
+                "executableSet": [
+                    {
+                        "malwareFamily": {
+                            "familyName": "Loki Bot",
+                            "description": "Information stealer focusing on theft of stored password and cryptocurrency wallet data"
+                        },
+                        "vendorDetections": [],
+                        "fileName": "doc.1000158989PO_pdf.exe",
+                        "type": "Attachment",
+                        "ssdeep": "12288:r+iFyKuYN9m7vg8BRptBhfPvLtgs88TUs9/vIKkoZYN11:yAZ7YvTX5vLigT9XIdoZYT",
+                        "dateEntered": 1528375864841,
+                        "severityLevel": "Major",
+                        "fileNameExtension": "exe",
+                        "md5Hex": "md5",
+                        "sha384Hex": "384",
+                        "sha512Hex": "512",
+                        "sha1Hex": "1",
+                        "sha224Hex": "224",
+                        "sha256Hex": "256"
+                    },
+                    {
+                        "malwareFamily": {
+                            "familyName": "Loki Bot",
+                            "description": "Information stealer focusing on theft of stored password and cryptocurrency wallet data"
+                        },
+                        "vendorDetections": [
+                            {
+                                "detected": false,
+                                "threatVendorName": "TotalDefense"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "AhnLab-V3"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "MAX"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Cylance"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Emsisoft"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "AVG"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "VIPRE"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Fortinet"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Webroot"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Avira"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "K7AntiVirus"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Antiy-AVL"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "CMC"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "AVware"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "McAfee"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "ClamAV"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "TrendMicro"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Babable"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "TrendMicro-HouseCall"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "F-Secure"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "F-Prot"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "SUPERAntiSpyware"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Ikarus"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Kingsoft"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "ESET-NOD32"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Rising"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "TACHYON"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Alibaba"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Symantec"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Avast-Mobile"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "TheHacker"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "DrWeb"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Bkav"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "CAT-QuickHeal"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Yandex"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "McAfee-GW-Edition"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "ALYac"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Avast"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Comodo"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Arcabit"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Panda"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Zoner"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "BitDefender"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "ViRobot"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Kaspersky"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Baidu"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "VBA32"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Tencent"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Sophos"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "NANO-Antivirus"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "GData"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Ad-Aware"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "K7GW"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Microsoft"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Qihoo-360"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Invincea"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Jiangmin"
+                            },
+                            {
+                                "detected": true,
+                                "threatVendorName": "Cyren"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "MicroWorld-eScan"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Malwarebytes"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "AegisLab"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "Zillya"
+                            },
+                            {
+                                "detected": false,
+                                "threatVendorName": "ZoneAlarm"
+                            }
+                        ],
+                        "fileName": "doc.1000158989PO_pdf.gz",
+                        "type": "Attachment",
+                        "ssdeep": "6144:x2zl9WZ2TWKqcDRW4IM5Fkgfh+cHk6GIgr79+lbYUUUnOysAQnEqA6oWUmUx2jq3:gpWwlW4IkmYh+IHG/+RYrUBsxpA6HUhX",
+                        "dateEntered": 1528375864552,
+                        "severityLevel": "Major",
+                        "fileNameExtension": "gz",
+                        "md5Hex": "md5",
+                        "sha384Hex": "384",
+                        "sha512Hex": "512",
+                        "sha1Hex": "sha1",
+                        "sha224Hex": "224",
+                        "sha256Hex": "256"
+                    }
+                ],
+                "senderIpSet": [],
+                "senderNameSet": [],
+                "spamUrlSet": [],
+                "subjectSet": [
+                    {
+                        "totalCount": 1,
+                        "subject": "k"
+                    }
+                ],
+                "campaignLanguageSet": [
+                    {
+                        "languageDefinition": {
+                            "isoCode": "en",
+                            "name": "English",
+                            "nativeName": "English",
+                            "family": "Indo-European"
+                        }
+                    }
+                ],
+                "lastPublished": 1528375968122,
+                "firstPublished": 1528375965648,
+                "label": "Signed Documents - Loki Bot",
+                "executiveSummary": "executive summary.",
+                "hasReport": true,
+                "reportURL": "https://www.threathq.comthreatreport/11908/html",
+                "apiReportURL": "https://www.threathlware/11908/html",
+                "threatDetailURL": "https://www.th/default?m=11908",
+                "malwareFamilySet": [
+                    {
+                        "familyName": "Loki Bot",
+                        "description": "Information data"
+                    }
+                ],
+                "threatType": "MALWARE",
+                "deliveryMechanisms": [],
+                "naicsCodes": []
+            }
+        ]
+    }
+},
+  "mock_output": "{'Data': '127.0.0.1', 'Threats': [{'id': 11908, 'relatedSearchTags': [], 'feeds': [{'id': 23, 'permissions': {'WRITE': False, 'OWNER': False, 'READ': True}, 'displayName': 'Cofense'}], 'blockSet': [{'malwareFamily': {'familyName': 'Loki Bot', 'description': 'Information stealer focusing on theft of stored password and cryptocurrency wallet data'}, 'ipDetail': {'ip': '127.0.0.1', 'lookupOn': 1000000000000, 'latitude': 34.0355, 'longitude': -118.4298, 'metroCode': 111, 'timeZone': 'America/Los_Angeles', 'continentName': 'North America', 'continentCode': 'NA', 'countryName': 'United States', 'countryIsoCode': 'US', 'subdivisionName': 'California', 'subdivisionIsoCode': 'CA', 'postalCode': '11111', 'asn': 22222, 'asnOrganization': 'Acme, Inc.', 'isp': 'Acme', 'organization': 'Acme'}, 'impact': 'Major', 'confidence': 0, 'blockType': 'IPv4 Address', 'roleDescription': 'Command and control location used by malware', 'role': 'C2', 'data': '127.0.0.1', 'data_1': '127.0.0.1'}], 'campaignBrandSet': [{'totalCount': 1, 'brand': {'id': 2051, 'text': 'None'}}], 'extractedStringSet': [], 'domainSet': [], 'senderEmailSet': [], 'executableSet': [{'malwareFamily': {'familyName': 'Loki Bot', 'description': 'Information stealer focusing on theft of stored password and cryptocurrency wallet data'}, 'vendorDetections': [], 'fileName': 'doc.1000158989PO_pdf.exe', 'type': 'Attachment', 'ssdeep': '12288:r+iFyKuYN9m7vg8BRptBhfPvLtgs88TUs9/vIKkoZYN11:yAZ7YvTX5vLigT9XIdoZYT', 'dateEntered': 1528375864841, 'severityLevel': 'Major', 'fileNameExtension': 'exe', 'md5Hex': 'md5', 'sha384Hex': '384', 'sha512Hex': '512', 'sha1Hex': '1', 'sha224Hex': '224', 'sha256Hex': '256'}, {'malwareFamily': {'familyName': 'Loki Bot', 'description': 'Information stealer focusing on theft of stored password and cryptocurrency wallet data'}, 'vendorDetections': [{'detected': True, 'threatVendorName': 'MAX'}, {'detected': True, 'threatVendorName': 'Cylance'}, {'detected': True, 'threatVendorName': 'Emsisoft'}, {'detected': True, 'threatVendorName': 'Fortinet'}, {'detected': True, 'threatVendorName': 'McAfee'}, {'detected': True, 'threatVendorName': 'TrendMicro'}, {'detected': True, 'threatVendorName': 'TrendMicro-HouseCall'}, {'detected': True, 'threatVendorName': 'F-Secure'}, {'detected': True, 'threatVendorName': 'F-Prot'}, {'detected': True, 'threatVendorName': 'Ikarus'}, {'detected': True, 'threatVendorName': 'McAfee-GW-Edition'}, {'detected': True, 'threatVendorName': 'Arcabit'}, {'detected': True, 'threatVendorName': 'BitDefender'}, {'detected': True, 'threatVendorName': 'Kaspersky'}, {'detected': True, 'threatVendorName': 'Sophos'}, {'detected': True, 'threatVendorName': 'GData'}, {'detected': True, 'threatVendorName': 'Invincea'}, {'detected': True, 'threatVendorName': 'Cyren'}], 'fileName': 'doc.1000158989PO_pdf.gz', 'type': 'Attachment', 'ssdeep': '6144:x2zl9WZ2TWKqcDRW4IM5Fkgfh+cHk6GIgr79+lbYUUUnOysAQnEqA6oWUmUx2jq3:gpWwlW4IkmYh+IHG/+RYrUBsxpA6HUhX', 'dateEntered': 1528375864552, 'severityLevel': 'Major', 'fileNameExtension': 'gz', 'md5Hex': 'md5', 'sha384Hex': '384', 'sha512Hex': '512', 'sha1Hex': 'sha1', 'sha224Hex': '224', 'sha256Hex': '256'}], 'senderIpSet': [], 'senderNameSet': [], 'spamUrlSet': [], 'subjectSet': [{'totalCount': 1, 'subject': 'k'}], 'campaignLanguageSet': [{'languageDefinition': {'isoCode': 'en', 'name': 'English', 'nativeName': 'English', 'family': 'Indo-European'}}], 'lastPublished': 1528375968122, 'firstPublished': 1528375965648, 'label': 'Signed Documents - Loki Bot', 'executiveSummary': 'executive summary.', 'hasReport': True, 'reportURL': 'https://www.threathq.comthreatreport/11908/html', 'apiReportURL': 'https://www.threathlware/11908/html', 'threatDetailURL': 'https://www.th/default?m=11908', 'malwareFamilySet': [{'familyName': 'Loki Bot', 'description': 'Information data'}], 'threatType': 'MALWARE', 'deliveryMechanisms': [], 'naicsCodes': []}]}",
+  "mock_readable": "### Cofense IP Reputation for IP 127.0.0.1\n|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|ASN|Country|Threat Report|\n|---|---|---|---|---|---|---|---|---|---|\n| 11908 | MALWARE | Malicious | executive summary. | Signed Documents - Loki Bot | Information data | 2018-06-07 12:52:48 | 22222 | US | [https://www.threathq.comthreatreport/11908/html](https://www.threathq.comthreatreport/11908/html) |\n"
+}
+

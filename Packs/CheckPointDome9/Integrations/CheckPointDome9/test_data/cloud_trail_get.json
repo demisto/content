@@ -1,0 +1,23 @@
+[
+    {
+        "accountId": "accountId",
+        "cloudAccountId": "cloudAccountId",
+        "cloudTrailStatus": {},
+        "cloudWatchLogsLogGroupArn": null,
+        "cloudWatchLogsRoleArn": null,
+        "externalId": "externalId",
+        "homeRegion": "homeRegion",
+        "id": "id",
+        "includeGlobalServiceEvents": true,
+        "isMultiRegionTrail": true,
+        "kmsKeyId": null,
+        "logFileValidationEnabled": true,
+        "name": "name",
+        "region": "region",
+        "s3BucketName": "s3BucketName",
+        "s3KeyPrefix": null,
+        "snsTopicArn": null,
+        "snsTopicName": null,
+        "trailArn": "trailArn"
+    }
+]

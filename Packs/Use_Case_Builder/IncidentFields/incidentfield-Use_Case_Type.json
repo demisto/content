@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasetype",
+    "closeForm": false,
+    "content": true,
+    "description": "Select from pre-built templates or Out-of-the-Box Use Cases",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasetype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Type",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "New Use Case",
+        "Out-of-the-Box Use Case",
+        "Quick Start"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

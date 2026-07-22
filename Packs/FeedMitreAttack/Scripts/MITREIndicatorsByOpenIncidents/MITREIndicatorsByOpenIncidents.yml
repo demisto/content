@@ -1,0 +1,23 @@
+args:
+- description: The end date for searching indicators.
+  name: to
+- description: The start date for searching indicators.
+  name: from
+comment: Deprecated. Use FeedMitreAttackv2 instead.
+commonfields:
+  id: MITREIndicatorsByOpenIncidents
+  version: -1
+enabled: true
+name: MITREIndicatorsByOpenIncidents
+script: '-'
+subtype: python3
+tags:
+- widget
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+deprecated: true
+tests:
+- No test.
+fromversion: 5.5.0

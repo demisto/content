@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Fixed Forcepoint DLP parsing rule **target_dataset** value to be ***forcepoint_forcepoint_dlp_raw*** instead of ***forcepoint_dlp_raw*** ."
+}

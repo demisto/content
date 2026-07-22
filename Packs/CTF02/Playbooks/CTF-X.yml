@@ -1,0 +1,86 @@
+id: CTF-X
+version: -1
+name: CTF-X
+description: Not so easy...
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d38d5ce9-a270-402b-891d-246790a39f56
+    type: start
+    task:
+      id: d38d5ce9-a270-402b-891d-246790a39f56
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 30113f7f-a14d-4383-80fe-68af175c88e0
+    type: regular
+    task:
+      id: 30113f7f-a14d-4383-80fe-68af175c88e0
+      version: -1
+      name: Print me
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: "the flag is: playbooksareawesome"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 245,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 8.2.0

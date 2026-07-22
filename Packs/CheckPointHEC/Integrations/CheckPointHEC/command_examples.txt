@@ -1,0 +1,7 @@
+!checkpointhec-get-entity entity=00000000000000000000000000000000
+!checkpointhec-get-events start_date=2024-01-01T00:00:00Z saas_apps="Microsoft Exchange"
+!checkpointhec-get-scan-info entity=00000000000000000000000000000000
+!checkpointhec-search-emails date_last="1 day" saas="Gmail"
+!checkpointhec-send-action entity=00000000000000000000000000000000 saas="Gmail" action=quarantine
+!checkpointhec-get-action-result task=000000
+!checkpointhec-send-notification entity=00000000000000000000000000000000 emails="a@example.com"

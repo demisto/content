@@ -1,0 +1,122 @@
+{
+    "identification_profiles": [
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 1,
+            "profile_name": "test7",
+            "status": "enable"
+        },
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 2,
+            "profile_name": "test6",
+            "status": "enable"
+        },
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 3,
+            "profile_name": "test5",
+            "status": "enable"
+        },
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 4,
+            "profile_name": "test4",
+            "status": "enable"
+        },
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 5,
+            "profile_name": "test3",
+            "status": "enable"
+        },
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 6,
+            "profile_name": "test2",
+            "status": "enable"
+        },
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 7,
+            "profile_name": "test1",
+            "status": "enable"
+        },
+        {
+            "description": "test",
+            "identification_method": {},
+            "members": {
+                "protocols": [
+                    "http",
+                    "https",
+                    "ftp"
+                ]
+            },
+            "order": 8,
+            "profile_name": "test",
+            "status": "enable"
+        },
+        {
+            "description": "Default settings",
+            "identification_method": {},
+            "profile_name": "global_identification_profile",
+            "status": "enable"
+        }
+    ]
+}

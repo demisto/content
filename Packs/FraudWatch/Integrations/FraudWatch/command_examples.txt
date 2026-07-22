@@ -1,0 +1,11 @@
+!fraudwatch-incidents-list brand="Testing Brand 2" from="2020-12-12" limit=3 status=monitor
+!fraudwatch-incident-report brand="Testing Brand 1" primary_url="http://www.maliciousaddress.com" type="vishing" reference_id="abc123" urls="http://abuse.com"
+!fraudwatch-incident-update incident_id=JJJ-504830 brand="Testing Brand 2" reference_id="reference123"
+!fraudwatch-incident-get-by-identifier incident_id=JJJ-168840
+!fraudwatch-incident-get-by-identifier reference_id=reference123
+!fraudwatch-incident-forensic-get incident_id=JJJ-397266
+!fraudwatch-incident-contact-emails-list incident_id=JJJ-898410 limit=2
+!fraudwatch-incident-messages-add incident_id=JJJ-898410 message_content="This incident is very malicious, please monitor it"
+!fraudwatch-incident-urls-add incident_id=JJJ-162968 urls=http://www.malicious1.com,http://www.malicious2.com
+!fraudwatch-incident-attachment-upload entry_id=fmSNZSY2fSCA2WptU8rddf@d382f488-92db-400c-87ff-fdd71f3b7408 incident_id=JJJ-604206
+!fraudwatch-brands-list

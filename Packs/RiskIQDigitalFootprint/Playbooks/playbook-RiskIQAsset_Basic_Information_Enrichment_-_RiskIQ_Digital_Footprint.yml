@@ -1,0 +1,833 @@
+id: RiskIQAsset Basic Information Enrichment - RiskIQ Digital Footprint
+version: -1
+name: RiskIQAsset Basic Information Enrichment - RiskIQ Digital Footprint
+description: |-
+  This playbook receives indicators from its parent playbook and enriches the basic information and the detected CVEs for the "RiskIQAsset" type of indicators. This playbook needs to be used with caution as it might use up the integrations' API license when running for large amounts of indicators.
+  Supported Integrations:
+  - RiskIQ Digital Footprint
+  - VulnDB
+  - CVE Search
+  - IBM X-Force
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 89601e2a-f4f1-4584-8597-db345cf071c5
+    type: start
+    task:
+      id: 89601e2a-f4f1-4584-8597-db345cf071c5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: af827a84-b10c-4c37-8e88-c84198766473
+    type: condition
+    task:
+      id: af827a84-b10c-4c37-8e88-c84198766473
+      version: -1
+      name: Is RiskIQ Digital Footprint integration enabled?
+      description: Checks whether there is an active instance of the RiskIQ Digital
+        Footprint integration enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RiskIQDigitalFootprint
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": -340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5f61429e-b801-4702-800a-572ea6a419db
+    type: regular
+    task:
+      id: 5f61429e-b801-4702-800a-572ea6a419db
+      version: -1
+      name: Get asset details
+      description: Retrieve the asset of the specified UUID or type and name from
+        Global Inventory.
+      script: '|||df-get-asset'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+      - "12"
+    scriptarguments:
+      global: {}
+      name:
+        complex:
+          root: inputs.asset_name
+      recent: {}
+      type:
+        complex:
+          root: inputs.asset_type
+      uuid: {}
+      size: {}
+    reputationcalc: 3
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 158f5322-9ef5-4e88-85cf-2df5862451d2
+    type: regular
+    task:
+      id: 158f5322-9ef5-4e88-85cf-2df5862451d2
+      version: -1
+      name: Update indicator with basic information of the asset
+      description: Sets the basic asset properties in the custom fields of the indicators.
+      script: Builtin|||setIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      accounttype: {}
+      actor: {}
+      admincountry: {}
+      adminemail: {}
+      adminname: {}
+      adminphone: {}
+      asn: {}
+      assettype: {}
+      assettypedropdown: {}
+      associatedfilenames: {}
+      associations: {}
+      biosversion: {}
+      campaign: {}
+      creationdate: {}
+      customFields: {}
+      cvedescription: {}
+      cvemodified: {}
+      cvss: {}
+      description: {}
+      detectionengines: {}
+      devicemodel: {}
+      dhcpserver: {}
+      displayname: {}
+      dns: {}
+      domainname: {}
+      domainorg: {}
+      domainstatus: {}
+      emailaddress: {}
+      employeehealthstatus: {}
+      employeeresponsestatus: {}
+      entryid: {}
+      expirationdate: {}
+      feedrelatedindicators: {}
+      fileextension: {}
+      filetype: {}
+      firstname: {}
+      firstseenbysource: {}
+      geocountry: {}
+      geolocation: {}
+      groups: {}
+      hostname: {}
+      id: {}
+      imphash: {}
+      indicatoridentification: {}
+      internal: {}
+      ipaddress: {}
+      jobtitle: {}
+      lastname: {}
+      lastseenbysource: {}
+      macaddress: {}
+      malwarefamily: {}
+      md5: {}
+      memory: {}
+      mitrealiases: {}
+      mitrecontributors: {}
+      mitredatasources: {}
+      mitredefensebypassed: {}
+      mitredescription: {}
+      mitredetection: {}
+      mitreextendedaliases: {}
+      mitreexternalreferences: {}
+      mitreid: {}
+      mitreimpacttype: {}
+      mitrekillchainphases: {}
+      mitrelabels: {}
+      mitrename: {}
+      mitrepermissionsrequired: {}
+      mitreplatforms: {}
+      mitresystemrequirements: {}
+      mitretype: {}
+      mitreversion: {}
+      name: {}
+      namefield: {}
+      nameservers: {}
+      office365category: {}
+      office365expressroute: {}
+      office365required: {}
+      operatingsystem: {}
+      operatingsystemversion: {}
+      organization: {}
+      organizationalunitou: {}
+      osversion: {}
+      passivetotalcomponentsaddress: {}
+      passivetotalcomponentscategory: {}
+      passivetotalcomponentsfirstseen: {}
+      passivetotalcomponentshostname: {}
+      passivetotalcomponentslabel: {}
+      passivetotalcomponentslastseen: {}
+      passivetotalcomponentsversion: {}
+      passivetotalhostpairscause: {}
+      passivetotalhostpairschild: {}
+      passivetotalhostpairsfirstseen: {}
+      passivetotalhostpairslastseen: {}
+      passivetotalhostpairsparent: {}
+      passivetotalpdnscollected: {}
+      passivetotalpdnsfirstseen: {}
+      passivetotalpdnslastseen: {}
+      passivetotalpdnsrecordhash: {}
+      passivetotalpdnsrecordtype: {}
+      passivetotalpdnsresolve: {}
+      passivetotalpdnsresolvetype: {}
+      passivetotalpdnssource: {}
+      passivetotalpdnsvalue: {}
+      passivetotalsslexpirationdate: {}
+      passivetotalsslfingerprint: {}
+      passivetotalsslissuedate: {}
+      passivetotalsslissuercommonname: {}
+      passivetotalsslissueremailaddress: {}
+      passivetotalsslissuerorganizationname: {}
+      passivetotalsslserialnumber: {}
+      passivetotalsslsha1: {}
+      passivetotalsslsubjectalternativenames: {}
+      passivetotalsslsubjectcommonname: {}
+      passivetotalsslsubjectemailaddress: {}
+      passivetotalsslsubjectorganizationname: {}
+      passivetotaltrackersaddress: {}
+      passivetotaltrackersattributetype: {}
+      passivetotaltrackersattributevalue: {}
+      passivetotaltrackersfirstseen: {}
+      passivetotaltrackershostname: {}
+      passivetotaltrackerslastseen: {}
+      passivetotalwhoisadminaddress: {}
+      passivetotalwhoisadmincity: {}
+      passivetotalwhoisadmincountry: {}
+      passivetotalwhoisadminemail: {}
+      passivetotalwhoisadminname: {}
+      passivetotalwhoisadminorganization: {}
+      passivetotalwhoisadminpostalcode: {}
+      passivetotalwhoisadminstate: {}
+      passivetotalwhoisadminstreet: {}
+      passivetotalwhoisbillingaddress: {}
+      passivetotalwhoisbillingcity: {}
+      passivetotalwhoisbillingcountry: {}
+      passivetotalwhoisbillingemail: {}
+      passivetotalwhoisbillingname: {}
+      passivetotalwhoisbillingorganization: {}
+      passivetotalwhoisbillingpostalcode: {}
+      passivetotalwhoisbillingstate: {}
+      passivetotalwhoisbillingstreet: {}
+      passivetotalwhoisexpiresdate: {}
+      passivetotalwhoislastscanneddate: {}
+      passivetotalwhoisname: {}
+      passivetotalwhoisnameservers: {}
+      passivetotalwhoisorganization: {}
+      passivetotalwhoisregister: {}
+      passivetotalwhoisregistereddate: {}
+      passivetotalwhoisregistrantaddress: {}
+      passivetotalwhoisregistrantcity: {}
+      passivetotalwhoisregistrantcountry: {}
+      passivetotalwhoisregistrantemail: {}
+      passivetotalwhoisregistrantname: {}
+      passivetotalwhoisregistrantorganization: {}
+      passivetotalwhoisregistrantpostalcode: {}
+      passivetotalwhoisregistrantstate: {}
+      passivetotalwhoisregistrantstreet: {}
+      passivetotalwhoisregistrar: {}
+      passivetotalwhoisregistryupdateddate: {}
+      passivetotalwhoisserver: {}
+      passivetotalwhoistechaddress: {}
+      passivetotalwhoistechcity: {}
+      passivetotalwhoistechcountry: {}
+      passivetotalwhoistechemail: {}
+      passivetotalwhoistechname: {}
+      passivetotalwhoistechorganization: {}
+      passivetotalwhoistechpostalcode: {}
+      passivetotalwhoistechstate: {}
+      passivetotalwhoistechstreet: {}
+      passivetotalwhoistelephone: {}
+      path: {}
+      port: {}
+      positivedetections: {}
+      processor: {}
+      processors: {}
+      published: {}
+      quarantined: {}
+      recordedfutureevidencedetails: {}
+      region: {}
+      registrantcountry: {}
+      registrantemail: {}
+      registrantname: {}
+      registrantphone: {}
+      registrarabuseemail: {}
+      registrarabusephone: {}
+      registrarname: {}
+      reportedby: {}
+      reputation: {}
+      riskiqassetaddedtoinventory:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.createdAt
+                iscontext: true
+          accessor: Asset.createdAt
+          transformers:
+          - operator: TimeStampToDate
+      riskiqassetbrands:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.brands.name
+                iscontext: true
+          accessor: Asset.brands.name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      riskiqassetconfidence:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.confidence
+                iscontext: true
+          accessor: Asset.confidence
+      riskiqassetcves:
+        complex:
+          root: CVE
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: CVE.ID
+                iscontext: true
+          accessor: ID
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      riskiqassetenterpriseasset:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.enterprise
+                iscontext: true
+          accessor: Asset.enterprise
+      riskiqassetfirstseen:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.firstSeen
+                iscontext: true
+          accessor: Asset.firstSeen
+          transformers:
+          - operator: TimeStampToDate
+      riskiqassetinventorystatus:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.state
+                iscontext: true
+          accessor: Asset.state
+      riskiqassetlastseen:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.lastSeen
+                iscontext: true
+          accessor: Asset.lastSeen
+          transformers:
+          - operator: TimeStampToDate
+      riskiqassetlastupdated:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.updatedAt
+                iscontext: true
+          accessor: Asset.updatedAt
+          transformers:
+          - operator: TimeStampToDate
+      riskiqassetorganizations:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.organizations.name
+                iscontext: true
+          accessor: Asset.organizations.name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      riskiqassetpriority:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.priority
+                iscontext: true
+          accessor: Asset.priority
+      riskiqassettags:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.tags.name
+                iscontext: true
+          accessor: Asset.tags.name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+      riskiqassettype: {}
+      riskiqassetuuid:
+        complex:
+          root: RiskIQDigitalFootprint
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: RiskIQDigitalFootprint.Asset.uuid
+                iscontext: true
+          accessor: Asset.uuid
+      riskiqbrand: {}
+      service: {}
+      sha1: {}
+      sha256: {}
+      sha512: {}
+      signatureauthentihash: {}
+      signaturecopyright: {}
+      signaturedescription: {}
+      signaturefileversion: {}
+      signatureinternalname: {}
+      signed: {}
+      siscategory: {}
+      sisexpiration: {}
+      sismalwaretype: {}
+      sismatchtype: {}
+      size: {}
+      sourceoriginalseverity: {}
+      ssdeep: {}
+      subdomains: {}
+      tags: {}
+      threattypes: {}
+      trafficlightprotocol: {}
+      type: {}
+      updateddate: {}
+      username: {}
+      value:
+        complex:
+          root: inputs.asset_name
+      xdrstatus: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: cac2a68a-5ff4-47a3-8bd6-2e9bd338af55
+    type: title
+    task:
+      id: cac2a68a-5ff4-47a3-8bd6-2e9bd338af55
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 90e46432-93f4-403f-8957-df31ff558b48
+    type: regular
+    task:
+      id: 90e46432-93f4-403f-8957-df31ff558b48
+      version: -1
+      name: Clean "RiskIQDigitalFootprint" key from the context
+      description: Delete "RiskIQDigitalFootprint" field from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: RiskIQDigitalFootprint
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 486f1a1a-0d72-4533-84da-71ba668b2994
+    type: playbook
+    task:
+      id: 486f1a1a-0d72-4533-84da-71ba668b2994
+      version: -1
+      name: CVE Enrichment - Generic v2
+      description: |-
+        This playbook performs CVE Enrichment using the following integrations:
+        - VulnDB
+        - CVE Search
+        - IBM X-Force Exchange
+      playbookName: CVE Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      cve_id:
+        complex:
+          root: CVE
+          accessor: ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: efc87ce1-b952-4efb-8674-f1999d2d0104
+    type: condition
+    task:
+      id: efc87ce1-b952-4efb-8674-f1999d2d0104
+      version: -1
+      name: Is there a CVE to enrich?
+      description: Verify that the context data includes at least one CVE ID to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: CVE
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: b072ab7f-b6de-4531-861d-fb30d8032113
+    type: regular
+    task:
+      id: b072ab7f-b6de-4531-861d-fb30d8032113
+      version: -1
+      name: Clean "CVE" key from the context
+      description: Delete the "CVE" field from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all: {}
+      index: {}
+      key:
+        simple: CVE
+      keysToKeep: {}
+      subplaybook:
+        simple: auto
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 01a74e98-f6fd-4dd1-8d5f-83cce2ff5835
+    type: title
+    task:
+      id: 01a74e98-f6fd-4dd1-8d5f-83cce2ff5835
+      version: -1
+      name: Enrichment of detected CVE(s)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -210,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: ca47e182-8b05-4e40-8ea8-72a43059af5f
+    type: condition
+    task:
+      id: ca47e182-8b05-4e40-8ea8-72a43059af5f
+      version: -1
+      name: Is there an asset to enrich?
+      description: Checks if there is an asset to perform the enrichment.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.asset_name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_4_#default#": 0.35,
+      "13_4_#default#": 0.2,
+      "1_4_#default#": 0.1
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1495,
+        "width": 1080,
+        "x": -210,
+        "y": -470
+      }
+    }
+  }
+inputs:
+- key: asset_name
+  value: {}
+  required: true
+  description: Name of the asset.
+  playbookInputQuery:
+- key: asset_type
+  value: {}
+  required: true
+  description: 'Type of the asset. Possible values: Domain, Host, IP Address, IP Block,
+    ASN, Page, SSL Cert, Contact.'
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

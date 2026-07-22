@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Twitter v1 is deprecated, Use Twitter v2 instead. ***twitter-get-user-info*** was removed, ***twitter-get-users***  was replaced by ***twitter-user-get***, ***twitter-get-tweets*** was replaced by ***twitter-tweet-search***."}

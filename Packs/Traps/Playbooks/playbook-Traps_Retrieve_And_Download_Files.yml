@@ -1,0 +1,205 @@
+id: Traps Retrieve And Download Files
+version: -1
+name: Traps Retrieve And Download Files
+hidden: true
+deprecated: true
+description: Deprecated. Use CortexXDR instead.
+fromversion: "5.0.0"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f12d335f-9a8b-4c06-8b0e-d9fe3eefd8e1
+    type: start
+    task:
+      id: f12d335f-9a8b-4c06-8b0e-d9fe3eefd8e1
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 6940ec13-06c0-4763-8485-0d626ea90c9c
+    type: regular
+    task:
+      id: 6940ec13-06c0-4763-8485-0d626ea90c9c
+      version: -1
+      name: traps-endpoint-files-retrieve
+      description: Execute a file retrieve action / SAM on the specified agent.
+      script: Traps|||traps-endpoint-files-retrieve
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      endpoint_id:
+        simple: ${inputs.endpoint_id}
+      event_id:
+        simple: ${inputs.event_id}
+      file_name:
+        simple: ${inputs.file_name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 2d5c2257-9a10-4df2-8006-3aef829c2b3a
+    type: playbook
+    task:
+      id: 2d5c2257-9a10-4df2-8006-3aef829c2b3a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${Traps.FileRetrieve.OperationID}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: operation_id
+      PollingCommandName:
+        simple: traps-endpoint-files-retrieve-result
+      Timeout:
+        simple: "5"
+      dt:
+        simple: Traps.FileRetrieveResult(val.Status == 'pending' || val.Status == 'in progress').OperationID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: c2d488f9-d7be-4416-8025-85e2b23e543f
+    type: regular
+    task:
+      id: c2d488f9-d7be-4416-8025-85e2b23e543f
+      version: -1
+      name: traps-endpoint-files-retrieve-result
+      description: Get the result of an endpoint file retrieval action.
+      script: Traps|||traps-endpoint-files-retrieve-result
+      type: regular
+      iscommand: true
+      brand: Traps
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      operation_id:
+        simple: ${Traps.FileRetrieve.OperationID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 8c65d7a1-5d83-471c-8068-594ad8c42965
+    type: regular
+    task:
+      id: 8c65d7a1-5d83-471c-8068-594ad8c42965
+      version: -1
+      name: traps-endpoint-files-retrieve-result
+      description: Get the result of an endpoint file retrieval action.
+      script: Traps|||traps-endpoint-files-retrieve-result
+      type: regular
+      iscommand: true
+      brand: Traps
+    scriptarguments:
+      operation_id:
+        simple: ${Traps.FileRetrieve.OperationID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: endpoint_id
+  value: {}
+  required: true
+  description: The ID of the endpoint.
+- key: file_name
+  value: {}
+  required: true
+  description: the name of the file to retrieve (including path).
+- key: event_id
+  value: {}
+  required: true
+  description: The ID of the Event.
+outputs: []
+tests:
+- No test - Is be tested in Traps test playbook

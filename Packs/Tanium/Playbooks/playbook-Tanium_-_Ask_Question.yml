@@ -1,0 +1,176 @@
+id: Tanium - Ask Question
+version: -1
+fromversion: "5.0.0"
+name: Tanium - Ask Question
+description: 'This playbook used generic polling to gets question result.'
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fd08b385-0693-43a8-8523-e4e344e47c7e
+    type: start
+    task:
+      id: fd08b385-0693-43a8-8523-e4e344e47c7e
+      version: -1
+      description: ""
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 22bd1506-813b-4c50-8d9d-9d1b019f2908
+    type: regular
+    task:
+      id: 22bd1506-813b-4c50-8d9d-9d1b019f2908
+      version: -1
+      description: ""
+      name: Ask question
+      script: '|||tn-ask-question'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      parameters:
+        complex:
+          root: inputs.parameters
+      question-text:
+        complex:
+          root: inputs.question-text
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 28bd0645-0f75-4f9c-84bb-3caf5f6a40f5
+    type: playbook
+    task:
+      id: 28bd0645-0f75-4f9c-84bb-3caf5f6a40f5
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        complex:
+          root: Tanium
+          accessor: Question.ID
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: question-id
+      PollingCommandName:
+        simple: tn-get-question-result
+      Timeout:
+        simple: "60"
+      dt:
+        simple: Tanium.QuestionResult(val.Status != 'Completed').QuestionID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: a45adf8d-4f2a-492c-8a1d-11118c892a5d
+    type: regular
+    task:
+      id: a45adf8d-4f2a-492c-8a1d-11118c892a5d
+      version: -1
+      description: ""
+      name: Get results
+      script: '|||tn-get-question-result'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      question-id:
+        simple: ${Tanium.Question.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 590,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: question-text
+  value: {}
+  required: false
+  description: ""
+- key: parameters
+  value: {}
+  required: false
+  description: ""
+outputs:
+- contextPath: Tanium.QuestionResult.Results
+  description: The question results.
+- contextPath: Tanium.Question.ID
+  description: The unique ID of the question object
+tests:
+- Tanium v2 - Test

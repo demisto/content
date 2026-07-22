@@ -1,0 +1,725 @@
+id: DLP - Get Approval
+version: -1
+name: DLP - Get Approval
+description: Get an approver response for an exemption request from a user.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bcd176d7-ec48-4529-8b0d-f2ba436c1753
+    type: start
+    task:
+      id: bcd176d7-ec48-4529-8b0d-f2ba436c1753
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 685b8517-2709-4dc6-875b-595b4f2bcdf8
+    type: regular
+    task:
+      id: 685b8517-2709-4dc6-875b-595b4f2bcdf8
+      version: -1
+      name: Find approver on slack
+      description: Gets details about a specified user.
+      script: SlackV3|||slack-get-user-details
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      user:
+        complex:
+          root: inputs.Approver
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 705ad813-8b3a-4063-800c-e8d711e90124
+    type: regular
+    task:
+      id: 705ad813-8b3a-4063-800c-e8d711e90124
+      version: -1
+      name: Get approval via slack
+      description: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
+      scriptName: SlackAskV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: |-
+          **DLP Exemption Request**
+          Hello ${inputs.approver},
+          The user ${incident.sourceusername} is asking to exclude this file: *${incident.filename}* which was blocked by *${incident.pandlpdataprofilename}* data profile on *${incident.app}*.
+
+          ${inputs.Detections}
+
+          Please choose "Yes" to approve. Otherwise, please choose "No".
+      task:
+        simple: AwaitApproval
+      user:
+        complex:
+          root: inputs.Approver
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 010e1f79-a7cb-41e7-86e1-c453accbe4af
+    type: condition
+    task:
+      id: 010e1f79-a7cb-41e7-86e1-c453accbe4af
+      description: ""
+      version: -1
+      name: Exemption approved?
+      tags:
+      - AwaitApproval
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "Yes":
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b163796c-0cd3-485e-8598-fd3cadc97dc0
+    type: regular
+    task:
+      id: b163796c-0cd3-485e-8598-fd3cadc97dc0
+      version: -1
+      name: Set feedback to "Exception Granted by By Approver"
+      description: Set feedback to "Exception Granted".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: EXCEPTION_GRANTED
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8a8ed02f-d8cb-4426-89d0-4d466cc2aef0
+    type: regular
+    task:
+      id: 8a8ed02f-d8cb-4426-89d0-4d466cc2aef0
+      version: -1
+      name: Set feedback to "Exception denied"
+      description: Set feedback to "Exception Granted".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      pandlpincidentfeedback:
+        simple: EXCEPTION_DENIED
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ff305da6-1801-48ee-80a9-68852fcde7b0
+    type: title
+    task:
+      id: ff305da6-1801-48ee-80a9-68852fcde7b0
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 430,
+          "y": 1500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 12ef48ca-c429-4891-885e-150e47f6cc47
+    type: condition
+    task:
+      id: 12ef48ca-c429-4891-885e-150e47f6cc47
+      version: -1
+      name: Is Slack v3 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: SlackV3
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: cb5b1ea5-66b5-4b8e-8c95-06cdc8712756
+    type: condition
+    task:
+      id: cb5b1ea5-66b5-4b8e-8c95-06cdc8712756
+      version: -1
+      name: Is Microsoft Teams enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "14"
+      "yes":
+      - "12"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Teams
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: db514c79-bc38-4171-85ae-84ad808c4df8
+    type: regular
+    task:
+      id: db514c79-bc38-4171-85ae-84ad808c4df8
+      version: -1
+      name: Get approval via Teams
+      description: Send a team member or channel a question with predefined response options on Microsoft Teams. The response can be used to close a task (might be conditional) in a playbook.
+      scriptName: MicrosoftTeamsAsk
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      message:
+        simple: "**DLP Exemption Request**\n\nHello ${inputs.approver}, \n\nThe user ${incident.sourceusername} is asking to exclude this file:\n\n**${incident.filename}**\n\nwhich was blocked by:\n\n**${incident.pandlpdataprofilename}** data profile on *${incident.app}*. \n\n${inputs.Detections}\n\nPlease choose \"Yes\" to approve. Otherwise, please choose \"No\"."
+      task_id:
+        simple: AwaitApproval
+      team_member:
+        complex:
+          root: inputs.Approver
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 37c94790-901c-41c8-8c50-d9f5f6b1ec85
+    type: condition
+    task:
+      id: 37c94790-901c-41c8-8c50-d9f5f6b1ec85
+      description: ""
+      version: -1
+      name: Ask approver via email
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "6"
+      "Yes":
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${inputs.Approver}
+      subject:
+        simple: DLP - Exemption approval request
+      body:
+        simple: |-
+          Hello ${inputs.approver},
+
+          The user ${incident.sourceusername} is asking to get a temporary exemption for this file: "${incident.filename}" which was blocked by "${incident.pandlpdataprofilename}" DLP data profile on *${incident.app}*.
+
+          ${inputs.Detections}
+
+          Do you approve the above exemption request?
+      methods:
+      - email
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 4a002891-e526-4871-87a6-13dcfc17fb10
+    type: condition
+    task:
+      id: 4a002891-e526-4871-87a6-13dcfc17fb10
+      description: ""
+      version: -1
+      name: What is the selected message app?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Email:
+      - "14"
+      MSTeams:
+      - "11"
+      Slack:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Slack
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ApproverMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Slack
+          ignorecase: true
+    - label: MSTeams
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ApproverMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Teams
+          ignorecase: true
+    - label: Email
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ApproverMessageApp
+            iscontext: true
+          right:
+            value:
+              simple: Email
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 66885f5a-50c1-4bb0-8610-fb8890cbe8ed
+    type: condition
+    task:
+      id: 66885f5a-50c1-4bb0-8610-fb8890cbe8ed
+      description: ""
+      version: -1
+      name: Manual approval?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Approver
+            iscontext: true
+          right:
+            value:
+              simple: Manual
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 532527d5-f4df-4c1c-80c9-2a0e3e80c38c
+    type: collection
+    task:
+      id: 532527d5-f4df-4c1c-80c9-2a0e3e80c38c
+      description: ""
+      version: -1
+      name: Manually approve
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Manual exemption review
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Do you approve the exemption?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Manual exemption review
+      description: Please review the exemption request and either approve or deny the request.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: ae9772ce-3753-41a2-84a2-a1e0180d506d
+    type: condition
+    task:
+      id: ae9772ce-3753-41a2-84a2-a1e0180d506d
+      description: ""
+      version: -1
+      name: Manual exemption approved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Manual exemption review.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -230,
+          "y": 1145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_14_no": 0.1,
+      "10_1_yes": 0.42,
+      "11_12_yes": 0.45,
+      "11_14_no": 0.23,
+      "27_14_Email": 0.22,
+      "28_27_#default#": 0.59,
+      "30_5_yes": 0.35,
+      "30_6_#default#": 0.46,
+      "4_5_Yes": 0.51,
+      "4_6_#default#": 0.51
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1895,
+        "width": 1490,
+        "x": -230,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: Approver
+  value: {}
+  required: false
+  description: The email address of the approver.
+  playbookInputQuery:
+- key: SendMailInstance
+  value: {}
+  required: false
+  description: The name of the instance to be used when executing the "send-mail" command in the playbook. In case it will be empty, all available instances will be used (default).
+  playbookInputQuery:
+- key: ApproverMessageApp
+  value: {}
+  required: false
+  description: |-
+    The communication method with the approver.
+    Can be one of the following:
+
+    - Slack
+    - Microsoft Teams
+    - Email
+
+    If you choose to set "Email", it's also possible to set the relevant email integration instance with the "SendEmailInstance" input.
+  playbookInputQuery:
+- key: Detections
+  value: {}
+  required: false
+  description: Detected violation snippets.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

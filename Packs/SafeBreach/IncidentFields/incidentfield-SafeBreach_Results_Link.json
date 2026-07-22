@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeBreach Insight"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safebreachresultslink",
+    "closeForm": false,
+    "content": true,
+    "description": "Link to the SafeBreach platform results page with all the related simulation results",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safebreachresultslink",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeBreach Results Link",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "url",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.5.0"
+}

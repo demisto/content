@@ -1,0 +1,21 @@
+{
+    "name": "MapRegex (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
+    "support": "community",
+    "currentVersion": "1.0.2",
+    "author": "Adam Burt",
+    "url": "",
+    "email": "",
+    "created": "2020-12-18T11:00:16Z",
+    "categories": [
+        "Utilities"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "hidden": true
+}

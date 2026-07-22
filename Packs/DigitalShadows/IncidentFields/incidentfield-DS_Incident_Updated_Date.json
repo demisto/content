@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "dsincidentupdateddate",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "fromVersion": "6.10.0",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_dsincidentupdateddate",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "DS Incident Updated Date",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "associatedTypes": [
+        "Reliaquest GreyMatter DRP Incident"
+    ],
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1
+}

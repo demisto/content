@@ -1,0 +1,389 @@
+description: "This playbook Remediates the Boot or Logon Autostart Execution technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1547: Boot or Logon Autostart Execution\n\nKill Chain phases:\n- Persistence\n- Privilege Escalation\n\nMITRE ATT&CK Description:\n\nAdversaries may configure system settings to automatically execute a program during system boot or logon to maintain persistence or gain higher-level privileges on compromised systems. Operating systems may have mechanisms for automatically running a program on system boot or account logon.[1][2][3][4][5]  These mechanisms may include automatically executing programs that are placed in specially designated directories or are referenced by repositories that store configuration information, such as the Windows Registry. An adversary may achieve the same goal by modifying or extending features of the kernel.\n\nSince some boot or logon autostart programs run with higher privileges, an adversary may leverage these to elevate privileges.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input."
+id: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
+inputs: []
+name: MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution
+outputs:
+- contextPath: Handled.Techniques
+  description: The techniques handled in this playbook
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ff10dc56-e880-41a3-860f-655d72f0229f
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: ff10dc56-e880-41a3-860f-655d72f0229f
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -320
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9de918ca-615e-429c-8d27-2f7b5e1d7621
+      iscommand: false
+      name: Enable Anti-Exploit in Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: 9de918ca-615e-429c-8d27-2f7b5e1d7621
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4df4b8ec-0ba1-47cf-81a0-bf16713dd575
+      iscommand: false
+      name: Enable Anti-Malware Protection in Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: 4df4b8ec-0ba1-47cf-81a0-bf16713dd575
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Cortex XDR - Enable Anti-Malware Protection.
+      id: 2856f007-76b9-4f7f-86dd-f42c56b25c17
+      iscommand: false
+      name: Manual - Cortex XDR - Enable Anti-Malware Protection
+      type: regular
+      version: -1
+    taskid: 2856f007-76b9-4f7f-86dd-f42c56b25c17
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Cortex XDR - Enable Anti-Exploit.
+      id: a0b174b1-ab61-43f0-8f83-5afb11e8fc39
+      iscommand: false
+      name: Manual - Cortex XDR - Enable Anti-Exploit
+      type: regular
+      version: -1
+    taskid: a0b174b1-ab61-43f0-8f83-5afb11e8fc39
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Configure Behavioral Threat Protection under the Malware Security Profile.
+      id: 6931f946-df0b-4cf4-8841-7fc3af134dd6
+      iscommand: false
+      name: Manual - Configure Behavioral Threat Protection under the Malware Security Profile
+      type: regular
+      version: -1
+    taskid: 6931f946-df0b-4cf4-8841-7fc3af134dd6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 980
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 2ea509b7-549a-4348-8348-e821335f9a5f
+      iscommand: false
+      name: Configure Behavioral Threat Protection under the Malware Security Profile in Cortex XDR
+      type: title
+      version: -1
+      description: ''
+    taskid: 2ea509b7-549a-4348-8348-e821335f9a5f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ca7474f6-5c54-4d2c-8144-29585bccefe5
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: ca7474f6-5c54-4d2c-8144-29585bccefe5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1530
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: T1547
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 066ea9af-9485-4da4-8b6a-37d525446689
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 066ea9af-9485-4da4-8b6a-37d525446689
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1155
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: d196de01-ed78-487f-8db6-cf6b62117284
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: d196de01-ed78-487f-8db6-cf6b62117284
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -160
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: 0d450427-9ed3-4507-897a-73d07acc32a8
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: 0d450427-9ed3-4507-897a-73d07acc32a8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 10
+        }
+      }
+  "11":
+    continueonerror: true
+    id: "11"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 8b3ba5ba-2490-4012-8224-b4f64439c67a
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 8b3ba5ba-2490-4012-8224-b4f64439c67a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1340
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1915,
+        "width": 730,
+        "x": 50,
+        "y": -320
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

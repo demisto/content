@@ -1,0 +1,107 @@
+{
+  "repository": {
+    "id": "XXXX",
+    "name": "xsoar",
+    "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX",
+    "project": {
+      "id": "xsoar-project",
+      "name": "xsoar",
+      "url": "https://dev.azure.com/xsoar/_apis/projects/xsoar-project",
+      "state": "wellFormed",
+      "revision": 11,
+      "visibility": "private",
+      "lastUpdateTime": "2021-10-13T15:46:18.017Z"
+    },
+    "size": 727,
+    "remoteUrl": "https://xsoar@dev.azure.com/xsoar/xsoar/_git/xsoar",
+    "sshUrl": "git@ssh.dev.azure.com:v3/xsoar/xsoar/xsoar",
+    "webUrl": "https://dev.azure.com/xsoar/xsoar/_git/xsoar",
+    "isDisabled": false
+  },
+  "pullRequestId": 1,
+  "codeReviewId": 1,
+  "status": "active",
+  "createdBy": {
+    "displayName": "XSOAR Test",
+    "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+    "_links": {
+      "avatar": {
+        "href": "https://dev.azure.com/xsoar/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+      }
+    },
+    "id": "XXXX",
+    "uniqueName": "xsoar@xsoar.co",
+    "imageUrl": "https://dev.azure.com/xsoar/_api/_common/identityImage?id=XXXX",
+    "descriptor": "aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+  },
+  "creationDate": "2021-10-14T12:10:44.4609827Z",
+  "title": "My title",
+  "description": "xsoar command description",
+  "sourceRefName": "refs/heads/main",
+  "targetRefName": "refs/heads/test-branch",
+  "mergeStatus": "queued",
+  "isDraft": false,
+  "mergeId": "e768c2a0-c93b-4ec1-8e9a-640c73e26385",
+  "lastMergeSourceCommit": {
+    "commitId": "d4c91300622b41a4090ebe9edbd5ec490e4481c0",
+    "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/d4c91300622b41a4090ebe9edbd5ec490e4481c0"
+  },
+  "lastMergeTargetCommit": {
+    "commitId": "ebb07959905a166605d38957e4ee9526ef4968b4",
+    "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/ebb07959905a166605d38957e4ee9526ef4968b4"
+  },
+  "reviewers": [
+    {
+      "reviewerUrl": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/1/reviewers/XXXX",
+      "vote": 0,
+      "hasDeclined": false,
+      "isFlagged": false,
+      "displayName": "XSOAR Test",
+      "url": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX",
+      "_links": {
+        "avatar": {
+          "href": "https://dev.azure.com/xsoar/_apis/GraphProfile/MemberAvatars/aad.ZWFlMjk2ZGYtMzYwOS03YWY3LWFkNzMtYzNlYmRhZDM3ZmQ5"
+        }
+      },
+      "id": "XXXX",
+      "uniqueName": "xsoar@xsoar.co",
+      "imageUrl": "https://dev.azure.com/xsoar/_api/_common/identityImage?id=XXXX"
+    }
+  ],
+  "labels": [],
+  "url": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/1",
+  "_links": {
+    "self": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/1"
+    },
+    "repository": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX"
+    },
+    "workItems": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/1/workitems"
+    },
+    "sourceBranch": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/refs/heads/main"
+    },
+    "targetBranch": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/refs/heads/test-branch"
+    },
+    "statuses": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/1/statuses"
+    },
+    "sourceCommit": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/d4c91300622b41a4090ebe9edbd5ec490e4481c0"
+    },
+    "targetCommit": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/commits/ebb07959905a166605d38957e4ee9526ef4968b4"
+    },
+    "createdBy": {
+      "href": "https://vssps.visualstudio.com/XXXX/_apis/Identities/XXXX"
+    },
+    "iterations": {
+      "href": "https://dev.azure.com/xsoar/xsoar-project/_apis/git/repositories/XXXX/pullRequests/1/iterations"
+    }
+  },
+  "supportsIterations": true,
+  "artifactId": "vstfs:///Git/PullRequestId/xsoar-project%2fXXXX%2f1"
+}

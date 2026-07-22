@@ -1,0 +1,15 @@
+{
+    "data": [
+        {
+            "rrn": "rrn",
+            "name": "test test",
+            "domain": "test.co"
+        }
+    ],
+    "metadata": {
+        "index": 0,
+        "size": 1,
+        "total_pages": 1,
+        "total_data": 1
+    }
+}

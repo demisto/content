@@ -1,0 +1,983 @@
+id: DomainTools-Test
+version: -1
+name: DomainTools-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bad2969a-5982-4b6c-8779-ca9a99bdd7a3
+    type: start
+    task:
+      id: bad2969a-5982-4b6c-8779-ca9a99bdd7a3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": -264
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 6371c740-eb1b-4c28-8ee9-e77fb47eead0
+    type: regular
+    task:
+      id: 6371c740-eb1b-4c28-8ee9-e77fb47eead0
+      version: -1
+      name: domain
+      description: Retrieve domain information.
+      script: DomainTools|||domain
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "12"
+      - "13"
+    scriptarguments:
+      domain:
+        simple: discounts.li
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ba882500-aab2-4646-88e3-da32a213f062
+    type: regular
+    task:
+      id: ba882500-aab2-4646-88e3-da32a213f062
+      version: -1
+      name: domainSearch
+      description: Search for domain based on the given parameters
+      script: DomainTools|||domainSearch
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      activeOnly:
+        simple: "false"
+      anchorLeft:
+        simple: "true"
+      anchorRight:
+        simple: "true"
+      deletedOnly: {}
+      exclude: {}
+      hasNumber: {}
+      hesHyphen: {}
+      maxLength:
+        simple: "7"
+      minLength: {}
+      pageNumber: {}
+      query:
+        simple: ynet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: ae705492-8b7b-4d99-812c-86f53ca76e79
+    type: regular
+    task:
+      id: ae705492-8b7b-4d99-812c-86f53ca76e79
+      version: -1
+      name: reverseIP
+      description: Reverse loopkup of an IP address
+      script: DomainTools|||reverseIP
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      domain:
+        simple: ynet.co.il
+      ip: {}
+      limit: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 1246
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d9e18086-72e5-455e-85f9-e164c7361c57
+    type: regular
+    task:
+      id: d9e18086-72e5-455e-85f9-e164c7361c57
+      version: -1
+      name: reverseNameServer
+      description: Reverse nameserver lookup
+      script: DomainTools|||reverseNameServer
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      limit: {}
+      nameServer:
+        simple: ns1.google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 2251
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ee38441b-519c-4abd-83e9-e1649586d8e9
+    type: regular
+    task:
+      id: ee38441b-519c-4abd-83e9-e1649586d8e9
+      version: -1
+      name: reverseWhois
+      description: Reverse lookup of whois information
+      script: DomainTools|||reverseWhois
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      exclude: {}
+      onlyHistoricScope: {}
+      quoteMode:
+        simple: purchase
+      terms:
+        simple: ynet
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 2756
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b3e43752-581b-4e45-89d4-0bb1a368f873
+    type: regular
+    task:
+      id: b3e43752-581b-4e45-89d4-0bb1a368f873
+      version: -1
+      name: whois
+      description: Provides registration details about a domain
+      script: DomainTools|||whois
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "20"
+      - "21"
+    scriptarguments:
+      parsed: {}
+      query:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ec017acd-72b8-464e-819d-f462c7235848
+    type: regular
+    task:
+      id: ec017acd-72b8-464e-819d-f462c7235848
+      version: -1
+      name: whoisHistory
+      description: Display a history of whois for a given domain
+      script: DomainTools|||whoisHistory
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      domain:
+        simple: ynet.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 3263
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 53e37c43-1878-4202-8fde-73169feda097
+    type: regular
+    task:
+      id: 53e37c43-1878-4202-8fde-73169feda097
+      version: -1
+      name: domainProfile
+      script: DomainTools|||domainProfile
+      type: regular
+      iscommand: true
+      brand: DomainTools
+    scriptarguments:
+      domain:
+        simple: ynet.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 3779
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: bb88ce6b-449b-4b13-8f37-714d8ec7ef00
+    type: regular
+    task:
+      id: bb88ce6b-449b-4b13-8f37-714d8ec7ef00
+      version: -1
+      name: NotInContextVerification
+      description: "Not in context verification is a script that executes the given command and verifies that the specified field is not in the context after execution. \n"
+      script: NotInContextVerification
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      cmdArguments:
+        simple: domain=google.com,using-brand=DomainTools
+      cmdToRun:
+        simple: domain
+      keyToWatch:
+        simple: Domain.Malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": -104
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: ed8d44b3-1d78-4742-8c19-f22b28774ce2
+    type: regular
+    task:
+      id: ed8d44b3-1d78-4742-8c19-f22b28774ce2
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Domain.Malicious
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -273,
+          "y": 399
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: d9e7a7b8-b60b-4320-852b-87cd2f95332d
+    type: regular
+    task:
+      id: d9e7a7b8-b60b-4320-852b-87cd2f95332d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      expectedValue:
+        simple: "3"
+      fields: {}
+      path:
+        simple: DBotScore.Score
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -686,
+          "y": 399
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 3526f92a-8178-4570-8705-d33a30a020fb
+    type: regular
+    task:
+      id: 3526f92a-8178-4570-8705-d33a30a020fb
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 68
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: d98b0628-03a1-4385-8b3d-7a873f15b170
+    type: regular
+    task:
+      id: d98b0628-03a1-4385-8b3d-7a873f15b170
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: fff8667a-9b97-4e06-8414-92eb7b5ac28d
+    type: regular
+    task:
+      id: fff8667a-9b97-4e06-8414-92eb7b5ac28d
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Domain.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 906
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 87742482-bc50-4d88-8d85-c1815a2548e2
+    type: regular
+    task:
+      id: 87742482-bc50-4d88-8d85-c1815a2548e2
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 1079
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: c5d52242-1d53-40a9-898f-6f25af8cdd04
+    type: regular
+    task:
+      id: c5d52242-1d53-40a9-898f-6f25af8cdd04
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: DNS.Address,Name
+      path:
+        simple: Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 1423
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 644da17e-12c1-4a5c-8c6b-e25107b37143
+    type: regular
+    task:
+      id: 644da17e-12c1-4a5c-8c6b-e25107b37143
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 1589
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 9cac1186-7035-4bce-8893-4a31df021249
+    type: regular
+    task:
+      id: 9cac1186-7035-4bce-8893-4a31df021249
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      expectedValue:
+        simple: google.com
+      fields: {}
+      path:
+        simple: Domain.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -273,
+          "y": 1918
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: cea27d70-919d-49e4-8637-5f8494dafea1
+    type: regular
+    task:
+      id: cea27d70-919d-49e4-8637-5f8494dafea1
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      expectedValue: {}
+      fields:
+        simple: Statuses,Registrar,Contacts,UpdatedDate
+      path:
+        simple: Domain.Whois
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -686,
+          "y": 1918
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: 678126d4-919b-47a6-89d2-373b261f6b3f
+    type: regular
+    task:
+      id: 678126d4-919b-47a6-89d2-373b261f6b3f
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 2091
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: af1766bf-5f37-443d-815d-b73740debb8c
+    type: regular
+    task:
+      id: af1766bf-5f37-443d-815d-b73740debb8c
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Domain.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 2409
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: 43de1ec9-a52e-4293-8d45-42d71f5eb363
+    type: regular
+    task:
+      id: 43de1ec9-a52e-4293-8d45-42d71f5eb363
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 2579
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 5bc0841d-c0c6-4982-8741-9b6df3e80b08
+    type: regular
+    task:
+      id: 5bc0841d-c0c6-4982-8741-9b6df3e80b08
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Domain.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 2919
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: aeb65b22-780c-45d9-8c2b-cf35610ce4ed
+    type: regular
+    task:
+      id: aeb65b22-780c-45d9-8c2b-cf35610ce4ed
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 3095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 9fe0fe6c-0fdb-44e9-8d7f-4cefb13c5e69
+    type: regular
+    task:
+      id: 9fe0fe6c-0fdb-44e9-8d7f-4cefb13c5e69
+      version: -1
+      name: VerifyContext
+      description: |-
+        Verifies path in context:
+        - Verifies path existence
+        - If matching object is an array: verify fields exists in each of the objects in the array
+        - If matching object is not an array: verify fields exists in matching object
+        - if 'expectedValue' is given: ensure that the given value is equal to the context path
+      script: VerifyContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      expectedValue: {}
+      fields: {}
+      path:
+        simple: Domain.WhoisHistory
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 3430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: b20355b6-52e2-43ad-8de9-5506c804cbe4
+    type: regular
+    task:
+      id: b20355b6-52e2-43ad-8de9-5506c804cbe4
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      script: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      key: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -482,
+          "y": 3607
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4138,
+        "width": 793,
+        "x": -686,
+        "y": -264
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

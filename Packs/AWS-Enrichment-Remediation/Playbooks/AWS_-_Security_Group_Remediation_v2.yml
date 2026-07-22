@@ -1,0 +1,382 @@
+id: AWS - Security Group Remediation v2
+version: -1
+name: AWS - Security Group Remediation v2
+description: |-
+  This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7aeccd71-8a2e-47a8-8ba0-b91bac919bf4
+    type: start
+    task:
+      id: 7aeccd71-8a2e-47a8-8ba0-b91bac919bf4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 57209409-3b96-48f9-865d-61de73bd6309
+    type: title
+    task:
+      id: 57209409-3b96-48f9-865d-61de73bd6309
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -280,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: fe8c7803-f99e-4ee6-8481-fa710b622cd7
+    type: condition
+    task:
+      id: fe8c7803-f99e-4ee6-8481-fa710b622cd7
+      version: -1
+      name: Is AWS - EC2 enabled and are input values defined?
+      description: Determines if the AWS - EC2 integration instance is configured and input values are defined in order to continue with remediating security groups.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.InstanceID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Port
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Protocol
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.PublicIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: a1cd953f-00c5-4dc2-8f89-9d0826215aa4
+    type: regular
+    task:
+      id: a1cd953f-00c5-4dc2-8f89-9d0826215aa4
+      version: -1
+      name: AWSRecreateSG
+      description: Automation to determine which interface on an EC2 instance has an over-permissive security group, determine which security groups have over-permissive rules, and replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      scriptName: AWSRecreateSG
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+      - "34"
+    scriptarguments:
+      assume_role:
+        complex:
+          root: inputs.AWSAssumeArn
+      instance_id:
+        complex:
+          root: inputs.InstanceID
+      port:
+        complex:
+          root: inputs.Port
+      protocol:
+        complex:
+          root: inputs.Protocol
+      public_ip:
+        complex:
+          root: inputs.PublicIP
+      region:
+        complex:
+          root: inputs.Region
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 8aa09dbe-ef6e-49fd-8a7f-a0a272df284c
+    type: condition
+    task:
+      id: 8aa09dbe-ef6e-49fd-8a7f-a0a272df284c
+      version: -1
+      name: Was AWS security group created?
+      description: Check if AWS security group was created or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              complex:
+                root: awssgrecreated
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 165c5309-8d07-4326-870b-2700af63b0b3
+    type: regular
+    task:
+      id: 165c5309-8d07-4326-870b-2700af63b0b3
+      version: -1
+      name: Set remediatedFlag to true
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 512be55e-4659-402a-8d81-57ef77fc1b1d
+    type: regular
+    task:
+      id: 512be55e-4659-402a-8d81-57ef77fc1b1d
+      version: -1
+      name: Set remediatedFlag to false
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: remediatedFlag
+      stringify:
+        simple: "false"
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1165,
+        "width": 1080,
+        "x": -280,
+        "y": -470
+      }
+    }
+  }
+inputs:
+- key: InstanceID
+  value: {}
+  required: true
+  description: ID of the AWS EC2 instance.
+  playbookInputQuery:
+- key: Port
+  value:
+    complex:
+      root: alert
+      accessor: remoteport
+  required: true
+  description: TCP/UDP port to be restricted.
+  playbookInputQuery:
+- key: Protocol
+  value: {}
+  required: true
+  description: Protocol of the port to be restricted.
+  playbookInputQuery:
+- key: PublicIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: true
+  description: Public IP address of the EC2 instance.
+  playbookInputQuery:
+- key: AWSAssumeArn
+  value: {}
+  required: false
+  description: Name of an AWS role to assume (should be the same for all organizations).
+  playbookInputQuery:
+- key: Region
+  value: {}
+  required: false
+  description: Region where EC2 instance is present.
+  playbookInputQuery:
+outputs:
+- contextPath: remediatedFlag
+  description: Output key to determine if remediation was successfully done.
+  type: boolean
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}

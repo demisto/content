@@ -1,0 +1,34 @@
+{
+    "totalSize": 1,
+    "done": true,
+    "records": [
+        {
+            "attributes": {
+                "type": "type",
+                "url": "url"
+            },
+            "Id": "id",
+            "Name": "19657",
+            "LastModifiedDate": "2020-07-08T13:30:09.000+0000",
+            "CreatedDate": "2020-07-08T12:31:56.000+0000",
+            "BMCServiceDesk__Category_ID__c": "category",
+            "BMCServiceDesk__Priority_ID__c": "1",
+            "BMCServiceDesk__Type__c": "Service Request",
+            "BMCServiceDesk__Impact_Id__c": null,
+            "BMCServiceDesk__Urgency_ID__c": null,
+            "BMCServiceDesk__Status_ID__c": "status",
+            "BMCServiceDesk__dueDateTime__c": null,
+            "BMCServiceDesk__queueName__c": null,
+            "BMCServiceDesk__Client_Account__c": null,
+            "BMCServiceDesk__Client_Name__c": "client name",
+            "BMCServiceDesk__incidentDescription__c": "Description",
+             "BMCServiceDesk__FKTemplate__r": {
+                "attributes": {
+                    "type": "type",
+                    "url": "url"
+                },
+                "Name": "name"
+            }
+        }
+    ]
+}

@@ -1,0 +1,2250 @@
+id: PCAP Parsing And Indicator Enrichment
+version: -1
+fromversion: 5.0.0
+name: PCAP Parsing And Indicator Enrichment
+description: This playbook is used to parse and extract indicators within PCAP files
+  and perform enrichment on the detected indicators. Supported file types are pcap,
+  cap, pcapng. The playbook can handle one PCAP file per incident. The user inputs
+  which indicator types are to be enriched including, email, URLs, IP addresses. The
+  user can specify in the inputs which indicators are internal or that will be treated
+  as internal (not enriched). The user can also specify a specific regex pattern to
+  search for. Another option is to specify the protocol types to be printed to context
+  for data extraction. Additional inputs allow the user to provide the WPA password
+  for decrypting 802.11 (wireless) traffic and add an RSA certificate to decrypt SSL
+  traffic. To display the results within the relevant incident fields, the playbook
+  needs to run in a PCAP Analysis incident type. For handling of PCAP files larger
+  than 30 MB, refer to the PcapMinerV2 documentation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: da420ca0-1bd6-4f13-8bb7-7c8cd937db10
+    type: start
+    task:
+      id: da420ca0-1bd6-4f13-8bb7-7c8cd937db10
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2660,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: f3eb580f-395e-4d62-8035-54a7ecd313da
+    type: condition
+    task:
+      id: f3eb580f-395e-4d62-8035-54a7ecd313da
+      version: -1
+      name: Is there a PCAP file?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.PcapFileEntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2660,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: c72c4d05-d686-45d2-8b09-2dcdb3742692
+    type: condition
+    task:
+      id: c72c4d05-d686-45d2-8b09-2dcdb3742692
+      version: -1
+      name: Are there flow results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResultsFlow
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2660,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: f72b29e3-c2ec-45c1-86c5-2e51f2bc76be
+    type: regular
+    task:
+      id: f72b29e3-c2ec-45c1-86c5-2e51f2bc76be
+      version: -1
+      name: PCAP Miner execution
+      description: PcapMiner V2 parses pcap files by displaying all of the relevant
+        data within the file, including ip addresses, ports, flows, specific protocol
+        breakdown, searching by regex, decrypting encrypted traffic, and more.
+      scriptName: PcapMinerV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+      - "58"
+      - "45"
+    scriptarguments:
+      convs_to_display: {}
+      custom_regex:
+        simple: ${inputs.RegexToSearch}
+      entry_id:
+        simple: ${inputs.PcapFileEntryID}
+      extract_ips: {}
+      extract_strings:
+        simple: "True"
+      filtered_file_name: {}
+      iterate: {}
+      packets_to_analyze: {}
+      pcap_filter:
+        simple: ${inputs.PcapFilter}
+      protocol_output:
+        simple: ${inputs.ProtocolsToOutput}
+      rsa_decrypt_key_entry_id:
+        simple: ${inputs.RsaDecryptKeyEntryID}
+      wpa_password:
+        simple: ${inputs.WpaPassword}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2910,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: b467332e-2b1e-4d55-8286-9923e14e7c54
+    type: title
+    task:
+      id: b467332e-2b1e-4d55-8286-9923e14e7c54
+      version: -1
+      name: IPs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3540,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "33":
+    id: "33"
+    taskid: ce0f18f4-323a-4bd3-8ad0-2b61ba4b2406
+    type: condition
+    task:
+      id: ce0f18f4-323a-4bd3-8ad0-2b61ba4b2406
+      version: -1
+      name: Are there ip results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResults.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3540,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: fc7dfa86-96a7-4c43-81f4-c56794d65507
+    type: title
+    task:
+      id: fc7dfa86-96a7-4c43-81f4-c56794d65507
+      version: -1
+      name: Done IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3540,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: b662d6e1-f3cf-4756-84a2-d5d4ba73451e
+    type: title
+    task:
+      id: b662d6e1-f3cf-4756-84a2-d5d4ba73451e
+      version: -1
+      name: Sort internal and external IPs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3270,
+          "y": 1340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: eec94df2-3e6e-4fa1-8fc5-4403af8aad71
+    type: regular
+    task:
+      id: eec94df2-3e6e-4fa1-8fc5-4403af8aad71
+      version: -1
+      name: Determine whether the IP addresses are internal or external
+      description: Returns yes if the IP is in one of the ranges provided, returns
+        no otherwise.
+      scriptName: IsIPInRanges
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      ip:
+        complex:
+          root: PCAPResults
+          accessor: IP
+          transformers:
+          - operator: uniq
+      ipRanges:
+        simple: ${inputs.InternalIPRange}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3270,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 08ed9b96-4280-4096-88e9-ced85740b8a8
+    type: regular
+    task:
+      id: 08ed9b96-4280-4096-88e9-ced85740b8a8
+      version: -1
+      name: Set detected IP addresses as internal
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InternalIPAddresses
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3270,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: 1eb234e9-21ba-4b90-85c7-1c64e00f1d57
+    type: regular
+    task:
+      id: 1eb234e9-21ba-4b90-85c7-1c64e00f1d57
+      version: -1
+      name: Set detected IP addresses as external
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExternalIPAddresses
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3270,
+          "y": 2035
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 874822fb-0e31-4497-844b-35586575011d
+    type: title
+    task:
+      id: 874822fb-0e31-4497-844b-35586575011d
+      version: -1
+      name: Enrich IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3270,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: 935d0af4-b4d1-41e3-8b91-aa3a1c72ee5d
+    type: condition
+    task:
+      id: 935d0af4-b4d1-41e3-8b91-aa3a1c72ee5d
+      version: -1
+      name: Are there external IP addresses?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExternalIPAddresses
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -3270,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "43":
+    id: "43"
+    taskid: b1b2bcc1-76e3-401e-8e61-f19401e9c96b
+    type: regular
+    task:
+      id: b1b2bcc1-76e3-401e-8e61-f19401e9c96b
+      version: -1
+      name: Enrich IPs
+      description: Checks the reputation of an IP address.
+      script: '|||ip'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      fullResponse: {}
+      ip:
+        simple: ${ExternalIPAddresses}
+      long: {}
+      retries: {}
+      sampleSize: {}
+      threshold: {}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3000,
+          "y": 2770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 2883fbbb-8027-46ea-8083-2364edd5f59e
+    type: condition
+    task:
+      id: 2883fbbb-8027-46ea-8083-2364edd5f59e
+      version: -1
+      name: Auto enrich IPs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "43"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.WhichIndicatorTypeToEnrich
+            iscontext: true
+          right:
+            value:
+              simple: ip
+    view: |-
+      {
+        "position": {
+          "x": -3160,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: e35e5432-9d4c-4633-8e57-547b179ac6f9
+    type: title
+    task:
+      id: e35e5432-9d4c-4633-8e57-547b179ac6f9
+      version: -1
+      name: Emails
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5410,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: e02bb65b-8c87-4f23-8cc3-fc82988f5a3e
+    type: condition
+    task:
+      id: e02bb65b-8c87-4f23-8cc3-fc82988f5a3e
+      version: -1
+      name: Are there email results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResults.Email
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResultsSMTP.From
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResultsSMTP.To
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -5410,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 1917e0b9-f00a-475e-8cc0-1614b65a940d
+    type: title
+    task:
+      id: 1917e0b9-f00a-475e-8cc0-1614b65a940d
+      version: -1
+      name: Sort internal and external emails
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "50"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 89342b80-c37c-40ba-8861-033f446c9fc4
+    type: title
+    task:
+      id: 89342b80-c37c-40ba-8861-033f446c9fc4
+      version: -1
+      name: Done emails
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5410,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 5501cc3e-c773-47c1-8dc2-05068a671ab8
+    type: regular
+    task:
+      id: 5501cc3e-c773-47c1-8dc2-05068a671ab8
+      version: -1
+      name: Determine whether the emails  are internal or external
+      description: Checks if the email address is part of the internal domains
+      scriptName: IsEmailAddressInternal
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      domain:
+        simple: ${inputs.InternalEmailDomainName}
+      email:
+        complex:
+          root: PCAPResults
+          accessor: Email
+          transformers:
+          - operator: uniq
+      include_subdomains: {}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 523a1b62-28ec-4b2b-8f7f-92d4586632ef
+    type: regular
+    task:
+      id: 523a1b62-28ec-4b2b-8f7f-92d4586632ef
+      version: -1
+      name: Set detected emails as internal
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InternalEmailAddresses
+      stringify: {}
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: Internal
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: 5cbd4808-ebfd-4965-8ec1-fac4cc8d432f
+    type: regular
+    task:
+      id: 5cbd4808-ebfd-4965-8ec1-fac4cc8d432f
+      version: -1
+      name: Set detected emails as external
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExternalEmailAddresses
+      stringify: {}
+      value:
+        complex:
+          root: Account
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Account.Email.NetworkType
+                iscontext: true
+              right:
+                value:
+                  simple: External
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: c56d9409-8c36-46d2-8282-3d4d0278524f
+    type: title
+    task:
+      id: c56d9409-8c36-46d2-8282-3d4d0278524f
+      version: -1
+      name: Enrich email
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "54"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: 7b01a59b-add5-473b-8fb4-4b54b019c9c0
+    type: condition
+    task:
+      id: 7b01a59b-add5-473b-8fb4-4b54b019c9c0
+      version: -1
+      name: Are there external emails?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DetectedExternalEmail
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -5170,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: e686558b-676c-4eb2-8092-f0f691423764
+    type: regular
+    task:
+      id: e686558b-676c-4eb2-8092-f0f691423764
+      version: -1
+      name: Set detected emails as external
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExternalEmailAddresses
+      stringify: {}
+      value:
+        complex:
+          root: PCAPResults
+          accessor: Email
+          transformers:
+          - operator: uniq
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -4480,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 5c6aaa11-d92a-40d6-8317-9ae5079202be
+    type: condition
+    task:
+      id: 5c6aaa11-d92a-40d6-8317-9ae5079202be
+      version: -1
+      name: Auto enrich emails?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "48"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.WhichIndicatorTypeToEnrich
+            iscontext: true
+          right:
+            value:
+              simple: email
+    view: |-
+      {
+        "position": {
+          "x": -5060,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: a637ac4b-4ea6-4129-89e4-d133f4d175d2
+    type: regular
+    task:
+      id: a637ac4b-4ea6-4129-89e4-d133f4d175d2
+      version: -1
+      name: Enrich Emails
+      description: Checks the reputation of an email address.
+      script: '|||email'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      email:
+        simple: ${ExternalEmailAddresses}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -4880,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "58":
+    id: "58"
+    taskid: 2b920ff6-1b98-4636-848d-4b2331f79dd2
+    type: title
+    task:
+      id: 2b920ff6-1b98-4636-848d-4b2331f79dd2
+      version: -1
+      name: URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2000,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "59":
+    id: "59"
+    taskid: 23b53a64-5173-46ba-8ba7-ada8d80d9293
+    type: condition
+    task:
+      id: 23b53a64-5173-46ba-8ba7-ada8d80d9293
+      version: -1
+      name: Are there URL results?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResultsHTTP.RequestURI
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: PCAPResults.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -2000,
+          "y": 1025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "60":
+    id: "60"
+    taskid: 5deebcf3-017c-4557-8f7f-c8323e55cbe5
+    type: title
+    task:
+      id: 5deebcf3-017c-4557-8f7f-c8323e55cbe5
+      version: -1
+      name: Done URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2000,
+          "y": 2940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "61":
+    id: "61"
+    taskid: 63a0a36f-6d8a-4cf2-8886-a5d3fca5b310
+    type: title
+    task:
+      id: 63a0a36f-6d8a-4cf2-8886-a5d3fca5b310
+      version: -1
+      name: Sort internal and external urls
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": 1380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "62":
+    id: "62"
+    taskid: 99a725f8-0e6a-46ce-84b7-414120b8c374
+    type: condition
+    task:
+      id: 99a725f8-0e6a-46ce-84b7-414120b8c374
+      version: -1
+      name: Has the internal url suffix name been provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "70"
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.InternalUrlName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "63":
+    id: "63"
+    taskid: dbe5e08f-9b77-46aa-8f20-1cdf737d290c
+    type: regular
+    task:
+      id: dbe5e08f-9b77-46aa-8f20-1cdf737d290c
+      version: -1
+      name: Determine whether the URLs are internal or external
+      description: Checks if the supplied URLs are in the specified domains.
+      scriptName: IsUrlPartOfDomain
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      domains:
+        complex:
+          root: inputs.InternalUrlName
+      urls:
+        complex:
+          root: PCAPResults
+          accessor: URL
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1730,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "64":
+    id: "64"
+    taskid: de2143d9-5c9a-4a53-832e-6056d808b9ef
+    type: regular
+    task:
+      id: de2143d9-5c9a-4a53-832e-6056d808b9ef
+      version: -1
+      name: Set internal URLs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InternalUrls
+      stringify: {}
+      value:
+        complex:
+          root: IsUrlPartOfDomain
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IsUrlPartOfDomain.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
+          accessor: URL
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1730,
+          "y": 1850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "65":
+    id: "65"
+    taskid: b22d38bf-0ef7-4ba4-89e5-b6a56c695e5b
+    type: regular
+    task:
+      id: b22d38bf-0ef7-4ba4-89e5-b6a56c695e5b
+      version: -1
+      name: Set external URLs
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExternalUrls
+      stringify: {}
+      value:
+        complex:
+          root: IsUrlPartOfDomain
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IsUrlPartOfDomain.IsInternal
+                iscontext: true
+              right:
+                value:
+                  simple: "false"
+          accessor: URL
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1730,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "66":
+    id: "66"
+    taskid: ecaf0156-22fa-4c66-8a81-a5e20175ebdb
+    type: title
+    task:
+      id: ecaf0156-22fa-4c66-8a81-a5e20175ebdb
+      version: -1
+      name: Enrich URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1730,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "67":
+    id: "67"
+    taskid: 8a795ab4-7cdc-4566-8a97-63b9a6b5661b
+    type: condition
+    task:
+      id: 8a795ab4-7cdc-4566-8a97-63b9a6b5661b
+      version: -1
+      name: Are there external URLs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ExternalUrls
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1730,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "68":
+    id: "68"
+    taskid: c5f8a83c-861a-4858-8022-262d92b7d66e
+    type: condition
+    task:
+      id: c5f8a83c-861a-4858-8022-262d92b7d66e
+      version: -1
+      name: Auto enrich URLs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "60"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: inputs.WhichIndicatorTypeToEnrich
+            iscontext: true
+          right:
+            value:
+              simple: url
+    view: |-
+      {
+        "position": {
+          "x": -1610,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "69":
+    id: "69"
+    taskid: a8090734-f27d-4aff-8b65-36a4b0335940
+    type: regular
+    task:
+      id: a8090734-f27d-4aff-8b65-36a4b0335940
+      version: -1
+      name: Enrich URLs
+      description: Checks the reputation of a URL in AutoFocus.
+      script: '|||url'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      long: {}
+      retries: {}
+      sampleSize: {}
+      submitWait: {}
+      threshold: {}
+      url:
+        simple: ${ExternalUrls}
+      wait: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "70":
+    id: "70"
+    taskid: 332ef2c6-3f69-4162-84a8-dd9352382e6c
+    type: regular
+    task:
+      id: 332ef2c6-3f69-4162-84a8-dd9352382e6c
+      version: -1
+      name: Set detected URLs as external
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExternalUrls
+      stringify: {}
+      value:
+        simple: ${PCAPResults.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": 2405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "81":
+    id: "81"
+    taskid: 6b3c0123-f35d-430b-8010-77291e4d33f6
+    type: condition
+    task:
+      id: 6b3c0123-f35d-430b-8010-77291e4d33f6
+      version: -1
+      name: Was an internal email domain provided?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.InternalEmailDomainName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -4480,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "82":
+    id: "82"
+    taskid: f61b656b-ea66-433b-8e26-7658a311a44a
+    type: title
+    task:
+      id: f61b656b-ea66-433b-8e26-7658a311a44a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2660,
+          "y": 3960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "83":
+    id: "83"
+    taskid: 888a9461-0a3b-407e-8093-cabf986fe0d0
+    type: regular
+    task:
+      id: 888a9461-0a3b-407e-8093-cabf986fe0d0
+      version: -1
+      name: Set detected protocols
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DetectedProtocols
+      stringify: {}
+      value:
+        complex:
+          root: PCAPResults
+          accessor: Protocols
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -4480,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "84":
+    id: "84"
+    taskid: 6334adeb-a54c-4260-8c79-e2ea69b81238
+    type: regular
+    task:
+      id: 6334adeb-a54c-4260-8c79-e2ea69b81238
+      version: -1
+      name: Set internal IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: InternalIPAddresses
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -4080,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "85":
+    id: "85"
+    taskid: 31089581-7f83-4944-8bcb-5d0fcec410eb
+    type: regular
+    task:
+      id: 31089581-7f83-4944-8bcb-5d0fcec410eb
+      version: -1
+      name: Set external IP addresses
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ExternalIPAddresses
+      stringify: {}
+      value:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3680,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "86":
+    id: "86"
+    taskid: b3b89f57-cd83-4b42-8c8f-17e1627542ef
+    type: regular
+    task:
+      id: b3b89f57-cd83-4b42-8c8f-17e1627542ef
+      version: -1
+      name: Set destination TCP ports
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DestinationTcpPorts
+      stringify: {}
+      value:
+        complex:
+          root: PCAPResultsFlow
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PCAPResultsFlow.Transport
+                iscontext: true
+              right:
+                value:
+                  simple: TCP
+          accessor: DestPort
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3280,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "87":
+    id: "87"
+    taskid: 2ee78bd9-41cc-4398-8fbb-98018f47a8f1
+    type: regular
+    task:
+      id: 2ee78bd9-41cc-4398-8fbb-98018f47a8f1
+      version: -1
+      name: Set destination UDP ports
+      description: Checks if the specified value exists in context. If the value exists,
+        it will be set in context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: DestinationUdpPorts
+      stringify: {}
+      value:
+        complex:
+          root: PCAPResultsFlow
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PCAPResultsFlow.Transport
+                iscontext: true
+              right:
+                value:
+                  simple: UDP
+          accessor: DestPort
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2880,
+          "y": 3420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "88":
+    id: "88"
+    taskid: 28d644d1-9a98-4906-871a-6582ec30898a
+    type: condition
+    task:
+      id: 28d644d1-9a98-4906-871a-6582ec30898a
+      version: -1
+      name: Is this a PCAP analysis incident type?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "82"
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.type
+            iscontext: true
+          right:
+            value:
+              simple: PCAP Analysis
+    view: |-
+      {
+        "position": {
+          "x": -3680,
+          "y": 3615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "89":
+    id: "89"
+    taskid: ef8d8aee-3355-449e-8d41-db1c273cacad
+    type: title
+    task:
+      id: ef8d8aee-3355-449e-8d41-db1c273cacad
+      version: -1
+      name: Set common fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "85"
+      - "83"
+      - "84"
+      - "86"
+      - "87"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3680,
+          "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "90":
+    id: "90"
+    taskid: a16b8f94-a497-42c3-8c0d-bd8af99b748b
+    type: regular
+    task:
+      id: a16b8f94-a497-42c3-8c0d-bd8af99b748b
+      version: -1
+      name: Set incident fields
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      columns:
+        simple: SourceIP,SourcePort,DestinationIP,DestinationPort,Duration,StartTime,EndTime,Bytes
+      context_path:
+        simple: PCAPResultsFlow
+      grid_id:
+        simple: pcapflows
+      keys:
+        simple: SourceIP,SourcePort,DestIP,DestPort,Duration,StartTime,EndTime,Bytes
+      overwrite:
+        simple: "true"
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -3970,
+          "y": 3790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Unique Ports
+      output:
+        complex:
+          root: PCAPResultsFlow
+          filters:
+          - - operator: lessThan
+              left:
+                value:
+                  simple: PCAPResultsFlow.DestPort
+                iscontext: true
+              right:
+                value:
+                  simple: "49151"
+          accessor: DestPort
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    - incidentfield: Protocols
+      output:
+        complex:
+          root: PCAPResults
+          accessor: Protocols
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    - incidentfield: Internal Addresses
+      output:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "yes"
+          accessor: Address
+          transformers:
+          - operator: uniq
+    - incidentfield: External Addresses
+      output:
+        complex:
+          root: IP
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: IP.InRange
+                iscontext: true
+              right:
+                value:
+                  simple: "no"
+          accessor: Address
+          transformers:
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+    - incidentfield: PCAP Start Time
+      output:
+        simple: ${PCAPResults.StartTime}
+    - incidentfield: PCAP End Time
+      output:
+        simple: ${PCAPResults.EndTime}
+    - incidentfield: PCAP Number Of Packets
+      output:
+        simple: ${PCAPResults.Packets}
+    - incidentfield: PCAP Number Of Streams
+      output:
+        simple: ${PCAPResults.Packets}
+    - incidentfield: PCAP File Name
+      output:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.PcapFileEntryID
+                iscontext: true
+          accessor: Name
+    - incidentfield: PCAP File Size
+      output:
+        complex:
+          root: File
+          filters:
+          - - operator: inList
+              left:
+                value:
+                  simple: File.EntryID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.PcapFileEntryID
+                iscontext: true
+          accessor: Size
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.71,
+      "59_60_#default#": 0.7,
+      "62_70_#default#": 0.76
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3615,
+        "width": 4810,
+        "x": -5410,
+        "y": 410
+      }
+    }
+  }
+inputs:
+- key: PcapFilter
+  value: {}
+  required: false
+  description: |
+    This input specifies a search filter to be used on the pcap file. Filters can be used to search only for a specific IP, protocols, and other examples. The syntax is the same as in Wireshark which can be found here: https://www.wireshark.org/docs/man-pages/wireshark-filter.html
+
+    Using a filter can improve performance and decrease the output results.
+  playbookInputQuery:
+- key: ProtocolsToOutput
+  value:
+    simple: DNS,SMB2,HTTP,LLMNR,SYSLOG,SMTP,NETBIOS,ICMP,KERBEROS,TELNET,SSH,IRC,FTP
+  required: false
+  description: "This input provides which protocols to output to context. This can\
+    \ be a single or several protocols from this list\n HTTP\n DNS\n LLMNR\n SYSLOG\n\
+    \ SMTP\n NETBIOS\n ICMP\n KERBEROS\n TELNET\n SSH\n IRC\n FTP\nSMB2\n\nTo provide\
+    \ more than one protocol use comma separation such as \nDNS,FTP\n\nEach selected\
+    \ protocol will have its own unique data displayed in context. Such as HTTP data,\
+    \ SMTP data etc."
+  playbookInputQuery:
+- key: RegexToSearch
+  value: {}
+  required: false
+  description: This input value is used to provide a python regular expression to
+    search in the the packet body. An example can be \w{10} for expressions that have
+    10 letter words.
+  playbookInputQuery:
+- key: WpaPassword
+  value: {}
+  required: false
+  description: This input value is used to provide a WPA (Wi-Fi Protected Access)
+    password to decrypt encrypted Wi-FI traffic.
+  playbookInputQuery:
+- key: WhichIndicatorTypeToEnrich
+  value: {}
+  required: false
+  description: "This input checks which indicator types that will be extracted from\
+    \ the PCAP will be enriched. Values can be\nip\nemail\nurl\nTo provide more than\
+    \ one indicator type use comma separation such as \nip,url,email\n\n"
+  playbookInputQuery:
+- key: InternalUrlName
+  value: {}
+  required: false
+  description: The organization's internal URL name. This is provided for the script
+    IsInternalHostName that checks if the detected URLs are internal or external if
+    the hosts contain the internal domains suffix. For example demisto.com. If there
+    is more than one domain, use comma separation such as demisto.com,paloaltonetworks.com.
+    Another example value can be localhost.
+- key: InternalEmailDomainName
+  value: {}
+  required: false
+  description: The organization's internal email domain name. This is provided for
+    the script IsEmailAddressInternal that checks if the detected emails are internal
+    or external. This  input can contain a List of internal domains to check, comma
+    separated
+  playbookInputQuery:
+- key: InternalIPRange
+  value: {}
+  required: false
+  description: 'A list of internal IP ranges to check IP addresses against. The list
+    should be provided in CIDR format, separated by commas. An example of a list of
+    ranges could be: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16. If a list of IP ranges
+    is not provided, the list provided in the IsIPInRanges script (the known IPv4
+    private address ranges) is used by default.'
+  playbookInputQuery:
+- key: PcapFileEntryID
+  value:
+    complex:
+      root: File
+      filters:
+      - - operator: inList
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: incident.pcapfile.name
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pcap
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: cap
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: pcapng
+      accessor: EntryID
+  required: false
+  description: This input specifics the file entry id for the PCAP file if the user
+    provided the file in the incident. One PCAP file can run per incident.
+  playbookInputQuery:
+- key: RsaDecryptKeyEntryID
+  value:
+    complex:
+      root: File
+      filters:
+      - - operator: inList
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+          right:
+            value:
+              simple: incident.pcapencryptionkey.name
+            iscontext: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+          right:
+            value:
+              simple: key
+      accessor: EntryID
+  required: false
+  description: This input specifics the file entry id for the RSA decrypt key if the
+    user provided the key in the incident.
+  playbookInputQuery:
+outputs:
+- contextPath: InternalIPAddresses
+  description: The internal IP addresses that were found in the PCAP.
+  type: string
+- contextPath: ExternalIPAddresses
+  description: The external IP addresses that were found in the PCAP.
+  type: string
+- contextPath: ExternalEmailAddresses
+  description: The external email addresses that were found in the PCAP.
+  type: string
+- contextPath: InternalEmailAddresses
+  description: The internal email addresses that were found in the PCAP.
+  type: string
+- contextPath: ExternalUrls
+  description: The external URLs that were found in the PCAP.
+  type: String
+- contextPath: InternalUrls
+  description: The internal URLs that were found in the PCAP.
+  type: string
+- contextPath: PCAPResults.Protocols
+  description: List of protocols found in the PCAP.
+  type: string
+- contextPath: DestinationTcpPorts
+  description: A list of destination TCP ports that were found in the PCAP.
+  type: string
+- contextPath: DestinationUdpPorts
+  description: A list of destination UDP ports that were found in the PCAP.
+  type: String
+tests:
+- PCAP Parsing And Indicator Enrichment Test

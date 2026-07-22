@@ -1,0 +1,13 @@
+[file:README.md]
+ignore=RM104
+
+[file:GuardiCoreV2.yml]
+ignore=IN144
+
+
+[file:GuardiCore_image.png]
+ignore=IM111
+
+# GR103 is temporary, see CIAC-11705
+[file:layoutscontainer-guardicore.json]
+ignore=GR103

@@ -1,0 +1,35 @@
+commonfields:
+  id: UrlscanGetHttpTransactions
+  version: -1
+name: UrlscanGetHttpTransactions
+script: ''
+type: javascript
+tags:
+- polling
+- UrlScan
+deprecated: true
+comment: "Deprecated. No available replacement."
+enabled: true
+args:
+- name: url
+  required: true
+  description: The URL to search the transaction list for.
+- name: wait_time_for_polling
+  description: The wait time between two polling actions(In Seconds) of UrlScan results page, please note that you may encounter rate-limit error if the time set is too low.
+  defaultValue: '5'
+- name: timeout
+  description: How many seconds to wait for the scan id result
+  defaultValue: '60'
+- name: limit
+  description: Limits the results in the war room(Maximum limit allowed is 100)
+  defaultValue: '20'
+scripttarget: 0
+dependson:
+  must:
+  - urlscan.io|||urlscan-get-http-transaction-list
+  - urlscan.io|||urlscan-submit-url-command
+  - urlscan.io|||urlscan-poll-uri
+runas: DBotWeakRole
+fromversion: 5.0.0
+tests:
+- No tests

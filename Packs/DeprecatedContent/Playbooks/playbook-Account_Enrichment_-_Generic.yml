@@ -1,0 +1,349 @@
+id: account_enrichment_-_generic
+version: -1
+name: Account Enrichment - Generic
+fromversion: "5.0.0"
+description: Deprecated. Use "Account Enrichment - Generic v2.1" playbook instead.\
+  \ Enrich Accounts using one or more integrations
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+    type: start
+    task:
+      id: 03bb7183-afc8-4bcd-8f32-5c35d41fdcad
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: "1"
+    taskid: 8dcf9277-f035-41b2-8165-8ea8d70541a4
+    type: condition
+    task:
+      id: 8dcf9277-f035-41b2-8165-8ea8d70541a4
+      version: -1
+      name: Is there a username to query?
+      description: Checks if there's a username to query
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.Username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 97aaf60a-4203-4577-8548-a61287d8b988
+    type: title
+    task:
+      id: 97aaf60a-4203-4577-8548-a61287d8b988
+      version: -1
+      name: Active Directory
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: b3c42fed-7e9b-428e-8fd6-142c05a2cbd1
+    type: title
+    task:
+      id: b3c42fed-7e9b-428e-8fd6-142c05a2cbd1
+      version: -1
+      name: Done
+      type: title
+      description: ""
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2.5,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 64684715-e0fd-44e4-8ba8-973e87eec920
+    type: condition
+    task:
+      id: 64684715-e0fd-44e4-8ba8-973e87eec920
+      version: -1
+      name: Is Active Directory enabled?
+      description: Checks if there's an active "Active Directory" instance
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: activedir
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: 1f64970f-99a7-477e-83c0-f54dc2e7e4ec
+    type: regular
+    task:
+      id: 1f64970f-99a7-477e-83c0-f54dc2e7e4ec
+      version: -1
+      name: Get Account info from Active Directory
+      description: Query "Active Directory" for the username's info
+      scriptName: ADGetUser
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: {}
+      customFieldData: {}
+      customFieldType: {}
+      dn: {}
+      email: {}
+      headers: {}
+      limit: {}
+      name: {}
+      nestedSearch: {}
+      userAccountControlOut: {}
+      username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 330,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 34d20cba-51b1-4f99-8689-7b1bf0e108f4
+    type: condition
+    task:
+      id: 34d20cba-51b1-4f99-8689-7b1bf0e108f4
+      version: -1
+      name: Is Active Directory v2 enabled?
+      description: Checks if there's an active "Active Directory" instance
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "8"
+    scriptarguments:
+      value:
+        complex:
+          root: modules
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: brand
+                iscontext: true
+              right:
+                value:
+                  simple: Active Directory Query v2
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: state
+                iscontext: true
+              right:
+                value:
+                  simple: active
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 35f69528-ad0b-4672-8864-c4e62cb11c4f
+    type: regular
+    task:
+      id: 35f69528-ad0b-4672-8864-c4e62cb11c4f
+      version: -1
+      name: Get Account info from Active Directory
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      attributes: {}
+      custom-field-data: {}
+      custom-field-type: {}
+      dn: {}
+      email: {}
+      limit: {}
+      name: {}
+      user-account-control-out: {}
+      username:
+        complex:
+          root: inputs.Username
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 1262.5,
+        "x": -2.5,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Username
+  value:
+    simple: ${Account.Username}
+  required: false
+  description: The Username to enrich
+outputs:
+- contextPath: Account
+  description: Account object
+  type: unknown
+- contextPath: Account.Type
+  description: Type of the Account entity
+  type: string
+- contextPath: Account.ID
+  description: The unique Account DN (Distinguished Name)
+  type: string
+- contextPath: Account.Username
+  description: The Account username
+  type: string
+- contextPath: Account.Email
+  description: The email address associated with the Account
+- contextPath: Account.Groups
+  description: The groups the Account is part of
+- contextPath: Account.DisplayName
+  description: The Account display name
+  type: string
+- contextPath: Account.Manager
+  description: The Account's manager
+  type: string
+tests:
+- no test
+deprecated: true

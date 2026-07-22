@@ -1,0 +1,4 @@
+!iam-disable-user user-profile=`{"email": "john.doe@example.com", "givenname": "Example"}`
+!iam-enable-user user-profile=`{"email": "john.doe@example.com", "givenname": "Example"}`
+!iam-get-user user-profile=`{"email": "john.doe@example.com", "givenname": "Example"}`
+!iam-get-mapping-fields

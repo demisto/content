@@ -1,0 +1,70 @@
+{
+    "test_case_1": {
+        "args": {
+            "alert_id": "alert_id", 
+            "comment": "comment"
+        },
+        "mock_response": {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2('alert_id')/comments",
+            "value": [
+                {
+                    "comment": "comment",
+                    "createdByDisplayName": "Cortex XSOAR MS Graph Dev",
+                    "createdDateTime": "2023-04-16T10:28:57.5354679Z"
+                }   
+            ]    
+        },
+        "expected_ec": {
+            "MsGraph.AlertComment(val.ID && val.ID == obj.ID)": {
+                "Comments": [
+                    {
+                        "Comment": "comment",
+                        "CreatedByDisplayName": "Cortex XSOAR MS Graph Dev",
+                        "CreatedDate": "2023-04-16T10:28:57.5354679Z"
+                    }
+                ],
+                "ID": "alert_id"
+            }
+        },
+        "expected_hr": "### Microsoft Security Graph Create Alert Comment - alert_id\n\n|Comment|CreatedByDisplayName|CreatedDate|\n|---|---|---|\n| comment | Cortex XSOAR MS Graph Dev | 2023-04-16T10:28:57.5354679Z |\n" 
+    },
+    "test_case_2": {
+        "args": {
+            "alert_id": "alert_id", 
+            "comment": "comment_2"
+        },
+        "mock_response": {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/alerts_v2('alert_id')/comments",
+            "value": [
+                {
+                    "comment": "comment_1",
+                    "createdByDisplayName": "Cortex XSOAR MS Graph Dev",
+                    "createdDateTime": "2023-04-16T10:28:57.5354679Z"
+                },
+                {
+                    "comment": "comment_2",
+                    "createdByDisplayName": "Cortex XSOAR MS Graph Dev",
+                    "createdDateTime": "2023-04-17T10:28:57.5354679Z"
+                }
+            ]    
+        },
+        "expected_ec": {
+            "MsGraph.AlertComment(val.ID && val.ID == obj.ID)": {
+                "Comments": [
+                    {
+                        "Comment": "comment_1",
+                        "CreatedByDisplayName": "Cortex XSOAR MS Graph Dev",
+                        "CreatedDate": "2023-04-16T10:28:57.5354679Z"
+                    },
+                    {
+                        "Comment": "comment_2",
+                        "CreatedByDisplayName": "Cortex XSOAR MS Graph Dev",
+                        "CreatedDate": "2023-04-17T10:28:57.5354679Z"
+                    }
+                ],
+                "ID": "alert_id"
+            }
+        },
+        "expected_hr": "### Microsoft Security Graph Create Alert Comment - alert_id\n\n|Comment|CreatedByDisplayName|CreatedDate|\n|---|---|---|\n| comment_1 | Cortex XSOAR MS Graph Dev | 2023-04-16T10:28:57.5354679Z |\n| comment_2 | Cortex XSOAR MS Graph Dev | 2023-04-17T10:28:57.5354679Z |\n" 
+    }
+}

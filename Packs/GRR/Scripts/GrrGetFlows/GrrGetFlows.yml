@@ -1,0 +1,30 @@
+commonfields:
+  id: GrrGetFlows
+  version: -1
+name: GrrGetFlows
+script: ''
+type: python
+subtype: python2
+deprecated: true
+tags:
+- GRR
+comment: Deprecated. Use grr-get-flows instead.
+system: true
+args:
+- name: client_id
+  required: true
+  default: true
+  description: The ID of the client
+- name: offset
+  description: Starting offset
+- name: count
+  description: Max number of flows to fetch
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - grr-get-flows
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.27799
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,839 @@
+id: Feed Expanse Test
+version: -1
+name: Feed Expanse Test
+description: Test Playbook for FeedExpanse
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 10d1bdb4-18c6-434b-86dc-def518691ce8
+    type: start
+    task:
+      id: 10d1bdb4-18c6-434b-86dc-def518691ce8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e08734c0-c0ae-4562-8778-8df350915a79
+    type: regular
+    task:
+      id: e08734c0-c0ae-4562-8778-8df350915a79
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 9d925c51-6337-4f92-8ae5-227239ac83dc
+    type: regular
+    task:
+      id: 9d925c51-6337-4f92-8ae5-227239ac83dc
+      version: -1
+      name: FeedExpanse Get Indicator IP
+      description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
+      script: '|||feedexpanse-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      certificate:
+        simple: "no"
+      domain:
+        simple: "no"
+      extend-context:
+        simple: Indicator=.
+      iprange:
+        simple: "no"
+      max_indicators:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 27b58833-42f9-4e01-8e93-b4a044cbf4ed
+    type: title
+    task:
+      id: 27b58833-42f9-4e01-8e93-b4a044cbf4ed
+      version: -1
+      name: Are there any indicators?
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - "21"
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 82c8144d-7b5e-4d25-8fc5-1b6a7cb83f51
+    type: condition
+    task:
+      id: 82c8144d-7b5e-4d25-8fc5-1b6a7cb83f51
+      version: -1
+      name: Is there IP indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Indicator
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: IP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d376e5d9-e8ae-4b26-8eb1-99a2ac41ffc8
+    type: condition
+    task:
+      id: d376e5d9-e8ae-4b26-8eb1-99a2ac41ffc8
+      version: -1
+      name: Check Indicator IP
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IP
+                accessor: fields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e1f38cb3-c103-4dff-840b-63a62751d2ed
+    type: regular
+    task:
+      id: e1f38cb3-c103-4dff-840b-63a62751d2ed
+      version: -1
+      name: FeedExpanse Get Indicator Domain
+      description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
+      script: '|||feedexpanse-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      certificate:
+        simple: "no"
+      extend-context:
+        simple: Indicator=.
+      ip:
+        simple: "no"
+      iprange:
+        simple: "no"
+      max_indicators:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e1bf3b90-3af8-4314-80d8-1fe026fd3997
+    type: condition
+    task:
+      id: e1bf3b90-3af8-4314-80d8-1fe026fd3997
+      version: -1
+      name: Is there Domain indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Indicator
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: Domain
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fd2ba00d-6b4f-4803-8f0f-845aa000995e
+    type: condition
+    task:
+      id: fd2ba00d-6b4f-4803-8f0f-845aa000995e
+      version: -1
+      name: Check Indicator Domain
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain,DomainGlob
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: inList
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain,DomainGlob
+                accessor: fields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: de90b879-7bf2-4ad5-895d-9afe684a9022
+    type: regular
+    task:
+      id: de90b879-7bf2-4ad5-895d-9afe684a9022
+      version: -1
+      name: FeedExpanse Get Indicator CIDR
+      description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
+      script: '|||feedexpanse-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      certificate:
+        simple: "no"
+      domain:
+        simple: "no"
+      extend-context:
+        simple: Indicator=.
+      ip:
+        simple: "no"
+      max_indicators:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 65ebffbe-0dbe-45cb-8d48-8c4367edc346
+    type: condition
+    task:
+      id: 65ebffbe-0dbe-45cb-8d48-8c4367edc346
+      version: -1
+      name: Is there CIDR indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Indicator
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: CIDR
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 060cfb85-3a90-4f25-8797-8136dd6c5ed6
+    type: condition
+    task:
+      id: 060cfb85-3a90-4f25-8797-8136dd6c5ed6
+      version: -1
+      name: Check Indicator CIDR
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CIDR
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CIDR
+                accessor: fields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 80b7af28-96b3-4612-8707-d233d97a188d
+    type: title
+    task:
+      id: 80b7af28-96b3-4612-8707-d233d97a188d
+      version: -1
+      name: Get Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+      - "11"
+      - "14"
+      - "18"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f1fb618e-b6f1-44fe-8c2d-0a7dcfe845f8
+    type: regular
+    task:
+      id: f1fb618e-b6f1-44fe-8c2d-0a7dcfe845f8
+      version: -1
+      name: FeedExpanse Get Indicator Certificate
+      description: Retrieve discovered IPs/IP Ranges/Domains/Certificates as indicators
+      script: '|||feedexpanse-get-indicators'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      domain:
+        simple: "no"
+      extend-context:
+        simple: Indicator=.
+      ip:
+        simple: "no"
+      iprange:
+        simple: "no"
+      max_indicators:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 0577335b-9575-4cae-866f-2d320d969fcc
+    type: condition
+    task:
+      id: 0577335b-9575-4cae-866f-2d320d969fcc
+      version: -1
+      name: Is there Certificate indicator
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Indicator
+                accessor: type
+            iscontext: true
+          right:
+            value:
+              simple: Certificate
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: adf839fc-fd25-47c3-8b29-79cccbacf764
+    type: condition
+    task:
+      id: adf839fc-fd25-47c3-8b29-79cccbacf764
+      version: -1
+      name: Check Indicator IP
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Certificate
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Indicator
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: Indicator.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Certificate
+                accessor: fields
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 6b5b0b25-7a32-4848-8135-aa59fda4f2b9
+    type: condition
+    task:
+      id: 6b5b0b25-7a32-4848-8135-aa59fda4f2b9
+      version: -1
+      name: Are there any indicators?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Indicator
+                accessor: type
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a86c7999-df1e-4105-80cf-ec64b1dec314
+    type: title
+    task:
+      id: a86c7999-df1e-4105-80cf-ec64b1dec314
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 725,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 1842.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0

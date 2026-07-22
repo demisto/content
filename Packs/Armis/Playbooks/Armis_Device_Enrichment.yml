@@ -1,0 +1,157 @@
+id: Armis Alert Enrichment
+version: -1
+name: Armis Alert Enrichment
+description: Enrich Armis alerts with the devices in the context details.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+    type: start
+    task:
+      id: 7cfa3cf6-82b0-452f-8c52-85355d20008a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: cbfc56a4-e4a0-40cd-85ec-425b34b33c22
+    type: title
+    task:
+      id: cbfc56a4-e4a0-40cd-85ec-425b34b33c22
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: b7400f40-5cf0-4846-8048-599cd1ab739a
+    type: regular
+    task:
+      id: b7400f40-5cf0-4846-8048-599cd1ab739a
+      version: -1
+      name: Get device information from Armis and update incident fields
+      description: Search devices by identifiers.
+      script: Armis|||armis-search-devices
+      type: regular
+      iscommand: true
+      brand: Armis
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.Armis_Device_Identifier}
+      device_type: {}
+      ip_address: {}
+      mac_address: {}
+      name: {}
+      risk_level: {}
+      time_frame: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 160
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Device properties collected by Armis.
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Device Name
+      output:
+        simple: ${Armis.Device.name}
+    - incidentfield: Device Model
+      output:
+        simple: ${Armis.Device.model}
+    - incidentfield: Armis Device Risk Level
+      output:
+        simple: ${Armis.Device.riskLevel}
+    - incidentfield: Device Local IP
+      output:
+        simple: ${Armis.Device.ipAddress}
+    - incidentfield: Armis Device Identifier
+      output:
+        simple: ${Armis.Device.id}
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 515,
+        "width": 380,
+        "x": 20,
+        "y": -30
+      }
+    }
+  }
+inputs:
+- key: Armis_Device_Identifier
+  value:
+    simple: ${incident.armisdeviceidentifier}
+  required: true
+  description: Get the device ID that is associated with the alert.
+  playbookInputQuery:
+outputs:
+- contextPath: Device ID
+  description: Device ID
+  type: string
+- contextPath: Armis.Device.name
+  description: Device name.
+  type: string
+- contextPath: Armis.Device.riskLevel
+  description: Device risk level defined by Armis.
+  type: number
+- contextPath: Armis.Device.ipAddress
+  description: IPv4 address.
+  type: string
+- contextPath: Armis.Device.site
+  description: Site name
+  type: string
+- contextPath: Armis.Device.tags
+  description: Tags.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

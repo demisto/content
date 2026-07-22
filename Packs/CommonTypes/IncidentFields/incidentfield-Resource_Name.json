@@ -1,0 +1,40 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Prisma Cloud",
+        "GCP Compute Engine Misconfiguration",
+        "AWS CloudTrail Misconfiguration",
+        "AWS IAM Policy Misconfiguration",
+        "AWS EC2 Instance Misconfiguration",
+        "Trend Micro CAS Event",
+        "Symantec DLP Discover Incident",
+		"Prisma Cloud - VM Alert Prioritization"
+    ],
+    "caseInsensitive": true,
+    "cliName": "resourcename",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_resourcename",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Resource Name",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "systemAssociatedTypes": [
+        "Symantec DLP Discover Incident",
+		"Prisma Cloud - VM Alert Prioritization"
+    ],
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

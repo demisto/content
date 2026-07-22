@@ -1,0 +1,318 @@
+[
+    {
+     "detection": {
+      "type": "RULE_DETECTION",
+      "detection": [
+       {
+        "ruleName": "demoRuleCreatedFromAPIVersion2",
+        "ruleType": "SINGLE_EVENT",
+        "ruleLabels": [
+         {
+          "key": "author",
+          "value": "securityuser2"
+         },
+         {
+          "key": "description",
+          "value": "double event rule that should generate detections"
+         }
+        ]
+       }
+      ],
+      "id": "de_eb1dd4a3-8748-9ec8-ce60-c0901e505ea6",
+      "timeWindow": {
+       "startTime": "2022-11-24T05:30:14.565422Z",
+       "endTime": "2022-11-24T05:30:14.565422Z"
+      },
+      "collectionElements": [
+       {
+        "references": [
+         {
+          "event": {
+           "metadata": {
+            "productLogId": "279591",
+            "eventTimestamp": "2022-11-24T05:30:14.565422Z",
+            "eventType": "NETWORK_DNS",
+            "vendorName": "Microsoft",
+            "productName": "Microsoft-Windows-Sysmon",
+            "productEventType": "22",
+            "ingestedTimestamp": "2022-11-24T05:30:39.575415Z",
+            "id": "AAAAAFh34L/n7z01FCB878aHzfQAAAAAAQAAAIgBAAA="
+           },
+           "principal": {
+            "hostname": "activedir.stackedpads.local",
+            "assetId": "ACTIVEDIR$",
+            "user": {
+             "userid": "SYSTEM",
+             "windowsSid": "S-1-5-18"
+            },
+            "process": {
+             "pid": "3224",
+             "file": {
+              "fullPath": "C:\\Program Files\\Google\\OSConfig\\google_osconfig_agent.exe"
+             },
+             "productSpecificProcessId": "SYSMON:{3be6fa21-31c6-62c8-1400-000000001100}"
+            },
+            "ip": [
+             "10.1.0.4"
+            ],
+            "administrativeDomain": "NT AUTHORITY",
+            "asset": {
+             "productObjectId": "81e90e03-cffc-45a4-a9e8-223f8f9f1398",
+             "hostname": "activedir.stackedpads.local",
+             "assetId": "ACTIVEDIR$",
+             "ip": [
+              "10.1.0.4"
+             ],
+             "platformSoftware": {
+              "platform": "WINDOWS",
+              "platformVersion": "Windows Server 2019 Datacenter - 10.0 (17763)"
+             },
+             "location": {
+              "countryOrRegion": "0"
+             },
+             "category": "Computer",
+             "attribute": {
+              "labels": [
+               {
+                "key": "Bad password count",
+                "value": "0"
+               },
+               {
+                "key": "Service Principal Names",
+                "value": "HOST/activedir.stackedpads.local/STACKEDPADS, ldap/activedir.stackedpads.local/STACKEDPADS, ldap/activedir.stackedpads.local/ForestDnsZones.stackedpads.local, ldap/activedir.stackedpads.local/DomainDnsZones.stackedpads.local, HOST/activedir.stackedpads.local/stackedpads.local, ldap/activedir.stackedpads.local/stackedpads.local, GC/activedir.stackedpads.local/stackedpads.local, TERMSRV/activedir.stackedpads.local, DNS/activedir.stackedpads.local, GC/activedir.stackedpads.local/ad.local, RestrictedKrbHost/activedir.stackedpads.local, HOST/activedir.stackedpads.local, HOST/activedir.stackedpads.local/ad.local, ldap/activedir.stackedpads.local, ldap/activedir.stackedpads.local/ad.local, ldap/7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local, ldap/ACTIVEDIR/STACKEDPADS, HOST/activedir.ad.local/STACKEDPADS, ldap/VM-WIN-202/STACKEDPADS, RPC/7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local, ldap/activedir.ad.local/STACKEDPADS, HOST/ACTIVEDIR/STACKEDPADS, HOST/VM-WIN-202/STACKEDPADS, GC/ACTIVEDIR/ad.local, HOST/VM-WIN-202/stackedpads.local, ldap/VM-WIN-202/ForestDnsZones.stackedpads.local, GC/VM-WIN-202/ad.local, ldap/ACTIVEDIR/ForestDnsZones.stackedpads.local, HOST/ACTIVEDIR/ad.local, ldap/VM-WIN-202/DomainDnsZones.stackedpads.local, HOST/ACTIVEDIR/stackedpads.local, ldap/ACTIVEDIR/DomainDnsZones.stackedpads.local, ldap/VM-WIN-202/stackedpads.local, ldap/ACTIVEDIR/stackedpads.local, HOST/VM-WIN-202/ad.local, ldap/VM-WIN-202/ad.local, GC/VM-WIN-202/stackedpads.local, ldap/ACTIVEDIR/ad.local, GC/ACTIVEDIR/stackedpads.local, TERMSRV/VM-WIN-202, RestrictedKrbHost/VM-WIN-202, HOST/VM-WIN-202, ldap/VM-WIN-202, ldap/activedir.ad.local/ForestDnsZones.stackedpads.local, ldap/activedir.ad.local/DomainDnsZones.stackedpads.local, HOST/activedir.ad.local/stackedpads.local, ldap/activedir.ad.local/stackedpads.local, GC/activedir.ad.local/stackedpads.local, Dfsr-12F9A27C-BF97-4787-9364-D31B6C55EB04/activedir.ad.local, TERMSRV/ACTIVEDIR, TERMSRV/activedir.ad.local, DNS/activedir.ad.local, GC/activedir.ad.local/ad.local, RestrictedKrbHost/activedir.ad.local, RestrictedKrbHost/ACTIVEDIR, HOST/ACTIVEDIR, HOST/activedir.ad.local, HOST/activedir.ad.local/ad.local, ldap/ACTIVEDIR, ldap/activedir.ad.local, ldap/activedir.ad.local/ad.local, E3514235-4B06-11D1-AB04-00C04FC2DCD2/7121e16d-a937-41b2-b7a4-4f38cf48d65c/stackedpads.local, RPC/7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.ad.local, E3514235-4B06-11D1-AB04-00C04FC2DCD2/7121e16d-a937-41b2-b7a4-4f38cf48d65c/ad.local"
+               },
+               {
+                "key": "Password Expired",
+                "value": "false"
+               },
+               {
+                "key": "Password Never Expires",
+                "value": "false"
+               },
+               {
+                "key": "Last Logon",
+                "value": "133020199220304700"
+               },
+               {
+                "key": "Last Logon Date",
+                "value": "1669196384000"
+               },
+               {
+                "key": "Password Last Set",
+                "value": "1669196384000"
+               },
+               {
+                "key": "Password Not Required",
+                "value": "false"
+               }
+              ],
+              "creationTime": "2022-11-23T09:39:44Z",
+              "lastUpdateTime": "2022-11-23T09:39:44Z"
+             }
+            }
+           },
+           "about": [
+            {
+             "labels": [
+              {
+               "key": "Category ID",
+               "value": "DnsQuery"
+              }
+             ]
+            }
+           ],
+           "securityResult": [
+            {
+             "summary": "Dns query",
+             "severity": "INFORMATIONAL"
+            },
+            {
+             "ruleName": "EventID: 22",
+             "summary": "QueryStatus: 0"
+            }
+           ],
+           "network": {
+            "applicationProtocol": "DNS",
+            "dns": {
+             "questions": [
+              {
+               "name": "logging.googleapis.com"
+              }
+             ],
+             "answers": [
+              {
+               "data": "::ffff:142.251.6.95"
+              }
+             ]
+            }
+           }
+          }
+         }
+        ],
+        "label": "e"
+       }
+      ],
+      "detectionTime": "2022-11-24T05:30:14.565422Z"
+     }
+    },
+    {
+     "detection": {
+      "type": "RULE_DETECTION",
+      "detection": [
+       {
+        "ruleName": "demoRuleCreatedFromAPIVersion2",
+        "ruleType": "SINGLE_EVENT",
+        "ruleLabels": [
+         {
+          "key": "author",
+          "value": "securityuser2"
+         },
+         {
+          "key": "description",
+          "value": "double event rule that should generate detections"
+         }
+        ]
+       }
+      ],
+      "id": "de_8a941da6-e192-4119-d915-0a7ae18d26fa",
+      "timeWindow": {
+       "startTime": "2022-11-24T05:30:14.079655Z",
+       "endTime": "2022-11-24T05:30:14.079655Z"
+      },
+      "collectionElements": [
+       {
+        "references": [
+         {
+          "event": {
+           "metadata": {
+            "productLogId": "279560",
+            "eventTimestamp": "2022-11-24T05:30:14.079655Z",
+            "eventType": "NETWORK_DNS",
+            "vendorName": "Microsoft",
+            "productName": "Microsoft-Windows-Sysmon",
+            "productEventType": "22",
+            "ingestedTimestamp": "2022-11-24T05:30:39.575415Z",
+            "id": "AAAAAFh34L/n7z01FCB878aHzfQAAAAAAQAAAK0AAAA="
+           },
+           "principal": {
+            "hostname": "activedir.stackedpads.local",
+            "assetId": "ACTIVEDIR$",
+            "user": {
+             "userid": "SYSTEM",
+             "windowsSid": "S-1-5-18"
+            },
+            "process": {
+             "pid": "3224",
+             "file": {
+              "fullPath": "C:\\Windows\\System32\\dns.exe"
+             },
+             "productSpecificProcessId": "SYSMON:{3be6fa21-31d0-62c8-4b00-000000001100}"
+            },
+            "ip": [
+             "10.1.0.4"
+            ],
+            "administrativeDomain": "NT AUTHORITY",
+            "asset": {
+             "productObjectId": "81e90e03-cffc-45a4-a9e8-223f8f9f1398",
+             "hostname": "activedir.stackedpads.local",
+             "assetId": "ACTIVEDIR$",
+             "ip": [
+              "10.1.0.4"
+             ],
+             "platformSoftware": {
+              "platform": "WINDOWS",
+              "platformVersion": "Windows Server 2019 Datacenter - 10.0 (17763)"
+             },
+             "location": {
+              "countryOrRegion": "0"
+             },
+             "category": "Computer",
+             "attribute": {
+              "labels": [
+               {
+                "key": "Bad password count",
+                "value": "0"
+               },
+               {
+                "key": "Service Principal Names",
+                "value": "HOST/activedir.stackedpads.local/STACKEDPADS, ldap/activedir.stackedpads.local/STACKEDPADS, ldap/activedir.stackedpads.local/ForestDnsZones.stackedpads.local, ldap/activedir.stackedpads.local/DomainDnsZones.stackedpads.local, HOST/activedir.stackedpads.local/stackedpads.local, ldap/activedir.stackedpads.local/stackedpads.local, GC/activedir.stackedpads.local/stackedpads.local, TERMSRV/activedir.stackedpads.local, DNS/activedir.stackedpads.local, GC/activedir.stackedpads.local/ad.local, RestrictedKrbHost/activedir.stackedpads.local, HOST/activedir.stackedpads.local, HOST/activedir.stackedpads.local/ad.local, ldap/activedir.stackedpads.local, ldap/activedir.stackedpads.local/ad.local, ldap/7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local, ldap/ACTIVEDIR/STACKEDPADS, HOST/activedir.ad.local/STACKEDPADS, ldap/VM-WIN-202/STACKEDPADS, RPC/7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local, ldap/activedir.ad.local/STACKEDPADS, HOST/ACTIVEDIR/STACKEDPADS, HOST/VM-WIN-202/STACKEDPADS, GC/ACTIVEDIR/ad.local, HOST/VM-WIN-202/stackedpads.local, ldap/VM-WIN-202/ForestDnsZones.stackedpads.local, GC/VM-WIN-202/ad.local, ldap/ACTIVEDIR/ForestDnsZones.stackedpads.local, HOST/ACTIVEDIR/ad.local, ldap/VM-WIN-202/DomainDnsZones.stackedpads.local, HOST/ACTIVEDIR/stackedpads.local, ldap/ACTIVEDIR/DomainDnsZones.stackedpads.local, ldap/VM-WIN-202/stackedpads.local, ldap/ACTIVEDIR/stackedpads.local, HOST/VM-WIN-202/ad.local, ldap/VM-WIN-202/ad.local, GC/VM-WIN-202/stackedpads.local, ldap/ACTIVEDIR/ad.local, GC/ACTIVEDIR/stackedpads.local, TERMSRV/VM-WIN-202, RestrictedKrbHost/VM-WIN-202, HOST/VM-WIN-202, ldap/VM-WIN-202, ldap/activedir.ad.local/ForestDnsZones.stackedpads.local, ldap/activedir.ad.local/DomainDnsZones.stackedpads.local, HOST/activedir.ad.local/stackedpads.local, ldap/activedir.ad.local/stackedpads.local, GC/activedir.ad.local/stackedpads.local, Dfsr-12F9A27C-BF97-4787-9364-D31B6C55EB04/activedir.ad.local, TERMSRV/ACTIVEDIR, TERMSRV/activedir.ad.local, DNS/activedir.ad.local, GC/activedir.ad.local/ad.local, RestrictedKrbHost/activedir.ad.local, RestrictedKrbHost/ACTIVEDIR, HOST/ACTIVEDIR, HOST/activedir.ad.local, HOST/activedir.ad.local/ad.local, ldap/ACTIVEDIR, ldap/activedir.ad.local, ldap/activedir.ad.local/ad.local, E3514235-4B06-11D1-AB04-00C04FC2DCD2/7121e16d-a937-41b2-b7a4-4f38cf48d65c/stackedpads.local, RPC/7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.ad.local, E3514235-4B06-11D1-AB04-00C04FC2DCD2/7121e16d-a937-41b2-b7a4-4f38cf48d65c/ad.local"
+               },
+               {
+                "key": "Password Expired",
+                "value": "false"
+               },
+               {
+                "key": "Password Never Expires",
+                "value": "false"
+               },
+               {
+                "key": "Last Logon",
+                "value": "133020199220304700"
+               },
+               {
+                "key": "Last Logon Date",
+                "value": "1669196384000"
+               },
+               {
+                "key": "Password Last Set",
+                "value": "1669196384000"
+               },
+               {
+                "key": "Password Not Required",
+                "value": "false"
+               }
+              ],
+              "creationTime": "2022-11-23T09:39:44Z",
+              "lastUpdateTime": "2022-11-23T09:39:44Z"
+             }
+            }
+           },
+           "about": [
+            {
+             "labels": [
+              {
+               "key": "Category ID",
+               "value": "DnsQuery"
+              }
+             ]
+            }
+           ],
+           "securityResult": [
+            {
+             "summary": "Dns query",
+             "severity": "INFORMATIONAL"
+            },
+            {
+             "ruleName": "EventID: 22",
+             "summary": "QueryStatus: 0"
+            }
+           ],
+           "network": {
+            "applicationProtocol": "DNS",
+            "dns": {
+             "questions": [
+              {
+               "name": "stackedpads.local"
+              }
+             ],
+             "answers": [
+              {
+               "type": 2,
+               "data": "activedir.stackedpads.local"
+              },
+              {
+               "data": "10.1.0.4"
+              }
+             ]
+            }
+           }
+          }
+         }
+        ],
+        "label": "e"
+       }
+      ],
+      "detectionTime": "2022-11-24T05:30:14.079655Z"
+     }
+    }
+   ]

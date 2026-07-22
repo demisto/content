@@ -1,0 +1,34 @@
+{
+   "id": "incident_securonixviolationspotterquery",
+   "version": -1,
+   "modified": "2023-01-28T17:09:13.942588582+05:30",
+   "name": "Securonix Violation Spotter Query",
+   "ownerOnly": false,
+   "description": "Spotter query to fetch the related violations.",
+   "cliName": "securonixviolationspotterquery",
+   "type": "shortText",
+   "closeForm": false,
+   "editForm": true,
+   "required": false,
+   "neverSetAsRequired": false,
+   "isReadOnly": false,
+   "useAsKpi": false,
+   "locked": false,
+   "system": false,
+   "content": true,
+   "group": 0,
+   "hidden": false,
+   "openEnded": false,
+   "associatedTypes": [
+      "Securonix Threat",
+      "Securonix Incident"
+   ],
+   "associatedToAll": false,
+   "unmapped": false,
+   "unsearchable": false,
+   "caseInsensitive": true,
+   "sla": 0,
+   "threshold": 72,
+   "fromVersion": "6.5.0"
+
+}

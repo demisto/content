@@ -1,0 +1,297 @@
+id: DBot Create Phishing Classifier V2 From File
+version: -1
+name: DBot Create Phishing Classifier V2 From File
+fromversion: 5.0.0
+description: Create a phishing classifier using machine learning. The classifier is based on incidents files extracted from email content.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ccf52cdb-4b5b-4ca4-8ff5-b998eaa374eb
+    type: start
+    task:
+      elasticcommonfields: {}
+      id: ccf52cdb-4b5b-4ca4-8ff5-b998eaa374eb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: d16e3cbe-5503-42df-8388-40d5947f67cf
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: d16e3cbe-5503-42df-8388-40d5947f67cf
+      version: -1
+      name: Pre-process file
+      description: Pre-process text data for the machine learning text classifier.
+      scriptName: DBotPreProcessTextData
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      cleanHTML:
+        simple: "true"
+      dedupThreshold:
+        simple: ${inputs.dedupThreshold}
+      hashSeed:
+        simple: ${inputs.hashSeed}
+      input:
+        simple: ${inputs.fileID}
+      inputType:
+        simple: ${inputs.inputFormat}
+      outputFormat:
+        simple: ${inputs.outputFormat}
+      preProcessType:
+        simple: nlp
+      removeShortTextThreshold:
+        simple: ${inputs.removeShortTextThreshold}
+      textFields:
+        simple: ${inputs.emailTextKey},${inputs.emailSubjectKey}
+      whitelistFields:
+        simple: ${inputs.emailTagKey}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: cdc8b0f5-e3d0-45a9-8bab-297a8598e8a3
+    type: regular
+    task:
+      elasticcommonfields: {}
+      id: cdc8b0f5-e3d0-45a9-8bab-297a8598e8a3
+      version: -1
+      name: Train Model
+      description: Train a machine learning text classifier.
+      scriptName: DBotTrainTextClassifierV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      findKeywords:
+        simple: "true"
+      input:
+        simple: ${DBotPreProcessTextData.Filename}
+      inputType:
+        complex:
+          root: DBotPreProcessTextData
+          accessor: FileFormat
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: _filename
+      keywordMinScore: {}
+      maxBelowThreshold: {}
+      metric: {}
+      modelName:
+        simple: ${inputs.modelName}
+      overrideExistingModel:
+        simple: ${inputs.overrideModel}
+      phishingLabels:
+        simple: ${inputs.phishingLabels}
+      storeModel:
+        simple: "true"
+      tagField:
+        simple: ${inputs.emailTagKey}
+      targetAccuracy:
+        simple: ${inputs.modelTargetAccuracy}
+      textField:
+        simple: ${DBotPreProcessTextData.TextFieldProcessed}
+      trainSetRatio: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: dc249213-599e-46f0-829b-f9b633074503
+    type: title
+    task:
+      elasticcommonfields: {}
+      id: dc249213-599e-46f0-829b-f9b633074503
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: fileID
+  value: {}
+  required: true
+  description: The ID of the file containing phishing incidents.
+  playbookInputQuery:
+- key: inputFormat
+  value:
+    simple: csv
+  required: true
+  description: The input file format. Valid values include json \ pickle \ csv.
+  playbookInputQuery:
+- key: modelName
+  value:
+    simple: phishing_model
+  required: false
+  description: The model name to store in the system.
+  playbookInputQuery:
+- key: emailTextKey
+  value:
+    simple: Email Body|Email Body HTML|details
+  required: false
+  description: A comma-separated list of incident field names with the email body or html body. You can also use "|" if you want to choose the first non empty value from a list of fields.
+  playbookInputQuery:
+- key: emailSubjectKey
+  value:
+    simple: Email Subject|name
+  required: false
+  description: A comma-separated list of incident field names with the email subject. You can also use "|" if you want to choose the first non-empty value from a list of fields.
+  playbookInputQuery:
+- key: emailTagKey
+  value:
+    simple: closeReason
+  required: false
+  description: The field name with the email tag. Supports a comma-separated list, in which the first non-empty value will be taken.
+  playbookInputQuery:
+- key: phishingLabels
+  value:
+    simple: '*'
+  required: false
+  description: 'A comma-separated list of email tag values and mappings. The script considers only the tags specified in this field. You can map a label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in the email tag: malicious, credentials harvesting, inner communitcation, external legit email, unclassified. While training, we want to ignore the "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communication" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communitcation:non-malicious,  external legit email:non-malicious'
+  playbookInputQuery:
+- key: incidentsQuery
+  value: {}
+  required: false
+  description: The incidents query used to fetch the training data for the model.
+  playbookInputQuery:
+- key: maxIncidentsToFetchOnTraining
+  value:
+    simple: "6000"
+  required: false
+  description: The maximum number of incidents to fetch.
+  playbookInputQuery:
+- key: hashSeed
+  value: {}
+  required: false
+  description: If non-empty, hash every word with this seed.
+  playbookInputQuery:
+- key: overrideModel
+  value:
+    simple: "false"
+  required: false
+  description: Whether to override the existing model if a model with the same name already exists. Default is "false".
+  playbookInputQuery:
+- key: incidentTypes
+  value:
+    simple: Phishing
+  required: false
+  description: ' A comma-separated list of incident types by which to filter.'
+  playbookInputQuery:
+- key: dedupThreshold
+  value:
+    simple: "0.99"
+  required: false
+  description: Remove emails with similarity greater than this threshold. A valid range is 0-1, where 1 is completely identical.
+  playbookInputQuery:
+- key: removeShortTextThreshold
+  value:
+    simple: "15"
+  required: false
+  description: ' Sample text of which the total number of words less than or equal to this number will be ignored.'
+  playbookInputQuery:
+- key: modelTargetAccuracy
+  value:
+    simple: "0.7"
+  required: false
+  description: The model target accuracy at each label, between 0 and 1.
+  playbookInputQuery:
+- key: outputFormat
+  value:
+    simple: pickle
+  required: false
+  description: The file output format. Valid values can be json \ pickle.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.f1-score
+  description: F1 score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.precision
+  description: Precision score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.EvaluationScores.micro_avg.recall
+  description: Recall score (0-1)
+  type: number
+- contextPath: DBotPhishingClassifier.ModelName
+  description: Model name in Demisto
+  type: String
+tests:
+- No test

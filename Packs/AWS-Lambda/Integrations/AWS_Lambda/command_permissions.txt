@@ -1,0 +1,5 @@
+!aws-lambda-list-functions * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+!aws-lambda-get-function * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+!aws-lambda-get-account-settings * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+!aws-lambda-list-aliases * `AWSLambda_ReadOnlyAccess`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/security_iam_troubleshoot.html#security_iam_troubleshoot-admin-deprecation).
+!aws-lambda-invoke * `AWSLambdaRole`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/access-control-identity-based.html).

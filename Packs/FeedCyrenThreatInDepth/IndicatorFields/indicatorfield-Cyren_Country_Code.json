@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "IP"
+    ],
+    "caseInsensitive": true,
+    "cliName": "cyrencountrycode",
+    "closeForm": false,
+    "content": true,
+    "description": "Associated country code by Cyren Threat InDepth Intelligence",
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_cyrencountrycode",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Cyren Country Code",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

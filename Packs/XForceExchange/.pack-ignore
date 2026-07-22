@@ -1,0 +1,11 @@
+[file:XFE_v2.yml]
+ignore=BA108,BA109
+
+[file:XFE_v2_image.png]
+ignore=IM111
+
+[file:XFE_image.png]
+ignore=IM111
+
+[known_words]
+X-Force

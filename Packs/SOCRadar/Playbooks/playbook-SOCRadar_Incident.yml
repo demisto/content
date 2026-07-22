@@ -1,0 +1,824 @@
+id: SOCRadar Incident
+version: -1
+name: SOCRadar Incident
+description: Performs indicator extraction and enrichment from the incident content,
+  calculates the severity level, assigns the incident to a particular analyst, notifies
+  SOCRadar platform for the incident response (to mark it as false positive or resolved)
+  and generates investigation summary report just before closing the investigation
+  in the end. This playbook is executed for the SOCRadar Generic incident type.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4d1e60f6-8f12-4bb6-8738-3d169e63e5bb
+    type: start
+    task:
+      id: 4d1e60f6-8f12-4bb6-8738-3d169e63e5bb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: a195605d-69ac-49f4-8885-d43bcb116b00
+    type: regular
+    task:
+      id: a195605d-69ac-49f4-8885-d43bcb116b00
+      version: -1
+      name: Extract Encountered Indicators
+      description: Extracts all indicators encountered in the SOCRadar incident.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      entryID: {}
+      filePath: {}
+      investigationID: {}
+      text:
+        simple: ${incident.socradarincidentcontent}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 6e5c34d7-82ec-41cb-8d14-af5d0f55ae93
+    type: condition
+    task:
+      id: 6e5c34d7-82ec-41cb-8d14-af5d0f55ae93
+      version: -1
+      name: Should indicators be extracted and enriched?
+      description: Checks whether the Enrich playbook input is set to True.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoEnrich
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AutoEnrich
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 72d17b4d-f671-4e88-8b97-93e0c63b7de3
+    type: title
+    task:
+      id: 72d17b4d-f671-4e88-8b97-93e0c63b7de3
+      version: -1
+      name: Extract & Enrich Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f6800e6c-5f3a-477b-80fc-28f2e3f77096
+    type: playbook
+    task:
+      id: f6800e6c-5f3a-477b-80fc-28f2e3f77096
+      version: -1
+      name: Entity Enrichment - Generic v3
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 04ba5846-6319-4eac-8750-163bb0888f6b
+    type: title
+    task:
+      id: 04ba5846-6319-4eac-8750-163bb0888f6b
+      version: -1
+      name: Incident Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e0362209-e78c-4525-8b64-e101146cbb80
+    type: regular
+    task:
+      id: e0362209-e78c-4525-8b64-e101146cbb80
+      version: -1
+      name: Assign Incident to Analyst
+      description: |-
+        Assign analyst to incident.
+        By default,  the analyst is picked randomly from the available users, according to the provided roles (if no roles provided, will fetch all users).
+        Otherwise, the analyst will be picked according to the 'assignBy' arguments.
+        machine-learning: DBot will calculated and decide who is the best analyst for the job.
+        top-user: The user that is most commonly owns this type of incident
+        less-busy-user: The less busy analyst will be picked to be the incident owner.
+        online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles provided, will fetch all users).
+        current: The user that executed the command
+      scriptName: AssignAnalystToIncident
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      assignBy:
+        simple: random
+      email: {}
+      onCall:
+        complex:
+          root: inputs.OnCall
+      roles: {}
+      username: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ad1b0966-c43a-4cc2-8cb4-f066fd849dcb
+    type: collection
+    task:
+      id: ad1b0966-c43a-4cc2-8cb4-f066fd849dcb
+      version: -1
+      name: Manually review the incident.
+      description: Manually review and investigate this incident.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Investigation Notes
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: Incident comment.
+        tooltip: ""
+        readonly: false
+      title: Investigation Notes
+      description: Provide investigation notes related with this incident.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 59e7c816-3ab8-4f73-80a5-67f7e24dcc23
+    type: title
+    task:
+      id: 59e7c816-3ab8-4f73-80a5-67f7e24dcc23
+      version: -1
+      name: Action Decision
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 9617e5a7-344c-4524-87e7-b110688bf1be
+    type: condition
+    task:
+      id: 9617e5a7-344c-4524-87e7-b110688bf1be
+      version: -1
+      name: Is this incident false positive?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      "NO":
+      - "17"
+      "Yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+    - label: "no"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Decision.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: f65c2aee-d0cb-45a7-81cd-5a8415a3bcfa
+    type: regular
+    task:
+      id: f65c2aee-d0cb-45a7-81cd-5a8415a3bcfa
+      version: -1
+      name: Generate Investigation Summary Report
+      description: |-
+        A script to generate investigation summary report in an automated way
+        Can be used in post-processing flow as well.
+      scriptName: GenerateInvestigationSummaryReport
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      name: {}
+      type: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: f536ccc8-4208-4c01-89d0-2a3fb6e293cc
+    type: regular
+    task:
+      id: f536ccc8-4208-4c01-89d0-2a3fb6e293cc
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: ${incident.closeNotes}
+      closeReason: {}
+      emailclassification: {}
+      id: {}
+      phishingsubtype: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 84e6bc59-ef5a-413e-86ee-a1e993b21837
+    type: title
+    task:
+      id: 84e6bc59-ef5a-413e-86ee-a1e993b21837
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -10,
+          "y": 2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: fe95e5e8-fcca-40c6-8c27-2d652bf5dfc6
+    type: regular
+    task:
+      id: fe95e5e8-fcca-40c6-8c27-2d652bf5dfc6
+      version: -1
+      name: Mark as False Positive
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      closeReason:
+        simple: False Positive
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 8534133e-0d66-486e-8bac-d8fb9f36fbfb
+    type: regular
+    task:
+      id: 8534133e-0d66-486e-8bac-d8fb9f36fbfb
+      version: -1
+      name: Mark as Resolved
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c2afa142-71ce-4160-8a96-f479efd36cb8
+    type: title
+    task:
+      id: c2afa142-71ce-4160-8a96-f479efd36cb8
+      version: -1
+      name: False Positive Actions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 27e676f8-1699-4bc8-8ef5-d000a7c37c0c
+    type: title
+    task:
+      id: 27e676f8-1699-4bc8-8ef5-d000a7c37c0c
+      version: -1
+      name: True Positive Actions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 9dc51c46-1325-4728-8141-896534044b31
+    type: regular
+    task:
+      id: 9dc51c46-1325-4728-8141-896534044b31
+      version: -1
+      name: Set Incident as False Positive in SOCRadar
+      description: Marks incident as false positive in SOCRadar platform.
+      script: SOCRadarIncidents|||socradar-mark-incident-fp
+      type: regular
+      iscommand: true
+      brand: SOCRadarIncidents
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      comments:
+        simple: ${Decision.Answers.1}
+      socradar_incident_id:
+        simple: ${incident.socradarincidentid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 6cae36bc-e7a5-49c3-8ff2-9ce45527e344
+    type: regular
+    task:
+      id: 6cae36bc-e7a5-49c3-8ff2-9ce45527e344
+      version: -1
+      name: Set Incident as Resolved in SOCRadar
+      description: Marks incident as resolved in SOCRadar platform.
+      script: SOCRadarIncidents|||socradar-mark-incident-resolved
+      type: regular
+      iscommand: true
+      brand: SOCRadarIncidents
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      comments:
+        simple: ${Decision.Answers.1}
+      socradar_incident_id:
+        simple: ${incident.socradarincidentid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: d54af70a-d42d-4320-8bdf-edd049c6c79d
+    type: collection
+    task:
+      id: d54af70a-d42d-4320-8bdf-edd049c6c79d
+      version: -1
+      name: Decide on action
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Is this incident false positive?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Comments
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: e.g. "This incident is FP." or "Necessary action has ben taken
+          over the threat."
+        tooltip: This message will be sent to SOCRadar as incident response action's
+          comment.
+        readonly: false
+      title: Decision
+      description: The decision of the action that will be taken over the incident.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 39269593-b4fb-4fbf-890f-c55098529d01
+    type: condition
+    task:
+      id: 39269593-b4fb-4fbf-890f-c55098529d01
+      version: -1
+      name: Is SOCRadar Incidents enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "13"
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: SOCRadarIncidents
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 85
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "21_2_yes": 0.42,
+      "2_5_no": 0.35
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3085,
+        "width": 1180,
+        "x": -190,
+        "y": -100
+      }
+    }
+  }
+inputs:
+- key: AutoEnrich
+  value:
+    simple: "Yes"
+  required: false
+  description: 'Auto Enrich input to be used for extracting indicators out of the
+    incident content automatically at the beginning of the playbook. (Options: Yes/No)'
+  playbookInputQuery:
+outputs: []
+tests:
+- SOCRadarThreatFusion-Test
+- SOCRadarIncidents-Test
+fromversion: 6.0.0

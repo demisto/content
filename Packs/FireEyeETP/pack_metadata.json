@@ -1,0 +1,28 @@
+{
+    "name": "Trellix Email Security - Cloud",
+    "description": "Trellix Email Security - Cloud (Formerly FireEye ETP) is a cloud-based platform that protects against advanced email attacks.",
+    "support": "xsoar",
+    "currentVersion": "2.1.6",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "FireEye ETP"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "defaultDataSource": "FireEye ETP Event Collector",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

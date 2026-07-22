@@ -1,0 +1,1 @@
+!gibti-get-indicators collection=ioc/common

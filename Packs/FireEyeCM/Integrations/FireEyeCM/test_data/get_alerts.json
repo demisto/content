@@ -1,0 +1,84 @@
+{
+  "alert": [
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35011",
+      "applianceId": "app",
+      "attackTime": "2021-05-11 07:12:53 +0000",
+      "dst": {
+        "ip": "3.3.3.3",
+        "mac": "00:00:00:00:00:00",
+        "port": 443
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 35011,
+      "malicious": "yes",
+      "name": "MALWARE_CALLBACK",
+      "occurred": "2021-05-11 07:12:53 +0000",
+      "product": "WEB_MPS",
+      "rootInfection": 34160,
+      "scVersion": "1150.112",
+      "sensor": "fireeye-941918",
+      "sensorIp": "1.1.1.1",
+      "severity": "CRIT",
+      "src": {
+        "ip": "2.2.2.2",
+        "port": 53070
+      },
+      "uuid": "uuid",
+      "vlan": 0
+    },
+    {
+      "ack": "no",
+      "action": "notified",
+      "alertUrl": "https://FireEyeCM/event_stream/events_for_bot?ev_id=35013",
+      "applianceId": "app",
+      "attackTime": "2021-05-11 08:15:52 +0000",
+      "dst": {
+        "ip": "3.3.3.3",
+        "mac": "00:00:00:00:00:00",
+        "port": 443
+      },
+      "explanation": {
+        "malwareDetected": {
+          "malware": [
+            {
+              "name": "Trojan.Malicious.SSL.Certificate.Dridex"
+            }
+          ]
+        },
+        "osChanges": []
+      },
+      "id": 35013,
+      "malicious": "yes",
+      "name": "MALWARE_CALLBACK",
+      "occurred": "2021-05-11 08:15:52 +0000",
+      "product": "WEB_MPS",
+      "rootInfection": 34162,
+      "scVersion": "1150.114",
+      "sensor": "fireeye-941918",
+      "sensorIp": "1.1.1.1",
+      "severity": "CRIT",
+      "src": {
+        "ip": "2.2.2.2",
+        "port": 33552
+      },
+      "uuid": "uuid",
+      "vlan": 0
+    }
+  ],
+  "alertsCount": 12,
+  "appliance": "CMS",
+  "msg": "concise",
+  "version": "CMS (CMS) 9.0.2.929543"
+}

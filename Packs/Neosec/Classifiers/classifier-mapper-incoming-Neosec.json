@@ -1,0 +1,91 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Neosec - Incoming Mapper",
+    "mapping": {
+        "Neosec Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "category"
+                },
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Name": {
+                    "simple": "name"
+                },
+                "Alert Source": {
+                    "simple": "source"
+                },
+                "Alert Type ID": {
+                    "simple": "alert_type"
+                },
+                "Caller": {
+                    "complex": {
+                        "accessor": "[0]",
+                        "filters": [],
+                        "root": "caller_ips",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "simple": "alert_info"
+                },
+                "Detected IPs": {
+                    "simple": "caller_ips"
+                },
+                "Endpoint": {
+                    "simple": "endpoint"
+                },
+                "Neosec Endpoints": {
+                    "simple": "endpoints"
+                },
+                "Neosec Entities": {
+                    "simple": "entities"
+                },
+                "Neosec Labels": {
+                    "simple": "labels"
+                },
+                "Neosec Recommendations": {
+                    "simple": "recommendations"
+                },
+                "category": {
+                    "complex": {
+                        "filters": [],
+                        "root": "category",
+                        "transformers": []
+                    }
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "name": {
+                    "complex": {
+                        "filters": [],
+                        "root": "name",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "timestamp",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Neosec - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

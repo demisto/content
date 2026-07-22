@@ -1,0 +1,428 @@
+id: MicrosoftCloudAppSecurity-Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: MicrosoftCloudAppSecurity-Test
+description: Test Microsoft Cloud App Security integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9decc032-a0db-497f-837b-de8943aaaabf
+    type: start
+    task:
+      id: 9decc032-a0db-497f-837b-de8943aaaabf
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4b806cbb-ccd2-4082-8252-bad1fc86cbbe
+    type: regular
+    task:
+      id: 4b806cbb-ccd2-4082-8252-bad1fc86cbbe
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 68aa5323-95fa-49bd-8e8a-ba7d7109b481
+    type: title
+    task:
+      id: 68aa5323-95fa-49bd-8e8a-ba7d7109b481
+      version: -1
+      name: List Alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ae5f579f-18be-4007-8ecb-8ef589ea71b7
+    type: regular
+    task:
+      id: ae5f579f-18be-4007-8ecb-8ef589ea71b7
+      version: -1
+      name: microsoft-cas-alerts-list
+      script: '|||microsoft-cas-alerts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 04e2dbe5-d266-40cf-88b2-f30823a49d25
+    type: regular
+    task:
+      id: 04e2dbe5-d266-40cf-88b2-f30823a49d25
+      version: -1
+      name: microsoft-cas-activities-list
+      script: '|||microsoft-cas-activities-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cc535718-46ef-495e-8384-58b86291dc9b
+    type: regular
+    task:
+      id: cc535718-46ef-495e-8384-58b86291dc9b
+      version: -1
+      name: microsoft-cas-files-list
+      script: '|||microsoft-cas-files-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5e1cf9ef-38b6-45b7-8af1-e728f23b7a94
+    type: regular
+    task:
+      id: 5e1cf9ef-38b6-45b7-8af1-e728f23b7a94
+      version: -1
+      name: microsoft-cas-users-accounts-list
+      script: '|||microsoft-cas-users-accounts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: ceb4dfc4-7367-4dcb-81b6-e46e2c25a5ba
+    type: title
+    task:
+      id: ceb4dfc4-7367-4dcb-81b6-e46e2c25a5ba
+      version: -1
+      name: Close Alerts
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c81479c9-4470-4714-8e85-798c339ed182
+    type: regular
+    task:
+      id: c81479c9-4470-4714-8e85-798c339ed182
+      version: -1
+      name: microsoft-cas-alert-close-benign
+      description: An alert on a suspicious but not malicious activity, such as a
+        penetration test or other authorized suspicious action
+      script: '|||microsoft-cas-alert-close-benign'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      comment:
+        simple: 'Test close-benign-command: close a single open alert'
+      custom_filter:
+        simple: |-
+          {
+          "filters": {
+              "resolutionStatus": {
+                "eq": 0
+              }
+             },
+          "limit": 1
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f0c33a01-4b5a-42ec-8033-59bf0d6ff277
+    type: regular
+    task:
+      id: f0c33a01-4b5a-42ec-8033-59bf0d6ff277
+      version: -1
+      name: microsoft-cas-alert-close-true-positive
+      description: Cֹlose multiple alerts matching the specified filters as true positive
+        (an alert on a confirmed malicious activity.
+      script: '|||microsoft-cas-alert-close-true-positive'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      comment:
+        simple: 'Test close-true-positive: close a single open alert'
+      custom_filter:
+        simple: |-
+          {
+          "filters": {
+              "resolutionStatus": {
+                "eq": 0
+              }
+             },
+          "limit": 1
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a731a95e-2be2-46e6-8211-c6956b6e0ffc
+    type: regular
+    task:
+      id: a731a95e-2be2-46e6-8211-c6956b6e0ffc
+      version: -1
+      name: microsoft-cas-alert-close-false-positive
+      description: Close multiple alerts matching the specified filters as false positive
+        (an alert on a non-malicious activity).
+      script: '|||microsoft-cas-alert-close-false-positive'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      comment:
+        simple: 'Test close false positive: close a single open alert'
+      custom_filter:
+        simple: |-
+          {
+          "filters": {
+              "resolutionStatus": {
+                "eq": 0
+              }
+             },
+          "limit": 1
+          }
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: a618d8c5-ec2f-4c9c-881c-bcfd9d2f3618
+    type: title
+    task:
+      id: a618d8c5-ec2f-4c9c-881c-bcfd9d2f3618
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1900,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

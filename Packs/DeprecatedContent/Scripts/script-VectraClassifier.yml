@@ -1,0 +1,97 @@
+commonfields:
+  id: VectraClassifier
+  version: -1
+name: VectraClassifier
+script: >-
+  vectra_type_dict = {
+      'C2Communication' :
+          ['External Remote Access',
+          'Hidden DNS Tunnel',
+          'Hidden HTTP Tunnel',
+          'Hidden HTTPS Tunnel',
+          'Peer-To-Peer',
+          'Pulling Instructions',
+          'Stealth HTTP Post',
+          'Suspect Domain Activity',
+          'Suspicious HTTP',
+          'TOR Activity'],
+      'Botnet Activity' :
+          ['Abnormal Ad Activity',
+          'Abnormal Web Activity',
+          'Bitcoin Mining',
+          'Brute-Force Attack',
+          'Outbound DoS',
+          'Outbound Port Sweep',
+          'Outbound Spam',
+          'Relay Communication'],
+      'Reconnaissance' :
+          ['Internal Darknet Scan',
+          'Kerberos Account Scan',
+          'Port Scan',
+          'Port Sweep'],
+      'Lateral Movement' :
+          ['Automated Replication',
+          'Brute-Force Attack',
+          'Suspicious Kerberos Client',
+          'Suspicious Kerberos Account',
+          'Kerberos Server Activity',
+          'Ransomware File Activity',
+          'Shell Knocker Client',
+          'Shell Knocker Server',
+          'Suspicious Admin',
+          'SQL Injection Activity'],
+      'Exfiltration' :
+          ['Data Smuggler',
+          'Hidden DNS Tunnel',
+          'Hidden HTTP Tunnel',
+          'Hidden HTTPS Tunnel',
+          'Smash and Grab',
+          'Staged Transfer - Hop 1',
+          'Staged Transfer - Hop 2']
+  }
+
+
+  TYPE_VNAME_LABEL = 'Label/type_vname'
+
+  CLASSIFIER_DESCRIPTION_LABAL = 'Label/Classifier/Description'
+
+  CONTEXT_SEPARATOR = '|'
+
+
+  ctx = demisto.context()
+
+
+  type_name = demisto.get(ctx, TYPE_VNAME_LABEL)
+
+  incident_type = ''
+
+
+  if type_name:
+      # Set context for future use
+      cur_description = demisto.get(ctx, CLASSIFIER_DESCRIPTION_LABAL) or ''
+      cur_description += CONTEXT_SEPARATOR if cur_description else ''
+      demisto.setContext(CLASSIFIER_DESCRIPTION_LABAL, cur_description + type_name)
+
+      # Looks for incident type in the type dictionary
+      for key, val in vectra_type_dict.items():
+          if type_name in val:
+              incident_type = key
+      if incident_type:
+          resp = demisto.executeCommand('IncidentSet ', {'type': incident_type, 'updatePlaybookForType' : 'yes'})
+          if isError(resp[0]):
+              demisto.results(resp)
+type: python
+subtype: python2
+tags:
+- Vectra
+- Classifier
+comment: Deprecated. Classifying Vectra incidents
+system: true
+scripttarget: 0
+dependson:
+  must:
+  - vec-health
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

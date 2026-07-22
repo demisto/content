@@ -1,0 +1,34 @@
+{
+  "pcaptask": 
+    {
+      "task_uuid": "8aa71f4b-aefe-439c-ba6b-fe05c8b72e5a",
+      "description": "",
+      "name": "pcaptest-1",
+      "sensor_ids": [
+        "test1"
+      ],
+      "account_code": "test",
+      "bpf": "host 123.23.220.88",
+      "created_uuid": "fd47730b-dc10-4a04-8762-40eb1585bedb",
+      "created_email": "test@test.com",
+      "created": "2022-06-29T17:28:12.238Z",
+      "status": "inactive",
+      "files": [
+        {
+          "name": "git112-1656523701-activity.log",
+          "task_uuid": "8aa71f4b-aefe-439c-ba6b-fe05c8b72e5a",
+          "account_code": "test",
+          "file_size": 193,
+          "sensor_id": "test1"
+        },
+        {
+          "name": "git112-1656523701.pcap.enc",
+          "task_uuid": "8aa71f4b-aefe-439c-ba6b-fe05c8b72e5a",
+          "account_code": "test",
+          "file_size": 613127,
+          "sensor_id": "test1"
+        }
+      ],
+      "has_files": true
+    }
+}

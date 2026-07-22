@@ -1,0 +1,1272 @@
+id: CarbonBlackLiveResponseCloud-Test
+version: 197
+vcShouldKeepItemLegacyProdMachine: false
+name: CarbonBlackLiveResponseCloud-Test
+fromversion: 5.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 01fa3257-4fd6-4434-8812-5c9b4d5555c6
+    type: start
+    task:
+      id: 01fa3257-4fd6-4434-8812-5c9b4d5555c6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8931ee4d-6923-40c6-8ae2-39e3cc4b796d
+    type: regular
+    task:
+      id: 8931ee4d-6923-40c6-8ae2-39e3cc4b796d
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+      - "93"
+      - "103"
+      - "109"
+      - "82"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: c8815937-5962-48e1-87cd-8a7c900b4e3d
+    type: title
+    task:
+      id: c8815937-5962-48e1-87cd-8a7c900b4e3d
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: d8f1c14a-eb75-4ae8-84ba-ca3000d42c9f
+    type: regular
+    task:
+      id: d8f1c14a-eb75-4ae8-84ba-ca3000d42c9f
+      version: -1
+      name: Create reg key
+      script: '|||cbd-lr-reg-key-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      reg_path:
+        simple: ${inputs.reg_key}
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: f0962f7a-638a-4511-8a0d-91ea6ac4a6ca
+    type: regular
+    task:
+      id: f0962f7a-638a-4511-8a0d-91ea6ac4a6ca
+      version: -1
+      name: Delete reg key
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-key-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      reg_path:
+        simple: ${inputs.reg_key}
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: aa1ccfbd-b64f-45a4-8c2a-8e7091e9e7cf
+    type: regular
+    task:
+      id: aa1ccfbd-b64f-45a4-8c2a-8e7091e9e7cf
+      version: -1
+      name: Set reg value
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-value-set
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      overwrite:
+        simple: "True"
+      reg_path:
+        simple: ${inputs.reg_key}\test_val
+      device_id:
+        simple: "3925348"
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+      value_data:
+        simple: value_v1
+      value_type:
+        simple: REG_SZ
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: c708d8de-0149-4ab3-8931-1ad903c6ff0a
+    type: regular
+    task:
+      id: c708d8de-0149-4ab3-8931-1ad903c6ff0a
+      version: -1
+      name: Create sub key
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-key-create
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      reg_path:
+        simple: ${inputs.reg_key}\test_sub_key
+      device_id:
+        simple: ${inputs.device_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c4a0f602-d411-4510-8ad5-e66cbbe903d0
+    type: regular
+    task:
+      id: c4a0f602-d411-4510-8ad5-e66cbbe903d0
+      version: -1
+      name: Get sub keys
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-sub-keys
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      reg_path:
+        simple: ${inputs.reg_key}
+      device_id:
+        simple: ${inputs.device_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 88688e56-a200-4176-8510-124e82539a71
+    type: regular
+    task:
+      id: 88688e56-a200-4176-8510-124e82539a71
+      version: -1
+      name: Delete reg value
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-value-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      reg_path:
+        simple: ${inputs.reg_key}\test_val
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 4e45d043-7401-4010-8202-07c508a078b7
+    type: regular
+    task:
+      id: 4e45d043-7401-4010-8202-07c508a078b7
+      version: -1
+      name: Execute test process
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-execute
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      cmd_line_path:
+        simple: C:\Windows\System32\cmd.exe /c  C:\\test\CarbonBlackLiveResponseProcessForTest.bat
+      command_string:
+        simple: C:\test\a_test_process.exe /c C:\test\loop.bat
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+      wait_for_completion:
+        simple: "False"
+      wait_for_output:
+        simple: "False"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 18c28a77-022a-409d-8b79-0a9bb65eeb11
+    type: regular
+    task:
+      id: 18c28a77-022a-409d-8b79-0a9bb65eeb11
+      version: -1
+      name: Kill test process
+      description: Kill process specified by process id
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-kill
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "107"
+    scriptarguments:
+      pid:
+        simple: ${CarbonBlackDefenseLR.ExecuteProcess.[2].return_value}
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: d4e8ca92-7f66-4118-89ac-7579556e5551
+    type: regular
+    task:
+      id: d4e8ca92-7f66-4118-89ac-7579556e5551
+      version: -1
+      name: Dump memory
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-memdump
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+      target_path:
+        simple: ${inputs.memdump_file_path}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: db3956ae-0bfa-481f-8b1a-a6004c09f0c8
+    type: regular
+    task:
+      id: db3956ae-0bfa-481f-8b1a-a6004c09f0c8
+      version: -1
+      name: Get dir content
+      description: List the contents of a directory on the remote machine
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-directory-listing
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      directory_path:
+        simple: ${inputs.memdump_dir}
+      device_id:
+        simple: ${inputs.device_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 81fa87cf-1537-432f-8a1d-8b00ba6fe582
+    type: regular
+    task:
+      id: 81fa87cf-1537-432f-8a1d-8b00ba6fe582
+      version: -1
+      name: Delete test reg key
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-key-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      force:
+        simple: "True"
+      reg_path:
+        simple: ${inputs.reg_key}
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: f5e2531d-b347-4a2b-8a77-c0274148e517
+    type: regular
+    task:
+      id: f5e2531d-b347-4a2b-8a77-c0274148e517
+      version: -1
+      name: Get processes list
+      description: List currently running processes on the remote machine
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-ps
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: d66bf41b-f01d-4a4d-8c5a-8ed9bd52530f
+    type: regular
+    task:
+      id: d66bf41b-f01d-4a4d-8c5a-8ed9bd52530f
+      version: -1
+      name: Get file from Endpoint to War Room
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-file-get
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      source_path:
+        simple: ${inputs.test_file_path}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 25de0452-a382-4d86-8bee-2ebd9466ab48
+    type: regular
+    task:
+      id: 25de0452-a382-4d86-8bee-2ebd9466ab48
+      version: -1
+      name: Delete test file
+      description: Delete the specified file name on the remote machine
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-file-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      source_path:
+        simple: ${inputs.test_file_path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: b81b78dd-be15-4be1-8459-84c678e7f508
+    type: regular
+    task:
+      id: b81b78dd-be15-4be1-8459-84c678e7f508
+      version: -1
+      name: Create file in War Room
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      data:
+        simple: test data
+      filename:
+        simple: test.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 251306c8-1a0a-470b-8f7b-989bb3b8e6ea
+    type: regular
+    task:
+      id: 251306c8-1a0a-470b-8f7b-989bb3b8e6ea
+      version: -1
+      name: Put file in Endpoint
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-file-put
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      destination_path:
+        simple: ${inputs.test_file_path}
+      file_id:
+        simple: '${.=(val.File instanceof Array ? val.File[val.File.length-1].EntryID
+          : val.File.EntryID)}'
+      device_id:
+        simple: ${inputs.device_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: c6b59de6-bd91-4dcb-832b-4623b9710316
+    type: regular
+    task:
+      id: c6b59de6-bd91-4dcb-832b-4623b9710316
+      version: -1
+      name: Delete file from Endpoint
+      description: Delete the specified file name on the remote machine
+      script: '|||cbd-lr-file-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      file_path:
+        simple: c:\test\test.txt
+      device_id:
+        simple: ${inputs.device_id}
+      source_path:
+        simple: ${inputs.test_file_path}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 1ea5ffca-7eb1-435a-87bb-558f52a4021d
+    type: condition
+    task:
+      id: 1ea5ffca-7eb1-435a-87bb-558f52a4021d
+      version: -1
+      name: Validate sub keys
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "110"
+      Sub keys exist:
+      - "98"
+    separatecontext: false
+    conditions:
+    - label: Sub keys exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefenseLR.RegistrySubKeys
+                accessor: sub_keys
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 172.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 03b544ad-3cc9-4951-8e29-c362e1ff61c6
+    type: regular
+    task:
+      id: 03b544ad-3cc9-4951-8e29-c362e1ff61c6
+      version: -1
+      name: Get reg values
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-get-values
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      reg_path:
+        simple: ${inputs.reg_key}
+      device_id:
+        simple: ${inputs.device_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 2dfe99dc-926f-4109-8f43-9b04097a7223
+    type: condition
+    task:
+      id: 2dfe99dc-926f-4109-8f43-9b04097a7223
+      version: -1
+      name: Validate values
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "110"
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefenseLR.RegistryValues.values
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 69a0c740-92e9-47c6-88e5-e1e4d3d3c358
+    type: regular
+    task:
+      id: 69a0c740-92e9-47c6-88e5-e1e4d3d3c358
+      version: -1
+      name: Delete reg sub key
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-reg-key-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      reg_path:
+        simple: ${inputs.reg_key}\test_sub_key
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 8030709c-b968-466f-8c71-bc0130b18e71
+    type: condition
+    task:
+      id: 8030709c-b968-466f-8c71-bc0130b18e71
+      version: -1
+      name: Verify dir content
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "110"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: CarbonBlackDefenseLR.Directory.content
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 2bf71f18-1ed4-40c4-80dd-58c3168f0314
+    type: regular
+    task:
+      id: 2bf71f18-1ed4-40c4-80dd-58c3168f0314
+      version: -1
+      name: Delete memdump file
+      description: Delete the specified file name on the remote machine
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-file-delete
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      device_id:
+        simple: ${inputs.device_id}
+      source_path:
+        simple: ${inputs.memdump_file_path}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 950,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: cf706760-757c-4d1e-8737-2dcddc7d7c52
+    type: condition
+    task:
+      id: cf706760-757c-4d1e-8737-2dcddc7d7c52
+      version: -1
+      name: Verify processes
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "110"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CarbonBlackDefenseLR.Processes.processes
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1820,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 03ed6d26-5dc4-4b69-8a4d-8beddc7356b7
+    type: regular
+    task:
+      id: 03ed6d26-5dc4-4b69-8a4d-8beddc7356b7
+      version: -1
+      name: Get the pid of the test process
+      description: Create a new process on the remote machine with the specified command
+        string
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-execute
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      command_string:
+        simple: ${inputs.get_pid_cmd}
+      device_id:
+        simple: ${inputs.device_id}
+      wait_for_completion:
+        simple: "True"
+      wait_for_output:
+        simple: "True"
+      wait_timeout:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: e9261033-a808-4f5e-8413-f851e3fb221a
+    type: regular
+    task:
+      id: e9261033-a808-4f5e-8413-f851e3fb221a
+      version: -1
+      name: Try to get the test process pid
+      description: Create a new process on the remote machine with the specified command
+        string
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-execute
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "108"
+    scriptarguments:
+      command_string:
+        simple: ${inputs.get_pid_cmd}
+      device_id:
+        simple: ${inputs.device_id}
+      wait_for_completion:
+        simple: "True"
+      wait_for_output:
+        simple: "True"
+      wait_timeout:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 658aa1fe-0c7b-42c0-8eb5-bfc63a68971b
+    type: condition
+    task:
+      id: 658aa1fe-0c7b-42c0-8eb5-bfc63a68971b
+      version: -1
+      name: Validate process killed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "110"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: CarbonBlackDefenseLR.ExecuteProcess
+                accessor: return_value
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: not running
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 17c1ed56-b14b-46e3-82dd-e197343337ad
+    type: regular
+    task:
+      id: 17c1ed56-b14b-46e3-82dd-e197343337ad
+      version: -1
+      name: Kill all test processes
+      script: CarbonBlackLiveResponseCloud|||cbd-lr-execute
+      type: regular
+      iscommand: true
+      brand: CarbonBlackLiveResponseCloud
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      cmd_line_path:
+        simple: C:\Windows\System32\cmd.exe /c  C:\\test\CarbonBlackLiveResponseProcessForTest.bat
+      command_string:
+        simple: cmd.exe /c taskkill /f /t /im a_test_process.exe
+      device_id:
+        simple: ${inputs.device_id}
+      session_id:
+        simple: ${CarbonBlackDefenseLR.Session.id}
+      wait_for_output:
+        simple: "False"
+      wait_timeout:
+        simple: "90"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: f53a721f-9394-4b11-8625-4784a639ac2d
+    type: regular
+    task:
+      id: f53a721f-9394-4b11-8625-4784a639ac2d
+      version: -1
+      name: Fail
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      message:
+        simple: Some validation failed
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "99_42_yes": 0.86
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 2150,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: device_id
+  value:
+    simple: "3925348"
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: reg_key
+  value:
+    simple: HKEY_LOCAL_MACHINE\SOFTWARE\test
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: reg_value
+  value:
+    simple: HKEY_LOCAL_MACHINE\SOFTWARE\test\test_val
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: test_file_path
+  value:
+    simple: C:\test\test.txt
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: memdump_dir
+  value:
+    simple: C:\test\memdump_test\
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: memdump_file_path
+  value:
+    simple: C:\test\memdump_test\test_dumped_file
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: get_pid_cmd
+  value:
+    simple: cmd.exe /c C:\test\get_pid.bat
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []

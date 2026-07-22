@@ -1,0 +1,12 @@
+{
+     "outputs": [
+        {
+            "assets_count": 9,
+            "control_product": "crowdstrike",
+            "exposure": 149,
+            "id": "id",
+            "recommendation": "text",
+            "vulnerabilities_count": 18
+        }
+    ]
+}

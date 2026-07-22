@@ -1,0 +1,68 @@
+{
+    "assignment": {
+        "id": 116,
+        "assigned_by": {
+            "id": 1,
+            "username": "test_user@mail.com"
+        },
+        "date_assigned": "2023-07-27T12:33:44Z",
+        "date_resolved": "2023-07-27T12:36:11Z",
+        "events": [
+            {
+                "assignment_id": 116,
+                "actor": 65,
+                "event_type": "resolved",
+                "datetime": "2023-07-27T12:36:11Z",
+                "context": {
+                    "entity_t_score": 83,
+                    "entity_c_score": 84,
+                    "triage_as": "Triage by XSOAR",
+                    "triaged_detection_ids": [
+                        1432,
+                        1433,
+                        1431
+                    ],
+                    "fixed_detection_ids": null,
+                    "created_rule_ids": [
+                        243,
+                        244,
+                        245
+                    ]
+                }
+            },
+            {
+                "assignment_id": 116,
+                "actor": 65,
+                "event_type": "created",
+                "datetime": "2023-07-27T12:33:44Z",
+                "context": {
+                    "to": 60,
+                    "entity_t_score": 63,
+                    "entity_c_score": 42
+                }
+            }
+        ],
+        "outcome": {
+            "id": 6,
+            "builtin": false,
+            "user_selectable": true,
+            "title": "Custom outcome",
+            "category": "benign_true_positive"
+        },
+        "resolved_by": {
+            "id": 2,
+            "username": "test_user2@gmail.com"
+        },
+        "triaged_detections": [
+            1432,
+            1433,
+            1431
+        ],
+        "host_id": null,
+        "account_id": 100,
+        "assigned_to": {
+            "id": 2,
+            "username": "test_user2@gmail.com"
+        }
+    }
+}

@@ -1,0 +1,715 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Case Details",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Work Plan",
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Linked Incidents",
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Child Incidents",
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Evidence",
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Team Members",
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Timeline Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Closing Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 22,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "name": "Investigation Data",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "splunk-comments-field",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Splunk Comments",
+                        "query": "SplunkConvertCommentsToTable",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 2,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "splunk-add-comment-botton",
+                        "items": [
+                            {
+                                "args": {
+                                    "tags": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "warning",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "button",
+                                "index": 0,
+                                "name": "Press to add comment to Splunk",
+                                "scriptId": "SplunkAddComment",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Add Comment",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 8
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "dwdtwscjnm",
+                "name": "Notable Summary",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-dwdtwscjnm-field-changed-caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "name",
+                                "height": 22,
+                                "id": "1858fea0-abe8-11eb-8990-dba25d1c608d",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "notableid",
+                                "height": 22,
+                                "id": "f1157090-a60a-11eb-997f-bd3b60819943",
+                                "index": 1,
+                                "listId": "caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "notableurgency",
+                                "height": 22,
+                                "id": "f1927740-ab85-11eb-b1fb-fd250246d749",
+                                "index": 2,
+                                "listId": "caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "categories",
+                                "height": 22,
+                                "id": "ed6a5190-b7df-11eb-b943-872b5e5949bd",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "fd0ed5a0-ab85-11eb-b1fb-fd250246d749",
+                                "index": 4,
+                                "listId": "caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "notablestatus",
+                                "height": 22,
+                                "id": "701e3600-ab7a-11eb-b1fb-fd250246d749",
+                                "index": 5,
+                                "listId": "caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "assigneduser",
+                                "height": 22,
+                                "id": "c07b1bc0-ab7c-11eb-b1fb-fd250246d749",
+                                "index": 6,
+                                "listId": "caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "splunknotablereviewer",
+								"height": 22,
+								"id": "52b88640-be18-11ec-8ba7-2999d56659d0",
+								"index": 7,
+								"listId": "caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-dwdtwscjnm-field-changed-caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "0577c790-ab88-11eb-b1fb-fd250246d749",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 44,
+                                "id": "3e4764a0-ab7d-11eb-b1fb-fd250246d749",
+                                "index": 8,
+                                "listId": "caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Notable Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-dwdtwscjnm-field-changed-caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-547bd270-abea-11eb-8990-dba25d1c608d",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "74ab6a60-abea-11eb-8990-dba25d1c608d",
+                                "index": 0,
+                                "listId": "caseinfoid-547bd270-abea-11eb-8990-dba25d1c608d",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "srcs",
+                                "height": 53,
+                                "id": "f3689ef0-b0f8-11eb-aa15-bb26b139b89e",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "usernames",
+                                "height": 53,
+                                "id": "eeef4bd0-b0f8-11eb-aa15-bb26b139b89e",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "dsts",
+                                "height": 22,
+                                "id": "f62d1620-b0f8-11eb-aa15-bb26b139b89e",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 2,
+                        "moved": false,
+                        "name": "Common CIM Fields",
+                        "static": false,
+                        "w": 2,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "description": "‘True’ indicates enrichment was successful, even if there were no results found. See Assets, Identities and Drilldown tabs for details.",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-dwdtwscjnm-field-changed-caseinfoid-cb6f5460-abea-11eb-addd-331717bce311",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "successfulassetenrichment",
+                                "height": 53,
+                                "id": "4c03ef90-abec-11eb-addd-331717bce311",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "successfulidentityenrichment",
+                                "height": 53,
+                                "id": "191c86a0-abf1-11eb-9e38-b129a5d2c523",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "successfuldrilldownenrichment",
+                                "height": 53,
+                                "id": "1ac46a40-abf1-11eb-9e38-b129a5d2c523",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Enrichment Status",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "spoqcqunv5",
+                "name": "Drilldown",
+                "sections": [
+                    {
+                        "h": 8,
+                        "hideName": true,
+                        "i": "caseinfoid-4fb80c70-ab74-11eb-b028-21bdcc40246b",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Drilldown Search",
+                        "query": "SplunkShowDrilldown",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "miuhpefilk",
+                "name": "Assets",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "caseinfoid-657981b0-ab74-11eb-b028-21bdcc40246b",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Assets",
+                        "query": "SplunkShowAsset",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "eekywqsdqd",
+                "name": "Identities",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "caseinfoid-78f54cb0-ab74-11eb-b028-21bdcc40246b",
+                        "items": [],
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 3,
+                        "moved": false,
+                        "name": "Identities",
+                        "query": "SplunkShowIdentity",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Splunk Notable Generic",
+    "name": "Splunk Notable Generic",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "",
+    "marketplaces": ["xsoar"]
+}

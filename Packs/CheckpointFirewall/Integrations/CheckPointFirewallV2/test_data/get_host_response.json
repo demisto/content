@@ -1,0 +1,34 @@
+{"uid": "1234",
+"name": "host 1",
+"type": "host",
+"domain": {
+    "uid": "56789",
+    "name": "SMC User",
+    "domain-type": "domain"
+},
+"ipv4-address": "8.8.8.8",
+"interfaces": [],
+"nat-settings": {
+    "auto-rule": false
+},
+"groups": [],
+"comments": "",
+"color": "black",
+"icon": "Objects/host",
+"tags": [],
+"meta-info": {
+    "lock": "unlocked",
+    "validation-state": "ok",
+    "last-modify-time": {
+    "posix": 1598381009752,
+    "iso-8601": "2020-08-25T21:43+0300"
+    },
+    "last-modifier": "admin",
+    "creation-time": {
+    "posix": 1598381009752,
+    "iso-8601": "2020-08-25T21:43+0300"
+    },
+    "creator": "admin"
+},
+"read-only": false
+}

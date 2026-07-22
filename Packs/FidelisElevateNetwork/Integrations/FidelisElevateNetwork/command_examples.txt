@@ -1,0 +1,23 @@
+!fidelis-get-alert alert_id=1
+!fidelis-get-alert-by-uuid alert_uuid=80d0ccf5-5879-11ea-b430-0eb174ee0947
+!fidelis-list-alerts
+!fidelis-list-alerts-by-ip
+!fidelis-download-pcap-file alert_id=5
+!fidelis-get-alert-report alert_id=5
+!fidelis-get-malware-data alert_id=9
+!fidelis-list-metadata
+!fidelis-list-pcap-components
+!fidelis-add-alert-comment alert_id=1 comment="my new comment"
+!fidelis-alert-execution-forensics-submission alert_id=9
+!fidelis-assign-user-to-alert assign_user=cloud-user conclusion_id=2
+!fidelis-close-alert conclusion_id=2 resolution="False Positive"
+!fidelis-get-alert-decoding-path alert_id=9
+!fidelis-get-alert-execution-forensics alert_id=9
+!fidelis-get-alert-forensic-text alert_id=9
+!fidelis-get-alert-session-data alert_id=9
+!fidelis-manage-alert-label action=Add alert_id=3 label="example-label"
+!fidelis-update-alert-status alert_id=1 status=Actionable
+!fidelis-upload-pcap component_ip=1.1.1.1 entry_id=7317@99f96547-c492-48d1-84bc-070759449a5d
+!fidelis-run-pcap component_ip=1.1.1.1 files=ipv4frags.pcap
+!fidelis-download-malware-file alert_id=9
+!fidelis-delete-alert alert_id=12

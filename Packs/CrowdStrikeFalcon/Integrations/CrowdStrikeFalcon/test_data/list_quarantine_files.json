@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "query_time": 0.003943737,
+    "powered_by": "quarantine",
+    "trace_id": "123456"
+  },
+  "resources": [
+    {
+      "id": "121212",
+      "aid": "131313",
+      "cid": "141414",
+      "sha256": "151515",
+      "paths": [
+        {
+          "path": "\\Device\\HarddiskVolume3\\Users\\admin\\Downloads\\test.exe",
+          "filename": "test.exe",
+          "state": "purged"
+        }
+      ],
+      "state": "unrelease_pending",
+      "detect_ids": ["161616"],
+      "hostname": "INSTANCE-1",
+      "username": "admin",
+      "date_updated": "2023-02-15T16:31:22Z",
+      "date_created": "2022-12-13T14:23:43Z"
+    },
+    {
+      "id": "171717",
+      "aid": "131313",
+      "cid": "141414",
+      "sha256": "181818",
+      "paths": [
+        {
+          "path": "\\Device\\HarddiskVolume3\\Users\\admin\\Downloads\\test1.exe",
+          "filename": "test1.exe",
+          "state": "purged"
+        }
+      ],
+      "state": "unrelease_pending",
+      "detect_ids": ["ldt:131313:176096213055"],
+      "hostname": "INSTANCE-1",
+      "username": "admin",
+      "date_updated": "2023-02-15T16:37:23Z",
+      "date_created": "2022-12-13T14:23:49Z"
+    }
+  ],
+  "errors": []
+}

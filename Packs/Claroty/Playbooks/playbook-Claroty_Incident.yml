@@ -1,0 +1,175 @@
+id: Claroty Incident
+inputs: []
+name: Claroty Incident
+fromversion: 5.0.0
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: 8e712abe-51e2-4176-842f-47e507439fce
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 8e712abe-51e2-4176-842f-47e507439fce
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  '1':
+    id: '1'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    scriptarguments:
+      alert_number: {}
+      date_from: {}
+      fields:
+        simple: all
+      get_single_alert:
+        simple: ${incident.clarotyresourceid}
+      sort_by: {}
+      type: {}
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: f93c6971-01b9-46f3-8ac9-ad481971cd02
+      iscommand: true
+      name: Claroty Get Alert Details
+      script: '|||claroty-query-alerts'
+      type: regular
+      version: -1
+    taskid: f93c6971-01b9-46f3-8ac9-ad481971cd02
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '4'
+    note: false
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: b52451f8-1d4a-4af4-89d2-04939791cd9b
+      iscommand: false
+      name: Manual Resolution
+      type: regular
+      version: -1
+    taskid: b52451f8-1d4a-4af4-89d2-04939791cd9b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  '4':
+    id: '4'
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    scriptarguments:
+      resolve_as:
+        simple: resolve
+      selected_alerts:
+        simple: ${Claroty.Alert.ResourceID}
+    separatecontext: false
+    task:
+      brand: ''
+      description: ''
+      id: f7bf6bff-5b3d-43e3-8590-e90e08ebeee5
+      iscommand: true
+      name: Resolve Event in Claroty
+      script: '|||claroty-resolve-alert'
+      type: regular
+      version: -1
+    taskid: f7bf6bff-5b3d-43e3-8590-e90e08ebeee5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    note: false
+    scriptarguments:
+      assetid: {}
+      closeNotes:
+        simple: Incident resolved
+      closeReason: {}
+      emailclassification: {}
+      id:
+        simple: ${incident.id}
+      phishingsubtype: {}
+    separatecontext: false
+    task:
+      brand: Builtin
+      description: ''
+      id: 8d4db095-97c9-45f5-8c8c-4cd19d629c3b
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 8d4db095-97c9-45f5-8c8c-4cd19d629c3b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+description: ''
+tests:
+  - No Test

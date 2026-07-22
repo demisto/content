@@ -1,0 +1,37 @@
+commonfields:
+  id: SlackSend
+  version: -1
+name: SlackSend
+script: >-
+  dArgs = {}
+
+  for argName in ['message', 'to', 'channel', 'group', 'entry']:
+      if demisto.get(demisto.args(), argName):
+          dArgs[argName] = demisto.args()[argName]
+  demisto.results( demisto.executeCommand( 'slack-send', dArgs )  )
+type: python
+subtype: python2
+tags:
+- slack
+comment: Deprecated. Send messages to Slack teams
+system: true
+deprecated: true
+args:
+- name: to
+  description: Send a Direct message by specifying a Slack user name
+- name: channel
+  description: Specify a Slack channel where the message will appear.
+- name: entry
+  description: Send a link to this entry in the War Room
+- name: group
+  description: Specify a private channel
+- name: message
+  default: true
+  description: Message contents to send.
+scripttarget: 0
+dependson:
+  must:
+  - slack-send
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

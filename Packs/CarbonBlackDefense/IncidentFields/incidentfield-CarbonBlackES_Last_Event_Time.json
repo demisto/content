@@ -1,0 +1,30 @@
+{
+    "id": "incident_carbonblackeslasteventtime",
+    "version": -1,
+    "name": "Carbon Black ES Last Event Time",
+    "ownerOnly": false,
+    "description": "The time of the latest event associated with the incident",
+    "cliName": "carbonblackeslasteventtime",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Carbon Black Endpoint Standard"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

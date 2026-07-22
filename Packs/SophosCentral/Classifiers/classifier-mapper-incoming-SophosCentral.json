@@ -1,0 +1,287 @@
+{
+    "description": "Maps incoming alerts from Sophos Central",
+    "id": "Sophos Central - Incoming Mapper",
+    "name": "Sophos Central - Incoming Mapper",
+    "mapping": {
+        "Malware": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "groups": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "keys": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "([^\\:]+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "File Path": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "groups": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "keys": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "at\\s\\'([^\\']+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Malware Family": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "groups": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "keys": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "required\\:\\s+\\'([^\\']+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Agent ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "managedAgentId",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Alert ID": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "id",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Alert Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "description",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Sub Category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "type",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "groups": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "keys": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Event\\:\\:(\\w+)\\:\\:(\\w+)\\:\\:(\\w+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Tenant Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "tenantName",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "User Id": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "person",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "category": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "category",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "description",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "groups": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "keys": {
+                                        "isContext": false,
+                                        "value": null
+                                    },
+                                    "regex": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "([^\\:]+)"
+                                        }
+                                    }
+                                },
+                                "operator": "RegexGroups"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "raisedAt",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [
+
+                        ],
+                        "root": "severity",
+                        "transformers": [
+
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

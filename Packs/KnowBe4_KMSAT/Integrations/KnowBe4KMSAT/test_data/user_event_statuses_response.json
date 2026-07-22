@@ -1,0 +1,26 @@
+{
+    "data": [
+        {
+            "id": "abcdefgh-843c-4fc8-bb2f-decf89876f7b",
+            "details": {
+                "events": [
+                    "87654321-a083-42b9-b50a-fb69b8e2b185"
+                ],
+                "failures": []
+            },
+            "processed": "2023-04-01T14:39:40.132Z",
+            "api_key": "Test Integration"
+        },
+        {
+            "id": "hgfedcba-843c-4fc8-bb2f-decf89876f7b",
+            "details": {
+                "events": [
+                    "12345678-a083-42b9-b50a-fb69b8e2b185"
+                ],
+                "failures": []
+            },
+            "processed": "2023-04-02T14:39:40.132Z",
+            "api_key": "Test Integration"
+        }
+    ]
+}

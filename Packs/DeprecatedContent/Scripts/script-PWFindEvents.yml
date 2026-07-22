@@ -1,0 +1,100 @@
+commonfields:
+  id: PWFindEvents
+  version: -1
+name: PWFindEvents
+script: >
+  from datetime import datetime, timedelta
+
+  res = []
+
+  events = []
+
+  found = []
+
+  dArgs = demisto.args()
+
+  dArgs["using-brand"] = "ProtectWise"
+
+  if not demisto.get(dArgs, 'end'):
+      dArgs['end'] = FormatIso8601(datetime.now())
+  # Default to past 24 hrs if start datetime is not provided
+
+  if not demisto.get(dArgs, 'start'):
+      dArgs['start'] = FormatIso8601(datetime.now() - timedelta(hours=24))
+  if demisto.get(dArgs, 'ip'):
+      ips = argToList(dArgs.pop('ip'))
+
+  for ip in ips:
+      dArgs['ip'] = ip
+      resSearch = demisto.executeCommand("search", dArgs)
+      try:
+          for entry in resSearch:
+              if isError(entry):
+                  res = resSearch
+                  break
+              else:
+                  if demisto.get(entry, 'Contents.count') > 0:
+                      myData = demisto.get(entry, 'Contents.events')
+                      if myData:
+                          found.append(ip)
+                          for row in myData:
+                              for k in row:
+                                  row[k] = formatCell(row[k])
+                          events += myData
+                      else:
+                          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                      "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent=4)})
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resSearch)})
+
+  if events:
+      appendContext("found_ips", ','.join(found), dedup=True)
+      demisto.setContext('pwevents', [ev['id'] for ev in events])
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": events})
+  else:
+      demisto.setContext('pwevents', '')
+      res.append({"Type": entryTypes["note"], "ContentsFormat": formats["text"], "Contents": 'No results.'})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- protectwise
+comment: Deprecated. Retrieve events from ProtectWise. If query does not include a time range - default to the last 24 hrs.
+system: true
+args:
+- name: start
+  default: true
+  description: 'Timestamp of the start time of the event end, Example: 1401451200000, or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00'
+- name: end
+  description: 'Timestamp of the end of the event, Example: 1401451500000, or ISO 8601 format (YYYY-MM-DDTHH:MM:S) like 2015-03-25T12:00:00s'
+- name: minLimit
+  description: Try to return at least this many results per page
+- name: maxLimit
+  description: Do not return more than this many results
+- name: ip
+  description: Filter by events that are affected by a specific IP address
+- name: eventType
+  description: Filter by one or more event types (MaliciousFlow/KillChainEscalation/MaliciousConversation)
+- name: expandDetails
+  description: (true or false) Include observation records
+- name: killChainStage
+  description: Filter by killchain stage (Methodology Recon Delivery Exploit Beacon CnC Fortification Data_Theft)
+- name: nextPage
+  description: An identifier to fetch the next page in the result set
+- name: observationStage
+  description: Filter by Realtime or Retrospective
+- name: reverseOrder
+  description: Return results sorted by descending timestamp (default = true)
+- name: threatCategory
+  description: Filter by threat category (ExploitsAndAttacks DenialOfService Malware Scanning Botnets Phishing Suspicious MaliciousHost APT Misc Unknown)
+- name: threatLevel
+  description: Filter by Low, Medium, or High threats (NONE LOW MEDIUM HIGH)
+scripttarget: 0
+dependson:
+  must:
+  - ProtectWise|||search
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,719 @@
+{
+ "assets": [
+  {
+   "domain_id": 5,
+   "properties": [
+    {
+     "last_reported": 1600000000000,
+     "name": "Primary OS ID",
+     "value": "IOS",
+     "last_reported_by": "admin"
+    },
+    {
+     "last_reported": 1700000000000,
+     "name": "Unified Name",
+     "value": "192.168.0.1",
+     "last_reported_by": "admin"
+    },
+    {
+     "last_reported": 1800000000000,
+     "name": "Compliance Notes",
+     "value": "note",
+     "last_reported_by": "Adam"
+    }
+   ],
+   "interfaces": [
+    {
+     "id": 1,
+     "created": 1578317168941,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "8.8.8.8"
+      },
+      {
+       "type": "IPV4",
+       "value": "1.1.1.1"
+      }
+     ],
+     "mac_address": "00-14-22-01-23-45"
+    },
+    {
+     "id": 2,
+     "created": 1578317168941,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "2.2.2.2"
+      }
+     ],
+     "mac_address": "Unknown NIC"
+    }
+   ]
+  },
+  {
+   "domain_id": 6,
+   "properties": [
+    {
+     "last_reported": 1600000000000,
+     "name": "Primary OS ID",
+     "value": "Windows"
+    },
+    {
+     "last_reported": 1600000000000,
+     "name": "Unified Name",
+     "value": "192.168.0.1",
+     "last_reported_by": "admin"
+    },
+    {
+     "last_reported": 1600000000000,
+     "name": "Compliance Notes",
+     "value": "note2",
+     "last_reported_by": "Adam2"
+    }
+   ],
+   "interfaces": [
+    {
+     "id": 3,
+     "created": 1600000000000,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "7.7.7.7"
+      },
+      {
+       "type": "IPV4",
+       "value": "3.3.3.3"
+      }
+     ],
+     "mac_address": "00-11-22-33-44-45"
+    },
+    {
+     "id": 4,
+     "created": 1600000000000,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "2.2.2.2"
+      }
+     ],
+     "mac_address": "Unknown NIC"
+    }
+   ]
+  }
+ ],
+ "offense_enrich": [
+  {
+   "domain_id": 5,
+   "Primary OS ID": "IOS",
+   "Unified Name": "192.168.0.1",
+   "Compliance Notes": "note",
+   "interfaces": [
+    {
+     "id": 1,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "8.8.8.8"
+      },
+      {
+       "type": "IPV4",
+       "value": "1.1.1.1"
+      }
+     ],
+     "mac_address": "00-14-22-01-23-45"
+    },
+    {
+     "id": 2,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "2.2.2.2"
+      }
+     ],
+     "mac_address": "Unknown NIC"
+    }
+   ]
+  },
+  {
+   "domain_id": 6,
+   "Primary OS ID": "Windows",
+   "Unified Name": "192.168.0.1",
+   "Compliance Notes": "note2",
+   "interfaces": [
+    {
+     "id": 3,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "7.7.7.7"
+      },
+      {
+       "type": "IPV4",
+       "value": "3.3.3.3"
+      }
+     ],
+     "mac_address": "00-11-22-33-44-45"
+    },
+    {
+     "id": 4,
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "2.2.2.2"
+      }
+     ],
+     "mac_address": "Unknown NIC"
+    }
+   ]
+  }
+ ],
+ "iso_transform": [
+  {
+   "domain_id": 5,
+   "properties": [
+    {
+     "last_reported": "2020-09-13T12:26:40+00:00",
+     "name": "Primary OS ID",
+     "value": "IOS",
+     "last_reported_by": "admin"
+    },
+    {
+     "last_reported": "2023-11-14T22:13:20+00:00",
+     "name": "Unified Name",
+     "value": "192.168.0.1",
+     "last_reported_by": "admin"
+    },
+    {
+     "last_reported": "2027-01-15T08:00:00+00:00",
+     "name": "Compliance Notes",
+     "value": "note",
+     "last_reported_by": "Adam"
+    }
+   ],
+   "interfaces": [
+    {
+     "id": 1,
+     "created": "2020-01-06T13:26:08.941000+00:00",
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "8.8.8.8"
+      },
+      {
+       "type": "IPV4",
+       "value": "1.1.1.1"
+      }
+     ],
+     "mac_address": "00-14-22-01-23-45"
+    },
+    {
+     "id": 2,
+     "created": "2020-01-06T13:26:08.941000+00:00",
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "2.2.2.2"
+      }
+     ],
+     "mac_address": "Unknown NIC"
+    }
+   ]
+  },
+  {
+   "domain_id": 6,
+   "properties": [
+    {
+     "last_reported": "2020-09-13T12:26:40+00:00",
+     "name": "Primary OS ID",
+     "value": "Windows"
+    },
+    {
+     "last_reported": "2020-09-13T12:26:40+00:00",
+     "name": "Unified Name",
+     "value": "192.168.0.1",
+     "last_reported_by": "admin"
+    },
+    {
+     "last_reported": "2020-09-13T12:26:40+00:00",
+     "name": "Compliance Notes",
+     "value": "note2",
+     "last_reported_by": "Adam2"
+    }
+   ],
+   "interfaces": [
+    {
+     "id": 3,
+     "created": "2020-09-13T12:26:40+00:00",
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "7.7.7.7"
+      },
+      {
+       "type": "IPV4",
+       "value": "3.3.3.3"
+      }
+     ],
+     "mac_address": "00-11-22-33-44-45"
+    },
+    {
+     "id": 4,
+     "created": "2020-09-13T12:26:40+00:00",
+     "ip_addresses": [
+      {
+       "type": "IPV4",
+       "value": "2.2.2.2"
+      }
+     ],
+     "mac_address": "Unknown NIC"
+    }
+   ]
+  }
+ ],
+ "case_one": {
+  "full_enrichment": true,
+  "expected": [
+   {
+    "Endpoint": {
+     "IPAddress": [
+      "8.8.8.8",
+      "1.1.1.1",
+      "2.2.2.2"
+     ],
+     "OS": "IOS",
+     "MACAddress": [
+      "00-14-22-01-23-45",
+      "Unknown NIC"
+     ],
+     "Domain": "domain1"
+    },
+    "Asset": {
+     "Name": {
+      "Value": "192.168.0.1",
+      "LastUser": "admin"
+     },
+     "ComplianceNotes": {
+      "Value": "note",
+      "LastUser": "Adam"
+     },
+     "domain_id": 5,
+     "properties": [
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Primary OS ID",
+       "value": "IOS",
+       "last_reported_by": "admin"
+      },
+      {
+       "last_reported": "2023-11-14T22:13:20+00:00",
+       "name": "Unified Name",
+       "value": "192.168.0.1",
+       "last_reported_by": "admin"
+      },
+      {
+       "last_reported": "2027-01-15T08:00:00+00:00",
+       "name": "Compliance Notes",
+       "value": "note",
+       "last_reported_by": "Adam"
+      }
+     ],
+     "interfaces": [
+      {
+       "id": 1,
+       "created": "2020-01-06T13:26:08.941000+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "8.8.8.8"
+        },
+        {
+         "type": "IPV4",
+         "value": "1.1.1.1"
+        }
+       ],
+       "mac_address": "00-14-22-01-23-45"
+      },
+      {
+       "id": 2,
+       "created": "2020-01-06T13:26:08.941000+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "2.2.2.2"
+        }
+       ],
+       "mac_address": "Unknown NIC"
+      }
+     ]
+    }
+   },
+   {
+    "Endpoint": {
+     "IPAddress": [
+      "7.7.7.7",
+      "3.3.3.3",
+      "2.2.2.2"
+     ],
+     "OS": "Windows",
+     "MACAddress": [
+      "00-11-22-33-44-45",
+      "Unknown NIC"
+     ],
+     "Domain": "domain2"
+    },
+    "Asset": {
+     "Name": {
+      "Value": "192.168.0.1",
+      "LastUser": "admin"
+     },
+     "ComplianceNotes": {
+      "Value": "note2",
+      "LastUser": "Adam2"
+     },
+     "domain_id": 6,
+     "properties": [
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Primary OS ID",
+       "value": "Windows"
+      },
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Unified Name",
+       "value": "192.168.0.1",
+       "last_reported_by": "admin"
+      },
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Compliance Notes",
+       "value": "note2",
+       "last_reported_by": "Adam2"
+      }
+     ],
+     "interfaces": [
+      {
+       "id": 3,
+       "created": "2020-09-13T12:26:40+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "7.7.7.7"
+        },
+        {
+         "type": "IPV4",
+         "value": "3.3.3.3"
+        }
+       ],
+       "mac_address": "00-11-22-33-44-45"
+      },
+      {
+       "id": 4,
+       "created": "2020-09-13T12:26:40+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "2.2.2.2"
+        }
+       ],
+       "mac_address": "Unknown NIC"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "case_two": {
+  "full_enrichment": false,
+  "expected": [
+   {
+    "Endpoint": {
+     "IPAddress": [
+      "8.8.8.8",
+      "1.1.1.1",
+      "2.2.2.2"
+     ],
+     "OS": "IOS"
+    },
+    "Asset": {
+     "Name": {
+      "Value": "192.168.0.1",
+      "LastUser": "admin"
+     },
+     "domain_id": 5,
+     "properties": [
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Primary OS ID",
+       "value": "IOS",
+       "last_reported_by": "admin"
+      },
+      {
+       "last_reported": "2023-11-14T22:13:20+00:00",
+       "name": "Unified Name",
+       "value": "192.168.0.1",
+       "last_reported_by": "admin"
+      },
+      {
+       "last_reported": "2027-01-15T08:00:00+00:00",
+       "name": "Compliance Notes",
+       "value": "note",
+       "last_reported_by": "Adam"
+      }
+     ],
+     "interfaces": [
+      {
+       "id": 1,
+       "created": "2020-01-06T13:26:08.941000+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "8.8.8.8"
+        },
+        {
+         "type": "IPV4",
+         "value": "1.1.1.1"
+        }
+       ],
+       "mac_address": "00-14-22-01-23-45"
+      },
+      {
+       "id": 2,
+       "created": "2020-01-06T13:26:08.941000+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "2.2.2.2"
+        }
+       ],
+       "mac_address": "Unknown NIC"
+      }
+     ]
+    }
+   },
+   {
+    "Endpoint": {
+     "IPAddress": [
+      "7.7.7.7",
+      "3.3.3.3",
+      "2.2.2.2"
+     ],
+     "OS": "Windows"
+    },
+    "Asset": {
+     "Name": {
+      "Value": "192.168.0.1",
+      "LastUser": "admin"
+     },
+     "domain_id": 6,
+     "properties": [
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Primary OS ID",
+       "value": "Windows"
+      },
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Unified Name",
+       "value": "192.168.0.1",
+       "last_reported_by": "admin"
+      },
+      {
+       "last_reported": "2020-09-13T12:26:40+00:00",
+       "name": "Compliance Notes",
+       "value": "note2",
+       "last_reported_by": "Adam2"
+      }
+     ],
+     "interfaces": [
+      {
+       "id": 3,
+       "created": "2020-09-13T12:26:40+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "7.7.7.7"
+        },
+        {
+         "type": "IPV4",
+         "value": "3.3.3.3"
+        }
+       ],
+       "mac_address": "00-11-22-33-44-45"
+      },
+      {
+       "id": 4,
+       "created": "2020-09-13T12:26:40+00:00",
+       "ip_addresses": [
+        {
+         "type": "IPV4",
+         "value": "2.2.2.2"
+        }
+       ],
+       "mac_address": "Unknown NIC"
+      }
+     ]
+    }
+   }
+  ]
+ },
+ "domain_mock_response": [
+  {
+   "id": 5,
+   "name": "domain1"
+  },
+  {
+   "id": 6,
+   "name": "domain2"
+  }
+ ],
+ "empty_case": {
+  "assets": [
+   {
+    "domain_id": 15,
+    "properties": [
+     {
+      "name": "A",
+      "value": "B"
+     },
+     {
+      "name": "C",
+      "value": "D",
+      "last_reported_by": "admin"
+     },
+     {
+      "name": "Compliance Notes 2",
+      "value": "note",
+      "last_reported_by": "Adam"
+     }
+    ],
+    "interfaces": [
+     {
+      "ip_addresses": []
+     },
+     {
+      "ip_addresses": []
+     }
+    ]
+   },
+   {
+    "domain_id": 16,
+    "properties": [],
+    "interfaces": [
+     {
+      "ip_addresses": []
+     },
+     {
+      "ip_addresses": []
+     }
+    ]
+   }
+  ],
+  "expected_basic_enrichment": [
+   {
+    "Endpoint": {
+     "IPAddress": []
+    },
+    "Asset": {
+     "domain_id": 15,
+     "properties": [
+      {
+       "name": "A",
+       "value": "B"
+      },
+      {
+       "name": "C",
+       "value": "D",
+       "last_reported_by": "admin"
+      },
+      {
+       "name": "Compliance Notes 2",
+       "value": "note",
+       "last_reported_by": "Adam"
+      }
+     ],
+     "interfaces": [
+      {
+       "ip_addresses": []
+      },
+      {
+       "ip_addresses": []
+      }
+     ]
+    }
+   },
+   {
+    "Endpoint": {
+     "IPAddress": []
+    },
+    "Asset": {
+     "domain_id": 16,
+     "properties": [],
+     "interfaces": [
+      {
+       "ip_addresses": []
+      },
+      {
+       "ip_addresses": []
+      }
+     ]
+    }
+   }
+  ],
+  "expected_full_enrichment": [
+   {
+    "Asset": {
+     "domain_id": 15,
+     "properties": [
+      {
+       "name": "A",
+       "value": "B"
+      },
+      {
+       "name": "C",
+       "value": "D",
+       "last_reported_by": "admin"
+      },
+      {
+       "name": "Compliance Notes 2",
+       "value": "note",
+       "last_reported_by": "Adam"
+      }
+     ],
+     "interfaces": [
+      {
+       "ip_addresses": []
+      },
+      {
+       "ip_addresses": []
+      }
+     ]
+    },
+    "Endpoint": {
+     "IPAddress": [],
+     "MACAddress": [],
+     "Domain": 15
+    }
+    },
+    {
+     "Asset": {
+      "domain_id": 16,
+      "properties": [],
+      "interfaces": [
+       {
+        "ip_addresses": []
+       },
+       {
+        "ip_addresses": []
+       }
+      ]
+     },
+     "Endpoint": {
+      "IPAddress": [],
+      "MACAddress": [],
+      "Domain": 16
+     }
+    }
+  ]
+ }
+}

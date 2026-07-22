@@ -1,0 +1,14 @@
+[file:README.md]
+ignore=RM104
+
+[file:Threat_Vault.yml]
+ignore=BA108,BA109
+
+[file:ThreatVaultv2.yml]
+ignore=IN126
+
+[known_words]
+threatvault
+md
+rtdns
+

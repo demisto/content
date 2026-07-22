@@ -1,0 +1,8 @@
+fromversion: 6.10.0
+id: trend_micro_vision_one_ModelingRule
+name: TrendAI Vision One™ Modeling Rule
+rules: ''
+schema: ''
+tags: trend_micro_vision_one
+supportedModules:
+- xsiam

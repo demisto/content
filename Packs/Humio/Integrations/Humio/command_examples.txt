@@ -1,0 +1,10 @@
+!humio-query repository=sandbox queryString="foo=bar"
+!humio-list-alerts repository=sandbox
+!humio-get-alert-by-id repository=sandbox id=ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc
+!humio-get-notifier-by-id repository=sandbox id=BTkuj8QArhIFMh_L39FoN0tnyTUEXplc
+!humio-query-job queryString="foo=bar" repository=sandbox
+!humio-poll repository=sandbox id=1-mJg87kWn247FiYFpsnwZcx9G
+!humio-delete-job repository=sandbox id=1-mJg87kWn247FiYFpsnwZcx9G
+!humio-list-notifiers repository=sandbox
+!humio-create-alert name=SampleTestAlert notifiers=BTkuj8QArhIFMh_L39FoN0tnyTUEXplc queryString="foo=bar" repository=sandbox
+!humio-delete-alert repository=sandbox id=dIn3uuIvY4Gz90Bt2Dn2mVtDuB11ZUl2

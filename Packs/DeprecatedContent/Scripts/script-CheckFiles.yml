@@ -1,0 +1,51 @@
+commonfields:
+  id: CheckFiles
+  version: -1
+name: CheckFiles
+script: >-
+  var fileNames = [];
+
+  if (args.fileNames) {
+    fileNames = args.fileNames.split(',');
+  }
+
+  var entries = executeCommand('getEntries', {});
+
+  var res = [];
+
+  for (var i=0; i<entries.length; i++) {
+    if (entries[i].File && (fileNames.length === 0 || fileNames.indexOf(entries[i].File) >= 0)) {
+      var rep = executeCommand('file', {file: entries[i].FileMetadata.MD5});
+      if (rep && Array.isArray(rep)) {
+        for (var r = 0; r < rep.length; r++) {
+          if (positiveFile(rep[r])) {
+            res.push(shortFile(rep[r]));
+          }
+        }
+      }
+    }
+  }
+
+  if (res.length > 0) {
+    res.push('yes');
+    return res;
+  }
+
+  return ['No suspicious files found', 'no'];
+type: javascript
+tags:
+- server
+- threat-intel
+comment: Deprecated. Iterate on all file artifacts in the investigation and return details of positives
+system: true
+deprecated: true
+args:
+- name: fileNames
+  default: true
+  description: If provided, checks only files whose names are in the list. The names should be comma-separated.
+scripttarget: 0
+dependson:
+  must:
+  - file
+timeout: 0s
+fromversion: 5.0.0

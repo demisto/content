@@ -1,0 +1,238 @@
+id: GetIndicatorsByQuery - Test
+inputs: []
+name: GetIndicatorsByQuery - Test
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 22ac96cd-cf44-4fa9-88d2-058fb0e5ad55
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 22ac96cd-cf44-4fa9-88d2-058fb0e5ad55
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      geocountry:
+        simple: ZZ
+      internal:
+        simple: "True"
+      type:
+        simple: IP
+      value:
+        simple: 1.2.3.4
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.new.indicator
+      id: 260a1f58-8e99-4430-846c-61ce9aed44e3
+      iscommand: true
+      name: Create indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      version: -1
+    taskid: 260a1f58-8e99-4430-846c-61ce9aed44e3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      populateFields:
+        simple: geocountry
+      query:
+        simple: value:1.2.3.4
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets a list of indicator objects and the associated indicator outputs that match the specified query and filters. The results are returned in a structured data file.
+      id: 8c7364a4-1e73-4eec-8f41-7c97eebb8049
+      iscommand: false
+      name: Search the indicator and populate only geocountry
+      script: GetIndicatorsByQuery
+      type: regular
+      version: -1
+    taskid: 8c7364a4-1e73-4eec-8f41-7c97eebb8049
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      contextKey:
+        simple: IndicatorData
+      entryID:
+        simple: ${File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Loads a JSON file from the war room to context.
+      id: 891d1a10-3a2c-48d6-858e-570f40649bfd
+      iscommand: false
+      name: Load result
+      script: LoadJSONFileToContext
+      type: regular
+      version: -1
+    taskid: 891d1a10-3a2c-48d6-858e-570f40649bfd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: IndicatorData.geocountry
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: IndicatorData.value
+          operator: isNotExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 162409c9-b24b-4675-8a78-285db5dcb2b6
+      iscommand: false
+      name: Verify context
+      type: condition
+      version: -1
+    taskid: 162409c9-b24b-4675-8a78-285db5dcb2b6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b2b4daf0-ae12-4b67-8de1-787ae73d118c
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: b2b4daf0-ae12-4b67-8de1-787ae73d118c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 910,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+fromversion: 5.5.0
+description: ''

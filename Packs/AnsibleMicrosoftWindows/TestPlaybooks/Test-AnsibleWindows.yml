@@ -1,0 +1,1306 @@
+id: Test-AnsibleWindows
+version: -1
+name: Test-AnsibleWindows
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c5beac53-e9ec-4d0c-8d53-da90e723661c
+    type: start
+    task:
+      id: c5beac53-e9ec-4d0c-8d53-da90e723661c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: f36cae01-5a6a-476f-8b5f-570662626433
+    type: regular
+    task:
+      id: f36cae01-5a6a-476f-8b5f-570662626433
+      version: -1
+      name: win-ping
+      description: |-
+        A windows version of the classic ping module
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_ping_module.html
+      script: '|||win-ping'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      data: {}
+      host:
+        simple: ${inputs.host}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: bda60b67-6b92-40b8-854b-c5dd3ce9666e
+    type: condition
+    task:
+      id: bda60b67-6b92-40b8-854b-c5dd3ce9666e
+      version: -1
+      name: check win-ping
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftWindows.WinPing.ping
+            iscontext: true
+          right:
+            value:
+              simple: pong
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+    type: regular
+    task:
+      id: 4739eca8-3a73-4ca8-8cb1-ec1864d38e03
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+      - "5"
+      - "6"
+      - "7"
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 5ba5b744-120b-4ed1-8835-08d2d4e3b538
+    type: title
+    task:
+      id: 5ba5b744-120b-4ed1-8835-08d2d4e3b538
+      version: -1
+      name: Basic Info
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -30
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 0e6f6d79-673a-47cc-8afd-d4830afa1f43
+    type: title
+    task:
+      id: 0e6f6d79-673a-47cc-8afd-d4830afa1f43
+      version: -1
+      name: File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: aff0f69e-a06e-48be-8cf1-4a7013e7d92b
+    type: title
+    task:
+      id: aff0f69e-a06e-48be-8cf1-4a7013e7d92b
+      version: -1
+      name: User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: ce0fd0d5-a295-4ff5-83ac-d3c300ffdfd9
+    type: title
+    task:
+      id: ce0fd0d5-a295-4ff5-83ac-d3c300ffdfd9
+      version: -1
+      name: Firewall
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3285498e-4280-4698-8414-89ac5d28f810
+    type: title
+    task:
+      id: 3285498e-4280-4698-8414-89ac5d28f810
+      version: -1
+      name: Package
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": -45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 4d17f7ff-fb18-4804-8dc8-790ced65e19e
+    type: regular
+    task:
+      id: 4d17f7ff-fb18-4804-8dc8-790ced65e19e
+      version: -1
+      name: win-gather-facts
+      description: |-
+        Gathers facts about remote hosts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/gather_facts_module.html
+      script: '|||win-gather-facts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      parallel: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 08feef9b-5915-44d6-8fc1-d7424590872c
+    type: condition
+    task:
+      id: 08feef9b-5915-44d6-8fc1-d7424590872c
+      version: -1
+      name: check win-gather-facts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: MicrosoftWindows.GatherFacts.processor_count
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 3498476b-e386-45ff-8c04-0cb490c3f7e2
+    type: regular
+    task:
+      id: 3498476b-e386-45ff-8c04-0cb490c3f7e2
+      version: -1
+      name: win-tempfile
+      description: |-
+        Creates temporary files and directories
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_tempfile_module.html
+      script: '|||win-tempfile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      path:
+        simple: c://testplaybook
+      prefix: {}
+      state:
+        simple: file
+      suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 054c61bd-96ea-448c-8eb2-ded1c7601799
+    type: condition
+    task:
+      id: 054c61bd-96ea-448c-8eb2-ded1c7601799
+      version: -1
+      name: check win-tempfile
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: MicrosoftWindows.WinTempfile.path
+            iscontext: true
+          right:
+            value:
+              simple: C:\testplaybook\ansible.
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 5232064f-c361-45ad-85bc-4f7872801b47
+    type: regular
+    task:
+      id: 5232064f-c361-45ad-85bc-4f7872801b47
+      version: -1
+      name: win-acl
+      description: |-
+        Set file/directory/registry permissions for a system user or group
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_acl_module.html
+      script: '|||win-acl'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      inherit: {}
+      path:
+        complex:
+          root: ${MicrosoftWindows.WinTempfile
+          accessor: path}
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \\
+              toReplace:
+                value:
+                  simple: \
+      propagation: {}
+      rights:
+        simple: Read,Write,Modify,FullControl,Delete
+      state:
+        simple: present
+      type:
+        simple: allow
+      user:
+        simple: test
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 9040d9d8-9962-452d-8e34-cc3d47e587ab
+    type: condition
+    task:
+      id: 9040d9d8-9962-452d-8e34-cc3d47e587ab
+      version: -1
+      name: check win-acl
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftWindows.WinAcl.status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: f2b2ec84-cfe7-4eda-8fc6-36ac58d770f4
+    type: condition
+    task:
+      id: f2b2ec84-cfe7-4eda-8fc6-36ac58d770f4
+      version: -1
+      name: check win-user
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftWindows.WinUser.name
+            iscontext: true
+          right:
+            value:
+              simple: test
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 52fc535d-3e64-401e-8dad-b5be09595838
+    type: condition
+    task:
+      id: 52fc535d-3e64-401e-8dad-b5be09595838
+      version: -1
+      name: check win-firewall
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              simple: MicrosoftWindows.WinFirewall.Public.enabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: fd11624f-ebd3-4443-8a9b-8f80bd8e3451
+    type: condition
+    task:
+      id: fd11624f-ebd3-4443-8a9b-8f80bd8e3451
+      version: -1
+      name: check win-chocolatey
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftWindows.WinChocolatey.rc
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 420a1805-664f-42b7-8103-e2eb487295e7
+    type: title
+    task:
+      id: 420a1805-664f-42b7-8103-e2eb487295e7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1210,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: 7530b7d7-468e-4474-858e-9c175e9a7280
+    type: regular
+    task:
+      id: 7530b7d7-468e-4474-858e-9c175e9a7280
+      version: -1
+      name: win-chocolatey
+      description: |-
+        Manage packages using chocolatey
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
+      script: '|||win-chocolatey'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      allow_empty_checksums: {}
+      allow_multiple: {}
+      allow_prerelease: {}
+      architecture: {}
+      force: {}
+      host:
+        simple: ${inputs.host}
+      ignore_checksums: {}
+      ignore_dependencies: {}
+      install_args: {}
+      name:
+        simple: 7zip.install
+      package_params: {}
+      pinned: {}
+      proxy_password: {}
+      proxy_url: {}
+      proxy_username: {}
+      skip_scripts: {}
+      source: {}
+      source_password: {}
+      source_username: {}
+      state:
+        simple: present
+      timeout: {}
+      validate_certs: {}
+      version: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "36":
+    id: "36"
+    taskid: c21edf3e-eb09-4172-804f-90af9246a0ee
+    type: regular
+    task:
+      id: c21edf3e-eb09-4172-804f-90af9246a0ee
+      version: -1
+      name: win-firewall (disabled)
+      description: |-
+        Enable or disable the Windows Firewall
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html
+      script: '|||win-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      profiles:
+        simple: Public
+      state:
+        simple: disabled
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: a93d547b-1605-46fc-8eb3-549c12d2ae05
+    type: regular
+    task:
+      id: a93d547b-1605-46fc-8eb3-549c12d2ae05
+      version: -1
+      name: win-user
+      description: |-
+        Manages local Windows user accounts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
+      script: '|||win-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      account_disabled: {}
+      account_locked: {}
+      description: {}
+      fullname: {}
+      groups: {}
+      groups_action: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: test
+      password: {}
+      password_expired: {}
+      password_never_expires: {}
+      state:
+        simple: present
+      update_password: {}
+      user_cannot_change_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "40":
+    id: "40"
+    taskid: f664aa2c-e6bf-41bd-86cf-28a4b10fa16c
+    type: regular
+    task:
+      id: f664aa2c-e6bf-41bd-86cf-28a4b10fa16c
+      version: -1
+      name: win-file
+      description: |-
+        Creates, touches or removes files or directories
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
+      script: '|||win-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      path:
+        simple: c:/testplaybook
+      state:
+        simple: directory
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "41":
+    id: "41"
+    taskid: 68edf85c-4724-44c6-8275-edf428759074
+    type: condition
+    task:
+      id: 68edf85c-4724-44c6-8275-edf428759074
+      version: -1
+      name: check win-file
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MicrosoftWindows.WinFile.status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "42":
+    id: "42"
+    taskid: f2c6dd99-8f4c-4bcd-852d-dbe42164e71c
+    type: title
+    task:
+      id: f2c6dd99-8f4c-4bcd-852d-dbe42164e71c
+      version: -1
+      name: Test User Present
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 4653199c-73ec-4730-84df-16af2b732956
+    type: regular
+    task:
+      id: 4653199c-73ec-4730-84df-16af2b732956
+      version: -1
+      name: win-file (absent)
+      description: |-
+        Creates, touches or removes files or directories
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
+      script: '|||win-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      path:
+        simple: c:/testplaybook
+      state:
+        simple: directory
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: b37c9402-e770-4e73-8bef-588f744771af
+    type: regular
+    task:
+      id: b37c9402-e770-4e73-8bef-588f744771af
+      version: -1
+      name: win-user (absent)
+      description: |-
+        Manages local Windows user accounts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
+      script: '|||win-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      account_disabled: {}
+      account_locked: {}
+      description: {}
+      fullname: {}
+      groups: {}
+      groups_action: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: test
+      password: {}
+      password_expired: {}
+      password_never_expires: {}
+      state:
+        simple: present
+      update_password: {}
+      user_cannot_change_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: f71a37ab-7026-4d12-883b-267e311c7ce4
+    type: regular
+    task:
+      id: f71a37ab-7026-4d12-883b-267e311c7ce4
+      version: -1
+      name: win-chocolatey (absent)
+      description: |-
+        Manage packages using chocolatey
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
+      script: '|||win-chocolatey'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      allow_empty_checksums: {}
+      allow_multiple: {}
+      allow_prerelease: {}
+      architecture: {}
+      force: {}
+      host:
+        simple: ${inputs.host}
+      ignore_checksums: {}
+      ignore_dependencies: {}
+      install_args: {}
+      name:
+        simple: 7zip.install
+      package_params: {}
+      pinned: {}
+      proxy_password: {}
+      proxy_url: {}
+      proxy_username: {}
+      skip_scripts: {}
+      source: {}
+      source_password: {}
+      source_username: {}
+      state:
+        simple: absent
+      timeout: {}
+      validate_certs: {}
+      version: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2550,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 99e51e95-358e-4bbd-8566-6195fe676561
+    type: regular
+    task:
+      id: 99e51e95-358e-4bbd-8566-6195fe676561
+      version: -1
+      name: win-user (absent)
+      description: |-
+        Manages local Windows user accounts
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_user_module.html
+      script: '|||win-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      account_disabled: {}
+      account_locked: {}
+      description: {}
+      fullname: {}
+      groups: {}
+      groups_action: {}
+      host:
+        simple: ${inputs.host}
+      name:
+        simple: test
+      password: {}
+      password_expired: {}
+      password_never_expires: {}
+      state:
+        simple: present
+      update_password: {}
+      user_cannot_change_password: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 1caf024b-b582-4225-8534-b88c24b42474
+    type: regular
+    task:
+      id: 1caf024b-b582-4225-8534-b88c24b42474
+      version: -1
+      name: win-file (absent)
+      description: |-
+        Creates, touches or removes files or directories
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_file_module.html
+      script: '|||win-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      path:
+        simple: c:/testplaybook
+      state:
+        simple: directory
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 5d1d7c41-a1f8-4771-8c9a-65b0c4884fe7
+    type: regular
+    task:
+      id: 5d1d7c41-a1f8-4771-8c9a-65b0c4884fe7
+      version: -1
+      name: win-chocolatey (absent)
+      description: |-
+        Manage packages using chocolatey
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_chocolatey_module.html
+      script: '|||win-chocolatey'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      allow_empty_checksums: {}
+      allow_multiple: {}
+      allow_prerelease: {}
+      architecture: {}
+      force: {}
+      host:
+        simple: ${inputs.host}
+      ignore_checksums: {}
+      ignore_dependencies: {}
+      install_args: {}
+      name:
+        simple: 7zip.install
+      package_params: {}
+      pinned: {}
+      proxy_password: {}
+      proxy_url: {}
+      proxy_username: {}
+      skip_scripts: {}
+      source: {}
+      source_password: {}
+      source_username: {}
+      state:
+        simple: absent
+      timeout: {}
+      validate_certs: {}
+      version: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: ffd6d12c-5fa5-4574-86cb-cf3a4c20b2e1
+    type: regular
+    task:
+      id: ffd6d12c-5fa5-4574-86cb-cf3a4c20b2e1
+      version: -1
+      name: win-firewall (enabled)
+      description: |-
+        Enable or disable the Windows Firewall
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html
+      script: '|||win-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      profiles:
+        simple: Public
+      state:
+        simple: enabled
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2010,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: 1666258a-9407-4031-8045-cb37704fc7af
+    type: regular
+    task:
+      id: 1666258a-9407-4031-8045-cb37704fc7af
+      version: -1
+      name: win-firewall (enabled)
+      description: |-
+        Enable or disable the Windows Firewall
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_firewall_module.html
+      script: '|||win-firewall'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      host:
+        simple: ${inputs.host}
+      profiles:
+        simple: Public
+      state:
+        simple: enabled
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": -685
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3155,
+        "width": 2470,
+        "x": 460,
+        "y": -1110
+      }
+    }
+  }
+inputs:
+- key: host
+  value:
+    simple: 123.123.123.123
+  required: true
+  description: Host to run tests against
+  playbookInputQuery:
+outputs: []
+sourceplaybookid: 3a6dd8ad-15e6-46c1-8110-8132245ac2eb
+fromversion: 6.0.0
+description: Test playbook for Ansible Windows Integration

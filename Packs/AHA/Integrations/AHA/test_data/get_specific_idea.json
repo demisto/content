@@ -1,0 +1,15 @@
+{
+    "idea": {
+        "id": "7144646026151911047",
+        "name": "[Test] Mirroring",
+        "reference_num": "DEMO-I-2895",
+        "product_id": "6836114877834670881",
+        "workflow_status": {
+            "id": "6836873525456343266",
+            "name": "Request Received",
+            "position": 1,
+            "complete": false,
+            "color": "#c1e39d"
+        }
+    }
+}

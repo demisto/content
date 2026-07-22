@@ -1,0 +1,35 @@
+{
+  "userid": "local|12345678-1234-1234-1234-123456789012",
+  "username": "fakeuser",
+  "connection": "local_account",
+  "email": "fakeuser@example.com",
+  "name": "Fake User",
+  "nickname": "fakey",
+  "certificate_subject_dn": "OU=unit,O=organization,L=city,ST=state,C=country",
+  "enable_cert_auth": false,
+  "user_metadata": {
+    "theme": "dark",
+    "language": "en"
+  },
+  "app_metadata": {
+    "roles": ["admin", "user"],
+    "groups": ["group1", "group2"]
+  },
+  "logins_count": 42,
+  "last_login": "2024-05-27T14:23:34.123456Z",
+  "created_at": "2024-01-15T08:12:19.987654Z",
+  "updated_at": "2024-05-28T10:15:30.654321Z",
+  "allowed_auth_methods": ["password", "user_certificate"],
+  "expires_at": "2025-01-01T00:00:00.000000Z",
+  "password_policy": "strict",
+  "allowed_client_types": ["unregistered", "public"],
+  "failed_logins_count": 3,
+  "failed_logins_initial_attempt_at": "2024-05-25T12:00:00.000000Z",
+  "account_lockout_at": "2024-05-25T12:10:00.000000Z",
+  "last_failed_login_at": "2024-05-26T13:00:00.000000Z",
+  "password_changed_at": "2024-04-01T10:00:00.000000Z",
+  "password_change_required": true,
+  "login_flags": {
+    "prevent_ui_login": false
+  }
+}

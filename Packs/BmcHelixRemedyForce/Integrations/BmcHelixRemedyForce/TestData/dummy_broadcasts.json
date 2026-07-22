@@ -1,0 +1,21 @@
+[
+    {
+        "Id": "a1v2w000000IaP7AAK",
+        "Name": "BES Server is down",
+        "Category": "Telecommunication", 
+        "Status": "OPENED",
+        "Priority": "1",
+        "Urgency": "HIGH",
+        "Impact": "HIGH"
+    }, 
+    {
+        "Id": "a1v2w000000IaP6AAK", 
+        "Name": "WEB-01", 
+        "Category": "IT Services", 
+        "Status": "OPENED", 
+        "Priority": "1", 
+        "Urgency": "HIGH", 
+        "Impact": "HIGH"
+    }
+]
+

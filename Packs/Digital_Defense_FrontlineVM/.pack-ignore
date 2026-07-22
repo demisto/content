@@ -1,0 +1,12 @@
+[file:Digital_Defense_FrontlineVM]
+ignore=PA116
+
+[file:Digital_Defense_FrontlineVM.yml]
+ignore=IN126,BA108,BA109,BA124
+
+[file:README.md]
+ignore=RM104
+
+[known_words]
+frontlinevm
+

@@ -1,0 +1,47 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"Prisma Cloud",
+		"GCP Compute Engine Misconfiguration",
+		"AWS CloudTrail Misconfiguration",
+		"AWS IAM Policy Misconfiguration",
+		"AWS EC2 Instance Misconfiguration",
+		"Prisma Cloud - VM Alert Prioritization"
+	],
+	"breachScript": "",
+	"caseInsensitive": true,
+	"cliName": "skuname",
+	"closeForm": false,
+	"columns": null,
+	"content": true,
+	"defaultRows": null,
+	"description": "",
+	"editForm": true,
+	"fieldCalcScript": "",
+	"group": 0,
+	"hidden": false,
+	"id": "incident_skuname",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "SKU Name",
+	"neverSetAsRequired": false,
+	"ownerOnly": false,
+	"placeholder": "",
+	"required": false,
+	"script": "",
+	"selectValues": null,
+	"sla": 0,
+	"system": false,
+	"systemAssociatedTypes": [
+		"Prisma Cloud - VM Alert Prioritization"
+	],
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": false,
+	"useAsKpi": false,
+	"validationRegex": "",
+	"version": -1,
+	"fromVersion": "5.0.0"
+}
+

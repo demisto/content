@@ -1,0 +1,234 @@
+id: Close All Duplicate XSOAR Incidents - Vectra Detect
+version: -1
+name: Close All Duplicate XSOAR Incidents - Vectra Detect
+description: This playbook will clean up all incidents in XSOAR by closing duplicate incidents from Vectra Detect.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2941f26e-de81-4013-8782-4d3c9c85c30b
+    type: start
+    task:
+      id: 2941f26e-de81-4013-8782-4d3c9c85c30b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 350573bb-f638-4253-83ed-771d2e2389ab
+    type: playbook
+    task:
+      id: 350573bb-f638-4253-83ed-771d2e2389ab
+      version: -1
+      name: Close Duplicate XSOAR Incidents - Vectra Detect
+      description: This playbook is called from the Close All Duplicate XSOAR Incidents - Vectra Detect playbook. It will close the duplicate incidents in XSOAR and resolve its assignment in Vectra.
+      playbookName: Close Duplicate XSOAR Incidents - Vectra Detect
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      close_in_vectra:
+        complex:
+          root: inputs.close_in_vectra
+      incident_types:
+        complex:
+          root: inputs.incident_types
+      note:
+        complex:
+          root: inputs.note
+      page_size:
+        complex:
+          root: inputs.page_size
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isFalse
+          left:
+            value:
+              complex:
+                root: VectraDetectIncidents
+                accessor: has_more_incidents
+            iscontext: true
+          right:
+            value: {}
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5c3a2dd5-b467-44f3-8f16-afa074d07aef
+    type: title
+    task:
+      id: 5c3a2dd5-b467-44f3-8f16-afa074d07aef
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: ce28f559-6119-4044-8b24-d8a51526a0b7
+    type: condition
+    task:
+      id: ce28f559-6119-4044-8b24-d8a51526a0b7
+      version: -1
+      name: Is VectraDetect Integration Enabled?
+      description: Check VectraDetect integration is active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Vectra_Detect
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+        - operator: isFalse
+          left:
+            value:
+              simple: inputs.close_in_vectra
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_2_#default#": 0.77
+    },
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: page_size
+  value:
+    simple: "50"
+  required: false
+  description: Specify the number of incidents to close during a single execution.
+  playbookInputQuery:
+- key: note
+  value:
+    simple: Duplicate. Closed.
+  required: false
+  description: The note to add to the closed incidents.
+  playbookInputQuery:
+- key: close_in_vectra
+  value:
+    simple: "True"
+  required: false
+  description: If set to true, the playbook will close the entity's assignment in Vectra platform. This option is supported only when instance of Vectra Detect integration is enabled.
+  playbookInputQuery:
+- key: incident_types
+  value:
+    simple: Vectra Account, Vectra Host
+  required: false
+  description: Specify the incident type(s) to close duplicate incidents. Supports comma-separated values.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

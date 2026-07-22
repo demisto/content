@@ -1,0 +1,63 @@
+commonfields:
+  id: SNUpdateTicket
+  version: -1
+name: SNUpdateTicket
+script: >-
+  DISPLAY_FIELDS = ['number', 'severity', 'category', 'opened_at', 'subcategory', 'priority', 'comments', 'short_description']
+
+  res = []
+
+  dArgs = demisto.args()
+
+  if 'assignmentgroup' in dArgs:
+      dArgs['assignment-group'] = dArgs.pop('assignmentgroup')
+  if 'shortdescription' in dArgs:
+      dArgs['short-description'] = dArgs.pop('shortdescription')
+  resCmdName = demisto.executeCommand("servicenow-incident-update", dArgs)
+
+  try:
+      for entry in resCmdName:
+          if isError(entry):
+              res = resCmdName
+              break
+          else:
+              myData = demisto.get(entry, 'Contents.result')
+              if myData:
+                  myData = {k: formatCell(myData[k]) for k in DISPLAY_FIELDS}
+                  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": myData})
+              else:
+                  res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                              "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"])})
+  except Exception as ex:
+      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                  "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmdName)})
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- servicenow
+comment: Deprecated. Update a ServiceNow ticket.
+system: true
+deprecated: true
+args:
+- name: category
+  default: true
+  description: Ticket new category
+- name: subcategory
+  description: Ticket new sub category
+- name: shortdescription
+  description: Ticket new short description
+- name: comments
+  description: Ticket new comments
+- name: assignmentgroup
+  description: Ticket new assignment group
+- name: id
+  required: true
+  description: ID of the Ticket/Incident in ServiceNow
+scripttarget: 0
+dependson:
+  must:
+  - servicenow-incident-update
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

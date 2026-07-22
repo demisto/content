@@ -1,0 +1,72 @@
+{
+    "data": [
+        {
+            "name": "panw-torexit-ip-list",
+            "snippet": "predefined",
+            "display_name": "Palo Alto Networks - Tor exit IP addresses",
+            "description": "IP addresses supplied by multiple providers and validated with Palo Alto Networks threat intelligence data as active Tor exit nodes. Traffic from Tor exit nodes can serve a legitimate purpose, however, is disproportionately associated with malicious activity, especially in enterprise environments."
+        },
+        {
+            "id": "1",
+            "name": "predefined ip",
+            "folder": "Shared",
+            "type": {
+                "predefined_ip": {
+                    "url": "panw-known-ip-list"
+                }
+            }
+        },
+              {
+            "id": "2",
+            "name": "url",
+            "folder": "Shared",
+            "type": {
+                "url": {
+                    "description": "api test",
+                    "recurring": {
+                        "weekly": {
+                            "at": "21",
+                            "day_of_week": "sunday"
+                        }
+                    },
+                    "url": "https://www.projecthoneypot.org/list_of_ips.php"
+                }
+            }
+        },
+        {
+            "id": "3",
+            "name": "domain",
+            "folder": "Shared",
+            "type": {
+                "domain": {
+                    "description": "api test",
+                    "recurring": {
+                        "monthly": {
+                            "at": "21",
+                            "day_of_month": "1"
+                        },
+                        "url": "test.com"
+                    }
+                }
+            }
+        },
+        {
+            "id": "4",
+            "name": "ip",
+            "folder": "Shared",
+            "type": {
+                "ip": {
+                    "description": "api test",
+                    "recurring": {
+                        "five_minute": {}
+                    },
+                    "certificate_profile": "GP_Log_Certificate",
+                    "url": "https://www.projecthoneypot.org/list_of_ips.php"
+                }
+            }
+        }
+    ],
+    "offset": 0,
+    "total": 5,
+    "limit": 200
+}

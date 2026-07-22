@@ -1,0 +1,57 @@
+commonfields:
+  id: PWEventPcapInfo
+  version: -1
+name: PWEventPcapInfo
+script: >
+  res = []
+
+  dArgs = demisto.args()
+
+  dArgs["using-brand"] = "ProtectWise"
+
+  eventids = argToList(demisto.get(dArgs, 'eventId'))
+
+  infos = []
+
+  for eid in eventids:
+      dArgs['eventId'] = eid
+      resCmd = demisto.executeCommand("event-pcap-info", dArgs)
+      try:
+          for entry in resCmd:
+              if isError(entry):
+                  res = resCmd
+                  break
+              else:
+                  myData = demisto.get(entry, 'Contents')
+                  if myData and isinstance(myData, dict):
+                      for field in myData:
+                          myData[field] = formatCell(myData[field])
+                      infos += [myData]
+                  else:
+                      res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                                  "Contents": "Could not extract result list from response: " + json.dumps(entry["Contents"], indent=4)})
+      except Exception as ex:
+          res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
+                      "Contents": "Error occurred while parsing output from command. Exception info:\n" + str(ex) + "\n\nInvalid output:\n" + str(resCmd)})
+  res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": infos})
+
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- protectwise
+comment: Deprecated. Retrieve information about a PCAP related to the specified event.
+system: true
+args:
+- name: eventId
+  required: true
+  default: true
+  description: The event ID, or list of IDs (will return PCAP Info for each)
+scripttarget: 0
+dependson:
+  must:
+  - ProtectWise|||event-pcap-info
+timeout: 0s
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

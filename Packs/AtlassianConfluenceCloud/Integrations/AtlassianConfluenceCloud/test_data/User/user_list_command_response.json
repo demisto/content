@@ -1,0 +1,76 @@
+{
+  "results": [
+    {
+      "user": {
+        "type": "known",
+        "accountId": "1238568455dsfsdf5555",
+        "accountType": "",
+        "publicName": "John doe",
+        "profilePicture": {
+          "path": "/wiki/aa-avatar/1238568455dsfsdf5555",
+          "width": 48,
+          "height": 48,
+          "isDefault": false
+        },
+        "displayName": "John doe",
+        "isExternalCollaborator": false,
+        "_expandable": {
+          "operations": "",
+          "personalSpace": ""
+        },
+        "_links": {
+          "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=1238568455dsfsdf5555"
+        }
+      },
+      "title": "John doe",
+      "excerpt": "",
+      "url": "/people/1238568455dsfsdf5555",
+      "breadcrumbs": [],
+      "entityType": "user",
+      "iconCssClass": "aui-iconfont-user",
+      "lastModified": "2021-08-20T05:43:36.264Z",
+      "score": 0.0
+    },
+    {
+      "user": {
+        "type": "known",
+        "accountId": "12345-6789-12345-6789-12345-6789-12345",
+        "accountType": "",
+        "publicName": "Confluence dummy",
+        "profilePicture": {
+          "path": "/wiki/aa-avatar/12345-6789-12345-6789-12345-6789-12345",
+          "width": 48,
+          "height": 48,
+          "isDefault": false
+        },
+        "displayName": "Confluence dummy",
+        "isExternalCollaborator": false,
+        "_expandable": {
+          "operations": "",
+          "personalSpace": ""
+        },
+        "_links": {
+          "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=12345-6789-12345-6789-12345-6789-12345"
+        }
+      },
+      "title": "Confluence dummy",
+      "excerpt": "",
+      "url": "/people/12345-6789-12345-6789-12345-6789-12345",
+      "breadcrumbs": [],
+      "entityType": "user",
+      "iconCssClass": "aui-iconfont-user",
+      "lastModified": "2021-08-20T05:43:36.264Z",
+      "score": 0.0
+    }
+  ],
+  "start": 2,
+  "limit": 2,
+  "size": 2,
+  "totalSize": 2,
+  "cqlQuery": "type=user",
+  "searchDuration": 435,
+  "_links": {
+    "base": "https://xsoar-bd.atlassian.net/wiki",
+    "context": "/wiki"
+  }
+}

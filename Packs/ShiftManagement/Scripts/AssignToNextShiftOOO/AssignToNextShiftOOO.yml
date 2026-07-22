@@ -1,0 +1,24 @@
+args:
+- description: A comma-separated list of active incident IDs to assign to the next shift, for example, 1,2,3,4.
+  name: incidentIds
+  required: true
+- defaultValue: OOO List
+  description: The name of the out-of-office list. Default is "OOO List".
+  name: listname
+comment: "Randomly assigns the active incidents to on call analysts (requires shift management).\nThis automation works with the other out-of-office automations to ensure only available analysts are assigned to the active incidents.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\nFor Cortex XSOAR 6 use the link https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations and for Cortex XSOAR 8 Cloud use the link https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script."
+commonfields:
+  id: AssignToNextShiftOOO
+  version: -1
+enabled: true
+name: AssignToNextShiftOOO
+script: '-'
+subtype: python3
+tags:
+- Shift Management
+- ooo
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.11.4819260
+tests:
+- No tests
+fromversion: 5.0.0

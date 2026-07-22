@@ -1,0 +1,422 @@
+id: Failed Login Playbook - Slack v2
+version: -1
+name: Failed Login Playbook - Slack v2
+fromversion: 5.0.0
+description: Deprecated. Use the Slack - General Failed Logins v2.1 playbook. When there are three failed login attempts to Demisto that originate from the same user ID, a direct message is sent to the user on Slack requesting that they confirm the activity.
+  If the reply is "no", then the incident severity is set to "high". If the reply is "yes", then another direct message is sent to the user asking if they require a password reset in AD.
+starttaskid: "0"
+hidden: true
+tasks:
+  "0":
+    id: "0"
+    taskid: e0772674-d7ff-43df-8075-a871655a3f9b
+    type: start
+    task:
+      id: e0772674-d7ff-43df-8075-a871655a3f9b
+      version: -1
+      name: start_task
+      description: ""
+      type: start
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "2":
+    id: "2"
+    taskid: 34e65914-c4a4-436d-8774-60ef198b8f4d
+    type: regular
+    task:
+      id: 34e65914-c4a4-436d-8774-60ef198b8f4d
+      version: -1
+      name: Ask user to confirm failed login attempts
+      description: Sends the user a direct message in Slack requesting that they confirm the account activity. The message includes predefined reply options. The response
+        can also close a task (might be conditional) in a playbook.
+      scriptName: SlackAsk
+      clonedfrom: 7a39f05d-23c9-412d-8e36-3dd1ba0dd2f2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      channel: {}
+      message:
+        simple: There were several failed login attempts with your user ID. Please confirm
+          that you attempted these logins.
+      option1: {}
+      option2: {}
+      persistent: {}
+      replyEntriesTag: {}
+      task:
+        simple: "3"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "3":
+    id: "3"
+    taskid: 58679e35-4e24-4d2a-89ba-22fbd161f308
+    type: condition
+    task:
+      id: 58679e35-4e24-4d2a-89ba-22fbd161f308
+      version: -1
+      name: Did the user attempt the failed login attempts?
+      description: Answer `yes` if the user initiated the failed login attempts.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "4":
+    id: "4"
+    taskid: 2df70754-d8f4-4ca3-85de-e76725c4e1cc
+    type: regular
+    task:
+      id: 2df70754-d8f4-4ca3-85de-e76725c4e1cc
+      version: -1
+      name: Raise Incident Severity to High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      addLabels: {}
+      affecteddata: {}
+      affecteddatatype: {}
+      affectedindividualscontactinformation: {}
+      app: {}
+      approximatenumberofaffecteddatasubjects: {}
+      assetid: {}
+      attachmentcount: {}
+      attachmentextension: {}
+      attachmenthash: {}
+      attachmentid: {}
+      attachmentname: {}
+      attachmentsize: {}
+      attachmenttype: {}
+      bugtraq: {}
+      city: {}
+      closeNotes: {}
+      closeReason: {}
+      companyaddress: {}
+      companycity: {}
+      companycountry: {}
+      companyhasinsuranceforthebreach: {}
+      companyname: {}
+      companypostalcode: {}
+      contactaddress: {}
+      contactname: {}
+      country: {}
+      countrywherebusinesshasitsmainestablishment: {}
+      countrywherethebreachtookplace: {}
+      customFields: {}
+      cve: {}
+      cvss: {}
+      dataencryptionstatus: {}
+      datetimeofthebreach: {}
+      deleteEmptyField: {}
+      dest: {}
+      destntdomain: {}
+      details: {}
+      dpoemailaddress: {}
+      duration: {}
+      emailaddress: {}
+      emailbcc: {}
+      emailbody: {}
+      emailbodyformat: {}
+      emailbodyhtml: {}
+      emailcc: {}
+      emailclientname: {}
+      emailfrom: {}
+      emailinreplyto: {}
+      emailkeywords: {}
+      emailmessageid: {}
+      emailreceived: {}
+      emailreplyto: {}
+      emailreturnpath: {}
+      emailsenderip: {}
+      emailsize: {}
+      emailsource: {}
+      emailsubject: {}
+      emailto: {}
+      emailtocount: {}
+      emailurlclicked: {}
+      filehash: {}
+      filename: {}
+      filepath: {}
+      id: {}
+      isthedatasubjecttodpia: {}
+      labels: {}
+      likelyimpact: {}
+      maliciouscauseifthecauseisamaliciousattack: {}
+      malwarefamily: {}
+      measurestomitigate: {}
+      name: {}
+      occurred: {}
+      owner: {}
+      phase: {}
+      possiblecauseofthebreach: {}
+      postalcode: {}
+      replacePlaybook: {}
+      roles: {}
+      sectorofaffectedparty: {}
+      severity:
+        simple: High
+      signature: {}
+      sizenumberofemployees: {}
+      sizeturnover: {}
+      sla: {}
+      slaField: {}
+      src: {}
+      srcntdomain: {}
+      srcuser: {}
+      systems: {}
+      telephoneno: {}
+      type: {}
+      user: {}
+      vendorid: {}
+      vendorproduct: {}
+      vulnerabilitycategory: {}
+      whereisdatahosted: {}
+      yaakovi: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 48,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "5":
+    id: "5"
+    taskid: fbf62a23-acd3-4546-8b0b-83e210261251
+    type: regular
+    task:
+      id: fbf62a23-acd3-4546-8b0b-83e210261251
+      version: -1
+      name: Ask the user if we should reset their password
+      description: Sends the user a direct message in Slack asking if their AD password should be reset. The message includes predefined reply options. The response
+        can also close a task (might be conditional) in a playbook.
+      scriptName: SlackAsk
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      channel: {}
+      message:
+        simple: Should we reset your password?
+      option1: {}
+      option2: {}
+      persistent: {}
+      replyEntriesTag: {}
+      task:
+        simple: "6"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "6":
+    id: "6"
+    taskid: 5de09b8c-1b2e-4ca7-8f16-afdcb5c5df16
+    type: condition
+    task:
+      id: 5de09b8c-1b2e-4ca7-8f16-afdcb5c5df16
+      version: -1
+      name: Should we reset the password?
+      description: Answer `yes` if password should be reset.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "9"
+      "yes":
+      - "7"
+    scriptarguments:
+      message:
+        simple: Do you want us to reset your password?
+      option1: {}
+      option2: {}
+      task:
+        simple: "6"
+      user:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "7":
+    id: "7"
+    taskid: 83deb81b-3415-4958-8178-54ad491332b0
+    type: regular
+    task:
+      id: 83deb81b-3415-4958-8178-54ad491332b0
+      version: -1
+      name: Expire Password
+      description: Expires the password of an Active Directory user.
+      script: '|||ad-expire-password'
+      clonedfrom: b061d5be-194d-4413-804b-ea47a7f05317
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      base-dn: {}
+      username:
+        simple: ${incident.labels.User}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 732,
+          "y": 894
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "8":
+    id: "8"
+    taskid: 761d55ff-dd09-42e4-880a-0c53659486c9
+    type: regular
+    task:
+      id: 761d55ff-dd09-42e4-880a-0c53659486c9
+      version: -1
+      name: Notify User on Slack
+      description: Sends a direct message to a Slack user, group, or channel.
+      script: '|||send-notification'
+      clonedfrom: 5e3d77e5-2172-4f74-87b6-c54e0f70fa62
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      channel: {}
+      entry: {}
+      ignoreAddURL: {}
+      message:
+        simple: Your password was reset
+      threadID: {}
+      to:
+        simple: ${incident.labels.Email}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 732,
+          "y": 1069
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "9":
+    id: "9"
+    taskid: cff20392-194c-4152-8666-098b2606037e
+    type: regular
+    task:
+      id: cff20392-194c-4152-8666-098b2606037e
+      version: -1
+      name: Close the incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      assetid: {}
+      closeNotes: {}
+      closeReason: {}
+      id: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "6_9_no": 0.71
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 1064,
+        "x": 48,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+  - no test - manual task
+deprecated: true

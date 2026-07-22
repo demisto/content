@@ -1,0 +1,1282 @@
+id: Microsoft Defender Advanced Threat Protection - Test
+version: -1
+name: Microsoft Defender Advanced Threat Protection - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f3681b00-0f58-49fd-84c8-e9afc23fe6f4
+    type: start
+    task:
+      id: f3681b00-0f58-49fd-84c8-e9afc23fe6f4
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6b12d10c-082a-4445-8bd5-a577758a4f29
+    type: title
+    task:
+      id: 6b12d10c-082a-4445-8bd5-a577758a4f29
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 570a2326-e18f-42e4-8d97-a155c7c01825
+    type: regular
+    task:
+      id: 570a2326-e18f-42e4-8d97-a155c7c01825
+      version: -1
+      name: Get machines by health status
+      description: Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+      script: '|||microsoft-atp-get-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+      - "53"
+    scriptarguments:
+      health_status:
+        simple: Active
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1985,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: bf980220-5c38-41dd-8880-633543fa0cf2
+    type: regular
+    task:
+      id: bf980220-5c38-41dd-8880-633543fa0cf2
+      version: -1
+      name: Get machine related to domain
+      description: Retrieves a collection of machines that have communicated to or from a given domain address.
+      script: '|||microsoft-atp-get-domain-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+      - "28"
+      - "29"
+      - "44"
+      - "50"
+      - "37"
+    scriptarguments:
+      domain:
+        simple: microsoft.com
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: ef4c9bd5-fae8-4cdb-8aca-d097f7345e35
+    type: regular
+    task:
+      id: ef4c9bd5-fae8-4cdb-8aca-d097f7345e35
+      version: -1
+      name: Delete context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1125,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 9e38ef68-7cbf-4385-8a42-025fcd10383e
+    type: regular
+    task:
+      id: 9e38ef68-7cbf-4385-8a42-025fcd10383e
+      version: -1
+      name: Get domain statistics
+      description: Retrieves the statistics on the given domain.
+      script: '|||microsoft-atp-get-domain-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      domain:
+        simple: ${MicrosoftATP.DomainMachine.Domain}
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 5e7eb859-bea2-4577-8c94-56c6e577ccfb
+    type: regular
+    task:
+      id: 5e7eb859-bea2-4577-8c94-56c6e577ccfb
+      version: -1
+      name: Get machine action data
+      description: Return the machine's actions. If you set an action id it will return the info on the specific action
+      script: '|||microsoft-atp-list-machine-actions-details'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      machine_id:
+        complex:
+          root: MicrosoftATP.DomainMachine.Machines
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: f56fe384-fa9a-4a75-8547-9b4952da8f8b
+    type: regular
+    task:
+      id: f56fe384-fa9a-4a75-8547-9b4952da8f8b
+      version: -1
+      name: Get file statistics
+      description: Retrieves the statistics for the given file.
+      script: '|||microsoft-atp-get-file-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      file_hash:
+        simple: 02c3831b162e02f7a8d27bdbf54b4c6bf711f750
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: bf124bbc-68d2-4ffa-85b6-216fc3cc007b
+    type: regular
+    task:
+      id: bf124bbc-68d2-4ffa-85b6-216fc3cc007b
+      version: -1
+      name: Get ip statistics
+      description: Retrieves the statistics for the given IP.
+      script: '|||microsoft-atp-get-ip-statistics'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+      retry-count:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: c65e27fd-ebff-4edd-86e9-e5b076d848b8
+    type: regular
+    task:
+      id: c65e27fd-ebff-4edd-86e9-e5b076d848b8
+      version: -1
+      name: Get user machines
+      description: Retrieves a collection of machines related to a given user ID.
+      script: '|||microsoft-atp-get-user-machines'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      username:
+        simple: demisto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 9a16eb3a-ac19-4f78-86cc-a865691e32f7
+    type: regular
+    task:
+      id: 9a16eb3a-ac19-4f78-86cc-a865691e32f7
+      version: -1
+      name: Add machine tag
+      description: Adds or remove tag to a specific Machine.
+      script: '|||microsoft-atp-add-remove-machine-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      action:
+        simple: Add
+      machine_id:
+        complex:
+          root: MicrosoftATP.DomainMachine.Machines
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      retry-count:
+        simple: "3"
+      tag:
+        simple: testing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 5cd03f7b-7462-42c9-8b4b-68c47e668004
+    type: regular
+    task:
+      id: 5cd03f7b-7462-42c9-8b4b-68c47e668004
+      version: -1
+      name: Remove machine tag
+      description: Adds or remove tag to a specific Machine.
+      script: '|||microsoft-atp-add-remove-machine-tag'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      action:
+        simple: Remove
+      machine_id:
+        simple: ${MicrosoftATP.Machine.ID}
+      retry-count:
+        simple: "3"
+      tag:
+        simple: testing
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 343e8ba6-f8c2-4e28-8680-2e6a507d09a2
+    type: regular
+    task:
+      id: 343e8ba6-f8c2-4e28-8680-2e6a507d09a2
+      version: -1
+      name: Start Investigation
+      description: Start an automated investigation on a machine.
+      script: '|||microsoft-atp-start-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      comment:
+        simple: testing
+      machine_id:
+        complex:
+          root: MicrosoftATP.DomainMachine.Machines
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MicrosoftATP.DomainMachine.Machines.OSPlatform
+                iscontext: true
+              right:
+                value:
+                  simple: Windows10
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 6ddb3950-33da-467c-8ee5-f8168215362a
+    type: regular
+    task:
+      id: 6ddb3950-33da-467c-8ee5-f8168215362a
+      version: -1
+      name: List investigations
+      description: Retrieves a collection of investigations or retrieves a specific investigation by its ID.
+      script: '|||microsoft-atp-list-investigations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      limit:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 5f13748a-9f96-4b8b-8283-1df5b529f456
+    type: regular
+    task:
+      id: 5f13748a-9f96-4b8b-8283-1df5b529f456
+      version: -1
+      name: endpoint command
+      description: Gets machines that have communicated with Microsoft Defender for Endpoint cloud. At least one of the following arguments is required ip, hostanme ot id. Otherwise, an error appears.
+      script: Microsoft Defender Advanced Threat Protection|||endpoint
+      type: regular
+      iscommand: true
+      brand: Microsoft Defender Advanced Threat Protection
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      hostname:
+        simple: ${MicrosoftATP.Machine.ComputerDNSName}
+      id:
+        complex:
+          root: ${MicrosoftATP.Machine.ID}
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: '0'
+              to:
+                value:
+                  simple: '5'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 67dce55b-41e5-40a3-89fa-7632131c1ec5
+    type: condition
+    task:
+      id: 67dce55b-41e5-40a3-89fa-7632131c1ec5
+      version: -1
+      name: verify endpoint ID
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    scriptarguments:
+      left:
+        complex:
+          root: Endpoint
+          accessor: ID
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+      right:
+        complex:
+          root: MicrosoftATP.Machine
+          accessor: ID
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: d0e461b9-520e-4907-8ce9-2718822ac179
+    type: condition
+    task:
+      id: d0e461b9-520e-4907-8ce9-2718822ac179
+      version: -1
+      name: verify endpoint hostname
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    scriptarguments:
+      left:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+      right:
+        complex:
+          root: MicrosoftATP.Machine
+          accessor: ComputerDNSName
+          transformers:
+          - operator: sort
+            args:
+              descending: {}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: ba98c308-fd0e-4ddb-819f-10601f15b8f1
+    type: condition
+    task:
+      id: ba98c308-fd0e-4ddb-819f-10601f15b8f1
+      version: -1
+      name: verify endpoint vendor
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${Endpoint.Vendor}
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Defender ATP
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 227bbe56-8fe5-46d4-8001-3e5ebb0c30dc
+    type: regular
+    task:
+      id: 227bbe56-8fe5-46d4-8001-3e5ebb0c30dc
+      version: -1
+      name: Ge file info
+      description: Retrieves file info by a file hash (Sha1 or Sha256).
+      script: '|||microsoft-atp-get-file-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      hash:
+        simple: 3395856ce81f2b7382dee72602f798b642f14140,db79e9e669c42b5ac46fc6d6b590ca990687958b
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 6cb5b06d-7413-49e5-83c0-f0147e075276
+    type: regular
+    task:
+      id: 6cb5b06d-7413-49e5-83c0-f0147e075276
+      version: -1
+      name: Get machine by vulnerability
+      description: Retrieves a list of machines affected by a vulnerability.
+      script: '|||microsoft-atp-list-machines-by-vulnerability'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      cve_id:
+        simple: CVE-2021-32810,CVE-2020-12321
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 36b44a88-ba2a-4eb9-8a3d-96651e95e559
+    type: condition
+    task:
+      id: 36b44a88-ba2a-4eb9-8a3d-96651e95e559
+      version: -1
+      name: Assert related alerts
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: MicrosoftATP.Machine.ID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 80b787dc-62ad-4150-8944-4bf38e82f483
+    type: regular
+    task:
+      id: 80b787dc-62ad-4150-8944-4bf38e82f483
+      version: -1
+      name: Get machine logged on users
+      description: Retrieves a collection of logged on users on a specific device.
+      script: '|||microsoft-atp-get-machine-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      machine_id:
+        complex:
+          root: MicrosoftATP.Machine.ID
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: MicrosoftATP.Machine.ID
+                iscontext: true
+              right:
+                value:
+                  simple: "489903"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 59b7c93c-d2b1-4fe0-8215-661cc521e2f3
+    type: regular
+    task:
+      id: 59b7c93c-d2b1-4fe0-8215-661cc521e2f3
+      version: -1
+      name: Get list vulnerabilities by machine
+      description: Retrieves a list of all the vulnerabilities affecting the organization per machine.
+      script: '|||microsoft-atp-list-vulnerabilities-by-machine'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      cve_id:
+        simple: ${MicrosoftATP.CveMachine.CVE}
+      machine_id:
+        simple: ${MicrosoftATP.CveMachine.ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 92142021-f3f1-433a-8de4-57b9c33436f2
+    type: condition
+    task:
+      id: 92142021-f3f1-433a-8de4-57b9c33436f2
+      version: -1
+      name: Verify vulnerabilities
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: IsValueInArray
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "57"
+    scriptarguments:
+      value:
+        complex:
+          root: MicrosoftATP.CveMachine
+          accessor: CVE
+      array:
+        complex:
+          root: MicrosoftATP.MachineCVE
+          accessor: cveId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: b1979bd6-4f7a-4464-8945-08a7782e2f12
+    type: regular
+    task:
+      id: b1979bd6-4f7a-4464-8945-08a7782e2f12
+      version: -1
+      name: Get list vulnerabilities
+      description: Retrieves a list of all vulnerabilities.
+      script: '|||microsoft-atp-list-vulnerabilities'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      id:
+        simple: ${MicrosoftATP.MachineCVE.cveId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: dab28733-43a5-413a-8d9c-2bb66a8ef2df
+    type: condition
+    task:
+      id: dab28733-43a5-413a-8d9c-2bb66a8ef2df
+      version: -1
+      name: Verify vulnerabilities
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    scriptarguments:
+      left:
+        simple: ${MicrosoftATP.Vulnerability.id}
+      right:
+        simple: ${MicrosoftATP.MachineCVE.cveId}
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 43dd28c0-97d5-45dc-8ef3-a5e1df1df543
+    type: regular
+    task:
+      id: 43dd28c0-97d5-45dc-8ef3-a5e1df1df543
+      version: -1
+      name: Get list software
+      description: Retrieves the organization software inventory.
+      script: '|||microsoft-atp-list-software'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      id:
+        simple: microsoft-_-powershell_6-x64
+      vendor:
+        simple: microsoft
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 53cb9582-c56a-4715-8367-40a3b501385c
+    type: condition
+    task:
+      id: 53cb9582-c56a-4715-8367-40a3b501385c
+      version: -1
+      name: Verify software list
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      scriptName: AreValuesEqual
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "61"
+    scriptarguments:
+      left:
+        simple: ${MicrosoftATP.Software.id}
+      right:
+        simple: microsoft-_-powershell_6-x64
+    results:
+    - AreValuesEqual
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: bb084bc3-db58-41ab-839f-6995fdb727c9
+    type: regular
+    task:
+      id: bb084bc3-db58-41ab-839f-6995fdb727c9
+      version: -1
+      name: Get list vulnerabilities by software
+      description: Retrieves a list of all the vulnerabilities affecting the organization per software.
+      script: '|||microsoft-atp-list-vulnerabilities-by-software'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      id:
+        simple: microsoft-_-powershell_6-x64
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 21eb47e5-7d86-42c6-8782-334ca3191d0c
+    type: condition
+    task:
+      id: 21eb47e5-7d86-42c6-8782-334ca3191d0c
+      version: -1
+      name: Verify vulnerabilities
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: MicrosoftATP.SoftwareCVE.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 55ebe901-3517-49a1-855d-cf3ca537ed66
+    type: regular
+    task:
+      id: 55ebe901-3517-49a1-855d-cf3ca537ed66
+      version: -1
+      name: Get list machines by software
+      description: Retrieve a list of device references that has this software installed.
+      script: '|||microsoft-atp-list-machines-by-software'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "64"
+    scriptarguments:
+      id:
+        simple: microsoft-_-defender_for_endpoint
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 94fb9f7f-f262-4bc2-88e1-d78a67fb663a
+    type: condition
+    task:
+      id: 94fb9f7f-f262-4bc2-88e1-d78a67fb663a
+      version: -1
+      name: Verify list machines by software
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.SoftwareMachine.id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2630,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2660,
+        "width": 2960,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: ''
+

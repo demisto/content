@@ -1,0 +1,6 @@
+[file:SumoLogic.yml]
+ignore=IN126
+
+
+[file:SumoLogic_image.png]
+ignore=IM111

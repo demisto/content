@@ -1,0 +1,37 @@
+commonfields:
+  id: LCMPathFinderScanHost
+  version: -1
+name: LCMPathFinderScanHost
+script: >
+  args = demisto.args()
+
+  resp = demisto.executeCommand("lcm-pathfinder-scan", args)
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  elif str(resp[0]['Contents']).lower() == 'true':
+      demisto.results('Host was added to PathFinder scan queue.')
+  elif str(resp[0]['Contents']).lower() == 'false':
+      demisto.results( { "Type" : entryTypes["error"], "ContentsFormat" : formats["text"], "Contents" : "LightCyber Magna could not add the host to the PathFinder scan queue." } )
+  else:
+      demisto.results(resp)
+type: python
+subtype: python2
+tags:
+- lightcyber
+comment: Deprecated. This script is deprecated. LightCyber Magna is no longer available.
+system: true
+args:
+- name: id
+  required: true
+  default: true
+  description: The host's ID
+scripttarget: 0
+deprecated: true
+dependson:
+  must:
+  - lcm-pathfinder-scan
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

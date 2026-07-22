@@ -1,0 +1,656 @@
+{
+    "id": "Port Scan",
+    "group": "incident",
+    "name": "Port Scan",
+    "description": "",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "hidden": false,
+                "id": "mvzri1qwnj",
+                "name": "Port Scan",
+                "sections": [
+                    {
+                        "description": "Files that were involved with the port scan. These may be the files that created the port scan alert.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-95b0a440-6df8-11ea-bb7c-b12294a1b42a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "filename",
+                                "height": 24,
+                                "id": "f9d4a0c0-6df8-11ea-bb7c-b12294a1b42a",
+                                "index": 0,
+                                "listId": "mvzri1qwnj-95b0a440-6df8-11ea-bb7c-b12294a1b42a",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filehash",
+                                "height": 24,
+                                "id": "e834c1b0-6df8-11ea-bb7c-b12294a1b42a",
+                                "index": 1,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Involved Files",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 5
+                    },
+                    {
+                        "description": "Information about the source of the scan",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-fd381710-6df8-11ea-bb7c-b12294a1b42a",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "sourceip",
+                                "height": 24,
+                                "id": "070f9f10-6df9-11ea-bb7c-b12294a1b42a",
+                                "index": 0,
+                                "listId": "mvzri1qwnj-fd381710-6df8-11ea-bb7c-b12294a1b42a",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcehostname",
+                                "height": 24,
+                                "id": "14fb76d0-6df9-11ea-bb7c-b12294a1b42a",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceusername",
+                                "height": 24,
+                                "id": "fc008b30-77ed-11ea-80ea-61c06e3d29c3",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "country",
+                                "height": 24,
+                                "id": "7a216840-77e4-11ea-885d-370e171ed58d",
+                                "index": 3,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Scan Source",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "description": "Information on the type, stage and scope of the incident. Subject to change throughout the investigation.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-338dd980-6df9-11ea-bb7c-b12294a1b42a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 24,
+                                "id": "3bf8b220-6df9-11ea-bb7c-b12294a1b42a",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "scansourcetype",
+                                "height": 24,
+                                "id": "61d69520-7367-11ea-a04d-b1d9f054f272",
+                                "index": 1,
+                                "listId": "mvzri1qwnj-338dd980-6df9-11ea-bb7c-b12294a1b42a",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "niststage",
+                                "height": 24,
+                                "id": "6afbd760-7357-11ea-a04d-b1d9f054f272",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 24,
+                                "id": "f556c9e0-77f5-11ea-80ea-61c06e3d29c3",
+                                "index": 3,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Investigation Properties",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "description": "This information is only relevant for an internal port scan where the username is available as part of the alert",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-5d2b0a20-7285-11ea-beef-f508bb0d1ce0",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeedisplayname",
+                                "height": 24,
+                                "id": "65873cc0-7285-11ea-beef-f508bb0d1ce0",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "employeemanageremail",
+                                "height": 24,
+                                "id": "5e45c8f0-7285-11ea-beef-f508bb0d1ce0",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "employeeemail",
+                                "height": 24,
+                                "id": "613ce8e0-7285-11ea-beef-f508bb0d1ce0",
+                                "index": 2,
+                                "listId": "mvzri1qwnj-5d2b0a20-7285-11ea-beef-f508bb0d1ce0",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "User Contact Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "description": "Additional entities potentially involved with the scan. This includes hostnames that were found associated with the file that initiated the scan (internal), domain names that were hosted on the IP (external scan) and more.",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-3b5cb910-77e5-11ea-885d-370e171ed58d",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "infectedhostnames",
+                                "height": 55,
+                                "id": "8365c610-77e6-11ea-885d-370e171ed58d",
+                                "index": 0,
+                                "listId": "mvzri1qwnj-3b5cb910-77e5-11ea-885d-370e171ed58d",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "associatedmaliciousdomains",
+                                "height": 55,
+                                "id": "ebd46090-7812-11ea-80ea-61c06e3d29c3",
+                                "index": 1,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Pivoted Entities",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "description": "Actions that were taken automatically to contain the incident. If containment and remediation steps are taken manually - these fields have to be updated manually.",
+                        "displayType": "CARD",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-99db7020-77e6-11ea-885d-370e171ed58d",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "attackerhostisolated",
+                                "height": 55,
+                                "id": "bd138d20-77e6-11ea-885d-370e171ed58d",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "attackeripblocked",
+                                "height": 55,
+                                "id": "bea02090-77e6-11ea-885d-370e171ed58d",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "filehashblocked",
+                                "height": 55,
+                                "id": "762affc0-77ef-11ea-80ea-61c06e3d29c3",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "maliciousdomainsblocked",
+                                "height": 55,
+                                "id": "c485d4f0-77e6-11ea-885d-370e171ed58d",
+                                "index": 4,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Actions Taken",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "description": "Why the alert was triggered.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-288052a0-77f6-11ea-80ea-61c06e3d29c3",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 24,
+                                "id": "439e7620-77f6-11ea-80ea-61c06e3d29c3",
+                                "index": 0,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Incident Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "description": "Information about the target of the scan.",
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "mvzri1qwnj-9dde2e70-78bc-11ea-86e7-8f6061b4d88c",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "destinationports",
+                                "height": 24,
+                                "id": "374ebac0-78bd-11ea-86e7-8f6061b4d88c",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "destinationip",
+                                "height": 24,
+                                "id": "0bde6530-6df9-11ea-bb7c-b12294a1b42a",
+                                "index": 1,
+                                "listId": "mvzri1qwnj-fd381710-6df8-11ea-bb7c-b12294a1b42a",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "numberofports",
+                                "height": 24,
+                                "id": "47114e50-78bd-11ea-86e7-8f6061b4d88c",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "numberofuniqueports",
+                                "height": 24,
+                                "id": "49936550-78bd-11ea-86e7-8f6061b4d88c",
+                                "index": 3,
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Scan Destination",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Metadata",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 24,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 24,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 24,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 24,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 24,
+                                "id": "incident-sourceBrand-field",
+                                "index": 4,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 24,
+                                "id": "incident-sourceInstance-field",
+                                "index": 5,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 24,
+                                "id": "incident-playbookId-field",
+                                "index": 6,
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Case Details",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "name": "Notes",
+                        "type": "notes",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "name": "Work Plan",
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "name": "Linked Incidents",
+                        "type": "linkedIncidents",
+                        "w": 1,
+                        "x": 1,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "name": "Child Incidents",
+                        "type": "childInv",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "name": "Evidence",
+                        "type": "evidence",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "name": "Team Members",
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "name": "Indicators",
+                        "query": "",
+                        "queryType": "input",
+                        "type": "indicators",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 24,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 24,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 24,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 24,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "startCol": 1
+                            }
+                        ],
+                        "name": "Timeline Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "incident-dbotClosed-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 24,
+                                "id": "incident-closeReason-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 24,
+                                "id": "incident-closeNotes-field",
+                                "index": 2,
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Closing Information",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "details",
+                                "height": 24,
+                                "id": "incident-details-field",
+                                "index": 0,
+                                "startCol": 0
+                            }
+                        ],
+                        "name": "Investigation Data",
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "hidden": true,
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            }
+        ]
+    },
+    "marketplaces": ["xsoar"]
+}

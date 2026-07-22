@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "caseInsensitive": true,
+    "cliName": "fwserials",
+    "closeForm": false,
+    "content": true,
+    "description": "Comma separated list of PAN-OS Firewall serial numbers.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cortex Data Lake Monitoring"
+    ],
+    "id": "incident_fwserials",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "fwserials",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "marketplaces": [
+    "xsoar"
+]
+}

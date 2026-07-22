@@ -1,0 +1,65 @@
+{
+    "name": "Splunk",
+    "description": "Fetch events as incidents and search Splunk",
+    "support": "xsoar",
+    "currentVersion": "4.3.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "defaultDataSource": "SplunkPy",
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Splunk"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Malware": {
+            "mandatory": true,
+            "display_name": "Malware"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "AccessInvestigation": {
+            "mandatory": true,
+            "display_name": "Access Investigation"
+        },
+        "Asset": {
+            "mandatory": true,
+            "display_name": "Asset"
+        },
+        "Identity": {
+            "mandatory": true,
+            "display_name": "Identity"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "Malware",
+        "CommonTypes",
+        "AccessInvestigation"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "xpanse",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "cloud_posture",
+        "edr",
+        "cloud",
+        "cloud_runtime_security"
+    ]
+}

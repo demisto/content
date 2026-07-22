@@ -1,0 +1,780 @@
+id: If-Elif Test
+version: -1
+name: If-Elif Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7c329149-c1f6-4ba1-8ef7-a5cd46dd870d
+    type: start
+    task:
+      id: 7c329149-c1f6-4ba1-8ef7-a5cd46dd870d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: efa6217c-f561-4f01-87df-393f79224804
+    type: regular
+    task:
+      id: efa6217c-f561-4f01-87df-393f79224804
+      version: -1
+      name: Set context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: IfElif
+      value:
+        simple: |-
+          {
+              "embedded_str": {
+                  "key1": {
+                      "key2": "value"
+                  }
+              },
+              "embedded_int": {
+                  "key1": {
+                      "key2": 1
+                  }
+              },
+              "embedded_dict": {
+                  "key1": {
+                      "key2": {
+                          "key3": [
+                              1,
+                              2,
+                              3
+                          ]
+                      }
+                  }
+              },
+              "success": "success"
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 85d94a20-024a-41bd-8ce8-be988d15ede8
+    type: title
+    task:
+      id: 85d94a20-024a-41bd-8ce8-be988d15ede8
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8d6500bd-dbf8-4ed6-8783-28f6f2b2fbef
+    type: regular
+    task:
+      id: 8d6500bd-dbf8-4ed6-8783-28f6f2b2fbef
+      version: -1
+      name: With regex_full_match
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "condition": "#{IfElif.embedded_int.key1.key2} < 5 and 'YES' == 'Yes'",
+                          "return": "error"
+                        },
+                       {
+                          "condition": "regex_match('\\w{4}', #{IfElif.embedded_str.key1.key2})",
+                          "return":"error"
+                        },
+                        {
+                          "condition": "regex_match('\\w{5}', #{IfElif.embedded_str.key1.key2})",
+                          "return": #{IfElif.success}
+                        },
+                        {
+                          "default": "error"
+                        }
+                      ]
+              flags:
+                value:
+                  simple: regex_full_match
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2f654efc-9421-4fd9-8d3a-b0d3f2cf88f8
+    type: regular
+    task:
+      id: 2f654efc-9421-4fd9-8d3a-b0d3f2cf88f8
+      version: -1
+      name: With case_insensitive
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "condition": "#{IfElif.embedded_int.key1.key2} < 5 and 'YES' != 'Yes'",
+                          "return": "error"
+                        },
+                       {
+                          "condition": "regex_match('VaLuE',  #{IfElif.embedded_str.key1.key2}) and 'a' == 'A' ",
+                          "return": #{IfElif.success}
+                        },
+                        {
+                          "default": "error2"
+                        }
+                      ]
+              flags:
+                value:
+                  simple: case_insensitive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0b2da5be-50ff-411d-87e3-b67293c15658
+    type: regular
+    task:
+      id: 0b2da5be-50ff-411d-87e3-b67293c15658
+      version: -1
+      name: With dict, from key
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: IfElif
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                        {
+                          "condition": "#{embedded_int.key1.key2} < 5 and 'YES' == 'Yes'",
+                          "return": "error"
+                        },
+                       {
+                          "condition": "#{embedded_dict} == {'key1':{'key2':{'key3':[1,2,3]}}}",
+                          "return": #{success}
+                        },
+                        {
+                          "default": "error"
+                        }
+                      ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5d2bc261-f927-463b-8b18-9aaadd8c28ae
+    type: condition
+    task:
+      id: 5d2bc261-f927-463b-8b18-9aaadd8c28ae
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: results
+            iscontext: true
+          right:
+            value:
+              simple: success
+      - - operator: hasLength
+          left:
+            value:
+              simple: results
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 69375d81-496f-40b7-86e7-f5aed6611040
+    type: regular
+    task:
+      id: 69375d81-496f-40b7-86e7-f5aed6611040
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
+        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
+        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "8"
+      - "10"
+      - "13"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b9ebb507-6e6e-4784-8648-84b7aa719bbd
+    type: regular
+    task:
+      id: b9ebb507-6e6e-4784-8648-84b7aa719bbd
+      version: -1
+      name: Add injection to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: malicious
+      value:
+        simple: ''''' or true  '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3f2e983f-489b-49fc-8d62-a641d8f1714b
+    type: regular
+    task:
+      id: 3f2e983f-489b-49fc-8d62-a641d8f1714b
+      version: -1
+      name: Use malicious value
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: results
+      value:
+        complex:
+          root: ${
+          accessor: '}'
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "condition": "'admin' == #{malicious}",
+                        "return": "injected!"
+                      },
+                      {
+                        "default": "success"
+                      }
+                    ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d86469e7-a1ad-4869-820d-ade1f2b9c22d
+    type: regular
+    task:
+      id: d86469e7-a1ad-4869-820d-ade1f2b9c22d
+      version: -1
+      name: Set list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      key:
+        simple: list
+      value:
+        simple: '[1,2,3,4,5]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 1d055eb9-b80b-48aa-80ee-4c65744a15f1
+    type: regular
+    task:
+      id: 1d055eb9-b80b-48aa-80ee-4c65744a15f1
+      version: -1
+      name: Get list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      key:
+        simple: list2
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "condition": "true",
+                        "return": #{list}
+                      },
+                      {
+                        "default": "error"
+                      }
+                    ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ea59f95b-5401-4478-8e7f-b93d10222567
+    type: condition
+    task:
+      id: ea59f95b-5401-4478-8e7f-b93d10222567
+      version: -1
+      name: Verify list grab
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: list2
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a1de73c8-43c3-497b-80ef-e9fbc9ffd862
+    type: regular
+    task:
+      id: a1de73c8-43c3-497b-80ef-e9fbc9ffd862
+      version: -1
+      name: Set dict
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      key:
+        simple: dict
+      value:
+        simple: '{"key":"value"}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 71aa0bf6-0bf5-4ebf-83ba-2acaae454315
+    type: regular
+    task:
+      id: 71aa0bf6-0bf5-4ebf-83ba-2acaae454315
+      version: -1
+      name: Get dict
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: dict2
+      value:
+        complex:
+          root: .
+          transformers:
+          - operator: If-Elif
+            args:
+              conditions:
+                value:
+                  simple: |-
+                    [
+                      {
+                        "condition": "true",
+                        "return": #{dict}
+                      },
+                      {
+                        "default": "error"
+                      }
+                    ]
+              flags: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 4ebb1288-ef17-4ac8-83b5-a73cbe4543e5
+    type: condition
+    task:
+      id: 4ebb1288-ef17-4ac8-83b5-a73cbe4543e5
+      version: -1
+      name: Verify dict grab
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: dict2.key
+            iscontext: true
+          right:
+            value:
+              simple: value
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1670,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0
+description: Test playbook for If-Elif Transformer

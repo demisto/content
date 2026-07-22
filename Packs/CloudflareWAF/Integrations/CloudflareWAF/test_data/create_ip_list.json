@@ -1,0 +1,14 @@
+{
+    "result": {
+        "id": "list_id",
+        "name": "list_name",
+        "kind": "ip",
+        "num_items": 0,
+        "num_referencing_filters": 0,
+        "created_on": "2022-04-26T11:42:55Z",
+        "modified_on": "2022-04-26T11:42:55Z"
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}

@@ -1,0 +1,10 @@
+!azure-storage-account-list
+!azure-storage-account-create-update account_name=demistotestdonotdelete kind=BlobStorage location=eastus sku=Standard_GRS
+!azure-storage-blob-service-properties-get account_name=demistotestdonotdelete
+!azure-storage-blob-service-properties-set account_name=demistotestdonotdelete delete_rentention_policy_enabled=false
+!azure-storage-blob-containers-list account_name=demistotestdonotdelete
+!azure-storage-blob-containers-create account_name=demistotestdonotdelete container_name=containertest
+!azure-storage-blob-containers-update account_name=demistotestdonotdelete container_name=containertest
+!azure-storage-blob-container-delete account_name=demistotestdonotdelete container_name=containertest
+!azure-storage-subscriptions-list
+!azure-storage-resource-group-list

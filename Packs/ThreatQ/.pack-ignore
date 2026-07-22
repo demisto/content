@@ -1,0 +1,9 @@
+[file:ThreatQ.yml]
+ignore=IN110,IN109,BA124
+
+[file:ThreatQ_v2.yml]
+ignore=BA108,BA109
+
+[known_words]
+ThreatQ
+Q

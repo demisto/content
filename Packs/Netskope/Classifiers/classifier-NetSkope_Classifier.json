@@ -1,0 +1,33 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Netskope Classifier",
+    "keyTypeMap": {
+        "Compromised Credential": "Netskope Compromised Credentials",
+        "DLP": "Netskope DLP",
+        "Legal Hold": "Netskope Legal Hold",
+        "Remediation": "Netskope Alert",
+        "Security Assessment": "Netskope Alert",
+        "alert": "Netskope Alert",
+        "anomaly": "Netskope Alert",
+        "application": "Netskope Event",
+        "audit": "Netskope Event",
+        "dlp_incident": "Netskope DLP Incident",
+        "infrastructure": "Netskope Event",
+        "malsite": "Netskope Malicious Sites",
+        "malware": "Netskope Malware",
+        "network": "Netskope Event",
+        "page": "Netskope Event",
+        "policy": "Netskope Alert",
+        "quarantine": "Netskope Quarantine",
+        "uba": "Netskope Behavior Analytics",
+        "watchlist": "Netskope Alert"
+    },
+    "name": "Netskope Classifier",
+    "transformer": {
+        "simple": "incident_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

@@ -1,0 +1,58 @@
+{
+    "id": "Vectra Account",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Vectra Account",
+    "prevName": "Vectra Account",
+    "color": "#FF9800",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "playbookId": "Process Incident - Vectra Detect",
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Vectra Account",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "email": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": [
+                    "emailRep"
+                ]
+            },
+            "usernames": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectraaccounthostaccesshistory": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectradetectiondetails": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "vectraserviceaccesshistory": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.5.0"
+}

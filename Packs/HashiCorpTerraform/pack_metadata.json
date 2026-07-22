@@ -1,0 +1,24 @@
+{
+    "name": "HashiCorp Terraform",
+    "description": "Hashicorp Terraform provide infrastructure automation to provision and manage resources in any cloud or data center.",
+    "support": "xsoar",
+    "currentVersion": "1.1.4",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

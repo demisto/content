@@ -1,0 +1,180 @@
+commonfields:
+  id: SearchCases
+  version: -1
+name: SearchCases
+script: '-'
+isInternal: true
+type: python
+comment: Retrieves cases based on the provided filters.
+enabled: true
+args:
+  - description: A comma separated list of case IDs.
+    isArray: true
+    name: case_id_list
+  - description: "The start time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+    name: start_time
+  - description: "The end time for filtering according to case creation time. Supports free text relative and absolute times. For example: 7 days ago, 2023-06-15T10:30:00Z, 13/8/2025."
+    name: end_time
+  - auto: PREDEFINED
+    description: Sorts returned cases by the date/time that the case was created ("asc" - ascending, "desc" - descending).
+    name: sort_by_creation_time
+    predefined:
+      - asc
+      - desc
+  - description: 'Filters for cases with the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto.'
+    name: status
+  - auto: PREDEFINED
+    description: Whether the case is starred.
+    name: starred
+    predefined:
+      - 'true'
+      - 'false'
+  - auto: PREDEFINED
+    description: Whether to include enriched case data in the response. Recommended for up to 10 cases.
+    name: get_enriched_case_data
+    defaultValue: 'false'
+    predefined:
+      - 'true'
+      - 'false'
+  - defaultValue: '0'
+    description: Page number (for pagination). The default is 0 (the first page).
+    name: page
+  - defaultValue: '100'
+    description: Maximum number of cases to return per page. The default and maximum is 100.
+    name: page_size
+    
+outputs:
+  - contextPath: Core.Case.case_id
+    description: Unique ID assigned to each returned case.
+    type: String
+  - contextPath: Core.Case.case_name
+    description: Name of the case.
+    type: String
+  - contextPath: Core.Case.creation_time
+    description: Timestamp when the case was created.
+    type: Number
+  - contextPath: Core.Case.modification_time
+    description: Timestamp when the case was last modified.
+    type: Number
+  - contextPath: Core.Case.detection_time
+    description: Timestamp when the first issue was detected in the case. May be null.
+    type: Date
+  - contextPath: Core.Case.status
+    description: Current status of the case.
+    type: String
+  - contextPath: Core.Case.severity
+    description: Severity level of the case.
+    type: String
+  - contextPath: Core.Case.description
+    description: Description of the case.
+    type: String
+  - contextPath: Core.Case.assigned_user_mail
+    description: Email address of the assigned user. May be null.
+    type: String
+  - contextPath: Core.Case.assigned_user_pretty_name
+    description: Full name of the assigned user. May be null.
+    type: String
+  - contextPath: Core.Case.issue_count
+    description: Total number of issues in the case.
+    type: Number
+  - contextPath: Core.Case.low_severity_issue_count
+    description: Number of issues with low severity.
+    type: Number
+  - contextPath: Core.Case.med_severity_issue_count
+    description: Number of issues with medium severity.
+    type: Number
+  - contextPath: Core.Case.high_severity_issue_count
+    description: Number of issues with high severity.
+    type: Number
+  - contextPath: Core.Case.critical_severity_issue_count
+    description: Number of issues with critical severity.
+    type: Number
+  - contextPath: Core.Case.user_count
+    description: Number of users involved in the case.
+    type: Number
+  - contextPath: Core.Case.host_count
+    description: Number of hosts involved in the case.
+    type: Number
+  - contextPath: Core.Case.notes
+    description: Notes related to the case. May be null.
+    type: String
+  - contextPath: Core.Case.resolve_comment
+    description: Comments added when resolving the case. May be null.
+    type: String
+  - contextPath: Core.Case.resolved_timestamp
+    description: Timestamp when the case was resolved.
+    type: Number
+  - contextPath: Core.Case.manual_severity
+    description: Severity manually assigned by the user. May be null.
+    type: Number
+  - contextPath: Core.Case.manual_description
+    description: Description manually provided by the user.
+    type: String
+  - contextPath: Core.Case.xdr_url
+    description: URL to view the case in Cortex XDR.
+    type: String
+  - contextPath: Core.Case.starred
+    description: Indicates whether the case is starred.
+    type: Boolean
+  - contextPath: Core.Case.starred_manually
+    description: True if the case was starred manually; false if starred by rules.
+    type: Boolean
+  - contextPath: Core.Case.hosts
+    description: List of hosts involved in the case.
+    type: Array
+  - contextPath: Core.Case.users
+    description: List of users involved in the case.
+    type: Array
+  - contextPath: Core.Case.case_sources
+    description: Sources of the case.
+    type: Array
+  - contextPath: Core.Case.rule_based_score
+    description: Score based on rules.
+    type: Number
+  - contextPath: Core.Case.manual_score
+    description: Manually assigned score. May be null.
+    type: Number
+  - contextPath: Core.Case.wildfire_hits
+    description: Number of WildFire hits.
+    type: Number
+  - contextPath: Core.Case.issues_grouping_status
+    description: Status of issue grouping.
+    type: String
+  - contextPath: Core.Case.mitre_tactics_ids_and_names
+    description: List of MITRE ATT&CK tactic IDs and names associated with the case.
+    type: Array
+  - contextPath: Core.Case.mitre_techniques_ids_and_names
+    description: List of MITRE ATT&CK technique IDs and names associated with the case.
+    type: Array
+  - contextPath: Core.Case.issue_categories
+    description: Categories of issues associated with the case.
+    type: Array
+  - contextPath: Core.Case.original_tags
+    description: Original tags assigned to the case.
+    type: Array
+  - contextPath: Core.Case.tags
+    description: Current tags assigned to the case.
+    type: Array
+  - contextPath: Core.Case.case_domain
+    description: Domain associated with the case.
+    type: String
+  - contextPath: Core.Case.custom_fields
+    description: Custom fields for the case with standardized lowercase, whitespace-free names.
+    type: Unknown
+  - contextPath: Core.Case.CaseExtraData.issue_ids
+    description: List of issue IDs associated with the case.
+    type: Array
+  - contextPath: Core.Case.CaseExtraData.file_artifacts
+    description: File artifacts associated with the case.
+    type: Array
+  - contextPath: Core.Case.CaseExtraData.network_artifacts
+    description: Network artifacts associated with the case.
+    type: Array
+subtype: python3
+dockerimage: demisto/python3:3.12.12.5490952
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- platform
+deprecated: true

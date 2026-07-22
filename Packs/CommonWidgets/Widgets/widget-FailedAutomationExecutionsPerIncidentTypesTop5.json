@@ -1,0 +1,75 @@
+{
+    "size": 5,
+    "dataType": "metrics",
+    "params": {
+        "groupBy": [
+            "incidentType"
+        ],
+        "keys": [
+            "sum|errorCount"
+        ],
+        "showOthers": false,
+        "tableColumns": [
+            {
+                "isDefault": true,
+                "key": "count",
+                "position": 0
+            },
+            {
+                "isDefault": true,
+                "key": "data",
+                "position": 1
+            },
+            {
+                "isDefault": true,
+                "key": "floatData",
+                "position": 2
+            },
+            {
+                "isDefault": true,
+                "key": "groups",
+                "position": 3
+            },
+            {
+                "isDefault": true,
+                "key": "name",
+                "position": 4
+            },
+            {
+                "isDefault": true,
+                "key": "pivot",
+                "position": 5
+            },
+            {
+                "isDefault": true,
+                "key": "color",
+                "position": 6
+            }
+        ],
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "",
+        "yAxisLabel": ""
+    },
+    "query": "type:automation",
+    "modified": "2021-05-03T17:25:13.308607181Z",
+    "name": "Failed Automation executions per Incident Types (top 5)",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "days",
+            "byFrom": "days",
+            "toValue": 0,
+            "fromValue": 1,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "failed-automation-executions-per-incident-types-top-5",
+    "widgetType": "bar",
+    "fromVersion": "6.2.0",
+    "description": "Failed Automation executions per Incident Types (top 5)"
+}

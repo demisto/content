@@ -1,0 +1,75 @@
+[RULE: common_lookout_fields]
+alter //general
+    xdm.event.id = id,
+    xdm.event.type = type,
+    xdm.event.operation = if(change_type = "CREATED", XDM_CONST.OPERATION_TYPE_CREATE, change_type = "UPDATED", XDM_CONST.OPERATION_TYPE_UPDATE, change_type = "DELETED", XDM_CONST.OPERATION_TYPE_DELETE, change_type),
+    xdm.target.user.ou = enterprise_guid;
+
+[MODEL: dataset="lookout_mobile_endpoint_security_raw"]
+//Device event type
+filter type = "DEVICE"
+| alter
+    get_device_platform = device -> platform,
+    get_device_info_group_guids = arraymap(device -> info.device_group_guids[], trim("@element", "\"")),
+    get_device_info = to_string(device -> info{}),
+    get_device_hardware = to_string(device -> hardware{})
+
+| alter //xdm mapping
+    xdm.alert.severity = to_string(device -> status{}) -> security_status,
+    xdm.target.host.device_id = device -> guid,
+    xdm.target.host.os_family = if(get_device_platform CONTAINS "IOS", XDM_CONST.OS_FAMILY_IOS, get_device_platform CONTAINS "ANDROID", XDM_CONST.OS_FAMILY_ANDROID, get_device_platform),
+    xdm.target.user.upn = get_device_info -> email,
+    xdm.target.user.groups = get_device_info_group_guids,
+    xdm.target.host.manufacturer = get_device_hardware -> manufacturer,
+    xdm.target.host.device_model = get_device_hardware -> model,
+    xdm.target.file.filename = to_string(device -> client{}) -> package_name,
+    xdm.observer.unique_identifier = get_device_info -> mdm_connector_id,
+    xdm.observer.type = get_device_info -> mdm_type
+| call common_lookout_fields;
+
+//Audit event type mapping
+filter type = "AUDIT"
+| alter //XDM mapping
+    xdm.event.operation_sub_type = audit -> type,
+    xdm.event.description = audit -> attribute_changes{}
+| call common_lookout_fields;
+
+//Threat event type mapping
+filter type = "THREAT"
+| alter
+    get_threat_details = to_string(threat -> details{})
+| alter
+    get_threat_details_proxy_address = get_threat_details -> proxy_address,
+    get_threat_details_vpn_local_address = get_threat_details -> vpn_local_address,
+    get_threat_status = threat -> status,
+    get_threat_classifications_first_val = threat -> classifications[0],
+    get_threat_details_dns_ip_addresses = arraymap(get_threat_details -> dns_ip_addresses[], trim("@element", "\""))
+
+| alter //XDM mapping
+    xdm.event.operation_sub_type = threat -> type,
+    xdm.alert.subcategory = get_threat_details -> reason,
+    xdm.alert.severity = threat -> severity,
+    xdm.alert.risks = arraymap(threat -> classifications[], trim( "@element", "\"")),
+    xdm.alert.original_threat_id = threat -> guid,
+    xdm.alert.status = if(get_threat_status IN ("OPEN", "DETECTED"), XDM_CONST.ALERT_STATUS_PENDING,  get_threat_status IN ("RESOLVED", "IGNORED"), XDM_CONST.ALERT_STATUS_DONE, get_threat_status),
+    xdm.alert.category = if(get_threat_classifications_first_val IN ("ADWARE","RISKWARE"), XDM_CONST.THREAT_CATEGORY_ADWARE, get_threat_classifications_first_val CONTAINS "BACKDOOR", XDM_CONST.THREAT_CATEGORY_BACKDOOR,  get_threat_classifications_first_val CONTAINS "BOT", XDM_CONST.THREAT_CATEGORY_BOTNET, get_threat_classifications_first_val CONTAINS "EXPLOIT", XDM_CONST.THREAT_CATEGORY_CODE_EXECUTION, get_threat_classifications_first_val CONTAINS "DATA_LEAK", XDM_CONST.THREAT_CATEGORY_DATA_THEFT, get_threat_classifications_first_val IN ("APP_DROPPER", "TROJAN"), XDM_CONST.THREAT_CATEGORY_DOWNLOADER, get_threat_classifications_first_val IN ("CHARGEWARE", "CLICK_FRAUD", "TOLL_FRAUD"), XDM_CONST.THREAT_CATEGORY_FRAUD, get_threat_classifications_first_val IN ("ROOT_ENABLER", "ROOT_JAILBREAK"), XDM_CONST.THREAT_CATEGORY_HACKTOOL,  get_threat_classifications_first_val IN ("NO_DEVICE_LOCK"), XDM_CONST.THREAT_CATEGORY_INSECURE_CREDENTIALS, get_threat_classifications_first_val CONTAINS "WORM", XDM_CONST.THREAT_CATEGORY_NETWORM, get_threat_classifications_first_val CONTAINS "SPYWARE", XDM_CONST.THREAT_CATEGORY_SPYWARE, get_threat_classifications_first_val CONTAINS "PHISHING_CONTENT", XDM_CONST.THREAT_CATEGORY_PHISHING, get_threat_classifications_first_val),
+    xdm.intermediate.port = to_integer(get_threat_details -> proxy_port),
+    xdm.intermediate.ipv4 = if(incidr(get_threat_details_proxy_address, "0.0.0.0/0"), get_threat_details_proxy_address),
+    xdm.intermediate.ipv6 = arrayindex(regextract(get_threat_details_proxy_address, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.intermediate.is_proxy = if(get_threat_details_proxy_address != null, TRUE, FALSE),
+    xdm.intermediate.host.hostname = get_threat_details -> network.access_point_hostname,
+    xdm.observer.action = get_threat_details -> response,
+    xdm.network.vpn.allocated_ipv4 = if(incidr(get_threat_details_vpn_local_address, "0.0.0.0/0"), get_threat_details_vpn_local_address),
+    xdm.network.vpn.allocated_ipv6 = arrayindex(regextract(get_threat_details_vpn_local_address, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.target.host.mac_addresses = arraycreate(get_threat_details -> mac_address),
+    xdm.target.application.name = coalesce(get_threat_details -> application_name, get_threat_details -> package_name),
+    xdm.target.file.filename = get_threat_details -> file_name,
+    xdm.target.file.path = get_threat_details -> path,
+    xdm.target.url = get_threat_details -> url,
+    xdm.target.zone = get_threat_details -> network_ssid,
+    xdm.target.host.device_id = `target` -> guid,
+    xdm.target.host.ipv4_addresses = if(incidr(arrayindex(get_threat_details_dns_ip_addresses, 0), "0.0.0.0/0"), get_threat_details_dns_ip_addresses),
+    xdm.target.host.ipv6_addresses = regextract(arrayindex(get_threat_details_dns_ip_addresses, 0), "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),
+    xdm.target.ipv4 = if(incidr(arrayindex(get_threat_details_dns_ip_addresses, 0), "0.0.0.0/0"), arrayindex(get_threat_details_dns_ip_addresses, 0)),
+    xdm.target.ipv6 =arrayindex(regextract(arrayindex(get_threat_details_dns_ip_addresses, 0), "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"), 0)
+| call common_lookout_fields;

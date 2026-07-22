@@ -1,0 +1,8 @@
+!GetObservable value="eicar@sekoia.io" type="email-addr"
+!GetIndicator value="eicar@sekoia.io" type="email-addr"
+!GetIndicatorContext value="eicar@sekoia.io" type="email-addr"
+!ip ip="206.189.85.18"
+!domain domain="eicar.sekoia.io"
+!url url="http://truesec.pro/"
+!email email="eicar@sekoia.io"
+!file file="e1d4d2e829885b322f7e619cbfc2615f"

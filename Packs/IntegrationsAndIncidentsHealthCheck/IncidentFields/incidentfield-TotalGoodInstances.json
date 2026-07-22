@@ -1,0 +1,29 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Integrations and Incidents Health Check"
+ ],
+ "caseInsensitive": true,
+ "cliName": "totalgoodinstances",
+ "closeForm": false,
+ "content": true,
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_totalgoodinstances",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Total Good Instances",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "number",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": true,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

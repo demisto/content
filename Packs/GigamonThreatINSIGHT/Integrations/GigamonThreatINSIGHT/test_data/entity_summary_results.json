@@ -1,0 +1,1 @@
+{"query_type": "ip_address", "summary": {"entity": "8.8.8.8", "first_seen": "2021-12-17T21:30:02.000Z", "last_seen": "2022-06-01T06:34:51.000Z", "prevalence_count_internal": 1, "tags": ["test1","test2"]}}

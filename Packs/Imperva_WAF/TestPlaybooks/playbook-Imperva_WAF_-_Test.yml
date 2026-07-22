@@ -1,0 +1,1219 @@
+id: Imperva WAF - Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Imperva WAF - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0c45b001-357a-466a-83d8-bbe7ca18150e
+    type: start
+    task:
+      id: 0c45b001-357a-466a-83d8-bbe7ca18150e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 43cb5a3d-077b-4cf7-8ee3-cb23c52b6361
+    type: regular
+    task:
+      id: 43cb5a3d-077b-4cf7-8ee3-cb23c52b6361
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 3d91c631-dbd7-4209-8e38-077ba6e5a8bb
+    type: regular
+    task:
+      id: 3d91c631-dbd7-4209-8e38-077ba6e5a8bb
+      version: -1
+      name: imperva-waf-ip-group-list
+      script: '|||imperva-waf-ip-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: cf1c6ec6-61ba-4b20-8656-a4f08088097c
+    type: condition
+    task:
+      id: cf1c6ec6-61ba-4b20-8656-a4f08088097c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.IpGroup.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 712da596-bcca-46aa-8120-fa7d83cacf45
+    type: regular
+    task:
+      id: 712da596-bcca-46aa-8120-fa7d83cacf45
+      version: -1
+      name: imperva-waf-ip-group-list-entries
+      script: '|||imperva-waf-ip-group-list-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ip-group-name:
+        complex:
+          root: ImpervaWAF
+          accessor: IpGroup.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2a66b3e6-f922-421d-80b7-586c8a391e7e
+    type: condition
+    task:
+      id: 2a66b3e6-f922-421d-80b7-586c8a391e7e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.IpGroup.Entries.Type
+            iscontext: true
+          right:
+            value:
+              simple: range
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.IpGroup.Entries.IpAddressTo
+            iscontext: true
+          right:
+            value:
+              simple: 127.0.0.2
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.IpGroup.Entries.IpAddressFrom
+            iscontext: true
+          right:
+            value:
+              simple: 127.0.0.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 727bb15f-28ed-4ab8-821a-d397ee3d0aaa
+    type: regular
+    task:
+      id: 727bb15f-28ed-4ab8-821a-d397ee3d0aaa
+      version: -1
+      name: imperva-waf-ip-group-remove-entries
+      script: '|||imperva-waf-ip-group-remove-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      ip-group-name:
+        complex:
+          root: ImpervaWAF
+          accessor: IpGroup.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 011e3d36-650c-4def-8921-49ae7c3e9c96
+    type: regular
+    task:
+      id: 011e3d36-650c-4def-8921-49ae7c3e9c96
+      version: -1
+      name: imperva-waf-sites-list
+      script: '|||imperva-waf-sites-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: d77fec43-291c-49a5-828e-667aa3943f83
+    type: condition
+    task:
+      id: d77fec43-291c-49a5-828e-667aa3943f83
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.Site.Name
+            iscontext: true
+          right:
+            value:
+              simple: Default Site
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: bd7ecb4d-062e-4570-8d59-257b1457f632
+    type: regular
+    task:
+      id: bd7ecb4d-062e-4570-8d59-257b1457f632
+      version: -1
+      name: imperva-waf-server-group-list
+      script: '|||imperva-waf-server-group-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      site-name:
+        complex:
+          root: ImpervaWAF
+          accessor: Site.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 73f5f550-0e90-4603-85d0-ac578966710e
+    type: condition
+    task:
+      id: 73f5f550-0e90-4603-85d0-ac578966710e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.ServerGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.ServerGroup.SiteName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 70a75686-731b-4785-8c69-a30b59783b80
+    type: regular
+    task:
+      id: 70a75686-731b-4785-8c69-a30b59783b80
+      version: -1
+      name: imperva-waf-server-group-list-policies
+      script: '|||imperva-waf-server-group-list-policies'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      server-group-name:
+        complex:
+          root: ImpervaWAF
+          accessor: ServerGroup.Name
+      site-name:
+        complex:
+          root: ImpervaWAF
+          accessor: Site.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 0519d8ff-3b5f-4ca7-8f07-809e055ea9d8
+    type: condition
+    task:
+      id: 0519d8ff-3b5f-4ca7-8f07-809e055ea9d8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.SecurityPolicy.PolicyName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.SecurityPolicy.PolicyType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.SecurityPolicy.ServerGroup
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.SecurityPolicy.SiteName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.SecurityPolicy.System
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 867c254b-2d8b-48c8-805c-cc5989981c46
+    type: regular
+    task:
+      id: 867c254b-2d8b-48c8-805c-cc5989981c46
+      version: -1
+      name: imperva-waf-web-service-custom-policy-list
+      script: '|||imperva-waf-web-service-custom-policy-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 7f8212ce-b4eb-49bd-8828-58aeccb27561
+    type: condition
+    task:
+      id: 7f8212ce-b4eb-49bd-8828-58aeccb27561
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpervaWAF.CustomWebPolicy.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 68b8b4f6-d9f1-4c80-8b6c-9049e3642035
+    type: regular
+    task:
+      id: 68b8b4f6-d9f1-4c80-8b6c-9049e3642035
+      version: -1
+      name: imperva-waf-ip-group-create
+      script: '|||imperva-waf-ip-group-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      cidr-mask: {}
+      entry-type:
+        simple: range
+      group-name:
+        simple: test_ip_group
+      ip-address-from:
+        simple: 127.0.0.1
+      ip-address-to:
+        simple: 127.0.0.2
+      json-entries: {}
+      network-address: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 8a5b5034-9a96-44f4-86eb-8b838fce560d
+    type: regular
+    task:
+      id: 8a5b5034-9a96-44f4-86eb-8b838fce560d
+      version: -1
+      name: add single ip entry
+      script: '|||imperva-waf-ip-group-update-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      cidr-mask: {}
+      entry-type:
+        simple: single
+      group-name:
+        complex:
+          root: ImpervaWAF
+          accessor: IpGroup.Name
+      ip-address-from:
+        simple: 10.0.0.1
+      ip-address-to: {}
+      json-entries: {}
+      network-address: {}
+      operation:
+        simple: add
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 549902f4-3ed7-4f5e-8933-6ff8788b3b9a
+    type: regular
+    task:
+      id: 549902f4-3ed7-4f5e-8933-6ff8788b3b9a
+      version: -1
+      name: imperva-waf-ip-group-delete
+      script: '|||imperva-waf-ip-group-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      group-name:
+        complex:
+          root: ImpervaWAF
+          accessor: IpGroup.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 797cf2f3-3899-4307-816f-67a7ea0ed349
+    type: regular
+    task:
+      id: 797cf2f3-3899-4307-816f-67a7ea0ed349
+      version: -1
+      name: imperva-waf-web-service-custom-policy-create
+      script: '|||imperva-waf-web-service-custom-policy-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      action: {}
+      country-names: {}
+      display-response-page: {}
+      enabled:
+        simple: "False"
+      followed-action: {}
+      geo-location-criteria-operation: {}
+      ip-addresses: {}
+      ip-addresses-criteria-operation:
+        simple: excludeAll
+      ip-groups:
+        simple: testDemisto
+      match-criteria-json: {}
+      one-alert-per-session: {}
+      policy-name:
+        simple: test_policy
+      server-group-name-to-apply:
+        simple: Tel Aviv
+      severity:
+        simple: low
+      site-name-to-apply:
+        simple: Default Site
+      web-service-name-to-apply:
+        simple: Orders
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 0944901f-7d8d-4e04-8ab6-fceb8beebf56
+    type: regular
+    task:
+      id: 0944901f-7d8d-4e04-8ab6-fceb8beebf56
+      version: -1
+      name: imperva-waf-web-service-custom-policy-update
+      script: '|||imperva-waf-web-service-custom-policy-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      action: {}
+      apply-operation: {}
+      country-names: {}
+      display-response-page: {}
+      enabled: {}
+      followed-action: {}
+      geo-location-criteria-operation: {}
+      ip-addresses:
+        simple: 127.0.0.1
+      ip-addresses-criteria-operation:
+        simple: excludeAll
+      ip-groups: {}
+      match-criteria-json: {}
+      one-alert-per-session: {}
+      policy-name:
+        simple: test_policy
+      server-group-name-to-apply: {}
+      severity:
+        simple: medium
+      site-name-to-apply: {}
+      web-service-name-to-apply: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8d599145-79c9-421a-8cbf-ad399dd1dc90
+    type: title
+    task:
+      id: 8d599145-79c9-421a-8cbf-ad399dd1dc90
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: f9946971-f238-4690-8b7c-0797b0de0f6b
+    type: regular
+    task:
+      id: f9946971-f238-4690-8b7c-0797b0de0f6b
+      version: -1
+      name: imperva-waf-ip-group-list-entries
+      script: '|||imperva-waf-ip-group-list-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      ip-group-name:
+        complex:
+          root: ImpervaWAF
+          accessor: IpGroup.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: da4be86b-9409-4f42-83bc-ced1a7dd4d6e
+    type: condition
+    task:
+      id: da4be86b-9409-4f42-83bc-ced1a7dd4d6e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.IpGroup.Entries.Type
+            iscontext: true
+          right:
+            value:
+              simple: single
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.IpGroup.Entries.IpAddressFrom
+            iscontext: true
+          right:
+            value:
+              simple: 10.0.0.1
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "24":
+    id: "24"
+    taskid: c8398213-decc-4b36-86d9-44037bf37697
+    type: regular
+    task:
+      id: c8398213-decc-4b36-86d9-44037bf37697
+      version: -1
+      name: remove the range ip entry
+      script: '|||imperva-waf-ip-group-update-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      cidr-mask: {}
+      entry-type:
+        simple: range
+      group-name:
+        complex:
+          root: ImpervaWAF
+          accessor: IpGroup.Name
+      ip-address-from:
+        simple: 127.0.0.1
+      ip-address-to:
+        simple: 127.0.0.2
+      json-entries: {}
+      network-address: {}
+      operation:
+        simple: remove
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "25":
+    id: "25"
+    taskid: 33484b03-ac8f-42af-80f9-d4411410284a
+    type: regular
+    task:
+      id: 33484b03-ac8f-42af-80f9-d4411410284a
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: e2d88f0e-a8c4-4af9-8357-1ffea03c8bdd
+    type: regular
+    task:
+      id: e2d88f0e-a8c4-4af9-8357-1ffea03c8bdd
+      version: -1
+      name: imperva-waf-ip-group-list-entries
+      script: '|||imperva-waf-ip-group-list-entries'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      ip-group-name:
+        simple: test_ip_group
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: 590786fe-62f0-496e-83d7-3946e8eaee6a
+    type: condition
+    task:
+      id: 590786fe-62f0-496e-83d7-3946e8eaee6a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEmpty
+          left:
+            value:
+              simple: ImpervaWAF.IpGroup.Entries
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 0849d68f-234f-40c3-8452-0972bc2d1e5c
+    type: regular
+    task:
+      id: 0849d68f-234f-40c3-8452-0972bc2d1e5c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: 7ece8231-947d-499f-8485-2cd58647dd62
+    type: regular
+    task:
+      id: 7ece8231-947d-499f-8485-2cd58647dd62
+      version: -1
+      name: imperva-waf-web-service-custom-policy-delete
+      script: '|||imperva-waf-web-service-custom-policy-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      policy-name:
+        complex:
+          root: ImpervaWAF
+          accessor: CustomWebPolicy.Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 483e8e9b-d89e-4365-8f98-cb74d368bd74
+    type: condition
+    task:
+      id: 483e8e9b-d89e-4365-8f98-cb74d368bd74
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isFalse
+          left:
+            value:
+              complex:
+                root: ImpervaWAF
+                accessor: CustomWebPolicy.Enabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ImpervaWAF
+                accessor: CustomWebPolicy.Severity
+            iscontext: true
+          right:
+            value:
+              simple: low
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ImpervaWAF
+                accessor: CustomWebPolicy.ApplyTo.serverGroupName
+            iscontext: true
+          right:
+            value:
+              simple: Tel Aviv
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.CustomWebPolicy.Name
+            iscontext: true
+          right:
+            value:
+              simple: test_policy
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 3b7326ec-1efe-4f99-88f4-6e80fb2dd2bc
+    type: condition
+    task:
+      id: 3b7326ec-1efe-4f99-88f4-6e80fb2dd2bc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ImpervaWAF
+                accessor: CustomWebPolicy.Severity
+            iscontext: true
+          right:
+            value:
+              simple: medium
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.CustomWebPolicy.Name
+            iscontext: true
+          right:
+            value:
+              simple: test_policy
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.CustomWebPolicy.MatchCriteria.userDefined.IP Address
+            iscontext: true
+          right:
+            value:
+              simple: 127.0.0.1
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.CustomWebPolicy.MatchCriteria.operation
+            iscontext: true
+          right:
+            value:
+              simple: excludeAll
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ImpervaWAF.CustomWebPolicy.MatchCriteria.type
+            iscontext: true
+          right:
+            value:
+              simple: sourceIpAddresses
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 5285,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

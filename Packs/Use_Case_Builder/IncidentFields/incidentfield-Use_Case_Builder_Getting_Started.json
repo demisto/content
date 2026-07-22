@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Use Case Builder"
+    ],
+    "caseInsensitive": true,
+    "cliName": "usecasebuildergettingstarted",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_usecasebuildergettingstarted",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Use Case Builder Getting Started",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "markdown",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.8.0",
+    "template": "# Welcome to Cortex XSOAR!\n\nWe are excited to get you started with your XSOAR Implementation.\n\nBelow is a list of resources to guide your Cortex XSOAR journey:\n\n## License\n\nYour license has been delivered in an email (from the all and powerful DBot). That email contains your download link (or server information if hosted) and instructions on how to apply your new license.\n\n## Support\n\n- Log in to our [Customer Support Portal](https://support.paloaltonetworks.com) to register devices, add users, open support cases, access customer resources and more\n- Review your [Support Plan Details](https://www.paloaltonetworks.com/services/support/support-plans)\n- Learn more on the [CSP FAQ page](https://www.paloaltonetworks.com/services/support/customer-support-portal-faq)\n\n## Technical documentation\n\n- Review [Cortex XSOAR™ Documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar)\n- XSOAR [Developer Hub Docs](https://xsoar.pan.dev/)\n- XSOAR [Admin Guide](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin-guide)\n\n*Subscribe to [XSOAR Release Announcements](https://live.paloaltonetworks.com/t5/cortex-xsoar-release/tkb-p/Cortex_XSOAR_Release_Announcements) to get notified about the latest feature releases*\n\n## Training and Certifications\n\n- [Visit our full online courses \u0026 certifications catalog](https://www.paloaltonetworks.com/services/education)\n- [Start learning about XSOAR in these on-line courses](https://www.paloaltonetworks.com/services/education/cortex-xsoar)\n- [Check out our PANW Certifications and get certified to become an XSOAR expert!](https://www.paloaltonetworks.com/services/education/certification)\n\n## DFIR Community\n\n- [Join our open Slack community for DFIR Professionals](https://pan-community.slack.com/)\n\n## Kick-off session\n\n- Watch a recording of our [XSOAR kick-off session](https://www.youtube.com/watch?v=EXYnLJ9BLV4\u0026t=906s)\n- [Have questions for our team after viewing this video? Please fill out this form](https://forms.gle/E5Ngcaox3YuegUxp8)\n\n---\n\n**After Kick-off, you’re ready to get started! Complete each step listed below:**\n1. [Setup](https://live.paloaltonetworks.com/t5/customer-journey-xsoar/setup-xsoar/ta-p/394505)\n2. [Configure](https://live.paloaltonetworks.com/t5/customer-journey-xsoar/setup-xsoar/ta-p/394505)\n3. [Integrate](https://live.paloaltonetworks.com/t5/customer-journey-xsoar/integrate-xsoar/ta-p/394507)\n\n**Ready for advanced features and continuous optimization?**\n- [Scale \u0026 Optimize](https://live.paloaltonetworks.com/t5/customer-journey-xsoar/scale-amp-optimize-xsoar/ta-p/394508)\n\n*Done reviewing this article? Continue to the next stage: [Setup](https://live.paloaltonetworks.com/t5/customer-journey-xsoar/setup-xsoar/ta-p/394505)*\n\n---\n\n**Have product questions? Connect with a Subject Matter Expert**\n\n- [Visit our Live Community Cortex XSOAR Discussions forum](https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions)\n- [Attend a Cortex XSOAR Event](https://www.paloaltonetworks.com/company/events)\n- [Need help with break/fix issues? Contact Support](https://support.paloaltonetworks.com)\n\n[Technical documentation: Cortex XSOAR™ Documentation](https://docs.paloaltonetworks.com/cortex/cortex-xsoar)\n\nTo learn about new features, subscribe to [Cortex XSOAR Release Announcements](https://live.paloaltonetworks.com/t5/cortex-xsoar-release/tkb-p/Cortex_XSOAR_Release_Announcements)\n\nExplore the latest trends and test drive use cases from Cortex XSOAR and other contributors: [Marketplace](https://www.paloaltonetworks.com/marketplace)\n"
+}

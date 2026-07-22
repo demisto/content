@@ -1,0 +1,128 @@
+[
+    {
+        "@id": "NCCIC:Indicator-34ac8712-f591-4a81-95dc-c99ce690112c",
+        "@timestamp": "2020-11-04T11:06:33Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Description": "Scanner_Generic",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-e7a67d32-14bd-45be-af9c-fea9e714ae16",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-1ef1043e-37b7-4f58-883b-c65b952bde18",
+                "cybox:Properties": {
+                    "@category": "ipv4-addr",
+                    "@xsi:type": "AddressObj:AddressObjectType",
+                    "AddressObj:Address_Value": {
+                        "@condition": "Equals",
+                        "#text": "2.2.2.2"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "@id": "NCCIC:Indicator-9cb1be36-9b69-4f3b-bd32-5d571db5bce9",
+        "@timestamp": "2020-11-04T11:06:33Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Description": "Scanner_Generic",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-552fda4b-ef98-4c65-a6e7-09a1b956eba7",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-888f97be-e76e-4bf2-a3dc-dfc71b5ae726",
+                "cybox:Properties": {
+                    "@category": "ipv4-addr",
+                    "@xsi:type": "AddressObj:AddressObjectType",
+                    "AddressObj:Address_Value": {
+                        "@condition": "Equals",
+                        "#text": "3.3.3.3"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "@id": "NCCIC:Indicator-67609b93-b146-4642-a00b-8614edbc019e",
+        "@timestamp": "2020-11-04T12:06:25Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Description": "MalwareDownload_Generic",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-7d9aad16-797e-49bf-95fa-80a4416d3b2a",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-8cfafffe-22c6-41a8-a7c3-8031d091bbe7",
+                "cybox:Properties": {
+                    "@category": "ipv4-addr",
+                    "@xsi:type": "AddressObj:AddressObjectType",
+                    "AddressObj:Address_Value": {
+                        "@condition": "Equals",
+                        "#text": "4.4.4.4"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "@id": "NCCIC:Indicator-acd981f5-0382-4f4c-9fe1-1a0a76bccd0c",
+        "@timestamp": "2020-11-04T12:06:25Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Description": "MalwareDownload_Generic",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-ba267c71-026c-4e68-942d-b7aed5843eac",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-8d0a5ccf-d5c0-41e2-89df-6a1d24c26e6c",
+                "cybox:Properties": {
+                    "@category": "ipv4-addr",
+                    "@xsi:type": "AddressObj:AddressObjectType",
+                    "AddressObj:Address_Value": {
+                        "@condition": "Equals",
+                        "#text": "5.5.5.5"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "@id": "NCCIC:Indicator-18bbbbf5-df6d-4ced-9b24-2c465fb2edc9",
+        "@timestamp": "2020-11-04T13:06:26Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Description": "MalwareDownload_Generic",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-cf7b8b1f-bcd6-4cc0-bf06-5cbb3f4adf87",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-0d70f54d-067d-4b57-abd0-a44979d40ab7",
+                "cybox:Properties": {
+                    "@category": "ipv4-addr",
+                    "@xsi:type": "AddressObj:AddressObjectType",
+                    "AddressObj:Address_Value": {
+                        "@condition": "Equals",
+                        "#text": "6.6.6.6"
+                    }
+                }
+            }
+        }
+    },
+    {
+        "@id": "NCCIC:Indicator-2afaf2d6-50a2-4860-a4da-414aef39bb91",
+        "@timestamp": "2020-11-04T13:06:26Z",
+        "@version": "2.0",
+        "@xsi:type": "indicator:IndicatorType",
+        "indicator:Description": "MalwareDownload_Generic",
+        "indicator:Observable": {
+            "@id": "NCCIC:Observable-7aa750a4-ed51-4274-8343-5bd0a56406c7",
+            "cybox:Object": {
+                "@id": "NCCIC:Object-0fed689a-dd67-482a-9994-4426104af33a",
+                "cybox:Properties": {
+                    "@category": "ipv4-addr",
+                    "@xsi:type": "AddressObj:AddressObjectType",
+                    "AddressObj:Address_Value": {
+                        "@condition": "Equals",
+                        "#text": "7.7.7.7"
+                    }
+                }
+            }
+        }
+    }
+]

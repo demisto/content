@@ -1,0 +1,30 @@
+{
+ "id": "incident_googlecloudsccresourceparentname",
+ "version": -1,
+ "modified": "2021-01-22T00:58:04.9917941+05:30",
+ "name": "GoogleCloudSCC Resource ParentName",
+ "ownerOnly": false,
+ "cliName": "googlecloudsccresourceparentname",
+ "type": "shortText",
+ "closeForm": false,
+ "editForm": false,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "Google Cloud SCC Finding"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": false,
+ "caseInsensitive": true,
+ "sla": 0,
+ "threshold": 72,
+ "fromVersion": "6.0.0"
+}

@@ -1,0 +1,69 @@
+commonfields:
+  id: VectraHosts
+  version: -1
+name: VectraHosts
+script: >
+  keys = ['id','name','state','t_score','c_score','last_source','last_detection_timestamp','detection_set','url','tags','key_asset','new_host_pointer','sensor_luid','t_score','targets_key_asset']
+
+  resp = demisto.executeCommand("vec-hosts", demisto.args())
+
+
+  if isError(resp[0]):
+      demisto.results(resp)
+  else:
+      data = demisto.get(resp[0], "Contents.results")
+      if data:
+          data = data if isinstance(data, list) else [data]
+          data = [{k: formatCell(row[k]).replace("\n","<br>") for k in row} for row in data]
+          data = tblToMd("Vectra Hosts",data,keys)
+
+          demisto.results({"ContentsFormat": formats["markdown"], "Type": entryTypes["note"], "Contents": data} )
+      else:
+          demisto.results("No results.")
+type: python
+subtype: python2
+tags:
+- Vectra
+comment: Deprecated. Host information includes data that correlates the host data to detected security events
+system: true
+args:
+- description: Filters objects listed
+  name: fields
+- description: Page number. Possible values are a positive integer or last
+  name: page
+- description: Page size. Possible values are a positive integer or all
+  name: page_size
+- description: "Orders records by last timestamp, threat score and certainty score. The default out sorts threat and certainty score in ascending order. Scores can sorted in descending order by prepending the query with “minus” symbol"
+  name: ordering
+- description: filter by name
+  name: name
+- description: 'filter by state: active, inactive, suspended, ignored, ignored4all'
+  name: state
+- description: filter by last_source (ip address)
+  name: last_source
+- description: filter by threat score
+  name: t_score
+- description: filter by threat score >= the score provided
+  name: t_score_gte
+- description: filter by certainty score
+  name: c_score
+- description: The current certainty score integer correlated to this host
+  name: c_score
+- description: filter by certainty score >= the score provided
+  name: c_score_gte
+- description: filter by last_detection_timestamp
+  name: last_detection_timestamp
+- description: filter by a tag or a comma-separated list of tags (returns hosts that contain any of the tags specified), e.g.tags=baz | tags=foo,bar"
+  name: tags
+- description: 'filter by key asset: True, False'
+  name: key_assest
+- description: filter by mac address
+  name: mac_address
+scripttarget: 0
+timeout: 0s
+dependson:
+  must:
+  - vec-hosts
+deprecated: true
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958

@@ -1,0 +1,8 @@
+[file:README.md]
+ignore=RM104
+
+[file:McAfee-MAR.yml]
+ignore=BA108,BA109
+
+[file:McAfee-MAR_image.png]
+ignore=IM111

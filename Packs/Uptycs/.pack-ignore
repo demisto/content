@@ -1,0 +1,9 @@
+[file:Uptycs.yml]
+ignore=IN126,IN136,BA124
+
+[file:README.md]
+ignore=RM102,RM104
+
+[file:Uptycs_image.png]
+ignore=IM111
+

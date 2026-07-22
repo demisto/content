@@ -1,0 +1,20 @@
+[
+    {
+        "description": "",
+        "id": "zNVae7vz-DH7GpeQUPfx1KXMGXGg7bf7",
+        "labels": [],
+        "linkURL": "https://localhost/sandbox/search?query=alerting%3Dtrue&live=true&start=24h&fullscreen=false",
+        "name": "Alerting True",
+        "notifiers": [
+            "BTkuj8QArhIFMh_L39FoN0tnyTUEXplc"
+        ],
+        "query": {
+            "end": "now",
+            "isLive": true,
+            "queryString": "alerting=true",
+            "start": "24h"
+        },
+        "silenced": false,
+        "throttleTimeMillis": 3600000
+    }
+]

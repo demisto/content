@@ -1,0 +1,211 @@
+{
+  "gcp-pubsub-topic-messages-seek": {},
+  "gcp-pubsub-topics-list": {
+    "topics": [
+      {
+        "name": "projects/dmst-doc-prjct/topics/dmst-test-topic"
+      }
+    ]
+  },
+  "gcp-pubsub-topic-publish-message": {
+    "messageIds": [
+      "123"
+    ]
+  },
+  "gcp-pubsub-topic-messages-pull": {
+    "receivedMessages": [
+      {
+        "ackId": "",
+        "message": {
+          "data": "42\\42",
+          "messageId": "123",
+          "publishTime": "2020-04-18T08:36:30.541Z"
+        }
+      }
+    ]
+  },
+  "try_pull_unique_messages_1": {
+    "receivedMessages": [
+      {
+        "ackId": "321",
+        "message": {
+          "data": "42",
+          "messageId": "123",
+          "publishTime": "2020-04-18T08:36:30.541Z"
+        }
+      }
+    ]
+  },
+  "try_pull_unique_messages_2": {
+    "receivedMessages": [
+      {
+        "ackId": "654",
+        "message": {
+          "data": "43",
+          "messageId": "456",
+          "publishTime": "2020-04-19T08:36:30.541Z"
+        }
+      }
+    ]
+  },
+  "try_pull_unique_messages_3": {
+    "receivedMessages": [
+      {
+        "ackId": "321",
+        "message": {
+          "data": "42",
+          "messageId": "123",
+          "publishTime": "2020-04-19T08:36:30.541Z"
+        }
+      },
+      {
+        "ackId": "654",
+        "message": {
+          "data": "43",
+          "messageId": "456",
+          "publishTime": "2020-04-19T08:36:30.541Z"
+        }
+      }
+    ]
+  },
+  "gcp-pubsub-topic-subscription-get-by-name": {
+    "name": "projects/dmst-doc-prjct/subscriptions/test_sub_2",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "pushConfig": {},
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "604800s",
+    "expirationPolicy": {
+      "ttl": "9999999999s"
+    }
+  },
+  "gcp-pubsub-topic-subscriptions-list": {
+    "subscriptions": [
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/dean-sub1",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 11,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "2678400s"
+        }
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/dean-sub2",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "2678400s"
+        }
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/test_sub_1",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "22678400s"
+        }
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/test_sub",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "2678400s"
+        }
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/test_sub_2",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {},
+        "ackDeadlineSeconds": 10,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {
+          "ttl": "9999999999s"
+        }
+      },
+      {
+        "name": "projects/dmst-doc-prjct/subscriptions/gcf-function-1-us-central1-dmst-test-topic",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "pushConfig": {
+          "pushEndpoint": "",
+          "attributes": {
+            "x-goog-version": "v1"
+          }
+        },
+        "ackDeadlineSeconds": 600,
+        "messageRetentionDuration": "604800s",
+        "expirationPolicy": {}
+      }
+    ]
+  },
+  "gcp-pubsub-topic-subscription-create": {
+    "name": "projects/dmst-doc-prjct/subscriptions/doc_sub_11",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "pushConfig": {},
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "86400s",
+    "expirationPolicy": {
+      "ttl": "86400s"
+    }
+  },
+  "gcp-pubsub-topic-subscription-update": {
+    "name": "projects/dmst-doc-prjct/subscriptions/doc_sub_11",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "pushConfig": {
+      "attributes": {
+        "x-goog-version": "v1"
+      }
+    },
+    "ackDeadlineSeconds": 10,
+    "messageRetentionDuration": "86400s",
+    "labels": {
+      "doc": "true"
+    },
+    "expirationPolicy": {
+      "ttl": "86400s"
+    }
+  },
+  "gcp-pubsub-topic-create": {
+    "name": "projects/dmst-doc-prjct/topics/dmst-doc-topic11"
+  },
+  "gcp-pubsub-topic-update": {
+    "name": "projects/dmst-doc-prjct/topics/dmst-doc-topic11",
+    "labels": {
+      "doc": "true"
+    }
+  },
+  "gcp-pubsub-topic-delete": {},
+  "gcp-pubsub-topic-snapshot-create": {
+    "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "expireTime": "2020-04-25T08:36:30.242Z"
+  },
+  "gcp-pubsub-topic-snapshot-update": {
+    "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
+    "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+    "expireTime": "2020-04-25T08:36:30.242Z",
+    "labels": {
+      "doc": "true"
+    }
+  },
+  "gcp-pubsub-topic-snapshots-list": {
+    "snapshots": [
+      {
+        "name": "projects/dmst-doc-prjct/snapshots/doc_snapshot",
+        "topic": "projects/dmst-doc-prjct/topics/dmst-test-topic",
+        "expireTime": "2020-04-25T08:36:30.242Z",
+        "labels": {
+          "doc": "true"
+        }
+      }
+    ]
+  },
+  "gcp-pubsub-topic-snapshot-delete": {}
+}

@@ -1,0 +1,78 @@
+{
+  "value": [
+    {
+      "name": "nsg1",
+      "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "location": "westus",
+      "etag": "123etag3",
+      "properties": {
+        "provisioningState": "Succeeded",
+        "securityRules": [],
+        "defaultSecurityRules": [
+          {
+            "name": "DenyAllOutBound",
+            "etag": "123etag3",
+            "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg1/defaultSecurityRules/DenyAllOutBound",
+            "properties": {
+              "provisioningState": "Succeeded",
+              "description": "Deny all outbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "nsg3",
+      "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg3",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "location": "westus",
+      "properties": {
+        "provisioningState": "Succeeded",
+        "securityRules": [],
+        "defaultSecurityRules": [
+          {
+            "name": "AllowVnetInBound",
+            "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg3/defaultSecurityRules/AllowVnetInBound",
+            "properties": {
+              "provisioningState": "Succeeded",
+              "description": "Allow inbound traffic from all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 65000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllOutBound",
+            "id": "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/networkSecurityGroups/nsg3/defaultSecurityRules/DenyAllOutBound",
+            "properties": {
+              "provisioningState": "Succeeded",
+              "description": "Deny all outbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

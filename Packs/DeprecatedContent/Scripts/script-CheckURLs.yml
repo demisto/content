@@ -1,0 +1,81 @@
+commonfields:
+  id: CheckURLs
+  version: -1
+name: CheckURLs
+script: >-
+  import re
+
+  strURLRegex = r'(?i)(?:(?:https?|ftp):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])'
+
+  res = []
+
+  urls = []
+
+  badUrls = []
+
+  filtered = ['http://schemas.microsoft.com/office/2004/12/omml', 'http://www.w3.org/TR/REC-html40']
+
+  data = demisto.args()['data'] if demisto.get(demisto.args(), 'data') else demisto.incidents()[0]['details']
+
+  if isinstance(data, list):
+      urls = data[:]
+  else:
+      for m in re.finditer(strURLRegex, data, re.I):
+          u = m.group(0)
+          if u in filtered:
+              continue
+          if u in urls:
+              continue
+          if 'mailto:' in u:
+              continue
+          urls.append(u)
+  for u in urls:
+      if isCommandAvailable('url'):
+          rep = demisto.executeCommand('url', {'url': u})
+          for r in rep:
+              if positiveUrl(r):
+                  badUrls.append(u)
+                  res.append(shortUrl(r))
+      if isCommandAvailable('pt-malware'):
+          ptRep = demisto.executeCommand('pt-malware', {'query': u})
+          if not isError(ptRep[0]) and demisto.get(ptRep[0], 'Contents.results'):
+              badUrls.append(u)
+              contents = flattenTable(demisto.get(ptRep[0], 'Contents.results'))
+              res.append( {'ContentsFormat': formats['table'], 'Type': entryTypes['note'], 'Contents': contents} )
+  if len(res) > 0:
+      res.extend(['yes', 'Found malicious URLs!'])
+      currUrls = demisto.get(demisto.context(), 'bad_urls')
+      if currUrls and isinstance(currUrls, list):
+          currUrls += [u for u in badUrls if u not in currUrls]
+      else:
+          currUrls = badUrls
+      demisto.setContext('bad_urls', currUrls)
+  else:
+      res.append('no')
+      if urls:
+          res.append('Only clean URLs found: \n' + '\n'.join(urls))
+      else:
+          res.append('No URLs found within data. Nothing to check.')
+  demisto.results(res)
+type: python
+subtype: python2
+tags:
+- server
+- threat-intel
+- xfe
+- virustotal
+comment: Deprecated. Check the URLs in the incident, or raw text provided as argument, for malicious URLs
+system: true
+deprecated: true
+args:
+- name: data
+  default: true
+  description: Raw text from which to extract URLs using the appropriate regular expression. If omitted, will scan Incident Details instead.
+scripttarget: 0
+dependson:
+  should:
+  - url
+  - pt-malware
+timeout: 0s
+fromversion: 5.0.0
+dockerimage: demisto/python:2.7.18.20958
