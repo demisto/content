@@ -522,7 +522,7 @@ class LdapClient:
         and returns the Active Directory username.
 
         Surrounding whitespace is stripped to avoid creating duplicate users when a username is
-        entered with a leading/trailing space (XSUP-73382).
+        entered with a leading/trailing space.
         """
         logon_name = logon_name.strip()
         ad_username = logon_name
