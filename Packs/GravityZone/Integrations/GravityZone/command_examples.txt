@@ -1,6 +1,6 @@
 !gz-endpoint-list
 !gz-endpoint-list name=TA66
-!gz-endpoint-list node_id=631707cc11a30cdd250b03f8
+!gz-endpoint-list node_id=6909d1859866985b410b2969
 !gz-endpoint-get id=6942a43afe8d4e463ca5c197
 !gz-endpoint-users-loggedin id=6942a43afe8d4e463ca5c197
 !gz-endpoint-create-memory-dump id=6942a43afe8d4e463ca5c197 path=C:\\dumps\\ password=ComplexPass123!

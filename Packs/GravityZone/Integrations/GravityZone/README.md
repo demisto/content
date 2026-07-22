@@ -47,7 +47,7 @@ Retrieves the list of managed endpoints.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of endpoints to retrieve. | Optional |
-| name | The endpoint name filter. Returns endpoints whose hostnames start with the specified value. The value must be at least 3 characters long. Supports an optional single leading `*` wildcard pattern. | Optional |
+| name | The endpoint name filter. Returns endpoints whose hostnames start with the specified value. The value must be at least 3 characters long. Supports an optional single leading '*' wildcard pattern. | Optional |
 | node_id | The ID of the target GravityZone company or network inventory group. If not specified, the default value is the ID of the company associated with the API key used to make the request. | Optional |
 
 #### Context Output
@@ -60,7 +60,7 @@ Retrieves the list of managed endpoints.
 | GravityZone.EndpointsList.OS | String | The endpoint operating system version. |
 | GravityZone.EndpointsList.MAC | String | The endpoint MAC address. |
 | GravityZone.EndpointsList.Vendor | String | The endpoint vendor. |
-| GravityZone.EndpointsList.FQDN | String | The endpoint fully qualified domain name (FQDN). |
+| GravityZone.EndpointsList.FQDN | String | The endpoint fully qualified domain name \(FQDN\). |
 | GravityZone.EndpointsList.CompanyID | String | The GravityZone company ID where the endpoint is located. |
 | GravityZone.EndpointsList.GroupID | String | The GravityZone group ID where the endpoint is located. |
 
@@ -75,26 +75,37 @@ Retrieves the list of managed endpoints.
     "GravityZone": {
         "EndpointsList": [
             {
-                "Hostname": "SL-WIN10-PC2",
-                "ID": "67c87017f3e11f09dc9143e8",
-                "IP": "1.1.1.1",
-                "MAC": "005056b1ef97",
+                "CompanyID": "6909d1859866985b410b2969",
+                "FQDN": "win",
+                "GroupID": "6909d1869866985b410b296e",
+                "Hostname": "WIN",
+                "ID": "699d81cdab613e65696e452e",
+                "IP": "IP1",
+                "MAC": "005056b1b175",
                 "OS": "Windows 10 Pro",
-                "Vendor": "GravityZone",
-                "FQDN": "SL-WIN10-PC2.domain.com",
-                "CompanyID": "631707cb11a30cdd250b03f3",
-                "GroupID": "631707cc11a30cdd250b03f9"
+                "Vendor": "GravityZone"
             },
             {
-                "Hostname": "TA66H0I6F225",
-                "ID": "67c87017f3e11f09dc9143e9",
-                "IP": "1.1.1.2",
-                "MAC": "005056b1ef98",
-                "OS": "Windows 10 Pro",
-                "Vendor": "GravityZone",
-                "FQDN": "TA66H0I6F225.domain.com",
-                "CompanyID": "631707cb11a30cdd250b03f3",
-                "GroupID": "631707cc11a30cdd250b03f8"
+                "CompanyID": "6909d1859866985b410b2969",
+                "FQDN": "xdr-nsva",
+                "GroupID": "6909d1869866985b410b296e",
+                "Hostname": "xdr-nsva",
+                "ID": "69fc10a547f2e985e6774a0f",
+                "IP": "IP2",
+                "MAC": "005056b156b1",
+                "OS": "Linux Ubuntu 24.04.4 LTS",
+                "Vendor": "GravityZone"
+            },
+            {
+                "CompanyID": "6909d1859866985b410b2969",
+                "FQDN": "ta349cf3rjt5",
+                "GroupID": "6909d1869866985b410b296e",
+                "Hostname": "TA349CF3RJT5",
+                "ID": "6a6043865de62c6f81270b8d",
+                "IP": "IP3",
+                "MAC": "005056b8bfd3",
+                "OS": "Windows 10 Enterprise",
+                "Vendor": "GravityZone"
             }
         ]
     }
@@ -107,46 +118,23 @@ Retrieves the list of managed endpoints.
 >
 >|ID|Hostname|IP|OS|MAC|Vendor|FQDN|CompanyID|GroupID|
 >|---|---|---|---|---|---|---|---|---|
->| 67c87017f3e11f09dc9143e8 | SL-WIN10-PC2 | 1.1.1.1 | Windows 10 Pro | 005056b1ef97 | GravityZone | SL-WIN10-PC2.domain.com | 631707cb11a30cdd250b03f3 | 631707cc11a30cdd250b03f9 |
->| 67c87017f3e11f09dc9143e9 | TA66H0I6F225 | 1.1.1.2 | Windows 10 Pro | 005056b1ef98 | GravityZone | TA66H0I6F225.domain.com | 631707cb11a30cdd250b03f3 | 631707cc11a30cdd250b03f8 |
+>| 699d81cdab613e65696e452e | WIN | IP1 | Windows 10 Pro | 005056b1b175 | GravityZone | win | 6909d1859866985b410b2969 | 6909d1869866985b410b296e |
+>| 69fc10a547f2e985e6774a0f | xdr-nsva | IP2 | Linux Ubuntu 24.04.4 LTS | 005056b156b1 | GravityZone | xdr-nsva | 6909d1859866985b410b2969 | 6909d1869866985b410b296e |
+>| 6a6043865de62c6f81270b8d | TA349CF3RJT5 | IP3 | Windows 10 Enterprise | 005056b8bfd3 | GravityZone | ta349cf3rjt5 | 6909d1859866985b410b2969 | 6909d1869866985b410b296e |
 
 #### Command example
 
 ```!gz-endpoint-list name=TA66```
 
-#### Context Example
-
-```json
-{
-    "GravityZone": {
-        "EndpointsList": [
-            {
-                "Hostname": "TA66H0I6F225",
-                "ID": "67c87017f3e11f09dc9143e9",
-                "IP": "1.1.1.2",
-                "MAC": "005056b1ef98",
-                "OS": "Windows 10 Pro",
-                "Vendor": "GravityZone",
-                "FQDN": "TA66H0I6F225.domain.com",
-                "CompanyID": "631707cb11a30cdd250b03f3",
-                "GroupID": "631707cc11a30cdd250b03f8"
-            }
-        ]
-    }
-}
-```
-
 #### Human Readable Output
 
 >### GravityZone Endpoints List
 >
->|ID|Hostname|IP|OS|MAC|Vendor|FQDN|CompanyID|GroupID|
->|---|---|---|---|---|---|---|---|---|
->| 67c87017f3e11f09dc9143e9 | TA66H0I6F225 | 1.1.1.2 | Windows 10 Pro | 005056b1ef98 | GravityZone | TA66H0I6F225.domain.com | 631707cb11a30cdd250b03f3 | 631707cc11a30cdd250b03f8 |
+>**No entries.**
 
 #### Command example
 
-```!gz-endpoint-list node_id=631707cc11a30cdd250b03f8```
+```!gz-endpoint-list node_id=6909d1859866985b410b2969```
 
 #### Context Example
 
@@ -155,15 +143,37 @@ Retrieves the list of managed endpoints.
     "GravityZone": {
         "EndpointsList": [
             {
-                "Hostname": "TA66H0I6F225",
-                "ID": "67c87017f3e11f09dc9143e9",
-                "IP": "1.1.1.2",
-                "MAC": "005056b1ef98",
+                "CompanyID": "6909d1859866985b410b2969",
+                "FQDN": "win",
+                "GroupID": "6909d1869866985b410b296e",
+                "Hostname": "WIN",
+                "ID": "699d81cdab613e65696e452e",
+                "IP": "IP1",
+                "MAC": "005056b1b175",
                 "OS": "Windows 10 Pro",
-                "Vendor": "GravityZone",
-                "FQDN": "TA66H0I6F225.domain.com",
-                "CompanyID": "631707cb11a30cdd250b03f3",
-                "GroupID": "631707cc11a30cdd250b03f8"
+                "Vendor": "GravityZone"
+            },
+            {
+                "CompanyID": "6909d1859866985b410b2969",
+                "FQDN": "xdr-nsva",
+                "GroupID": "6909d1869866985b410b296e",
+                "Hostname": "xdr-nsva",
+                "ID": "69fc10a547f2e985e6774a0f",
+                "IP": "IP2",
+                "MAC": "005056b156b1",
+                "OS": "Linux Ubuntu 24.04.4 LTS",
+                "Vendor": "GravityZone"
+            },
+            {
+                "CompanyID": "6909d1859866985b410b2969",
+                "FQDN": "ta349cf3rjt5",
+                "GroupID": "6909d1869866985b410b296e",
+                "Hostname": "TA349CF3RJT5",
+                "ID": "6a6043865de62c6f81270b8d",
+                "IP": "IP3",
+                "MAC": "005056b8bfd3",
+                "OS": "Windows 10 Enterprise",
+                "Vendor": "GravityZone"
             }
         ]
     }
@@ -176,7 +186,9 @@ Retrieves the list of managed endpoints.
 >
 >|ID|Hostname|IP|OS|MAC|Vendor|FQDN|CompanyID|GroupID|
 >|---|---|---|---|---|---|---|---|---|
->| 67c87017f3e11f09dc9143e9 | TA66H0I6F225 | 1.1.1.2 | Windows 10 Pro | 005056b1ef98 | GravityZone | TA66H0I6F225.domain.com | 631707cb11a30cdd250b03f3 | 631707cc11a30cdd250b03f8 |
+>| 699d81cdab613e65696e452e | WIN | IP1 | Windows 10 Pro | 005056b1b175 | GravityZone | win | 6909d1859866985b410b2969 | 6909d1869866985b410b296e |
+>| 69fc10a547f2e985e6774a0f | xdr-nsva | IP2 | Linux Ubuntu 24.04.4 LTS | 005056b156b1 | GravityZone | xdr-nsva | 6909d1859866985b410b2969 | 6909d1869866985b410b296e |
+>| 6a6043865de62c6f81270b8d | TA349CF3RJT5 | IP3 | Windows 10 Enterprise | 005056b8bfd3 | GravityZone | ta349cf3rjt5 | 6909d1859866985b410b2969 | 6909d1869866985b410b296e |
 
 ### gz-endpoint-get
 
