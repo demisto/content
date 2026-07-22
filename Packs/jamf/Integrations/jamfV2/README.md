@@ -54,6 +54,26 @@ In order to run JAMF V2 commands, the user should have a set of minimum permissi
 | Jamf Pro Server Actions → Send Mobile Device Lost Mode Command |
 | Jamf Pro Server Actions → Send Mobile Device Remote Wipe Command |
 | Jamf Pro Server Actions → View Mobile Device Lost Mode Location |
+| Jamf Pro API → View MDM command information in Jamf Pro API |
+
+#### Required Jamf Pro API Role privileges per MDM command
+
+The following commands use the Jamf Pro API and require these API Role privileges:
+
+| Command | Required privilege(s) |
+| --- | --- |
+| jamf-computer-lock | View MDM command information in Jamf Pro API + Send Computer Remote Lock Command |
+| jamf-computer-erase | Send Computer Remote Wipe Command |
+| jamf-mobile-device-lost-mode | Send Mobile Device Lost Mode Command + Read Mobile Devices |
+| jamf-mobile-device-erase | Send Mobile Device Remote Wipe Command |
+| jamf-mdm-command-status | View MDM command information in Jamf Pro API |
+
+To add a missing privilege to an API Role in the Jamf Pro UI:
+
+1. In Jamf Pro, go to **Settings → System Settings → API Roles and Clients → API Clients**.
+2. Open the API Client used by this integration and note which API Role(s) are assigned to it.
+3. Switch to the **API Roles** tab and open the role assigned to that client.
+4. Add the missing privilege(s) from the table above to the role and save.
 
 ## Commands
 
