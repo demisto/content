@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### Box Event Collector\nThe 'Maximum number of events per page' parameter has been removed; the per-request page size is now fixed internally at the Box API maximum. Additionally, the ***box-get-events*** command's 'page_size' argument has been replaced with a 'limit' argument that caps the total number of events returned. Update any scripts or automations that pass 'page_size' to this command to use 'limit'. Refer to the release notes for additional details."
+}
