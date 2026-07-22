@@ -7397,7 +7397,7 @@ script:
         required: false
         type: String
       - name: end_date
-        description: End date for the forecast.
+        description: End date for the forecast. Default value 7 days from current time (UTC). e.g. 2022-01-01T00:00:00Z.
         required: false
         type: String
       - name: filter
