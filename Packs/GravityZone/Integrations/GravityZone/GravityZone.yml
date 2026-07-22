@@ -105,7 +105,7 @@ script:
       default: false
     - name: name
       isArray: false
-      description: The endpoint name filter. Returns endpoints whose hostnames start with the specified value. The value must be at least 3 characters long.
+      description: The endpoint name filter. Returns endpoints whose hostnames start with the specified value. The value must be at least 3 characters long. Supports an optional single leading '*' wildcard pattern.
       required: false
       secret: false
       default: false

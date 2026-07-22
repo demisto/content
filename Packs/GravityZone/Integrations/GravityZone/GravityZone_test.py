@@ -321,7 +321,7 @@ def test_gz_endpoint_list_command_valid_name_values(mock_demisto, requests_mock,
     [
         ("ab", r"The 'name' argument must be at least 3 characters long\."),
         ("ac*b", r"If using a wildcard, the 'name' argument must start with '\*'\."),
-        ("ac*b*d", r"The 'name' argument can only contain one wildcard '\*' character\."),
+        ("*ac*b*d", r"The 'name' argument can only contain one wildcard '\*' character\."),
     ],
 )
 def test_gz_endpoint_list_command_invalid_name_values(mock_demisto, requests_mock, invalid_name, expected_error):

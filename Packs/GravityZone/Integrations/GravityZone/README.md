@@ -47,7 +47,7 @@ Retrieves the list of managed endpoints.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of endpoints to retrieve. | Optional |
-| name | The endpoint name filter. Returns endpoints whose hostnames start with the specified value. The value must be at least 3 characters long. | Optional |
+| name | The endpoint name filter. Returns endpoints whose hostnames start with the specified value. The value must be at least 3 characters long. Supports an optional single leading `*` wildcard pattern. | Optional |
 | node_id | The ID of the target GravityZone company or network inventory group. If not specified, the default value is the ID of the company associated with the API key used to make the request. | Optional |
 
 #### Context Output
