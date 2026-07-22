@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The jamf-mobile-device-lost-mode command context output has changed - the JAMF.MobileDeviceCommands.status output was removed and the JAMF.MobileDeviceCommands.href output was added. The jamf-mobile-device-erase command context output has changed, and the clear_activation_code argument was deprecated (replaced by clear_activation_lock)."
+}
