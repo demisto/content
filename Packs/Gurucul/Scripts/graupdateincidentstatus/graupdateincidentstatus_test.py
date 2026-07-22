@@ -48,3 +48,39 @@ def test_gra_update_incident_status_graincident_fallback(monkeypatch, mocker):
             "using": "instance_name",
         },
     )
+
+
+def test_gra_update_incident_status_false_positive(monkeypatch, mocker):
+    """False Positive close reason maps to modelReviewIncident / Tuning Required."""
+    monkeypatch.setattr(graupdateincidentstatus, "_get_incident", lambda: _INCIDENT)
+    mocker.patch.object(demisto, "args", return_value={"closeReason": "False Positive", "closeNotes": "fp"})
+    execute_mocker = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "ok"}])
+    close_incident()
+    execute_mocker.assert_called_with(
+        "gra-incident-action",
+        {
+            "action": "modelReviewIncident",
+            "subOption": "Tuning Required",
+            "incidentId": "33",
+            "incidentComment": "fp",
+            "using": "instance_name",
+        },
+    )
+
+
+def test_gra_update_incident_status_other(monkeypatch, mocker):
+    """Other close reason maps to modelReviewIncident / Others."""
+    monkeypatch.setattr(graupdateincidentstatus, "_get_incident", lambda: _INCIDENT)
+    mocker.patch.object(demisto, "args", return_value={"closeReason": "Other", "closeNotes": "review"})
+    execute_mocker = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "ok"}])
+    close_incident()
+    execute_mocker.assert_called_with(
+        "gra-incident-action",
+        {
+            "action": "modelReviewIncident",
+            "subOption": "Others",
+            "incidentId": "33",
+            "incidentComment": "review",
+            "using": "instance_name",
+        },
+    )

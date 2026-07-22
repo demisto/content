@@ -50,3 +50,41 @@ def test_gra_update_alert_status_graalert_fallback(monkeypatch, mocker):
             "using": "instance_name",
         },
     )
+
+
+def test_gra_update_alert_status_false_positive(monkeypatch, mocker):
+    """False Positive close reason maps to Not An Incident / False Positive."""
+    monkeypatch.setattr(graupdatealertstatus, "_get_incident", lambda: _INCIDENT)
+    mocker.patch.object(demisto, "args", return_value={"closeReason": "False Positive", "closeNotes": "fp"})
+    execute_mocker = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "ok"}])
+    close_alert()
+    execute_mocker.assert_called_with(
+        "gra-alert-action",
+        {
+            "action": "closeAlert",
+            "alertId": "101",
+            "alertComment": "fp",
+            "incidentType": "Not An Incident",
+            "subStatus": "False Positive",
+            "using": "instance_name",
+        },
+    )
+
+
+def test_gra_update_alert_status_other(monkeypatch, mocker):
+    """Other close reason maps to Not An Incident / Model Review."""
+    monkeypatch.setattr(graupdatealertstatus, "_get_incident", lambda: _INCIDENT)
+    mocker.patch.object(demisto, "args", return_value={"closeReason": "Other", "closeNotes": "review"})
+    execute_mocker = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "ok"}])
+    close_alert()
+    execute_mocker.assert_called_with(
+        "gra-alert-action",
+        {
+            "action": "closeAlert",
+            "alertId": "101",
+            "alertComment": "review",
+            "incidentType": "Not An Incident",
+            "subStatus": "Model Review",
+            "using": "instance_name",
+        },
+    )

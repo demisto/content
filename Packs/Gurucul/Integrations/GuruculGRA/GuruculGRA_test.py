@@ -752,3 +752,88 @@ def test_gra_alert_comment(requests_mock):
     assert response.outputs == mock_response
     assert response.outputs_prefix == "Gra.Alert.Action"
     assert response.outputs_key_field == "alertId"
+
+
+def test_fetch_gra_alerts_empty_preserves_max_id(requests_mock):
+    """Empty alert page keeps the previous maxAlertId cursor."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    requests_mock.get("https://test.com/api/alerts/OPEN", json=[])
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_alerts(client, max_results=25, last_run={"maxAlertId": 100}, first_fetch_time=1600000000)
+
+    assert incidents == []
+    assert next_run == {"maxAlertId": 100}
+
+
+def test_fetch_incidents_routes_to_alerts(requests_mock):
+    """fetch_incidents with fetch_type=Alerts uses the alert fetch path."""
+    from GuruculGRA import Client, fetch_incidents
+
+    mock_response = util_load_json("test_data/gra-alerts.json")
+    requests_mock.get("https://test.com/api/alerts/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=25,
+        last_run={},
+        first_fetch_time=1600000000,
+        fetch_type="Alerts",
+    )
+
+    assert len(incidents) == 1
+    assert next_run == {"maxAlertId": 101}
+
+
+def test_gra_alert_assign(requests_mock):
+    """Unit test for gra-alert-assign POST command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alert-action.json")
+    requests_mock.post("https://test.com/api/alerts/assignAlert", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps(
+        {
+            "alertId": 101,
+            "alertComment": "assigned",
+            "assigneeType": "GRA_USER",
+            "assigneeName": "analyst1",
+        }
+    )
+    response = fetch_record_command(
+        client, "/alerts/assignAlert", "Gra.Alert.Action", "alertId", {"page": 1, "max": 10}, post_url
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.Action"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_alert_in_progress(requests_mock):
+    """Unit test for gra-alert-in-progress POST command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alert-action.json")
+    requests_mock.post("https://test.com/api/alerts/inProgressAlert", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps({"alertId": 101, "alertComment": "working"})
+    response = fetch_record_command(
+        client, "/alerts/inProgressAlert", "Gra.Alert.Action", "alertId", {"page": 1, "max": 10}, post_url
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.Action"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_alert_update_history(requests_mock):
+    """Unit test for gra-alert-update-history command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = [{"alertDetails": [{"actionName": "Comment", "comment": "note", "addedDate": "2026-07-12T08:15:00"}]}]
+    requests_mock.get("https://test.com/api/alerts/getAlertUpdateHistory", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(client, "/alerts/getAlertUpdateHistory", "Gra.Alert.History", "alertId", {"alertId": 101})
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.History"
+    assert response.outputs_key_field == "alertId"
