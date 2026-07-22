@@ -3157,10 +3157,7 @@ class Client(BaseClient):
             # whose values all satisfy ``value_check``.
             if not isinstance(data, dict) or not data:
                 return False
-            return all(
-                isinstance(key, str) and re.match(r"^[a-z].*$", key) and value_check(value)
-                for key, value in data.items()
-            )
+            return all(isinstance(key, str) and re.match(r"^[a-z].*$", key) and value_check(value) for key, value in data.items())
 
         validators = {
             "common": lambda data: _matches_common(data),
