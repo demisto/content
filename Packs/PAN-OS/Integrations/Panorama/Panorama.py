@@ -16969,7 +16969,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "pan-os-platform-get-system-status":
-            return_results(system_status_command(demisto.args()))
+             return_results(system_status_command(args))
         elif command == "pan-os-platform-update-ha-state":
             topology = get_topology()
             return_results(

@@ -8762,9 +8762,6 @@ script:
     - description: The timeout (in seconds) when polling.
       name: timeout
       defaultValue: '1200'
-    - description: Whether to hide the polling result (automatically filled by polling).
-      name: hide_polling_output
-      deprecated: true
     description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal. Supports polling to wait until the device becomes available.
     name: pan-os-platform-get-system-status
     polling: true
