@@ -7,39 +7,46 @@ commonfields:
   id: Reco
   version: -1
 configuration:
-- display: Server URL (e.g. https://host.reco.ai/api/v1)
+- additionalinfo: The base URL of your Reco instance.
+  display: Server URL (e.g. https://host.reco.ai/api/v1)
   name: url
   required: true
   type: 0
   section: Connect
 - section: Connect
+  additionalinfo: The API token (Bearer) used to authenticate with the Reco External API.
   display: JWT app token
   displaypassword: API Token
   name: api_token
   type: 4
   required: true
   hiddenusername: true
-- display: Trust any certificate (not secure)
+- additionalinfo: The option to skip TLS certificate verification when connecting to the Reco API.
+  display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
   section: Connect
-- display: Use system proxy settings
+- additionalinfo: The option to route requests through the system proxy.
+  display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   section: Connect
-- display: Incident type
+- additionalinfo: The incident type to map Reco alerts to.
+  display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
-- display: Fetch incidents
+- additionalinfo: The option to enable automatic incident fetching.
+  display: Fetch incidents
   name: isFetch
   type: 8
   required: false
   section: Collect
-- defaultvalue: '200'
+- additionalinfo: The maximum number of incidents to fetch per run (up to 500).
+  defaultvalue: '200'
   display: Max fetch
   name: max_fetch
   type: 0
@@ -63,19 +70,20 @@ configuration:
   type: 0
   required: false
   section: Collect
-- additionalinfo: Risk level of the incidents to fetch
-  display: Risk level
+- additionalinfo: 'The minimum severity threshold for fetched incidents. Accepts a single value: LOW, MEDIUM, HIGH, or CRITICAL (or numeric equivalents 10, 20, 30, 40). Alerts at or above this severity are fetched. For example, "MEDIUM" fetches medium, high, and critical severity alerts.'
+  display: Minimum risk level (e.g. MEDIUM fetches medium and higher)
   name: risk_level
   type: 0
   required: false
   section: Collect
-- defaultvalue: 7 days
+- additionalinfo: The amount of time to look back on the first fetch run (e.g. `7 days`, `12 hours`).
+  defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
   required: false
-description: Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
+description: Reco is the leader in SaaS & AI Security, providing full visibility and control across your SaaS ecosystem and AI agents.
 display: Reco
 name: Reco
 script:
@@ -128,8 +136,33 @@ script:
     description: Get Risky Users from Reco.
     name: reco-get-risky-users
     outputs:
-    - contextPath: Reco.RiskyUsers
-      description: Risky Users.
+    - contextPath: Reco.RiskyUsers.id
+      description: The account ID.
+      type: String
+    - contextPath: Reco.RiskyUsers.name
+      description: The account display name.
+      type: String
+    - contextPath: Reco.RiskyUsers.accountEmail
+      description: The account email address.
+      type: String
+    - contextPath: Reco.RiskyUsers.permissions
+      description: The account permissions in the SaaS application.
+      type: String
+    - contextPath: Reco.RiskyUsers.hasMfa
+      description: The value that indicates whether the account has MFA enabled.
+      type: Boolean
+    - contextPath: Reco.RiskyUsers.openAlerts
+      description: The number of open alerts for this account.
+      type: Number
+    - contextPath: Reco.RiskyUsers.isAdmin
+      description: The value that indicates whether the account has admin privileges.
+      type: Boolean
+    - contextPath: Reco.RiskyUsers.isRiskyUser
+      description: The value that indicates whether the account is flagged as risky.
+      type: Boolean
+    - contextPath: Reco.RiskyUsers.lastSeen
+      description: The last activity timestamp for the account.
+      type: Date
   - arguments:
     - description: Email address of the user to add to the risky users list in Reco.
       name: email_address
@@ -170,30 +203,30 @@ script:
     description: Get all sensitive assets from Reco by id.
     name: reco-get-sensitive-assets-by-id
     outputs:
-    - contextPath: Reco.SensitiveAssets.file_name
+    - contextPath: Reco.SensitiveAssets.id
+      description: The unique identifier of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.name
       description: The name of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.file_owner
+    - contextPath: Reco.SensitiveAssets.owner
       description: The owner of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.file_url
-      description: Json string of the asset's url and the name.
-      type: Unknown
-    - contextPath: Reco.SensitiveAssets.currently_permitted_users
-      description: List of currently permitted users.
+    - contextPath: Reco.SensitiveAssets.url
+      description: The URL of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.visibility
-      description: Visibility of the asset.
+    - contextPath: Reco.SensitiveAssets.sensitivityLevel
+      description: The sensitivity level of the asset (numeric).
+      type: Number
+    - contextPath: Reco.SensitiveAssets.permissionVisibility
+      description: The visibility/permission level of the asset.
       type: String
     - contextPath: Reco.SensitiveAssets.location
       description: The path of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.source
-      description: SaaS tool source of the asset.
-      type: String
-    - contextPath: Reco.SensitiveAssets.sensitivity_level
-      description: The sensitivity level of the asset.
-      type: Number
+    - contextPath: Reco.SensitiveAssets.dataCategories
+      description: The data categories detected in the asset.
+      type: Unknown
   - arguments:
     - description: Entity Type (RM_LINK_TYPE_USER).
       name: entity
@@ -300,27 +333,33 @@ script:
       name: email_address
       required: true
     outputs:
-    - contextPath: Reco.User.email_account
-      description: The email of the user.
+    - contextPath: Reco.User.id
+      description: The identity ID.
+      type: String
+    - contextPath: Reco.User.email
+      description: The primary email of the identity.
+      type: String
+    - contextPath: Reco.User.name
+      description: The full name of the identity.
       type: String
     - contextPath: Reco.User.departments
-      description: User departments.
+      description: The departments the identity belongs to.
       type: String
-    - contextPath: Reco.User.job_titles
-      description: Job Title.
+    - contextPath: Reco.User.jobTitles
+      description: The job titles of the identity.
       type: String
-    - contextPath: Reco.User.category
-      description: Category.
-      type: String
-    - contextPath: Reco.User.groups
-      description: The groups user is member of.
-      type: String
-    - contextPath: Reco.User.full_name
-      description: The user full name.
-      type: String
-    - contextPath: Reco.User.labels
-      description: User Labels.
-      type: Unknown
+    - contextPath: Reco.User.isFormer
+      description: The value that indicates whether the identity is a former employee.
+      type: Boolean
+    - contextPath: Reco.User.isInternal
+      description: The value that indicates whether the identity is an internal employee.
+      type: Boolean
+    - contextPath: Reco.User.openAlerts
+      description: The number of open alerts for this identity.
+      type: Number
+    - contextPath: Reco.User.lastSeen
+      description: The last activity timestamp for the identity.
+      type: Date
     description: Get user context by email address from Reco.
     name: reco-get-user-context-by-email-address
   - arguments:
@@ -411,30 +450,30 @@ script:
     description: Get all assets from Reco by id.
     name: reco-get-assets-by-id
     outputs:
-    - contextPath: Reco.SensitiveAssets.file_name
+    - contextPath: Reco.SensitiveAssets.id
+      description: The unique identifier of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.name
       description: The name of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.file_owner
+    - contextPath: Reco.SensitiveAssets.owner
       description: The owner of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.file_url
-      description: Json string of the asset's url and the name.
-      type: Unknown
-    - contextPath: Reco.SensitiveAssets.currently_permitted_users
-      description: List of currently permitted users.
+    - contextPath: Reco.SensitiveAssets.url
+      description: The URL of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.visibility
-      description: Visibility of the asset.
+    - contextPath: Reco.SensitiveAssets.sensitivityLevel
+      description: The sensitivity level of the asset (numeric).
+      type: Number
+    - contextPath: Reco.SensitiveAssets.permissionVisibility
+      description: The visibility/permission level of the asset.
       type: String
     - contextPath: Reco.SensitiveAssets.location
       description: The path of the asset.
       type: String
-    - contextPath: Reco.SensitiveAssets.source
-      description: SaaS tool source of the asset.
-      type: String
-    - contextPath: Reco.SensitiveAssets.sensitivity_level
-      description: The sensitivity level of the asset.
-      type: Number
+    - contextPath: Reco.SensitiveAssets.dataCategories
+      description: The data categories detected in the asset.
+      type: Unknown
   - arguments:
     - description: Alert ID.
       name: alert_id
@@ -459,33 +498,39 @@ script:
     description: Get app discovery data from Reco. Fetches all available apps using pagination.
     name: reco-get-apps
     outputs:
-    - contextPath: Reco.Apps.app_name
-      description: The name of the application.
-      type: String
-    - contextPath: Reco.Apps.app_id
+    - contextPath: Reco.Apps.id
       description: The unique identifier of the application.
+      type: String
+    - contextPath: Reco.Apps.name
+      description: The name of the application.
       type: String
     - contextPath: Reco.Apps.category
       description: The category of the application.
       type: String
-    - contextPath: Reco.Apps.risk_score
-      description: The risk score of the application.
-      type: Number
-    - contextPath: Reco.Apps.users_count
+    - contextPath: Reco.Apps.usersCount
       description: The number of users with access to the application.
       type: Number
-    - contextPath: Reco.Apps.data_access
-      description: The data access level of the application.
+    - contextPath: Reco.Apps.authorization
+      description: The authorization/sanction status of the application.
       type: String
-    - contextPath: Reco.Apps.updated_at
-      description: The last update timestamp of the application.
-      type: Date
-    - contextPath: Reco.Apps.created_at
-      description: The creation timestamp of the application.
-      type: Date
-    - contextPath: Reco.Apps.status
-      description: The status of the application.
+    - contextPath: Reco.Apps.authType
+      description: The authentication type used by the application.
       type: String
+    - contextPath: Reco.Apps.isUsingAi
+      description: The value that indicates whether the application uses AI.
+      type: Boolean
+    - contextPath: Reco.Apps.isShadowApp
+      description: The value that indicates whether the application is a shadow/unmanaged app.
+      type: Boolean
+    - contextPath: Reco.Apps.vendorGrade
+      description: The vendor security grade of the application.
+      type: String
+    - contextPath: Reco.Apps.aiCapability
+      description: The AI capability description for the application.
+      type: String
+    - contextPath: Reco.Apps.lastSeen
+      description: The last activity timestamp for the application.
+      type: Date
   - arguments:
     - description: Application ID to update authorization status for.
       name: app_id
@@ -515,11 +560,456 @@ script:
       description: The authorization status that was set.
       type: String
     - contextPath: Reco.AppAuthorization.updated
-      description: Whether the update was successful.
+      description: The value that indicates whether the update was successful.
       type: Boolean
     - contextPath: Reco.AppAuthorization.rows_affected
       description: Number of rows affected by the update operation.
       type: Number
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "actor.email eq \"user@example.com\" and eventTime gt \"2024-01-01T00:00:00Z\"").'
+      name: filters
+      required: false
+    - description: The maximum number of events to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists SaaS events from Reco using the external API.
+    name: reco-list-events
+    outputs:
+    - contextPath: Reco.Events.id
+      description: The event ID.
+      type: String
+    - contextPath: Reco.Events.eventType
+      description: The event type code.
+      type: String
+    - contextPath: Reco.Events.formattedEventType
+      description: The human-readable event type.
+      type: String
+    - contextPath: Reco.Events.application
+      description: The SaaS application the event belongs to.
+      type: String
+    - contextPath: Reco.Events.actorEmail
+      description: The email of the actor who triggered the event.
+      type: String
+    - contextPath: Reco.Events.actorName
+      description: The name of the actor who triggered the event.
+      type: String
+    - contextPath: Reco.Events.eventTime
+      description: The timestamp of the event.
+      type: Date
+    - contextPath: Reco.Events.outcomeString
+      description: The outcome description of the event.
+      type: String
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "severity eq \"HIGH\"").'
+      name: filters
+      required: false
+    - description: The maximum number of posture issues to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists posture issues from Reco using the external API.
+    name: reco-list-posture-issues
+    outputs:
+    - contextPath: Reco.PostureIssues.id
+      description: The posture issue ID.
+      type: String
+    - contextPath: Reco.PostureIssues.name
+      description: The posture issue name.
+      type: String
+    - contextPath: Reco.PostureIssues.severity
+      description: The severity of the posture issue.
+      type: String
+    - contextPath: Reco.PostureIssues.checkStatus
+      description: The current check status of the posture issue.
+      type: String
+    - contextPath: Reco.PostureIssues.scorePercentage
+      description: The compliance score percentage for this issue.
+      type: Number
+    - contextPath: Reco.PostureIssues.checkedInstance
+      description: The SaaS instance this issue was checked against.
+      type: Unknown
+    - contextPath: Reco.PostureIssues.url
+      description: The link to the posture issue detail in the Reco UI.
+      type: String
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "isRiskyUser eq true" or "accountEmail co \"@example.com\"").'
+      name: filters
+      required: false
+    - description: The maximum number of accounts to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists accounts (SaaS user accounts) from Reco using the external API.
+    name: reco-list-accounts
+    outputs:
+    - contextPath: Reco.Accounts.id
+      description: The account ID.
+      type: String
+    - contextPath: Reco.Accounts.name
+      description: The account display name.
+      type: String
+    - contextPath: Reco.Accounts.accountEmail
+      description: The account email address.
+      type: String
+    - contextPath: Reco.Accounts.permissions
+      description: The account permissions in the SaaS application.
+      type: String
+    - contextPath: Reco.Accounts.hasMfa
+      description: The value that indicates whether the account has MFA enabled.
+      type: Boolean
+    - contextPath: Reco.Accounts.openAlerts
+      description: The number of open alerts for this account.
+      type: Number
+    - contextPath: Reco.Accounts.isAdmin
+      description: The value that indicates whether the account has admin privileges.
+      type: Boolean
+    - contextPath: Reco.Accounts.isRiskyUser
+      description: The value that indicates whether the account is flagged as risky.
+      type: Boolean
+    - contextPath: Reco.Accounts.lastSeen
+      description: The last activity timestamp for the account.
+      type: Date
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "isUnmanaged eq true" or "devicePlatform eq \"Windows\"").'
+      name: filters
+      required: false
+    - description: The maximum number of devices to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists devices from Reco using the external API.
+    name: reco-list-devices
+    outputs:
+    - contextPath: Reco.Devices.id
+      description: The device ID.
+      type: String
+    - contextPath: Reco.Devices.name
+      description: The device name.
+      type: String
+    - contextPath: Reco.Devices.devicePlatform
+      description: The device platform (Windows, macOS, iOS, Android, etc.).
+      type: String
+    - contextPath: Reco.Devices.os
+      description: The operating system of the device.
+      type: String
+    - contextPath: Reco.Devices.osVersion
+      description: The operating system version.
+      type: String
+    - contextPath: Reco.Devices.isUnmanaged
+      description: The value that indicates whether the device is unmanaged (not enrolled in MDM).
+      type: Boolean
+    - contextPath: Reco.Devices.hasNonCompliant
+      description: The value that indicates whether the device has non-compliant policies.
+      type: Boolean
+    - contextPath: Reco.Devices.lastSeen
+      description: The last activity timestamp for the device.
+      type: Date
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "authorization eq \"AUTH_STATUS_UNSANCTIONED\"").'
+      name: filters
+      required: false
+    - description: The maximum number of AI agents to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists AI agents detected by Reco using the external API.
+    name: reco-list-ai-agents
+    outputs:
+    - contextPath: Reco.AiAgents.id
+      description: The AI agent ID.
+      type: String
+    - contextPath: Reco.AiAgents.name
+      description: The AI agent name.
+      type: String
+    - contextPath: Reco.AiAgents.vendor
+      description: The vendor of the AI agent.
+      type: String
+    - contextPath: Reco.AiAgents.type
+      description: The type of AI agent.
+      type: String
+    - contextPath: Reco.AiAgents.authorization
+      description: The authorization/sanction status of the AI agent.
+      type: String
+    - contextPath: Reco.AiAgents.agentStatus
+      description: The current status of the AI agent.
+      type: String
+    - contextPath: Reco.AiAgents.risk
+      description: The risk level of the AI agent.
+      type: String
+    - contextPath: Reco.AiAgents.lastUsage
+      description: The last usage timestamp for the AI agent.
+      type: Date
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "name co \"Engineering\"").'
+      name: filters
+      required: false
+    - description: The maximum number of groups to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists SaaS groups from Reco using the external API.
+    name: reco-list-groups
+    outputs:
+    - contextPath: Reco.Groups.id
+      description: The group ID.
+      type: String
+    - contextPath: Reco.Groups.name
+      description: The group name.
+      type: String
+    - contextPath: Reco.Groups.email
+      description: The group email address.
+      type: String
+    - contextPath: Reco.Groups.membersCount
+      description: The number of members in the group.
+      type: Number
+    - contextPath: Reco.Groups.appsCount
+      description: The number of apps the group has access to.
+      type: Number
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "authorization eq \"AUTH_STATUS_UNSANCTIONED\" or permissionRisk eq \"30\"").'
+      name: filters
+      required: false
+    - description: The maximum number of SaaS-to-SaaS grants to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists SaaS-to-SaaS OAuth grants and integrations from Reco using the external API.
+    name: reco-list-saas-to-saas
+    outputs:
+    - contextPath: Reco.SaasToSaas.id
+      description: The SaaS-to-SaaS grant ID.
+      type: String
+    - contextPath: Reco.SaasToSaas.plugin
+      description: The plugin or app name receiving the grant.
+      type: String
+    - contextPath: Reco.SaasToSaas.authorization
+      description: The authorization status of the grant.
+      type: String
+    - contextPath: Reco.SaasToSaas.permissionRisk
+      description: The permission risk level (10=LOW, 20=MEDIUM, 30=HIGH).
+      type: String
+    - contextPath: Reco.SaasToSaas.accounts
+      description: The number of accounts with this grant.
+      type: Number
+    - contextPath: Reco.SaasToSaas.aiCapability
+      description: The AI capability of the third-party app.
+      type: String
+    - contextPath: Reco.SaasToSaas.lastSeen
+      description: The last activity timestamp for this grant.
+      type: Date
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "country eq \"CN\" or hasVpn eq true").'
+      name: filters
+      required: false
+    - description: The maximum number of IP addresses to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists observed IP addresses from Reco using the external API.
+    name: reco-list-ip-addresses
+    outputs:
+    - contextPath: Reco.IpAddresses.ipAddress
+      description: The IP address or CIDR range.
+      type: String
+    - contextPath: Reco.IpAddresses.country
+      description: The country of the IP address.
+      type: String
+    - contextPath: Reco.IpAddresses.asnName
+      description: The ASN name of the IP address.
+      type: String
+    - contextPath: Reco.IpAddresses.eventsCount
+      description: The number of events from this IP.
+      type: Number
+    - contextPath: Reco.IpAddresses.usersCount
+      description: The number of users seen from this IP.
+      type: Number
+    - contextPath: Reco.IpAddresses.hasVpn
+      description: The value that indicates whether the IP is associated with a VPN.
+      type: Boolean
+    - contextPath: Reco.IpAddresses.hasProxy
+      description: The value that indicates whether the IP is associated with a proxy.
+      type: Boolean
+    - contextPath: Reco.IpAddresses.lastEventTime
+      description: The last event timestamp from this IP.
+      type: Date
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "name eq \"Finance\"").'
+      name: filters
+      required: false
+    - description: The maximum number of business units to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists external business units from Reco using the external API.
+    name: reco-list-business-units
+    outputs:
+    - contextPath: Reco.BusinessUnits.id
+      description: The business unit ID.
+      type: String
+    - contextPath: Reco.BusinessUnits.name
+      description: The business unit name.
+      type: String
+    - contextPath: Reco.BusinessUnits.manager
+      description: The manager of the business unit.
+      type: String
+    - contextPath: Reco.BusinessUnits.createdAt
+      description: The creation timestamp of the business unit.
+      type: Date
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "userEmail eq \"admin@example.com\" and action eq \"DELETE\"").'
+      name: filters
+      required: false
+    - description: The maximum number of audit log entries to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists Reco platform audit logs using the external API.
+    name: reco-list-audit-logs
+    outputs:
+    - contextPath: Reco.AuditLogs.id
+      description: The audit log entry ID.
+      type: String
+    - contextPath: Reco.AuditLogs.userEmail
+      description: The email of the user who performed the action.
+      type: String
+    - contextPath: Reco.AuditLogs.module
+      description: The module where the action was performed.
+      type: String
+    - contextPath: Reco.AuditLogs.action
+      description: The action performed.
+      type: String
+    - contextPath: Reco.AuditLogs.objectName
+      description: The name of the object affected.
+      type: String
+    - contextPath: Reco.AuditLogs.timestamp
+      description: The timestamp of the audit log entry.
+      type: Date
+    - contextPath: Reco.AuditLogs.remoteAddr
+      description: The remote IP address of the actor.
+      type: String
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "severity eq \"HIGH\" and apps co \"Google\"").'
+      name: filters
+      required: false
+    - description: The maximum number of posture check definitions to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists posture check definitions from Reco using the external API.
+    name: reco-list-posture-checks
+    outputs:
+    - contextPath: Reco.PostureChecks.id
+      description: The posture check ID.
+      type: String
+    - contextPath: Reco.PostureChecks.name
+      description: The posture check name.
+      type: String
+    - contextPath: Reco.PostureChecks.severity
+      description: The severity of the posture check.
+      type: String
+    - contextPath: Reco.PostureChecks.policyType
+      description: The policy type of the posture check.
+      type: String
+    - contextPath: Reco.PostureChecks.apps
+      description: The applications this posture check applies to.
+      type: Unknown
+    - contextPath: Reco.PostureChecks.type
+      description: The type of posture check (built-in or custom).
+      type: String
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "severity eq \"HIGH\" and status eq \"ON\"").'
+      name: filters
+      required: false
+    - description: The maximum number of policies to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists threat detection policies from Reco using the external API.
+    name: reco-list-threat-detection-policies
+    outputs:
+    - contextPath: Reco.ThreatDetectionPolicies.id
+      description: The policy ID.
+      type: String
+    - contextPath: Reco.ThreatDetectionPolicies.name
+      description: The policy name.
+      type: String
+    - contextPath: Reco.ThreatDetectionPolicies.severity
+      description: The severity of the policy.
+      type: String
+    - contextPath: Reco.ThreatDetectionPolicies.status
+      description: The status of the policy (ON, OFF, or PREVIEW).
+      type: String
+    - contextPath: Reco.ThreatDetectionPolicies.apps
+      description: The applications monitored by the policy.
+      type: Unknown
+    - contextPath: Reco.ThreatDetectionPolicies.openAlerts
+      description: The number of open alerts triggered by this policy.
+      type: Number
+    - contextPath: Reco.ThreatDetectionPolicies.type
+      description: The type of policy (built-in or custom).
+      type: String
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "policyName co \"MFA\"").'
+      name: filters
+      required: false
+    - description: The maximum number of exclusions to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists alert suppression exclusion rules from Reco using the external API.
+    name: reco-list-exclusions
+    outputs:
+    - contextPath: Reco.Exclusions.id
+      description: The exclusion rule ID.
+      type: String
+    - contextPath: Reco.Exclusions.name
+      description: The exclusion rule name.
+      type: String
+    - contextPath: Reco.Exclusions.policyName
+      description: The name of the policy this exclusion applies to.
+      type: String
+    - contextPath: Reco.Exclusions.apps
+      description: The applications this exclusion applies to.
+      type: Unknown
+    - contextPath: Reco.Exclusions.createdBy
+      description: The user who created the exclusion.
+      type: String
+    - contextPath: Reco.Exclusions.createdAt
+      description: The creation timestamp of the exclusion.
+      type: Date
+  - arguments:
+    - description: 'The SCIM v2 filter expression (e.g. "isUsingAi eq true").'
+      name: filters
+      required: false
+    - description: The maximum number of app instances to return.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Lists integrated app instances (app portfolio) from Reco using the external API. Only returns instances with an active integration status.
+    name: reco-list-app-instances
+    outputs:
+    - contextPath: Reco.AppInstances.id
+      description: The app instance ID.
+      type: String
+    - contextPath: Reco.AppInstances.name
+      description: The app instance name.
+      type: String
+    - contextPath: Reco.AppInstances.instanceType
+      description: The type of the app instance.
+      type: String
+    - contextPath: Reco.AppInstances.accountsCount
+      description: The number of accounts in this app instance.
+      type: Number
+    - contextPath: Reco.AppInstances.isUsingAi
+      description: The value that indicates whether this app instance uses AI features.
+      type: Boolean
+    - contextPath: Reco.AppInstances.saasToSaasCount
+      description: The number of SaaS-to-SaaS grants for this instance.
+      type: Number
+    - contextPath: Reco.AppInstances.filesCount
+      description: The number of files tracked in this instance.
+      type: Number
 tests:
 - No tests
-fromversion: 6.5.0
+fromversion: 6.8.0

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The fetch-incidents Risk level parameter now fetches alerts at the given severity and above instead of an exact match, and several context output fields were renamed or removed on commands migrated to the new Reco External API. See the release notes for the full list of affected fields."
+}
