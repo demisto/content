@@ -387,64 +387,124 @@ class Client(BaseClient):
         if res.status_code == 502:
             raise DemistoException(f"Bad gateway. Origin response from server: {err_msg.title}")
 
-    def computer_lock_request(self, computer_id: str, passcode: str, lock_message: str = None):
+    def _json_api_request(
+        self,
+        method: str,
+        url_suffix: str,
+        json_data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        error_handler: Any = None,
+    ) -> Any:
+        """Generic helper for making JSON requests to the Jamf Pro API.
+
+        Unlike ``_pro_api_get`` this does not prepend an API version prefix, so the
+        caller must pass the full versioned ``url_suffix`` (e.g. ``/api/v2/mdm/commands``).
+
+        Args:
+            method (str): HTTP method (e.g. "GET", "POST").
+            url_suffix (str): Full versioned URL suffix to append to the base URL.
+            json_data (dict[str, Any] | None): JSON body for the request.
+            params (dict[str, Any] | None): Query parameters for the request.
+            error_handler (Any): Optional error handler for the request.
+
+        Returns:
+            Any: The parsed JSON response from the API.
         """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/computercommands/createComputerCommandByCommand
-        """
-        uri = "/computercommands/command/DeviceLock"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<computer_command>"
-            + "<general>"
-            + f"<passcode>{passcode}</passcode>"
-            + f"<lock_message>{lock_message}</lock_message>"
-            + "</general>"
-            + "<computers>"
-            + "<computer>"
-            + f"<id>{computer_id}</id>"
-            + "</computer>"
-            + "</computers>"
-            + "</computer_command>"
+        headers = (self._headers or {}) | GET_HEADERS  # merge the token with JSON content-type/accept headers
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            json_data=json_data,
+            params=params,
+            resp_type="json",
+            error_handler=error_handler or self._generic_error_handler,
+            auth=self.auth,
         )
 
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._computer_lock_erase_error_handler)
+    def resolve_computer_management_id(self, computer_id: str) -> str:
+        """Resolve the device-level managementId for a computer from its numeric id.
 
-        json_res = json.loads(xml2json(res.content))
-        return json_res
+        Calls GET /api/v3/computers-inventory/{id}?section=GENERAL and reads
+        general.managementId (clientType COMPUTER).
 
-    @staticmethod
-    def _computer_lock_erase_error_handler(res):
-        err_msg = BeautifulSoup(res.text)
-        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
-        if res.status_code == 400 and "Unable to match computer" in res.text:
-            raise DemistoException(f"ID doesn't exist. Origin error from server: {err_msg}")
-        if res.status_code == 400 and "is not managed" in res.text:
-            raise DemistoException(f"Device is unmanaged. Origin error from server: {err_msg}")
+        Args:
+            computer_id (str): The numeric computer id.
 
-    def computer_erase_request(self, computer_id: str, passcode: str):
+        Returns:
+            str: The device-level managementId.
         """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/computercommands/createComputerCommandByCommand
+        demisto.debug(f"Resolving managementId for computer id {computer_id} via computers-inventory GENERAL section.")
+        response = self._json_api_request(
+            method="GET",
+            url_suffix=f"/api/v3/computers-inventory/{computer_id}",
+            params={"section": ComputersInventorySection.GENERAL.value},
+        )
+        management_id = (response.get("general") or {}).get("managementId")
+        if not management_id:
+            raise DemistoException(f"Could not resolve managementId for computer id {computer_id}.")
+        return management_id
+
+    def post_mdm_command(self, management_id: str, command_data: dict[str, Any]) -> list[dict[str, Any]]:
+        """Queue an MDM command via POST /api/v2/mdm/commands.
+
+        Args:
+            management_id (str): The device-level managementId to target.
+            command_data (dict[str, Any]): The commandData payload (must include commandType).
+
+        Returns:
+            list[dict[str, Any]]: The API response, a list of created command objects
+                (each with "id" and "href").
         """
-        uri = "/computercommands/command/EraseDevice"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<computer_command>"
-            + "<general>"
-            + "<command> EraseDevice </command>"
-            + f"<passcode>{passcode}</passcode>"
-            + "</general>"
-            + "<computers>"
-            + "<computer>"
-            + f"<id>{computer_id}</id>"
-            + "</computer>"
-            + "</computers>"
-            + "</computer_command>"
+        body = {
+            "clientData": [{"managementId": management_id}],
+            "commandData": command_data,
+        }
+        demisto.debug(f"Queuing MDM command '{command_data.get('commandType')}' for managementId {management_id}.")
+        return self._json_api_request(method="POST", url_suffix="/api/v2/mdm/commands", json_data=body)
+
+    def computer_erase_request(self, computer_id: str, passcode: str | None = None) -> dict[str, Any]:
+        """Erase a computer via the dedicated POST /api/v1/computer-inventory/{id}/erase endpoint.
+
+        Args:
+            computer_id (str): The numeric computer id (used in the path).
+            passcode (str | None): Optional 6-char Find My PIN, sent as body "pin".
+
+        Returns:
+            dict[str, Any]: The API response ({deviceId, commandUuid}).
+        """
+        demisto.debug(f"Sending erase command to computer id {computer_id} via computer-inventory/erase endpoint.")
+        # Only include the "pin" field when a passcode is actually provided; avoid sending {"pin": null}.
+        json_data: dict[str, Any] = {}
+        if passcode:
+            json_data["pin"] = passcode
+        return self._json_api_request(
+            method="POST",
+            url_suffix=f"/api/v1/computer-inventory/{computer_id}/erase",
+            json_data=json_data,
         )
 
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._computer_lock_erase_error_handler)
+    def resolve_mobile_device_management_id(self, mobile_device_id: str) -> str:
+        """Resolve the managementId for a mobile device from its numeric id.
 
-        raw_action = json.loads(xml2json(res.content))
-        return raw_action
+        Calls GET /api/v2/mobile-devices/{id}/detail and reads the top-level
+        managementId.
+
+        Args:
+            mobile_device_id (str): The numeric mobile device id.
+
+        Returns:
+            str: The mobile device managementId.
+        """
+        demisto.debug(f"Resolving managementId for mobile device id {mobile_device_id} via mobile-devices detail.")
+        response = self._json_api_request(
+            method="GET",
+            url_suffix=f"/api/v2/mobile-devices/{mobile_device_id}/detail",
+        )
+        management_id = response.get("managementId")
+        if not management_id:
+            raise DemistoException(f"Could not resolve managementId for mobile device id {mobile_device_id}.")
+        return management_id
 
     def get_users_request(self, user_id: str = None, name: str = None, email: str = None):
         """Get users.
@@ -458,15 +518,72 @@ class Client(BaseClient):
 
         uri = "/users"
         if user_id:
-            res = self._classic_api_get(url_suffix=f"{uri}/id/{user_id}", error_handler=self._generic_error_handler)
+            url_suffix = f"{uri}/id/{user_id}"
         elif name:
-            res = self._classic_api_get(url_suffix=f"{uri}/name/{name}", error_handler=self._generic_error_handler)
+            url_suffix = f"{uri}/name/{name}"
         elif email:
-            res = self._classic_api_get(url_suffix=f"{uri}/email/{email}", error_handler=self._generic_error_handler)
+            url_suffix = f"{uri}/email/{email}"
         else:
-            res = self._classic_api_get(url_suffix=f"{uri}", error_handler=self._generic_error_handler)
+            url_suffix = uri
 
-        return res
+        return self._classic_api_get(url_suffix=url_suffix, error_handler=self._generic_error_handler)
+
+    def get_user_by_id_request(self, user_id: str) -> dict[str, Any]:
+        """Get a single user by id via the Pro API GET /api/v1/users/{id}.
+
+        Args:
+            user_id (str): The numeric user id.
+
+        Returns:
+            dict[str, Any]: The Pro API user object.
+        """
+        demisto.debug(f"Sending a Pro API /api/v1/users/{user_id} request.")
+        return self._json_api_request(method="GET", url_suffix=f"/api/v1/users/{user_id}")
+
+    def get_users_pro_request(
+        self,
+        limit: int = 50,
+        page: int = 0,
+        filter_query: str | None = None,
+    ) -> dict[str, Any]:
+        """List users via the Pro API GET /api/v1/users with server-side pagination.
+
+        Args:
+            limit (int): Maximum number of results per page (page-size).
+            page (int): Page number.
+            filter_query (str | None): Optional RSQL filter query.
+
+        Returns:
+            dict[str, Any]: The Pro API response (results under "results", "totalCount").
+        """
+        params: dict[str, Any] = {"page": page, "page-size": limit}
+        if filter_query:
+            params["filter"] = filter_query
+
+        demisto.debug(f"Sending a Pro API /api/v1/users request with params: {params}")
+        return self._json_api_request(method="GET", url_suffix="/api/v1/users", params=params)
+
+    def get_mdm_commands_request(
+        self,
+        filter_query: str,
+        limit: int = 50,
+        page: int = 0,
+    ) -> dict[str, Any]:
+        """List MDM commands via the Pro API GET /api/v2/mdm/commands.
+
+        The ``filter`` query param is required by the API (no filter -> 400).
+
+        Args:
+            filter_query (str): Required RSQL filter query.
+            limit (int): Maximum number of results per page (page-size).
+            page (int): Page number.
+
+        Returns:
+            dict[str, Any]: The Pro API response (results under "results").
+        """
+        params: dict[str, Any] = {"page": page, "page-size": limit, "filter": filter_query}
+        demisto.debug(f"Sending a Pro API /api/v2/mdm/commands request with params: {params}")
+        return self._json_api_request(method="GET", url_suffix="/api/v2/mdm/commands", params=params)
 
     def get_mobile_devices_request(self, mobile_id: str = None, match: str = None):
         """Get mobile devices.
@@ -518,69 +635,37 @@ class Client(BaseClient):
 
         return res
 
-    @staticmethod
-    def _mobile_lost_erase_error_handler(res):
-        err_msg = BeautifulSoup(res.text)
-        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
-        if res.status_code == 400 and "Unable to match mobile device" in res.text:
-            raise DemistoException(f"Unable to match mobile device. Origin error from server: {err_msg}")
-        if res.status_code == 400 and "not support" in res.text:
-            raise DemistoException(f"The device does not support lost mode. Origin error from server: {err_msg}")
-
-    def mobile_device_lost_request(self, mobile_id: str, lost_message: str = None):
-        """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/mobiledevicecommands/createMobileDeviceCommand
-        """
-
-        uri = "/mobiledevicecommands/command/DeviceLock"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<mobile_device_command>"
-            + "<general>"
-            + "<command>EnableLostMode</command>"
-            + f"<lost_mode_message>{lost_message}</lost_mode_message>"
-            + "</general>"
-            + "<mobile_devices>"
-            + "<mobile_device>"
-            + f"<id>{mobile_id}</id>"
-            + "</mobile_device>"
-            + "</mobile_devices>"
-            + "</mobile_device_command>"
-        )
-
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._mobile_lost_erase_error_handler)
-
-        json_response = json.loads(xml2json(res.content))
-        return json_response
-
     def mobile_device_erase_request(
-        self, mobile_id: str = None, preserve_data_plan: bool = False, clear_activation_code: bool = False
-    ):
-        """
-        API link: https://www.jamf.com/developers/apis/classic/reference/#/mobiledevicecommands/createMobileDeviceCommand
-        """
+        self,
+        mobile_id: str,
+        preserve_data_plan: bool = False,
+        disallow_proximity_setup: bool = False,
+        clear_activation_lock: bool = False,
+        return_to_service: bool = False,
+    ) -> dict[str, Any]:
+        """Erase a mobile device via the dedicated POST /api/v2/mobile-devices/{id}/erase endpoint.
 
-        uri = "/mobiledevicecommands/command/EraseDevice"
-        request_body = (
-            '<?xml version="1.0" encoding="UTF-8"?>'
-            + "<mobile_device_command>"
-            + "<general>"
-            + "<command>EraseDevice</command>"
-            + f"<preserve_data_plan>{preserve_data_plan}</preserve_data_plan>"
-            + f"<clear_activation_code>{clear_activation_code}</clear_activation_code>"
-            + "</general>"
-            + "<mobile_devices>"
-            + "<mobile_device>"
-            + f"<id>{mobile_id}</id>"
-            + "</mobile_device>"
-            + "</mobile_devices>"
-            + "</mobile_device_command>"
+        Args:
+            mobile_id (str): The numeric mobile device id (used in the path).
+            preserve_data_plan (bool): Whether to retain cellular data plans.
+            disallow_proximity_setup (bool): Whether to disallow proximity setup.
+            clear_activation_lock (bool): Whether to clear the activation lock on the device.
+            return_to_service (bool): Whether to enable Return to Service.
+
+        Returns:
+            dict[str, Any]: The API response ({deviceId, commandUuid}).
+        """
+        demisto.debug(f"Sending erase command to mobile device id {mobile_id} via mobile-devices/erase endpoint.")
+        return self._json_api_request(
+            method="POST",
+            url_suffix=f"/api/v2/mobile-devices/{mobile_id}/erase",
+            json_data={
+                "preserveDataPlan": preserve_data_plan,
+                "disallowProximitySetup": disallow_proximity_setup,
+                "clearActivationLock": clear_activation_lock,
+                "returnToService": return_to_service,
+            },
         )
-
-        res = self._classic_api_post(data=request_body, url_suffix=uri, error_handler=self._mobile_lost_erase_error_handler)
-
-        json_response = json.loads(xml2json(res.content))
-        return json_response
 
     def get_mobiledeviceconfigurationprofiles_by_id(self, jamf_id):
         """
