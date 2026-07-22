@@ -455,3 +455,49 @@ List the messages of a chat (Compliance API).
 | AnthropicClaude.Chat.Message.id | String | The message ID. |
 | AnthropicClaude.Chat.Message.role | String | The message role \(user or assistant\). |
 | AnthropicClaude.Chat.Message.created_at | Date | The message creation time. |
+
+### claude-delete-chat-file
+
+***
+Permanently delete a Claude file (a conversation file or a project binary file) via the Compliance API. This is an irreversible hard delete that cannot be undone, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown file ID succeeds (idempotent).
+
+#### Base Command
+
+`claude-delete-chat-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | The Claude file ID to permanently delete \(e.g., claude_file_...\). Deletes a file uploaded in a conversation or a project binary file \(project_file\). This is an irreversible hard delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnthropicClaude.DeletedFile.id | String | The ID of the file that was deleted. |
+| AnthropicClaude.DeletedFile.type | String | The deletion confirmation type \(claude_file_deleted\). |
+| AnthropicClaude.DeletedFile.Deleted | Boolean | Whether the file was deleted. |
+
+### claude-delete-project-document
+
+***
+Permanently delete a Claude project document (a plain-text project_doc) via the Compliance API. This is an irreversible hard delete that cannot be undone, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown document ID succeeds (idempotent).
+
+#### Base Command
+
+`claude-delete-project-document`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| document_id | The Claude project document ID to permanently delete \(e.g., claude_proj_doc_...\). Applies to project plain-text documents \(project_doc\). This is an irreversible hard delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnthropicClaude.DeletedProjectDocument.id | String | The ID of the project document that was deleted. |
+| AnthropicClaude.DeletedProjectDocument.type | String | The deletion confirmation type \(claude_project_document_deleted\). |
+| AnthropicClaude.DeletedProjectDocument.Deleted | Boolean | Whether the project document was deleted. |

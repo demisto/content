@@ -2,7 +2,7 @@
     "name": "Anthropic Claude",
     "description": "Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging Anthropic Claude's natural language conversational capabilities.",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -24,6 +24,8 @@ from AnthropicClaude import (
     list_projects_command,
     list_project_attachments_command,
     get_project_document_command,
+    delete_chat_file_command,
+    delete_project_document_command,
     module_test_compliance,
     resolve_org_uuid,
     ensure_compliance_key,
@@ -483,3 +485,109 @@ def test_http_get_retries_on_rate_limit(mocker):
     assert kwargs["retries"] == Config.MAX_RETRIES
     assert kwargs["backoff_factor"] == Config.BACKOFF_FACTOR
     assert 429 in kwargs["status_list_to_retry"]
+
+
+""" DELETE COMMAND TESTS """
+
+
+def test_http_delete_retries_on_rate_limit(mocker):
+    """ComplianceClient.http_delete enables back-off retries on 429 and transient 5xx codes."""
+    client = build_client()
+    request_mock = mocker.patch.object(client, "_http_request", return_value={})
+
+    client.http_delete("v1/compliance/apps/chats/files/claude_file_1")
+
+    kwargs = request_mock.call_args.kwargs
+    assert kwargs["retries"] == Config.MAX_RETRIES
+    assert kwargs["backoff_factor"] == Config.BACKOFF_FACTOR
+    assert 429 in kwargs["status_list_to_retry"]
+    assert request_mock.call_args.kwargs["method"] == "DELETE"
+
+
+def test_delete_chat_file_command_happy_path(mocker):
+    """Happy path: hits the flat chat-files delete path and reports the deleted id."""
+    client = build_client()
+    response = {"id": "claude_file_1", "type": "claude_file_deleted"}
+    delete_mock = mocker.patch.object(client, "http_delete", return_value=response)
+
+    results = delete_chat_file_command(client, args={"file_id": "claude_file_1"})
+
+    assert "v1/compliance/apps/chats/files/claude_file_1" in delete_mock.call_args.args[0]
+    assert results.outputs_prefix == "AnthropicClaude.DeletedFile"
+    assert results.outputs["id"] == "claude_file_1"
+    assert results.outputs["type"] == "claude_file_deleted"
+    assert results.outputs["Deleted"] is True
+
+
+def test_delete_chat_file_command_idempotent_on_404(mocker):
+    """A 404 (already deleted / unknown id) is treated as an idempotent success."""
+    client = build_client()
+    mocker.patch.object(
+        client,
+        "http_delete",
+        side_effect=DemistoException("Error 404: No file found with provided id, or it has already been deleted."),
+    )
+
+    results = delete_chat_file_command(client, args={"file_id": "claude_file_gone"})
+
+    assert results.outputs["id"] == "claude_file_gone"
+    assert results.outputs["Deleted"] is True
+    assert "already deleted" in results.readable_output.lower()
+
+
+def test_delete_chat_file_command_propagates_non_404(mocker):
+    """Non-404 errors (e.g. 401 insufficient scope) propagate to the caller."""
+    client = build_client()
+    mocker.patch.object(
+        client,
+        "http_delete",
+        side_effect=DemistoException("Error 401: does not have the delete:compliance_user_data scope"),
+    )
+
+    with pytest.raises(DemistoException):
+        delete_chat_file_command(client, args={"file_id": "claude_file_1"})
+
+
+def test_delete_chat_file_command_missing_arg_raises(mocker):
+    client = build_client()
+    mocker.patch.object(client, "http_delete")
+    with pytest.raises(KeyError):
+        delete_chat_file_command(client, args={})
+
+
+def test_delete_project_document_command_happy_path(mocker):
+    """Happy path: hits the flat project-documents delete path and reports the deleted id."""
+    client = build_client()
+    response = {"id": "claude_proj_doc_1", "type": "claude_project_document_deleted"}
+    delete_mock = mocker.patch.object(client, "http_delete", return_value=response)
+
+    results = delete_project_document_command(client, args={"document_id": "claude_proj_doc_1"})
+
+    assert "v1/compliance/apps/projects/documents/claude_proj_doc_1" in delete_mock.call_args.args[0]
+    assert results.outputs_prefix == "AnthropicClaude.DeletedProjectDocument"
+    assert results.outputs["id"] == "claude_proj_doc_1"
+    assert results.outputs["type"] == "claude_project_document_deleted"
+    assert results.outputs["Deleted"] is True
+
+
+def test_delete_project_document_command_idempotent_on_404(mocker):
+    """A 404 (already deleted / unknown id) is treated as an idempotent success."""
+    client = build_client()
+    mocker.patch.object(
+        client,
+        "http_delete",
+        side_effect=DemistoException("Error 404: No project document found with provided id, or it has already been deleted."),
+    )
+
+    results = delete_project_document_command(client, args={"document_id": "claude_proj_doc_gone"})
+
+    assert results.outputs["id"] == "claude_proj_doc_gone"
+    assert results.outputs["Deleted"] is True
+    assert "already deleted" in results.readable_output.lower()
+
+
+def test_delete_project_document_command_missing_arg_raises(mocker):
+    client = build_client()
+    mocker.patch.object(client, "http_delete")
+    with pytest.raises(KeyError):
+        delete_project_document_command(client, args={})
