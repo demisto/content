@@ -2025,23 +2025,51 @@ def get_pro_users_readable_output(users: list[dict[str, Any]]) -> list[dict[str,
 
 
 def get_users_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
+    """Get users via the Jamf Pro API.
+
+    Supports lookup by id (GET /api/v1/users/{id}), by name/email via RSQL filter,
+    or a paginated list (GET /api/v1/users). Pagination is server-side.
+
+    Args:
+        client (Client): Jamf client.
+        args (dict[str, Any]): Command arguments (id, name, email, limit, page).
+
+    Returns:
+        List[CommandResults]: Command results.
+    """
+    user_id = args.get("id")
+    name = args.get("name")
+    email = args.get("email")
     limit = arg_to_number(args.get("limit", 50))
     page = arg_to_number(args.get("page", 0))
-    user_response = client.get_users_request()
-    total_results = len(user_response.get("users"))
-    user_response = pagination(user_response.get("users"), limit, page)
+
+    if user_id:
+        response = client.get_user_by_id_request(user_id)
+        users = [response]
+        total_results = 1
+    else:
+        filter_query = None
+        if name:
+            filter_query = f'username=="{name}"'
+        elif email:
+            filter_query = f'email=="{email}"'
+
+        response = client.get_users_pro_request(limit=limit, page=page, filter_query=filter_query)  # type: ignore
+        users = response.get("results", [])
+        total_results = response.get("totalCount", len(users))
+
+    context_outputs = [normalize_pro_user(user) for user in users]
+    readable_output = get_pro_users_readable_output(users)
 
     paging_outputs, paging_readable_output = get_paging_hr_and_outputs(total_results, limit, page)
-
-    readable_output = get_users_readable_output(user_response)
 
     return [
         CommandResults(
             readable_output=tableToMarkdown("Jamf get users results", readable_output, removeNull=True),
             outputs_prefix="JAMF.User",
             outputs_key_field="id",
-            outputs=user_response,
-            raw_response=user_response,
+            outputs=context_outputs,
+            raw_response=response,
         ),
         CommandResults(
             readable_output=tableToMarkdown("Paging for get users", paging_readable_output, removeNull=True),
