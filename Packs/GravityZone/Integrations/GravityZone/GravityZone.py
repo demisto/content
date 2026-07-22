@@ -1398,15 +1398,16 @@ def generate_endpoint_entry_from_list(device) -> dict[str, Any]:
         Dict[str, Any]: The generated endpoint entry.
     """
     device_id = device.get("id")
+    device_details = device.get("details", {}) or {}
     entry = {
         "ID": device_id,
         "CompanyID": device.get("companyId"),
-        "GroupID": device.get("details", {}).get("groupId"),
+        "GroupID": device_details.get("groupId"),
         "Hostname": device.get("name"),
-        "FQDN": device.get("details", {}).get("fqdn"),
-        "IP": device.get("details", {}).get("ip"),
-        "OS": device.get("details", {}).get("operatingSystemVersion"),
-        "MAC": (device.get("details", {}).get("macs") or [None])[0],
+        "FQDN": device_details.get("fqdn"),
+        "IP": device_details.get("ip"),
+        "OS": device_details.get("operatingSystemVersion"),
+        "MAC": (device_details.get("macs") or [None])[0],
         "Vendor": INTEGRATION_NAME,
     }
     return entry
