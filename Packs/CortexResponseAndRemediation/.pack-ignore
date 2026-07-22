@@ -408,7 +408,7 @@ ignore=GR109
 ignore=GR109
 
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
-[file:silent-playbook-NTDS.dit_file_written_by_an_uncommon_executable.yml]
+[file:playbook-NTDS.dit_file_written_by_an_uncommon_executable.yml]
 ignore=GR109
 
 # GR109 fails on playbooks that use modules that the pack does not support. This ignore entry should be removed once GR109 can be ignored at the pack level / no longer poses an issue (new repo or pack).
