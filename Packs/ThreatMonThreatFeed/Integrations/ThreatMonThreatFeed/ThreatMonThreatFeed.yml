@@ -1,0 +1,155 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Threatmon Threat Feed
+  version: -1
+name: Threatmon Threat Feed
+display: Threatmon Threat Feed
+provider: ThreatMon
+description: Fetches Indicators of Compromise (IOCs) from the Threatmon IOC platform and ingests them into Cortex XSOAR as indicators.
+sectionorder:
+- Connect
+- Collect
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://ioc.threatmonit.io
+  type: 0
+  required: true
+  section: Connect
+- displaypassword: API Token
+  additionalinfo: The Threatmon API token used to authenticate against the IOC API.
+  name: credentials
+  hiddenusername: true
+  type: 9
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: 'true'
+  type: 8
+  required: false
+  section: Connect
+- display: Data Type to Fetch
+  additionalinfo: The type of IOC data to fetch from Threatmon.
+  name: data_type
+  defaultvalue: all
+  type: 15
+  options:
+  - all
+  - ip
+  - domain
+  - url
+  required: false
+  section: Collect
+- display: Maximum number of indicators per fetch
+  additionalinfo: The maximum number of indicators to fetch in a single run.
+  name: limit
+  defaultvalue: '500'
+  type: 0
+  required: false
+  section: Collect
+- display: Collection IDs
+  additionalinfo: A comma-separated list of Threatmon collection IDs to filter the fetch by. Leave empty to fetch from all collections.
+  name: collection_ids
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Bad
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  section: Collect
+- additionalinfo: Reliability of the source providing the intelligence data.
+  display: Source Reliability
+  name: feedReliability
+  defaultvalue: A - Completely reliable
+  type: 15
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'true'
+  type: 8
+  hidden: true
+  required: false
+  section: Collect
+- display: ''
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  required: false
+  section: Collect
+- display: ''
+  name: feedExpirationInterval
+  defaultvalue: '20160'
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: '240'
+  type: 19
+  required: false
+  section: Collect
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  section: Collect
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+  required: false
+  section: Collect
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10404775
+  feed: true
+  runonce: false
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
