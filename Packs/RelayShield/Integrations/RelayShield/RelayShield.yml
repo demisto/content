@@ -1,0 +1,142 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: RelayShield
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  defaultvalue: https://api.relayshield.net
+  type: 0
+  required: true
+- display: API Key
+  name: credentials
+  type: 9
+  displaypassword: API Key
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: |-
+  RelayShield real-time identity-compromise and agent-security threat intelligence.
+  Implements the generic `domain`/`ip`/`email` reputation commands (auto-invoked by
+  existing enrichment playbooks) plus RelayShield-specific commands for MCP server
+  registry risk, certificate expiry, and supply-chain vendor risk.
+
+  "No known finding" from any command means nothing was flagged in the sources
+  RelayShield actually queried — it is deliberately never mapped to a "Good" DBotScore,
+  since that would claim more certainty than the data supports. See the READMEs's DBotScore
+  section for the exact mapping.
+display: RelayShield
+name: RelayShield
+script:
+  commands:
+  - name: domain
+    description: Check a domain for phishing-lookalike/typosquat risk, presence in RelayShield's criminal IOC corpus, and set a DBotScore.
+    arguments:
+    - name: domain
+      required: true
+      isArray: true
+      description: Domain(s) to check.
+    outputs:
+    - contextPath: RelayShield.Domain.queried
+      description: The domain queried.
+    - contextPath: RelayShield.Domain.verdict
+      description: RelayShield verdict (CRITICAL/HIGH/MEDIUM/LOW), absent if no known finding.
+    - contextPath: RelayShield.Domain.findings
+      description: List of findings, if any.
+    - contextPath: DBotScore.Indicator
+      description: The indicator being checked.
+    - contextPath: DBotScore.Score
+      description: DBotScore (0=Unknown, 2=Suspicious, 3=Bad — never 1/Good for a clean result).
+  - name: ip
+    description: Check an IP address for reputation, malicious/suspicious votes, and set a DBotScore.
+    arguments:
+    - name: ip
+      required: true
+      isArray: true
+      description: IP address(es) to check.
+    outputs:
+    - contextPath: RelayShield.IP.queried
+      description: The IP queried.
+    - contextPath: RelayShield.IP.reputation
+      description: Community reputation score.
+    - contextPath: RelayShield.IP.malicious_votes
+      description: Malicious vote count.
+    - contextPath: DBotScore.Indicator
+      description: The indicator being checked.
+    - contextPath: DBotScore.Score
+      description: DBotScore (0=Unknown, 2=Suspicious, 3=Bad — never 1/Good for a clean result).
+  - name: email
+    description: Check an email address for breach exposure and active stolen-session risk, and set a DBotScore.
+    arguments:
+    - name: email
+      required: true
+      isArray: true
+      description: Email address(es) to check.
+    outputs:
+    - contextPath: RelayShield.Email.queried
+      description: The email queried.
+    - contextPath: RelayShield.Email.breach_found
+      description: Whether the email appears in a known breach.
+    - contextPath: RelayShield.Email.session_risk_found
+      description: Whether an active stolen session was found.
+    - contextPath: DBotScore.Indicator
+      description: The indicator being checked.
+    - contextPath: DBotScore.Score
+      description: DBotScore (0=Unknown, 2=Suspicious, 3=Bad — never 1/Good for a clean result).
+  - name: relayshield-mcp-registry-risk
+    description: Assess an MCP server URL or package name for typosquat/supply-chain/registry risk before an agent connects to it.
+    arguments:
+    - name: server_url
+      description: Full URL of the MCP server to check. Provide this or package_name.
+    - name: package_name
+      description: Package name of the MCP server if no server_url is available.
+    outputs:
+    - contextPath: RelayShield.MCPRegistryRisk.queried
+      description: The server URL or package name queried.
+    - contextPath: RelayShield.MCPRegistryRisk.verdict
+      description: RelayShield verdict, absent if no known finding.
+    - contextPath: RelayShield.MCPRegistryRisk.findings
+      description: List of findings, if any.
+  - name: relayshield-cert-expiry
+    description: Check a domain's TLS certificate expiry risk.
+    arguments:
+    - name: domain
+      required: true
+      description: Domain to check.
+    outputs:
+    - contextPath: RelayShield.CertExpiry.domain
+      description: The domain checked.
+    - contextPath: RelayShield.CertExpiry.days_remaining
+      description: Days until certificate expiry.
+    - contextPath: RelayShield.CertExpiry.risk_level
+      description: Risk level (CRITICAL/HIGH/MEDIUM/LOW).
+  - name: relayshield-supply-chain
+    description: Check up to 10 vendor domains (or emails) for combined breach/infostealer risk.
+    arguments:
+    - name: vendor_domains
+      isArray: true
+      description: Up to 10 vendor domains to check. Provide this or vendor_emails.
+    - name: vendor_emails
+      isArray: true
+      description: Vendor email addresses — the domain portion is extracted automatically.
+    outputs:
+    - contextPath: RelayShield.SupplyChain.domains_checked
+      description: Number of vendor domains checked.
+    - contextPath: RelayShield.SupplyChain.highest_risk
+      description: Highest risk level found across all vendors checked.
+    - contextPath: RelayShield.SupplyChain.critical_vendors
+      description: List of vendors flagged as critical risk.
+  dockerimage: demisto/python3:3.11.10.115186
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.5.0
+tests:
+- No test - reason
