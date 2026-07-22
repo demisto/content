@@ -50,6 +50,13 @@ configuration:
   required: false
   additionalinfo: "The maximum total number of events to fetch per fetch cycle (max 5000; higher values are capped). If you're encountering fetch timeouts on a high-volume backlog, decrease this value."
   section: Collect
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  defaultvalue: '1'
+  required: false
+  section: Collect
+  advanced: true
 description: Collect events from Box's logs.
 display: Box Event Collector
 name: BoxEventsCollector
