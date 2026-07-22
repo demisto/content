@@ -12,6 +12,9 @@
                 "description": {
                     "simple": "description"
                 },
+                "Category": {
+                    "simple": "category"
+                },
                 "Severity": {
                     "simple": "severity"
                 },

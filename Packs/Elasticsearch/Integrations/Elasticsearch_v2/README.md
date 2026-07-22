@@ -37,6 +37,50 @@ The permissions required to use this integration depends on which operations you
 | Incident type |  | False |
 | Fetch incidents |  | False |
 | Space ID | The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a `space_id` argument is provided to a command, it overrides this value. See [Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) for more information. | False |
+| Fetch incident types | The type of incident to fetch from Elasticsearch (Elasticsearch, Elasticsearch Security Alert, or Elasticsearch Case). | False |
+| Incident Mirroring Direction | Mirroring works only for incident types Elasticsearch Security Alert and Elasticsearch Case. | False |
+| Fetch by Severity | Case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case. | False |
+| Fetch by Status | Case statuses to fetch. If none is chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case. | False |
+| Fetch alerts for case | When enabled, fetches alerts associated with each Elasticsearch Case. You must have read privileges for the Cases feature in the Management, Observability, or Security section of the Kibana feature privileges. | False |
+| Close Mirrored XSOAR Incident | When selected, closing the Elasticsearch alert or case is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Elasticsearch Incident | When selected, closing the Cortex XSOAR incident is mirrored in Elasticsearch. | False |
+
+## Fetch
+
+Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch** entity, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
+
+### Fetch
+
+The default fetch behavior. Configure the **Index to fetch incidents from**, **Query String**, and/or **Raw Query** fields to fetch generic Elasticsearch documents as incidents.
+
+### Fetch Security Alerts
+
+To fetch security alerts use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
+
+### Fetch Cases
+
+Use the **Fetch by Severity** parameter to filter cases by the required severity and the **Fetch by Status** parameter to filter cases by the required status. Enable **Fetch alerts for case** to also retrieve the alerts associated with each case.
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Elasticsearch (Kibana) Security Alerts and Cases.
+
+Mirroring is only available for **Elasticsearch Security Alert** and **Elasticsearch Case** incident types.
+
+To set up mirroring:
+
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the **Fetch incident types** parameter, select **Elasticsearch Security Alert** or **Elasticsearch Case**.
+3. In the **Incident Mirroring Direction** parameter, select in which direction the incidents should be mirrored:
+    - **Incoming** - Changes in Elasticsearch (status, tags, workflow reason, case fields) are reflected in Cortex XSOAR.
+    - **Outgoing** - Changes in Cortex XSOAR are reflected in Elasticsearch.
+    - **Incoming And Outgoing** - Changes are mirrored in both directions.
+4. Optionally, select **Close Mirrored XSOAR Incident** to close the XSOAR incident when the Elasticsearch alert/case is closed, and **Close Mirrored Elasticsearch Incident** to close the Elasticsearch alert/case when the XSOAR incident is closed.
+
+**Notes:**
+
+- The mirroring is affected by the following integration parameters: **Incident Mirroring Direction**, **Close Mirrored XSOAR Incident**, and **Close Mirrored Elasticsearch Incident**.
+- To ensure mirroring works as expected, the mappers are required, so that the fields are properly mapped to and from Elasticsearch. Select the appropriate incoming and outgoing mappers per incident type (**Elasticsearch Security Alert - Incoming/Outgoing Mapper** and **Elasticsearch Case - Incoming/Outgoing Mapper**).
 
 ## Commands
 

@@ -12,6 +12,12 @@
                 "description": {
                     "simple": "description"
                 },
+                "Owner": {
+                    "simple": "owner"
+                },
+                "Category": {
+                    "simple": "category"
+                },
                 "Elasticsearch Case Status": {
                     "simple": "status"
                 },

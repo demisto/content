@@ -33,7 +33,7 @@
                 "Elasticsearch index": {
                     "simple": "_index"
                 },
-                "Event ID": {
+                "Elasticsearch Alert ID": {
                     "simple": "kibana.alert.uuid"
                 }
             }

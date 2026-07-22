@@ -3456,6 +3456,8 @@ def get_remote_data_command(args: Dict[str, Any], proxies) -> GetRemoteDataRespo
                     "name": f"Elasticsearch: {response.get('title', remote_id)}",
                     "description": response.get("description"),
                     "severity": response.get("severity"),
+                    "owner": response.get("owner"),
+                    "category": response.get("category"),
                     "tags": response.get("tags"),
                     "rawJSON": json.dumps(response),
                 }
@@ -3766,10 +3768,10 @@ def main():  # pragma: no cover
         if demisto.command() == "test-module":
             return_results(test_func(proxies))
         elif demisto.command() == "fetch-incidents":
-            incident_type = PARAMS.get("incidentType", "")
-            if incident_type == INCIDENT_TYPE_SECURITY_ALERT:
+            fetch_incident_type = PARAMS.get("fetch_incident_type") or PARAMS.get("incidentType", "")
+            if fetch_incident_type == INCIDENT_TYPE_SECURITY_ALERT:
                 demisto.incidents(fetch_security_alerts(proxies))
-            elif incident_type == INCIDENT_TYPE_CASE:
+            elif fetch_incident_type == INCIDENT_TYPE_CASE:
                 demisto.incidents(fetch_cases(proxies))
             else:
                 fetch_incidents(proxies)

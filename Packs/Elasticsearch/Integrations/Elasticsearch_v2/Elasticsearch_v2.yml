@@ -163,6 +163,17 @@ configuration:
   advanced: true
   required: false
   additionalinfo: The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a space_id argument is provided to a command, it overrides this value. See https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+- display: Fetch incident types
+  name: fetch_incident_type
+  defaultvalue: Elasticsearch
+  type: 15
+  options:
+  - Elasticsearch
+  - Elasticsearch Security Alert
+  - Elasticsearch Case
+  section: Collect
+  required: false
+  additionalinfo: The type of incident to fetch from Elasticsearch (Security Alert, Case, or other entity).
 - display: Incident Mirroring Direction
   name: mirror_direction
   defaultvalue: None
@@ -2302,6 +2313,7 @@ script:
 autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
+defaultclassifier: Elasticsearch
 tests:
 - Elasticsearch_v2_test
 - Elasticsearch_v2_test-v6
