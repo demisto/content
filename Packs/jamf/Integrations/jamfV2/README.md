@@ -2562,7 +2562,7 @@ Returns the requested section for a specific computer according to the given arg
 ### jamf-computer-lock
 
 ***
-Sends the "DeviceLock" command to a computer. This command logs the user out of the computer, restarts the computer, and then locks the computer. Optional: Displays a message on the computer when it locks.
+Locks a computer. This logs the user out of the computer, restarts it, and then locks it. Optionally displays a message on the computer when it locks.
 
 #### Base Command
 
@@ -2578,9 +2578,11 @@ Jamf Pro Server Objects → Computers → Create
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| passcode | A 6-digit passcode to be used to unlock the computer after it was locked. | Required |
-| id | The ID of the computer that you want to lock. | Required |
+| passcode | A 6-digit passcode to be used to unlock the computer after it was locked. | Optional |
+| id | The ID of the computer that you want to lock. | Optional |
 | lock_message | A message to display on the locked screen. | Optional |
+| phone_number | A phone number to display on the locked screen. | Optional |
+| management_id | The device-level management ID of the computer to lock. Provide either "id" or "management_id". | Optional |
 
 #### Context Output
 
@@ -2588,7 +2590,9 @@ Jamf Pro Server Objects → Computers → Create
 | --- | --- | --- |
 | JAMF.ComputerCommand.name | String | The command name. |
 | JAMF.ComputerCommand.command_uuid | String | The command UDID. |
+| JAMF.ComputerCommand.href | String | The URL of the queued MDM command. |
 | JAMF.ComputerCommand.computer_id | String | The computer ID. |
+| JAMF.ComputerCommand.management_id | String | The device-level management ID of the computer. |
 
 #### Command Example
 
@@ -2619,7 +2623,7 @@ Jamf Pro Server Objects → Computers → Create
 ### jamf-computer-erase
 
 ***
-Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
+Erases a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
 
 #### Base Command
 
@@ -2635,7 +2639,7 @@ Jamf Pro Server Objects → Computers → Create
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| passcode | A 6-digit passcode that locks the computer after being erased. | Required |
+| passcode | A 6-digit passcode that locks the computer after being erased. | Optional |
 | id | The ID of the computer that you want to erase. | Required |
 
 #### Context Output
@@ -2675,7 +2679,7 @@ Jamf Pro Server Objects → Computers → Create
 ### jamf-get-users
 
 ***
-Returns a list of users with their IDs and names. By default, returns the first 50 users to the context (ID + name).
+Returns a list of users with their IDs and names. Optionally filter by ID, name, or email. By default, returns the first 50 users. Requires the "Read User" Jamf Pro API privilege.
 
 #### Base Command
 
@@ -2689,7 +2693,10 @@ Jamf Pro Server Objects → Users → Read
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of users to retrieve. The maximal value is 200. Default is 50. | Optional |
+| id | If provided, returns a single user with the given ID. | Optional |
+| name | If provided, returns users with the given username. | Optional |
+| email | If provided, returns users with the given email address. | Optional |
+| limit | Maximum number of users to retrieve. The maximum value is 200. Default is 50. | Optional |
 | page | The number of the requested page. Default is 0. | Optional |
 
 #### Context Output
@@ -2698,6 +2705,12 @@ Jamf Pro Server Objects → Users → Read
 | --- | --- | --- |
 | JAMF.User.id | Number | The user ID. |
 | JAMF.User.name | String | The user name. |
+| JAMF.User.email | String | The user email. |
+| JAMF.User.phone_number | String | The user phone number. |
+| JAMF.User.position | String | The user position. |
+| JAMF.User.enableCustomPhotoUrl | Boolean | Whether the user custom photo URL is enabled. |
+| JAMF.User.customPhotoUrl | String | The user custom photo URL. |
+| JAMF.User.managedAppleId | String | The user managed Apple ID. |
 | JAMF.User.Paging.total_results | Number | The number of users returned in this specific search. |
 | JAMF.User.Paging.page_size | Number | The number of users to be returned on each page. |
 | JAMF.User.Paging.current_page | Number | The number of requested page. |
@@ -4682,10 +4695,7 @@ Jamf Pro Server Objects → Advanced Computer Searches → Read
 ### jamf-mobile-device-lost-mode
 
 ***
-
-#### This is a beta command
-
-This is a beta command - couldn't be tested due to technical limitations. Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
+Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen. At least one of 'lost_mode_message' or 'lost_mode_phone' must be provided.
 
 #### Base Command
 
@@ -4701,17 +4711,20 @@ Jamf Pro Server Objects → Mobile Devices → Create
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The mobile device’s ID. | Required |
+| id | The mobile device’s ID. | Optional |
 | lost_mode_message | A message that is displayed on the device’s lock screen. | Optional |
+| lost_mode_phone | A phone number that is displayed on the device’s lock screen. | Optional |
+| lost_mode_footnote | A footnote that is displayed on the device’s lock screen. | Optional |
+| management_id | The device-level management ID of the mobile device to target. Provide either "id" or "management_id". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.MobileDeviceCommands.name | String | The mobile device command name. |
-| JAMF.MobileDeviceCommands.status | String | The mobile device command status. |
 | JAMF.MobileDeviceCommands.management_id | String | The mobile device command management ID. |
 | JAMF.MobileDeviceCommands.id | String | The mobile device command ID. |
+| JAMF.MobileDeviceCommands.href | String | The URL of the created mobile device command. |
 
 #### Command Example
 
@@ -4724,10 +4737,7 @@ Jamf Pro Server Objects → Mobile Devices → Create
 ### jamf-mobile-device-erase
 
 ***
-
-#### This is a beta command
-
-This is a beta command - couldn't be tested due to technical limitations. Permanently erases all data on the device and deactivates the device.
+Permanently erases all data on the device and deactivates the device.
 
 #### Base Command
 
@@ -4745,16 +4755,18 @@ Jamf Pro Server Objects → Mobile Devices → Create
 | --- | --- | --- |
 | id | The device’s ID. | Required |
 | preserve_data_plan | Whether to retain cellular data plans (iOS 11 or later). Possible values are: True, False. Default is False. | Optional |
-| clear_activation_code | Whether to clear activation lock on the device. Possible values are: True, False. Default is False. | Optional |
+| disallow_proximity_setup | Whether to disallow proximity setup on the device. Possible values are: True, False. Default is False. | Optional |
+| clear_activation_lock | Whether to clear activation lock on the device. Possible values are: True, False. Default is False. | Optional |
+| return_to_service | Whether to enable Return to Service on the device. Possible values are: True, False. Default is False. | Optional |
+| clear_activation_code | Deprecated. Use 'clear_activation_lock' instead. Whether to clear activation lock on the device. If both are supplied, 'clear_activation_lock' takes precedence. Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | JAMF.MobileDeviceCommands.name | String | The mobile device command name. |
-| JAMF.MobileDeviceCommands.status | String | The mobile device command status. |
-| JAMF.MobileDeviceCommands.management_id | String | The mobile device command managment ID. |
-| JAMF.MobileDeviceCommands.id | String | The mobile device command ID. |
+| JAMF.MobileDeviceCommands.command_uuid | String | The mobile device command UUID. |
+| JAMF.MobileDeviceCommands.id | String | The mobile device ID. |
 
 #### Command Example
 
@@ -4763,6 +4775,42 @@ Jamf Pro Server Objects → Mobile Devices → Create
 #### Human Readable Output
 
 >### Computer 114 erased successfully
+
+### jamf-mdm-command-status
+
+***
+Returns the status of MDM commands. At least one filter must be provided - either the 'filter' argument or one of 'command_uuid', 'management_id', 'status', or 'command_name'. Requires the "View MDM command information" Jamf Pro API privilege.
+
+#### Base Command
+
+`jamf-mdm-command-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| command_uuid | Filter results to a specific command UUID. | Optional |
+| management_id | Filter results to commands for a specific device management ID. | Optional |
+| status | Filter results by command status. Possible values are: Pending, Acknowledged, NotNow, Error. | Optional |
+| command_name | Filter results to a specific command name. Possible value: REMOVE_PROFILE. | Optional |
+| filter | An advanced RSQL query string for filtering results. When provided, it takes precedence over the other filter arguments. | Optional |
+| limit | Maximum number of commands to retrieve. The maximum value is 200. Default is 50. | Optional |
+| page | The number of the requested page. Default is 0. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| JAMF.MdmCommand.uuid | String | The MDM command UUID. |
+| JAMF.MdmCommand.commandType | String | The MDM command type. |
+| JAMF.MdmCommand.commandState | String | The MDM command state. |
+| JAMF.MdmCommand.dateSent | String | The date the MDM command was sent. |
+| JAMF.MdmCommand.dateCompleted | String | The date the MDM command was completed. |
+| JAMF.MdmCommand.client.managementId | String | The management ID of the client the command targets. |
+| JAMF.MdmCommand.client.clientType | String | The client type the command targets. |
+| JAMF.MdmCommand.Paging.total_results | Number | The number of commands returned in this specific search. |
+| JAMF.MdmCommand.Paging.page_size | Number | The number of commands to be returned on each page. |
+| JAMF.MdmCommand.Paging.current_page | Number | The number of the requested page. |
 
 ### endpoint
 
