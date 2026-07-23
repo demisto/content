@@ -5,9 +5,9 @@ description: Migrate a Cortex XSOAR/XSIAM playbook YAML from old Core commands (
 
 # 🔀 pci-migrate-playbook
 
-Migrate a playbook from old Core commands to new PCI (`Builtin`) commands using [`migrate_playbook.py`](./migrate_playbook.py), then hand-fix what the script flags as `[UNMAPPABLE]`. The script is validated: drive it, do not modify it. Playbook YAML structure reference lives in [`references/playbook-structure.md`](./references/playbook-structure.md).
+Migrate a playbook from old Core commands to new PCI (`Builtin`) commands using [`migrate_playbook.py`](playbooks_pci_migration/migrate_playbook.py), then hand-fix what the script flags as `[UNMAPPABLE]`. The script is validated: drive it, do not modify it. Playbook YAML structure reference lives in [`references/playbook-structure.md`](playbooks_pci_migration/references/playbook-structure.md).
 
-This bundle is self-contained: the script, the mapping, and the structure reference all live here, and every residual-review lookup is sourced from [`endpoint_mapping.json`](./endpoint_mapping.json). No PCI repo is required at runtime.
+This bundle is self-contained: the script, the mapping, and the structure reference all live here, and every residual-review lookup is sourced from [`endpoint_mapping.json`](playbooks_pci_migration/endpoint_mapping.json). No PCI repo is required at runtime.
 
 ## What the script does
 
@@ -17,7 +17,7 @@ For each task where `task.iscommand` is true it parses `task.script` (`<brand>||
 
 1. `ruamel.yaml` installed: `pip install ruamel.yaml`.
 2. A target playbook path provided by the user.
-3. Mapping present at [`endpoint_mapping.json`](./endpoint_mapping.json) (top keys: `matched_commands`, `not_migrated`, `newly_added`, `ambiguous_matches`). The script resolves this automatically as its default; you only pass `--mapping` to override it.
+3. Mapping present at [`endpoint_mapping.json`](playbooks_pci_migration/endpoint_mapping.json) (top keys: `matched_commands`, `not_migrated`, `newly_added`, `ambiguous_matches`). The script resolves this automatically as its default; you only pass `--mapping` to override it.
 
 ## Run it
 
@@ -44,7 +44,7 @@ python3 playbooks_pci_migration/migrate_playbook.py <playbook.yml> --mapping pla
 
 ## Review and hand-fix the residuals
 
-Work each `[UNMAPPABLE]` line case by case against the playbook YAML. Source every decision from [`endpoint_mapping.json`](./endpoint_mapping.json). Never invent a command or output path.
+Work each `[UNMAPPABLE]` line case by case against the playbook YAML. Source every decision from [`endpoint_mapping.json`](playbooks_pci_migration/endpoint_mapping.json). Never invent a command or output path.
 
 1. **not_migrated / unmatched command** (task left untouched). Look the command up in `endpoint_mapping.json` `not_migrated` (list of `{old_command, endpoint, old_source_file}`) to explain why it has no PCI replacement. Decide whether an alternate new command in `matched_commands` fits; if none does, flag to the user that the task needs a manual decision.
 2. **Dropped removed arg** (key in `args_changes.removed`, dropped with its value). Decide whether the value must move to a renamed/added arg on the new command. Consult the matched entry's `args_changes.moved` / `args_changes.added` in `endpoint_mapping.json` and re-add the value under the correct new arg when an equivalent exists. If the mapping does not make the target arg unambiguous, surface the decision to the user.
