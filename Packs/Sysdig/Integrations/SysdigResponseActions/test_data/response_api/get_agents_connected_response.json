@@ -1,0 +1,24 @@
+{
+    "agents": [
+        {
+            "id": 99001,
+            "customer": 55001,
+            "hostName": "ip-10-0-1-100.us-west-2.compute.internal",
+            "machineId": "aa:bb:cc:dd:ee:01",
+            "opaqueUid": "host-uid-aaaa-0001",
+            "attributes": {
+                "clusterName": "prod-us-west-2"
+            }
+        },
+        {
+            "id": 99002,
+            "customer": 55001,
+            "hostName": "ip-10-0-2-200.us-west-2.compute.internal",
+            "machineId": "aa:bb:cc:dd:ee:02",
+            "opaqueUid": "host-uid-aaaa-0002",
+            "attributes": {
+                "clusterName": "staging-us-east-1"
+            }
+        }
+    ]
+}

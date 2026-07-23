@@ -6,6 +6,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 
 import re
+import time
 from typing import Any
 import urllib3
 
@@ -17,9 +18,64 @@ urllib3.disable_warnings()
 
 SYSTEM_CAPTURES_REQUIRED_FIELDS = ["container_id", "host_name", "capture_name", "agent_id", "customer_id", "machine_id"]
 RESPONSE_ACTIONS_REQUIRED_FIELDS = ["actionType", "callerId"]
-RESPONSE_ACTIONS_PARAMS = {
-    "FILE_QUARANTINE": ["path.absolute", "container.id"],
-    "KILL_PROCESS": ["process.id", "host.id"],
+RESPONSE_ACTIONS_PARAMS: dict[str, list[str]] = {
+    "KILL_PROCESS": ["host.id", "process.id", "startTime"],
+    "KILL_CONTAINER": ["host.id", "container.id"],
+    "PAUSE_CONTAINER": ["host.id", "container.id"],
+    "STOP_CONTAINER": ["host.id", "container.id"],
+    "UNPAUSE_CONTAINER": ["host.id", "container.id"],
+    "START_CONTAINER": ["host.id", "container.id"],
+    "FILE_QUARANTINE": ["host.id", "path.absolute"],
+    "FILE_ACQUIRE": ["host.id", "path.absolute"],
+    "FILE_UNQUARANTINE": ["host.id", "path.absolute", "quarantined_file_path"],
+    "DELETE_POD": ["kubernetes.cluster.name", "kubernetes.namespace.name", "kubernetes.pod.name"],
+    "ROLLOUT_RESTART": [
+        "kubernetes.cluster.name",
+        "kubernetes.namespace.name",
+        "kubernetes.workload.type",
+        "kubernetes.workload.name",
+    ],
+    "ISOLATE_NETWORK": [
+        "kubernetes.cluster.name",
+        "kubernetes.namespace.name",
+        "kubernetes.workload.type",
+        "kubernetes.workload.name",
+    ],
+    "DELETE_NETWORK_POLICY": ["kubernetes.cluster.name", "kubernetes.namespace.name", "network_policy_name"],
+    "GET_LOGS": ["kubernetes.cluster.name", "kubernetes.namespace.name"],
+    "KUBERNETES_VOLUME_SNAPSHOT": ["kubernetes.cluster.name", "kubernetes.namespace.name"],
+    "KUBERNETES_DELETE_VOLUME_SNAPSHOT": [
+        "kubernetes.cluster.name",
+        "kubernetes.namespace.name",
+        "kubernetes.persistentvolume.claim.name",
+        "kubernetes.volume.snapshot.name",
+    ],
+    "CAPTURE": ["host.id", "capture.remote_storage_configuration_id", "capture.duration_ns", "capture.past_duration_ns"],
+    "IAM_QUARANTINE": ["cloudProvider.name", "cloudProvider.account.id"],
+    "IAM_UNQUARANTINE": ["cloudProvider.name", "cloudProvider.account.id", "iam_policy_name", "ct.user.identitytype", "ct.user"],
+    "MAKE_PRIVATE_CLOUD_RESOURCE": ["cloudProvider.name", "cloudProvider.account.id", "cloudResourceType", "cloudResourceName"],
+    "UNDO_MAKE_PRIVATE_CLOUD_RESOURCE": [
+        "cloudProvider.name",
+        "cloudProvider.account.id",
+        "cloudResourceType",
+        "cloudResourceName",
+        "previousPublicAccessSettings",
+    ],
+    "CLOUD_VOLUME_SNAPSHOT": ["cloudProvider.name", "cloudProvider.account.id", "cloudProvider.region", "aws.instanceId"],
+    "UNDO_CLOUD_VOLUME_SNAPSHOT": [
+        "cloudProvider.name",
+        "cloudProvider.account.id",
+        "cloudProvider.region",
+        "snapshotIds",
+        "aws.instanceId",
+    ],
+    "FETCH_CLOUD_LOGS": [
+        "cloudProvider.name",
+        "cloudProvider.account.id",
+        "cloudProvider.region",
+        "fromTimestamp",
+        "toTimestamp",
+    ],
 }
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -100,17 +156,67 @@ def _build_data_payload(args: dict[str, Any]) -> dict[str, Any]:
         missing_fields = [field for field in RESPONSE_ACTIONS_REQUIRED_FIELDS if not data.get(field)]
         raise ValueError(f"The following fields are required and cannot be null: {', '.join(missing_fields)}")
 
-    parameters = {
-        key: value
-        for key, value in {
-            "container.id": args.get("container_id") if args.get("container_id") else None,
-            "host.id": args.get("host_id") if args.get("host_id") else None,
-            "path.absolute": args.get("path_absolute") if args.get("path_absolute") else None,
-            "process.id": int(args["process_id"]) if args.get("process_id") else None,
-            "startTime": -1 if args.get("process_id") else None,
-        }.items()
-        if value is not None
+    PARAM_ARG_MAP = {
+        "container.id": "container_id",
+        "host.id": "host_id",
+        "path.absolute": "path_absolute",
+        "process.id": "process_id",
+        "startTime": "startTime",
+        "quarantined_file_path": "quarantined_file_path",
+        "kubernetes.cluster.name": "k8s_cluster_name",
+        "kubernetes.namespace.name": "k8s_namespace_name",
+        "kubernetes.pod.name": "k8s_pod_name",
+        "kubernetes.workload.type": "k8s_workload_type",
+        "kubernetes.workload.name": "k8s_workload_name",
+        "kubernetes.persistentvolume.claim.name": "k8s_pvc_name",
+        "kubernetes.volume.snapshot.name": "k8s_volume_snapshot_name",
+        "kubernetes.container.name": "k8s_container_name",
+        "network_policy_name": "network_policy_name",
+        "network.protocol": "network_protocol",
+        "network.port": "network_port",
+        "network.cidr": "network_cidr",
+        "network.direction": "network_direction",
+        "previous": "previous",
+        "allContainers": "all_containers",
+        "capture.remote_storage_configuration_id": "capture_storage_config_id",
+        "capture.duration_ns": "capture_duration_ns",
+        "capture.past_duration_ns": "capture_past_duration_ns",
+        "capture.filters": "capture_filters",
+        "capture.max_size": "capture_max_size",
+        "capture.token": "capture_token",
+        "cloudProvider.name": "cloud_provider",
+        "cloudProvider.account.id": "cloud_account_id",
+        "cloudProvider.region": "cloud_region",
+        "ct.user.arn": "ct_user_arn",
+        "ct.user.identitytype": "ct_user_identity_type",
+        "ct.user": "ct_user",
+        "ct.originaluser": "ct_original_user",
+        "ct.name": "ct_name",
+        "ct.src": "ct_src",
+        "iam_policy_name": "iam_policy_name",
+        "cloudResourceType": "cloud_resource_type",
+        "cloudResourceName": "cloud_resource_name",
+        "previousPublicAccessSettings": "previous_public_access_settings",
+        "aws.instanceId": "aws_instance_id",
+        "snapshotIds": "snapshot_ids",
+        "fromTimestamp": "from_timestamp",
+        "toTimestamp": "to_timestamp",
     }
+    INTEGER_PARAMS = {"process.id", "startTime", "capture.duration_ns", "capture.past_duration_ns", "capture.max_size"}
+
+    parameters: dict[str, Any] = {}
+    for api_key, arg_name in PARAM_ARG_MAP.items():
+        val = args.get(arg_name)
+        if val in (None, "", "null"):
+            continue
+        if api_key in INTEGER_PARAMS:
+            val = int(val)  # type: ignore[arg-type]
+        if api_key == "previous" or api_key == "allContainers":  # guardrails-disable-line
+            val = argToBoolean(val)
+        parameters[api_key] = val
+
+    if args.get("process_id") and "startTime" not in parameters:
+        parameters["startTime"] = -1
 
     data["parameters"] = parameters
     _validate_response_actions_params(data)
@@ -164,16 +270,15 @@ def _validate_response_actions_params(args: dict[str, Any]) -> None:
     actionType: str = args.get("actionType", "")
     parameters: dict = args.get("parameters", {})
 
-    # Normalize parameter values
-    for key in ["path.absolute", "process.id", "container.id", "host.id"]:
-        if parameters.get(key) in ["null", ""]:
+    for key in list(parameters):
+        if parameters[key] in ("null", ""):
             parameters[key] = None
 
-    # Validate required parameters based on the actionType
-    missing_params = [param for param in RESPONSE_ACTIONS_PARAMS.get(actionType, []) if not parameters.get(param)]
+    required = RESPONSE_ACTIONS_PARAMS.get(actionType, [])
+    missing_params = [param for param in required if parameters.get(param) in (None, "")]
 
     if missing_params:
-        raise ValueError(f"{', '.join(missing_params)} are required for actionType {actionType}")
+        raise ValueError(f"Missing required parameters for {actionType}: {', '.join(missing_params)}")
 
 
 def _get_public_api_url(base_url: str) -> str:
@@ -296,6 +401,92 @@ def get_capture_file_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
+def _cache_is_valid(entry: dict | None, ttl: int = 3600) -> bool:
+    if not entry or "cached_at" not in entry:
+        return False
+    return (time.time() - entry["cached_at"]) < ttl
+
+
+def get_agent_by_mac_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    machine_id = args.get("machine_id")
+    if not machine_id:
+        raise ValueError("machine_id (MAC address) is required.")
+
+    ctx = demisto.getIntegrationContext()
+    cache_key = f"agent_{machine_id}"
+    cached = ctx.get(cache_key)
+    force = argToBoolean(args.get("force_refresh", "false"))
+
+    if _cache_is_valid(cached) and not force:
+        agent = cached["data"]
+    else:
+        result: dict = client.call_sysdig_api("GET", url_suffix="/api/agents/connected")  # type: ignore[assignment]
+        agents = result.get("agents", result) if isinstance(result, dict) else result
+        agent = None
+        for a in agents:
+            if a.get("machineId") == machine_id:
+                agent = {
+                    "agentId": str(a.get("id", "")),
+                    "customerId": str(a.get("customer", "")),
+                    "hostName": a.get("hostName", ""),
+                    "machineId": a.get("machineId", ""),
+                    "hostId": a.get("opaqueUid", ""),
+                    "clusterName": (a.get("attributes") or {}).get("clusterName", ""),
+                }
+                ctx[cache_key] = {"data": agent, "cached_at": time.time()}
+                demisto.setIntegrationContext(ctx)
+                break
+
+        if not agent:
+            raise ValueError(f"No connected agent found with machineId (MAC) '{machine_id}'.")
+
+    return CommandResults(
+        outputs_prefix="Sysdig.Agent",
+        outputs_key_field="machineId",
+        outputs=agent,
+        readable_output=(
+            f"**Agent ID:** {agent['agentId']}\n"
+            f"**Customer ID:** {agent['customerId']}\n"
+            f"**Hostname:** {agent['hostName']}\n"
+            f"**Host ID:** {agent['hostId']}\n"
+            f"**Cluster:** {agent['clusterName']}"
+        ),
+    )
+
+
+def get_customer_info_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    ctx = demisto.getIntegrationContext()
+    cached = ctx.get("customer_info")
+    force = argToBoolean(args.get("force_refresh", "false"))
+
+    if _cache_is_valid(cached) and not force:
+        customer_id = cached["data"]["customer_id"]
+        customer_name = cached["data"].get("customer_name", "")
+    else:
+        result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")  # type: ignore[assignment]
+        user: dict = result.get("user") or {}
+        customer = user.get("customer") or {}
+        customer_id = customer.get("id") or user.get("customerId")
+        customer_name = customer.get("name") or user.get("customerName", "")
+        if customer_id:
+            ctx["customer_info"] = {
+                "data": {"customer_id": str(customer_id), "customer_name": customer_name},
+                "cached_at": time.time(),
+            }
+            demisto.setIntegrationContext(ctx)
+
+    if not customer_id:
+        raise ValueError("Could not retrieve customer ID from Sysdig API.")
+
+    output = {"customerId": str(customer_id), "customerName": customer_name}
+    return CommandResults(
+        outputs_prefix="Sysdig.Customer",
+        outputs_key_field="customerId",
+        outputs=output,
+        readable_output=f"**Sysdig Customer ID:** {customer_id}\n**Customer Name:** {customer_name}",
+    )
+
+
 def test_module(client: Client):
     """
     Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
@@ -308,7 +499,7 @@ def test_module(client: Client):
     """
 
     result: dict = client.call_sysdig_api("GET", url_suffix="/api/users/me")  # type: ignore[assignment]
-    user: dict = result.get("user", {})
+    user: dict = result.get("user") or {}
     if user and user.get("id"):
         return "ok"
     else:
@@ -351,6 +542,10 @@ def main():  # pragma: no cover
             result = get_capture_file_command(client, args)
         elif command == "get-action-execution":
             result = get_action_execution_command(client, args)
+        elif command == "sysdig-agent-info-get":
+            result = get_agent_by_mac_command(client, args)
+        elif command == "sysdig-customer-info-get":
+            result = get_customer_info_command(client, args)
         elif command == "test-module":
             result = test_module(client)
         else:
