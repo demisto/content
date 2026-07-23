@@ -1,10 +1,13 @@
 import pytest
 
 from ThreatMonThreatFeed import (
+    build_indicators,
     calculate_verdict,
     fetch_indicators_command,
+    get_indicators_command,
     map_indicator_type,
     parse_indicator,
+    strip_port,
 )
 from ThreatMonThreatFeed import test_module as run_test_module
 
@@ -70,17 +73,46 @@ def test_map_indicator_type(ioc_type, expected):
     assert map_indicator_type(ioc_type) == expected
 
 
+@pytest.mark.parametrize("ioc_type", ["", None, "something-else"])
+def test_map_indicator_type_unknown_returns_none(ioc_type):
+    """
+    Given: A missing or unrecognized ioc_type.
+    When: Mapping it to an XSOAR indicator type.
+    Then: None is returned so the caller can skip the indicator.
+    """
+    assert map_indicator_type(ioc_type) is None
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("1.2.3.4:8080", "1.2.3.4"),
+        ("1.2.3.4", "1.2.3.4"),
+        ("[2001:db8::1]:443", "2001:db8::1"),
+        ("2001:db8::1", "2001:db8::1"),
+    ],
+)
+def test_strip_port(value, expected):
+    """
+    Given: An indicator value that may contain a port, including IPv6 forms.
+    When: Stripping the port.
+    Then: The port is removed for IPv4 and bracketed IPv6, and unbracketed IPv6 is left intact.
+    """
+    assert strip_port(value) == expected
+
+
 def test_parse_indicator_ip_strips_port():
     """
     Given: An IP IOC whose value contains a port and which has an extracted_ip field.
     When: Parsing it into an XSOAR indicator.
-    Then: The indicator value is the bare IP, without the port.
+    Then: The indicator value is the bare IP, and the rawJSON and service keys are present.
     """
     indicator = parse_indicator(IOC_IP, feed_tags=["ThreatMon"], tlp_color="GREEN")
 
     assert indicator["value"] == "1.2.3.4"
     assert indicator["type"] == "IP"
-    assert indicator["rawData"] == IOC_IP
+    assert indicator["service"] == "ThreatMon"
+    assert indicator["rawJSON"] == IOC_IP
 
 
 def test_parse_indicator_builds_fields_and_tags():
@@ -115,17 +147,34 @@ def test_parse_indicator_without_tlp_color():
     assert "trafficlightprotocol" not in indicator["fields"]
 
 
-@pytest.mark.parametrize("reputation", ["None", "Good", "Suspicious", "Bad", "Unrecognized value"])
-def test_calculate_verdict(reputation):
+def test_parse_indicator_skips_untyped_and_valueless():
+    """
+    Given: An IOC that has no value, or an unrecognized type.
+    When: Parsing it into an XSOAR indicator.
+    Then: None is returned so the caller can skip it, instead of raising.
+    """
+    assert parse_indicator({"ioc_type": "ip"}, feed_tags=[], tlp_color=None) is None
+    assert parse_indicator({"ioc_value": "something", "ioc_type": "unknown-type"}, feed_tags=[], tlp_color=None) is None
+
+
+@pytest.mark.parametrize(
+    "reputation, expected",
+    [
+        ("None", 0),
+        ("Good", 1),
+        ("Suspicious", 2),
+        ("Bad", 3),
+        ("Malicious", 3),
+        ("Unrecognized value", 3),
+    ],
+)
+def test_calculate_verdict(reputation, expected):
     """
     Given: A feedReputation configuration value.
     When: Calculating the DBot score for the fetched indicators.
-    Then: The Malicious DBot score is returned.
-
-    Note: the current implementation always resolves to the Malicious score, regardless of the
-    configured reputation, so this test asserts the behavior as implemented today.
+    Then: The matching DBot score is returned, defaulting to Bad (3).
     """
-    assert calculate_verdict(reputation) == 3
+    assert calculate_verdict(reputation) == expected
 
 
 def test_run_test_module_success():
@@ -149,6 +198,19 @@ def test_run_test_module_failure():
     client = MockClient(exception=Exception("Unauthorized"))
 
     assert run_test_module(client, {}) == "Test failed: Unauthorized"
+
+
+def test_build_indicators_applies_feed_tags():
+    """
+    Given: A feedTags parameter configured by the user.
+    When: Building indicators.
+    Then: The user tags are applied to the indicators alongside the ThreatMon source tag.
+    """
+    client = MockClient(response={"iocs": [IOC_DOMAIN]})
+
+    indicators, _ = build_indicators(client, {"feedTags": "internal,priority"}, limit=100)
+
+    assert indicators[0]["fields"]["tags"] == ["ThreatMon", "internal", "priority"]
 
 
 def test_fetch_indicators_first_run():
@@ -198,7 +260,7 @@ def test_fetch_indicators_empty_response():
     assert last_run == {"last_timestamp": "2026-01-02T00:00:00Z"}
 
 
-def test_fetch_indicators_raises_on_api_error():
+def test_fetch_indicators_raises_on_api_error(capfd):
     """
     Given: An API that raises an error.
     When: Fetching indicators.
@@ -206,5 +268,32 @@ def test_fetch_indicators_raises_on_api_error():
     """
     client = MockClient(exception=Exception("Connection error"))
 
-    with pytest.raises(Exception, match="Connection error"):
+    with capfd.disabled(), pytest.raises(Exception, match="Connection error"):
         fetch_indicators_command(client, {}, limit=500, last_run={})
+
+
+def test_get_indicators_command_returns_table():
+    """
+    Given: An API returning IOCs.
+    When: Running the get-indicators command with a limit.
+    Then: A CommandResults with a markdown table and the raw response is returned, limited in size.
+    """
+    client = MockClient(response={"iocs": [IOC_IP, IOC_DOMAIN]})
+
+    result = get_indicators_command(client, {}, {"limit": "1"})
+
+    assert "Indicators from ThreatMon" in result.readable_output
+    assert len(result.raw_response) == 1
+
+
+def test_get_indicators_command_no_results():
+    """
+    Given: An API returning no IOCs.
+    When: Running the get-indicators command.
+    Then: A friendly "no indicators" message is returned.
+    """
+    client = MockClient(response={"iocs": []})
+
+    result = get_indicators_command(client, {}, {})
+
+    assert "No indicators were found" in result.readable_output

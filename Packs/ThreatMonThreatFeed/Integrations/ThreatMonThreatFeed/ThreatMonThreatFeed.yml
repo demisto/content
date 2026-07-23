@@ -1,11 +1,12 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Threatmon Threat Feed
+  id: ThreatMon Threat Feed
   version: -1
-name: Threatmon Threat Feed
-display: Threatmon Threat Feed
+name: ThreatMon Threat Feed
+display: ThreatMon Threat Feed
 provider: ThreatMon
-description: Fetches Indicators of Compromise (IOCs) from the Threatmon IOC platform and ingests them into Cortex XSOAR as indicators.
+supportlevelheader: community
+description: Fetches Indicators of Compromise (IOCs) from the ThreatMon IOC platform and ingests them into Cortex as indicators.
 sectionorder:
 - Connect
 - Collect
@@ -17,7 +18,7 @@ configuration:
   required: true
   section: Connect
 - displaypassword: API Token
-  additionalinfo: The Threatmon API token used to authenticate against the IOC API.
+  additionalinfo: The ThreatMon API token used to authenticate against the IOC API.
   name: credentials
   hiddenusername: true
   type: 9
@@ -40,7 +41,7 @@ configuration:
   required: false
   section: Connect
 - display: Data Type to Fetch
-  additionalinfo: The type of IOC data to fetch from Threatmon.
+  additionalinfo: The type of IOC data to fetch from ThreatMon.
   name: data_type
   defaultvalue: all
   type: 15
@@ -59,7 +60,7 @@ configuration:
   required: false
   section: Collect
 - display: Collection IDs
-  additionalinfo: A comma-separated list of Threatmon collection IDs to filter the fetch by. Leave empty to fetch from all collections.
+  additionalinfo: A comma-separated list of ThreatMon collection IDs to filter the fetch by. Leave empty to fetch from all collections.
   name: collection_ids
   type: 0
   required: false
@@ -101,7 +102,7 @@ configuration:
   type: 15
   required: false
   section: Collect
-- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: 'true'
@@ -150,6 +151,14 @@ script:
   dockerimage: demisto/python3:3.12.13.10404775
   feed: true
   runonce: false
+  commands:
+  - name: threatmon-get-indicators
+    description: Gets a sample of indicators from the ThreatMon feed. This command is used mainly for testing and debugging, and does not create indicators in the system.
+    arguments:
+    - name: limit
+      description: The maximum number of indicators to return.
+      defaultValue: '10'
+    outputs: []
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
