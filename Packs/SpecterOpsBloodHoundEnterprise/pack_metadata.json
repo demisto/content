@@ -1,8 +1,8 @@
 {
-    "name": "SpecterOpsBloodHoundEnterprise",
+    "name": "SpecterOps BloodHound Enterprise",
     "description": "This content pack integrates with BloodHound Enterprise to automatically ingest and analyze attack path findings from Active Directory and Azure environments, helping security teams identify and remediate privilege escalation risks.",
-    "support": "community",
-    "currentVersion": "1.0.0",
+    "support": "partner",
+    "currentVersion": "1.0.1",
     "author": "SpecterOps",
     "url": "https://bloodhound.specterops.io",
     "email": "support@specterops.io",
@@ -24,11 +24,13 @@
     "githubUser": [
         "ishikap-metron",
         "krishnabhargavb-metron",
-        "alakeshk-metron"
+        "alakeshk-metron",
+        "tanujs-metron"
     ],
     "devEmail": [
         "ishika.patidar@metronlabs.com",
         "krishnabhargav.bapatla@metronlabs.com",
-        "alakesh.kothar@metronlabs.com"
+        "alakesh.kothar@metronlabs.com",
+        "tanuj.sharma@metronlabs.com"
     ]
 }
