@@ -239,7 +239,7 @@ def test_findings_get_command_success(mocker):
         ],
         "NextToken": "tok-123",
     }
-    args = {"string_filters": "field_name=severity,value=High", "sort_field": "time", "sort_order": "desc", "limit": "10"}
+    args = {"string_filters": "field_name=severity,value=High", "sort_field": "time", "sort_order": "desc", "limit": "1"}
 
     result = findings_get_command(mock_client, args)
 

@@ -156,7 +156,7 @@ configuration:
   required: false
 - display: Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub
   name: resolve_finding
-  additionalinfo: 'Whether closing an incident in Cortex sets the corresponding finding''s status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
+  additionalinfo: 'Whether closing an incident in Cortex XSOAR sets the corresponding finding's status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
   type: 8
   section: Collect
   defaultvalue: 'false'
@@ -189,7 +189,7 @@ script:
       description: 'The boolean field filters. Each entry must follow the format: field_name=<OCSF field>,value=<true|false> (multiple entries must be separated by semicolons).'
       required: false
     - name: number_filters
-      description: 'The number field filters. Each entry must follow the format: field_name=<OCSF field>,<operator>=<number> where the operator is one of eq, gt, gte, lt, or lte. Multiple operators can be combined in a single entry, and multiple entries must be separated by semicolons. For example,  field_name=severity_id,gte=4 OR field_name=severity_id,gte=4,lte=6.'
+      description: 'The number field filters. Each entry must follow the format: field_name=<OCSF field>,<operator>=<number> where the operator is one of eq, gt, gte, lt, or lte. Multiple operators can be combined in a single entry, and multiple entries must be separated by semicolons. For example,  "field_name=severity_id,gte=4" OR "field_name=severity_id,gte=4,lte=6".'
       required: false
     - name: map_filters
       description: 'The map field filters. Each entry must follow the format: field_name=<OCSF field>,key=<key>,value=<value>,comparison=<comparison_type> (multiple entries must be separated by semicolons).  Supported comparison types are EQUALS (default) and NOT_EQUALS.'

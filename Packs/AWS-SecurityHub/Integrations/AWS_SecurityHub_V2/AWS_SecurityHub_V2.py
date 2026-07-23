@@ -381,10 +381,10 @@ def enable_security_hub_command(client: BotoClient, args: dict) -> CommandResult
     hub_arn = response.get("HubV2Arn")
     outputs = {"HubV2Arn": hub_arn}
     return CommandResults(
-        outputs_prefix="AWS.SecurityHubV2.Hub",
+        outputs_prefix="AWS.SecurityHubV2.EnableHubV2",
         outputs_key_field="HubV2Arn",
         outputs=outputs,
-        readable_output=tableToMarkdown("AWS Security Hub V2 Enabled", outputs, removeNull=True),
+        readable_output=tableToMarkdown("AWS Security Hub V2 successfully enabled.", outputs, removeNull=True),
         raw_response=response,
     )
 
@@ -425,17 +425,17 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
         {
             "Filters": generate_filters_for_get_findings(args),
             "SortCriteria": sort_criteria,
-            "MaxResults": arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH,
+            "MaxResults":  min(arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT),
             "NextToken": args.get("next_token"),
         }
     )
 
-    demisto.debug("[AWS_Security_Hub_V2] Getting findings")
+    demisto.debug(f"[AWS_Security_Hub_V2] Getting findings {kwargs.keys()=}")
     response = client.get_findings_v2(**kwargs)
 
     findings = response.get("Findings", [])
     if not findings:
-        return CommandResults(readable_output="No findings found.")
+        return CommandResults(readable_output="No findings were found.")
 
     next_token = response.get("NextToken")
     outputs = {
@@ -490,15 +490,15 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
 
     kwargs = remove_empty_elements(
         {
-            "MetadataUids": metadata_uids or None,
-            "FindingIdentifiers": finding_identifiers or None,
+            "MetadataUids": metadata_uids,
+            "FindingIdentifiers": finding_identifiers,
             "Comment": args.get("comment"),
             "SeverityId": arg_to_number(args.get("severity_id")),
             "StatusId": arg_to_number(args.get("status_id")),
         }
     )
 
-    demisto.debug("[AWS_Security_Hub_V2] Batch updating findings")
+    demisto.debug(f"[AWS_Security_Hub_V2] Batch updating findings {kwargs.keys()=}")
     response = client.batch_update_findings_v2(**kwargs)
 
     processed = response.get("ProcessedFindings", [])
@@ -830,8 +830,8 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
         # severity number). Translate it to the OCSF SeverityId so editing the incident severity
         # mirrors out. An explicit "severityid" delta (handled above) takes precedence if both exist.
         if "SeverityId" not in kwargs and delta.get("severity") not in (None, ""):
-            xsoar_severity = arg_to_number(delta["severity"])
-            ocsf_severity_id = XSOAR_SEVERITY_TO_OCSF_ID.get(float(xsoar_severity)) if xsoar_severity is not None else None
+            xsoar_severity = float(delta["severity"])
+            ocsf_severity_id = XSOAR_SEVERITY_TO_OCSF_ID.get(xsoar_severity) if xsoar_severity is not None else None
             if ocsf_severity_id:
                 kwargs["SeverityId"] = ocsf_severity_id
             else:
@@ -898,7 +898,7 @@ def test_module(client: BotoClient) -> str:
         )
     except client.exceptions.AccessDeniedException:
         raise DemistoException(
-            "Access denied. Verify the configured role/credentials have the " "'securityhub:DescribeSecurityHubV2' permission."
+            "Access denied. Verify the configured role/credentials have the 'securityhub:DescribeSecurityHubV2' permission."
         )
     return "ok"
 
