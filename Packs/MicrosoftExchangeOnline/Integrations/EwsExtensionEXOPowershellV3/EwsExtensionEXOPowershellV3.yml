@@ -4,7 +4,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: EWS Extension Online Powershell v3
+  id: EWS Extension Online Powershell v3 test_exo_ver
   version: -1
 configuration:
 - defaultvalue: https://outlook.office365.com
@@ -37,8 +37,8 @@ configuration:
   type: 0
   section: Connect
 description: Use the EWS Extension Online Powershell v3 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
-display: EWS Extension Online Powershell v3
-name: EWS Extension Online Powershell v3
+display: EWS Extension Online Powershell v3 test_exo_ver
+name: EWS Extension Online Powershell v3 test_exo_ver
 script:
   commands:
   - arguments:
