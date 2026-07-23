@@ -2495,7 +2495,7 @@ def test_odata_filter_parameters(mocker):
     # validate
     expected_filter = (
         "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and "
-        "(properties/productName ne 'test_alert_product_name') and "
+        "(not properties/additionalData/alertProductNames/any(x:x eq 'test_alert_product_name')) and "
         "((contains(properties/title, 'test_title') ne true))"
     )
     assert client.http_request.call_args_list[0][1] == {

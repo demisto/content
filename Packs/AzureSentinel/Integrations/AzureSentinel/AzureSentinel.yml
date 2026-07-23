@@ -237,14 +237,14 @@ configuration:
 - display: Incident Titles to not Fetch
   additionalinfo: The case-sensitive titles of the incidents that will not be fetched. This will also match if the title provided is contained in the incident's title. If no title is provided then all incidents will be fetched.
   name: titles_to_not_fetch
-  type: 16
+  type: 12
   required: false
   section: Collect
   advanced: true
 - display: Alert Product Names to not Fetch
   additionalinfo: 'The alert product names of the incidents that will not be fetched. For example: <Microsoft Entra ID Protection>, <Microsoft Sentinel>. If no alert product name is provided then incidents will be fetched normally.'
   name: alert_product_names_to_not_fetch
-  type: 16
+  type: 12
   required: false
   section: Collect
   advanced: true

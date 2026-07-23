@@ -600,16 +600,16 @@ def status_filter(statuses):
     return status_filter
 
 
-def ne_filter(filter_property, filter_property_values):
+def not_any_filter(filter_property, filter_property_values):
     """
-    Create a 'properties/filter_property ne {}' Filter string,
+    Create a 'not properties/filter_property/any(x:x eq {})' Filter string,
     when filter_property and filter_property_values are not empty.
     """
-    _ne_filter = ""
+    _na_filter = ""
     if filter_property and filter_property_values:
-        conditions = [f"properties/{filter_property} ne '{s}'" for s in filter_property_values]
-        _ne_filter = f"and ({ ' or '.join(conditions) })"
-    return _ne_filter
+        conditions = [f"not properties/{filter_property}/any(x:x eq '{s}')" for s in filter_property_values]
+        _na_filter = f"and ({ ' and '.join(conditions) })"
+    return _na_filter
 
 
 def not_contains_filter(filter_property, filter_property_values):
@@ -1531,7 +1531,7 @@ def fetch_incidents_lookback(
         f" {status_filter(statuses_to_fetch)}".strip()
     )
     if alert_product_names_to_not_fetch:
-        filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
+        filter_value = f"{filter_value} {not_any_filter('additionalData/alertProductNames', alert_product_names_to_not_fetch)}"
     if titles_to_not_fetch:
         filter_value = f"{filter_value} {not_contains_filter('title', titles_to_not_fetch)}"
 
@@ -1657,7 +1657,9 @@ def fetch_incidents(
             f" {status_filter(statuses_to_fetch)}".strip()
         )
         if alert_product_names_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
+            filter_value = (
+                f"{filter_value} {not_any_filter('additionalData/alertProductNames', alert_product_names_to_not_fetch)}"
+            )
         if titles_to_not_fetch:
             filter_value = f"{filter_value} {not_contains_filter('title', titles_to_not_fetch)}"
         command_args = {
@@ -1677,7 +1679,9 @@ def fetch_incidents(
             f" {status_filter(statuses_to_fetch)}".strip()
         )
         if alert_product_names_to_not_fetch:
-            filter_value = f"{filter_value} {ne_filter('productName', alert_product_names_to_not_fetch)}"
+            filter_value = (
+                f"{filter_value} {not_any_filter('additionalData/alertProductNames', alert_product_names_to_not_fetch)}"
+            )
         if titles_to_not_fetch:
             filter_value = f"{filter_value} {not_contains_filter('title', titles_to_not_fetch)}"
         command_args = {
