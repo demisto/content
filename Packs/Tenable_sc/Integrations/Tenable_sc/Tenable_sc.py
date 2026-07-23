@@ -3104,6 +3104,68 @@ def run_assets_fetch(client: Client, last_run: dict) -> list:  # pragma: no cove
     return fetch_assets_command(client, last_run)
 
 
+def get_assets_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Manually fetch host assets and display them in the war room.
+
+    This command wraps the fetch-assets logic: it queries the Tenable.sc
+    hosts/search endpoint for a single page of assets and renders them as a
+    human-readable table. It does NOT touch the fetch-assets last run state,
+    so it is safe to run manually for debugging/inspection.
+
+    When should_push_assets=true, the fetched assets are also sent to XSIAM
+    (mirrors the behavior of the scheduled fetch-assets command).
+
+    Args:
+        client (Client): The tenable.sc client object.
+        args (Dict): demisto.args() object.
+
+    Returns:
+        CommandResults: command results object with the human readable table and raw response.
+    """
+    limit = arg_to_number(args.get("limit")) or ASSETS_PAGE_SIZE
+    should_push_assets = argToBoolean(args.get("should_push_assets", False))
+
+    response = client.search_hosts(
+        fields=HOST_FIELDS,
+        start_offset=0,
+        end_offset=limit,
+    )
+
+    response_data = (response or {}).get("response", [])
+
+    # Handle both list response (simple) and dict response (paginated)
+    if isinstance(response_data, list):
+        assets = response_data
+    else:
+        assets = response_data.get("results", [])
+
+    assets = assets[:limit]
+
+    if should_push_assets and (is_xsiam() or is_platform()):
+        demisto.debug(f"Pushing {len(assets)} assets to XSIAM.")
+        send_data_to_xsiam(
+            data=assets,
+            vendor=VENDOR,
+            product=f"{PRODUCT}_assets",
+            data_type="assets",
+        )
+
+    headers = ["id", "name", "ipAddress", "os", "dns", "macAddress", "repository", "firstSeen", "lastSeen"]
+    readable_output = tableToMarkdown(
+        "Tenable.sc Assets",
+        assets,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        raw_response=assets,
+    )
+
+
 """ FETCH VULNERABILITIES FUNCTIONS """
 
 
@@ -3312,6 +3374,7 @@ def main():  # pragma: no cover
         "tenable-sc-get-device": get_device_command,
         "tenable-sc-create-remediation-scan": create_remediation_scan_command,
         "tenable-sc-get-organization": get_organization_command,
+        "tenable-sc-get-assets": get_assets_command,
     }
 
     try:
