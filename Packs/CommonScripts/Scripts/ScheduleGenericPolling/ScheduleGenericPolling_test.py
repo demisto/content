@@ -5,6 +5,7 @@ from ScheduleGenericPolling import (
     calculate_end_time,
     get_command_string,
     is_command_sanitized,
+    is_guid_flow_supported,
     is_value_sanitized,
     main,
     parseIds,
@@ -365,3 +366,65 @@ def test_main_pass_no_playbook_id(mocker):
     )
 
     assert command == expected_command
+
+
+@pytest.mark.parametrize(
+    "res_version, version_ge, expected",
+    [
+        # unified_platform (Cortex/XSIAM) must use the GUID flow regardless of build number - XSUP-58905.
+        # version_ge is irrelevant here because unified_platform short-circuits before the version gate.
+        ({"platform": "unified_platform", "version": "8.14.0", "buildNumber": "10036305"}, False, True),
+        # unified_platform with no/garbage build number still supported (build gate does not apply).
+        ({"platform": "unified_platform", "version": "8.14.0", "buildNumber": ""}, False, True),
+        # xsoar new enough (version gate passes, build above minimum) - supported.
+        ({"platform": "xsoar", "version": "8.2.0", "buildNumber": "309463"}, True, True),
+        # xsoar version gate passes but build number below minimum - not supported.
+        ({"platform": "xsoar", "version": "8.2.0", "buildNumber": "1"}, True, False),
+        # Legacy / unknown platform - not supported, falls back to legacy flow.
+        ({"platform": "xsoar_hosted", "version": "6.10.0", "buildNumber": "100"}, False, False),
+    ],
+)
+def test_is_guid_flow_supported(mocker, res_version, version_ge, expected):
+    """
+    Given: A demistoVersion() result for various platforms.
+    When:  Deciding whether to use the GUID-based polling flow.
+    Then:  unified_platform and sufficiently-new xsoar use the GUID flow; older/unknown platforms do not.
+    """
+    mocker.patch("ScheduleGenericPolling.is_demisto_version_ge", return_value=version_ge)
+    assert is_guid_flow_supported(res_version) is expected
+
+
+def test_main_unified_platform_uses_guid_flow(mocker):
+    """
+    Given: The script runs on platform=unified_platform (Cortex/XSIAM), reproducing XSUP-58905.
+    When:  main() schedules the polling task.
+    Then:  The scheduled command includes scheduledEntryGuid and endTime (the robust GUID flow),
+           instead of the fragile legacy self-rescheduling flow that could finish prematurely.
+    """
+    good_input = {
+        "ids": "123",
+        "pollingCommand": "jira-get-issue",
+        "pollingCommandArgName": "issueId",
+        "dt": "Ticket(val.Status != 'Done').Id",
+        "interval": "3",
+        "timeout": "5",
+        "tag": "polling",
+    }
+    mocker.patch.object(demisto, "args", return_value=good_input)
+    mocker.patch.object(
+        demisto,
+        "demistoVersion",
+        return_value={"platform": "unified_platform", "version": "8.14.0", "buildNumber": "10036305"},
+    )
+    execute_command_mocker = mocker.patch("ScheduleGenericPolling.demisto.executeCommand")
+    mocker.patch("ScheduleGenericPolling.demisto.dt", return_value="abc")
+
+    main()
+
+    schedule_args = execute_command_mocker.call_args_list[0][0][1]
+    command = schedule_args["command"]
+    assert "scheduledEntryGuid=" in command
+    assert "endTime=" in command
+    # GUID flow schedules multiple iterations (timeout // interval + 2), not a single run.
+    assert schedule_args["times"] > 1
+    assert "scheduledEntryGuid" in schedule_args

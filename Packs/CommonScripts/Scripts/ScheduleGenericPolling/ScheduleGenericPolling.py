@@ -9,6 +9,13 @@ from CommonServerPython import *  # noqa: F401
 MINIMUM_XSOAR_VERSION = "8.2.0"
 MINIMUM_BUILD_NUMBER_XSOAR = 309463
 
+# Platforms that support the stopScheduleEntry command and the GUID-based scheduling flow.
+# "xsoar"            - XSOAR 8.x
+# "unified_platform" - Cortex platform (XSIAM 8.x and later) that reports itself as unified_platform.
+# See XSUP-58905: on unified_platform the legacy (non-GUID) flow could complete the blocking task
+# prematurely, so these platforms must use the robust GUID/endTime flow.
+GUID_FLOW_PLATFORMS = ("xsoar", "unified_platform")
+
 # Order is important! See is_command_sanitized implementation
 SANITIZED_ARG_NAMES = [
     "additionalPollingCommandArgValues",
@@ -32,28 +39,48 @@ def parseIds(idsArg):
     return str(idsArg)
 
 
+def is_guid_flow_supported(res_version):
+    """
+    Determine whether the current platform/version supports the GUID-based scheduling flow
+    (the stopScheduleEntry command and the GUID add-on to the Schedule command).
+
+    The GUID flow is the robust flow: it stops polling based on an absolute endTime and an
+    explicit scheduled-entry GUID, instead of relying on the legacy self-rescheduling flow
+    whose "no pending ids in context" check can complete the blocking task prematurely
+    (see XSUP-58905).
+
+    Args:
+        res_version (dict): The result of demisto.demistoVersion(), containing at least
+            "platform" and "buildNumber".
+
+    Returns:
+        bool: True if the GUID flow should be used, False to fall back to the legacy flow.
+    """
+    build_number = res_version.get("buildNumber")
+    platform = res_version.get("platform")
+
+    # The try/except mechanism is to support development and to ignore cast errors.
+    try:
+        # unified_platform does not expose a meaningful (comparable) build number in all versions,
+        # but always supports the GUID flow, so the version/build gate only applies to xsoar.
+        if platform == "unified_platform":
+            return True
+        return (
+            platform in GUID_FLOW_PLATFORMS
+            and is_demisto_version_ge(MINIMUM_XSOAR_VERSION)
+            and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR
+        )
+    except (ValueError, TypeError) as e:
+        demisto.debug(f"[ScheduleGenericPolling] Error parsing version or build number: {e}")
+        return False
+
+
 def should_run_with_guid():  # pragma: no cover
     """
     The function verifies that the server has the right version in order to support
      the stopScheduleEntry command and the add-on of the GUID to the Schedule command.
     """
-    res_version = demisto.demistoVersion()
-    build_number = res_version.get("buildNumber")
-    platform = res_version.get("platform")
-
-    # conditions to add when the feature is supported in XSIAM:
-    # (platform == "x2" and is_demisto_version_ge(MINIMUM_XSIAM_VERSION) and int(
-    #     build_number) >= MINIMUM_BUILD_NUMBER_XSIAM)
-    # The try/except mechanism is to support development and to ignore cast errors.
-    try:
-        return (
-            platform == "xsoar"
-            and is_demisto_version_ge(MINIMUM_XSOAR_VERSION)
-            and int(build_number) >= MINIMUM_BUILD_NUMBER_XSOAR
-        )
-    except ValueError as e:
-        demisto.debug(f"[ScheduleGenericPolling] Error parsing version or build number: {e}")
-        return False
+    return is_guid_flow_supported(demisto.demistoVersion())
 
 
 def calculate_end_time(timeout):
