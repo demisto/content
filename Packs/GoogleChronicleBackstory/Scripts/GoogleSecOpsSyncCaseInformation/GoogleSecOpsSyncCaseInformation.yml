@@ -1,0 +1,31 @@
+commonfields:
+  id: GoogleSecOpsSyncCaseInformation
+  version: -1
+name: GoogleSecOpsSyncCaseInformation
+script: ''
+type: python
+subtype: python3
+tags: []
+comment: Syncs the latest case information, related alerts and alert entities from Google SecOps and updates the XSOAR incident data.
+enabled: true
+args:
+- name: case_id
+  description: "Specify the ID of the Google SecOps Case to sync.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+- name: alert_page_size
+  description: "Specify the maximum number of alerts to retrieve.\n\nNote: Maximum value is 1000."
+  defaultValue: '1000'
+- name: entity_page_size
+  description: "Specify the maximum number of entities to retrieve per alert.\n\nNote: Maximum value is 1000."
+  defaultValue: '1000'
+outputs: []
+scripttarget: 0
+dependson:
+  must: []
+timeout: 600ns
+runonce: false
+dockerimage: demisto/python3:3.12.13.10404775
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

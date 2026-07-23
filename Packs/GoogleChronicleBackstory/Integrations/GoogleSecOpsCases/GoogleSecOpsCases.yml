@@ -1,0 +1,2898 @@
+category: Analytics & SIEM
+commonfields:
+  id: GoogleSecOpsCases
+  version: -1
+provider: Google
+sectionorder:
+- Connect
+- Collect
+configuration:
+- displaypassword: User's Service Account JSON
+  name: credentials
+  hiddenusername: true
+  required: true
+  type: 9
+  section: Connect
+- display: API URL Format
+  additionalinfo: "Select the API URL format to use for API requests. Default value is '<chronicle>.<REGION>.<rep.googleapis.com>'."
+  name: url_format
+  required: false
+  type: 15
+  options:
+  - "<REGION>-<chronicle.googleapis.com>"
+  - "<chronicle>.<REGION>.<rep.googleapis.com>"
+  section: Connect
+- display: Google SecOps Project Instance ID
+  additionalinfo: "Provide the Project Instance ID of the Google SecOps.\n\nNote: User can retrieve the Customer ID(Project Instance ID) in the Profile section of the Google SecOps page."
+  name: secops_project_instance_id
+  required: true
+  type: 0
+  section: Connect
+- display: Google SecOps Project Number
+  additionalinfo: "Provide the Project Number of the Google SecOps.\n\nNote: User can retrieve the Project Number in the Profile section of the Google SecOps page. If Project Number is not provided, then Project ID(from Service Account JSON) will be used."
+  name: secops_project_number
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: Select the region based on the location of the Google SecOps instance. If the region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
+  defaultvalue: US
+  display: Region
+  name: region
+  required: true
+  options:
+  - Africa-south1
+  - Asia-northeast1
+  - Asia-south1
+  - Asia-southeast1
+  - Asia-southeast2
+  - Australia-southeast1
+  - EU
+  - Europe-west2
+  - Europe-west3
+  - Europe-west6
+  - Europe-west9
+  - Europe-west12
+  - ME-central1
+  - ME-central2
+  - ME-west1
+  - Northamerica-northeast2
+  - Southamerica-east1
+  - US
+  - Other
+  type: 15
+  section: Connect
+- additionalinfo: Specify the region based on the location of the Google SecOps instance. Only applicable if the "Other" option is selected in the Region dropdown.
+  display: Other Region
+  hidden: false
+  name: other_region
+  required: false
+  type: 0
+  section: Connect
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+- display: Incident type
+  defaultvalue: Google SecOps Case
+  name: incidentType
+  type: 13
+  section: Connect
+  required: false
+- additionalinfo: |-
+    The UTC date or relative timestamp from where to start fetching incidents. Default is 3 days.
+
+    Note: If the value is greater than the past 7 days, it will be considered as past 7 days. The maximum is 7 days.
+
+    Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+
+    For example: 01 May 2026, 01 May 2026 04:45:33, 2026-05-17T14:05:44Z.
+  defaultvalue: 3 days
+  display: First Fetch Time
+  name: first_fetch
+  type: 0
+  section: Collect
+  required: false
+- additionalinfo: |-
+    The maximum number of incidents to fetch in each time. Default is 50.
+
+    Note: If the value is greater than 200, it will be considered as 200. The maximum is 200.
+  defaultvalue: '50'
+  display: How many incidents to fetch each time
+  name: max_fetch
+  type: 0
+  section: Collect
+  required: false
+- additionalinfo: Filter cases by priority level. Default is all.
+  display: Case Priorities
+  name: case_priorities
+  options:
+  - UNSPECIFIED
+  - INFO
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  type: 16
+  section: Collect
+  required: false
+- additionalinfo: Filter cases by status. Default is all.
+  display: Case Statuses
+  name: case_statuses
+  options:
+  - CASE_DATA_STATE_UNSPECIFIED
+  - OPENED
+  - CLOSED
+  - MERGED
+  - CREATION_PENDING
+  type: 16
+  section: Collect
+  required: false
+- additionalinfo: Filter cases by logical environment.
+  display: Case Environments
+  name: case_environments
+  type: 16
+  section: Collect
+  required: false
+- additionalinfo: Filter cases by tag name.
+  display: Case Tags
+  name: case_tags
+  type: 16
+  section: Collect
+  required: false
+- additionalinfo: Logical operator to combine the case filter parameters. Default is AND.
+  defaultvalue: AND
+  display: Case Filter Logic
+  name: case_filter_logic
+  type: 15
+  options:
+  - AND
+  - OR
+  section: Collect
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: Use the Google SecOps Cases integration to retrieve Cases as Incidents. This integration also provides commands to manage the Cases lifecycle.
+display: Google SecOps Cases
+name: GoogleSecOpsCases
+script:
+  commands:
+  - arguments:
+    - description: "Filter the cases by display name. Supports comma-separated values."
+      isArray: true
+      name: display_name
+    - auto: PREDEFINED
+      description: "Filter the cases by priority. Supports comma-separated values."
+      isArray: true
+      name: priority
+      predefined:
+      - UNSPECIFIED
+      - INFO
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - auto: PREDEFINED
+      description: "Filter the cases by status. Supports comma-separated values."
+      isArray: true
+      name: status
+      predefined:
+      - OPENED
+      - CLOSED
+      - MERGED
+      - CREATION_PENDING
+      - CASE_DATA_STATE_UNSPECIFIED
+    - auto: PREDEFINED
+      description: "Filter the cases by type. Supports comma-separated values."
+      isArray: true
+      name: type
+      predefined:
+      - EXTERNAL
+      - TEST
+      - REQUEST
+      - CASE_TYPE_UNSPECIFIED
+    - auto: PREDEFINED
+      description: "Filter the cases by stage. Supports comma-separated values."
+      isArray: true
+      name: stage
+      predefined:
+      - Triage
+      - Incident
+      - Investigation
+    - auto: PREDEFINED
+      description: "Filter the cases by source. Supports comma-separated values."
+      isArray: true
+      name: source
+      predefined:
+      - Server
+      - User
+      - Simulated
+      - Merge
+      - AlertMove
+    - description: "Filter the cases by assignee user email or SOC role. Supports comma-separated values."
+      isArray: true
+      name: assignee
+    - description: "Filter the cases by environment assigned to the case. Supports comma-separated values."
+      isArray: true
+      name: environment
+    - description: "Filter the cases by tag names. Supports comma-separated values."
+      isArray: true
+      name: tags
+    - description: "Filter the cases by product name. Supports comma-separated values."
+      isArray: true
+      name: products
+    - auto: PREDEFINED
+      description: "Filter the cases by the importance flag."
+      name: important
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: "Filter the cases by the incident flag."
+      name: incident
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: "Filter the cases by playbook or workflow execution status. Supports comma-separated values."
+      isArray: true
+      name: workflow_status
+      predefined:
+      - NONE
+      - IN_PROGRESS
+      - COMPLETED
+      - FAILED
+      - TERMINATED
+      - PENDING_IN_QUEUE
+      - PENDING_FOR_USER
+      - WORKFLOW_STATUS_UNSPECIFIED
+    - auto: PREDEFINED
+      description: "Filter the cases by SLA expiration status. Supports comma-separated values."
+      isArray: true
+      name: sla
+      predefined:
+      - OPEN_SLA
+      - PASSED_DUE
+      - NO_SLA
+      - CRITICAL_EXPIRED
+      - PAUSED
+      - SLA_EXPIRATION_STATUS_UNSPECIFIED
+    - auto: PREDEFINED
+      description: "Filter the cases by the aggregated alerts SLA expiration status. Supports comma-separated values."
+      isArray: true
+      name: alerts_sla
+      predefined:
+      - OPEN_SLA
+      - PASSED_DUE
+      - NO_SLA
+      - CRITICAL_EXPIRED
+      - PAUSED
+      - SLA_EXPIRATION_STATUS_UNSPECIFIED
+    - description: "Filter the cases created on or after this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: create_start_time
+    - description: "Filter the cases created on or before this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: create_end_time
+    - description: "Filter the cases updated on or after this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: update_start_time
+    - description: "Filter the cases updated on or before this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: update_end_time
+    - description: "Specify a raw AIP-160 filter string for advanced conditions. When provided, all other individual filter arguments are ignored.\n\nSupported values: displayName, creatorUserId, creatorUser, assignee, stage, status, priority, important, type, environment, score, alertsSla.expirationStatus, sla.expirationStatus, tags, products, closureDetails, tasks, workflowStatus, createTime, updateTime\n\nExample: (priority=\"PRIORITY_HIGH\" OR status=\"OPENED\") AND stage=\"Investigation\"."
+      name: advanced_filter
+    - defaultValue: '50'
+      description: "Specify the maximum number of cases to return.\n\nNote: Maximum value is 1000."
+      name: page_size
+    - description: "Specify the page token for pagination.\n\nNote: Use the next_page_token from a previous gcb-case-list response."
+      name: page_token
+    - auto: PREDEFINED
+      defaultValue: createTime
+      description: "Specify the field to sort results by."
+      name: sort_by
+      predefined:
+      - displayName
+      - priority
+      - stage
+      - status
+      - score
+      - createTime
+      - updateTime
+      - assignee
+      - environment
+      - type
+      - sla.expirationTime
+      - alertsSla.expirationTime
+      - sla.expirationStatus
+      - alertsSla.expirationStatus
+      - workflowStatus
+    - auto: PREDEFINED
+      defaultValue: Desc
+      description: "Specify the sort direction for the results."
+      name: sort_order
+      predefined:
+      - Asc
+      - Desc
+    - auto: PREDEFINED
+      defaultValue: AND
+      description: "Specify the logical operator to combine filter conditions."
+      name: filter_logic
+      predefined:
+      - AND
+      - OR
+    description: Retrieve the list of cases.
+    name: gcb-case-list
+    outputs:
+    - contextPath: GoogleSecOps.Case.name
+      description: The unique resource name of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.displayName
+      description: The title of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.creatorUserId
+      description: The ID of the user who created the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.lastModifyingUserId
+      description: The ID of the user who last modified the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.createTime
+      description: The creation time of the Case (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.updateTime
+      description: The last update time of the Case (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertCount
+      description: The number of alerts linked to the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.stage
+      description: The current workflow stage of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.priority
+      description: The priority of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.assignee
+      description: The assigned user or SOC role of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.description
+      description: The description of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.type
+      description: The type of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.environment
+      description: The logical environment of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.status
+      description: The status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.score
+      description: The attack exposure score of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.workflowStatus
+      description: The playbook or workflow status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.source
+      description: The source that created the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.important
+      description: Whether the Case is marked as important.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.incident
+      description: Whether the Case is marked as an incident.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.overflowCase
+      description: Whether the Case is an overflow case due to large data volume.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.involvedSuspiciousEntity
+      description: Whether a suspicious entity is involved in the Case.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.sla.expirationTime
+      description: The SLA expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.criticalExpirationTime
+      description: The SLA critical expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.expirationStatus
+      description: The SLA expiration status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.remainingTimeSinceLastPause
+      description: The remaining time since the last SLA pause of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.alertsSla.expirationTime
+      description: The aggregated alerts SLA expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.criticalExpirationTime
+      description: The aggregated alerts SLA critical expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.expirationStatus
+      description: The aggregated alerts SLA expiration status.
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.remainingTimeSinceLastPause
+      description: The remaining time since the last alerts SLA pause of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.tags.displayName
+      description: The display name of the tag.
+      type: String
+    - contextPath: GoogleSecOps.Case.tags.priority
+      description: The priority order of the tag.
+      type: Number
+    - contextPath: GoogleSecOps.Case.products.displayName
+      description: The display name of the product.
+      type: String
+    - contextPath: GoogleSecOps.Case.products.alert
+      description: The resource name of the alert associated with the product.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.id
+      description: The ID of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.title
+      description: The title of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.content
+      description: The content/description of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.status
+      description: The status of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.assignee
+      description: The assignee of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.author
+      description: The author who created the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.lastAuthor
+      description: The last user who modified the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.createTime
+      description: The creation time of the task (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.updateTime
+      description: The last update time of the task (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.caseId
+      description: The ID of the Case the task belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.Case.tasks.favorite
+      description: Whether the task is marked as a favorite.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.closureDetails.reason
+      description: The closure reason of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.comment
+      description: The closure comment of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.rootCause
+      description: The root cause provided at closure.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.caseClosedAction
+      description: The action taken when the Case was closed.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.command
+      description: The command name associated with the pagination token.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.nextPageToken
+      description: The token to retrieve the next page of Cases.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.totalSize
+      description: The total number of cases available.
+      type: Number
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    description: Retrieve a specific case by its ID.
+    name: gcb-case-get
+    outputs:
+    - contextPath: GoogleSecOps.Case.name
+      description: The unique resource name of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.displayName
+      description: The title of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.creatorUserId
+      description: The ID of the user who created the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.lastModifyingUserId
+      description: The ID of the user who last modified the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.createTime
+      description: The creation time of the Case (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.updateTime
+      description: The last update time of the Case (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertCount
+      description: The number of alerts linked to the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.stage
+      description: The current workflow stage of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.priority
+      description: The priority of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.assignee
+      description: The assigned user or SOC role of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.description
+      description: The description of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.type
+      description: The type of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.environment
+      description: The logical environment of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.status
+      description: The status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.score
+      description: The attack exposure score of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.workflowStatus
+      description: The playbook or workflow status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.source
+      description: The source that created the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.important
+      description: Whether the Case is marked as important.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.incident
+      description: Whether the Case is marked as an incident.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.overflowCase
+      description: Whether the Case is an overflow case due to large data volume.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.involvedSuspiciousEntity
+      description: Whether a suspicious entity is involved in the Case.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.sla.expirationTime
+      description: The SLA expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.criticalExpirationTime
+      description: The SLA critical expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.expirationStatus
+      description: The SLA expiration status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.remainingTimeSinceLastPause
+      description: The remaining time since the last SLA pause of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.alertsSla.expirationTime
+      description: The aggregated alerts SLA expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.criticalExpirationTime
+      description: The aggregated alerts SLA critical expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.expirationStatus
+      description: The aggregated alerts SLA expiration status.
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.remainingTimeSinceLastPause
+      description: The remaining time since the last alerts SLA pause of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.tags.displayName
+      description: The display name of the tag.
+      type: String
+    - contextPath: GoogleSecOps.Case.tags.priority
+      description: The priority order of the tag.
+      type: Number
+    - contextPath: GoogleSecOps.Case.products.displayName
+      description: The display name of the product.
+      type: String
+    - contextPath: GoogleSecOps.Case.products.alert
+      description: The resource name of the alert associated with the product.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.id
+      description: The ID of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.title
+      description: The title of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.content
+      description: The content/description of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.status
+      description: The status of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.assignee
+      description: The assignee of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.author
+      description: The author who created the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.lastAuthor
+      description: The last user who modified the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.createTime
+      description: The creation time of the task (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.updateTime
+      description: The last update time of the task (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.caseId
+      description: The ID of the Case the task belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.Case.tasks.favorite
+      description: Whether the task is marked as a favorite.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.closureDetails.reason
+      description: The closure reason of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.comment
+      description: The closure comment of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.rootCause
+      description: The root cause provided at closure.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.caseClosedAction
+      description: The action taken when the Case was closed.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the new title for the case.\n\nNote: If the value is greater than 200 characters, it will be truncated to 200 characters."
+      name: display_name
+      required: false
+    - description: "Specify the new description for the case.\n\nNote: If the value is greater than 1000 characters, it will be truncated to 1000 characters."
+      name: description
+      required: false
+    - description: Specify whether to mark the case as important.
+      name: important
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Specify whether to mark the case as an incident.
+      name: incident
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    description: Update the properties of a case.
+    name: gcb-case-update
+    outputs:
+    - contextPath: GoogleSecOps.Case.name
+      description: The unique resource name of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.displayName
+      description: The title of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.creatorUserId
+      description: The ID of the user who created the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.lastModifyingUserId
+      description: The ID of the user who last modified the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.createTime
+      description: The creation time of the Case (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.updateTime
+      description: The last update time of the Case (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertCount
+      description: The number of alerts linked to the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.stage
+      description: The current workflow stage of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.priority
+      description: The priority of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.assignee
+      description: The assigned user or SOC role of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.description
+      description: The description of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.type
+      description: The type of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.environment
+      description: The logical environment of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.status
+      description: The status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.score
+      description: The attack exposure score of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.workflowStatus
+      description: The playbook or workflow status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.source
+      description: The source that created the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.important
+      description: Whether the Case is marked as important.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.incident
+      description: Whether the Case is marked as an incident.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.overflowCase
+      description: Whether the Case is an overflow case due to large data volume.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.involvedSuspiciousEntity
+      description: Whether a suspicious entity is involved in the Case.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.sla.expirationTime
+      description: The SLA expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.criticalExpirationTime
+      description: The SLA critical expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.expirationStatus
+      description: The SLA expiration status of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.sla.remainingTimeSinceLastPause
+      description: The remaining time since the last SLA pause of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.alertsSla.expirationTime
+      description: The aggregated alerts SLA expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.criticalExpirationTime
+      description: The aggregated alerts SLA critical expiration time of the Case (unix ms).
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.expirationStatus
+      description: The aggregated alerts SLA expiration status.
+      type: String
+    - contextPath: GoogleSecOps.Case.alertsSla.remainingTimeSinceLastPause
+      description: The remaining time since the last alerts SLA pause of the Case.
+      type: Number
+    - contextPath: GoogleSecOps.Case.tags.displayName
+      description: The display name of the tag.
+      type: String
+    - contextPath: GoogleSecOps.Case.tags.priority
+      description: The priority order of the tag.
+      type: Number
+    - contextPath: GoogleSecOps.Case.products.displayName
+      description: The display name of the product.
+      type: String
+    - contextPath: GoogleSecOps.Case.products.alert
+      description: The resource name of the alert associated with the product.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.id
+      description: The ID of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.title
+      description: The title of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.content
+      description: The content/description of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.status
+      description: The status of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.assignee
+      description: The assignee of the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.author
+      description: The author who created the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.lastAuthor
+      description: The last user who modified the task.
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.createTime
+      description: The creation time of the task (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.updateTime
+      description: The last update time of the task (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.Case.tasks.caseId
+      description: The ID of the Case the task belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.Case.tasks.favorite
+      description: Whether the task is marked as a favorite.
+      type: Boolean
+    - contextPath: GoogleSecOps.Case.closureDetails.reason
+      description: The closure reason of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.comment
+      description: The closure comment of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.rootCause
+      description: The root cause provided at closure.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.caseClosedAction
+      description: The action taken when the Case was closed.
+      type: String
+  - arguments:
+    - description: "Specify the IDs of the case to add tags. Supports comma-separated values.\n\nNote: Use gcb-case-list to retrieve case ID."
+      isArray: true
+      name: case_ids
+      required: true
+    - description: Specify the tags to add to the cases. Supports comma-separated values.
+      isArray: true
+      name: tags
+      required: true
+    description: Add the specified tags to the cases.
+    name: gcb-case-tag-add
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.recentlyAddedTags
+      description: The list of recently added tags.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case to remove the tag.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: Specify the tag to remove from the case.
+      name: tag
+      required: true
+    description: Remove the specified tag from a case.
+    name: gcb-case-tag-remove
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.recentlyRemovedTag
+      description: The tag that was recently removed from the case.
+      type: String
+  - arguments:
+    - description: "Specify the IDs of the case to change priority. Supports comma-separated values.\n\nNote: Use gcb-case-list to retrieve case ID."
+      isArray: true
+      name: case_ids
+      required: true
+    - auto: PREDEFINED
+      description: "Specify the new priority level for the cases."
+      name: priority
+      predefined:
+      - UNSPECIFIED
+      - INFO
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      required: true
+    description: Change the priority of the specified cases.
+    name: gcb-case-priority-change
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.priority
+      description: The updated priority of the Case.
+      type: String
+  - name: gcb-case-stage-definition-list
+    description: Retrieve the list of case stage definitions configured in the instance.
+    outputs:
+    - contextPath: GoogleSecOps.CaseStageDefinition
+      description: The list of the case stage definitions.
+      type: Unknown
+  - arguments:
+    - description: "Specify the IDs of the case to change stage. Supports comma-separated values.\n\nNote: Use gcb-case-list to retrieve case ID."
+      isArray: true
+      name: case_ids
+      required: true
+    - auto: PREDEFINED
+      description: "Specify the new workflow stage name.\n\nNote: Use gcb-case-stage-definition-list to retrieve case stage definition list."
+      name: stage
+      predefined:
+      - Triage
+      - Incident
+      - Investigation
+      required: true
+    description: Change the workflow stage of the specified cases.
+    name: gcb-case-stage-change
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.stage
+      description: The updated workflow stage of the Case.
+      type: String
+  - arguments:
+    - description: "Specify the IDs of the case to reopen. Supports comma-separated values.\n\nNote: Use gcb-case-list to retrieve case ID."
+      isArray: true
+      name: case_ids
+      required: true
+    - description: Specify a comment explaining why the cases are being reopened.
+      name: reopen_comment
+      required: true
+    description: Reopen the specified cases.
+    name: gcb-case-reopen
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.status
+      description: The status of the Case after reopening.
+      type: String
+  - description: Retrieve the list of case close definitions configured in the instance.
+    name: gcb-case-close-definition-list
+    outputs:
+    - contextPath: GoogleSecOps.CaseCloseDefinition.name
+      description: The unique resource name of the Case close definition.
+      type: String
+    - contextPath: GoogleSecOps.CaseCloseDefinition.closeReason
+      description: The close reason of the Case close definition.
+      type: String
+    - contextPath: GoogleSecOps.CaseCloseDefinition.rootCause
+      description: The root cause of the Case close definition.
+      type: String
+  - arguments:
+    - description: "Specify the IDs of the case to close. Supports comma-separated values.\n\nNote: Use gcb-case-list to retrieve case ID."
+      isArray: true
+      name: case_ids
+      required: true
+    - auto: PREDEFINED
+      description: "Specify the reason for closing the cases."
+      name: close_reason
+      predefined:
+      - MALICIOUS
+      - NOT_MALICIOUS
+      - MAINTENANCE
+      - INCONCLUSIVE
+      - UNKNOWN
+      - CLOSE_REASON_UNSPECIFIED
+      required: true
+    - description: Specify the root cause description for the closure.
+      name: root_cause
+      required: true
+    - description: Specify a comment to add when closing the cases.
+      name: close_comment
+      required: false
+    description: Close the specified cases.
+    name: gcb-case-close
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.status
+      description: The status of the Case after closure.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.reason
+      description: The closure reason of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.comment
+      description: The closure comment of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.closureDetails.rootCause
+      description: The root cause provided at closure.
+      type: String
+  - arguments:
+    - description: "Specify the IDs of the case to assign. Supports comma-separated values.\n\nNote: Use gcb-case-list to retrieve case ID."
+      isArray: true
+      name: case_ids
+      required: true
+    - description: "Specify the user email address or a SOC role.\n\nFor SOC roles, add the @ prefix (for example, @Tier1)."
+      name: assignee
+      required: true
+    description: Assign the specified cases to a specific analyst or SOC role.
+    name: gcb-case-assign
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.assignee
+      description: The resolved user ID or SOC role assigned to the Case after the operation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case to retrieve comments.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - defaultValue: '50'
+      description: "Specify the maximum number of comments to return.\n\nNote: Maximum value is 1000."
+      name: page_size
+    - description: "Specify the page token for pagination.\n\nNote: Use the next_page_token from a previous gcb-case-comment-list response."
+      name: page_token
+    - auto: PREDEFINED
+      defaultValue: createTime
+      description: "Specify the field to sort results by."
+      name: sort_by
+      predefined:
+      - createTime
+      - updateTime
+      - user
+      - comment
+      - deletionInvoker
+      - favorite
+      - alert
+      - deleted
+    - auto: PREDEFINED
+      defaultValue: Desc
+      description: "Specify the sort direction for the results."
+      name: sort_order
+      predefined:
+      - Asc
+      - Desc
+    description: Retrieve the list of comments associated with the specified case.
+    name: gcb-case-comment-list
+    outputs:
+    - contextPath: GoogleSecOps.CaseComment.name
+      description: The unique resource name of the Case comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.commentId
+      description: The ID of the Case comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.createTime
+      description: The creation time of the Case comment (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.updateTime
+      description: The last update time of the Case comment (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.user
+      description: User owner of the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.comment
+      description: The text of the Case comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.userOwnerFullName
+      description: The user who created the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.lastEditorFullName
+      description: The user who last edited the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.deletedByUser
+      description: The user who deleted the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.alertIdentifier
+      description: The alert associated with the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.isFavorite
+      description: Whether the comment is marked as a favorite.
+      type: Boolean
+    - contextPath: GoogleSecOps.CaseComment.isDeleted
+      description: Indicates if the comment has been softly deleted.
+      type: Boolean
+    - contextPath: GoogleSecOps.CaseComment.case
+      description: The case associated with the comment.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.command
+      description: The command name associated with the pagination token.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.nextPageToken
+      description: Token to fetch the next page of case comments.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.totalSize
+      description: The total number of case comments available.
+      type: Number
+  - arguments:
+    - description: "Specify the ID of the case to add the comment.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: Specify the comment text to add to the case.
+      name: comment
+      required: true
+    description: Add a comment to the specified case.
+    name: gcb-case-comment-create
+    outputs:
+    - contextPath: GoogleSecOps.CaseComment.name
+      description: The unique resource name of the Case comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.commentId
+      description: The ID of the Case comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.createTime
+      description: The creation time of the Case comment (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.updateTime
+      description: The last update time of the Case comment (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.user
+      description: User owner of the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.comment
+      description: The text of the Case comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.userOwnerFullName
+      description: The user who created the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.lastEditorFullName
+      description: The user who last edited the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.deletedByUser
+      description: The user who deleted the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.alertIdentifier
+      description: The alert associated with the comment.
+      type: String
+    - contextPath: GoogleSecOps.CaseComment.isFavorite
+      description: Whether the comment is marked as a favorite.
+      type: Boolean
+    - contextPath: GoogleSecOps.CaseComment.isDeleted
+      description: Indicates if the comment has been softly deleted.
+      type: Boolean
+    - contextPath: GoogleSecOps.CaseComment.case
+      description: The case associated with the comment.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case to pause the SLA timer.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: Specify the reason for pausing the SLA timer.
+      name: message
+    description: Pause the SLA timer for the specified case.
+    name: gcb-case-sla-pause
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.slaStatus
+      description: The SLA status of the Case after the operation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case to resume the SLA timer.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    description: Resume the SLA timer for the specified case.
+    name: gcb-case-sla-resume
+    outputs:
+    - contextPath: GoogleSecOps.Case.caseId
+      description: The ID of the Case.
+      type: String
+    - contextPath: GoogleSecOps.Case.slaStatus
+      description: The SLA status of the Case after the operation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case to list alerts.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: Filter alerts by display name. Supports comma-separated values.
+      isArray: true
+      name: display_name
+    - auto: PREDEFINED
+      description: "Filter alerts by priority. Supports comma-separated values."
+      isArray: true
+      name: priority
+      predefined:
+      - LEGACY_CASE_PRIORITY_UNSPECIFIED
+      - UNCHANGED
+      - INFORMATIVE
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+    - auto: PREDEFINED
+      description: Filter alerts by status. Supports comma-separated values.
+      isArray: true
+      name: status
+      predefined:
+      - OPEN
+      - CLOSE
+      - ALERT_STATUS_UNSPECIFIED
+    - description: Filter alerts by product name. Supports comma-separated values.
+      isArray: true
+      name: product
+    - description: Filter alerts by vendor name. Supports comma-separated values.
+      isArray: true
+      name: vendor
+    - description: Filter alerts by tag name. Supports comma-separated values.
+      isArray: true
+      name: tag
+    - description: Filter alerts by environment name. Supports comma-separated values.
+      isArray: true
+      name: environment
+    - description: Filter alerts by the alerting system that raised the alert. Supports comma-separated values.
+      isArray: true
+      name: source_system_name
+    - auto: PREDEFINED
+      description: Filter alerts by whether they were created manually.
+      name: manual
+      predefined:
+      - 'True'
+      - 'False'
+    - description: "Filter alerts created on or after this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: create_start_time
+    - description: "Filter alerts created on or before this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: create_end_time
+    - description: "Filter alerts updated on or after this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: update_start_time
+    - description: "Filter alerts updated on or before this time.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2026, 2026-05-17T14:05:44Z."
+      name: update_end_time
+    - description: "Specify a raw AIP-160 filter string to query alerts with advanced conditions. When provided, this filter is used as-is and all other filter arguments are ignored.\n\nNote: Supported filter fields: displayName, product, vendor, environment, sourceSystemName, priority, status, createTime, updateTime.\n\nExample: (priority='HIGH' OR status='OPEN') AND product='DLP'."
+      name: advanced_filter
+    - auto: PREDEFINED
+      defaultValue: AND
+      description: Specify the logical operator to combine filter conditions.
+      name: filter_logic
+      predefined:
+      - AND
+      - OR
+    - defaultValue: '50'
+      description: "Specify the maximum number of alerts to return.\n\nNote: Maximum value is 1000."
+      name: page_size
+    - description: "Specify the page token for pagination.\n\nNote: Use the next_page_token from a previous gcb-case-alert-list response."
+      name: page_token
+    - auto: PREDEFINED
+      defaultValue: createTime
+      description: "Specify the field to sort results by."
+      name: sort_by
+      predefined:
+      - displayName
+      - caseId
+      - identifier
+      - sourceGroupingIdentifier
+      - product
+      - vendor
+      - environment
+      - ticketId
+      - sourceSystemName
+      - priority
+      - status
+      - startTime
+      - endTime
+      - createTime
+    - auto: PREDEFINED
+      defaultValue: Desc
+      description: Specify the sort direction for the results.
+      name: sort_order
+      predefined:
+      - Asc
+      - Desc
+    description: Retrieve the list of alerts associated with the specified case.
+    name: gcb-case-alert-list
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.name
+      description: The unique resource name of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert extracted from the resource name.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.identifier
+      description: The legacy identifier (alert title + GUID) of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceGroupingIdentifier
+      description: The source grouping identifier used to group related Case Alerts.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.alertGroupIdentifier
+      description: The alert group identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.displayName
+      description: The display name of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.product
+      description: The product associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.vendor
+      description: The vendor associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.environment
+      description: The environment of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceSystemName
+      description: The alerting system that raised the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceIdentifier
+      description: The source identifier (e.g. connector ID) of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.ruleGenerator
+      description: The third-party rule that triggered the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.siemAlertId
+      description: The SIEM alert identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceUrl
+      description: The source URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceRuleUrl
+      description: The source rule URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceSystemUrl
+      description: The source system URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceRuleIdentifier
+      description: The source rule identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.ticketId
+      description: The ticket ID linked to the Case Alert in the integrated ticketing system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.additionalProperties
+      description: The additional connector data of the Case Alert as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.priority
+      description: The priority of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.status
+      description: The status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.manual
+      description: Whether the Case Alert was created manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.CaseAlert.nestingDepth
+      description: The nesting depth level of the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.playbookStatus
+      description: The playbook or workflow status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.attachedPlaybookName
+      description: The name of the playbook attached to the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.eventCount
+      description: The number of events that triggered the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.playbookRunCount
+      description: The number of times the first playbook was run for the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.createTime
+      description: The creation time of the Case Alert (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.updateTime
+      description: The last update time of the Case Alert (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.startTime
+      description: The time the alert was created on the third-party system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.endTime
+      description: The time the alert was closed on the third-party system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.expirationStatus
+      description: The SLA expiration status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.expirationTime
+      description: The SLA expiration time of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.criticalExpirationTime
+      description: The SLA critical expiration time of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.remainingTimeSinceLastPause
+      description: The remaining time since the last SLA pause of the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.tags.tag
+      description: The tag value associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.reason
+      description: The closure reason of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.comment
+      description: The closure comment of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.rootCause
+      description: The root cause provided at closure of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.closingTimeMs
+      description: The closure time of the Case Alert in Unix milliseconds.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.identifier
+      description: The identifier of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.alertIdentifier
+      description: The identifier of the alert the Involved Relation belongs to.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.caseId
+      description: The Case ID the Involved Relation belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.relationType
+      description: The type of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.deviceProduct
+      description: The product associated with the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.deviceVendor
+      description: The vendor associated with the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.categoryOutcome
+      description: The category outcome of the Involved Relation (e.g. Blocked, Allowed).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.destinationPort
+      description: The destination port of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.eventClassId
+      description: The event display name of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.startTime
+      description: The start time of the Involved Relation.
+      type: Date
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.endTime
+      description: The end time of the Involved Relation.
+      type: Date
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.additionalProperties
+      description: The additional data of the Involved Relation as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.from.identifier
+      description: The identifier of the source entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.from.type
+      description: The type of the source entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.to.identifier
+      description: The identifier of the destination entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.to.type
+      description: The type of the destination entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.command
+      description: The command name associated with the pagination token.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.nextPageToken
+      description: The token to retrieve the next page of Case Alerts.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.totalSize
+      description: The total number of Case Alerts matching the query.
+      type: Number
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to retrieve.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    description: Retrieve detailed information about a specific case alert by its ID.
+    name: gcb-case-alert-get
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.name
+      description: The unique resource name of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert extracted from the resource name.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.identifier
+      description: The legacy identifier (alert title + GUID) of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceGroupingIdentifier
+      description: The source grouping identifier used to group related Case Alerts.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.alertGroupIdentifier
+      description: The alert group identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.displayName
+      description: The display name of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.product
+      description: The product associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.vendor
+      description: The vendor associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.environment
+      description: The environment of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceSystemName
+      description: The alerting system that raised the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceIdentifier
+      description: The source identifier (e.g. connector ID) of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.ruleGenerator
+      description: The third-party rule that triggered the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.siemAlertId
+      description: The SIEM alert identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceUrl
+      description: The source URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceRuleUrl
+      description: The source rule URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceSystemUrl
+      description: The source system URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceRuleIdentifier
+      description: The source rule identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.ticketId
+      description: The ticket ID linked to the Case Alert in the integrated ticketing system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.additionalProperties
+      description: The additional connector data of the Case Alert as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.priority
+      description: The priority of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.status
+      description: The status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.manual
+      description: Whether the Case Alert was created manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.CaseAlert.nestingDepth
+      description: The nesting depth level of the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.playbookStatus
+      description: The playbook or workflow status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.attachedPlaybookName
+      description: The name of the playbook attached to the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.eventCount
+      description: The number of events that triggered the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.playbookRunCount
+      description: The number of times the first playbook was run for the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.createTime
+      description: The creation time of the Case Alert (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.updateTime
+      description: The last update time of the Case Alert (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.startTime
+      description: The time the alert was created on the third-party system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.endTime
+      description: The time the alert was closed on the third-party system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.slaStatus
+      description: The SLA expiration status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.slaExpireTime
+      description: The SLA expiration time of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.tags.tag
+      description: The tag value associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.reason
+      description: The closure reason of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.comment
+      description: The closure comment of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.rootCause
+      description: The root cause provided at closure of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.closingTimeMs
+      description: The closure time of the Case Alert in Unix milliseconds.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.identifier
+      description: The identifier of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.alertIdentifier
+      description: The identifier of the alert the Involved Relation belongs to.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.caseId
+      description: The Case ID the Involved Relation belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.relationType
+      description: The type of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.deviceProduct
+      description: The product associated with the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.deviceVendor
+      description: The vendor associated with the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.categoryOutcome
+      description: The category outcome of the Involved Relation (e.g. Blocked, Allowed).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.destinationPort
+      description: The destination port of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.eventClassId
+      description: The event display name of the Involved Relation (e.g. Email Check, Data Exfiltration).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.startTime
+      description: The start time of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.endTime
+      description: The end time of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.additionalProperties
+      description: The additional data of the Involved Relation as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.from.identifier
+      description: The identifier of the source entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.from.type
+      description: The type of the source entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.to.identifier
+      description: The identifier of the destination entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.to.type
+      description: The type of the destination entity of the Involved Relation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to update.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - auto: PREDEFINED
+      description: Specify the new status for the alert.
+      name: status
+      predefined:
+      - ALERT_STATUS_UNSPECIFIED
+      - OPEN
+      - CLOSE
+      required: false
+    - auto: PREDEFINED
+      description: Specify the new priority for the alert.
+      name: priority
+      predefined:
+      - LEGACY_CASE_PRIORITY_UNSPECIFIED
+      - UNCHANGED
+      - INFORMATIVE
+      - LOW
+      - MEDIUM
+      - HIGH
+      - CRITICAL
+      required: false
+    - auto: PREDEFINED
+      description: "Specify the reason for closing the alert.\n\nNote: Required when status is CLOSE."
+      name: close_reason
+      predefined:
+      - MALICIOUS
+      - NOT_MALICIOUS
+      - MAINTENANCE
+      - INCONCLUSIVE
+      - UNKNOWN
+      - CLOSE_REASON_UNSPECIFIED
+      required: false
+    - description: Specify a comment to add when closing the alert.
+      name: close_comment
+      required: false
+    - description: "Specify the root cause for the alert closure.\n\nNote: Required when status is CLOSE."
+      name: root_cause
+      required: false
+    description: Update the properties of an existing case alert.
+    name: gcb-case-alert-update
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.name
+      description: The unique resource name of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert extracted from the resource name.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.identifier
+      description: The legacy identifier (alert title + GUID) of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceGroupingIdentifier
+      description: The source grouping identifier used to group related Case Alerts.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.alertGroupIdentifier
+      description: The alert group identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.displayName
+      description: The display name of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.product
+      description: The product associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.vendor
+      description: The vendor associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.environment
+      description: The environment of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceSystemName
+      description: The alerting system that raised the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceIdentifier
+      description: The source identifier (e.g. connector ID) of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.ruleGenerator
+      description: The third-party rule that triggered the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.siemAlertId
+      description: The SIEM alert identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceUrl
+      description: The source URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceRuleUrl
+      description: The source rule URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceSystemUrl
+      description: The source system URL of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sourceRuleIdentifier
+      description: The source rule identifier of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.ticketId
+      description: The ticket ID linked to the Case Alert in the integrated ticketing system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.additionalProperties
+      description: The additional connector data of the Case Alert as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.priority
+      description: The priority of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.status
+      description: The status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.manual
+      description: Whether the Case Alert was created manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.CaseAlert.nestingDepth
+      description: The nesting depth level of the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.playbookStatus
+      description: The playbook or workflow status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.attachedPlaybookName
+      description: The name of the playbook attached to the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.eventCount
+      description: The number of events that triggered the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.playbookRunCount
+      description: The number of times the first playbook was run for the Case Alert.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.createTime
+      description: The creation time of the Case Alert (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.updateTime
+      description: The last update time of the Case Alert (unix epoch milliseconds).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.startTime
+      description: The time the alert was created on the third-party system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.endTime
+      description: The time the alert was closed on the third-party system.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.slaStatus
+      description: The SLA expiration status of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.sla.slaExpireTime
+      description: The SLA expiration time of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.tags.tag
+      description: The tag value associated with the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.reason
+      description: The closure reason of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.comment
+      description: The closure comment of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.rootCause
+      description: The root cause provided at closure of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.closureDetails.closingTimeMs
+      description: The closure time of the Case Alert in Unix milliseconds.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.identifier
+      description: The identifier of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.alertIdentifier
+      description: The identifier of the alert the Involved Relation belongs to.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.caseId
+      description: The Case ID the Involved Relation belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.relationType
+      description: The type of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.deviceProduct
+      description: The product associated with the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.deviceVendor
+      description: The vendor associated with the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.categoryOutcome
+      description: The category outcome of the Involved Relation (e.g. Blocked, Allowed).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.destinationPort
+      description: The destination port of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.eventClassId
+      description: The event display name of the Involved Relation (e.g. Email Check, Data Exfiltration).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.startTime
+      description: The start time of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.endTime
+      description: The end time of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.additionalProperties
+      description: The additional data of the Involved Relation as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.from.identifier
+      description: The identifier of the source entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.from.type
+      description: The type of the source entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.to.identifier
+      description: The identifier of the destination entity of the Involved Relation.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.involvedRelations.to.type
+      description: The type of the destination entity of the Involved Relation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to add a tag.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: Specify the tag to add to the alert.
+      name: tag
+      required: true
+    description: Add a tag to a case alert.
+    name: gcb-case-alert-tag-add
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.recentlyAddedTag
+      description: The recently added tag.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to remove a tag.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: Specify the tag to remove from the alert.
+      name: tag
+      required: true
+    description: Remove a tag from a case alert.
+    name: gcb-case-alert-tag-remove
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.recentlyRemovedTag
+      description: The tag that was recently removed from the case alert.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the source case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to move.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: "Specify the destination case ID to move the alert to.\n\nNote: Use gcb-case-list to retrieve destination case ID."
+      name: destination_case_id
+      required: true
+    description: "Move a case alert to a different case.\n\nNote: Both source and destination cases must be open."
+    name: gcb-case-alert-move
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The Case ID the alert was moved to.
+      type: Number
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to pause the SLA timer.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: "Specify the reason for pausing the SLA timer."
+      name: message
+    description: Pause the SLA timer for the specified case alert.
+    name: gcb-case-alert-sla-pause
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.slaExpirationStatus
+      description: The SLA expiration status of the Case Alert after the operation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to resume the SLA timer.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    description: Resume the SLA timer for the specified case alert.
+    name: gcb-case-alert-sla-resume
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.slaExpirationStatus
+      description: The SLA expiration status of the Case Alert after the operation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to set the SLA.\n\nNote: The alert must be open. Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: "Specify the total SLA duration.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. For example: 2 weeks, 01 May 2026, 2026-05-17T14:05:44Z."
+      name: total_time
+      required: true
+    - description: "Specify the critical SLA threshold.\n\nNote: Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. For example: 2 weeks, 01 May 2026, 2026-05-17T14:05:44Z."
+      name: critical_time
+    description: "Set the SLA parameters for a case alert.\n\nNote: When critical_time is specified, total_time must be greater than critical_time."
+    name: gcb-case-alert-sla-set
+    outputs:
+    - contextPath: GoogleSecOps.CaseAlert.alertId
+      description: The ID of the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.caseId
+      description: The ID of the Case the alert belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.CaseAlert.slaExpirationTime
+      description: The SLA expiration time of the Case Alert (epoch ms).
+      type: String
+    - contextPath: GoogleSecOps.CaseAlert.slaCriticalExpirationTime
+      description: The SLA critical expiration time of the Case Alert (epoch ms).
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to generate a recommendation.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    description: Initiate an asynchronous AI recommendation for a case alert.
+    name: gcb-case-alert-recommendation-create
+    outputs:
+    - contextPath: GoogleSecOps.AlertRecommendation.parent
+      description: The resource name of the Case Alert the recommendation belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertRecommendation.recommendationId
+      description: The ID of the created recommendation.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: Specify the recommendation ID returned by gcb-case-alert-recommendation-create command.
+      name: recommendation_id
+      required: true
+    description: Fetch a previously generated AI recommendation for a case alert.
+    name: gcb-case-alert-recommendation-fetch
+    outputs:
+    - contextPath: GoogleSecOps.AlertRecommendation.parent
+      description: The resource name of the Case Alert the recommendation belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertRecommendation.recommendationId
+      description: The ID of the recommendation.
+      type: String
+    - contextPath: GoogleSecOps.AlertRecommendation.recommendation
+      description: The AI-generated recommendation text for the Case Alert.
+      type: String
+    - contextPath: GoogleSecOps.AlertRecommendation.alertIdentifierToCaseId
+      description: Mapping of alert identifiers to their associated Case IDs.
+      type: Unknown
+    - contextPath: GoogleSecOps.AlertRecommendation.marketplaceActionsTriggeredManually
+      description: List of marketplace actions that were manually triggered on the alert.
+      type: Unknown
+    - contextPath: GoogleSecOps.AlertRecommendation.state
+      description: The current state of the recommendation generation.
+      type: String
+  - name: gcb-case-alert-customfield-list
+    description: Retrieve the list of custom field values associated with a case alert.
+    arguments:
+    - name: case_id
+      required: true
+      description: "Specify the ID of the case the alert belongs to.\n\nNote: Use gcb-case-list to retrieve case ID."
+    - name: alert_id
+      required: true
+      description: "Specify the ID of the case alert to list custom field values.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+    - name: page_size
+      required: false
+      defaultValue: '50'
+      description: "Specify the maximum number of custom field values to return.\n\nNote: Maximum value is 1000."
+    - name: page_token
+      required: false
+      description: "Specify the page token for pagination.\n\nNote: Use the next_page_token from a previous gcb-case-alert-customfield-list response."
+    outputs:
+    - contextPath: GoogleSecOps.AlertCustomFieldValue.name
+      description: The unique resource name of the Custom Field Value.
+      type: String
+    - contextPath: GoogleSecOps.AlertCustomFieldValue.customFieldId
+      description: The ID of the parent Custom Field.
+      type: String
+    - contextPath: GoogleSecOps.AlertCustomFieldValue.displayName
+      description: The display name of the Custom Field resolved from the custom field ID.
+      type: String
+    - contextPath: GoogleSecOps.AlertCustomFieldValue.scope
+      description: The scope of the Custom Field Value.
+      type: String
+    - contextPath: GoogleSecOps.AlertCustomFieldValue.scopeId
+      description: The identifier of the scope (case or alert) this value references.
+      type: String
+    - contextPath: GoogleSecOps.AlertCustomFieldValue.values
+      description: The value(s) for the Custom Field.
+      type: Unknown
+    - contextPath: GoogleSecOps.AlertCustomFieldValue.valuesSearchText
+      description: The concatenated search text for all values of the Custom Field.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.command
+      description: The command name for which the page token applies.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.nextPageToken
+      description: The token to retrieve the next page of Custom Field Values.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.totalSize
+      description: The total number of Custom Field Values available.
+      type: Number
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert to list entities.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - defaultValue: '50'
+      description: "Specify the maximum number of entities to return.\n\nNote: Maximum value is 1000."
+      name: page_size
+    - description: "Specify the page token for pagination.\n\nNote: Use the next_page_token from a previous gcb-case-alert-entity-list response."
+      name: page_token
+    - auto: PREDEFINED
+      description: "Filter entities by type. Supports comma-separated values."
+      name: entity_type
+      isArray: true
+      predefined:
+      - ADDRESS
+      - HOSTNAME
+      - PROCESS
+      - USB
+    - auto: PREDEFINED
+      description: "Filter entities by suspicious status."
+      name: suspicious
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Filter entities by internal status."
+      name: internal
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Filter entities by attacker designation."
+      name: attacker
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Filter entities by pivot designation."
+      name: pivot
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Filter entities by enrichment status."
+      name: enriched
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Filter entities by artifact flag."
+      name: artifact
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Filter entities by vulnerable flag."
+      name: vulnerable
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: "Filter entities by manually created flag."
+      name: manually_created
+      predefined:
+      - 'true'
+      - 'false'
+    - description: "Filter entities by threat source. Supports comma-separated values."
+      name: threat_source
+      isArray: true
+    - description: "Filter entities by operating system. Supports comma-separated values."
+      name: operating_system
+      isArray: true
+    - description: "Filter entities by network name. Supports comma-separated values."
+      name: network_title
+      isArray: true
+    - description: "Filter entities by network priority (integer values). Supports comma-separated values."
+      name: network_priority
+      isArray: true
+    - description: "Filter entities by environment. Supports comma-separated values."
+      name: environment
+      isArray: true
+    - description: "Specify a raw filter expression to query entities with advanced conditions. When provided, this filter is used as-is and all other filter arguments are ignored.\n\nNote: Supported filter fields: type, suspicious, internal, attacker, pivot, enriched, artifact, vulnerable, manuallyCreated, threatSource, operatingSystem, networkTitle, networkPriority, environment, fields.\n\nExample: type='ADDRESS' AND suspicious=true AND internal=false."
+      name: advanced_filter
+    - auto: PREDEFINED
+      defaultValue: id
+      description: "Specify the field to sort results by."
+      name: sort_by
+      predefined:
+      - id
+      - entityType
+      - suspicious
+      - internal
+      - attacker
+      - pivot
+      - enriched
+      - artifact
+      - vulnerable
+      - manuallyCreated
+      - threatSource
+      - operatingSystem
+      - networkTitle
+      - networkPriority
+      - environment
+    - auto: PREDEFINED
+      defaultValue: Desc
+      description: "Specify the sort direction for the results."
+      name: sort_order
+      predefined:
+      - Asc
+      - Desc
+    - auto: PREDEFINED
+      defaultValue: AND
+      description: "Specify the logical operator to combine filter conditions."
+      name: filter_logic
+      predefined:
+      - AND
+      - OR
+    description: Retrieve the list of entities associated with a case alert.
+    name: gcb-case-alert-entity-list
+    outputs:
+    - contextPath: GoogleSecOps.AlertEntity.id
+      description: The immutable identifier of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.identifier
+      description: The identifier name of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.type
+      description: The type of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.caseId
+      description: The Case ID the Involved Entity belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.alertIdentifier
+      description: The alert identifier the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.environment
+      description: The environment of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.threatSource
+      description: The threat source associated with the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.operatingSystem
+      description: The operating system of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkTitle
+      description: The network name related to the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkPriority
+      description: The network priority of the Involved Entity.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.entityUri
+      description: The full URL of the Involved Entity in the source system.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.sourceSystemUri
+      description: The source system URI link of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.additionalProperties
+      description: The additional properties of the Involved Entity as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.suspicious
+      description: Whether the Involved Entity is considered suspicious.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.internal
+      description: Whether the Involved Entity is internal.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.attacker
+      description: Whether the Involved Entity represents an attacker.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.pivot
+      description: Whether the Involved Entity is a pivot entity common to multiple cases.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.manuallyCreated
+      description: Whether the Involved Entity was added manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.enriched
+      description: Whether the Involved Entity has been enriched by an external action.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.artifact
+      description: Whether the Involved Entity is an artifact.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.vulnerable
+      description: Whether the Involved Entity is vulnerable.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.displayName
+      description: The display name of the context group of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.highlighted
+      description: Whether the context group of the Involved Entity is highlighted.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.hidden
+      description: Whether the context group of the Involved Entity is hidden.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.name
+      description: The property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.originalName
+      description: The original property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.value
+      description: The value of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.command
+      description: The command name associated with the pagination token.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.nextPageToken
+      description: Token to fetch the next page of alert entities.
+      type: String
+    - contextPath: GoogleSecOps.PageToken.totalSize
+      description: The total number of alert entities available.
+      type: Number
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: "Specify the ID of the involved entity to retrieve.\n\nNote: Use gcb-case-alert-entity-list to retrieve entity ID."
+      name: entity_id
+      required: true
+    description: Retrieve detailed information about a specific involved entity in a case alert.
+    name: gcb-case-alert-entity-get
+    outputs:
+    - contextPath: GoogleSecOps.AlertEntity.id
+      description: The immutable identifier of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.identifier
+      description: The identifier name of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.type
+      description: The type of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.alertId
+      description: The Alert ID the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.caseId
+      description: The Case ID the Involved Entity belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.alertIdentifier
+      description: The alert identifier the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.environment
+      description: The environment of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.threatSource
+      description: The threat source associated with the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.operatingSystem
+      description: The operating system of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkTitle
+      description: The network name related to the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkPriority
+      description: The network priority of the Involved Entity.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.entityUri
+      description: The full URL of the Involved Entity in the source system.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.sourceSystemUri
+      description: The source system URI link of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.additionalProperties
+      description: The additional properties of the Involved Entity as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.suspicious
+      description: Whether the Involved Entity is considered suspicious.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.internal
+      description: Whether the Involved Entity is internal.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.attacker
+      description: Whether the Involved Entity represents an attacker.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.pivot
+      description: Whether the Involved Entity is a pivot entity common to multiple cases.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.manuallyCreated
+      description: Whether the Involved Entity was added manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.enriched
+      description: Whether the Involved Entity has been enriched by an external action.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.artifact
+      description: Whether the Involved Entity is an artifact.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.vulnerable
+      description: Whether the Involved Entity is vulnerable.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.displayName
+      description: The display name of the context group of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.highlighted
+      description: Whether the context group of the Involved Entity is highlighted.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.hidden
+      description: Whether the context group of the Involved Entity is hidden.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.name
+      description: The property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.originalName
+      description: The original property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.value
+      description: The value of the context group item of the Involved Entity.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: Specify the identifier name of the entity (e.g. IP address, hostname value, process name).
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      description: "Specify the type of the new entity.\n\nNote: Immutable after creation."
+      name: entity_type
+      predefined:
+      - ADDRESS
+      - HOSTNAME
+      - PROCESS
+      - USB
+      required: true
+    - auto: PREDEFINED
+      description: Specify whether the entity is suspicious.
+      name: suspicious
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specify whether the entity is internal to the organization.
+      name: internal
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specify whether the entity represents an attacker.
+      name: attacker
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specify whether the entity is a pivot entity common to multiple cases.
+      name: pivot
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Specify the operating system of the entity.
+      name: operating_system
+    - description: Specify the network name related to the entity.
+      name: network_title
+    - description: Specify the threat source name associated with the entity.
+      name: threat_source
+    - description: Specify the network priority of the entity (non-negative integer).
+      name: network_priority
+    description: Manually create a new involved entity within a case alert.
+    name: gcb-case-alert-entity-create
+    outputs:
+    - contextPath: GoogleSecOps.AlertEntity.id
+      description: The immutable identifier of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.identifier
+      description: The identifier name of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.type
+      description: The type of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.alertId
+      description: The Alert ID the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.caseId
+      description: The Case ID the Involved Entity belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.alertIdentifier
+      description: The alert identifier the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.environment
+      description: The environment of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.threatSource
+      description: The threat source associated with the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.operatingSystem
+      description: The operating system of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkTitle
+      description: The network name related to the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkPriority
+      description: The network priority of the Involved Entity.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.entityUri
+      description: The full URL of the Involved Entity in the source system.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.sourceSystemUri
+      description: The source system URI link of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.additionalProperties
+      description: The additional properties of the Involved Entity as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.suspicious
+      description: Whether the Involved Entity is considered suspicious.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.internal
+      description: Whether the Involved Entity is internal.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.attacker
+      description: Whether the Involved Entity represents an attacker.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.pivot
+      description: Whether the Involved Entity is a pivot entity common to multiple cases.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.manuallyCreated
+      description: Whether the Involved Entity was added manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.enriched
+      description: Whether the Involved Entity has been enriched by an external action.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.artifact
+      description: Whether the Involved Entity is an artifact.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.vulnerable
+      description: Whether the Involved Entity is vulnerable.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.displayName
+      description: The display name of the context group of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.highlighted
+      description: Whether the context group of the Involved Entity is highlighted.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.hidden
+      description: Whether the context group of the Involved Entity is hidden.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.name
+      description: The property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.originalName
+      description: The original property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.value
+      description: The value of the context group item of the Involved Entity.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: "Specify the ID of the involved entity to update.\n\nNote: Use gcb-case-alert-entity-list to retrieve entity ID."
+      name: entity_id
+      required: true
+    - auto: PREDEFINED
+      description: Specify the updated suspicion flag for the entity.
+      name: suspicious
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specify the updated internal flag for the entity.
+      name: internal
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specify the updated attacker designation for the entity.
+      name: attacker
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specify the updated pivot designation for the entity.
+      name: pivot
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Specify the updated operating system of the entity.
+      name: operating_system
+    - description: Specify the updated network name related to the entity.
+      name: network_title
+    - description: Specify the updated threat source associated with the entity.
+      name: threat_source
+    - description: Specify the updated network priority associated with the entity (non-negative integer).
+      name: network_priority
+    description: Update the attributes of an existing involved entity in a case alert.
+    name: gcb-case-alert-entity-update
+    outputs:
+    - contextPath: GoogleSecOps.AlertEntity.id
+      description: The immutable identifier of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.identifier
+      description: The identifier name of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.type
+      description: The type of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.alertId
+      description: The Alert ID the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.caseId
+      description: The Case ID the Involved Entity belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.alertIdentifier
+      description: The alert identifier the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.environment
+      description: The environment of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.threatSource
+      description: The threat source associated with the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.operatingSystem
+      description: The operating system of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkTitle
+      description: The network name related to the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkPriority
+      description: The network priority of the Involved Entity.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.entityUri
+      description: The full URL of the Involved Entity in the source system.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.sourceSystemUri
+      description: The source system URI link of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.additionalProperties
+      description: The additional properties of the Involved Entity as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.suspicious
+      description: Whether the Involved Entity is considered suspicious.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.internal
+      description: Whether the Involved Entity is internal.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.attacker
+      description: Whether the Involved Entity represents an attacker.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.pivot
+      description: Whether the Involved Entity is a pivot entity common to multiple cases.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.manuallyCreated
+      description: Whether the Involved Entity was added manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.enriched
+      description: Whether the Involved Entity has been enriched by an external action.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.artifact
+      description: Whether the Involved Entity is an artifact.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.vulnerable
+      description: Whether the Involved Entity is vulnerable.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.displayName
+      description: The display name of the context group of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.highlighted
+      description: Whether the context group of the Involved Entity is highlighted.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.hidden
+      description: Whether the context group of the Involved Entity is hidden.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.name
+      description: The property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.originalName
+      description: The original property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.value
+      description: The value of the context group item of the Involved Entity.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: "Specify the ID of the involved entity to add a property.\n\nNote: Use gcb-case-alert-entity-list to retrieve entity ID."
+      name: entity_id
+      required: true
+    - description: "Specify the property key to add.\n\nNote: The key must not already exist on the entity."
+      name: key
+      required: true
+    - description: Specify the value for the new property.
+      name: value
+      required: true
+    description: Add a new custom property to an involved entity in a case alert.
+    name: gcb-case-alert-entity-property-add
+    outputs:
+    - contextPath: GoogleSecOps.AlertEntity.id
+      description: The immutable identifier of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.identifier
+      description: The identifier name of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.type
+      description: The type of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.alertId
+      description: The Alert ID the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.caseId
+      description: The Case ID the Involved Entity belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.alertIdentifier
+      description: The alert identifier the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.environment
+      description: The environment of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.threatSource
+      description: The threat source associated with the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.operatingSystem
+      description: The operating system of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkTitle
+      description: The network name related to the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkPriority
+      description: The network priority of the Involved Entity.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.entityUri
+      description: The full URL of the Involved Entity in the source system.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.sourceSystemUri
+      description: The source system URI link of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.additionalProperties
+      description: The additional properties of the Involved Entity as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.suspicious
+      description: Whether the Involved Entity is considered suspicious.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.internal
+      description: Whether the Involved Entity is internal.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.attacker
+      description: Whether the Involved Entity represents an attacker.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.pivot
+      description: Whether the Involved Entity is a pivot entity common to multiple cases.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.manuallyCreated
+      description: Whether the Involved Entity was added manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.enriched
+      description: Whether the Involved Entity has been enriched by an external action.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.artifact
+      description: Whether the Involved Entity is an artifact.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.vulnerable
+      description: Whether the Involved Entity is vulnerable.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.displayName
+      description: The display name of the context group of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.highlighted
+      description: Whether the context group of the Involved Entity is highlighted.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.hidden
+      description: Whether the context group of the Involved Entity is hidden.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.name
+      description: The property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.originalName
+      description: The original property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.value
+      description: The value of the context group item of the Involved Entity.
+      type: String
+  - arguments:
+    - description: "Specify the ID of the case.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the ID of the case alert.\n\nNote: Use gcb-case-alert-list to retrieve alert ID."
+      name: alert_id
+      required: true
+    - description: "Specify the ID of the involved entity to update the property.\n\nNote: Use gcb-case-alert-entity-list to retrieve entity ID."
+      name: entity_id
+      required: true
+    - description: Specify the existing property key whose value should be updated.
+      name: key
+      required: true
+    - description: Specify the new value for the property.
+      name: value
+      required: true
+    description: Update an existing custom property value on an involved entity in a case alert.
+    name: gcb-case-alert-entity-property-update
+    outputs:
+    - contextPath: GoogleSecOps.AlertEntity.id
+      description: The immutable identifier of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.identifier
+      description: The identifier name of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.type
+      description: The type of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.alertId
+      description: The Alert ID the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.caseId
+      description: The Case ID the Involved Entity belongs to.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.alertIdentifier
+      description: The alert identifier the Involved Entity belongs to.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.environment
+      description: The environment of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.threatSource
+      description: The threat source associated with the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.operatingSystem
+      description: The operating system of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkTitle
+      description: The network name related to the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.networkPriority
+      description: The network priority of the Involved Entity.
+      type: Number
+    - contextPath: GoogleSecOps.AlertEntity.entityUri
+      description: The full URL of the Involved Entity in the source system.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.sourceSystemUri
+      description: The source system URI link of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.additionalProperties
+      description: The additional properties of the Involved Entity as a JSON string.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.suspicious
+      description: Whether the Involved Entity is considered suspicious.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.internal
+      description: Whether the Involved Entity is internal.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.attacker
+      description: Whether the Involved Entity represents an attacker.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.pivot
+      description: Whether the Involved Entity is a pivot entity common to multiple cases.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.manuallyCreated
+      description: Whether the Involved Entity was added manually.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.enriched
+      description: Whether the Involved Entity has been enriched by an external action.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.artifact
+      description: Whether the Involved Entity is an artifact.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.vulnerable
+      description: Whether the Involved Entity is vulnerable.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.displayName
+      description: The display name of the context group of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.highlighted
+      description: Whether the context group of the Involved Entity is highlighted.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.hidden
+      description: Whether the context group of the Involved Entity is hidden.
+      type: Boolean
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.name
+      description: The property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.originalName
+      description: The original property name of the context group item of the Involved Entity.
+      type: String
+    - contextPath: GoogleSecOps.AlertEntity.fields.items.value
+      description: The value of the context group item of the Involved Entity.
+      type: String
+  - arguments:
+    - description: Filter the playbooks by environment.
+      name: environment
+      required: false
+    - auto: PREDEFINED
+      defaultValue: ALERT
+      description: Filter the playbooks attachable by the specified execution scope.
+      name: execution_scope
+      predefined:
+      - ALERT
+      - CASE
+      - EXECUTION_SCOPE_UNSPECIFIED
+      required: false
+    description: Retrieve the list of all playbooks that are currently enabled and ready for execution.
+    name: gcb-playbook-list
+    outputs:
+    - contextPath: GoogleSecOps.Playbook.playbookName
+      description: The name of the enabled playbook.
+      type: String
+    - contextPath: GoogleSecOps.Playbook.description
+      description: The description of the playbook.
+      type: String
+    - contextPath: GoogleSecOps.Playbook.playbookType
+      description: The type of the playbook (REGULAR or NESTED).
+      type: String
+    - contextPath: GoogleSecOps.Playbook.originalWorkflowDefinitionIdentifier
+      description: The original workflow definition identifier of the playbook.
+      type: String
+    - contextPath: GoogleSecOps.Playbook.workflowDefinitionIdentifier
+      description: The workflow definition identifier of the playbook.
+      type: String
+    - contextPath: GoogleSecOps.Playbook.isDebugMode
+      description: Whether the playbook is running in debug mode.
+      type: Boolean
+  - arguments:
+    - description: "Specify the ID of the case to attach the playbook.\n\nNote: Use gcb-case-list to retrieve case ID."
+      name: case_id
+      required: true
+    - description: "Specify the alert group identifier of the case alert.\n\nNote: Use gcb-case-alert-get to retrieve the alert group identifier."
+      name: alert_group_identifier
+      required: true
+    - description: "Specify the alert identifier of the case alert.\n\nNote: Use gcb-case-alert-get to retrieve the alert identifier."
+      name: alert_identifier
+      required: true
+    - description: "Specify the name of the playbook (workflow) to attach.\n\nNote: Use gcb-playbook-list to retrieve available playbook names."
+      name: playbook_name
+      required: true
+    - description: "Specify the original workflow definition identifier of the playbook.\n\nNote: Use gcb-playbook-list to retrieve the original workflow definition identifier."
+      name: original_workflow_definition_identifier
+    description: Manually attach (trigger) a specific playbook to a case alert.
+    name: gcb-playbook-attach
+    outputs:
+    - contextPath: GoogleSecOps.PlaybookAttach.caseId
+      description: The Case ID the playbook was attached to.
+      type: String
+    - contextPath: GoogleSecOps.PlaybookAttach.alertGroupIdentifier
+      description: The alert group identifier the playbook was attached to.
+      type: String
+    - contextPath: GoogleSecOps.PlaybookAttach.alertIdentifier
+      description: The alert identifier the playbook was attached to.
+      type: String
+    - contextPath: GoogleSecOps.PlaybookAttach.playbookName
+      description: The name of the playbook that was attached.
+      type: String
+    - contextPath: GoogleSecOps.PlaybookAttach.originalWorkflowDefinitionIdentifier
+      description: The original workflow definition identifier of the attached playbook.
+      type: String
+    - contextPath: GoogleSecOps.PlaybookAttach.success
+      description: Whether the playbook was successfully attached to the alert.
+      type: Boolean
+  isfetch: true
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/googleapi-python3:1.0.0.11185775
+fromversion: 6.10.0
+defaultmapperin: 'Google SecOps Cases - Incoming Mapper'
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
