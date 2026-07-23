@@ -1,0 +1,311 @@
+name: AWS - Security Hub v2
+display: AWS - Security Hub v2
+category: IT Services
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: AWS - Security Hub v2
+  version: -1
+description: Use the AWS Security Hub V2 integration to import, manage, and retrieve unified security and compliance findings across your cloud environments.
+configuration:
+- display: AWS Default Region
+  name: region
+  options:
+  - us-east-1
+  - us-east-2
+  - us-west-1
+  - us-west-2
+  - ca-central-1
+  - eu-west-1
+  - eu-central-1
+  - eu-west-2
+  - ap-northeast-1
+  - ap-northeast-2
+  - ap-southeast-1
+  - ap-southeast-2
+  - ap-south-1
+  - sa-east-1
+  - eu-north-1
+  - eu-west-3
+  - il-central-1
+  - us-gov-east-1
+  - us-gov-west-1
+  type: 15
+  section: Connect
+  required: true
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  section: Connect
+  required: false
+- display: Role Arn
+  name: role_arn
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Name
+  name: role_session_name
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Role Session Duration
+  name: session_duration
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Timeout
+  name: timeout
+  additionalinfo: The timeout interval in seconds. Can be a single integer representing the read timeout (for example 60), or two comma-separated values representing the read and connect timeouts (for example 60,10).
+  defaultvalue: 60,10
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Retries
+  name: retries
+  defaultvalue: 5
+  additionalinfo: "The number of times to retry the connection if it fails with connection or throttling errors. Set to 0 to disable retries. Note: Increasing the number of retries will increase the execution time."
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: PrivateLink service URL.
+  name: endpoint_url
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: STS PrivateLink URL.
+  name: sts_endpoint_url
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  section: Collect
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  section: Collect
+  required: false
+- display: First fetch time
+  name: first_fetch
+  defaultvalue: 3 days
+  additionalinfo: 'The time range for the initial data fetch (for example, 3 days, 12 hours, 7 minutes).'
+  type: 0
+  section: Collect
+  required: false
+- display: Maximum number of incidents per fetch
+  name: max_fetch
+  defaultvalue: 50
+  additionalinfo: The maximum number of findings to fetch per cycle. The maximum is 100.
+  type: 0
+  section: Collect
+  required: false
+- display: Minimum severity to fetch
+  name: min_severity
+  additionalinfo: The minimum severity of findings to fetch, based on the OCSF severity_id. Findings with this severity or higher are fetched. Leave empty to fetch all severities.
+  options:
+  - Informational
+  - Low
+  - Medium
+  - High
+  - Critical
+  - Fatal
+  type: 15
+  section: Collect
+  required: false
+- display: Additional fetch filters
+  name: fetch_filters
+  additionalinfo: 'The additional string filters used to narrow the fetch. Follows the same format as the string_filters command argument: "field_name=<OCSF field>,value=<value>,comparison=<comparison>" (multiple entries must be separated by semicolons). These filters are combined with the time and severity filters using an AND operator.'
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  additionalinfo: 'The direction to mirror the finding. Possible values are None, Incoming (from AWS - Security Hub to Cortex), Outgoing (from Cortex to AWS - Security Hub), or Incoming And Outgoing (from/to Cortex and AWS - Security Hub).'
+  type: 15
+  section: Collect
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  defaultvalue: None
+  required: false
+- display: Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub
+  name: resolve_finding
+  additionalinfo: 'Whether closing an incident in Cortex XSOAR sets the corresponding finding''s status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
+  type: 8
+  section: Collect
+  defaultvalue: 'false'
+  required: false
+script:
+  commands:
+  - name: aws-securityhub-v2-security-hub-enable
+    description: "Enables AWS Security Hub V2 for the configured account and region. Required IAM Permission: securityhub:EnableSecurityHubV2."
+    arguments:
+    - name: tags
+      description: "The tags to assign to the Security Hub V2 resource, in the format: key=key1,value=value1;key=key2,value=value2."
+      required: false
+    outputs:
+    - contextPath: AWS.SecurityHubV2.Hub.HubV2Arn
+      description: The ARN of the enabled Security Hub V2 resource.
+      type: String
+  - name: aws-securityhub-v2-security-hub-disable
+    description: "Disables AWS Security Hub V2 for the configured account and region. Required IAM Permission: securityhub:DisableSecurityHubV2."
+    arguments: []
+  - name: aws-securityhub-v2-findings-get
+    description: "Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required IAM Permission: securityhub:GetFindingsV2."
+    arguments:
+    - name: string_filters
+      description: 'The string field filters. Each entry must follow the format: field_name=<OCSF field>,value=<value>,comparison=<comparison_type> (separate multiple entries by semicolons). Supported comparison types are EQUALS (default), PREFIX, NOT_EQUALS, PREFIX_NOT_EQUALS, and CONTAINS_WORD. For substring matching, use CONTAINS_WORD (CONTAINS and NOT_CONTAINS are not supported by this API). Example: field_name=severity,value=High,comparison=EQUALS;field_name=finding_info.title,value=root,comparison=CONTAINS_WORD.'
+      required: false
+    - name: date_filters
+      description: 'The date field filters. Each entry must use either an absolute range format: field_name=<OCSF field>,start=<ISO8601>,end=<ISO8601> (both start and end are required), or a relative date range format: field_name=<OCSF field>,value=<number>,unit=<unit>,comparison=<comparison> (value is required, unit defaults to DAYS, and comparison is optional). Note that days=<number> is accepted as a shorthand for value=<number>,unit=DAYS. Multiple entries must be separated by semicolons. Examples: field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z OR field_name=finding_info.modified_time_dt,value=7,unit=DAYS OR field_name=finding_info.modified_time_dt,days=7.'
+      required: false
+    - name: boolean_filters
+      description: 'The boolean field filters. Each entry must follow the format: field_name=<OCSF field>,value=<true|false> (multiple entries must be separated by semicolons).'
+      required: false
+    - name: number_filters
+      description: 'The number field filters. Each entry must follow the format: field_name=<OCSF field>,<operator>=<number> where the operator is one of eq, gt, gte, lt, or lte. Multiple operators can be combined in a single entry, and multiple entries must be separated by semicolons. For example,  "field_name=severity_id,gte=4" OR "field_name=severity_id,gte=4,lte=6".'
+      required: false
+    - name: map_filters
+      description: 'The map field filters. Each entry must follow the format: field_name=<OCSF field>,key=<key>,value=<value>,comparison=<comparison_type> (multiple entries must be separated by semicolons).  Supported comparison types are EQUALS (default) and NOT_EQUALS.'
+      required: false
+    - name: ip_filters
+      description: 'The IP field filters. Each entry must follow the format: field_name=<field>,cidr=<IP address> (multiple entries must be separated by semicolons). Possible field_name values are:  evidences.src_endpoint.ip and evidences.dst_endpoint.ip. The CIDR value must be a plain IPv4 or IPv6 address (CIDR ranges such as 10.0.0.0/8 are not accepted). For example, field_name=evidences.src_endpoint.ip,cidr=10.0.0.1.'
+      required: false
+    - name: filter_operator
+      description: The logical operator used to combine the filter conditions within the composite filter. Possible values are AND and OR.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - AND
+      - OR
+      defaultValue: AND
+    - name: composite_operator
+      description: The logical operator used to combine multiple composite filters. Possible values are AND and OR.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - AND
+      - OR
+      defaultValue: AND
+    - name: sort_field
+      description: The finding field to sort the results by.
+      required: false
+    - name: sort_order
+      description: The order to sort the results by.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: limit
+      description: The maximum number of findings to return.
+      required: false
+      defaultValue: '50'
+    - name: next_token
+      description: The pagination token returned from a previous request, used to retrieve the next set of results.
+      required: false
+    outputs:
+    - contextPath: AWS.SecurityHubV2.Findings
+      description: The list of OCSF-formatted findings returned by Security Hub V2. Each finding is a free-form OCSF object containing fields such as metadata, finding_info, severity, status, cloud, resources, and time.
+      type: Unknown
+    - contextPath: AWS.SecurityHubV2.FindingsNextToken
+      description: The pagination token to use when requesting the next set of findings.
+      type: String
+  - name: aws-securityhub-v2-findings-batch-update
+    description: "Updates one or more AWS Security Hub V2 findings in a single batch request. Findings are targeted by metadata_uids and/or finding_identifiers. Required IAM Permission: securityhub:BatchUpdateFindingsV2."
+    arguments:
+    - name: metadata_uids
+      description: A comma-separated list of OCSF finding metadata UIDs to update. Each UID must be a 64-character lowercase hexadecimal string (pattern ^[0-9a-z]{64}$), exactly as returned in the metadata.uid field by aws-securityhub-v2-findings-get.
+      required: false
+      isArray: true
+    - name: finding_identifiers
+      description: 'The composite finding identifiers to update. Each entry must follow the format: cloud_account_uid=<id>,finding_info_uid=<id>,metadata_product_uid=<id> (multiple entries must be separated by semicolons).'
+      required: false
+    - name: comment
+      description: The reason for updating the findings.
+      required: false
+    - name: severity_id
+      description: The new OCSF severity ID to assign to the findings (1=Informational, 2=Low, 3=Medium, 4=High, 5=Critical, 6=Fatal).
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+    - name: status_id
+      description: The new OCSF status ID to assign to the findings (1=New, 2=In Progress, 3=Suppressed, 4=Resolved).
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+    outputs:
+    - contextPath: AWS.SecurityHubV2.BatchUpdateFindings.ProcessedFindings
+      description: The list of findings that were successfully updated.
+      type: Unknown
+    - contextPath: AWS.SecurityHubV2.BatchUpdateFindings.UnprocessedFindings
+      description: The list of findings that could not be updated, including the error for each.
+      type: Unknown
+  - name: get-remote-data
+    description: 'Returns the updated data of a single mirrored AWS Security Hub V2 finding. This command is used for mirroring and is not intended to be run manually.'
+    arguments:
+    - name: id
+      description: The finding metadata UID to retrieve.
+      required: true
+    - name: lastUpdate
+      description: The date string in local time representing the last time the incident was updated.
+      required: false
+  - name: get-mapping-fields
+    description: 'Returns the list of fields available for outgoing mirroring. This command is used for mirroring and is not intended to be run manually.'
+    arguments: []
+  - name: update-remote-system
+    description: 'Pushes local (Cortex XSOAR) incident changes to the corresponding AWS Security Hub V2 finding. This command is used for mirroring and is not intended to be run manually.'
+    arguments:
+    - name: remoteId
+      description: The remote finding metadata UID to update.
+      required: false
+  dockerimage: demisto/boto3py3:1.0.0.7704170
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+defaultmapperin: AWS Security Hub v2 - Incoming Mapper
+defaultmapperout: AWS Security Hub v2 - Outgoing Mapper
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
