@@ -11,12 +11,16 @@ alter
     IsUser = if(ActorCUID = "00000000-0000-0000-0000-000000000000" OR get_data_ActorCUID ="00000000-0000-0000-0000-000000000000", to_boolean("False"), to_boolean("True"))
 | alter
     xdm.source.user.upn = coalesce(ActorUPN, get_data -> ActorUPN),
+    xdm.source.identity.upn = coalesce(ActorUPN, get_data -> ActorUPN),
     xdm.source.user.identifier = if(IsUser = False, null, get_data_ActorCUID != null, get_data_ActorCUID, ActorCUID),
+    xdm.source.identity.identifier = if(IsUser = False, null, get_data_ActorCUID != null, get_data_ActorCUID, ActorCUID),
     xdm.source.user.identity_type = if(IsUser = True, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_MACHINE),
+    xdm.source.identity.identity_type = if(IsUser = True, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_MACHINE),
     xdm.auth.auth_method = coalesce(AuthenticationMechanism, get_data -> AuthenticationMechanism),
     xdm.session_context_id = coalesce(CorrelationId, get_data -> CorrelationId),
     xdm.event.description = coalesce(Details, get_data -> Details),
     xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_AZURE,
+    xdm.source.identity.scope = XDM_CONST.SCOPE_TYPE_AZURE,
     xdm.event.operation_sub_type = coalesce(Category, get_data -> CategoryDisplayName),
     xdm.source.cloud.project_id = if(ProjectId = "00000000-0000-0000-0000-000000000000" OR get_data_ProjectId = "00000000-0000-0000-0000-000000000000", null, get_data_ProjectId != null, get_data_ProjectId, ProjectId),
     xdm.source.cloud.project = coalesce(ProjectName, get_data -> ProjectName),
@@ -40,8 +44,11 @@ filter Area = "Licensing" OR _raw_log ->[0].data.Area = "Licensing"
     DetailsUsernameOrGroupName = if(get_data != null, arrayindex(regextract(get_data_Details, "\"(.+)\""),0), arrayindex(regextract(Details,"\"(.+)\""),0))
 | alter
     xdm.target.user.identifier = coalesce(Data -> UserIdentifier, get_data_Data -> UserIdentifier),
+    xdm.target.identity.identifier = coalesce(Data -> UserIdentifier, get_data_Data -> UserIdentifier),
     xdm.target.user.username = if(Data -> UserIdentifier != null OR get_data_Data -> UserIdentifier != null, DetailsUsernameOrGroupName),
+    xdm.target.identity.username = if(Data -> UserIdentifier != null OR get_data_Data -> UserIdentifier != null, DetailsUsernameOrGroupName),
     xdm.target.user.groups = if(Data -> GroupIdentifier != null OR get_data_Data -> GroupIdentifier != null, arraycreate(DetailsUsernameOrGroupName)),
+    xdm.target.identity.groups = if(Data -> GroupIdentifier != null OR get_data_Data -> GroupIdentifier != null, arraycreate(DetailsUsernameOrGroupName)),
     xdm.event.outcome_reason = coalesce(Data -> Reason, get_data_Data -> Reason),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
@@ -75,8 +82,11 @@ filter Area = "Group" OR _raw_log ->[0].data.Area = "Group"
 | alter
     xdm.source.process.name = coalesce(Data -> CallerProcedure, get_data_Data -> CallerProcedure),
     xdm.target.user.groups = if(get_data != null, arraycreate(concat("Id: ", get_data_Data -> GroupId), concat("Name: ", get_data_Data -> GroupName)), arraycreate(concat("Id: ",Data -> GroupId), concat("Name: ", Data -> GroupName))),
+    xdm.target.identity.groups = if(get_data != null, arraycreate(concat("Id: ", get_data_Data -> GroupId), concat("Name: ", get_data_Data -> GroupName)), arraycreate(concat("Id: ",Data -> GroupId), concat("Name: ", Data -> GroupName))),
     xdm.target.user.identifier = coalesce(Data -> MemberId, get_data_Data -> MemberId),
+    xdm.target.identity.identifier = coalesce(Data -> MemberId, get_data_Data -> MemberId),
     xdm.target.user.username = coalesce(Data -> MemberDisplayName, get_data_Data -> MemberDisplayName),
+    xdm.target.identity.username = coalesce(Data -> MemberDisplayName, get_data_Data -> MemberDisplayName),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Library events
@@ -117,7 +127,9 @@ filter Area = "Token" OR _raw_log ->[0].data.Area = "Token"
     xdm.target.resource.sub_type = coalesce(Data -> TokenType, get_data_Data -> TokenType),
     xdm.target.resource.name = coalesce(Data -> DisplayName, get_data_Data -> DisplayName),
     xdm.target.user.identifier = coalesce(Data -> TargetUser, get_data_Data -> TargetUser),
+    xdm.target.identity.identifier = coalesce(Data -> TargetUser, get_data_Data -> TargetUser),
      xdm.target.user.username = OwnerName,
+     xdm.target.identity.username = OwnerName,
      xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Policy events
@@ -176,8 +188,11 @@ filter Area = "Permissions" OR _raw_log ->[0].data.Area = "Permissions"
     xdm.target.resource.value = coalesce(Data -> PermissionModifiedTo, get_data_Data -> PermissionModifiedTo),
     xdm.target.resource.name = if(ChangedPermission != null, ChangedPermission, get_data_Data = null, to_string(arraymap(Data -> EventSummary[], "@element" -> PermissionNames)), to_string(arraymap(get_data_Data -> eventSummary[], "@element" -> permissionNames))),
     xdm.target.user.groups = if(SubjectDescriptor = null, arraycreate(SubjectDisplayName)),
+    xdm.target.identity.groups = if(SubjectDescriptor = null, arraycreate(SubjectDisplayName)),
     xdm.target.user.upn = if(SubjectDescriptor != null, arrayindex(regextract(SubjectDescriptor, ".+\\+(.+)"),0)),
+    xdm.target.identity.upn = if(SubjectDescriptor != null, arrayindex(regextract(SubjectDescriptor, ".+\\+(.+)"),0)),
     xdm.target.user.username = if(SubjectDescriptor != null, SubjectDisplayName),
+    xdm.target.identity.username = if(SubjectDescriptor != null, SubjectDisplayName),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Pipelines events

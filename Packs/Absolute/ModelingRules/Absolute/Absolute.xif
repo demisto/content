@@ -11,6 +11,7 @@ alter
     xdm.event.operation_sub_type = verb,
     xdm.source.host.device_id = if(actorObjectType = "Device", actorDisplayId),
     xdm.source.user.identifier = if(actorObjectType = "User", actorDisplayId),
+    xdm.source.identity.identifier = if(actorObjectType = "User", actorDisplayId),
     xdm.source.application.version = if(actorObjectType = "System", actorDisplayId),
     xdm.source.user.identity_type = if(
     	actorObjectType = "Device", XDM_CONST.IDENTITY_TYPE_MACHINE,
@@ -18,8 +19,15 @@ alter
 		actorObjectType = "System", XDM_CONST.IDENTITY_TYPE_BUILTIN,
 		actorObjectType = "NA", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
 		actorObjectType = null, null, to_string(actorObjectType)),
+    xdm.source.identity.identity_type = if(
+    	actorObjectType = "Device", XDM_CONST.IDENTITY_TYPE_MACHINE,
+		actorObjectType = "User", XDM_CONST.IDENTITY_TYPE_USER,
+		actorObjectType = "System", XDM_CONST.IDENTITY_TYPE_BUILTIN,
+		actorObjectType = "NA", XDM_CONST.IDENTITY_TYPE_UNKNOWN,
+		actorObjectType = null, null, to_string(actorObjectType)),
     xdm.source.host.hostname = if(actorObjectType = "Device", actorDisplayName),
 	xdm.source.user.username = if(actorObjectType = "User", actorDisplayName),
+	xdm.source.identity.username = if(actorObjectType = "User", actorDisplayName),
 	xdm.source.application.name = if(actorObjectType = "System", actorDisplayName),
     xdm.target.resource.id = objectDisplayId,
     xdm.target.resource.type = objectObjectType,

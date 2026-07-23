@@ -15,8 +15,11 @@ filter category in (
     xdm.source.process.parent_id = json_extract_scalar(properties, "$.InitiatingProcessParentId"),
     xdm.source.process.pid = to_integer(json_extract_scalar(properties, "$.InitiatingProcessId")),
     xdm.source.user.domain = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.InitiatingProcessCreationTime")),
+    xdm.source.identity.domain = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.InitiatingProcessCreationTime")),
     xdm.source.user.identifier = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountName"), json_extract_scalar(properties, "$.InitiatingProcessAccountSid")),
+    xdm.source.identity.identifier = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountName"), json_extract_scalar(properties, "$.InitiatingProcessAccountSid")),
     xdm.source.user.username = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.InitiatingProcessAccountName")),
+    xdm.source.identity.username = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.InitiatingProcessAccountName")),
     xdm.event.operation = json_extract_scalar(properties, "$.ActionType"),
     xdm.event.id = json_extract_scalar(properties, "$.ReportId"),
     xdm.event.operation_sub_type = json_extract_scalar(properties, "$.ActionType"),
@@ -66,7 +69,9 @@ filter category in (
     xdm.source.process.parent_id = json_extract_scalar(properties, "$.InitiatingProcessParentId"),
     xdm.source.process.pid = to_integer(json_extract_scalar(properties, "$.InitiatingProcessId")),
     xdm.source.user.domain = json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"),
-    xdm.source.user.identifier = json_extract_scalar(properties, "$.InitiatingProcessAccountSid");
+    xdm.source.identity.domain = json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"),
+    xdm.source.user.identifier = json_extract_scalar(properties, "$.InitiatingProcessAccountSid"),
+    xdm.source.identity.identifier = json_extract_scalar(properties, "$.InitiatingProcessAccountSid");
 
 filter category in (
     "AdvancedHunting-DeviceLogonEvents"
@@ -91,8 +96,11 @@ filter category in (
     xdm.source.process.parent_id = json_extract_scalar(properties, "$.InitiatingProcessParentId"),
     xdm.source.process.pid = to_integer(json_extract_scalar(properties, "$.InitiatingProcessId")),
     xdm.source.user.domain = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.AccountDomain")),
+    xdm.source.identity.domain = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.AccountDomain")),
     xdm.source.user.identifier = coalesce(json_extract_scalar(properties, "$.AccountSid"), json_extract_scalar(properties, "$.InitiatingProcessAccountSid")),
+    xdm.source.identity.identifier = coalesce(json_extract_scalar(properties, "$.AccountSid"), json_extract_scalar(properties, "$.InitiatingProcessAccountSid")),
     xdm.source.user.username = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountName"), json_extract_scalar(properties, "$.AccountName")),
+    xdm.source.identity.username = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountName"), json_extract_scalar(properties, "$.AccountName")),
     xdm.logon.is_elevated = to_boolean(json_extract_scalar(properties, "$.IsLocalAdmin")),
     xdm.logon.type = json_extract_scalar(properties, "$.LogonType"),
     xdm.event.id = json_extract_scalar(properties, "$.ReportId"),
@@ -105,8 +113,11 @@ filter category in (
     xdm.target.ipv4 = json_extract_scalar(properties, "$.DestinationIPAddress"),
     xdm.target.port = to_integer(json_extract_scalar(properties, "$.DestinationPort")),
     xdm.target.user.domain = json_extract_scalar(properties, "$.AccountDomain"),
+    xdm.target.identity.domain = json_extract_scalar(properties, "$.AccountDomain"),
     xdm.target.user.identifier = json_extract_scalar(properties, "$.AccountSid"),
-    xdm.target.user.username = coalesce(json_extract_scalar(properties, "$.AccountName"), json_extract_scalar(properties, "$.TargetAccountDisplayName"));
+    xdm.target.identity.identifier = json_extract_scalar(properties, "$.AccountSid"),
+    xdm.target.user.username = coalesce(json_extract_scalar(properties, "$.AccountName"), json_extract_scalar(properties, "$.TargetAccountDisplayName")),
+    xdm.target.identity.username = coalesce(json_extract_scalar(properties, "$.AccountName"), json_extract_scalar(properties, "$.TargetAccountDisplayName"));
 
 filter
     category = "AdvancedHunting-EmailEvents"
@@ -129,12 +140,14 @@ filter
     outcome_result = json_extract_scalar(properties, "$.RawEventData.ResultStatus")
 | alter
     xdm.target.user.username = json_extract_scalar(properties, "$.ObjectId"),
+    xdm.target.identity.username = json_extract_scalar(properties, "$.ObjectId"),
     xdm.event.operation = json_extract_scalar(properties, "$.ActionType"),
     xdm.event.operation_sub_type = coalesce(operationname, json_extract_scalar(properties, "$.ActivityType")),
     xdm.event.id = json_extract_scalar(properties, "$.ReportId"),
     xdm.event.outcome = if(outcome_result ~= "fail", XDM_CONST.OUTCOME_FAILED, outcome_result = "success", XDM_CONST.OUTCOME_SUCCESS, outcome_result = null, null, to_string(outcome_result)),
     xdm.source.agent.identifier = json_extract_scalar(properties, "$.UserAgent"),
     xdm.source.user.username = json_extract_scalar(properties, "$.RawEventData.UserId"),
+    xdm.source.identity.username = json_extract_scalar(properties, "$.RawEventData.UserId"),
     xdm.source.ipv4 = json_extract_scalar(properties, "$.IPAddress"),
     xdm.source.location.city = json_extract_scalar(properties, "$.City"),
     xdm.source.location.country = json_extract_scalar(properties, "$.CountryCode");
