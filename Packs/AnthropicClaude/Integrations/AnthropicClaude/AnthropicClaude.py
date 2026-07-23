@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+import requests
 import urllib3
 import parse_emails
 
@@ -236,8 +237,12 @@ class ComplianceClient(BaseClient):
             status_list_to_retry=list(Config.RETRY_STATUS_CODES),
         )
 
-    def http_delete(self, url_suffix: str) -> dict[str, Any]:
+    def http_delete(self, url_suffix: str) -> requests.Response:
         """Performs an authenticated DELETE request against a Compliance API endpoint.
+
+        Returns the raw :class:`requests.Response` so callers can inspect the HTTP status code
+        directly (a 404 means the resource is already gone, which the delete commands treat as an
+        idempotent success). A 404 is included in ``ok_codes`` so it does not raise.
 
         Retries on rate-limit (429) and transient 5xx responses using exponential back-off; the
         underlying urllib3 Retry honors the server's ``Retry-After`` header when present.
@@ -246,6 +251,8 @@ class ComplianceClient(BaseClient):
             method="DELETE",
             url_suffix=url_suffix,
             headers=self.headers,
+            resp_type="response",
+            ok_codes=(200, 204, 404),
             retries=Config.MAX_RETRIES,
             backoff_factor=Config.BACKOFF_FACTOR,
             status_list_to_retry=list(Config.RETRY_STATUS_CODES),
@@ -1006,17 +1013,6 @@ def get_project_document_command(client: ComplianceClient, args: dict[str, Any])
     )
 
 
-def _is_not_found_error(error: DemistoException) -> bool:
-    """Return True when a Compliance API error represents a 404 / already-deleted resource.
-
-    The delete endpoints return a ``not_found_error`` with a message such as
-    "No file found with provided id, or it has already been deleted." for both a missing id and
-    an already-deleted id, so a 404 is treated as an idempotent success by the callers.
-    """
-    error_text = str(error).lower()
-    return "404" in error_text or "not_found" in error_text or "not found" in error_text
-
-
 def _delete_command(
     client: ComplianceClient,
     resource_id: str,
@@ -1027,19 +1023,19 @@ def _delete_command(
 ) -> CommandResults:
     """Generic DELETE-and-report helper for the irreversible compliance delete endpoints.
 
-    A 404 response is treated as an idempotent success (the resource is gone either way), so
-    re-running a delete is always safe.
+    The HTTP status code is inspected directly: a 404 means the resource is already gone, which is
+    treated as an idempotent success so re-running a delete is always safe. Any other non-2xx code
+    is raised by ``http_delete`` before reaching here.
     """
-    already_deleted = False
-    try:
-        response = client.http_delete(url_suffix)
-    except DemistoException as error:
-        if not _is_not_found_error(error):
-            raise
-        already_deleted = True
-        response = {"id": resource_id, "type": deleted_type}
+    response = client.http_delete(url_suffix)
+    already_deleted = response.status_code == 404
 
-    outputs = {"id": resource_id, "type": response.get("type", deleted_type), "Deleted": True}
+    try:
+        raw_response = response.json()
+    except ValueError:
+        raw_response = {"id": resource_id, "type": deleted_type}
+
+    outputs = {"id": resource_id, "type": deleted_type, "Deleted": True}
     note = " (was already deleted)" if already_deleted else ""
     readable = tableToMarkdown(
         f"{resource_label} deleted{note}",
@@ -1052,11 +1048,11 @@ def _delete_command(
         outputs_key_field="id",
         outputs=outputs,
         readable_output=readable,
-        raw_response=response,
+        raw_response=raw_response,
     )
 
 
-def delete_chat_file_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+def chat_file_delete_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
     """Permanently delete a Claude file (chat file or project binary file) via the Compliance API.
 
     This is an irreversible hard delete (DELETE /v1/compliance/apps/chats/files/{claude_file_id}).
@@ -1072,7 +1068,7 @@ def delete_chat_file_command(client: ComplianceClient, args: dict[str, Any]) -> 
     )
 
 
-def delete_project_document_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
+def project_document_delete_command(client: ComplianceClient, args: dict[str, Any]) -> CommandResults:
     """Permanently delete a Claude project document via the Compliance API.
 
     This is an irreversible hard delete
@@ -1160,8 +1156,8 @@ def main() -> None:  # pragma: no cover
         "claude-list-projects": list_projects_command,
         "claude-list-project-attachments": list_project_attachments_command,
         "claude-get-project-document": get_project_document_command,
-        "claude-delete-chat-file": delete_chat_file_command,
-        "claude-delete-project-document": delete_project_document_command,
+        "claude-chat-file-delete": chat_file_delete_command,
+        "claude-project-document-delete": project_document_delete_command,
     }
     # LLM (Messages API) commands that require the Anthropic API Key.
     llm_commands: dict[str, Any] = {

@@ -456,14 +456,14 @@ List the messages of a chat (Compliance API).
 | AnthropicClaude.Chat.Message.role | String | The message role \(user or assistant\). |
 | AnthropicClaude.Chat.Message.created_at | Date | The message creation time. |
 
-### claude-delete-chat-file
+### claude-chat-file-delete
 
 ***
-Permanently delete a Claude file (a conversation file or a project binary file) via the Compliance API. This is an irreversible hard delete that cannot be undone, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown file ID succeeds (idempotent).
+Permanently delete a Claude file (a conversation file or a project binary file) via the Compliance API. This is an irreversible hard delete, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown file ID succeeds (idempotent).
 
 #### Base Command
 
-`claude-delete-chat-file`
+`claude-chat-file-delete`
 
 #### Input
 
@@ -477,16 +477,42 @@ Permanently delete a Claude file (a conversation file or a project binary file) 
 | --- | --- | --- |
 | AnthropicClaude.DeletedFile.id | String | The ID of the file that was deleted. |
 | AnthropicClaude.DeletedFile.type | String | The deletion confirmation type \(claude_file_deleted\). |
-| AnthropicClaude.DeletedFile.Deleted | Boolean | Whether the file was deleted. |
+| AnthropicClaude.DeletedFile.Deleted | Boolean | The deletion result for the file \(true when deleted\). |
 
-### claude-delete-project-document
+#### Command example
+
+```!claude-chat-file-delete file_id=claude_file_011CbqYrHZoNLmjzW2AC53fK```
+
+#### Context Example
+
+```json
+{
+    "AnthropicClaude": {
+        "DeletedFile": {
+            "Deleted": true,
+            "id": "claude_file_011CbqYrHZoNLmjzW2AC53fK",
+            "type": "claude_file_deleted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### File deleted
+>
+>|id|type|Deleted|
+>|---|---|---|
+>| claude_file_011CbqYrHZoNLmjzW2AC53fK | claude_file_deleted | true |
+
+### claude-project-document-delete
 
 ***
-Permanently delete a Claude project document (a plain-text project_doc) via the Compliance API. This is an irreversible hard delete that cannot be undone, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown document ID succeeds (idempotent).
+Permanently delete a Claude project document (a plain-text project_doc) via the Compliance API. This is an irreversible hard delete, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown document ID succeeds (idempotent).
 
 #### Base Command
 
-`claude-delete-project-document`
+`claude-project-document-delete`
 
 #### Input
 
@@ -500,4 +526,30 @@ Permanently delete a Claude project document (a plain-text project_doc) via the 
 | --- | --- | --- |
 | AnthropicClaude.DeletedProjectDocument.id | String | The ID of the project document that was deleted. |
 | AnthropicClaude.DeletedProjectDocument.type | String | The deletion confirmation type \(claude_project_document_deleted\). |
-| AnthropicClaude.DeletedProjectDocument.Deleted | Boolean | Whether the project document was deleted. |
+| AnthropicClaude.DeletedProjectDocument.Deleted | Boolean | The deletion result for the project document \(true when deleted\). |
+
+#### Command example
+
+```!claude-project-document-delete document_id=claude_proj_doc_011CbqYrHZoNLmjzW2AC53fK```
+
+#### Context Example
+
+```json
+{
+    "AnthropicClaude": {
+        "DeletedProjectDocument": {
+            "Deleted": true,
+            "id": "claude_proj_doc_011CbqYrHZoNLmjzW2AC53fK",
+            "type": "claude_project_document_deleted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Project document deleted
+>
+>|id|type|Deleted|
+>|---|---|---|
+>| claude_proj_doc_011CbqYrHZoNLmjzW2AC53fK | claude_project_document_deleted | true |
