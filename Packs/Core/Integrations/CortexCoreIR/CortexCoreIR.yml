@@ -1742,6 +1742,9 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
+    - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma.'
+      name: paths_separator
+      defaultvalue: ','
     - description: For polling use.
       isArray: true
       name: action_id
@@ -1816,6 +1819,9 @@ script:
       prettypredefined:
         Issue initiator file: ${issue.initiatorpath}
         Issue CGO file path: ${issue.cgopath}
+    - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma.'
+      name: paths_separator
+      defaultvalue: ','
     - description: For polling use.
       isArray: true
       name: action_id

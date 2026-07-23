@@ -1093,6 +1093,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files from no
 | linux_file_paths | A comma-separated list of file paths on the Linux platform. | Optional |
 | mac_file_paths | A comma-separated list of file paths on the Mac platform. | Optional |
 | generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on. | Optional |
+| paths_separator | The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma. Default is ,. | Optional |
 | action_id | For polling use. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
 | timeout_in_seconds | Polling timeout in seconds. | Optional |

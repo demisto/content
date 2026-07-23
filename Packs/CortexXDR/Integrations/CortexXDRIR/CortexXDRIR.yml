@@ -2187,6 +2187,9 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, so the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
+    - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma.'
+      name: paths_separator
+      defaultvalue: ','
     - description: Interval in seconds between each poll.
       name: interval_in_seconds
     - description: Polling timeout in seconds.
@@ -2257,6 +2260,9 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, so the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
+    - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma.'
+      name: paths_separator
+      defaultvalue: ','
     deprecated: true
     description: Deprecated. Use `xdr-file-retrieve` instead.
     name: xdr-retrieve-files
