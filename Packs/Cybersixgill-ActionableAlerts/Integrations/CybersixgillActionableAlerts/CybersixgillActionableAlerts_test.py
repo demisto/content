@@ -202,7 +202,7 @@ expected_alert_output = [
         '"summary": "", "threat_level": "imminent", "threats": ["Brand Protection", '
         '"Data Leak"], "title": "Your organization was potentially targeted by a '
         'ransomware group", "update_time": "2021-11-08 06:01:05", "user_id": '
-        '"5d233575f8db38787dbe24b6", "date": "2021-11-08 06:01:05", "org_id": ""}',
+        '"5d233575f8db38787dbe24b6", "date": "2021-11-08 06:01:05", "alert_post_url": ""}',
     }
 ]
 
