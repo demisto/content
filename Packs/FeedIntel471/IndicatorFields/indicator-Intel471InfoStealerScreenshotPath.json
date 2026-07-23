@@ -1,8 +1,8 @@
 {
-	"id": "indicator_intel471infostealerantivirussoftware",
+	"id": "indicator-intel471infostealerscreenshotpath",
 	"version": -1,
 	"cacheVersn": 0,
-	"modified": "2026-07-14T13:23:38.734659044Z",
+	"modified": "2026-07-14T13:52:15.792171106Z",
 	"created": "0001-01-01T00:00:00Z",
 	"sizeInBytes": 0,
 	"packID": "",
@@ -15,13 +15,13 @@
 	"vcShouldKeepItemLegacyProdMachine": false,
 	"commitMessage": "",
 	"shouldCommit": false,
-	"name": "Intel471 Info Stealer Antivirus Software",
-	"prevName": "Intel471 Info Stealer Antivirus Software",
+	"name": "Intel471 Info Stealer Screenshot Path",
+	"prevName": "Intel471 Info Stealer Screenshot Path",
 	"ownerOnly": false,
 	"placeholder": "",
 	"template": "",
-	"description": "Antivirus software detected on the machine infected by the info stealer that captured the credential.",
-	"cliName": "intel471infostealerantivirussoftware",
+	"description": "Path to the desktop screenshot captured by the info stealer on the infected machine.",
+	"cliName": "intel471infostealerscreenshotpath",
 	"type": "shortText",
 	"orgType": "shortText",
 	"closeForm": false,
@@ -60,5 +60,6 @@
 	"breachScript": "",
 	"validatedError": "",
 	"aliases": null,
-	"aliasTo": ""
+	"aliasTo": "",
+	"fromVersion": "5.5.0"
 }

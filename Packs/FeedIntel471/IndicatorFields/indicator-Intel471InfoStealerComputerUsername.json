@@ -1,8 +1,8 @@
 {
-	"id": "indicator_intel471infostealerpcname",
+	"id": "indicator-intel471infostealercomputerusername",
 	"version": -1,
 	"cacheVersn": 0,
-	"modified": "2026-07-14T13:51:25.744570877Z",
+	"modified": "2026-07-14T13:29:42.484997988Z",
 	"created": "0001-01-01T00:00:00Z",
 	"sizeInBytes": 0,
 	"packID": "",
@@ -15,13 +15,13 @@
 	"vcShouldKeepItemLegacyProdMachine": false,
 	"commitMessage": "",
 	"shouldCommit": false,
-	"name": "Intel471 Info Stealer PC Name",
-	"prevName": "Intel471 Info Stealer PC Name",
+	"name": "Intel471 Info Stealer Computer Username",
+	"prevName": "Intel471 Info Stealer Computer Username",
 	"ownerOnly": false,
 	"placeholder": "",
 	"template": "",
-	"description": "Hostname (PC name) of the machine infected by the info stealer.",
-	"cliName": "intel471infostealerpcname",
+	"description": "Operating-system username logged in on the machine when the info stealer captured the credential.",
+	"cliName": "intel471infostealercomputerusername",
 	"type": "shortText",
 	"orgType": "shortText",
 	"closeForm": false,
@@ -60,5 +60,6 @@
 	"breachScript": "",
 	"validatedError": "",
 	"aliases": null,
-	"aliasTo": ""
+	"aliasTo": "",
+	"fromVersion": "5.5.0"
 }

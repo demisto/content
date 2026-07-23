@@ -7,7 +7,9 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 INTEGRATION_NAME = "Intel 471 Credentials"
-FEED_URL_CREDENTIALS = "https://api.intel471.cloud/integrations/creds/v1/credentials/stream"
+API_BASE_URL = "https://api.intel471.cloud"
+FEED_CREDENTIALS_PATH = "/integrations/creds/v1/credentials/stream"
+FEED_URL_CREDENTIALS = f"{API_BASE_URL}{FEED_CREDENTIALS_PATH}"
 DEMISTO_VERSION = demisto.demistoVersion()
 CONTENT_PACK = f"Intel471 Feed/{get_pack_version()!s}"
 USER_AGENT = f'XSOAR/{DEMISTO_VERSION["version"]}.{DEMISTO_VERSION["buildNumber"]} - {CONTENT_PACK} - {INTEGRATION_NAME}'
@@ -33,15 +35,14 @@ INFO_STEALER_FIELDS = (
 CLI_NAME_OVERRIDES = {"infection_ts": "intel471infostealerinfectiontimestamp"}
 
 
-class Client:
+class Client(BaseClient):
     """Client for the Intel 471 Credentials API."""
-
-    headers = {"user-agent": USER_AGENT}
 
     def __init__(
         self,
         auth: tuple[str, str],
-        insecure: bool = False,
+        verify: bool = True,
+        proxy: bool = False,
         credential_set_name: str | None = None,
         credential_set_id: str | None = None,
         domain: str | None = None,
@@ -51,8 +52,14 @@ class Client:
         girs: str | None = None,
         fetch_time: str | None = None,
     ):
-        self.auth = auth
-        self._verify = insecure
+        super().__init__(
+            base_url=API_BASE_URL,
+            verify=verify,
+            proxy=proxy,
+            headers={"user-agent": USER_AGENT},
+            auth=auth,
+            timeout=REQUEST_TIMEOUT,
+        )
         self.credential_set_name = credential_set_name
         self.credential_set_id = credential_set_id
         self.domain = domain
@@ -61,7 +68,6 @@ class Client:
         self.detected_malware = detected_malware
         self.girs = girs
         self.fetch_time = fetch_time
-        self._proxies = handle_proxy(proxy_param_name="proxy", checkbox_default_value=False)
 
     def fetch_credentials(self, from_ts: str, cursor: str, limit: int) -> tuple[list, str]:
         """Pull leaked credentials from /credentials/stream.
@@ -93,26 +99,25 @@ class Client:
         if self.girs:
             params["girs"] = self.girs
 
-        params["size"] = str(min(MAX_PAGE_SIZE, max(limit, 1)))
         params["last_updated_from"] = from_ts
         if cursor:
             params["cursor"] = cursor
 
         should_continue = True
         while should_continue:
-            encoded_params = urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+            remaining = limit - len(result)
+            if remaining <= 0:
+                break
+            # Cap each request to what's still needed so cursor_next never advances
+            # past items we don't keep — otherwise the next fetch would skip them.
+            params["size"] = str(min(MAX_PAGE_SIZE, remaining))
             try:
-                response = requests.get(
-                    url=FEED_URL_CREDENTIALS,
-                    params=encoded_params,
-                    verify=self._verify,
-                    proxies=self._proxies,
-                    headers=self.headers,
-                    auth=self.auth,
-                    timeout=REQUEST_TIMEOUT,
+                data = self._http_request(
+                    method="GET",
+                    url_suffix=FEED_CREDENTIALS_PATH,
+                    params=params,
+                    params_parser=urllib.parse.quote,
                 )
-                response.raise_for_status()
-                data = response.json()
                 credentials: list = data.get("credentials", [])
 
                 if credentials:
@@ -127,31 +132,11 @@ class Client:
                 else:
                     should_continue = False
 
-                if len(result) >= limit:
-                    should_continue = False
-                    result = result[:limit]
-
-            except requests.exceptions.Timeout as err:
-                demisto.debug(str(err))
-                raise Exception(
-                    f"Timeout error in the API call to {INTEGRATION_NAME}.\nRequest exceeded {REQUEST_TIMEOUT}s.\n\n{err}"
-                )
-            except requests.exceptions.SSLError as err:
-                demisto.debug(str(err))
-                raise Exception(
-                    f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your not secure parameter.\n\n{err}"
-                )
-            except requests.ConnectionError as err:
-                demisto.debug(str(err))
-                raise Exception(
-                    f"Connection error in the API call to {INTEGRATION_NAME}.\nCheck your Server URL parameter.\n\n{err}"
-                )
-            except requests.exceptions.HTTPError as err:
-                demisto.debug(f"Got an error from {FEED_URL_CREDENTIALS} while fetching credentials {err!s}")
-                raise Exception(f"HTTP error in the API call to {INTEGRATION_NAME}.\nCheck your configuration.\n\n{err}")
-            except ValueError as err:
-                demisto.debug(str(err))
-                raise ValueError(f"Could not parse returned data to JSON. \n\nError message: {err}")
+            except Exception as err:
+                if result:
+                    demisto.error(f"Partial fetch failure: {err}\n{traceback.format_exc()}")
+                    break
+                raise
 
         return result, next_cursor
 
@@ -169,7 +154,7 @@ def _indicator_type_for_login(login: str) -> str:
     return FeedIndicatorType.Account
 
 
-def build_indicator(credential: dict[str, Any]) -> dict[str, Any]:
+def build_indicator(credential: dict[str, Any], feed_tags: list[str] | None = None) -> dict[str, Any]:
     """Builds an XSOAR indicator dict from a single /credentials/stream record.
 
     Returns an empty dict when no usable login value is present.
@@ -195,6 +180,8 @@ def build_indicator(credential: dict[str, Any]) -> dict[str, Any]:
     affiliations = data.get("affiliations", []) or []
     if affiliations:
         fields["tags"].extend(affiliations)
+    if feed_tags:
+        fields["tags"].extend(feed_tags)
 
     for key in INFO_STEALER_FIELDS:
         raw = info_stealer.get(key)
@@ -340,7 +327,7 @@ def build_incident(credential: dict[str, Any]) -> dict[str, Any]:
     return incident
 
 
-def fetch_indicators_command(client: Client, max_items: int) -> tuple[list, list, dict]:
+def fetch_indicators_command(client: Client, max_items: int, feed_tags: list[str] | None = None) -> tuple[list, list, dict]:
     """Fetches leaked credentials and turns each one into an indicator and an incident.
 
     Indicators are the primary output; incidents are produced inline within the
@@ -363,7 +350,7 @@ def fetch_indicators_command(client: Client, max_items: int) -> tuple[list, list
     indicators: list = []
     incidents: list = []
     for credential in credentials:
-        indicator = build_indicator(credential)
+        indicator = build_indicator(credential, feed_tags)
         if not indicator:
             continue
         incident = build_incident(credential)
@@ -375,7 +362,7 @@ def fetch_indicators_command(client: Client, max_items: int) -> tuple[list, list
     return indicators, incidents, next_run
 
 
-def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResults:
+def get_indicators_command(client: Client, args: dict[str, str], feed_tags: list[str] | None = None) -> CommandResults:
     """War-room wrapper that returns the pending indicators without persisting state."""
     limit = arg_to_number(args.get("limit")) or 50
     start_date, _end = parse_date_range(client.fetch_time or "7 days", utc=True, to_timestamp=True)
@@ -383,7 +370,7 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResul
 
     indicators: list = []
     for credential in credentials:
-        indicator = build_indicator(credential)
+        indicator = build_indicator(credential, feed_tags)
         if indicator:
             indicators.append(indicator)
 
@@ -395,6 +382,7 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResul
         readable_output=human_readable,
         outputs_prefix="Intel471Credentials.Indicators",
         outputs_key_field="value",
+        outputs=indicators,
         raw_response=indicators,
     )
 
@@ -402,7 +390,8 @@ def get_indicators_command(client: Client, args: dict[str, str]) -> CommandResul
 def main():
     args = demisto.args()
     params = demisto.params()
-    use_ssl = not params.get("insecure", False)
+    verify = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
     fetch_time = params.get("fetch_time")
     credential_set_name = params.get("credential_set_name")
     credential_set_id = params.get("credential_set_id")
@@ -411,6 +400,7 @@ def main():
     password_strength = params.get("password_strength")
     detected_malware = params.get("detected_malware")
     girs = params.get("girs")
+    feed_tags = argToList(params.get("feedTags"))
     max_items = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_INCIDENTS
 
     credentials = params.get("credentials", {})
@@ -423,35 +413,36 @@ def main():
 
     try:
         client = Client(
-            auth,
-            use_ssl,
-            credential_set_name,
-            credential_set_id,
-            domain,
-            affiliation_group,
-            password_strength,
-            detected_malware,
-            girs,
-            fetch_time,
+            auth=auth,
+            verify=verify,
+            proxy=proxy,
+            credential_set_name=credential_set_name,
+            credential_set_id=credential_set_id,
+            domain=domain,
+            affiliation_group=affiliation_group,
+            password_strength=password_strength,
+            detected_malware=detected_malware,
+            girs=girs,
+            fetch_time=fetch_time,
         )
 
         if command == "test-module":
             return_results(test_module(client, params))
         elif command == "fetch-indicators":
-            indicators, incidents, next_run = fetch_indicators_command(client, max_items)
+            indicators, incidents, next_run = fetch_indicators_command(client, max_items, feed_tags)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
             for iter_ in batch(incidents, batch_size=2000):
                 demisto.createIncidents(iter_)
             demisto.setLastRun(next_run)
         elif command == "intel471-credentials-get-indicators":
-            return_results(get_indicators_command(client, args))
+            return_results(get_indicators_command(client, args, feed_tags))
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as err:
         err_msg = f"Error in {INTEGRATION_NAME} Integration. [{err}]"
-        return_error(err_msg)
+        return_error(err_msg, error=err)
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

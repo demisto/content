@@ -1,8 +1,8 @@
 {
-	"id": "indicator_intel471infostealermalwarefamily",
+	"id": "indicator-intel471infostealerpcname",
 	"version": -1,
 	"cacheVersn": 0,
-	"modified": "2026-07-14T13:46:05.045525186Z",
+	"modified": "2026-07-14T13:51:25.744570877Z",
 	"created": "0001-01-01T00:00:00Z",
 	"sizeInBytes": 0,
 	"packID": "",
@@ -15,13 +15,13 @@
 	"vcShouldKeepItemLegacyProdMachine": false,
 	"commitMessage": "",
 	"shouldCommit": false,
-	"name": "Intel471 Info Stealer Malware Family",
-	"prevName": "Intel471 Info Stealer Malware Family",
+	"name": "Intel471 Info Stealer PC Name",
+	"prevName": "Intel471 Info Stealer PC Name",
 	"ownerOnly": false,
 	"placeholder": "",
 	"template": "",
-	"description": "Family of info stealer malware that captured the credential (e.g., Lumma, Vidar, RedLine).",
-	"cliName": "intel471infostealermalwarefamily",
+	"description": "Hostname (PC name) of the machine infected by the info stealer.",
+	"cliName": "intel471infostealerpcname",
 	"type": "shortText",
 	"orgType": "shortText",
 	"closeForm": false,
@@ -60,5 +60,6 @@
 	"breachScript": "",
 	"validatedError": "",
 	"aliases": null,
-	"aliasTo": ""
+	"aliasTo": "",
+	"fromVersion": "5.5.0"
 }

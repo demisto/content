@@ -1,5 +1,5 @@
 {
-    "id": "indicator_intel471infostealerip",
+    "id": "indicator-intel471infostealerip",
     "version": -1,
     "cacheVersn": 0,
     "modified": "2026-07-15T11:58:24.282893417Z",
@@ -60,5 +60,6 @@
     "breachScript": "",
     "validatedError": "",
     "aliases": null,
-    "aliasTo": ""
+    "aliasTo": "",
+    "fromVersion": "5.5.0"
 }

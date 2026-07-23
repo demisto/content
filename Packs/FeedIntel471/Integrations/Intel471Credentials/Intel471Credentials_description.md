@@ -1,3 +1,5 @@
+## Intel 471 Credentials
+
 ### Credentials
 
 The integration authenticates to the Intel 471 Credentials API with HTTP Basic auth:
