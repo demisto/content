@@ -1,0 +1,8 @@
+fromversion: 8.4.0
+id: KoiSecurity_ModelingRule
+name: Koi Security Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam
