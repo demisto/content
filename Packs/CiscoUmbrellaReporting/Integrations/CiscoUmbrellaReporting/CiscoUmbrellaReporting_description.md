@@ -2,20 +2,25 @@
 
 Use Cisco Umbrella's Reporting to monitor your Umbrella integration and gain a better understanding of your Umbrella usage. Gain insights into request activity and blocked activity, determining which of your identities are generating blocked requests. Reports help build actionable intelligence in addressing security threats including changes in usage trends over time.
 
-## How to get a Cisco Umbrella Reporting Credentials
-### Generate API Key
+## How to get Cisco Umbrella Reporting Credentials
 
-Create an Umbrella Reporting API key and secret.
+### Generate an API Key
 
-1. Navigate to **Admin** > **API Keys** and click **Create**.
+Create an Umbrella API key and secret in the Umbrella admin console.
 
-   or
+1. In Umbrella, navigate to **Admin** > **API Keys** (or **Settings** > **API Keys** in a Multi-org/MSP/MSSP management console) and click **Add** / **Create**.
+2. Provide a name for the key (for example, `Cortex Reporting`) and select an expiration date.
+3. Under **Key Scope**, expand **Reports** and grant the key the following scopes (read-only is sufficient for this integration):
+    - **Aggregations** – Read
+    - **Utilities** – Read
+4. Click **Create Key**.
+5. Copy **Your Key (API Key)** and **Your Secret (API Secret)**, acknowledge the warning, and click **Close**.
 
-   In a management console (Multi-org, MSP, or MSSP), navigate to **Settings** > **API Keys** and click **Add**.
-2. Select **Umbrella Reporting** and click **Generate Token**.
-3. Expand **Umbrella Reporting** and copy **Your Key** and **Your Secret**.
-4. Click the **To keep it secure, ...** checkbox and then click **Close**.
+> **Note:** In the current Umbrella admin console, the dedicated "Umbrella Reporting" key type has been replaced by **Umbrella API keys with scoped permissions**. Granting the **Reports** scopes above is what previously was called the "Reporting v2" key.
+> If the key is missing any of the required Reports scopes, the integration test will fail with an authorization error from Cisco Umbrella.
 
-You must acknowledge that your key and secret are only displayed once to activate the **Close** button.
+For more information, see the official Cisco Umbrella documentation:
 
-For more information please see: [log-into-umbrella](https://developer.cisco.com/docs/cloud-security/#!reporting-v2-authentication/log-into-umbrella).
+- [Add Umbrella API Keys](https://developer.cisco.com/docs/cloud-security/authentication/)
+- [Umbrella API OAuth scopes](https://developer.cisco.com/docs/cloud-security/umbrella-api-oauth-scopes/)
+- [Reporting v2 authentication](https://developer.cisco.com/docs/cloud-security/#!reporting-v2-authentication/log-into-umbrella)
