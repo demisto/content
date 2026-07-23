@@ -161,6 +161,14 @@ configuration:
   advanced: true
   section: Collect
   required: false
+- display: Firewall/Panorama Time Zone
+  name: firewall_timezone
+  additionalinfo: "The IANA time zone configured on the firewall/Panorama (e.g. Asia/Jakarta, America/New_York, US/Eastern). Defaults to UTC. This is used to convert the log timestamps to UTC for proper incident creation."
+  type: 0
+  defaultvalue: UTC
+  advanced: true
+  section: Collect
+  required: false
 - display: Traffic Log Type Query
   name: traffic_query
   additionalinfo: "Traffic Log Type query example: (addr.src in {source}) and (addr.dst in {destination}) and (action eq {action}).\nIn case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device. \nFor example:(device_name eq dummy_device)"
