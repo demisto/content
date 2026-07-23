@@ -97,7 +97,16 @@ warning = ["RM108", "PB130", "PB131", "GR107", "GR110", "GR101","PA133", "AS106"
 
 [connectors_path_based_validations]
 select = [
-  "CO100"
+  "CO100",
+  "CO101",
+  "CO102",
+  "CO103",
+  "CO104",
+  "CO105",
+  "CO106",
+  "CO118",
+  "CO1164",
+  "CO190"
 ]
 warning = []
 
