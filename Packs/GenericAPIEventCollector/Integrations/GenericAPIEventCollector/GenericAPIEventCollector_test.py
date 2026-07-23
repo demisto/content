@@ -1,18 +1,23 @@
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
 from CommonServerPython import DemistoException
 from GenericAPIEventCollector import (
+    Client,
     PaginationLogic,
     RequestData,
     TimestampFieldConfig,
+    convert_epoch_to_timestamp,
     datetime_to_timestamp_format,
     extract_pagination_params,
+    fetch_events,
     generate_authentication_headers,
     generate_headers,
     get_time_field_from_event_to_dt,
+    is_microseconds,
+    is_milliseconds,
     is_pagination_needed,
     iso8601_to_datetime_str,
     organize_events_to_xsiam_format,
@@ -20,9 +25,6 @@ from GenericAPIEventCollector import (
     recursive_replace,
     setup_search_events,
     timestamp_format_to_datetime,
-    is_milliseconds,
-    is_microseconds,
-    convert_epoch_to_timestamp,
 )
 
 
@@ -463,3 +465,65 @@ def test_convert_epoch_to_timestamp_boundary_conditions(mock_debug):
     expected_16 = datetime.fromtimestamp(float(epoch_16_chars) / 1_000_000)
 
     assert result_16 == expected_16
+
+
+@patch("GenericAPIEventCollector.demisto.debug")
+@patch("GenericAPIEventCollector.demisto.error")
+def test_fetch_events_pagination_does_not_crash(mock_error, mock_debug):
+    """Regression test: fetch_events must not raise 'unhashable type: list'
+    when the API returns hasMore=true and pagination is enabled.
+
+    Before the fix, line 236 used pagination_logic.pagination_field_name (a list)
+    as a dict key, which raised TypeError: unhashable type: 'list'.
+    """
+    page1 = {
+        "threats": [
+            {"id": "uuid-1", "eventTime": "2024-01-01T00:00:01.000000Z"},
+        ],
+        "hasMore": True,
+        "nextPageToken": "token-abc",
+    }
+    page2 = {
+        "threats": [
+            {"id": "uuid-2", "eventTime": "2024-01-01T00:00:02.000000Z"},
+        ],
+        "hasMore": False,
+        "nextPageToken": None,
+    }
+
+    client = Client(base_url="https://api.example.com", verify=False, headers={}, proxy=False)
+
+    mock_search = MagicMock(side_effect=[page1, page2])
+    with patch.object(client, "search_events", mock_search):
+        params = {
+            "pagination_needed": "true",
+            "pagination_field_name": "nextPageToken",
+            "pagination_flag": "hasMore",
+            "timestamp_field_name": "eventTime",
+            "timestamp_format": "%Y-%m-%dT%H:%M:%S.%fZ",
+        }
+        timestamp_field_config = TimestampFieldConfig(["eventTime"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        first_fetch = datetime(2024, 1, 1, 0, 0, 0)
+        last_run: dict = {}
+
+        # This must not raise TypeError: unhashable type: 'list'
+        next_run, events = fetch_events(
+            client=client,
+            params=params,
+            last_run=last_run,
+            first_fetch_datetime=first_fetch,
+            endpoint="/threats",
+            http_method="GET",
+            ok_codes=[200],
+            events_keys=["threats"],
+            timestamp_field_config=timestamp_field_config,
+        )
+
+    assert len(events) == 2
+    assert events[0]["id"] == "uuid-1"
+    assert events[1]["id"] == "uuid-2"
+    # Verify the second page was requested with the token as a plain string key
+    second_call_kwargs = mock_search.call_args_list[1]
+    request_json = second_call_kwargs.kwargs["request_data"].request_json
+    assert "nextPageToken" in request_json
+    assert request_json["nextPageToken"] == "token-abc"
