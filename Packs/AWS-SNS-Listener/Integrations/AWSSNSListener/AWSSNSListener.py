@@ -1,6 +1,7 @@
 import base64
 import re
 from collections import deque
+from datetime import datetime, UTC
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
@@ -213,9 +214,45 @@ def handle_subscription_confirmation(subscribe_url) -> requests.Response:  # pra
     return response
 
 
-def handle_notification(payload, raw_json):
+def compute_message_latency_seconds(timestamp: str | None, received_at: "datetime | None" = None) -> float | None:
+    """Compute the delay between when AWS SNS stamped the message and when the
+    integration received it.
+
+    Args:
+        timestamp: The SNS `Timestamp` field (ISO 8601, e.g. "2024-02-13T18:03:27.239Z").
+        received_at: The time the message was observed by the integration.
+            Defaults to "now" (UTC). Exposed for deterministic testing.
+
+    Returns:
+        The latency in seconds (received_at - timestamp), or None if the
+        timestamp is missing or cannot be parsed.
+    """
+    if not timestamp:
+        return None
+    try:
+        normalised = timestamp.replace("Z", "+00:00")
+        sent_at = datetime.fromisoformat(normalised)
+        if sent_at.tzinfo is None:
+            sent_at = sent_at.replace(tzinfo=UTC)
+    except (ValueError, TypeError) as e:
+        demisto.debug(f"sns.message.latency.parse_failed timestamp={timestamp!r} err={e}")
+        return None
+
+    now = received_at or datetime.now(UTC)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=UTC)
+    return (now - sent_at).total_seconds()
+
+
+def handle_notification(payload, raw_json, received_at: "datetime | None" = None):
     message = payload["Message"]
     demisto.debug(f"Notification request msg: {message}")
+    latency_seconds = compute_message_latency_seconds(payload.get("Timestamp"), received_at=received_at)
+    if latency_seconds is not None:
+        demisto.info(
+            f"sns.message.latency message_id={payload.get('MessageId')} "
+            f"sns_timestamp={payload.get('Timestamp')} latency_seconds={latency_seconds:.3f}"
+        )
     return {
         "name": payload["Subject"],
         "labels": [],
@@ -254,6 +291,7 @@ async def handle_post(
     Returns:
         Union[Response, str]: Response data or error message.
     """
+    received_at = datetime.now(UTC)
     data = ""
     request_headers = dict(request.headers)
     is_valid_credentials = False
@@ -288,7 +326,7 @@ async def handle_post(
         demisto.debug(f"Response from subscribe url: {response}")
         return response
     elif type == "Notification":
-        incident = handle_notification(payload, raw_json)
+        incident = handle_notification(payload, raw_json, received_at=received_at)
         data = demisto.createIncidents(incidents=[incident])
         demisto.debug(f"Created incident: {incident}")
         if PARAMS.get("store_samples"):
