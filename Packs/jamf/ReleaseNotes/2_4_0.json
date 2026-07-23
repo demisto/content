@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The jamf-mobile-device-lost-mode command context output has changed - the JAMF.MobileDeviceCommands.status output was removed. The jamf-mobile-device-erase command context output has changed - the JAMF.MobileDeviceCommands.status output was removed."
+}

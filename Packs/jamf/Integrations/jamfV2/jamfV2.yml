@@ -841,14 +841,16 @@ script:
   - arguments:
     - description: A 6-digit passcode to be used to unlock the computer after it was locked.
       name: passcode
-      required: true
       secret: true
     - description: The ID of the computer that you want to lock.
       name: id
-      required: true
     - description: A message to display on the locked screen.
       name: lock_message
-    description: 'Sends the "DeviceLock" command to a computer. This command logs the user out of the computer, restarts the computer, and then locks the computer. Optional: Displays a message on the computer when it locks.'
+    - description: A phone number to display on the locked screen.
+      name: phone_number
+    - description: The device-level management ID of the computer to lock. Provide either "id" or "management_id".
+      name: management_id
+    description: 'Locks a computer. This logs the user out of the computer, restarts it, and then locks it. Optionally displays a message on the computer when it locks.'
     name: jamf-computer-lock
     outputs:
     - contextPath: JAMF.ComputerCommand.name
@@ -857,20 +859,25 @@ script:
     - contextPath: JAMF.ComputerCommand.command_uuid
       description: The command UDID.
       type: String
+    - contextPath: JAMF.ComputerCommand.href
+      description: The URL of the queued MDM command.
+      type: String
     - contextPath: JAMF.ComputerCommand.computer_id
       description: The computer ID.
+      type: String
+    - contextPath: JAMF.ComputerCommand.management_id
+      description: The device-level management ID of the computer.
       type: String
     compliantpolicies:
     - EndPoint Isolation
   - arguments:
     - description: A 6-digit passcode that locks the computer after being erased.
       name: passcode
-      required: true
       secret: true
     - description: The ID of the computer that you want to erase.
       name: id
       required: true
-    description: Deprecated. Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
+    description: Erases a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
     name: jamf-computer-erase
     outputs:
     - contextPath: JAMF.ComputerCommand.name
@@ -882,15 +889,20 @@ script:
     - contextPath: JAMF.ComputerCommand.computer_id
       description: The computer ID.
       type: String
-    deprecated: true
   - arguments:
+    - description: If provided, returns a single user with the given ID.
+      name: id
+    - description: If provided, returns users with the given username.
+      name: name
+    - description: If provided, returns users with the given email address.
+      name: email
     - defaultValue: '50'
-      description: Maximum number of users to retrieve. The maximal value is 200.
+      description: Maximum number of users to retrieve. The maximum value is 200.
       name: limit
     - defaultValue: '0'
       description: The number of the requested page.
       name: page
-    description: Returns a list of users with their IDs and names. By default, returns the first 50 users to the context (ID + name).
+    description: Returns a list of users with their IDs and names. Optionally filter by ID, name, or email. By default, returns the first 50 users. Requires the "Read User" Jamf Pro API privilege.
     name: jamf-get-users
     outputs:
     - contextPath: JAMF.User.id
@@ -898,6 +910,24 @@ script:
       type: Number
     - contextPath: JAMF.User.name
       description: The user name.
+      type: String
+    - contextPath: JAMF.User.email
+      description: The user email.
+      type: String
+    - contextPath: JAMF.User.phone_number
+      description: The user phone number.
+      type: String
+    - contextPath: JAMF.User.position
+      description: The user position.
+      type: String
+    - contextPath: JAMF.User.enableCustomPhotoUrl
+      description: Whether the user custom photo URL is enabled.
+      type: Boolean
+    - contextPath: JAMF.User.customPhotoUrl
+      description: The user custom photo URL.
+      type: String
+    - contextPath: JAMF.User.managedAppleId
+      description: The user managed Apple ID.
       type: String
     - contextPath: JAMF.User.Paging.total_results
       description: The number of users returned in this specific search.
@@ -2235,25 +2265,29 @@ script:
   - arguments:
     - description: The mobile device’s ID.
       name: id
-      required: true
     - description: A message that is displayed on the device’s lock screen.
       name: lost_mode_message
+    - description: A phone number that is displayed on the device’s lock screen.
+      name: lost_mode_phone
+    - description: A footnote that is displayed on the device’s lock screen.
+      name: lost_mode_footnote
+    - description: The device-level management ID of the mobile device to target. Provide either "id" or "management_id".
+      name: management_id
     description: |-
-      This is a beta command - couldn't be tested due to technical limitations.
-      Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
+      Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen. At least one of 'lost_mode_message' or 'lost_mode_phone' must be provided.
     name: jamf-mobile-device-lost-mode
     outputs:
     - contextPath: JAMF.MobileDeviceCommands.name
       description: The mobile device command name.
-      type: String
-    - contextPath: JAMF.MobileDeviceCommands.status
-      description: The mobile device command status.
       type: String
     - contextPath: JAMF.MobileDeviceCommands.management_id
       description: The mobile device command management ID.
       type: String
     - contextPath: JAMF.MobileDeviceCommands.id
       description: The mobile device command ID.
+      type: String
+    - contextPath: JAMF.MobileDeviceCommands.href
+      description: The URL of the created mobile device command.
       type: String
   - arguments:
     - description: The device’s ID.
@@ -2268,28 +2302,104 @@ script:
       - 'False'
     - auto: PREDEFINED
       defaultValue: 'False'
+      description: Whether to disallow proximity setup on the device.
+      name: disallow_proximity_setup
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: 'False'
       description: Whether to clear activation lock on the device.
+      name: clear_activation_lock
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Whether to enable Return to Service on the device.
+      name: return_to_service
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      deprecated: true
+      description: Deprecated. Use 'clear_activation_lock' instead. Whether to clear activation lock on the device. If both are supplied, 'clear_activation_lock' takes precedence.
       name: clear_activation_code
       predefined:
       - 'True'
       - 'False'
-    description: |-
-      This is a beta command - couldn't be tested due to technical limitations.
-      Permanently erases all data on the device and deactivates the device.
+    description: Permanently erases all data on the device and deactivates the device.
     name: jamf-mobile-device-erase
     outputs:
     - contextPath: JAMF.MobileDeviceCommands.name
       description: The mobile device command name.
       type: String
-    - contextPath: JAMF.MobileDeviceCommands.status
-      description: The mobile device command status.
-      type: String
-    - contextPath: JAMF.MobileDeviceCommands.management_id
-      description: The mobile device command managment ID.
+    - contextPath: JAMF.MobileDeviceCommands.command_uuid
+      description: The mobile device command UUID.
       type: String
     - contextPath: JAMF.MobileDeviceCommands.id
-      description: The mobile device command ID.
+      description: The mobile device ID.
       type: String
+    - contextPath: JAMF.MobileDeviceCommands.management_id
+      description: The device-level management ID of the mobile device.
+      type: String
+  - arguments:
+    - description: 'Filter results to a specific command UUID.'
+      name: command_uuid
+    - description: 'Filter results to commands for a specific device management ID.'
+      name: management_id
+    - auto: PREDEFINED
+      description: Filter results by command status.
+      name: status
+      predefined:
+      - Pending
+      - Acknowledged
+      - NotNow
+      - Error
+    - description: 'Filter results to a specific command name. Possible value: REMOVE_PROFILE.'
+      name: command_name
+    - description: An advanced RSQL query string for filtering results. When provided, it takes precedence over the other filter arguments.
+      name: filter
+    - defaultValue: '50'
+      description: Maximum number of commands to retrieve. The maximum value is 200.
+      name: limit
+    - defaultValue: '0'
+      description: The number of the requested page.
+      name: page
+    description: Returns the status of MDM commands. At least one filter must be provided - either the 'filter' argument or one of 'command_uuid', 'management_id', 'status', or 'command_name'. Requires the "View MDM command information" Jamf Pro API privilege.
+    name: jamf-mdm-command-status
+    outputs:
+    - contextPath: JAMF.MdmCommand.uuid
+      description: The MDM command UUID.
+      type: String
+    - contextPath: JAMF.MdmCommand.commandType
+      description: The MDM command type.
+      type: String
+    - contextPath: JAMF.MdmCommand.commandState
+      description: The MDM command state.
+      type: String
+    - contextPath: JAMF.MdmCommand.dateSent
+      description: The date the MDM command was sent.
+      type: String
+    - contextPath: JAMF.MdmCommand.dateCompleted
+      description: The date the MDM command was completed.
+      type: String
+    - contextPath: JAMF.MdmCommand.client.managementId
+      description: The management ID of the client the command targets.
+      type: String
+    - contextPath: JAMF.MdmCommand.client.clientType
+      description: The client type the command targets.
+      type: String
+    - contextPath: JAMF.MdmCommand.Paging.total_results
+      description: The number of commands returned in this specific search.
+      type: Number
+    - contextPath: JAMF.MdmCommand.Paging.page_size
+      description: The number of commands to be returned on each page.
+      type: Number
+    - contextPath: JAMF.MdmCommand.Paging.current_page
+      description: The number of the requested page.
+      type: Number
   - arguments:
     - description: The endpoint ID.
       isArray: true
@@ -2407,7 +2517,7 @@ script:
     - contextPath: JAMF.OSX.ProfileConfiguration.self_service
       description: Self-service object of the configuration profile.
       type: String
-  dockerimage: demisto/btfl-soup:1.0.1.7742802
+  dockerimage: demisto/btfl-soup:1.0.1.11200773
   runonce: false
   script: '-'
   subtype: python3
