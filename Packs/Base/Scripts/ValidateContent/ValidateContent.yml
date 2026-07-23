@@ -51,3 +51,4 @@ dockerimage: demisto/xsoar-tools:1.0.0.8457987
 tests:
 - ValidateContent - Test
 runonce: false
+
