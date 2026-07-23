@@ -1,0 +1,43 @@
+Deletes indicators ingested from Cyware Intel Exchange (CTIX v3) that are flagged as deprecated, revoked, false positive, reviewed, or whitelisted.
+
+The script builds a Threat Intel query scoped to indicators from the **CTIX v3** integration (`sourceBrands:"CTIX v3"`) with any of the enabled flag fields set, and runs the built-in `deleteIndicators` command on the matches. All delete flags are disabled by default — the script does nothing until at least one flag is explicitly enabled, so it can never issue an unscoped delete.
+
+It is intended to be run on a schedule via the bundled **CTIX - Delete Flagged Indicators** job (which triggers the playbook of the same name), but can also be run manually from the War Room or Playground.
+
+Note: this script only deletes indicators whose flag fields are already up to date in the Threat Intel Module — run the CTIX feed fetch first so it can update those fields, then run this script (or the bundled job/playbook) to pick up the changes.
+
+## Script Data
+
+---
+
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Cortex XSOAR Version | 6.10.0 |
+
+## Inputs
+
+---
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| delete_deprecated | Whether to delete indicators marked as deprecated in Cyware Intel Exchange \(CTIX\). Default is false. |
+| delete_revoked | Whether to delete indicators revoked by their source in Cyware Intel Exchange \(CTIX\). Default is false. |
+| delete_false_positive | Whether to delete indicators marked as false positive in Cyware Intel Exchange \(CTIX\). Default is false. |
+| delete_whitelisted | Whether to delete indicators allow-listed in Cyware Intel Exchange \(CTIX\). Default is false. |
+| delete_reviewed | Whether to delete indicators that have been reviewed in Cyware Intel Exchange \(CTIX\). Default is false. |
+| exclude | Whether to also add the deleted indicators to the Exclusion List. When false \(default\), indicators are purely deleted and can be re-created if they reappear un-flagged. |
+| reason | The reason recorded for the deletion \(and exclusion, if enabled\). |
+
+## Command Example
+
+```!CTIXDeleteFlaggedIndicators delete_false_positive=true exclude=true reason="Not malicious and used internally"```
+
+## Human Readable Output
+
+>done
+
+## Outputs
+
+---
+There are no outputs for this script.

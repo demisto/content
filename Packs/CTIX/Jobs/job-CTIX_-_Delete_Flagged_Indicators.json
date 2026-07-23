@@ -1,0 +1,24 @@
+{
+    "id": "CTIX - Delete Flagged Indicators",
+    "name": "CTIX - Delete Flagged Indicators",
+    "details": "Scheduled trigger for the 'CTIX - Delete Flagged Indicators' playbook. Deletes CTIX v3-sourced indicators flagged as deprecated, revoked, false positive, reviewed, or whitelisted. All delete flags default to disabled - enable the ones you want in the playbook inputs.",
+    "playbookId": "CTIX - Delete Flagged Indicators",
+    "scheduled": true,
+    "recurrent": true,
+    "cronView": false,
+    "humanCron": {
+        "timePeriodType": "hours",
+        "timePeriod": 12
+    },
+    "shouldTriggerNew": true,
+    "closePrevRun": true,
+    "isFeed": false,
+    "selectedFeeds": [],
+    "isAllFeeds": false,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "xsoar",
+        "xsiam",
+        "agentix"
+    ]
+}
