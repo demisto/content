@@ -8749,8 +8749,22 @@ script:
     - description: The serial number, or IP address for a Panorama instance, to reboot.
       name: target
       required: true
-    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+    - auto: PREDEFINED
+      description: Whether to use polling. When set to "true", the command polls the target device until it becomes available (operational mode "normal") or the timeout is reached.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The interval (in seconds) between polling attempts.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+      defaultValue: '1200'
+    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal. Supports polling to wait until the device becomes available.
     name: pan-os-platform-get-system-status
+    polling: true
     outputs:
     - contextPath: PANOS.SystemStatus.hostid
       type: String
