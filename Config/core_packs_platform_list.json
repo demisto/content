@@ -314,6 +314,37 @@
                 "exposure_management",
                 "xsiam"
             ]
+        },
+        {
+            "id": "GCP",
+            "supportedModules": [
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "Azure",
+            "supportedModules": [
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "agentix",
+                "xsiam"
+            ]
+        },
+        {
+            "id": "AWS",
+            "supportedModules": [
+                "agentix",
+                "cloud_posture",
+                "cloud",
+                "cloud_runtime_security",
+                "xsiam",
+                "edr"
+            ]
         }
     ]
 }
