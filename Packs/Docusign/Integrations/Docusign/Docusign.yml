@@ -110,7 +110,7 @@ script:
     arguments: []
     execution: false
     hidden: true
-  dockerimage: demisto/auth-utils:1.0.0.8160132
+  dockerimage: demisto/auth-utils:1.0.0.10133006
   isfetchevents: true
   runonce: false
   script: '-'
