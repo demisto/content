@@ -1,0 +1,21 @@
+{
+    "name": "Tenable.sc Advanced Analysis",
+    "description": "Tenable.sc Advanced Analysis extends Cortex XSOAR with detailed vulnerability-analysis capabilities using the Tenable.sc Analysis API.\n\nThe pack supports configurable repository, severity, source-type, First Seen, and Last Seen filters; paginated vulnerability retrieval; deduplicated vulnerability datasets; detailed plugin and asset enrichment; mitigation history; and configurable vulnerability SLA summaries.\n\nIt is designed for vulnerability reporting, remediation tracking, SLA monitoring, asset enrichment, dashboards, and CSV or email reporting workflows.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Abdelrahman Farahat",
+    "url": "",
+    "email": "",
+    "created": "2026-07-23T12:36:47Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Fara7at2008"
+    ]
+}
