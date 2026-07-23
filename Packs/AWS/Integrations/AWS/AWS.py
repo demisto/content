@@ -452,6 +452,38 @@ def parse_resource_arn_priority_field(refs_string: str | None) -> list:
     return references
 
 
+def parse_key_value_items_field(items_string: str | None, required_key: str, format_hint: str) -> list[dict]:
+    """
+    Parses a list representation of items with the form of
+    'Key1=<value>,Key2=<value>;Key1=<value>,Key2=<value>'.
+
+    Each item is separated by ';' and its fields by ','. Every field must be provided as 'Key=Value',
+    and the given required_key must be present in each item.
+
+    Args:
+        items_string: The items list string.
+        required_key: The key that must be present in each parsed item.
+        format_hint: An example of the expected format, appended to error messages.
+    Returns:
+        A list of dicts, each mapping the parsed field keys to their values.
+    """
+    items: list[dict] = []
+    for item in argToList(items_string, separator=";"):
+        fields: dict = {}
+        for field in argToList(item, separator=","):
+            key, sep, value = field.partition("=")
+            if not sep or not value:
+                raise ValueError(f"Could not parse field: {item}. Please make sure you provided like so: {format_hint}")
+            fields[key.strip()] = value.strip()
+
+        if required_key not in fields:
+            raise ValueError(f"Could not parse field: {item}. {required_key} is required for each item.")
+
+        items.append(fields)
+
+    return items
+
+
 def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
     """
     Parses a list representation of stateful rule group references with the form of
@@ -466,25 +498,14 @@ def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
         A list of dicts with the form
         {"ResourceArn": <arn>, "Priority": <priority>, "Override": {"Action": <action>}, "DeepThreatInspection": <bool>}.
     """
+    format_hint = (
+        "ResourceArn=arn:aws1,Priority=priority1,Override=action1,DeepThreatInspection=true;"
+        "ResourceArn=arn:aws2,Priority=priority2"
+    )
     references: list = []
-    list_refs = argToList(refs_string, separator=";")
-    for ref in list_refs:
-        fields = {}
-        for field in argToList(ref, separator=","):
-            key, sep, value = field.partition("=")
-            if not sep or not value:
-                raise ValueError(
-                    f"Could not parse field: {ref}. Please make sure you provided like so: "
-                    "ResourceArn=arn:aws1,Priority=priority1,Override=action1,DeepThreatInspection=true;"
-                    "ResourceArn=arn:aws2,Priority=priority2"
-                )
-            fields[key.strip()] = value.strip()
-
-        if "ResourceArn" not in fields:
-            raise ValueError(f"Could not parse field: {ref}. ResourceArn is required for each rule group reference.")
-
+    for fields in parse_key_value_items_field(refs_string, required_key="ResourceArn", format_hint=format_hint):
         if not re.match(r"^arn:aws", fields["ResourceArn"]):
-            raise ValueError(f"Could not parse field: {ref}. ResourceArn must be a valid ARN starting with 'arn:aws'.")
+            raise ValueError(f"Could not parse field: {fields}. ResourceArn must be a valid ARN starting with 'arn:aws'.")
 
         reference = {
             "ResourceArn": fields.get("ResourceArn"),
@@ -495,6 +516,31 @@ def parse_stateful_rule_group_references_field(refs_string: str | None) -> list:
         references.append(remove_empty_elements(reference))
 
     return references
+
+
+def parse_subnet_mappings_field(mappings_string: str | None) -> list:
+    """
+    Parses a list representation of subnet mappings with the form of
+    'SubnetId=<id>,IPAddressType=<type>;SubnetId=<id>,IPAddressType=<type>'.
+
+    Each mapping is separated by ';' and its fields by ','. Only SubnetId is required; IPAddressType is
+    optional and dropped when not provided.
+
+    Args:
+        mappings_string: The subnet mappings list string.
+    Returns:
+        A list of dicts with the form {"SubnetId": <id>, "IPAddressType": <type>}.
+    """
+    format_hint = "SubnetId=id1,IPAddressType=type1;SubnetId=id2,IPAddressType=type2"
+    mappings: list = []
+    for fields in parse_key_value_items_field(mappings_string, required_key="SubnetId", format_hint=format_hint):
+        subnet_mapping = {
+            "SubnetId": fields.get("SubnetId"),
+            "IPAddressType": fields.get("IPAddressType"),
+        }
+        mappings.append(remove_empty_elements(subnet_mapping))
+
+    return mappings
 
 
 def convert_datetimes_to_iso_safe(data):
@@ -10181,6 +10227,44 @@ class NetworkFirewall:
         )
 
     @staticmethod
+    def update_subnet_change_protection_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Modifies the flag, SubnetChangeProtection, which indicates whether it is possible to change the subnets that the
+        firewall is associated with.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_change_protection,
+                and an optional update_token
+
+        Returns:
+            CommandResults: Formatted results with a success message
+        """
+        validate_network_firewall_identifier(args, "firewall")
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "SubnetChangeProtection": arg_to_bool_or_none(args.get("subnet_change_protection")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(
+            client,
+            f"Updating firewall subnet change protection with parameters: "
+            f"{kwargs.keys()} and {kwargs.get('SubnetChangeProtection')=}",
+        )
+        response = client.update_subnet_change_protection(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        return CommandResults(
+            readable_output="The subnet change protection flag of the firewall was updated successfully.",
+            raw_response=response,
+        )
+
+    @staticmethod
     def update_firewall_description_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
         """
         Modifies the description for the specified firewall.
@@ -10732,6 +10816,96 @@ class NetworkFirewall:
             raw_response=raw_response,
         )
 
+    @staticmethod
+    def associate_subnets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Associates the specified subnets in the Amazon VPC to the firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_mappings,
+                and an optional update_token
+
+        Returns:
+            CommandResults: Formatted results with the firewall subnet mappings
+        """
+        validate_network_firewall_identifier(args, "firewall")
+        subnet_mappings = parse_subnet_mappings_field(args.get("subnet_mappings"))
+
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "SubnetMappings": subnet_mappings,
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Associating subnets with parameters: {kwargs.keys()} and {subnet_mappings=}")
+        response = client.associate_subnets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response_outputs = copy.deepcopy(response)
+        response_outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=response_outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Associate Subnets",
+                response_outputs.get("SubnetMappings", []),
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
+    @staticmethod
+    def disassociate_subnets_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults | None:
+        """
+        Removes the specified subnet associations from the firewall.
+
+        Args:
+            client (BotoClient): The boto3 client for NetworkFirewall service
+            args (Dict[str, Any]): Command arguments containing firewall_name or firewall_arn, subnet_ids,
+                and an optional update_token
+
+        Returns:
+            CommandResults: Formatted results with the remaining subnet mappings
+        """
+        validate_network_firewall_identifier(args, "firewall")
+        kwargs = {
+            "UpdateToken": args.get("update_token"),
+            "FirewallName": args.get("firewall_name"),
+            "FirewallArn": args.get("firewall_arn"),
+            "SubnetIds": argToList(args.get("subnet_ids")),
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        print_debug_logs(client, f"Disassociating subnets with parameters: {kwargs.keys()}")
+        response = client.disassociate_subnets(**kwargs)
+
+        if response.get("ResponseMetadata", {}).get("HTTPStatusCode") != HTTPStatus.OK:
+            return AWSErrorHandler.handle_response_error(response, args.get("account_id"))
+
+        response_outputs = copy.deepcopy(response)
+        response_outputs.pop("ResponseMetadata", None)
+
+        return CommandResults(
+            outputs_prefix="AWS.NetworkFirewall.Firewalls",
+            outputs_key_field="FirewallArn",
+            outputs=response_outputs,
+            readable_output=tableToMarkdown(
+                "AWS Network Firewall Disassociate Subnets",
+                response_outputs.get("SubnetMappings", []),
+                removeNull=True,
+                headerTransform=pascalToSpace,
+            ),
+            raw_response=response,
+        )
+
 
 def get_file_path(file_id):
     filepath_result = demisto.getFilePath(file_id)
@@ -10953,6 +11127,9 @@ COMMANDS_MAPPING: dict[str, Callable] = {
     "aws-network-firewall-firewall-policy-delete": NetworkFirewall.delete_firewall_policy_command,
     "aws-network-firewall-firewall-policy-update": NetworkFirewall.update_firewall_policy_command,
     "aws-network-firewall-firewall-policy-change-protection-update": NetworkFirewall.update_firewall_policy_change_protection_command,  # noqa: E501
+    "aws-network-firewall-subnet-change-protection-update": NetworkFirewall.update_subnet_change_protection_command,
+    "aws-network-firewall-subnets-associate": NetworkFirewall.associate_subnets_command,
+    "aws-network-firewall-subnets-disassociate": NetworkFirewall.disassociate_subnets_command,
     "aws-network-firewall-rule-group-create": NetworkFirewall.create_rule_group_command,
     "aws-network-firewall-rule-group-delete": NetworkFirewall.delete_rule_group_command,
     "aws-network-firewall-rule-group-describe": NetworkFirewall.describe_rule_group_command,
@@ -11142,6 +11319,9 @@ REQUIRED_ACTIONS: list[str] = [
     "network-firewall:DeleteFirewall",
     "network-firewall:UpdateFirewallDeleteProtection",
     "network-firewall:UpdateFirewallDescription",
+    "network-firewall:UpdateSubnetChangeProtection",
+    "network-firewall:AssociateSubnets",
+    "network-firewall:DisassociateSubnets",
     "network-firewall:TagResource",
     "network-firewall:ListFirewallPolicies",
     "network-firewall:CreateFirewallPolicy",

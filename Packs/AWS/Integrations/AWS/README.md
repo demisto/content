@@ -6792,6 +6792,90 @@ Deletes the specified FirewallPolicy. Required permissions: network-firewall:Del
 
 There is no context output for this command.
 
+### aws-network-firewall-subnet-change-protection-update
+
+***
+Modifies the flag, SubnetChangeProtection, which indicates whether it is possible to change the subnets that the firewall is associated with. Required permissions: network-firewall:UpdateSubnetChangeProtection.
+
+#### Base Command
+
+`aws-network-firewall-subnet-change-protection-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| update_token | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request. | Optional |
+| firewall_name | The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided. | Optional |
+| subnet_change_protection | Whether the firewall is protected against changes to the subnet associations. If "true", change protection is enabled, preventing changes to the subnets. If "false", the subnet associations can be changed. Possible values are: true, false. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### aws-network-firewall-subnets-associate
+
+***
+Associates the specified subnets in the Amazon VPC to the firewall. You can specify one subnet for each of the Availability Zones that the VPC spans. This is used to provide the firewall endpoints for the subnets. Required permissions: network-firewall:AssociateSubnets.
+
+#### Base Command
+
+`aws-network-firewall-subnets-associate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| update_token | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request. | Optional |
+| firewall_name | The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided. | Optional |
+| subnet_mappings | The semicolon-separated list of subnet mappings to associate with the firewall. Each mapping is a comma-separated list of fields in the form 'SubnetId=&lt;id&gt;,IPAddressType=&lt;type&gt;'. SubnetId is required and IPAddressType (one of DUALSTACK, IPV4, IPV6) is optional. For example: SubnetId=subnet-1111,IPAddressType=IPV4;SubnetId=subnet-2222. You can specify one subnet for each of the Availability Zones that the VPC spans. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Firewalls.FirewallArn | String | The Amazon Resource Name \(ARN\) of the firewall. |
+| AWS.NetworkFirewall.Firewalls.FirewallName | String | The descriptive name of the firewall. |
+| AWS.NetworkFirewall.Firewalls.UpdateToken | String | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. |
+| AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId | String | The unique identifier for the subnet. |
+| AWS.NetworkFirewall.Firewalls.SubnetMappings.IPAddressType | String | The subnet's IP address type. |
+
+### aws-network-firewall-subnets-disassociate
+
+***
+Removes the specified subnet associations from the firewall. This removes the firewall endpoints from the subnets and removes any network filtering protections that the endpoints were providing. Required permissions: network-firewall:DisassociateSubnets.
+
+#### Base Command
+
+`aws-network-firewall-subnets-disassociate`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_id | The AWS account ID. | Required |
+| region | The AWS region. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, af-south-1, ap-east-1, ap-south-2, ap-southeast-3, ap-southeast-5, ap-southeast-4, ap-south-1, ap-northeast-3, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-northeast-1, ca-central-1, ca-west-1, eu-central-1, eu-west-1, eu-west-2, eu-south-1, eu-south-2, eu-west-3, eu-north-1, eu-central-2, il-central-1, me-south-1, me-central-1, sa-east-1, us-gov-east-1, us-gov-west-1. | Required |
+| update_token | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. The token marks the state of the firewall resource at the time of the request. | Optional |
+| firewall_name | The descriptive name of the firewall. Cannot be changed after creation. Required if the firewall ARN is not specified, though both can be provided. | Optional |
+| firewall_arn | The Amazon Resource Name (ARN) of the firewall. Required if the firewall name is not specified, though both can be provided. | Optional |
+| subnet_ids | A comma-separated list of unique identifiers of the subnets that you want to disassociate from the firewall. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.NetworkFirewall.Firewalls.FirewallArn | String | The Amazon Resource Name \(ARN\) of the firewall. |
+| AWS.NetworkFirewall.Firewalls.FirewallName | String | The descriptive name of the firewall. |
+| AWS.NetworkFirewall.Firewalls.UpdateToken | String | The optional token that you can use for optimistic locking. Network Firewall returns a token to your requests that access the firewall. |
+| AWS.NetworkFirewall.Firewalls.SubnetMappings.SubnetId | String | The unique identifier for the subnet. |
+| AWS.NetworkFirewall.Firewalls.SubnetMappings.IPAddressType | String | The subnet's IP address type. |
+
 ### aws-network-firewall-rule-group-create
 
 ***
