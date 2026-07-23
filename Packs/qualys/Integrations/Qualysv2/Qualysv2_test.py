@@ -29,6 +29,8 @@ from Qualysv2 import (
     get_activity_logs_events_command,
     send_assets_and_vulnerabilities_to_xsiam,
     set_assets_last_run_with_new_limit,
+    advance_cursor_past_stuck_host,
+    ASSETS_STUCK_HOST_MAX_RETRIES,
     fetch_events,
     get_activity_logs_events,
     fetch_assets,
@@ -1719,6 +1721,132 @@ def test_set_assets_last_run_with_new_limit():
         "type": 1,  # assets
         "limit": HOST_LIMIT // 2,
     }
+
+
+def test_advance_cursor_past_stuck_host_counts_before_threshold(mocker):
+    """
+    Given:
+        - A timed-out assets run at limit=1 on a cursor not seen stuck before.
+    When:
+        - Calling advance_cursor_past_stuck_host repeatedly (below the retry threshold).
+    Assert:
+        - Returns None (defer to normal limit-halving) while incrementing the stuck-run counter on
+          last_run, until the threshold is reached.
+    """
+    mocker.patch.object(demisto, "debug")
+    last_run = {"stage": "assets", "next_page": "964703368", "limit": 1, "snapshot_id": SNAPSHOT_ID}
+
+    # First timed-out attempt: counter becomes 1, still below threshold.
+    assert advance_cursor_past_stuck_host(last_run) is None
+    assert last_run["stuck_host_page"] == "964703368"
+    assert last_run["stuck_host_count"] == 1
+
+    # Subsequent attempts keep incrementing while below the threshold.
+    for expected_count in range(2, ASSETS_STUCK_HOST_MAX_RETRIES):
+        assert advance_cursor_past_stuck_host(last_run) is None
+        assert last_run["stuck_host_count"] == expected_count
+
+
+def test_advance_cursor_past_stuck_host_advances_at_threshold(mocker):
+    """
+    Given:
+        - An assets run that has been stuck on the same cursor at limit=1 for
+          (ASSETS_STUCK_HOST_MAX_RETRIES - 1) prior attempts.
+    When:
+        - Calling advance_cursor_past_stuck_host once more (reaching the threshold).
+    Assert:
+        - The cursor is advanced to host_id + 1, limit is reset to HOST_LIMIT, nextTrigger/type are set,
+          and the stuck-tracking state is cleared.
+    """
+    mocker.patch.object(demisto, "info")
+    last_run = {
+        "stage": "assets",
+        "next_page": "964703368",
+        "limit": 1,
+        "total_assets": 128111,
+        "snapshot_id": SNAPSHOT_ID,
+        "stuck_host_page": "964703368",
+        "stuck_host_count": ASSETS_STUCK_HOST_MAX_RETRIES - 1,
+    }
+
+    result = advance_cursor_past_stuck_host(last_run)
+
+    assert result is not None
+    assert result["next_page"] == "964703369"
+    assert result["limit"] == HOST_LIMIT
+    assert result["nextTrigger"] == "0"
+    assert result["type"] == 1  # assets
+    assert "stuck_host_page" not in result
+    assert "stuck_host_count" not in result
+
+
+def test_advance_cursor_past_stuck_host_resets_counter_on_new_cursor(mocker):
+    """
+    Given:
+        - A stuck counter recorded for a previous host, but the cursor has since moved to a new host.
+    When:
+        - Calling advance_cursor_past_stuck_host.
+    Assert:
+        - The counter restarts at 1 for the new cursor (progress was made previously).
+    """
+    mocker.patch.object(demisto, "debug")
+    last_run = {
+        "next_page": "999999999",
+        "limit": 1,
+        "stuck_host_page": "964703368",
+        "stuck_host_count": ASSETS_STUCK_HOST_MAX_RETRIES,
+    }
+
+    assert advance_cursor_past_stuck_host(last_run) is None
+    assert last_run["stuck_host_page"] == "999999999"
+    assert last_run["stuck_host_count"] == 1
+
+
+def test_advance_cursor_past_stuck_host_not_at_min_limit():
+    """
+    Given:
+        - A timed-out run where the limit is still above 1 (normal halving can still help).
+    When:
+        - Calling advance_cursor_past_stuck_host.
+    Assert:
+        - Returns None and does not start counting (the stuck condition only applies at limit=1).
+    """
+    last_run = {"next_page": "964703368", "limit": 500}
+
+    assert advance_cursor_past_stuck_host(last_run) is None
+    assert "stuck_host_count" not in last_run
+
+
+def test_advance_cursor_past_stuck_host_no_next_page():
+    """
+    Given:
+        - A run with no next_page cursor (nothing to be stuck on).
+    When:
+        - Calling advance_cursor_past_stuck_host.
+    Assert:
+        - Returns None.
+    """
+    assert advance_cursor_past_stuck_host({"limit": 1}) is None
+
+
+def test_advance_cursor_past_stuck_host_non_integer_cursor(mocker):
+    """
+    Given:
+        - The cursor has reached the retry threshold but is not a parseable integer.
+    When:
+        - Calling advance_cursor_past_stuck_host.
+    Assert:
+        - Returns None (cannot safely advance), falling back to normal behavior.
+    """
+    mocker.patch.object(demisto, "debug")
+    last_run = {
+        "next_page": "not-an-int",
+        "limit": 1,
+        "stuck_host_page": "not-an-int",
+        "stuck_host_count": ASSETS_STUCK_HOST_MAX_RETRIES - 1,
+    }
+
+    assert advance_cursor_past_stuck_host(last_run) is None
 
 
 @freeze_time("2025-01-01 00:00:00 UTC")
