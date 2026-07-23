@@ -94,6 +94,11 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_targets_update_command,
     redteam_targets_probe_command,
     model_security_scans_list_command,
+    model_security_models_list_command,
+    model_security_models_get_command,
+    model_security_models_versions_command,
+    model_security_models_version_get_command,
+    model_security_models_files_command,
     model_security_groups_list_command,
     model_security_rules_list_command,
     model_security_rules_get_command,
@@ -593,6 +598,167 @@ class TestCommands:
         assert result.outputs[0]["uuid"] == "group-uuid-123"
         assert result.outputs[0]["name"] == "hf-strict"
         assert result.outputs[0]["source_type"] == "HUGGING_FACE"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_models_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """models-list parses the catalog, forwards filters, and hits the data plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "models": [
+                {
+                    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+                    "name": "org/llama",
+                    "latest_version_uuid": "660e8400-e29b-41d4-a716-446655440000",
+                    "latest_version_revision": "main",
+                    "latest_version_outcome": "PASSED",
+                    "latest_version_formats": ["safetensors"],
+                    "latest_version_source_types": ["HUGGING_FACE"],
+                    "latest_version_scan_time": "2024-01-01T00:00:00Z",
+                    "created_at": "2024-01-01T00:00:00Z",
+                    "updated_at": "2024-01-02T00:00:00Z",
+                }
+            ],
+            "pagination": {"total_items": 1},
+        }
+
+        args = {"limit": "10", "search_query": "llama", "latest_version_outcomes": "PASSED,FAILED"}
+        result = model_security_models_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityModel"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["uuid"] == "550e8400-e29b-41d4-a716-446655440000"
+        assert result.outputs[0]["name"] == "org/llama"
+        assert result.outputs[0]["latest_version_outcome"] == "PASSED"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/models"
+        assert kwargs["use_model_sec_data"] is True
+        assert kwargs["params"]["search_query"] == "llama"
+        assert kwargs["params"]["latest_version_outcomes"] == ["PASSED", "FAILED"]
+
+    @patch.object(Client, "http_request")
+    def test_model_security_models_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """models-get returns a single model keyed by uuid on the data plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "org/model",
+            "latest_version_uuid": "660e8400-e29b-41d4-a716-446655440000",
+            "latest_version_outcome": "PASSED",
+        }
+
+        result = model_security_models_get_command(mock_client, {"uuid": "550e8400-e29b-41d4-a716-446655440000"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityModel"
+        assert result.outputs["uuid"] == "550e8400-e29b-41d4-a716-446655440000"
+        assert result.outputs["name"] == "org/model"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/models/550e8400-e29b-41d4-a716-446655440000"
+        assert kwargs["use_model_sec_data"] is True
+
+    @patch.object(Client, "http_request")
+    def test_model_security_models_versions_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """models-versions lists a model's versions on the data plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "model_versions": [
+                {
+                    "uuid": "660e8400-e29b-41d4-a716-446655440000",
+                    "model_uuid": "550e8400-e29b-41d4-a716-446655440000",
+                    "revision": "main",
+                    "file_count": 12,
+                    "last_eval_outcome": "PASSED",
+                }
+            ],
+            "pagination": {"total_items": 1},
+        }
+
+        args = {"model_uuid": "550e8400-e29b-41d4-a716-446655440000", "sort_order": "desc"}
+        result = model_security_models_versions_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityModelVersion"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["uuid"] == "660e8400-e29b-41d4-a716-446655440000"
+        assert result.outputs[0]["file_count"] == 12
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/models/550e8400-e29b-41d4-a716-446655440000/model-versions"
+        assert kwargs["use_model_sec_data"] is True
+        assert kwargs["params"]["sort_order"] == "desc"
+
+    @patch.object(Client, "http_request")
+    def test_model_security_models_version_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """models-version-get returns a single version keyed by uuid on the data plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "uuid": "660e8400-e29b-41d4-a716-446655440000",
+            "model_uuid": "550e8400-e29b-41d4-a716-446655440000",
+            "revision": "main",
+            "last_eval_outcome": "PASSED",
+        }
+
+        result = model_security_models_version_get_command(mock_client, {"uuid": "660e8400-e29b-41d4-a716-446655440000"})
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityModelVersion"
+        assert result.outputs["uuid"] == "660e8400-e29b-41d4-a716-446655440000"
+        assert result.outputs["revision"] == "main"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/model-versions/660e8400-e29b-41d4-a716-446655440000"
+        assert kwargs["use_model_sec_data"] is True
+
+    @patch.object(Client, "http_request")
+    def test_model_security_models_files_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """models-files lists a version's files on the data plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "files": [
+                {
+                    "uuid": "770e8400-e29b-41d4-a716-446655440000",
+                    "path": "/model.safetensors",
+                    "type": "FILE",
+                    "result": "SUCCESS",
+                    "formats": ["safetensors"],
+                    "model_version_uuid": "660e8400-e29b-41d4-a716-446655440000",
+                }
+            ],
+            "pagination": {"total_items": 1},
+        }
+
+        args = {"model_version_uuid": "660e8400-e29b-41d4-a716-446655440000", "limit": "50"}
+        result = model_security_models_files_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.ModelSecurityModelFile"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["path"] == "/model.safetensors"
+        assert result.outputs[0]["result"] == "SUCCESS"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/model-versions/660e8400-e29b-41d4-a716-446655440000/files"
+        assert kwargs["use_model_sec_data"] is True
 
     @patch.object(Client, "http_request")
     def test_model_security_rules_list_command(self, mock_http: Mock, mock_client: Client) -> None:

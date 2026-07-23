@@ -3200,6 +3200,257 @@ Get rule evaluations for a scan. Lists all rule evaluations showing which securi
 | PrismaAIRs.ModelSecurityEvaluations.limit | Number | Limit used for pagination. |
 | PrismaAIRs.ModelSecurityEvaluations.offset | Number | Offset used for pagination. |
 
+### prisma-airs-model-security-models-list
+
+***
+List Model Security model catalog entries (aggregate over their scanned versions). Read-only.
+
+#### Base Command
+
+`prisma-airs-model-security-models-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of models to return. Default is 50. | Optional |
+| skip | Number of records to skip from the start \(pagination offset\). | Optional |
+| search_query | Search query \(matches model UUID or name\). | Optional |
+| sort_field | Field to sort by. Possible values are: created_at, updated_at. | Optional |
+| sort_order | Sort order. Possible values are: asc, desc. | Optional |
+| latest_version_outcomes | Comma-separated list of latest-version evaluation outcomes to filter by \(e.g., PASSED,FAILED\). | Optional |
+| latest_version_formats | Comma-separated list of latest-version model formats to filter by. | Optional |
+| latest_version_source_types | Comma-separated list of latest-version source types to filter by \(e.g., HUGGING_FACE,S3\). | Optional |
+| start_time | Only models created on or after this ISO 8601 datetime. | Optional |
+| end_time | Only models created on or before this ISO 8601 datetime. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.ModelSecurityModel.uuid | String | Model UUID. |
+| PrismaAIRs.ModelSecurityModel.name | String | Model name. |
+| PrismaAIRs.ModelSecurityModel.latest_version_uuid | String | UUID of the model's latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_revision | String | Revision label of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | Evaluation outcome of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | Model formats of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | Source types of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version. |
+| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp. |
+| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-model-security-models-list limit=5
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Model Security Models
+>
+>|Uuid|Name|Latest Version Revision|Latest Version Outcome|Latest Version Scan Time|
+>|---|---|---|---|---|
+>| aa29b059-0dda-4752-86a0-485bb9de1d44 | AxelAlltrue/network_issue_model | v1 | BLOCKED | 2026-07-19T05:00:06.201927Z |
+>| cf9d16d7-e7b5-402b-ac63-624050d1f45a | ScanMe/test-models | v2 | BLOCKED | 2026-07-19T05:00:05.247801Z |
+>| b2024eaf-54a2-4549-86da-70be0b374840 | skt/A.X-4.0 | v1 | BLOCKED | 2026-07-19T05:00:04.241757Z |
+>| fcfb37d0-49b0-4297-8efa-2c674ea9d541 | Retr0REG/gguf-ssti | v1 | BLOCKED | 2026-07-19T05:00:03.111347Z |
+>| ead07515-4c2e-4ce9-949e-16768749bbea | meta-llama/Llama-3.2-3B | v1 | BLOCKED | 2026-07-14T20:49:16.617659Z |
+
+### prisma-airs-model-security-models-get
+
+***
+Get a single Model Security model by UUID. Read-only.
+
+#### Base Command
+
+`prisma-airs-model-security-models-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | Model UUID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.ModelSecurityModel.uuid | String | Model UUID. |
+| PrismaAIRs.ModelSecurityModel.name | String | Model name. |
+| PrismaAIRs.ModelSecurityModel.latest_version_uuid | String | UUID of the model's latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_revision | String | Revision label of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_fingerprint | String | Fingerprint of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_hf_commit_sha | String | Hugging Face commit SHA of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_outcome | String | Evaluation outcome of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_formats | Unknown | Model formats of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_source_types | Unknown | Source types of the latest version. |
+| PrismaAIRs.ModelSecurityModel.latest_version_scan_time | Date | Scan time of the latest version. |
+| PrismaAIRs.ModelSecurityModel.created_at | Date | Creation timestamp. |
+| PrismaAIRs.ModelSecurityModel.updated_at | Date | Last update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-model-security-models-get uuid=aa29b059-0dda-4752-86a0-485bb9de1d44
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Model Security Model: AxelAlltrue/network_issue_model
+>
+>|Created At|Latest Version Formats|Latest Version Hf Commit Sha|Latest Version Outcome|Latest Version Revision|Latest Version Scan Time|Latest Version Source Types|Latest Version Uuid|Name|Updated At|Uuid|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 2026-05-05T03:59:26.609882Z | keras_metadata,<br>tensorflow,<br>yaml | 7b092807b12c4ff811e571c85b6298cfdb0252bc | BLOCKED | v1 | 2026-07-19T05:00:06.201927Z | HUGGING_FACE | 0a31bedc-1452-474d-a14e-44df7b3a5a51 | AxelAlltrue/network_issue_model | 2026-07-19T05:00:07.493745Z | aa29b059-0dda-4752-86a0-485bb9de1d44 |
+
+### prisma-airs-model-security-models-versions
+
+***
+List the versions (revisions) of a Model Security model. Read-only.
+
+#### Base Command
+
+`prisma-airs-model-security-models-versions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| model_uuid | Model UUID whose versions to list. | Required |
+| limit | Maximum number of versions to return. Default is 50. | Optional |
+| skip | Number of records to skip from the start \(pagination offset\). | Optional |
+| sort_order | Sort order. Possible values are: asc, desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.ModelSecurityModelVersion.uuid | String | Model version UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.model_uuid | String | Parent model UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.revision | String | Revision label. |
+| PrismaAIRs.ModelSecurityModelVersion.file_count | Number | Number of files in the version. |
+| PrismaAIRs.ModelSecurityModelVersion.license | String | Model license. |
+| PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | Model formats. |
+| PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | Source types. |
+| PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | Latest evaluation outcome. |
+| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | Hugging Face model name. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | Hugging Face organization. |
+
+#### Command example
+
+```
+!prisma-airs-model-security-models-versions model_uuid=aa29b059-0dda-4752-86a0-485bb9de1d44
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Model Security Model Versions (model aa29b059-0dda-4752-86a0-485bb9de1d44)
+>
+>|Uuid|Revision|File Count|Last Eval Outcome|Latest Scan Time|
+>|---|---|---|---|---|
+>| 0a31bedc-1452-474d-a14e-44df7b3a5a51 | v1 | 2 | BLOCKED | 2026-07-19T05:00:06.201927Z |
+
+### prisma-airs-model-security-models-version-get
+
+***
+Get a single Model Security model version by UUID. Read-only.
+
+#### Base Command
+
+`prisma-airs-model-security-models-version-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| uuid | Model version UUID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.ModelSecurityModelVersion.uuid | String | Model version UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.model_uuid | String | Parent model UUID. |
+| PrismaAIRs.ModelSecurityModelVersion.revision | String | Revision label. |
+| PrismaAIRs.ModelSecurityModelVersion.fingerprint | String | Version fingerprint. |
+| PrismaAIRs.ModelSecurityModelVersion.file_count | Number | Number of files in the version. |
+| PrismaAIRs.ModelSecurityModelVersion.license | String | Model license. |
+| PrismaAIRs.ModelSecurityModelVersion.model_formats | Unknown | Model formats. |
+| PrismaAIRs.ModelSecurityModelVersion.source_types | Unknown | Source types. |
+| PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome | String | Latest evaluation outcome. |
+| PrismaAIRs.ModelSecurityModelVersion.latest_scan_time | Date | Latest scan time. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_model_name | String | Hugging Face model name. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_organization | String | Hugging Face organization. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_commit_sha | String | Hugging Face commit SHA. |
+| PrismaAIRs.ModelSecurityModelVersion.hf_commit_title | String | Hugging Face commit title. |
+| PrismaAIRs.ModelSecurityModelVersion.created_at | Date | Creation timestamp. |
+| PrismaAIRs.ModelSecurityModelVersion.updated_at | Date | Last update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-model-security-models-version-get uuid=0a31bedc-1452-474d-a14e-44df7b3a5a51
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Model Security Model Version: v1
+>
+>|Created At|File Count|Hf Commit Sha|Hf Commit Title|Hf Model Name|Hf Organization|Last Eval Outcome|Latest Scan Time|Model Formats|Model Uuid|Revision|Source Types|Updated At|Uuid|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2025-10-29T19:42:14.497371Z | 2 | 7b092807b12c4ff811e571c85b6298cfdb0252bc | Upload folder using huggingface_hub | network_issue_model | AxelAlltrue | BLOCKED | 2026-07-19T05:00:06.201927Z | keras_metadata,<br>tensorflow,<br>yaml | aa29b059-0dda-4752-86a0-485bb9de1d44 | v1 | HUGGING_FACE | 2026-07-19T05:00:07.493745Z | 0a31bedc-1452-474d-a14e-44df7b3a5a51 |
+
+### prisma-airs-model-security-models-files
+
+***
+List the files of a Model Security model version. Read-only.
+
+#### Base Command
+
+`prisma-airs-model-security-models-files`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| model_version_uuid | Model version UUID whose files to list. | Required |
+| limit | Maximum number of files to return. Default is 50. | Optional |
+| skip | Number of records to skip from the start \(pagination offset\). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.ModelSecurityModelFile.uuid | String | File UUID. |
+| PrismaAIRs.ModelSecurityModelFile.path | String | File path within the model tree. |
+| PrismaAIRs.ModelSecurityModelFile.parent_path | String | Parent directory path. |
+| PrismaAIRs.ModelSecurityModelFile.type | String | Entry type \(e.g., FILE, DIRECTORY\). |
+| PrismaAIRs.ModelSecurityModelFile.result | String | Scan result for the file \(e.g., FAILED, SKIPPED\). |
+| PrismaAIRs.ModelSecurityModelFile.formats | Unknown | Detected file formats. |
+| PrismaAIRs.ModelSecurityModelFile.model_version_uuid | String | Parent model version UUID. |
+| PrismaAIRs.ModelSecurityModelFile.scan_uuid | String | Associated scan UUID. |
+
+#### Command example
+
+```
+!prisma-airs-model-security-models-files model_version_uuid=0a31bedc-1452-474d-a14e-44df7b3a5a51
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Model Security Model Version Files (version 0a31bedc-1452-474d-a14e-44df7b3a5a51)
+>
+>|Uuid|Path|Type|Result|Formats|
+>|---|---|---|---|---|
+>| f20ed4f7-966e-4ebd-ab58-77cb8b99f4ad | fingerprint.pb | FILE | SKIPPED |  |
+>| 61877efb-d79c-433b-a00c-7747699bbc4b | .gitattributes | FILE | SKIPPED |  |
+>| 63a95a86-69b6-44ab-a4f0-cc30011be0b4 | keras_metadata.pb | FILE | FAILED | keras_metadata |
+>| 406bdb16-8db9-4413-aa6e-774e865b13d8 | saved_model.pb | FILE | FAILED | tensorflow |
+>| 55e91044-5eca-4c12-87aa-b73ab5ce6c7b | variables | DIRECTORY | SKIPPED |  |
+>| 4b648756-535a-4d6d-96cb-7c891c159999 | variables/variables.data-00000-of-00001 | FILE | SKIPPED |  |
+>| e0b6cd6d-8305-47bb-884a-4e477dd36eea | variables/variables.index | FILE | SKIPPED |  |
+
 ### prisma-airs-model-security-groups-list
 
 ***

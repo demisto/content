@@ -3207,6 +3207,291 @@ def model_security_scans_evaluations_command(client: Client, args: dict[str, Any
     )
 
 
+def model_security_models_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List Model Security model catalog entries (aggregate over their versions).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    skip = arg_to_number(args.get("skip"))
+
+    # Call Model Security Data API to list models (read-only catalog).
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/model-security/models-client.ts (listModels)
+    # SDK path: /v1/models (data plane)
+    params: dict[str, Any] = {"limit": str(limit) if limit else str(DEFAULT_LIMIT)}
+    if skip is not None:
+        params["skip"] = str(skip)
+    # Optional search/sort passthrough (see ModelSecurityModelListOptions in the SDK).
+    for key in ("search_query", "sort_field", "sort_order", "latest_version_scan_time_before", "start_time", "end_time"):
+        value = args.get(key)
+        if value:
+            params[key] = value
+    # Array filters serialize as repeated query params (validated against the tenant for network-broker).
+    for key in ("latest_version_outcomes", "latest_version_formats", "latest_version_source_types"):
+        value = argToList(args.get(key))
+        if value:
+            params[key] = value
+
+    response = client.http_request(method="GET", url_suffix="/v1/models", params=params, use_model_sec_data=True)
+
+    # Parse response - SDK schema: ModelListSchema ({pagination, models[]}).
+    models_raw = response.get("models") or []
+    models = [
+        {
+            "uuid": model.get("uuid"),
+            "name": model.get("name"),
+            "latest_version_uuid": model.get("latest_version_uuid"),
+            "latest_version_revision": model.get("latest_version_revision"),
+            "latest_version_outcome": model.get("latest_version_outcome"),
+            "latest_version_formats": model.get("latest_version_formats"),
+            "latest_version_source_types": model.get("latest_version_source_types"),
+            "latest_version_scan_time": model.get("latest_version_scan_time"),
+            "created_at": model.get("created_at"),
+            "updated_at": model.get("updated_at"),
+        }
+        for model in models_raw
+    ]
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Model Security Models",
+        models,
+        headers=["uuid", "name", "latest_version_revision", "latest_version_outcome", "latest_version_scan_time"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityModel",
+        outputs_key_field="uuid",
+        outputs=models,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def model_security_models_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single Model Security model by UUID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args["uuid"]
+
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/model-security/models-client.ts (getModel)
+    # SDK path: /v1/models/{uuid} (data plane)
+    response = client.http_request(method="GET", url_suffix=f"/v1/models/{uuid}", use_model_sec_data=True)
+
+    model_info = {
+        "uuid": response.get("uuid"),
+        "name": response.get("name"),
+        "latest_version_uuid": response.get("latest_version_uuid"),
+        "latest_version_revision": response.get("latest_version_revision"),
+        "latest_version_fingerprint": response.get("latest_version_fingerprint"),
+        "latest_version_hf_commit_sha": response.get("latest_version_hf_commit_sha"),
+        "latest_version_outcome": response.get("latest_version_outcome"),
+        "latest_version_formats": response.get("latest_version_formats"),
+        "latest_version_source_types": response.get("latest_version_source_types"),
+        "latest_version_scan_time": response.get("latest_version_scan_time"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Model Security Model: {model_info.get('name') or uuid}",
+        model_info,
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityModel",
+        outputs_key_field="uuid",
+        outputs=model_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def model_security_models_versions_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List the versions (revisions) of a Model Security model.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    model_uuid = args["model_uuid"]
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    skip = arg_to_number(args.get("skip"))
+    sort_order = args.get("sort_order")
+
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/model-security/models-client.ts (listModelVersions)
+    # SDK path: /v1/models/{modelUuid}/model-versions (data plane)
+    params: dict[str, Any] = {"limit": str(limit) if limit else str(DEFAULT_LIMIT)}
+    if skip is not None:
+        params["skip"] = str(skip)
+    if sort_order:
+        params["sort_order"] = sort_order
+
+    response = client.http_request(
+        method="GET", url_suffix=f"/v1/models/{model_uuid}/model-versions", params=params, use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: ModelVersionListSchema ({pagination, model_versions[]}).
+    versions_raw = response.get("model_versions") or []
+    versions = [
+        {
+            "uuid": version.get("uuid"),
+            "model_uuid": version.get("model_uuid"),
+            "revision": version.get("revision"),
+            "file_count": version.get("file_count"),
+            "license": version.get("license"),
+            "model_formats": version.get("model_formats"),
+            "source_types": version.get("source_types"),
+            "last_eval_outcome": version.get("last_eval_outcome"),
+            "latest_scan_time": version.get("latest_scan_time"),
+            "hf_model_name": version.get("hf_model_name"),
+            "hf_organization": version.get("hf_organization"),
+        }
+        for version in versions_raw
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Model Security Model Versions (model {model_uuid})",
+        versions,
+        headers=["uuid", "revision", "file_count", "last_eval_outcome", "latest_scan_time"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityModelVersion",
+        outputs_key_field="uuid",
+        outputs=versions,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def model_security_models_version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single Model Security model version by UUID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    uuid = args["uuid"]
+
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/model-security/models-client.ts (getModelVersion)
+    # SDK path: /v1/model-versions/{uuid} (data plane)
+    response = client.http_request(method="GET", url_suffix=f"/v1/model-versions/{uuid}", use_model_sec_data=True)
+
+    version_info = {
+        "uuid": response.get("uuid"),
+        "model_uuid": response.get("model_uuid"),
+        "revision": response.get("revision"),
+        "fingerprint": response.get("fingerprint"),
+        "file_count": response.get("file_count"),
+        "license": response.get("license"),
+        "model_formats": response.get("model_formats"),
+        "source_types": response.get("source_types"),
+        "last_eval_outcome": response.get("last_eval_outcome"),
+        "latest_scan_time": response.get("latest_scan_time"),
+        "hf_model_name": response.get("hf_model_name"),
+        "hf_organization": response.get("hf_organization"),
+        "hf_commit_sha": response.get("hf_commit_sha"),
+        "hf_commit_title": response.get("hf_commit_title"),
+        "created_at": response.get("created_at"),
+        "updated_at": response.get("updated_at"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Model Security Model Version: {version_info.get('revision') or uuid}",
+        version_info,
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityModelVersion",
+        outputs_key_field="uuid",
+        outputs=version_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def model_security_models_files_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List the files of a Model Security model version.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    model_version_uuid = args["model_version_uuid"]
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    skip = arg_to_number(args.get("skip"))
+
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/model-security/models-client.ts (listModelVersionFiles)
+    # SDK path: /v1/model-versions/{modelVersionUuid}/files (data plane); same shape as scan files (FileListSchema).
+    params: dict[str, Any] = {"limit": str(limit) if limit else str(DEFAULT_LIMIT)}
+    if skip is not None:
+        params["skip"] = str(skip)
+
+    response = client.http_request(
+        method="GET", url_suffix=f"/v1/model-versions/{model_version_uuid}/files", params=params, use_model_sec_data=True
+    )
+
+    # Parse response - SDK schema: FileListSchema ({pagination, files[]}).
+    files_raw = response.get("files") or []
+    files = [
+        {
+            "uuid": file.get("uuid"),
+            "path": file.get("path"),
+            "parent_path": file.get("parent_path"),
+            "type": file.get("type"),
+            "result": file.get("result"),
+            "formats": file.get("formats"),
+            "model_version_uuid": file.get("model_version_uuid"),
+            "scan_uuid": file.get("scan_uuid"),
+        }
+        for file in files_raw
+    ]
+
+    readable_output = tableToMarkdown(
+        f"Prisma AIRs Model Security Model Version Files (version {model_version_uuid})",
+        files,
+        headers=["uuid", "path", "type", "result", "formats"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}ModelSecurityModelFile",
+        outputs_key_field="uuid",
+        outputs=files,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def model_security_groups_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List model security groups.
 
@@ -5286,14 +5571,15 @@ def redteam_languages_list_command(client: Client, args: dict[str, Any]) -> Comm
 
     # Keep the metadata attached to the language list in a single output object.
     languages = response.get("languages") or []
+    supported_job_types = argToList(response.get("supported_job_types"))
     languages_info = {
         "multilingual_enabled": response.get("multilingual_enabled"),
-        "supported_job_types": response.get("supported_job_types"),
+        "supported_job_types": supported_job_types,
         "plane": "management" if use_management else "data",
         "languages": [{"code": lang.get("code"), "name": lang.get("name")} for lang in languages],
     }
 
-    supported = ", ".join(languages_info["supported_job_types"] or [])
+    supported = ", ".join(str(job_type) for job_type in supported_job_types)
     title = (
         f"Prisma AIRs Red Team Supported Languages "
         f"(multilingual_enabled: {languages_info['multilingual_enabled']}; job types: {supported or 'N/A'})"
@@ -8750,6 +9036,21 @@ def main() -> None:
 
         elif command == "prisma-airs-model-security-scans-evaluations":
             return_results(model_security_scans_evaluations_command(client, args))
+
+        elif command == "prisma-airs-model-security-models-list":
+            return_results(model_security_models_list_command(client, args))
+
+        elif command == "prisma-airs-model-security-models-get":
+            return_results(model_security_models_get_command(client, args))
+
+        elif command == "prisma-airs-model-security-models-versions":
+            return_results(model_security_models_versions_command(client, args))
+
+        elif command == "prisma-airs-model-security-models-version-get":
+            return_results(model_security_models_version_get_command(client, args))
+
+        elif command == "prisma-airs-model-security-models-files":
+            return_results(model_security_models_files_command(client, args))
 
         elif command == "prisma-airs-model-security-groups-list":
             return_results(model_security_groups_list_command(client, args))

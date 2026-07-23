@@ -3012,6 +3012,272 @@ script:
     - contextPath: PrismaAIRs.ModelSecurityEvaluations.offset
       description: Offset used for pagination.
       type: Number
+  - name: prisma-airs-model-security-models-list
+    description: List Model Security model catalog entries (aggregate over their scanned versions). Read-only.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of models to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: Number of records to skip from the start (pagination offset).
+    - name: search_query
+      required: false
+      description: Search query (matches model UUID or name).
+    - name: sort_field
+      required: false
+      description: Field to sort by.
+      auto: PREDEFINED
+      predefined:
+      - created_at
+      - updated_at
+    - name: sort_order
+      required: false
+      description: Sort order.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: latest_version_outcomes
+      required: false
+      description: Comma-separated list of latest-version evaluation outcomes to filter by (e.g., PASSED,FAILED).
+      isArray: true
+    - name: latest_version_formats
+      required: false
+      description: Comma-separated list of latest-version model formats to filter by.
+      isArray: true
+    - name: latest_version_source_types
+      required: false
+      description: Comma-separated list of latest-version source types to filter by (e.g., HUGGING_FACE,S3).
+      isArray: true
+    - name: start_time
+      required: false
+      description: Only models created on or after this ISO 8601 datetime.
+    - name: end_time
+      required: false
+      description: Only models created on or before this ISO 8601 datetime.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModel.uuid
+      description: Model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.name
+      description: Model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_uuid
+      description: UUID of the model's latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_revision
+      description: Revision label of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_outcome
+      description: Evaluation outcome of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_formats
+      description: Model formats of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_source_types
+      description: Source types of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_scan_time
+      description: Scan time of the latest version.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-model-security-models-get
+    description: Get a single Model Security model by UUID. Read-only.
+    arguments:
+    - name: uuid
+      required: true
+      description: Model UUID.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModel.uuid
+      description: Model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.name
+      description: Model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_uuid
+      description: UUID of the model's latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_revision
+      description: Revision label of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_fingerprint
+      description: Fingerprint of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_hf_commit_sha
+      description: Hugging Face commit SHA of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_outcome
+      description: Evaluation outcome of the latest version.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_formats
+      description: Model formats of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_source_types
+      description: Source types of the latest version.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModel.latest_version_scan_time
+      description: Scan time of the latest version.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModel.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-model-security-models-versions
+    description: List the versions (revisions) of a Model Security model. Read-only.
+    arguments:
+    - name: model_uuid
+      required: true
+      description: Model UUID whose versions to list.
+    - name: limit
+      required: false
+      description: Maximum number of versions to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: Number of records to skip from the start (pagination offset).
+    - name: sort_order
+      required: false
+      description: Sort order.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.uuid
+      description: Model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_uuid
+      description: Parent model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.revision
+      description: Revision label.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.file_count
+      description: Number of files in the version.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.license
+      description: Model license.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_formats
+      description: Model formats.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.source_types
+      description: Source types.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome
+      description: Latest evaluation outcome.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.latest_scan_time
+      description: Latest scan time.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_model_name
+      description: Hugging Face model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_organization
+      description: Hugging Face organization.
+      type: String
+  - name: prisma-airs-model-security-models-version-get
+    description: Get a single Model Security model version by UUID. Read-only.
+    arguments:
+    - name: uuid
+      required: true
+      description: Model version UUID.
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.uuid
+      description: Model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_uuid
+      description: Parent model UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.revision
+      description: Revision label.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.fingerprint
+      description: Version fingerprint.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.file_count
+      description: Number of files in the version.
+      type: Number
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.license
+      description: Model license.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.model_formats
+      description: Model formats.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.source_types
+      description: Source types.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.last_eval_outcome
+      description: Latest evaluation outcome.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.latest_scan_time
+      description: Latest scan time.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_model_name
+      description: Hugging Face model name.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_organization
+      description: Hugging Face organization.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_commit_sha
+      description: Hugging Face commit SHA.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.hf_commit_title
+      description: Hugging Face commit title.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.ModelSecurityModelVersion.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-model-security-models-files
+    description: List the files of a Model Security model version. Read-only.
+    arguments:
+    - name: model_version_uuid
+      required: true
+      description: Model version UUID whose files to list.
+    - name: limit
+      required: false
+      description: Maximum number of files to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: Number of records to skip from the start (pagination offset).
+    outputs:
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.uuid
+      description: File UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.path
+      description: File path within the model tree.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.parent_path
+      description: Parent directory path.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.type
+      description: Entry type (e.g., FILE).
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.result
+      description: Scan result for the file.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.formats
+      description: Detected file formats.
+      type: Unknown
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.model_version_uuid
+      description: Parent model version UUID.
+      type: String
+    - contextPath: PrismaAIRs.ModelSecurityModelFile.scan_uuid
+      description: Associated scan UUID.
+      type: String
   - name: prisma-airs-model-security-groups-list
     description: List all model security groups.
     arguments:

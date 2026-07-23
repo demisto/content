@@ -47,6 +47,7 @@
 !prisma-airs-model-security-rules-list
 !prisma-airs-model-security-scans-list
 !prisma-airs-model-security-labels-keys
+!prisma-airs-model-security-models-list
 
 ## Red Team (read-only)
 !prisma-airs-redteam-targets-list
