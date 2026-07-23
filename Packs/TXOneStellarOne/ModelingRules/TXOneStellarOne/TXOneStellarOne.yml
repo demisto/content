@@ -1,0 +1,8 @@
+fromversion: 8.14.0
+id: TXOne_StellarOne_ModelingRule
+name: TXOne StellarOne Modeling Rule
+rules: ''
+schema: ''
+tags:
+supportedModules:
+- xsiam

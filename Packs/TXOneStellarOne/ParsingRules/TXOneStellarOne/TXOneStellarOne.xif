@@ -1,0 +1,27 @@
+// TXOne StellarOne, StellarProtect, and their Legacy Mode variants all forward CEF logs.
+// Each product is matched by its own INGEST header (vendor + product) so a given event is claimed by exactly one rule, and no_hit=drop discards unmatched events instead of storing them as raw.
+[INGEST:vendor="TXOne Networks", product="StellarProtect", target_dataset="txone_stellarone_raw", no_hit=drop]
+alter _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), to_timestamp(to_integer(agentrt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
+
+[INGEST:vendor="TXOne Networks", product="StellarOne",target_dataset="txone_stellarone_raw", no_hit=drop]
+alter _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), to_timestamp(to_integer(start), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
+
+[INGEST:vendor="TXOne Networks", product="StellarProtect (Legacy Mode)", target_dataset="txone_stellarone_raw", no_hit=drop]
+alter _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), to_timestamp(to_integer(agentrt), "MILLIS"), parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
+
+[INGEST:vendor="TXOne Networks", product="StellarOne (Legacy Mode)", target_dataset="txone_stellarone_raw", no_hit=drop]
+alter _time = coalesce(to_timestamp(to_integer(rt), "MILLIS"), to_timestamp(to_integer(start), "MILLIS"),parse_timestamp("%b %d %Y %H:%M:%S GMT%Ez", eventtime));
+
+
+// The following rules drops the auto-generated per-vendor-product datasets to prevent duplicate storage of CEF logs
+[INGEST:vendor="TXOne Networks", product="StellarProtect", target_dataset="txone_networks_stellarprotect_raw", no_hit=drop]
+filter cefDeviceVendor != "TXOne Networks";
+
+[INGEST:vendor="TXOne Networks", product="StellarOne", target_dataset="txone_networks_stellarone_raw", no_hit=drop]
+filter cefDeviceVendor != "TXOne Networks";
+
+[INGEST:vendor="TXOne Networks", product="StellarProtect (Legacy Mode)", target_dataset="txone_networks_stellarprotect_legacy_mode__raw", no_hit=drop]
+filter cefDeviceVendor != "TXOne Networks";
+
+[INGEST:vendor="TXOne Networks", product="StellarOne (Legacy Mode)", target_dataset="txone_networks_stellarone_legacy_mode__raw", no_hit=drop]
+filter cefDeviceVendor != "TXOne Networks";
