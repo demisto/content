@@ -1,5 +1,4 @@
 Vega integration for fetching alerts and incidents from the Vega platform.
-This integration was integrated and tested with version xx of Vega.
 
 ## Prerequisites
 

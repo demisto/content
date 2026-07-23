@@ -2,7 +2,7 @@
     "name": "Common Playbooks",
     "description": "Frequently used playbooks pack.",
     "support": "xsoar",
-    "currentVersion": "2.8.3",
+    "currentVersion": "2.8.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Cortex"],
     "dependencies": {
         "Threat_Crowd": {
             "mandatory": false,

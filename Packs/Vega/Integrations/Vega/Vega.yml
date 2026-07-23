@@ -10,7 +10,6 @@ sectionorder:
   - Autoclosure
   - Alerts
   - Incidents
-  - Related Incidents
 configuration:
   - display: Base URL
     additionalinfo: The Base URL of the Vega API.
@@ -160,6 +159,22 @@ configuration:
       - INCONCLUSIVE
       - NA
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
+  - display: Has related incidents
+    additionalinfo: >-
+      The filter for alerts based on whether they have related incidents. Select Yes to fetch alerts with related incidents,
+      No to fetch alerts without related incidents, or both to fetch all alerts.
+      At least one option must be selected.
+      Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents,
+      No to fetch alerts without related incidents, or both to fetch all alerts.
+      At least one option must be selected.
+    name: alert_has_related_incidents
+    type: 16
+    section: Alerts
+    required: true
+    options:
+      - "Yes"
+      - "No"
+    defaultvalue: "Yes,No"
   - display: Incident Severities to fetch
     additionalinfo: >-
       The severities by which to filter incidents. If empty, all severities are fetched.
@@ -214,22 +229,6 @@ configuration:
       - INCONCLUSIVE
       - NA
     defaultvalue: MALICIOUS,SUSPICIOUS,BENIGN,INCONCLUSIVE,NA
-  - display: Has related incidents
-    additionalinfo: >-
-      The filter for alerts based on whether they have related incidents. Select Yes to fetch alerts with related incidents,
-      No to fetch alerts without related incidents, or both to fetch all alerts.
-      At least one option must be selected.
-      Filter alerts by whether they have related incidents. Select Yes to fetch alerts with related incidents,
-      No to fetch alerts without related incidents, or both to fetch all alerts.
-      At least one option must be selected.
-    name: alert_has_related_incidents
-    type: 16
-    section: Related Incidents
-    required: true
-    options:
-      - "Yes"
-      - "No"
-    defaultvalue: "Yes,No"
   - display: Incident type
     name: incidentType
     type: 13
@@ -532,7 +531,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10404775
 fromversion: 6.10.0
 marketplaces:
   - xsoar
