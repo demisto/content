@@ -1,4 +1,5 @@
 import ipaddress
+import re
 from enum import Enum
 
 import requests
@@ -3113,11 +3114,19 @@ class Client(BaseClient):
 
     def get_response_schema(self, response):
         """
-        Try to figure out the JSON schema from the response
-        """
-        import jsonschema
-        from jsonschema.exceptions import ValidationError, SchemaError
+        Try to figure out the JSON schema from the response.
 
+        The three shapes we care about are simple structural patterns, so we
+        validate them with lightweight inline checks instead of pulling in the
+        external ``jsonschema`` package (which is not bundled in the runtime
+        Docker image):
+
+        - ``common``:         a list of dicts, e.g. ``[{"x": "x"}, {"z": "z"}]``
+        - ``dict_list_dict``: a dict whose values are all lists of dicts,
+          e.g. ``{"w": [{"x": "x"}, {"z": "z"}]}``
+        - ``dict_dict``:      a dict whose values are all dicts,
+          e.g. ``{"x": {"y": "y"}, "y": {"z": "z"}}``
+        """
         schemas = {
             "common": {  # [{"x": "x", "y": "y"}, {"z": "z", "w": "w"}]
                 "type": "array",
@@ -3126,13 +3135,11 @@ class Client(BaseClient):
                 },
             },
             "dict_list_dict": {  # {"w": [{"x": "x", "y": "y"}, {"z": "z", "w": "w"}]}
-                "$schema": "https://json-schema.org",
                 "type": "object",
                 "patternProperties": {"^[a-z].*$": {"type": "array", "items": {"type": "object"}}},
                 "additionalProperties": False,  # Forces strict rejection of unmapped patterns
             },
             "dict_dict": {  # {'x': {'y':'y'}, 'y': {'z': 'z'}}
-                "$schema": "https://json-schema.org",
                 "type": "object",
                 "patternProperties": {
                     "^[a-z].*$": {"type": "object"},
@@ -3140,12 +3147,29 @@ class Client(BaseClient):
                 "additionalProperties": False,  # Forces strict rejection of unmapped patterns
             },
         }
-        for name, schema in schemas.items():
-            try:
-                jsonschema.validate(instance=response, schema=schema)
-                return name, schema
-            except (ValidationError, SchemaError):
-                pass
+
+        def _matches_common(data: Any) -> bool:
+            # A list where every item is a dict.
+            return isinstance(data, list) and all(isinstance(item, dict) for item in data)
+
+        def _matches_dict_of(data: Any, value_check) -> bool:
+            # A non-empty dict whose keys start with a lowercase letter and
+            # whose values all satisfy ``value_check``.
+            if not isinstance(data, dict) or not data:
+                return False
+            return all(isinstance(key, str) and re.match(r"^[a-z].*$", key) and value_check(value) for key, value in data.items())
+
+        validators = {
+            "common": lambda data: _matches_common(data),
+            "dict_list_dict": lambda data: _matches_dict_of(
+                data, lambda value: isinstance(value, list) and all(isinstance(item, dict) for item in value)
+            ),
+            "dict_dict": lambda data: _matches_dict_of(data, lambda value: isinstance(value, dict)),
+        }
+
+        for name, is_valid in validators.items():
+            if is_valid(response):
+                return name, schemas[name]
         return "common", schemas.get("common")
 
     def get_markdown(self, response):

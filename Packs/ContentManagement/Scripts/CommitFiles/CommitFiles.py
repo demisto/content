@@ -8,7 +8,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
 from demisto_sdk.commands.common.tools import find_type
-from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
+from demisto_sdk.commands.split_yml.extractor import Extractor as YmlSplitter
 
 PR_TEMPLATE = (
     "### Pull Request created in Cortex XSOAR\n"
@@ -258,13 +258,10 @@ def split_yml_file(content_file: ContentFile):  # pragma: no cover
 
     # split the yml file
     yml_splitter = YmlSplitter(
-        content_file.file_name,
-        base_name=base_name,
-        output=base_name,  # pylint: disable=E1123
+        input=content_file.file_name,
+        output=base_name,
         file_type=content_file.content_type,
-        no_pipenv=True,
-        no_code_formatting=True,
-        no_logging=True,
+        base_name=base_name,
         no_readme=True,
     )
 
