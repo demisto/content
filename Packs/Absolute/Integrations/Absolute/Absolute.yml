@@ -821,5 +821,7 @@ script:
   isfetchevents: true
   isfetchevents:xsoar: false
 fromversion: 6.0.0
+supportedModules: 
+- agentix
 tests:
 - Absolute_TestPlaybook
