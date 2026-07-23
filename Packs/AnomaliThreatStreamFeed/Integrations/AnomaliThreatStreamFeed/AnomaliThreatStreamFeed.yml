@@ -149,7 +149,7 @@ script:
       - 'Modified Time'
     description: Gets indicators from the feed. This command is mainly used for testing and debugging purposes.
     name: threatstream-feed-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.5475267
+  dockerimage: demisto/py3-tools:1.0.0.10120494
   runonce: false
   feed: true
   script: '-'

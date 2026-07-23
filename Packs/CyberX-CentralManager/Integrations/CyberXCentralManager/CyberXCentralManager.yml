@@ -47,7 +47,7 @@ script:
       required: true
     description: Updating the alert
     name: cyberx-update-alert
-  dockerimage: demisto/python3-deb:3.12.12.7090913
+  dockerimage: demisto/python3-deb:3.12.13.10116658
   script: ''
   subtype: python3
   type: python
