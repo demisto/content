@@ -125,7 +125,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Https inspection to read encrypted traffic. If omitted, the current ThreatZone API-provided default is used.
+      description: Enable HTTPS inspection for encrypted traffic. If omitted, the current ThreatZone API-provided default is used.
     - name: internet_connection
       auto: PREDEFINED
       predefined:
@@ -181,7 +181,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
+      description: When false, the submission is visible to everyone. When true, it is visible only to members of your workspace.
       defaultValue: "true"
     - name: extension_check
       required: false
@@ -193,7 +193,7 @@ script:
       defaultValue: "false"
     - name: entrypoint
       required: false
-      description: For archives, specify the filename inside the archive to analyse.
+      description: For archives, specify the filename inside the archive to analyze.
     - name: password
       required: false
       description: Password for password-protected archives.
@@ -225,7 +225,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission.
+      description: When false, the submission is visible to everyone. When true, it is visible only to members of your workspace.
       defaultValue: "true"
     - name: extension_check
       required: false
@@ -264,7 +264,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: URL to analyse.
+      description: URL to analyze.
     - name: private
       required: false
       auto: PREDEFINED
@@ -476,7 +476,7 @@ script:
     - name: uuid
       required: true
       description: UUID of the submission.
-    description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
+    description: Downloads a sanitized file from the ThreatZone API and uploads it to the War Room.
     outputs:
     - contextPath: InfoFile.Extension
       type: String

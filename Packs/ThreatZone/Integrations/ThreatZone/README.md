@@ -39,7 +39,7 @@ Submits a sample to ThreatZone for sandbox analysis.
 | timeout | Duration of the submission analysis. If omitted, the current ThreatZone API-provided default is used. Possible values are: 60, 120, 180, 300. | Optional |
 | work_path | The working path of the submission. If omitted, the current ThreatZone API-provided default is used. Possible values are: desktop, root, appdata, windows, temp. | Optional |
 | mouse_simulation | Enable mouse simulation. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
-| https_inspection | Https inspection to read encrypted traffic. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
+| https_inspection | Enable HTTPS inspection for encrypted traffic. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
 | internet_connection | Enable internet connection. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
 | raw_logs | Legacy compatibility argument. ThreatZone v3.2 does not accept this metafield, so it is not forwarded. Possible values are: true, false. | Optional |
 | snapshot | Enable Fast Bootup. If omitted, the current ThreatZone API-provided default is used. Possible values are: true, false. | Optional |
@@ -71,9 +71,9 @@ Submits a sample to ThreatZone for static analysis.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional |
+| private | When false, the submission is visible to everyone. When true, it is visible only to members of your workspace. Possible values are: true, false. Default is true. | Optional |
 | extension_check | Enforce MIME-based extension correction before static scan. Possible values are: true, false. Default is false. | Optional |
-| entrypoint | For archives, specify the filename inside the archive to analyse. | Optional |
+| entrypoint | For archives, specify the filename inside the archive to analyze. | Optional |
 | password | Password for password-protected archives. | Optional |
 
 #### Context Output
@@ -100,7 +100,7 @@ Submits a sample to ThreatZone for CDR.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | Entry ID of the file to submit. | Required |
-| private | If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission. Possible values are: true, false. Default is true. | Optional |
+| private | When false, the submission is visible to everyone. When true, it is visible only to members of your workspace. Possible values are: true, false. Default is true. | Optional |
 | extension_check | Enforce MIME-based extension correction before sanitization. Possible values are: true, false. Default is true. | Optional |
 | entrypoint | For archives, specify the filename inside the archive to sanitize. | Optional |
 | password | Password for password-protected archives. | Optional |
@@ -128,7 +128,7 @@ Submits a URL to ThreatZone for analysis.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to analyse. | Required |
+| url | URL to analyze. | Required |
 | private | Mark the submission as workspace-private. Possible values are: true, false. Default is true. | Optional |
 | safe_browsing | Start an isolated safe-browsing session alongside URL analysis. Possible values are: true, false. Default is false. | Optional |
 
@@ -304,7 +304,7 @@ Retrieves configuration extractor results for a submission from ThreatZone.
 ### tz-get-sanitized
 
 ***
-Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
+Downloads a sanitized file from the ThreatZone API and uploads it to the War Room.
 
 #### Base Command
 
