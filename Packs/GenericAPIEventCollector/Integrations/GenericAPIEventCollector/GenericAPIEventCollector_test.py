@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from unittest.mock import patch
 
 import pytest
@@ -12,6 +12,8 @@ from GenericAPIEventCollector import (
     extract_pagination_params,
     generate_authentication_headers,
     generate_headers,
+    generate_login_url_command,
+    get_oauth2_auth_handler,
     get_time_field_from_event_to_dt,
     is_pagination_needed,
     iso8601_to_datetime_str,
@@ -24,6 +26,7 @@ from GenericAPIEventCollector import (
     is_microseconds,
     convert_epoch_to_timestamp,
 )
+from ContentClientApiModule import OAuth2ClientCredentialsHandler
 
 
 def test_datetime_to_timestamp_format():
@@ -207,12 +210,12 @@ def test_generate_authentication_headers_invalid_auth(mock_error, mock_return_er
     params = {"authentication": "InvalidAuth"}
     generate_authentication_headers(params)
     mock_error.assert_called_once_with(
-        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
-        "No Authorization, got: InvalidAuth"
+        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken, "
+        "OAuth 2.0, No Authorization, got: InvalidAuth"
     )
     mock_return_error.assert_called_once_with(
-        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken"
-        "No Authorization, got: InvalidAuth"
+        "Please insert a valid authentication method, options are: Basic, Bearer, Token, Api-Key, RawToken, "
+        "OAuth 2.0, No Authorization, got: InvalidAuth"
     )
 
 
@@ -463,3 +466,403 @@ def test_convert_epoch_to_timestamp_boundary_conditions(mock_debug):
     expected_16 = datetime.fromtimestamp(float(epoch_16_chars) / 1_000_000)
 
     assert result_16 == expected_16
+
+
+# ---------------------------------------------------------------------------
+# generate_authentication_headers - OAuth 2.0
+# ---------------------------------------------------------------------------
+
+
+def test_generate_authentication_headers_oauth2_returns_empty_headers():
+    """
+    Given: params with authentication set to "OAuth 2.0".
+    When: generate_authentication_headers is called.
+    Then: An empty headers dict is returned (the access token is applied dynamically
+          by the OAuth2ClientCredentialsHandler, not via a static header).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": {"password": "my-secret"},
+    }
+    headers = generate_authentication_headers(params)
+    assert headers == {}
+
+
+# ---------------------------------------------------------------------------
+# get_oauth2_auth_handler
+# ---------------------------------------------------------------------------
+
+
+def test_get_oauth2_auth_handler_returns_none_for_non_oauth2():
+    """
+    Given: params whose authentication method is not "OAuth 2.0".
+    When: get_oauth2_auth_handler is called.
+    Then: None is returned (no OAuth handler is built).
+    """
+    params = {"authentication": "Bearer", "token": {"password": "abc"}}
+    assert get_oauth2_auth_handler(params) is None
+
+
+def test_get_oauth2_auth_handler_client_credentials_grant():
+    """
+    Given: OAuth 2.0 params with a token url, client id and client secret but no
+           authorization code / redirect uri.
+    When: get_oauth2_auth_handler is called.
+    Then: A client credentials OAuth2ClientCredentialsHandler is returned with the
+          configured values and no authorization-code auth_params.
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+        "oauth_scopes": "read write",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    assert handler.token_url == "https://auth.example.com/oauth/token"
+    assert handler.client_id == "my-client-id"
+    assert handler.client_secret == "my-secret"
+    assert handler.scope == "read write"
+    assert handler.auth_params == {}
+
+
+def test_get_oauth2_auth_handler_authorization_code_grant():
+    """
+    Given: OAuth 2.0 params that include both an authorization code and a redirect uri.
+    When: get_oauth2_auth_handler is called.
+    Then: An OAuth2ClientCredentialsHandler using the authorization_code grant is
+          returned with the code and redirect uri populated in auth_params.
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+        "authorization_code": "the-auth-code",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    assert handler.auth_params == {
+        "grant_type": "authorization_code",
+        "code": "the-auth-code",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+
+
+def test_get_oauth2_auth_handler_scope_defaults_to_none_when_empty():
+    """
+    Given: OAuth 2.0 params where oauth_scopes is an empty string.
+    When: get_oauth2_auth_handler is called.
+    Then: The resulting handler has scope set to None (falsy scope is normalized).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+        "oauth_scopes": "",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    assert handler.scope is None
+
+
+def test_get_oauth2_auth_handler_missing_token_url():
+    """
+    Given: OAuth 2.0 params missing the oauth_token_url.
+    When: get_oauth2_auth_handler is called.
+    Then: A handler is still built (validation is performed elsewhere).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+
+
+def test_get_oauth2_auth_handler_missing_client_id():
+    """
+    Given: OAuth 2.0 params missing the oauth_client_id.
+    When: get_oauth2_auth_handler is called.
+    Then: A handler is still built (validation is performed elsewhere).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_secret": "my-secret",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+
+
+def test_get_oauth2_auth_handler_missing_client_secret():
+    """
+    Given: OAuth 2.0 params missing the oauth_client_secret.
+    When: get_oauth2_auth_handler is called.
+    Then: A handler is still built (validation is performed elsewhere).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+
+
+# ---------------------------------------------------------------------------
+# generate_authentication_headers - OAuth 2.0 validation
+# ---------------------------------------------------------------------------
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_generate_authentication_headers_oauth_missing_token_url(mock_return_error):
+    """
+    Given: OAuth 2.0 params missing the oauth_token_url.
+    When: generate_authentication_headers is called.
+    Then: return_error is called with a token-url specific message.
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+    }
+    with pytest.raises(SystemExit):
+        generate_authentication_headers(params)
+    mock_return_error.assert_called_once_with("OAuth token url is required for OAuth 2.0 Authentication.")
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_generate_authentication_headers_oauth_missing_client_id(mock_return_error):
+    """
+    Given: OAuth 2.0 params missing the oauth_client_id.
+    When: generate_authentication_headers is called.
+    Then: return_error is called with a client-id specific message.
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_secret": "my-secret",
+    }
+    with pytest.raises(SystemExit):
+        generate_authentication_headers(params)
+    mock_return_error.assert_called_once_with("OAuth client id is required for OAuth 2.0 Authentication.")
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_generate_authentication_headers_oauth_missing_client_secret(mock_return_error):
+    """
+    Given: OAuth 2.0 params missing the oauth_client_secret.
+    When: generate_authentication_headers is called.
+    Then: return_error is called with a client-secret specific message.
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+    }
+    with pytest.raises(SystemExit):
+        generate_authentication_headers(params)
+    mock_return_error.assert_called_once_with("OAuth client secret is required for OAuth 2.0 Authentication.")
+
+
+# ---------------------------------------------------------------------------
+# generate_login_url_command
+# ---------------------------------------------------------------------------
+
+
+def test_generate_login_url_command_builds_authorize_url():
+    """
+    Given: params with the token url, client id and redirect uri configured.
+    When: generate_login_url_command is called.
+    Then: The command returns readable output that contains a login URL pointing at
+          the derived /authorize endpoint with the expected query parameters.
+    """
+    params = {
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    result = generate_login_url_command(params)
+    readable = result.readable_output
+    assert "https://auth.example.com/oauth/authorize?" in readable
+    assert "response_type=code" in readable
+    assert "client_id=my-client-id" in readable
+    assert "redirect_uri=https%3A%2F%2Fredirect.example.com%2Fcallback" in readable
+    assert "state=" in readable
+
+
+def test_generate_login_url_command_includes_scope_when_provided():
+    """
+    Given: params that include an oauth_scopes value.
+    When: generate_login_url_command is called.
+    Then: The generated login URL includes the url-encoded scope query parameter.
+    """
+    params = {
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "redirect_uri": "https://redirect.example.com/callback",
+        "oauth_scopes": "read write",
+    }
+    result = generate_login_url_command(params)
+    assert "scope=read+write" in result.readable_output
+
+
+def test_generate_login_url_command_omits_scope_when_not_provided():
+    """
+    Given: params without an oauth_scopes value.
+    When: generate_login_url_command is called.
+    Then: The generated login URL does not contain a scope query parameter.
+    """
+    params = {
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    result = generate_login_url_command(params)
+    assert "scope=" not in result.readable_output
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_generate_login_url_command_missing_token_url(mock_return_error):
+    """
+    Given: params missing the oauth_token_url.
+    When: generate_login_url_command is called.
+    Then: return_error is called with a token-url specific message.
+    """
+    params = {
+        "oauth_client_id": "my-client-id",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    with pytest.raises(SystemExit):
+        generate_login_url_command(params)
+    mock_return_error.assert_called_once_with("Oauth token url is required to generate the login url.")
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_generate_login_url_command_missing_client_id(mock_return_error):
+    """
+    Given: params missing the oauth_client_id.
+    When: generate_login_url_command is called.
+    Then: return_error is called with a client-id specific message.
+    """
+    params = {
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    with pytest.raises(SystemExit):
+        generate_login_url_command(params)
+    mock_return_error.assert_called_once_with("Oauth client id is required to generate the login url.")
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_generate_login_url_command_missing_redirect_uri(mock_return_error):
+    """
+    Given: params missing the redirect_uri.
+    When: generate_login_url_command is called.
+    Then: return_error is called with a redirect-uri specific message.
+    """
+    params = {
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+    }
+    with pytest.raises(SystemExit):
+        generate_login_url_command(params)
+    mock_return_error.assert_called_once_with("Redirect uri is required to generate the login url.")
+
+
+# ---------------------------------------------------------------------------
+# TEXT_AREA_ENCRYPTED (parameter type 14) credential delivery
+#
+# NOTE: `oauth_client_secret` and `authorization_code` are declared as
+# TEXT_AREA_ENCRYPTED (parameter type 14) in the yml. Per the demisto-sdk
+# parameter type enum, this type is an encrypted text area that is delivered to
+# the integration as a plain string - unlike the AUTH type (9), which is
+# delivered as a credentials dict `{"identifier": ..., "password": ...}`. The
+# tests below therefore mock these values as plain strings, matching real XSOAR
+# behavior for TEXT_AREA_ENCRYPTED parameters.
+# ---------------------------------------------------------------------------
+
+
+def test_get_oauth2_auth_handler_secret_is_passed_unwrapped_as_plain_string():
+    """
+    Given: OAuth 2.0 params where oauth_client_secret is a plain string
+           (real XSOAR delivery for a type: 14 / TEXT_AREA_ENCRYPTED parameter).
+    When: get_oauth2_auth_handler is called.
+    Then: The client secret is forwarded to the handler unchanged as a plain
+          string (not wrapped in / read from a credentials dict).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    assert handler.client_secret == "my-secret"
+
+
+def test_get_oauth2_auth_handler_authorization_code_is_plain_string():
+    """
+    Given: OAuth 2.0 params where authorization_code is a plain string
+           (real XSOAR delivery for a type: 14 / TEXT_AREA_ENCRYPTED parameter).
+    When: get_oauth2_auth_handler is called with a redirect uri present.
+    Then: The authorization_code grant auth_params carry the plain-string code
+          verbatim (not a stringified credentials dict).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+        "authorization_code": "the-auth-code",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    assert handler.auth_params["code"] == "the-auth-code"
+
+
+@patch("GenericAPIEventCollector.add_sensitive_log_strs")
+def test_generate_authentication_headers_oauth2_masks_unwrapped_secret(mock_add_sensitive):
+    """
+    Given: OAuth 2.0 params where oauth_client_secret is a plain string
+           (type: 14 / TEXT_AREA_ENCRYPTED delivery).
+    When: generate_authentication_headers is called.
+    Then: add_sensitive_log_strs is called with the plain-string secret so it is
+          masked in the logs (and an empty headers dict is returned, since the
+          token is applied dynamically by the auth handler).
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+    }
+    headers = generate_authentication_headers(params)
+    assert headers == {}
+    mock_add_sensitive.assert_called_once_with("my-secret")
+
+
+@patch("GenericAPIEventCollector.demisto.error")
+def test_timestamp_format_to_datetime_unparseable_falls_back_to_now(mock_error):
+    """
+    Given: a timestamp string that cannot be parsed by arg_to_datetime.
+    When: timestamp_format_to_datetime is called.
+    Then: demisto.error is logged and a naive current-time datetime is returned
+          (proving the timezone fallback resolves and does not raise).
+    """
+    before = datetime.now(UTC).replace(tzinfo=None)
+    result = timestamp_format_to_datetime("not-a-real-timestamp", "%Y-%m-%dT%H:%M:%SZ")
+    after = datetime.now(UTC).replace(tzinfo=None)
+
+    assert result.tzinfo is None
+    assert before <= result <= after
+    mock_error.assert_called_once()

@@ -7,38 +7,44 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Generic API Event Collector (Beta) in Cortex
 
-| **Parameter**                                                              | **Description**                                                                                                                                                                                                                                                                            | **Required** |
-|----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| Server URL                                                                 |                                                                                                                                                                                                                                                                                            | True         |
-| Endpoint                                                                   | Add the endpoint you want to collect data from \(Alert/Events etc.\).                                                                                                                                                                                                                      | True         |
-| Authentication Type                                                        | Select the authentication method.                                                                                                                                                                                                                                                           | True         |
-| HTTP Method                                                                | The HTTP method of the request to the API.                                                                                                                                                                                                                                                 | True         |
-| API Token                                                                  | API Key to access the service REST API.                                                                                                                                                                                                                                                    | False        |
-| Username                                                                   | Username &amp;amp; Password to use for basic authentication.                                                                                                                                                                                                                               | False        |
-| Password                                                                   |                                                                                                                                                                                                                                                                                            | False        |
-| Add Fields To header                                                       | If the product authentication requires more fields to add to the header add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\}                | False        |
-| Use system proxy settings                                                  |                                                                                                                                                                                                                                                                                            | False        |
-| Trust any certificate (not secure)                                         |                                                                                                                                                                                                                                                                                            | False        |
-| Vendor                                                                     | Enter vendor name for dataset.                                                                                                                                                                                                                                                              | True         |
-| Product                                                                    | Enter product name for dataset.                                                                                                                                                                                                                                                            | True         |
-| Request data                                                               | If the product authentication requires more fields to add to the DATA add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\}                  | False        |
-| Initial request data                                                       | If the product requires a different initial DATA,  add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\}                                     | False        |
-| Request JSON parameters                                                    | If the product authentication requires more fields to add to the body as JSON add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\}          | False        |
-| Initial request JSON parameters                                            | If the product requires a different initial request JSON, add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\}                              | False        |
-| Query parameters                                                           | If the product authentication allows to filter the results using query Parameters add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\}      | False        |
-| Initial query parameters                                                   | If the product requires a different initial query parameters for the first fetch call, add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False        |
-| Is pagination needed                                                       | If the API JSON response supports events pagination.                                                                                                                                                                                                                                       |              |
-| Pagination field name                                                      | Next page field in JSON response, e.g., "cursor", "next_page"                                                                                                                                                                                                                              | False        |
-| Pagination flag                                                            | Next page existence in JSON response e.g., "has_more", "next"                                                                                                                                                                                                                              | False        |
-| Timestamp format of the event creation time or "epoch".                    | Python compatible datetime formatting \(e.g. ,"%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S"\) or "epoch" to use UNIX epoch time.                                                                                                                                                           | False        |
-| Timestamp field                                                            | The name of the event creation time in the response data, e.g., "timestamp" or "created_at".                                                                                                                                                                                                | True         |
-| Events lookup path in the response JSON, dot-separated, e.g., "data.items". | Where within the response object to find the events list.                                                                                                                                                                                                                                  | False        |
-| Event ID lookup path in the event response JSON, dot-separated, e.g., "id". | Where within the event object to find the event ID.                                                                                                                                                                                                                                       | False        |
-| The type of ID field, either "integer" or "string"                         | ID field of type integer are comparable and when last fetched ID is the maximum ID between the fetched events, when the type is string, the last fetched ID is the last event returned from the API.                                                                                       | False        |
-| OK codes                                                                   | Allowed HTTP status codes for successful response from the API                                                                                                                                                                                                                             | False        |
-| Limit                                                                      | Number of incidents to fetch per fetch.                                                                                                                                                                                                                                                    | False        |
-| Fetch Events                                                               |                                                                                                                                                                                                                                                                                            | False        |
-| Events Fetch Interval                                                      |                                                                                                                                                                                                                                                                                            | False        |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Endpoint | Add the endpoint you want to collect data from \(Alert/Events, etc.\). | True |
+| Authentication Type | Select the authentication method. | True |
+| HTTP Method | The HTTP method of the request to the API. | True |
+| API Token | API Key to access the service REST API. | False |
+| Username | Username &amp;amp; Password to use for basic authentication. | False |
+| Password |  | False |
+| Oauth token URL | OAuth 2.0 token endpoint URL. Format example: https://YOUR_AUTH0_DOMAIN/oauth/token | False |
+| Oauth client ID | OAuth Client ID issued by the IdP. | False |
+| Oauth client secret | OAuth Client Secret. | False |
+| Authorization code | The IdP renders its login/consent page. After the user authenticates and grants consent, the IdP redirects the user-agent to redirect_uri with an authorization code. | False |
+| Redirect URI | Used by IdP to provide an authorization code. | False |
+| Oauth scopes | Space-separated scopes, e.g. events:read alerts:read. | False |
+| Add Fields To header | If the additional header is required, add it here in dictionary format \{unique_field : 286\}. If there's a need to add more then one, use it in this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Vendor | Enter vendor name for dataset. | True |
+| Product | Enter product name for dataset. | True |
+| Request data | If passing DATA is required when calling the API to collect data, add it here in dictionary format \{unique_field : 286\}. If you need to add more then one, use this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Initial request data | If the product requires a different initial DATA, add it here in dictionary format \{unique_field : 286\}. If you need to add more then one, use this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Request JSON parameters | If passing JSON data is required when calling the API to collect data, add it here in dictionary format \{unique_field : 286\}. If you need to add more then one, use this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Initial request JSON parameters | If the product requires a different initial request JSON, add it here in dictionary format \{unique_field : 286\}. If you need to add more then one, use this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Query parameters | If filtering the results using query parameters is required, add it here in dictionary format \{unique_field : 286\}. If you need to add more then one, use this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Initial query parameters | If the product requires a different initial query parameters for the first fetch call, add it here in dictionary format \{unique_field : 286\}. If you need to add more then one, use this format: \{'field-1': value_example, 'field-2': value_2, 'field-3': value_3\} | False |
+| Is pagination needed | If the API JSON response supports events pagination. |  |
+| Pagination field name | Next page field in JSON response, e.g., "cursor", "next_page" | False |
+| Pagination flag | JSON response key indicating whether a next page exists, e.g., "has_more", "next". | False |
+| Timestamp format of the event creation time or "epoch". | Python compatible datetime formatting \(e.g., "%Y-%m-%dT%H:%M:%S.%fZ" or "%Y.%m.%d %H:%M:%S"\) or "epoch" to use UNIX epoch time. | False |
+| Timestamp field | The name of the event creation time in the response data, e.g., "timestamp" or "created_at". | True |
+| Events lookup path in the response JSON, dot-separated, e.g. ,"data.items". | Where to find the events list within the response object . | False |
+| Event ID lookup path in the event response JSON, dot-separated, e.g., "id". | Where to find the event ID within the event object. | False |
+| The type of ID field, either "integer" or "string" | ID field of type integer are comparable and when last fetched ID is the maximum ID between the fetched events, when the type is string, the last fetched ID is the last event returned from the API. | False |
+| Allowed HTTP status codes for successful response from the API | OK codes in a comma-separated list \(e.g., "200,201,202"\). Default is "200". | False |
+| Number of incidents to fetch per request. |  | False |
+| Fetch events |  | False |
+| Events fetch interval |  | False |
 
 ## How to configure the event collector
 
@@ -49,12 +55,15 @@ This is the default integration for this content pack when configured by the Dat
 You must specify the authentication method required by the server.
 The supported authentication types include:
 
-- Basic authentication (username and password)
-- Token-based authentication
-- Bearer token
-- Api-Key token
+- Basic Authentication (username and password)
+- Token Based Authentication (Token key)
+- Bearer Token (API key)
 - Raw Token (for custom token-based authentication)
 - No Authorization (for publicly accessible data)
+- API key (sent in a request header)
+- OAuth 2.0 (Client Credentials and Authorization Code flows)
+
+For the OAuth 2.0 Authorization Code flow, run the ***generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
 
 ### Pagination
 
@@ -363,6 +372,23 @@ Gets events from 3rd-party vendor.
 |--------------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------|
 | should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required     |
 | limit              | Maximum number of results to return.                                                                                              | Optional     |
+
+#### Context Output
+
+There is no context output for this command.
+
+### generate-login-url
+
+***
+Generate the login URL used for the Authorization Code flow.
+
+#### Base Command
+
+`generate-login-url`
+
+#### Input
+
+There are no input arguments for this command.
 
 #### Context Output
 
