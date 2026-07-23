@@ -4,6 +4,8 @@ All delete flags default to `false`, so the playbook does nothing until at least
 
 Note: an indicator flagged in CTIX is only picked up after the CTIX v3 feed re-fetches it, which updates the indicator's flag fields in the Threat Intel Module; the next run then finds and deletes it.
 
+![CTIX - Delete Flagged Indicators](../doc_files/CTIX_-_Delete_Flagged_Indicators.png)
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.

@@ -16,7 +16,10 @@
     "useCases": [],
     "keywords": ["Cyware"],
     "itemPrefix": ["ctix"],
-    "githubUser": [],
+    "githubUser": [
+        "Prateek-Cyware",
+        "vishal-cyware"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
