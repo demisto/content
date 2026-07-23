@@ -15,6 +15,9 @@
     ],
     "useCases": [],
     "keywords": [],
+    "managed": true,
+    "source": "cloud_managed",
+    "source:platform": "registry",
     "dependencies": {
         "Active_Directory_Query": {
             "mandatory": false,
