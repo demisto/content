@@ -1,11 +1,11 @@
-ThreatZone malware analysis sandboxing through the official ThreatZone Python SDK 1.1.0.
+ThreatZone malware analysis sandboxing through the official ThreatZone Python SDK 1.1.1.
 This integration supports ThreatZone platform v3.2.0 and later.
 
 ## Configure ThreatZone in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. https://app.threat.zone) | Required ThreatZone instance root or `/public-api` URL. The integration appends the suffix exactly once. | True |
+| Server URL (e.g. <https://app.threat.zone>) | Required ThreatZone instance root or `/public-api` URL. The integration appends the suffix exactly once. | True |
 | ThreatZone API Key | API key generated for the ThreatZone workspace. | True |
 | Source Reliability | Reliability of the source. | False |
 | Trust any certificate (not secure) | Disables TLS certificate validation when enabled. | False |
@@ -702,7 +702,7 @@ Retrieves the full URL analysis report.
 ### tz-get-behaviours
 
 ***
-Retrieves one bounded page of OS-specific behaviour telemetry.
+Retrieves one bounded page of behaviour telemetry.
 
 #### Base Command
 
@@ -713,7 +713,6 @@ Retrieves one bounded page of OS-specific behaviour telemetry.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | UUID of the submission. | Required |
-| os | Operating system that produced the events. Possible values are: windows, linux, android, macos. | Required |
 | type | Behaviour event type filter. | Optional |
 | pid | Process ID filter. | Optional |
 | operation | Operation-name filter. | Optional |

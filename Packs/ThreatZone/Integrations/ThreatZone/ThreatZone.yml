@@ -804,15 +804,6 @@ script:
     - name: uuid
       required: true
       description: UUID of the submission.
-    - name: os
-      required: true
-      auto: PREDEFINED
-      predefined:
-      - windows
-      - linux
-      - android
-      - macos
-      description: Operating system that produced the events.
     - name: type
       required: false
       description: Behaviour event type filter.
@@ -833,7 +824,7 @@ script:
       required: false
       defaultValue: "100"
       description: Number of events to return (1-500).
-    description: Retrieves one bounded page of OS-specific behaviour telemetry.
+    description: Retrieves one bounded page of behaviour telemetry.
     outputs:
     - contextPath: ThreatZone.Submission.Behaviours.UUID
       description: UUID of the submission.
@@ -1124,7 +1115,7 @@ script:
     - contextPath: ThreatZone.Metadata.Plan_Status
       description: Status of the active ThreatZone plan.
       type: String
-  dockerimage: devdemisto/threatzone-sdk:1.1.0.10645661
+  dockerimage: demisto/threatzone-sdk:1.1.1.11256202
   runonce: false
   subtype: python3
 fromversion: 6.9.0

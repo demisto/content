@@ -729,12 +729,11 @@ class TestTelemetryCommands(unittest.TestCase):
         self.client.sdk.get_behaviours.return_value = {"items": [], "total": 0}
         result = integration.threatzone_get_behaviours(
             self.client,
-            {"uuid": "u", "os": "windows", "pid": "42", "process_name": "sample.exe"},
+            {"uuid": "u", "pid": "42", "process_name": "sample.exe"},
         )[0]
         assert result.outputs["UUID"] == "u"
         self.client.sdk.get_behaviours.assert_called_once_with(
             "u",
-            os="windows",
             type=None,
             pid=42,
             operation=None,
@@ -743,11 +742,9 @@ class TestTelemetryCommands(unittest.TestCase):
             limit=100,
         )
 
-    def test_behaviours_requires_os_and_bounds_limit(self):
-        with pytest.raises(DemistoException, match="os argument is required"):
-            integration.threatzone_get_behaviours(self.client, {"uuid": "u"})
+    def test_behaviours_bounds_limit(self):
         with pytest.raises(DemistoException, match="between 1 and 500"):
-            integration.threatzone_get_behaviours(self.client, {"uuid": "u", "os": "linux", "limit": "501"})
+            integration.threatzone_get_behaviours(self.client, {"uuid": "u", "limit": "501"})
 
     def test_syscalls_defaults_and_limit_bound(self):
         self.client.sdk.get_syscalls.return_value = {"items": [], "total": 0}

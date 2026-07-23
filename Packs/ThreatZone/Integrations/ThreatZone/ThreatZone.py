@@ -1087,9 +1087,6 @@ def threatzone_get_uuid_section(
 
 def threatzone_get_behaviours(client: Client, args: dict[str, Any]) -> list[CommandResults]:  # noqa: F405
     uuid = _require_uuid(args)
-    os_value = args.get("os")
-    if not os_value:
-        raise DemistoException("os argument is required.")  # noqa: F405
     page = cast(
         int,
         parse_bounded_int_argument(args.get("page"), "page", minimum=1, maximum=2_147_483_647, default=1),
@@ -1100,7 +1097,6 @@ def threatzone_get_behaviours(client: Client, args: dict[str, Any]) -> list[Comm
     )
     data = client.sdk.get_behaviours(
         uuid,
-        os=os_value,
         type=args.get("type"),
         pid=parse_int_argument(args.get("pid"), "pid"),
         operation=args.get("operation"),
