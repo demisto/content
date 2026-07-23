@@ -49,7 +49,7 @@ SEVERITY_MAP = {
 
 class Client(ContentClient):
     """
-    Client to use in the Cyberint Premium Feed integration.
+    Client to use in the Check Point EM ThreatCloud Intelligence Feed integration.
     """
 
     def __init__(
@@ -520,7 +520,7 @@ def get_indicators_command(
     )
 
     human_readable = tableToMarkdown(
-        "Indicators from Cyberint Premium Feed:",
+        "Indicators from Check Point EM ThreatCloud Intelligence Feed:",
         indicators,
         headers=[
             "indicator_type",
