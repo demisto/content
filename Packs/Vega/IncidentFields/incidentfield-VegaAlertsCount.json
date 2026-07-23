@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegaalertscount",
+    "version": -1,
+    "name": "Vega Alerts Count",
+    "ownerOnly": false,
+    "description": "The number of Vega alerts grouped under this incident.",
+    "cliName": "vegaalertscount",
+    "type": "number",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
