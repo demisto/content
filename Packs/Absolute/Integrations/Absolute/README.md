@@ -1100,3 +1100,129 @@ In the ***absolute-device-application-list*** command, the following argument wa
   - *Absolute.DeviceUnenroll.Serial*
   - *Absolute.DeviceUnenroll.SystemName*
   - *Absolute.DeviceUnenroll.Username*
+
+### absolute-wipe-request-list
+
+***
+Get information about the Wipe requests.
+
+#### Base Command
+
+`absolute-wipe-request-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_uid | The system-defined unique identifier of the Device Action request. | Optional |
+| request_status | Filters results to include responses where requestStatus equals the given value. Possible values are: Init, Canceled, Completed, InProgress, Failed, Scheduled, PendingApproval. | Optional |
+| created_from_date_time_utc | Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Format &lt;yyyy-MM-dd'T'HH:mm:ss.SSS'Z'&gt;. Example 2011-12-03T10:15:30.000Z. | Optional |
+| created_to_date_time_utc | Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Format &lt;yyyy-MM-dd'T'HH:mm:ss.SSS'Z'&gt;. Example 2011-12-03T10:15:30.000Z. | Optional |
+| page | The pagination token for the next page of results. | Optional |
+| limit | Pagination limit - maximum number of events to return. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Absolute.WipeRequest.requestId | String | The ID of the wipe request. |
+| Absolute.WipeRequest.requestUid | String | The unique identifier of the wipe request. |
+| Absolute.WipeRequest.requestStatus | String | The status of the wipe request. |
+| Absolute.WipeRequest.totalDevices | Number | The total number of devices in the wipe request. |
+| Absolute.WipeRequest.pending | Number | The number of devices pending wipe. |
+| Absolute.WipeRequest.processing | Number | The number of devices currently processing the wipe. |
+| Absolute.WipeRequest.completed | Number | The number of devices that have completed the wipe. |
+| Absolute.WipeRequest.canceled | Number | The number of devices that have canceled the wipe. |
+| Absolute.WipeRequest.failed | Number | The number of devices that have failed the wipe. |
+| Absolute.WipeRequest.macUsername | String | The username of the user with administrative rights \(applies to Mac devices only\). |
+| Absolute.WipeRequest.macPwd | String | The password of the user with administrative rights \(applies to Mac devices only\). |
+| Absolute.WipeRequest.unenrollDevicesAndFreeLicenses | Boolean | Indicates whether a Windows device should be unenrolled after the Wipe is complete. |
+| Absolute.WipeRequest.createdDateTimeUtc | Date | The date and time when the wipe request was created. |
+| Absolute.WipeRequest.updatedDateTimeUtc | Date | The date and time when the wipe request was last updated. |
+| Absolute.WipeRequest.requester | String | The requester of the wipe request. |
+
+### absolute-wipe-actions-list
+
+***
+Get the status of actions by devices or by request.
+
+#### Base Command
+
+`absolute-wipe-actions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_uid | The system-defined unique identifier of the Device Action request. | Optional |
+| device_uids | The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices. | Required |
+| action_status | Filters results to include responses where action_status equals the given value. Possible values are: Failed, Pending, Canceled, Processing, Completed. | Optional |
+| created_from_date_time_utc | Filters results to include responses where createdDateTimeUtc is from the given date and time (inclusive). Format &lt;yyyy-MM-dd'T'HH:mm:ss.SSS'Z'&gt;. Example 2011-12-03T10:15:30.000Z. | Optional |
+| created_to_date_time_utc | Filters results to include responses where createdDateTimeUtc is to the given date and time (inclusive). Format &lt;yyyy-MM-dd'T'HH:mm:ss.SSS'Z'&gt;. Example 2011-12-03T10:15:30.000Z. | Optional |
+| page | The pagination token for the next page of results. | Optional |
+| limit | Pagination limit - maximum number of events to return. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Absolute.WipeAction.actionUid | String | The unique identifier of the wipe action. |
+| Absolute.WipeAction.requestUid | String | The unique identifier of the wipe request. |
+| Absolute.WipeAction.deviceUid | String | The unique identifier of the device. |
+| Absolute.WipeAction.deviceName | String | The name of the device. |
+| Absolute.WipeAction.esn | String | The Electronic Serial Number of the device. |
+| Absolute.WipeAction.actionStatus | String | The status of the wipe action. |
+| Absolute.WipeAction.updatedDateTimeUtc | Date | The date and time when the wipe action was last updated. |
+| Absolute.WipeAction.createdDateTimeUtc | Date | The date and time when the wipe action was created. |
+| Absolute.WipeAction.certificateUid | String | The unique identifier of the certificate. |
+
+### absolute-wipe-request-create
+
+***
+Create a Wipe request for the devices.
+
+#### Base Command
+
+`absolute-wipe-request-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_uids | The system-defined unique identifiers of the devices included in the request. Passing an empty list will return results for all applicable devices. | Required |
+| name | The name of the Wipe request. | Optional |
+| description | The user-defined description of the Wipe request. | Optional |
+| firmware_wipe_requested | Indicates whether a Firmware Wipe is requested. Possible values are: true, false. | Optional |
+| crypto_wipe_requested | Indicates whether a Cryptographic Wipe is requested. Default is true if no other Wipe options are specified. Possible values are: true, false. | Optional |
+| wipe_used_space_only | Indicates whether only the device's used disk space is wiped. Applies to Cryptographic Wipe requests only. Possible values are: true, false. | Optional |
+| delete_all_files_requested | Indicates whether a Delete All Files wipe is requested. Possible values are: true, false. | Optional |
+| disable_window_os | Indicates whether all non-OS and user profile data is deleted and the Windows operating system is disabled after the Wipe is complete. Applies only to Delete All Files wipe requests on Windows devices. Possible values are: true, false. | Optional |
+| secure_erase_count | Indicates the number of times the file content is overwritten with non-sensitive data (series of zeros and ones). Applies to Delete All Files wipe requests only. Possible values are: 1, 3, 7. | Optional |
+| mac_user_name | The username of the user with administrative rights (applies to Mac devices only). | Optional |
+| mac_pwd | The password of the user with administrative rights (applies to Mac devices only). | Optional |
+| unenroll_devices_and_free_licenses | Indicates whether a Windows device should be unenrolled after the Wipe is complete. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+### absolute-wipe-request-cancel
+
+***
+Attempt to cancel all Wipe actions with an actionStatus of Pending for the request specified by the requestUid path parameter.
+
+#### Base Command
+
+`absolute-wipe-request-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_uid | The system-defined unique identifier of the Device Action request. | Required |
+| action_uids | The system-defined unique identifiers of the actions included in the request. | Optional |
+| cancel_all_actions | Indicates whether all actions in the request should be canceled. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
