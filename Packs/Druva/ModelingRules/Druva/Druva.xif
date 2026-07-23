@@ -1,4 +1,3 @@
-// Mapping and extraction of fields for all event types.
 [RULE: druva_common_fields]
 alter
     src_username = arrayindex(regextract(initiator, "(\S+)\@"),0),
@@ -14,7 +13,8 @@ alter
     xdm.source.ipv6 = if(is_ipv6(ip), ip),
     xdm.event.id  = rtrim(to_string(eventID), ".0"),
     xdm.target.host.os = if(clientOS = "", null, clientOS),
-    xdm.event.type = eventType,
+    xdm.event.type = source_log_type,
+    xdm.event.original_event_type = eventType,
     xdm.source.user.username = if(src_username != null, src_username ,initiator = "", null, initiator),
     xdm.source.user.first_name = if(src_first_name != null, src_first_name),
     xdm.source.user.last_name = if(src_last_name != null, src_last_name),
@@ -32,22 +32,75 @@ alter
     xdm.target.host.hostname = if(inSyncDataSourceName = "", null, inSyncDataSourceName),
     xdm.event.log_level = if(severity_str = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity_str = "1", XDM_CONST.LOG_LEVEL_ALERT, severity_str = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity_str = "3", XDM_CONST.LOG_LEVEL_ERROR, severity_str = "4", XDM_CONST.LOG_LEVEL_WARNING, severity_str = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity_str = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity_str = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity_str);
 
-[MODEL: dataset="druva_druva_raw"]
-filter eventType = "Alert" //Extraction of fields from 'eventDetails' that are relevant to 'Alert' event types.
-| call druva_common_fields
-| alter
+[RULE:druva_alert_specific_fields]
+alter
     alert_name = arrayindex(regextract(eventDetails, "Alert\:(.+?)\,"),0),
     alert_desc = arrayindex(regextract(eventDetails, "Alert\sDescription\:(.+?)\,"),0)
 | alter
     xdm.alert.name = alert_name,
     xdm.alert.description = if(alert_desc = "NA.", null, alert_desc);
 
-filter eventType = "Backup" //Extraction of fields from 'eventDetails' that are relevant to 'Backup' event types.
-| call druva_common_fields
-| alter
+[RULE:druva_backup_specific_fields]
+alter
     bytes_sent = arrayindex(regextract(eventDetails, "Total\sBytes\sTransferred\:(\d+)"), 0)
 | alter
     xdm.target.sent_bytes = to_integer(bytes_sent);
 
-filter eventType not in ("Alert", "Backup")
+[RULE: druva_security_common_fields]
+alter
+    det = to_json_string(details)
+| alter
+    sec_email      = json_extract_scalar(det, "$.email"),
+    sec_status     = json_extract_scalar(det, "$.status"),
+    sec_sourceip   = json_extract_scalar(det, "$.sourceIP"),
+    sec_ip         = json_extract_scalar(det, "$.ip"),
+    sec_initiator  = json_extract_scalar(det, "$.initiator"),
+    sec_initiatorid= json_extract_scalar(det, "$.initiatorID"),
+    sec_errmsg     = json_extract_scalar(det, "$.errorMessage"),
+    sec_admin_email= json_extract_scalar(det, "$.adminEmail"),
+    sec_admin_ip   = json_extract_scalar(det, "$.adminIPAddress"),
+    sec_login_res  = json_extract_scalar(det, "$.loginResult"),
+    sec_location   = json_extract_scalar(det, "$.location"),
+    sec_eventstate = json_extract_scalar(det, "$.eventState"),
+    sec_eventdet   = json_extract_scalar(det, "$.eventDetails"),
+    sec_mfamode    = json_extract_scalar(to_json_string(det), "$.mfaMode"),
+    sec_alertname  = json_extract_scalar(to_json_string(details), "$.alertName")
+
+| alter
+    sec_actor_ip   = coalesce(sec_sourceip, sec_ip, sec_admin_ip),
+    sec_actor_user = coalesce(sec_admin_email, sec_email, sec_initiator),
+    sec_outcome_raw= coalesce(sec_status, sec_login_res, sec_eventstate)
+| alter
+    xdm.event.id                  = to_string(id),
+    xdm.event.type                = source_log_type,
+    xdm.event.original_event_type = type,
+    xdm.event.description         = coalesce(sec_eventdet, sec_errmsg),
+    xdm.source.ipv4               = if(is_ipv4(sec_actor_ip), sec_actor_ip),
+    xdm.source.ipv6               = if(is_ipv6(sec_actor_ip), sec_actor_ip),
+    xdm.source.location.country   = sec_location,
+    xdm.alert.name                = coalesce(sec_alertname, type),
+    xdm.auth.mfa.method = sec_mfamode,
+    xdm.source.user.username      = arrayindex(regextract(sec_actor_user, "(\S+)\@"), 0),
+    xdm.source.user.upn           = if(sec_actor_user contains "@", sec_actor_user),
+    xdm.source.user.identifier    = sec_initiatorid,
+    xdm.event.outcome             = if(sec_outcome_raw contains "Success" or sec_outcome_raw contains "Warning", XDM_CONST.OUTCOME_SUCCESS, sec_outcome_raw contains "Failure" or sec_outcome_raw contains "Failed", XDM_CONST.OUTCOME_FAILED, sec_outcome_raw),
+    xdm.event.outcome_reason      = sec_errmsg,
+    xdm.event.log_level           = if(to_string(syslogSeverity) = "3", XDM_CONST.LOG_LEVEL_ERROR, to_string(syslogSeverity) = "4", XDM_CONST.LOG_LEVEL_WARNING, to_string(syslogSeverity) = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, to_string(syslogSeverity));
+
+[MODEL: dataset="druva_druva_raw"]
+filter eventType = "Alert"
+| call druva_common_fields
+| call druva_alert_specific_fields;
+
+filter eventType = "Backup"
+| call druva_common_fields
+| call druva_backup_specific_fields;
+
+filter category = "EVENT" 
+| call druva_security_common_fields;
+
+filter eventType not in ("Alert", "Backup") and details = null
 | call druva_common_fields;
+
+filter category = "EVENT" and feature not in ("Admin Event","Alerts And Notifications") and eventType = null
+| call druva_security_common_fields;
