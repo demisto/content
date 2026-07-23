@@ -35,7 +35,7 @@ configuration:
   type: 13
   required: false
   section: Collect
-- defaultvalue: Event,Threat Monitoring Object,DSPM Violation,IR Violation
+- defaultvalue: Event,Threat Monitoring Object,DSPM Violation,IR Violation,Sensitive Data Object
   display: RSC Fetch Types
   additionalinfo: "Select RSC types to fetch as incidents.\n\nNote: Supports the listed options only. If not provided, it will fetch all listed options."
   name: rsc_fetch_types
@@ -44,6 +44,7 @@ configuration:
   - Threat Monitoring Object
   - DSPM Violation
   - IR Violation
+  - Sensitive Data Object
   type: 16
   required: false
   section: Collect
@@ -99,7 +100,7 @@ configuration:
   type: 0
   required: false
   section: Collect
-- additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If multiple fetch types (Events, Threat Monitoring objects, DSPM Violations, IR Violations) are selected, the limit is distributed optimally among them to fetch all types."
+- additionalinfo: "Maximum number of incidents to fetch every time. The maximum value is 1000.\n\nNote: If multiple fetch types (Events, Threat Monitoring objects, DSPM Violations, IR Violations, Sensitive Data Objects) are selected, the limit is distributed optimally among them to fetch all types."
   defaultvalue: '20'
   display: Fetch Limit (Maximum of 1000)
   name: max_fetch
@@ -300,6 +301,50 @@ configuration:
   - PRIVILEGED
   - AT_RISK
   - SENSITIVE
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select Sensitive Data Object sensitivity levels to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"Sensitive Data Object\"."
+  display: Sensitive Data Object Sensitivity Levels
+  name: sensitive_data_object_sensitivity
+  options:
+  - HIGH
+  - MEDIUM
+  - LOW
+  - NO
+  type: 16
+  required: false
+  section: Collect
+- additionalinfo: "Select Sensitive Data Object types to fetch as incidents. Default is all.\n\nNote: Applies only when RSC fetch type is set to \"Sensitive Data Object\". Values not included in the options can be found in the documentation."
+  display: Sensitive Data Object Types
+  name: sensitive_data_object_type
+  options:
+  - VmwareVirtualMachine
+  - LinuxFileset
+  - ShareFileset
+  - WindowsFileset
+  - NutanixVirtualMachine
+  - HypervVirtualMachine
+  - VolumeGroup
+  - NAS_FILESET
+  - OLVM_VIRTUAL_MACHINE
+  - AzureNativeVm
+  - AzureNativeManagedDisk
+  - AZURE_STORAGE_ACCOUNT
+  - AZURE_SQL_DATABASE_DB
+  - AZURE_SQL_MANAGED_INSTANCE_DB
+  - O365Onedrive
+  - O365Site
+  - AWS_NATIVE_S3_BUCKET
+  - AwsNativeEbsVolume
+  - AwsNativeRdsInstance
+  - AWS_NATIVE_DYNAMODB_TABLE
+  - OracleDatabase
+  - ORACLE_DATA_GUARD_GROUP
+  - K8S_VIRTUAL_MACHINE
+  - K8S_PROTECTION_SET
+  - GcpNativeGCEInstance
+  - GcpNativeDisk
   type: 16
   required: false
   section: Collect
@@ -3080,8 +3125,20 @@ script:
     - contextPath: RubrikPolaris.FileContext.lastModifiedTime
       description: The last modified time of the file in milliseconds since the epoch.
       type: Number
+    - contextPath: RubrikPolaris.FileContext.creationTime
+      description: The creation time of the file in milliseconds since the epoch.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.lastScanTime
+      description: The last scan time of the file in milliseconds since the epoch.
+      type: Number
     - contextPath: RubrikPolaris.FileContext.directory
       description: The value of Directory.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.createdBy
+      description: The user who created the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.modifiedBy
+      description: The user who last modified the file.
       type: String
     - contextPath: RubrikPolaris.FileContext.numDescendantFiles
       description: The number of descendant files of the file.
@@ -3204,7 +3261,7 @@ script:
       description: The type of the high-risk file count field.
       type: String
     - contextPath: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.totalCount
-      description: Total number of medium-risk files for the policy object.
+      description: The total number of medium-risk files for the policy object.
       type: Number
     - contextPath: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.violatedCount
       description: The number of medium-risk files for the policy object that violates policies.
@@ -3213,7 +3270,7 @@ script:
       description: The type of the medium risk file count field.
       type: String
     - contextPath: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.totalCount
-      description: Total number of low-risk files for the policy object.
+      description: The total number of low-risk files for the policy object.
       type: Number
     - contextPath: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.violatedCount
       description: The number of low-risk files for the policy object that violates policies.
@@ -3221,8 +3278,128 @@ script:
     - contextPath: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.__typename
       description: The type of the low-risk file count field.
       type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.noRiskFileCount.totalCount
+      description: The total number of no-risk files for the policy object.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.noRiskFileCount.violatedCount
+      description: The number of no-risk files for the policy object that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.noRiskFileCount.__typename
+      description: The type of the no-risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.totalFileCount.totalCount
+      description: The total number of files for the policy object.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.totalFileCount.violatedCount
+      description: The number of files for the policy object that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.totalFileCount.__typename
+      description: The type of the total file count field.
+      type: String
     - contextPath: RubrikPolaris.FileContext.sensitiveFiles.__typename
       description: The type of the sensitive files field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.highRiskHits.totalHits
+      description: The total number of high-risk sensitive hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.highRiskHits.violatedHits
+      description: The number of high-risk sensitive hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.highRiskHits.__typename
+      description: The type of the high-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.mediumRiskHits.totalHits
+      description: The total number of medium-risk sensitive hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.mediumRiskHits.violatedHits
+      description: The number of medium-risk sensitive hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.mediumRiskHits.__typename
+      description: The type of the medium-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.lowRiskHits.totalHits
+      description: The total number of low-risk sensitive hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.lowRiskHits.violatedHits
+      description: The number of low-risk sensitive hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.lowRiskHits.__typename
+      description: The type of the low-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.noRiskHits.totalHits
+      description: The total number of no-risk sensitive hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.noRiskHits.violatedHits
+      description: The number of no-risk sensitive hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.noRiskHits.__typename
+      description: The type of the no-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveHits.__typename
+      description: The type of the sensitive hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.highRiskHits.totalHits
+      description: The total number of high-risk analyzer hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.highRiskHits.violatedHits
+      description: The number of high-risk analyzer hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.highRiskHits.__typename
+      description: The type of the high-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.mediumRiskHits.totalHits
+      description: The total number of medium-risk analyzer hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.mediumRiskHits.violatedHits
+      description: The number of medium-risk analyzer hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.mediumRiskHits.__typename
+      description: The type of the medium-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.lowRiskHits.totalHits
+      description: The total number of low-risk analyzer hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.lowRiskHits.violatedHits
+      description: The number of low-risk analyzer hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.lowRiskHits.__typename
+      description: The type of the low-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.noRiskHits.totalHits
+      description: The total number of no-risk analyzer hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.noRiskHits.violatedHits
+      description: The number of no-risk analyzer hits for the file that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.noRiskHits.__typename
+      description: The type of the no-risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerRiskHits.__typename
+      description: The type of the analyzer risk hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.hits.totalHits
+      description: The total number of hits for the analyzer results.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.hits.violations
+      description: The number of violations for the analyzer results.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.hits.__typename
+      description: The type of the hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.analyzer.id
+      description: The ID of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.analyzer.name
+      description: The name of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.analyzer.analyzerType
+      description: The type of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.analyzer.__typename
+      description: The type of the analyzer field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerResults.__typename
+      description: The type of the analyzer results field.
       type: String
     - contextPath: RubrikPolaris.FileContext.openAccessType
       description: The open access type for the file.
@@ -3236,17 +3413,86 @@ script:
     - contextPath: RubrikPolaris.FileContext.numActivitiesDelta
       description: The change in the number of activities for the file since the last time it was checked.
       type: Number
+    - contextPath: RubrikPolaris.FileContext.exposureSummary.exposureType
+      description: The exposure type of the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.exposureSummary.fileCount.totalCount
+      description: The total number of files with this exposure type.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.exposureSummary.fileCount.violatedCount
+      description: The number of files with this exposure type that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.exposureSummary.fileCount.__typename
+      description: The type of the file count field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.exposureSummary.__typename
+      description: The type of the exposure summary field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.dbEntityType
+      description: The database entity type of the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.mipLabel.siteId
+      description: The site ID of the MIP label.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.mipLabel.labelName
+      description: The name of the MIP label.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.mipLabel.labelId
+      description: The ID of the MIP label.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.mipLabel.hasProtection
+      description: Whether the MIP label has protection applied.
+      type: Boolean
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.mipLabel.__typename
+      description: The type of the MIP label field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.filesCount.violatedCount
+      description: The number of files with this MIP label that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.filesCount.totalCount
+      description: The total number of files with this MIP label.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.filesCount.__typename
+      description: The type of the files count field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.mipLabelsSummary.__typename
+      description: The type of the MIP labels summary field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.documentTypesSummary.id
+      description: The ID of the document type.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.documentTypesSummary.name
+      description: The name of the document type.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.documentTypesSummary.filesCount.totalCount
+      description: The total number of files of this document type.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.documentTypesSummary.filesCount.violatedCount
+      description: The number of files of this document type that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.documentTypesSummary.filesCount.__typename
+      description: The type of the files count field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.documentTypesSummary.__typename
+      description: The type of the document types summary field.
+      type: String
     - contextPath: RubrikPolaris.FileContext.__typename
       description: The type of the file context field.
       type: String
     - contextPath: RubrikPolaris.PageToken.FileContext.name
       description: Name of the command.
       type: String
+    - contextPath: RubrikPolaris.PageToken.FileContext.startCursor
+      description: The start cursor for the current page.
+      type: String
     - contextPath: RubrikPolaris.PageToken.FileContext.endCursor
       description: The end cursor for the current page.
       type: String
     - contextPath: RubrikPolaris.PageToken.FileContext.hasNextPage
       description: Whether the result has the next page or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.PageToken.FileContext.hasPreviousPage
+      description: Whether the result has the previous page or not.
       type: Boolean
   - arguments:
     - description: "The Snapshot ID of the object or Activity Series ID.\n\nNote: Users can get the list of the snapshot IDs by executing the \"rubrik-polaris-object-snapshot-list\" command. For the Activity Series ID, the users can execute the \"rubrik-event-list\" command with the \"activity_type\" argument set to \"ANOMALY\"."
@@ -6249,6 +6495,454 @@ script:
     - contextPath: RubrikPolaris.IRViolation.status
       description: The status of the violation.
       type: String
+  - name: rubrik-sensitive-data-object-get
+    arguments:
+    - description: "The ID of the object (snappable FID).\n\nNote: Users can get the object ID by executing the \"rubrik-polaris-object-list\" command."
+      name: object_id
+      required: true
+    - description: "The Snapshot ID of the object.\n\nNote: Users can get the snapshot ID by executing the \"rubrik-polaris-object-snapshot-list\" command."
+      name: snapshot_id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: "The boolean indicates to include the whitelisted results."
+      name: include_whitelisted_results
+      predefined:
+      - "True"
+      - "False"
+    description: Retrieve the details of the object based on the provided object ID and snapshot ID.
+    outputs:
+    - contextPath: RubrikPolaris.SensitiveDataObject.id
+      description: The ID of the sensitive data object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snapshotFid
+      description: The FID of the snapshot associated with the object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snapshotTimestamp
+      description: The timestamp of the snapshot.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.shareType
+      description: The share type of the object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.riskLevel
+      description: The risk level of the object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.osType
+      description: The OS type of the object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.isUserAccessEnabledObject
+      description: Whether user access is enabled for the object.
+      type: Boolean
+    - contextPath: RubrikPolaris.SensitiveDataObject.__typename
+      description: The GraphQL type name of the sensitive data object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.objectStatus.latestSnapshotResult.snapshotTime
+      description: The time of the latest snapshot result.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.objectStatus.latestSnapshotResult.snapshotFid
+      description: The FID of the latest snapshot result.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.objectStatus.policyStatuses.status
+      description: The status of the policy for the object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.objectStatus.__typename
+      description: The GraphQL type name of the object status.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.objectStatus.latestSnapshotResult.__typename
+      description: The GraphQL type name of the latest snapshot result.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.hits.totalHits
+      description: The total number of sensitive data hits in the object.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.hits.violations
+      description: The total number of violations in the object.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.hits.violationsDelta
+      description: The change in violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.hits.totalHitsDelta
+      description: The change in total hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.__typename
+      description: The GraphQL type name of the root file result.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.hits.__typename
+      description: The GraphQL type name of the root file result hits.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.groupType
+      description: The type of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.id
+      description: The ID of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.name
+      description: The name of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.totalHits
+      description: The total hits for the analyzer group.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.violations
+      description: The violations for the analyzer group.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.violationsDelta
+      description: The change in violations for the analyzer group since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.totalHitsDelta
+      description: The change in total hits for the analyzer group since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.__typename
+      description: The GraphQL type name of the analyzer group result.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.analyzerGroup.__typename
+      description: The GraphQL type name of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerGroupResults.hits.__typename
+      description: The GraphQL type name of the analyzer group hits.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.analyzer.id
+      description: The ID of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.analyzer.name
+      description: The name of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.totalHits
+      description: The total hits for the analyzer.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.violations
+      description: The violations for the analyzer.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.violationsDelta
+      description: The change in violations for the analyzer since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.totalHitsDelta
+      description: The change in total hits for the analyzer since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.analyzerResults.hits.__typename
+      description: The GraphQL type name of the analyzer result hits.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.totalHits
+      description: The total number of files with sensitive data hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.violations
+      description: The number of files with violations.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.violationsDelta
+      description: The change in files with violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.totalHitsDelta
+      description: The change in files with hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.filesWithHits.__typename
+      description: The GraphQL type name of the files with hits.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.totalHits
+      description: The total number of open-access files.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.violations
+      description: The number of open-access files with violations.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.violationsDelta
+      description: The change in open-access files with violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.totalHitsDelta
+      description: The change in open-access files hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFiles.__typename
+      description: The GraphQL type name of the open access files.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.totalHits
+      description: The total number of open-access folders.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.violations
+      description: The number of open-access folders with violations.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.violationsDelta
+      description: The change in open-access folders with violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.totalHitsDelta
+      description: The change in open-access folders hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFolders.__typename
+      description: The GraphQL type name of the open access folders.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.totalHits
+      description: The total number of open-access files with sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.violations
+      description: The number of open-access files with hits and violations.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.violationsDelta
+      description: The change in open-access files with hits violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.totalHitsDelta
+      description: The change in open-access files with hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessFilesWithHits.__typename
+      description: The GraphQL type name of the open access files with hits.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.totalHits
+      description: The total number of stale files.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.violations
+      description: The number of stale files with violations.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.violationsDelta
+      description: The change in stale files with violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.totalHitsDelta
+      description: The change in stale files hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFiles.__typename
+      description: The GraphQL type name of the stale files.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.totalHits
+      description: The total number of stale files with sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.violations
+      description: The number of stale files with hits and violations.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.violationsDelta
+      description: The change in stale files with hits violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.totalHitsDelta
+      description: The change in stale files with hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.staleFilesWithHits.__typename
+      description: The GraphQL type name of the stale files with hits.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.totalHits
+      description: The total number of open-access stale files.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.violations
+      description: The number of open-access stale files with violations.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.violationsDelta
+      description: The change in open-access stale files with violations since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.totalHitsDelta
+      description: The change in open-access stale files hits since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.openAccessStaleFiles.__typename
+      description: The GraphQL type name of the open access stale files.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.totalHits
+      description: The total high risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.violatedHits
+      description: The violated high risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.highRiskHits.__typename
+      description: The GraphQL type name of the high risk hits summary.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.totalHits
+      description: The total medium risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.violatedHits
+      description: The violated medium risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.mediumRiskHits.__typename
+      description: The GraphQL type name of the medium risk hits summary.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.totalHits
+      description: The total low risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.violatedHits
+      description: The violated low risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.lowRiskHits.__typename
+      description: The GraphQL type name of the low risk hits summary.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.totalHits
+      description: The total no-risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.violatedHits
+      description: The violated no-risk sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.noRiskHits.__typename
+      description: The GraphQL type name of the no-risk hits summary.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.totalHits
+      description: The total sensitive hits across all risk levels.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.violatedHits
+      description: The total violated sensitive hits across all risk levels.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.totalHits.__typename
+      description: The GraphQL type name of the total sensitive hits summary.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.sensitiveHits.__typename
+      description: The GraphQL type name of the sensitive hits.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.numActivities
+      description: The number of activities associated with the file result.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.rootFileResult.numActivitiesDelta
+      description: The change in number of activities since last scan.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.id
+      description: The ID of the snappable object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.name
+      description: The name of the snappable object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.objectType
+      description: The type of the snappable object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.slaAssignment
+      description: The SLA assignment of the snappable object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.logicalPath.fid
+      description: The FID of the logical path node.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.logicalPath.name
+      description: The name of the logical path node.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.logicalPath.objectType
+      description: The object type of the logical path node.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.logicalPath.__typename
+      description: The GraphQL type name of the logical path node.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.physicalPath.fid
+      description: The FID of the physical path node.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.physicalPath.name
+      description: The name of the physical path node.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.physicalPath.objectType
+      description: The object type of the physical path node.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.effectiveSlaDomain.id
+      description: The ID of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.effectiveSlaDomain.name
+      description: The name of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.effectiveSlaDomain.isRetentionLockedSla
+      description: Whether the SLA domain has retention lock enabled.
+      type: Boolean
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.effectiveSlaDomain.retentionLockMode
+      description: The retention lock mode of the SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.effectiveSlaDomain.description
+      description: The description of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.effectiveSlaDomain.__typename
+      description: The GraphQL type name of the effective SLA domain.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.rscNativeObjectPendingSla.id
+      description: The ID of the pending SLA for the native object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.rscNativeObjectPendingSla.name
+      description: The name of the pending SLA for the native object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.snappable.__typename
+      description: The GraphQL type name of the snappable object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.policySummaries.id
+      description: The ID of the classification policy.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.policySummaries.name
+      description: The name of the classification policy.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.policySummaries.colorEnum
+      description: The color enum of the classification policy.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObject.policySummaries.__typename
+      description: The GraphQL type name of the classification policy summary.
+      type: String
+  - name: rubrik-sensitive-data-object-file-get
+    arguments:
+    - description: "The ID of the object (snappable FID).\n\nNote: Users can get the object ID by executing the \"rubrik-polaris-object-list\" command."
+      name: object_id
+      required: true
+    - description: "The Snapshot ID of the object.\n\nNote: Users can get the snapshot ID by executing the \"rubrik-polaris-object-snapshot-list\" command."
+      name: snapshot_id
+      required: true
+    - description: The full path of the file for which to retrieve information.
+      name: file_path
+      required: true
+    - auto: PREDEFINED
+      defaultValue: "True"
+      description: Whether to resolve SIDs to display names in the file response.
+      name: resolve_sids
+      predefined:
+      - "True"
+      - "False"
+    description: Retrieve the file information for the provided file path in the object.
+    outputs:
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.objectId
+      description: The unique identifier of the snappable object.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.stdPath
+      description: The standard file path of the sensitive file.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.path
+      description: The full path of the sensitive file from the security descriptor.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.owner
+      description: The SID of the owner of the file.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.cn
+      description: The display name of the principal with file permissions.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.principalId
+      description: The SID or identifier of the principal with file permissions.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.principalOrigin
+      description: The origin of the principal.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.idpType
+      description: The identity provider type for the principal.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.principalType
+      description: The type of the principal.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.resolutionType
+      description: The resolution type of the principal SID.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.access
+      description: The access level granted to the principal.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.flags
+      description: The permission flags.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.secInfo.permissions.accessMethodDetails.accessMethod
+      description: The access method used.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.createdBy.value
+      description: The value of the principal who created the file.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.creationTime
+      description: The creation time of the file as a Unix timestamp.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.lastAccessTime
+      description: The last access time of the file as a Unix timestamp.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.lastModifiedBy.value
+      description: The value of the principal who last modified the file.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.lastModifiedTime
+      description: The last modified time of the file as a Unix timestamp.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.lastScanTime
+      description: The last scan time of the file as a Unix timestamp.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.path
+      description: The full path of the file as recorded in the metadata.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.fileMetadata.size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.exposureSummary.exposureType
+      description: The exposure type of the file.
+      type: String
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.exposureSummary.fileCount.totalCount
+      description: The total count of files in the exposure summary.
+      type: Number
+    - contextPath: RubrikPolaris.SensitiveDataObjectFile.exposureSummary.fileCount.violatedCount
+      description: The number of files with violations in the exposure summary.
+      type: Number
   dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.10133006
   isfetch: true
   runonce: false
