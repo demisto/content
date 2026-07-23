@@ -81,6 +81,26 @@ configuration:
   advanced: true
   hidden: true
   required: false
+- display: Certificate Thumbprint (for certificate-based authentication)
+  name: creds_auth_certificate
+  type: 9
+  section: Connect
+  advanced: true
+  displaypassword: Private Key (for certificate-based authentication)
+  additionalinfo: |-
+    Optional. SHA-1 thumbprint (hex) of the certificate uploaded to the Azure AD app registration.
+    When both Certificate Thumbprint and Private Key are provided, certificate-based authentication
+    (client assertion JWT) is used instead of Bot Password.
+  required: false
+- display: Tenant ID (for certificate-based authentication)
+  name: tenant_id
+  type: 0
+  section: Connect
+  advanced: true
+  additionalinfo: |-
+    Required when using certificate-based authentication. The Azure AD tenant ID (Directory ID).
+    Find it in Azure Portal → Microsoft Entra ID → Overview → Tenant ID.
+  required: false
 - display: Bot Type Converted to Single-Tenant
   name: is_single_tenant_bot_type
   type: 8

@@ -4744,3 +4744,357 @@ def test_proactive_users_lru_eviction_on_new_user(mocker, requests_mock):
     assert oldest_user not in cached_users  # LRU evicted
     assert new_proactive_user_id in cached_users
     assert cached_users[new_proactive_user_id]["email"] == new_user_email
+
+
+# ============================================================
+# Certificate-based authentication tests
+# ============================================================
+
+FAKE_THUMBPRINT = "AABBCCDDEEFF00112233445566778899AABBCCDD"
+FAKE_PRIVATE_KEY = """-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA2a2rwplBQLzHPZe5TNJT5sGNdSa6K7/Gu7ow7aSFGMFMhFT
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+-----END RSA PRIVATE KEY-----"""
+
+
+def test_create_client_assertion_structure(mocker):
+    """
+    Given:
+        - AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY are set.
+        - A tenant_id and audience_url are provided.
+    When:
+        - Calling create_client_assertion().
+    Then:
+        - Ensure the returned JWT has the correct x5t header and payload claims.
+    """
+    from MicrosoftTeams import create_client_assertion
+
+    fake_assertion = "header.payload.signature"
+    mock_encode = mocker.patch("MicrosoftTeams.jwt.encode", return_value=fake_assertion)
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", FAKE_THUMBPRINT)
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+    mocker.patch("MicrosoftTeams.BOT_ID", "test-bot-id")
+
+    audience_url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+    result = create_client_assertion(tenant_id=tenant_id, audience_url=audience_url)
+
+    assert result == fake_assertion
+    assert mock_encode.called
+
+    call_kwargs = mock_encode.call_args
+    payload = call_kwargs[0][0]
+    private_key = call_kwargs[0][1]
+    headers = call_kwargs[1].get("headers") or call_kwargs[0][3] if len(call_kwargs[0]) > 3 else call_kwargs[1]["headers"]
+
+    assert payload["aud"] == audience_url
+    assert payload["iss"] == "test-bot-id"
+    assert payload["sub"] == "test-bot-id"
+    assert "jti" in payload
+    assert "nbf" in payload
+    assert "iat" in payload
+    assert "exp" in payload
+    assert payload["exp"] > payload["iat"]
+    assert private_key == FAKE_PRIVATE_KEY
+
+
+def test_create_client_assertion_x5t_encoding(mocker):
+    """
+    Given:
+        - A hex thumbprint with colons (e.g., from openssl output).
+    When:
+        - Calling create_client_assertion().
+    Then:
+        - Ensure the x5t header is correctly base64url-encoded (no padding) from the hex thumbprint.
+    """
+    import base64
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", "AA:BB:CC:DD:EE")
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+    mocker.patch("MicrosoftTeams.BOT_ID", "test-bot-id")
+
+    captured_headers: dict = {}
+
+    def capture_encode(payload, key, algorithm, headers):
+        captured_headers.update(headers)
+        return "mocked.jwt.token"
+
+    mocker.patch("MicrosoftTeams.jwt.encode", side_effect=capture_encode)
+
+    from MicrosoftTeams import create_client_assertion
+    create_client_assertion(tenant_id=tenant_id)
+
+    expected_x5t = base64.urlsafe_b64encode(bytes.fromhex("AABBCCDDEE")).rstrip(b"=").decode()
+    assert captured_headers["x5t"] == expected_x5t
+
+
+def test_create_client_assertion_missing_credentials(mocker):
+    """
+    Given:
+        - AUTH_CERTIFICATE_THUMBPRINT or AUTH_PRIVATE_KEY is not set.
+    When:
+        - Calling create_client_assertion().
+    Then:
+        - Ensure a DemistoException is raised.
+    """
+    from MicrosoftTeams import create_client_assertion
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", "")
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", "")
+
+    with pytest.raises(DemistoException, match="Certificate Thumbprint and Private Key must be provided"):
+        create_client_assertion(tenant_id=tenant_id)
+
+
+def test_get_bot_access_token_certificate_multi_tenant(mocker, requests_mock):
+    """
+    Given:
+        - Certificate-based authentication is configured (thumbprint + private key).
+        - Bot is multi-tenant.
+    When:
+        - Calling get_bot_access_token().
+    Then:
+        - Ensure the request uses client_assertion instead of client_secret.
+        - Ensure the token is successfully retrieved.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", FAKE_THUMBPRINT)
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+    mocker.patch("MicrosoftTeams.create_client_assertion", return_value="mocked.jwt.assertion")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    def check_request(request, context):
+        body = request.text
+        assert "client_assertion=" in body
+        assert "client_secret" not in body
+        assert "client_assertion_type=urn%3Aietf%3Aparams%3Aoauth%3Aclient-assertion-type%3Ajwt-bearer" in body
+        context.status_code = 200
+        return {"access_token": "cert_bot_token", "expires_in": 3600}
+
+    requests_mock.post(
+        "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token",
+        json=check_request,
+    )
+
+    token = get_bot_access_token()
+    assert token == "cert_bot_token"
+
+
+def test_get_bot_access_token_certificate_single_tenant(mocker, requests_mock):
+    """
+    Given:
+        - Certificate-based authentication is configured (thumbprint + private key).
+        - Bot is single-tenant.
+    When:
+        - Calling get_bot_access_token().
+    Then:
+        - Ensure the request uses client_assertion instead of client_secret.
+        - Ensure the token is successfully retrieved from the tenant-specific endpoint.
+    """
+    from MicrosoftTeams import get_bot_access_token
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", FAKE_THUMBPRINT)
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+    mocker.patch("MicrosoftTeams.create_client_assertion", return_value="mocked.jwt.assertion")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"bot_type": "single-tenant", "tenant_id": tenant_id})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    def check_request(request, context):
+        body = request.text
+        assert "client_assertion=" in body
+        assert "client_secret" not in body
+        context.status_code = 200
+        return {"access_token": "cert_single_tenant_token", "expires_in": 3600}
+
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json=check_request,
+    )
+
+    token = get_bot_access_token()
+    assert token == "cert_single_tenant_token"
+
+
+def test_get_graph_access_token_certificate_client_credentials(mocker, requests_mock):
+    """
+    Given:
+        - Certificate-based authentication is configured (thumbprint + private key).
+        - Auth type is Client Credentials.
+    When:
+        - Calling get_graph_access_token().
+    Then:
+        - Ensure the request uses client_assertion instead of client_secret.
+        - Ensure the Graph API token is successfully retrieved.
+    """
+    from MicrosoftTeams import get_graph_access_token
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", FAKE_THUMBPRINT)
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", CLIENT_CREDENTIALS_FLOW)
+    mocker.patch("MicrosoftTeams.create_client_assertion", return_value="mocked.jwt.assertion")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"tenant_id": tenant_id})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    def check_request(request, context):
+        body = request.text
+        assert "client_assertion=" in body
+        assert "client_secret" not in body
+        assert "grant_type=client_credentials" in body
+        context.status_code = 200
+        return {"access_token": "cert_graph_token", "expires_in": 3600}
+
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json=check_request,
+    )
+
+    token = get_graph_access_token(auth_type=CLIENT_CREDENTIALS_FLOW)
+    assert token == "cert_graph_token"
+
+
+def test_get_graph_access_token_certificate_auth_code_flow(mocker, requests_mock):
+    """
+    Given:
+        - Certificate-based authentication is configured (thumbprint + private key).
+        - Auth type is Authorization Code.
+        - An auth code is available (no refresh token yet).
+    When:
+        - Calling get_graph_access_token() with auth_type=AUTHORIZATION_CODE_FLOW.
+    Then:
+        - Ensure the request uses client_assertion and grant_type=authorization_code.
+        - Ensure the Graph API token is successfully retrieved.
+    """
+    from MicrosoftTeams import get_graph_access_token
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", FAKE_THUMBPRINT)
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", AUTHORIZATION_CODE_FLOW)
+    mocker.patch("MicrosoftTeams.AUTH_CODE", "test_auth_code_value")
+    mocker.patch("MicrosoftTeams.REDIRECT_URI", "https://localhost/callback")
+    mocker.patch("MicrosoftTeams.create_client_assertion", return_value="mocked.jwt.assertion")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"tenant_id": tenant_id})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    def check_request(request, context):
+        body = request.text
+        assert "client_assertion=" in body
+        assert "client_secret" not in body
+        assert "grant_type=authorization_code" in body
+        assert "code=test_auth_code_value" in body
+        context.status_code = 200
+        return {"access_token": "cert_authcode_token", "expires_in": 3600, "refresh_token": "new_refresh"}
+
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json=check_request,
+    )
+
+    token = get_graph_access_token(auth_type=AUTHORIZATION_CODE_FLOW)
+    assert token == "cert_authcode_token"
+
+
+def test_get_graph_access_token_certificate_refresh_token_flow(mocker, requests_mock):
+    """
+    Given:
+        - Certificate-based authentication is configured (thumbprint + private key).
+        - Auth type is Authorization Code.
+        - A refresh token is already cached in the integration context.
+    When:
+        - Calling get_graph_access_token() with auth_type=AUTHORIZATION_CODE_FLOW.
+    Then:
+        - Ensure the request uses client_assertion and grant_type=refresh_token.
+        - Ensure the Graph API token is successfully retrieved.
+    """
+    from MicrosoftTeams import get_graph_access_token
+
+    cached_token_params = json.dumps({
+        "graph_access_token": "",
+        "current_refresh_token": "cached_refresh_token",
+        "graph_valid_until": 0,
+    })
+
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", FAKE_THUMBPRINT)
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+    mocker.patch("MicrosoftTeams.AUTH_TYPE", AUTHORIZATION_CODE_FLOW)
+    mocker.patch("MicrosoftTeams.AUTH_CODE", "some_auth_code")
+    mocker.patch("MicrosoftTeams.REDIRECT_URI", "https://localhost/callback")
+    mocker.patch("MicrosoftTeams.create_client_assertion", return_value="mocked.jwt.assertion")
+    mocker.patch.object(
+        demisto,
+        "getIntegrationContext",
+        return_value={"tenant_id": tenant_id, AUTHCODE_TOKEN_PARAMS: cached_token_params},
+    )
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    def check_request(request, context):
+        body = request.text
+        assert "client_assertion=" in body
+        assert "grant_type=refresh_token" in body
+        assert "refresh_token=cached_refresh_token" in body
+        context.status_code = 200
+        return {"access_token": "cert_refreshed_token", "expires_in": 3600, "refresh_token": "new_refresh_token"}
+
+    requests_mock.post(
+        f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token",
+        json=check_request,
+    )
+
+    token = get_graph_access_token(auth_type=AUTHORIZATION_CODE_FLOW)
+    assert token == "cert_refreshed_token"
+
+
+def test_test_module_certificate_auth_no_password(mocker):
+    """
+    Given:
+        - BOT_ID is set.
+        - BOT_PASSWORD is empty.
+        - AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY are both set.
+    When:
+        - Calling test_module().
+    Then:
+        - Ensure it does NOT raise a credentials error (certificate auth is valid).
+        - Ensure it raises the expected 'Test module is unavailable' DemistoException.
+    """
+    from MicrosoftTeams import test_module
+
+    mocker.patch("MicrosoftTeams.BOT_ID", "test-bot-id")
+    mocker.patch("MicrosoftTeams.BOT_PASSWORD", "")
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", FAKE_THUMBPRINT)
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", FAKE_PRIVATE_KEY)
+
+    with pytest.raises(DemistoException, match="Test module is unavailable"):
+        test_module()
+
+
+def test_test_module_no_credentials_raises(mocker):
+    """
+    Given:
+        - BOT_ID is set.
+        - BOT_PASSWORD is empty.
+        - AUTH_CERTIFICATE_THUMBPRINT and AUTH_PRIVATE_KEY are both empty.
+    When:
+        - Calling test_module().
+    Then:
+        - Ensure a DemistoException is raised indicating missing credentials.
+    """
+    from MicrosoftTeams import test_module
+
+    mocker.patch("MicrosoftTeams.BOT_ID", "test-bot-id")
+    mocker.patch("MicrosoftTeams.BOT_PASSWORD", "")
+    mocker.patch("MicrosoftTeams.AUTH_CERTIFICATE_THUMBPRINT", "")
+    mocker.patch("MicrosoftTeams.AUTH_PRIVATE_KEY", "")
+
+    with pytest.raises(DemistoException, match="Either Bot Password or both Certificate Thumbprint and Private Key must be provided"):
+        test_module()
