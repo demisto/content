@@ -163,6 +163,78 @@ configuration:
   advanced: true
   required: false
   additionalinfo: The default Kibana space ID to use for es-kibana-* commands. Used to derive the Kibana base URL from the Server URL. If a space_id argument is provided to a command, it overrides this value. See https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+- display: Fetch incident types
+  name: fetch_incident_type
+  defaultvalue: Elasticsearch
+  type: 15
+  options:
+  - Elasticsearch
+  - Elasticsearch Security Alert
+  - Elasticsearch Case
+  section: Collect
+  required: false
+  additionalinfo: The type of incident to fetch from Elasticsearch (Security Alert, Case, or other entity).
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  defaultvalue: None
+  type: 15
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  section: Collect
+  required: false
+  additionalinfo: Mirroring works only for incident types Elasticsearch Security Alert and Elasticsearch Case.
+- display: Fetch by Severity
+  name: fetch_severity
+  type: 16
+  options:
+  - critical
+  - high
+  - medium
+  - low
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Case severities to fetch. If none is chosen, all severity levels will be returned. Relevant only for incident type Elasticsearch Case.
+- display: Fetch by Status
+  name: fetch_status
+  defaultvalue: open,in-progress
+  type: 16
+  options:
+  - open
+  - acknowledged
+  - in-progress
+  - closed
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Case statuses to fetch. If none is chosen, in-progress and open will be returned. Relevant only for incident type Elasticsearch Case.
+- display: Fetch alerts for case
+  name: fetch_alerts_for_case
+  type: 8
+  defaultvalue: 'false'
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: When enabled, fetches alerts associated with each Elasticsearch Case. You must have read privileges for the Cases feature in the Management, Observability, or Security section of the Kibana feature privileges.
+- display: Close Mirrored XSOAR Incident
+  name: close_incident
+  type: 8
+  defaultvalue: 'false'
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: When selected, closing the Elasticsearch alert or case is mirrored in Cortex XSOAR.
+- display: Close Mirrored Elasticsearch Incident
+  name: close_elastic_incident
+  type: 8
+  defaultvalue: 'false'
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Elasticsearch.
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
 display: Elasticsearch v2
 name: Elasticsearch v2
@@ -2237,9 +2309,11 @@ script:
   subtype: python3
   type: python
   ismappable: true
+  ismirror: true
 autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
+defaultclassifier: Elasticsearch
 tests:
 - Elasticsearch_v2_test
 - Elasticsearch_v2_test-v6

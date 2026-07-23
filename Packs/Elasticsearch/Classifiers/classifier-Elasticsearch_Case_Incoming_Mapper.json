@@ -1,0 +1,46 @@
+{
+    "description": "Maps incoming Elasticsearch Case fields to XSOAR incident fields.",
+    "feed": false,
+    "id": "Elasticsearch Case - Incoming Mapper",
+    "mapping": {
+        "Elasticsearch Case": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "name": {
+                    "simple": "title"
+                },
+                "description": {
+                    "simple": "description"
+                },
+                "Owner": {
+                    "simple": "owner"
+                },
+                "Category": {
+                    "simple": "category"
+                },
+                "Elasticsearch Case Status": {
+                    "simple": "status"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "Elasticsearch Case ID": {
+                    "simple": "id"
+                },
+                "occurred": {
+                    "simple": "created_at"
+                },
+                "dbotMirrorLastSync": {
+                    "simple": "updated_at"
+                }
+            }
+        }
+    },
+    "name": "Elasticsearch Case - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

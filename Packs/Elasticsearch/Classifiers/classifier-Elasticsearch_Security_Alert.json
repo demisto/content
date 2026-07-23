@@ -1,0 +1,12 @@
+{
+    "description": "Classifies Elasticsearch Security Alerts.",
+    "feed": false,
+    "id": "Elasticsearch Security Alert - Classifier",
+    "keyTypeMap": {
+        "Elasticsearch Security Alert": "Elasticsearch Security Alert"
+    },
+    "name": "Elasticsearch Security Alert - Classifier",
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

@@ -1,0 +1,25 @@
+{
+    "description": "Maps XSOAR incident fields to outgoing Elasticsearch Security Alert fields.",
+    "feed": false,
+    "id": "Elasticsearch Security Alert - Outgoing Mapper",
+    "mapping": {
+        "Elasticsearch Security Alert": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Tags": {
+                    "simple": "tags"
+                },
+                "Elasticsearch Workflow Alert Status": {
+                    "simple": "status"
+                },
+                "Elasticsearch Workflow Alert Status Reason": {
+                    "simple": "reason"
+                }
+            }
+        }
+    },
+    "name": "Elasticsearch Security Alert - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

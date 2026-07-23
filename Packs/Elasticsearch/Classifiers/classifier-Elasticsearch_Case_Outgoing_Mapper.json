@@ -1,0 +1,37 @@
+{
+    "description": "Maps XSOAR incident fields to outgoing Elasticsearch Case fields.",
+    "feed": false,
+    "id": "Elasticsearch Case - Outgoing Mapper",
+    "mapping": {
+        "Elasticsearch Case": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "name": {
+                    "simple": "title"
+                },
+                "description": {
+                    "simple": "description"
+                },
+                "Category": {
+                    "simple": "category"
+                },
+                "Severity": {
+                    "simple": "severity"
+                },
+                "Elasticsearch Case Status": {
+                    "simple": "status"
+                },
+                "Elasticsearch Case Close Reason": {
+                    "simple": "closeReason"
+                },
+                "Tags": {
+                    "simple": "tags"
+                }
+            }
+        }
+    },
+    "name": "Elasticsearch Case - Outgoing Mapper",
+    "type": "mapping-outgoing",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
