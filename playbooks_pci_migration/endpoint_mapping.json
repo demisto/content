@@ -1,0 +1,3075 @@
+{
+  "matched_commands": [
+    {
+      "old_command": "core-retrieve-file-details",
+      "new_command": "retrieveFileDetails",
+      "endpoint": "/actions/file_retrieval_details",
+      "old_endpoint_raw": "/actions/file_retrieval_details/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/actions/file_retrieval_details",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1083",
+      "new_source_file": "pkg/corecontent/commands/actions/commands.go:19",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "File.Info",
+          "File.SSDeep"
+        ],
+        "removed": [
+          "File",
+          "File.SHA512"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-action-status-get",
+      "new_command": "getActionStatus",
+      "endpoint": "/actions/get_action_status",
+      "old_endpoint_raw": "/actions/get_action_status/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/actions/get_action_status",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1231",
+      "new_source_file": "pkg/corecontent/commands/actions/commands.go:18",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.GetActionStatus",
+          "Core.GetActionStatus.ErrorReasons.bucket",
+          "Core.GetActionStatus.ErrorReasons.errorData",
+          "Core.GetActionStatus.ErrorReasons.file_name",
+          "Core.GetActionStatus.ErrorReasons.file_path",
+          "Core.GetActionStatus.ErrorReasons.file_size",
+          "Core.GetActionStatus.ErrorReasons.missing_files",
+          "Core.GetActionStatus.ErrorReasons.terminate_result",
+          "Core.GetActionStatus.ErrorReasons.terminated_by"
+        ],
+        "moved": {
+          "Core.GetActionStatus.ErrorReasons.errorDescription": "Core.GetActionStatus.error_description"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-update-endpoint-version",
+      "new_command": "setEndpointVersion",
+      "endpoint": "/agents/upgrade",
+      "old_endpoint_raw": "/agents/upgrade",
+      "new_endpoint_raw": "/api/webapp/agents/upgrade",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:900",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:34",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "Core.EndpointUpdate.action_id": "Core.EndpointUpdate.ActionID",
+          "Core.EndpointUpdate.endpoint_ids": "Core.EndpointUpdate.EndpointIDs"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-endpoint-update-version",
+      "new_command": "getEndpointUpdateVersion",
+      "endpoint": "/agents/upgrade/details",
+      "old_endpoint_raw": "/agents/upgrade/details",
+      "new_endpoint_raw": "/api/webapp/agents/upgrade/details",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:892",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:33",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "Core.EndpointUpdateVersion.distributions.endpoints_with_higher_version_count": "Core.EndpointUpdateVersion.Distributions.EndpointsWithHigherVersionCount",
+          "Core.EndpointUpdateVersion.distributions.endpoints_with_lower_version_count": "Core.EndpointUpdateVersion.Distributions.EndpointsWithLowerVersionCount",
+          "Core.EndpointUpdateVersion.distributions.endpoints_with_same_version_count": "Core.EndpointUpdateVersion.Distributions.EndpointsWithSameVersionCount",
+          "Core.EndpointUpdateVersion.distributions.platform": "Core.EndpointUpdateVersion.Distributions.Platform",
+          "Core.EndpointUpdateVersion.platform_count": "Core.EndpointUpdateVersion.PlatformCount",
+          "Core.EndpointUpdateVersion.total_count": "Core.EndpointUpdateVersion.TotalCount",
+          "Core.EndpointUpdateVersion.distributions.version": "Core.EndpointUpdateVersion.Distributions.Version"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-update-issue",
+      "new_command": "updateIssue",
+      "endpoint": "/alerts/update_alerts",
+      "old_endpoint_raw": "/alerts/update_alerts",
+      "new_endpoint_raw": "/api/webapp/alerts/update_alerts",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:711",
+      "new_source_file": "pkg/corecontent/commands/issues/commands.go:18",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "id": {
+            "attribute": "required",
+            "old": "false",
+            "new": "true"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-exclusion",
+      "new_command": "getExclusions",
+      "endpoint": "/alerts_exclusion",
+      "old_endpoint_raw": "/alerts_exclusion/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/alerts_exclusion",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1299",
+      "new_source_file": "pkg/corecontent/commands/exclusions/commands.go:15",
+      "args_changes": {
+        "added": [],
+        "removed": [
+          "tenant_ID"
+        ],
+        "moved": {
+          "filterObject": "filter_object"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_FIELD",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_TYPE",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_VALUE",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.data_type",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.dml_type",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.entity_map",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.pretty_name",
+          "Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.render_type"
+        ],
+        "moved": {},
+        "changed": {
+          "Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_STATUS": "Core.Exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_STATUS",
+          "Core.exclusion.ALERT_WHITELIST_COMMENT": "Core.Exclusion.ALERT_WHITELIST_COMMENT",
+          "Core.exclusion.ALERT_WHITELIST_HITS": "Core.Exclusion.ALERT_WHITELIST_HITS",
+          "Core.exclusion.ALERT_WHITELIST_ID": "Core.Exclusion.ALERT_WHITELIST_ID",
+          "Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": "Core.Exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS",
+          "Core.exclusion.ALERT_WHITELIST_MODIFY_TIME": "Core.Exclusion.ALERT_WHITELIST_MODIFY_TIME",
+          "Core.exclusion.ALERT_WHITELIST_NAME": "Core.Exclusion.ALERT_WHITELIST_NAME",
+          "Core.exclusion.ALERT_WHITELIST_PRETTY_USER": "Core.Exclusion.ALERT_WHITELIST_PRETTY_USER",
+          "Core.exclusion.ALERT_WHITELIST_STATUS": "Core.Exclusion.ALERT_WHITELIST_STATUS",
+          "Core.exclusion.ALERT_WHITELIST_USER": "Core.Exclusion.ALERT_WHITELIST_USER"
+        }
+      }
+    },
+    {
+      "old_command": "core-add-exclusion",
+      "new_command": "addExclusion",
+      "endpoint": "/alerts_exclusion/add",
+      "old_endpoint_raw": "/alerts_exclusion/add/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/alerts_exclusion/add",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1278",
+      "new_source_file": "pkg/corecontent/commands/exclusions/commands.go:13",
+      "args_changes": {
+        "added": [],
+        "removed": [
+          "comment"
+        ],
+        "moved": {
+          "filterObject": "filter_object"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "Core.exclusion.rule_id": "Core.Exclusion.rule_id"
+        }
+      }
+    },
+    {
+      "old_command": "core-delete-exclusion",
+      "new_command": "deleteExclusion",
+      "endpoint": "/alerts_exclusion/delete",
+      "old_endpoint_raw": "/alerts_exclusion/delete/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/alerts_exclusion/delete",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1288",
+      "new_source_file": "pkg/corecontent/commands/exclusions/commands.go:14",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "Core.deletedExclusion.rule_id": "Core.DeletedExclusion.rule_id"
+        }
+      }
+    },
+    {
+      "old_command": "core-get-audit-agent-reports",
+      "new_command": "getAuditAgentReports",
+      "endpoint": "/audits/agents_reports",
+      "old_endpoint_raw": "/audits/agents_reports/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/audits/agents_reports/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:719",
+      "new_source_file": "pkg/corecontent/commands/audit/commands.go:14",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "type": "types",
+          "sub_type": "sub_types",
+          "result": "results"
+        },
+        "changed": {
+          "sort_order": {
+            "attribute": "default",
+            "old": "asc",
+            "new": ""
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-audit-management-logs",
+      "new_command": "getAuditManagementLogs",
+      "endpoint": "/audits/management_logs",
+      "old_endpoint_raw": "/audits/management_logs/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/audits/management_logs/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:670",
+      "new_source_file": "pkg/corecontent/commands/audit/commands.go:13",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "email": "emails",
+          "type": "types",
+          "sub_type": "sub_types",
+          "result": "results"
+        },
+        "changed": {
+          "sort_order": {
+            "attribute": "default",
+            "old": "desc",
+            "new": ""
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-update-case",
+      "new_command": "setCase",
+      "endpoint": "/case/set_data",
+      "old_endpoint_raw": "/case/set_data",
+      "new_endpoint_raw": "/api/webapp/case/set_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:919",
+      "new_source_file": "pkg/corecontent/commands/cases/commands.go:18",
+      "args_changes": {
+        "added": [
+          "access_mode",
+          "case_team_ids",
+          "case_team_member_types",
+          "case_team_operation",
+          "case_team_roles"
+        ],
+        "removed": [],
+        "moved": {
+          "case_id": "case_ids"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.Case.accessMode",
+          "Core.Case.caseTeam.id",
+          "Core.Case.caseTeam.memberType",
+          "Core.Case.caseTeam.teamRole",
+          "Core.Case.hasAttachment",
+          "Core.Case.id",
+          "Core.Case.severity"
+        ],
+        "removed": [
+          "Core.Case.assigned.mail",
+          "Core.Case.assigned.pretty",
+          "Core.Case.groupingStatus.pretty",
+          "Core.Case.groupingStatus.raw",
+          "Core.Case.groupingStatus.reason",
+          "Core.Case.name.isUser",
+          "Core.Case.name.value",
+          "Core.Case.severityCounters.SEV_020_LOW",
+          "Core.Case.severityCounters.SEV_030_MEDIUM",
+          "Core.Case.severityCounters.SEV_040_HIGH",
+          "Core.Case.severityCounters.SEV_050_CRITICAL",
+          "Core.Case.status.resolveComment",
+          "Core.Case.status.resolve_reason",
+          "Core.Case.status.value",
+          "Core.Case.tags.tag_id",
+          "Core.Case.tags.tag_name",
+          "Core.Case.topCounters.HOSTS",
+          "Core.Case.topCounters.MAL_ARTIFACTS",
+          "Core.Case.topCounters.USERS",
+          "Core.Case.userSeverity"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-case-resolution-statuses",
+      "new_command": "getCaseResolutionStatuses",
+      "endpoint": "/case/{}/resolution-plan/tasks",
+      "old_endpoint_raw": "/xsoar/case/{}/resolution-plan/tasks",
+      "new_endpoint_raw": "/xsoar/case/{}/resolution-plan/tasks",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1031",
+      "new_source_file": "pkg/corecontent/commands/cases/commands.go:1640",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "case_id": "case_ids"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.CaseResolutionStatus.TaskName"
+        ],
+        "removed": [],
+        "moved": {
+          "Core.CaseResolutionStatus.category": "Core.CaseResolutionStatus.Category",
+          "Core.CaseResolutionStatus.completedAt": "Core.CaseResolutionStatus.CompletedAt",
+          "Core.CaseResolutionStatus.issueIDs": "Core.CaseResolutionStatus.IssueIDs",
+          "Core.CaseResolutionStatus.itemType": "Core.CaseResolutionStatus.ItemType",
+          "Core.CaseResolutionStatus.playbookVersion": "Core.CaseResolutionStatus.PlaybookVersion",
+          "Core.CaseResolutionStatus.startedAt": "Core.CaseResolutionStatus.StartedAt",
+          "Core.CaseResolutionStatus.status": "Core.CaseResolutionStatus.Status",
+          "Core.CaseResolutionStatus.type": "Core.CaseResolutionStatus.Type",
+          "Core.CaseResolutionStatus.userInput": "Core.CaseResolutionStatus.UserInput",
+          "Core.CaseResolutionStatus.description": "Core.CaseResolutionStatus.Description",
+          "Core.CaseResolutionStatus.id": "Core.CaseResolutionStatus.ID",
+          "Core.CaseResolutionStatus.name": "Core.CaseResolutionStatus.Name",
+          "Core.CaseResolutionStatus.parentPlaybook.description": "Core.CaseResolutionStatus.ParentPlaybook.Description",
+          "Core.CaseResolutionStatus.parentPlaybook.id": "Core.CaseResolutionStatus.ParentPlaybook.ID",
+          "Core.CaseResolutionStatus.parentPlaybook.name": "Core.CaseResolutionStatus.ParentPlaybook.Name"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-add-assessment-profile",
+      "new_command": "addAssessmentProfile",
+      "endpoint": "/compliance/add_assessment_profile",
+      "old_endpoint_raw": "/compliance/add_assessment_profile",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/compliance/add_assessment_profile",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:991",
+      "new_source_file": "pkg/corecontent/commands/compliance/commands.go:16",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "Core.AssessmentProfile.assessment_profile_id": "Core.AssessmentProfile.AssessmentProfileID"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-list-compliance-standards",
+      "new_command": "getComplianceStandards",
+      "endpoint": "/compliance/get_standards",
+      "old_endpoint_raw": "/compliance/get_standards",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/compliance/get_standards",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1007",
+      "new_source_file": "pkg/corecontent/commands/compliance/commands.go:15",
+      "args_changes": {
+        "added": [
+          "limit"
+        ],
+        "removed": [],
+        "moved": {
+          "page_number": "page"
+        },
+        "changed": {
+          "labels": {
+            "attribute": "is_array",
+            "old": "false",
+            "new": "true"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "Core.ComplianceStandards.assessments_profiles_count": "Core.ComplianceStandards.AssessmentsProfilesCount",
+          "Core.ComplianceStandards.controls_count": "Core.ComplianceStandards.ControlsCount",
+          "Core.ComplianceStandards.description": "Core.ComplianceStandards.Description",
+          "Core.ComplianceStandardsMetadata.filtered_count": "Core.ComplianceStandardsMetadata.FilteredCount",
+          "Core.ComplianceStandards.id": "Core.ComplianceStandards.ID",
+          "Core.ComplianceStandards.labels": "Core.ComplianceStandards.Labels",
+          "Core.ComplianceStandards.name": "Core.ComplianceStandards.Name",
+          "Core.ComplianceStandardsMetadata.returned_count": "Core.ComplianceStandardsMetadata.ReturnedCount"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-endpoint-device-control-violations",
+      "new_command": "getEndpointDeviceControlViolations",
+      "endpoint": "/device_control/get_violations",
+      "old_endpoint_raw": "/device_control/get_violations/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/device_control/get_violations/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1006",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:31",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "hostname": "hostnames",
+          "product": "products",
+          "product_id": "product_ids",
+          "serial": "serials",
+          "type": "types",
+          "username": "usernames",
+          "vendor": "vendors",
+          "vendor_id": "vendor_ids"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.EndpointViolations.date"
+        ],
+        "removed": [
+          "Core.EndpointViolations",
+          "Core.EndpointViolations.violations"
+        ],
+        "moved": {},
+        "changed": {
+          "Core.EndpointViolations.violations.endpoint_id": "Core.EndpointViolations.endpoint_id",
+          "Core.EndpointViolations.violations.hostname": "Core.EndpointViolations.hostname",
+          "Core.EndpointViolations.violations.ip": "Core.EndpointViolations.ip",
+          "Core.EndpointViolations.violations.os_type": "Core.EndpointViolations.os_type",
+          "Core.EndpointViolations.violations.product": "Core.EndpointViolations.product",
+          "Core.EndpointViolations.violations.product_id": "Core.EndpointViolations.product_id",
+          "Core.EndpointViolations.violations.serial": "Core.EndpointViolations.serial",
+          "Core.EndpointViolations.violations.timestamp": "Core.EndpointViolations.timestamp",
+          "Core.EndpointViolations.violations.type": "Core.EndpointViolations.type",
+          "Core.EndpointViolations.violations.username": "Core.EndpointViolations.username",
+          "Core.EndpointViolations.violations.vendor": "Core.EndpointViolations.vendor",
+          "Core.EndpointViolations.violations.vendor_id": "Core.EndpointViolations.vendor_id",
+          "Core.EndpointViolations.violations.violation_id": "Core.EndpointViolations.violation_id"
+        }
+      }
+    },
+    {
+      "old_command": "core-create-distribution",
+      "new_command": "createDistribution",
+      "endpoint": "/distributions/create",
+      "old_endpoint_raw": "/distributions/create/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/distributions/create/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:634",
+      "new_source_file": "pkg/corecontent/commands/distributions/commands.go:17",
+      "args_changes": {
+        "added": [
+          "distribution_id",
+          "interval_in_seconds",
+          "timeout_in_seconds"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "agent_version": {
+            "attribute": "required",
+            "old": "true",
+            "new": "false"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [
+          "Core.Distribution.package_type"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-create-distribution-status",
+      "new_command": "getDistributionStatus",
+      "endpoint": "/distributions/get_status",
+      "old_endpoint_raw": "/distributions/get_status/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/distributions/get_status/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:597",
+      "new_source_file": "pkg/corecontent/commands/distributions/commands.go:18",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-distribution-versions",
+      "new_command": "getDistributionVersions",
+      "endpoint": "/distributions/get_versions",
+      "old_endpoint_raw": "/distributions/get_versions/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/distributions/get_versions/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:607",
+      "new_source_file": "pkg/corecontent/commands/distributions/commands.go:20",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-endpoint-scan-abort",
+      "new_command": "abortEndpointScan",
+      "endpoint": "/endpoints/abort_scan",
+      "old_endpoint_raw": "endpoints/abort_scan/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/abort_scan",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:905",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:27",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-block-ip",
+      "new_command": "blockIPs",
+      "endpoint": "/endpoints/block_ip",
+      "old_endpoint_raw": "/endpoints/block_ip",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/block_ip/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:147",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:39",
+      "args_changes": {
+        "added": [
+          "interval_in_seconds",
+          "poll_count",
+          "timeout_in_seconds"
+        ],
+        "removed": [],
+        "moved": {
+          "addresses": "ip_addresses",
+          "endpoint_list": "endpoint_ids"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.ip_block_results.endpoint_id",
+          "Core.ip_block_results.ip_address",
+          "Core.ip_block_results.reason"
+        ],
+        "removed": [
+          "Core.ip_block_results"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-delete-endpoints",
+      "new_command": "deleteEndpoints",
+      "endpoint": "/endpoints/delete",
+      "old_endpoint_raw": "/endpoints/delete/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/delete",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:930",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:24",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "endpoint_ids": {
+            "attribute": "is_array",
+            "old": "false",
+            "new": "true"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-policy",
+      "new_command": "getEndpointPolicy",
+      "endpoint": "/endpoints/get_policy",
+      "old_endpoint_raw": "/endpoints/get_policy/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/get_policy",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:937",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:28",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.Policy"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-terminate-process",
+      "new_command": "terminateProcess",
+      "endpoint": "/endpoints/terminate_process",
+      "old_endpoint_raw": "/endpoints/terminate_process/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/terminate_process/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1434",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:3025",
+      "args_changes": {
+        "added": [
+          "poll_count"
+        ],
+        "removed": [],
+        "moved": {
+          "incident_id": "alert_id"
+        },
+        "changed": {
+          "interval_in_seconds": {
+            "attribute": "default",
+            "old": "",
+            "new": "10"
+          },
+          "timeout_in_seconds": {
+            "attribute": "default",
+            "old": "",
+            "new": "600"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.GetActionStatus",
+          "Core.GetActionStatus.ErrorReasons.bucket",
+          "Core.GetActionStatus.ErrorReasons.errorData",
+          "Core.GetActionStatus.ErrorReasons.errorDescription",
+          "Core.GetActionStatus.ErrorReasons.file_name",
+          "Core.GetActionStatus.ErrorReasons.file_path",
+          "Core.GetActionStatus.ErrorReasons.file_size",
+          "Core.GetActionStatus.ErrorReasons.missing_files",
+          "Core.GetActionStatus.ErrorReasons.terminate_result",
+          "Core.GetActionStatus.ErrorReasons.terminated_by",
+          "Core.GetActionStatus.action_id",
+          "Core.GetActionStatus.endpoint_id",
+          "Core.GetActionStatus.status"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-unisolate-endpoint",
+      "new_command": "unisolateEndpoint",
+      "endpoint": "/endpoints/unisolate",
+      "old_endpoint_raw": "/endpoints/unisolate",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/unisolate",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:565",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:2755",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "incident_id": "case_id"
+        },
+        "changed": {
+          "action_id": {
+            "attribute": "is_array",
+            "old": "true",
+            "new": "false"
+          },
+          "endpoint_id": {
+            "attribute": "required",
+            "old": "true",
+            "new": "false"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-endpoint-alias-change",
+      "new_command": "setEndpointAlias",
+      "endpoint": "/endpoints/update_agent_name",
+      "old_endpoint_raw": "/endpoints/update_agent_name/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/update_agent_name",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:539",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:25",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "scan_status": {
+            "attribute": "is_array",
+            "old": "false",
+            "new": "true"
+          },
+          "status": {
+            "attribute": "is_array",
+            "old": "false",
+            "new": "true"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-asset-coverage-histogram",
+      "new_command": "getAssetCoverageHistogram",
+      "endpoint": "/get_histograms",
+      "old_endpoint_raw": "/get_histograms",
+      "new_endpoint_raw": "/api/webapp/get_histograms",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:783",
+      "new_source_file": "pkg/corecontent/commands/coverage/commands.go:15",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "asset_id": "asset_ids",
+          "asset_name": "asset_names",
+          "asset_provider": "asset_providers",
+          "asset_type": "asset_types",
+          "last_scan_status": "last_scan_statuses",
+          "status_coverage": "status_coverages",
+          "vendor_name": "vendor_names"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "Core.Coverage.Histogram.column_name": "Core.Coverage.Histogram.ColumnName",
+          "Core.Coverage.Histogram.data.count": "Core.Coverage.Histogram.Data.Count",
+          "Core.Coverage.Histogram.data.percentage": "Core.Coverage.Histogram.Data.Percentage",
+          "Core.Coverage.Histogram.data.pretty_name": "Core.Coverage.Histogram.Data.PrettyName",
+          "Core.Coverage.Histogram.data.value": "Core.Coverage.Histogram.Data.Value"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-allowlist-files",
+      "new_command": "addFileToAllowlist",
+      "endpoint": "/hash_exceptions/allowlist",
+      "old_endpoint_raw": "/hash_exceptions/allowlist/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/hash_exceptions/allowlist",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:774",
+      "new_source_file": "pkg/corecontent/commands/hash_exceptions/commands.go:23",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "incident_id": "case_id"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.Allowlist.FileHash",
+          "Core.Allowlist.Status"
+        ],
+        "removed": [
+          "Core.allowlist.added_hashes",
+          "Core.allowlist.excluded_hashes"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-remove-allowlist-files",
+      "new_command": "removeFileFromAllowlist",
+      "endpoint": "/hash_exceptions/allowlist/remove",
+      "old_endpoint_raw": "/hash_exceptions/allowlist/remove/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/hash_exceptions/allowlist/remove",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:791",
+      "new_source_file": "pkg/corecontent/commands/hash_exceptions/commands.go:24",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "incident_id": "case_id"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.Allowlist.FileHash",
+          "Core.Allowlist.Status"
+        ],
+        "removed": [
+          "Core.allowlist.removed_hashes"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-blocklist-files",
+      "new_command": "addFileToBlocklist",
+      "endpoint": "/hash_exceptions/blocklist",
+      "old_endpoint_raw": "/hash_exceptions/blocklist/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/hash_exceptions/blocklist",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:735",
+      "new_source_file": "pkg/corecontent/commands/hash_exceptions/commands.go:21",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "incident_id": "case_id"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.Blocklist.FileHash",
+          "Core.Blocklist.Status"
+        ],
+        "removed": [
+          "Core.blocklist.added_hashes",
+          "Core.blocklist.excluded_hashes"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-remove-blocklist-files",
+      "new_command": "removeFileFromBlocklist",
+      "endpoint": "/hash_exceptions/blocklist/remove",
+      "old_endpoint_raw": "/hash_exceptions/blocklist/remove/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/hash_exceptions/blocklist/remove",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:752",
+      "new_source_file": "pkg/corecontent/commands/hash_exceptions/commands.go:22",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "incident_id": "case_id"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.Blocklist.FileHash",
+          "Core.Blocklist.Status"
+        ],
+        "removed": [
+          "Core.blocklist.removed_hashes"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-add-indicator-rule",
+      "new_command": "addIOCRule",
+      "endpoint": "/indicators/insert_jsons",
+      "old_endpoint_raw": "indicators/insert_jsons",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/indicators/insert_jsons",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:110",
+      "new_source_file": "pkg/corecontent/commands/indicators/commands.go:18",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-run-playbook",
+      "new_command": "runPlaybook",
+      "endpoint": "/inv-playbook/new",
+      "old_endpoint_raw": "/inv-playbook/new",
+      "new_endpoint_raw": "/xsoar/inv-playbook/new",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:949",
+      "new_source_file": "pkg/corecontent/commands/playbooks/commands.go:14",
+      "args_changes": {
+        "added": [],
+        "removed": [
+          "playbook_id"
+        ],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.RunPlaybook.playbook",
+          "Core.RunPlaybook.result"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-create-appsec-policy",
+      "new_command": "createAppSecPolicy",
+      "endpoint": "/public_api/appsec/v1/policies",
+      "old_endpoint_raw": "/public_api/appsec/v1/policies",
+      "new_endpoint_raw": "/api/webapp/public_api/appsec/v1/policies",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:854",
+      "new_source_file": "pkg/corecontent/commands/appsecpolicies/commands.go:16",
+      "args_changes": {
+        "added": [
+          "triggers_cicd_enabled",
+          "triggers_ciimage_block_cicd",
+          "triggers_ciimage_enabled",
+          "triggers_ciimage_override_severity",
+          "triggers_ciimage_report_cicd",
+          "triggers_ciimage_report_issue",
+          "triggers_imageregistry_enabled",
+          "triggers_imageregistry_override_severity",
+          "triggers_imageregistry_report_issue",
+          "triggers_periodic_enabled",
+          "triggers_pr_enabled"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-enable-scanners",
+      "new_command": "enableScanners",
+      "endpoint": "/public_api/appsec/v1/repositories/{}/scan-configuration",
+      "old_endpoint_raw": "/public_api/appsec/v1/repositories/{}/scan-configuration",
+      "new_endpoint_raw": "/api/webapp/public_api/appsec/v1/repositories/{}/scan-configuration",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:792",
+      "new_source_file": "pkg/corecontent/commands/scanners/commands.go:241",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.ScannerConfiguration.Error",
+          "Core.ScannerConfiguration.RepositoryID",
+          "Core.ScannerConfiguration.Status"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-quarantine-status",
+      "new_command": "getFileQuarantineStatus",
+      "endpoint": "/quarantine/status",
+      "old_endpoint_raw": "/quarantine/status/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/quarantine/status",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:917",
+      "new_source_file": "pkg/corecontent/commands/files/commands.go:16",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.QuarantineFiles.status.endpointId",
+          "Core.QuarantineFiles.status.fileHash",
+          "Core.QuarantineFiles.status.filePath",
+          "Core.QuarantineFiles.status.status"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-list-user-groups",
+      "new_command": "getUserGroups",
+      "endpoint": "/rbac/get_user_group",
+      "old_endpoint_raw": "/rbac/get_user_group/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/rbac/get_user_group",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1359",
+      "new_source_file": "pkg/corecontent/commands/users/commands.go:14",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-script-code",
+      "new_command": "getScriptCode",
+      "endpoint": "/scripts/get_script_code",
+      "old_endpoint_raw": "/scripts/get_script_code/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/get_script_code",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1136",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:20",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.ScriptCode"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-script-execution-results",
+      "new_command": "getScriptExecutionResults",
+      "endpoint": "/scripts/get_script_execution_results",
+      "old_endpoint_raw": "/scripts/get_script_execution_results",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/get_script_execution_results",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1195",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:22",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "action_id": "action_ids"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "Core.ScriptResult.results.command": "Core.ScriptResult.command",
+          "Core.ScriptResult.results.command_output": "Core.ScriptResult.command_output",
+          "Core.ScriptResult.results.domain": "Core.ScriptResult.domain",
+          "Core.ScriptResult.results.endpoint_id": "Core.ScriptResult.endpoint_id",
+          "Core.ScriptResult.results.endpoint_ip_address": "Core.ScriptResult.endpoint_ip_address",
+          "Core.ScriptResult.results.endpoint_name": "Core.ScriptResult.endpoint_name",
+          "Core.ScriptResult.results.endpoint_status": "Core.ScriptResult.endpoint_status",
+          "Core.ScriptResult.results.execution_status": "Core.ScriptResult.execution_status",
+          "Core.ScriptResult.results.failed_files": "Core.ScriptResult.failed_files",
+          "Core.ScriptResult.results.retention_date": "Core.ScriptResult.retention_date",
+          "Core.ScriptResult.results.retrieved_files": "Core.ScriptResult.retrieved_files",
+          "Core.ScriptResult.results.return_value": "Core.ScriptResult.return_value",
+          "Core.ScriptResult.results.standard_output": "Core.ScriptResult.standard_output"
+        }
+      }
+    },
+    {
+      "old_command": "core-get-script-execution-result-files",
+      "new_command": "getScriptExecutionResultFiles",
+      "endpoint": "/scripts/get_script_execution_results_files",
+      "old_endpoint_raw": "/scripts/get_script_execution_results_files",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/get_script_execution_results_files",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1204",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:23",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {
+          "action_id": {
+            "attribute": "is_array",
+            "old": "true",
+            "new": "false"
+          },
+          "endpoint_id": {
+            "attribute": "is_array",
+            "old": "true",
+            "new": "false"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "File.EntryID",
+          "File.Extension",
+          "File.Info",
+          "File.MD5",
+          "File.Name",
+          "File.SHA1",
+          "File.SHA256",
+          "File.SHA512",
+          "File.SSDeep",
+          "File.Size",
+          "File.Type"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-script-execution-status",
+      "new_command": "getScriptExecutionStatus",
+      "endpoint": "/scripts/get_script_execution_status",
+      "old_endpoint_raw": "/scripts/get_script_execution_status/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/get_script_execution_status",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1186",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:21",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "action_id": "action_ids"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.ScriptStatus.endpoints_aborted",
+          "Core.ScriptStatus.error_message"
+        ],
+        "moved": {
+          "Core.ScriptStatus.endpoints_completed_successfully": "Core.ScriptStatus.endpoints_succeeded"
+        },
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-script-metadata",
+      "new_command": "getScriptMetadata",
+      "endpoint": "/scripts/get_script_metadata",
+      "old_endpoint_raw": "/scripts/get_script_metadata/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/get_script_metadata",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1124",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:19",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.ScriptMetadata.script_output_dictionary_definitions.friendly_name",
+          "Core.ScriptMetadata.script_output_dictionary_definitions.name",
+          "Core.ScriptMetadata.script_output_dictionary_definitions.type",
+          "Core.ScriptMetadata.script_uid"
+        ],
+        "removed": [
+          "Core.ScriptMetadata",
+          "Core.ScriptMetadata.script_output_dictionary_definitions"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-scripts",
+      "new_command": "getScripts",
+      "endpoint": "/scripts/get_scripts",
+      "old_endpoint_raw": "/scripts/get_scripts/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/get_scripts",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1115",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:18",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "description": "script_descriptions",
+          "script_name": "script_names"
+        },
+        "changed": {
+          "limit": {
+            "attribute": "default",
+            "old": "",
+            "new": "50"
+          },
+          "offset": {
+            "attribute": "default",
+            "old": "",
+            "new": "0"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.Scripts",
+          "Core.Scripts.script_id"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-run-snippet-code-script",
+      "new_command": "runSnippetCodeScript",
+      "endpoint": "/scripts/run_snippet_code_script",
+      "old_endpoint_raw": "/scripts/run_snippet_code_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_snippet_code_script",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1175",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:26",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "incident_id": "case_id"
+        },
+        "changed": {
+          "action_id": {
+            "attribute": "is_array",
+            "old": "true",
+            "new": "false"
+          },
+          "endpoint_ids": [
+            {
+              "attribute": "required",
+              "old": "true",
+              "new": "false"
+            },
+            {
+              "attribute": "is_array",
+              "old": "false",
+              "new": "true"
+            }
+          ],
+          "snippet_code": {
+            "attribute": "required",
+            "old": "true",
+            "new": "false"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "Core.GetActionStatus.ErrorReasons.bucket",
+          "Core.GetActionStatus.ErrorReasons.errorData",
+          "Core.GetActionStatus.ErrorReasons.errorDescription",
+          "Core.GetActionStatus.ErrorReasons.file_name",
+          "Core.GetActionStatus.ErrorReasons.file_path",
+          "Core.GetActionStatus.ErrorReasons.file_size",
+          "Core.GetActionStatus.ErrorReasons.missing_files",
+          "Core.GetActionStatus.ErrorReasons.terminate_result",
+          "Core.GetActionStatus.ErrorReasons.terminated_by"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-remove-endpoint-tag",
+      "new_command": "removeEndpointTag",
+      "endpoint": "/tags/agents/remove",
+      "old_endpoint_raw": "/tags/agents/remove/",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/tags/agents/remove",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:1330",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:2062",
+      "args_changes": {
+        "added": [],
+        "removed": [
+          "endpoint_ids"
+        ],
+        "moved": {},
+        "changed": {
+          "status": {
+            "attribute": "is_array",
+            "old": "false",
+            "new": "true"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-get-cases",
+      "new_command": "getCases",
+      "endpoint": "/incidents/get_multiple_incidents_extra_data",
+      "old_endpoint_raw": "/public_api/v1/incidents/get_multiple_incidents_extra_data/",
+      "new_endpoint_raw": "/api/webapp/cases/get_ai_case_details",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1168",
+      "new_source_file": "pkg/corecontent/commands/cases/commands.go:24",
+      "match_kind": "any_of_endpoint",
+      "note": "matched on a non-primary endpoint reachable by the new command",
+      "args_changes": {
+        "added": [
+          "filter_object"
+        ],
+        "removed": [],
+        "moved": {
+          "assignee": "assignees",
+          "case_description": "case_descriptions",
+          "case_domain": "case_domains",
+          "case_id_list": "case_ids",
+          "case_name": "case_names",
+          "severity": "severities",
+          "tag": "tags"
+        },
+        "changed": {
+          "limit": {
+            "attribute": "default",
+            "old": "100",
+            "new": "50"
+          }
+        }
+      },
+      "output_changes": {
+        "added": [
+          "Core.Case.accessMode",
+          "Core.Case.caseTeam.id",
+          "Core.Case.caseTeam.memberType",
+          "Core.Case.caseTeam.teamRole"
+        ],
+        "removed": [
+          "Core.CasesMetadata.filtered_count",
+          "Core.CasesMetadata.returned_count"
+        ],
+        "moved": {},
+        "changed": {}
+      }
+    },
+    {
+      "old_command": "core-appsec-remediate-issue",
+      "new_command": "appsecRemediateIssue",
+      "endpoint": "/issues/fix/trigger_fix_pull_request",
+      "old_endpoint_raw": "/v1/issues/fix/trigger_fix_pull_request",
+      "new_endpoint_raw": "/api/webapp/public_api/appsec/v1/issues/fix/trigger_fix_pull_request",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:830",
+      "new_source_file": "pkg/corecontent/commands/issues/commands.go:370",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'issues/fix/trigger_fix_pull_request'. New endpoint const triggerFixPullRequestAPIPath at issues/commands.go:26 adds the '/api/webapp/public_api/appsec' prefix. Args identical (issue_ids, title). Output diff not computed (new side uses GenerateOutputsFromResponse(TriggeredPR{}))."
+    },
+    {
+      "old_command": "core-get-hash-analytics-prevalence",
+      "new_command": "getHashAnalyticsPrevalence",
+      "endpoint": "/analytics_apis",
+      "old_endpoint_raw": "/analytics_apis",
+      "new_endpoint_raw": "/api/webapp/xsiam/analytics_apis/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:92",
+      "new_source_file": "pkg/corecontent/commands/prevalence/commands.go:187",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'analytics_apis'. New endpoint const prevalenceAPIPath at prevalence/commands.go:13 adds the '/api/webapp/xsiam' prefix. Disambiguated from the other 5 analytics-prevalence commands by resource type / argument (sha256). Output diff not computed (new side uses typed GenerateOutputsFromResponse structs)."
+    },
+    {
+      "old_command": "core-get-IP-analytics-prevalence",
+      "new_command": "getIPAnalyticsPrevalence",
+      "endpoint": "/analytics_apis",
+      "old_endpoint_raw": "/analytics_apis",
+      "new_endpoint_raw": "/api/webapp/xsiam/analytics_apis/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:92",
+      "new_source_file": "pkg/corecontent/commands/prevalence/commands.go:197",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'analytics_apis'. Disambiguated by argument ip_address. Output diff not computed (typed structs)."
+    },
+    {
+      "old_command": "core-get-domain-analytics-prevalence",
+      "new_command": "getDomainAnalyticsPrevalence",
+      "endpoint": "/analytics_apis",
+      "old_endpoint_raw": "/analytics_apis",
+      "new_endpoint_raw": "/api/webapp/xsiam/analytics_apis/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:92",
+      "new_source_file": "pkg/corecontent/commands/prevalence/commands.go:207",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'analytics_apis'. Disambiguated by argument domain_name. Output diff not computed (typed structs)."
+    },
+    {
+      "old_command": "core-get-process-analytics-prevalence",
+      "new_command": "getProcessAnalyticsPrevalence",
+      "endpoint": "/analytics_apis",
+      "old_endpoint_raw": "/analytics_apis",
+      "new_endpoint_raw": "/api/webapp/xsiam/analytics_apis/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:92",
+      "new_source_file": "pkg/corecontent/commands/prevalence/commands.go:217",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'analytics_apis'. Disambiguated by argument process_name. Output diff not computed (typed structs)."
+    },
+    {
+      "old_command": "core-get-registry-analytics-prevalence",
+      "new_command": "getRegistryAnalyticsPrevalence",
+      "endpoint": "/analytics_apis",
+      "old_endpoint_raw": "/analytics_apis",
+      "new_endpoint_raw": "/api/webapp/xsiam/analytics_apis/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:92",
+      "new_source_file": "pkg/corecontent/commands/prevalence/commands.go:227",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'analytics_apis'. Disambiguated by arguments key_name + value_name. Output diff not computed (typed structs)."
+    },
+    {
+      "old_command": "core-get-cmd-analytics-prevalence",
+      "new_command": "getCmdAnalyticsPrevalence",
+      "endpoint": "/analytics_apis",
+      "old_endpoint_raw": "/analytics_apis",
+      "new_endpoint_raw": "/api/webapp/xsiam/analytics_apis/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:92",
+      "new_source_file": "pkg/corecontent/commands/prevalence/commands.go:237",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'analytics_apis'. Disambiguated by argument process_command_line. Output diff not computed (typed structs)."
+    },
+    {
+      "old_command": "core-get-endpoint-support-file",
+      "new_command": "getEndpointSupportFile",
+      "endpoint": "/retrieve_endpoint_tsf",
+      "old_endpoint_raw": "/retrieve_endpoint_tsf",
+      "new_endpoint_raw": "/api/webapp/agents/retrieve_endpoint_tsf",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:870",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:565",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'retrieve_endpoint_tsf'. New endpoint const endpointSupportFileAPIPath at endpoints/commands.go:32 adds the '/api/webapp/agents' prefix. Args identical (endpoint_ids). Old output Core.EndpointSupportFile.group_action_id; new uses GenerateOutputsFromResponse(EndpointSupportFile{}), diff not computed."
+    },
+    {
+      "old_command": "core-iocs-enable",
+      "new_command": "enableIOCs",
+      "endpoint": "/enable_iocs",
+      "old_endpoint_raw": "/enable_iocs",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/indicators/enable_iocs",
+      "old_source_file": "Core/CoreIOCs/CoreIOCs.py:336",
+      "new_source_file": "pkg/corecontent/commands/indicators/commands.go:70",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [
+          "indicators"
+        ],
+        "removed": [
+          "indicator"
+        ],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'enable_iocs'. New endpoint const enableIOCsAPIPath at indicators/commands.go:20 adds the '/api/webapp/public_api/v1/indicators' prefix."
+    },
+    {
+      "old_command": "core-iocs-disable",
+      "new_command": "disableIOCs",
+      "endpoint": "/disable_iocs",
+      "old_endpoint_raw": "/disable_iocs",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/indicators/disable_iocs",
+      "old_source_file": "Core/CoreIOCs/CoreIOCs.py:336",
+      "new_source_file": "pkg/corecontent/commands/indicators/commands.go:80",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [
+          "indicators"
+        ],
+        "removed": [
+          "indicator"
+        ],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'disable_iocs'. New endpoint const disableIOCsAPIPath at indicators/commands.go:21 adds the '/api/webapp/public_api/v1/indicators' prefix."
+    },
+    {
+      "old_command": "core-iocs-push",
+      "new_command": "pushIOCs",
+      "endpoint": "/tim_insert_jsons",
+      "old_endpoint_raw": "/tim_insert_jsons",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/indicators/tim_insert_jsons",
+      "old_source_file": "Core/CoreIOCs/CoreIOCs.py:324",
+      "new_source_file": "pkg/corecontent/commands/indicators/commands.go:90",
+      "match_basis": "suffix",
+      "args_changes": {
+        "added": [
+          "indicators",
+          "query",
+          "severity"
+        ],
+        "removed": [
+          "indicator"
+        ],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "note": "Recovered by suffix 'tim_insert_jsons'. New endpoint const pushIOCsAPIPath at indicators/commands.go:22 adds the '/api/webapp/public_api/v1/indicators' prefix."
+    },
+    {
+      "old_command": "core-retrieve-files",
+      "new_command": "retrieveFiles",
+      "endpoint": "/endpoints/file_retrieval",
+      "old_endpoint_raw": "/endpoints/file_retrieval",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/file_retrieval/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1754",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:434",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/file_retrieval' by name alignment (core-retrieve-files -> retrieveFiles). Endpoint const fileRetrievalTriggerAPIPath at endpoints/commands.go:35. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-retrieve-files-quick-action",
+      "new_command": "retrieveFilesQuickAction",
+      "endpoint": "/endpoints/file_retrieval",
+      "old_endpoint_raw": "/endpoints/file_retrieval",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/file_retrieval/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1828",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:454",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/file_retrieval' by name alignment (core-retrieve-files-quick-action -> retrieveFilesQuickAction). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-get-endpoints",
+      "new_command": "getEndpoints",
+      "endpoint": "/endpoints/get_endpoint",
+      "old_endpoint_raw": "/endpoints/get_endpoint",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/get_endpoint",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:385",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:127",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/get_endpoint' by name alignment (core-get-endpoints -> getEndpoints). Endpoint const endpointsAPIPath at endpoints/commands.go:21. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "endpoint",
+      "new_command": "endpoint",
+      "endpoint": "/endpoints/get_endpoint",
+      "old_endpoint_raw": "/endpoints/get_endpoint",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/get_endpoint/",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:163",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/get_endpoint' by exact name match (endpoint -> endpoint). Endpoint const getEndpointAPIPath at endpoints/commands.go:36. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-endpoint-scan",
+      "new_command": "endpointScan",
+      "endpoint": "/endpoints/scan",
+      "old_endpoint_raw": "/endpoints/scan",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/scan",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1325",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:298",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/scan' by name alignment (core-endpoint-scan -> endpointScan). Endpoint const scanAPIPath at endpoints/commands.go:26. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-endpoint-scan-quick-action",
+      "new_command": "endpointScanQuickAction",
+      "endpoint": "/endpoints/scan",
+      "old_endpoint_raw": "/endpoints/scan",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/scan",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1431",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:331",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/scan' by name alignment (core-endpoint-scan-quick-action -> endpointScanQuickAction). Reuses CommandEndpointScan. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-add-endpoint-tag",
+      "new_command": "addEndpointTag",
+      "endpoint": "/tags/agents/assign",
+      "old_endpoint_raw": "/tags/agents/assign",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/tags/agents/assign",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3496",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:176",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/tags/agents/assign' by name alignment (core-add-endpoint-tag -> addEndpointTag). Endpoint const addTagAPIPath at endpoints/commands.go:23. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-update-endpoint-tags",
+      "new_command": "updateEndpointTags",
+      "endpoint": "/tags/agents/assign",
+      "old_endpoint_raw": "/tags/agents/assign",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/tags/agents/assign",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3594",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:224",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/tags/agents/assign' by name alignment (core-update-endpoint-tags -> updateEndpointTags). Endpoint const addTagAPIPath at endpoints/commands.go:23. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-list-risky-hosts",
+      "new_command": "getRiskyHosts",
+      "endpoint": "/get_risk_score",
+      "old_endpoint_raw": "/get_risk_score",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/get_risk_score",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3672",
+      "new_source_file": "pkg/corecontent/commands/risk/commands.go:53",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/get_risk_score' (any_of_endpoint) by name alignment (core-list-risky-hosts -> getRiskyHosts, hosts operation). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-list-risky-users",
+      "new_command": "getRiskyUsers",
+      "endpoint": "/get_risk_score",
+      "old_endpoint_raw": "/get_risk_score",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/get_risk_score",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3639",
+      "new_source_file": "pkg/corecontent/commands/risk/commands.go:41",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/get_risk_score' (any_of_endpoint) by name alignment (core-list-risky-users -> getRiskyUsers, users operation). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-isolate-endpoint",
+      "new_command": "isolateEndpoint",
+      "endpoint": "/endpoints/isolate",
+      "old_endpoint_raw": "/endpoints/isolate",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/isolate",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:178",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:362",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/isolate' by name alignment (core-isolate-endpoint -> isolateEndpoint). Endpoint const isolateAPIPath at endpoints/commands.go:29. The quick-action old command (core-isolate-endpoint-quick-action) also maps to isolateEndpoint. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-isolate-endpoint-quick-action",
+      "new_command": "isolateEndpoint",
+      "endpoint": "/endpoints/isolate",
+      "old_endpoint_raw": "/endpoints/isolate",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/isolate",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:178",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:362",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/isolate'. The quick-action command collapses onto the same new command as core-isolate-endpoint (isolateEndpoint). Endpoint const isolateAPIPath at endpoints/commands.go:29. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-quarantine-files",
+      "new_command": "quarantineFile",
+      "endpoint": "/endpoints/quarantine",
+      "old_endpoint_raw": "/endpoints/quarantine",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/quarantine",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1035",
+      "new_source_file": "pkg/corecontent/commands/files/commands.go:58",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/quarantine' by name alignment (core-quarantine-files -> quarantineFile). The quick-action old command (core-quarantine-files-quick-action) also maps to quarantineFile. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-quarantine-files-quick-action",
+      "new_command": "quarantineFile",
+      "endpoint": "/endpoints/quarantine",
+      "old_endpoint_raw": "/endpoints/quarantine",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/quarantine",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1035",
+      "new_source_file": "pkg/corecontent/commands/files/commands.go:58",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/quarantine'. The quick-action command collapses onto the same new command as core-quarantine-files (quarantineFile). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-restore-file",
+      "new_command": "restoreFile",
+      "endpoint": "/endpoints/restore",
+      "old_endpoint_raw": "/endpoints/restore",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/restore",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1173",
+      "new_source_file": "pkg/corecontent/commands/files/commands.go:79",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/restore' by name alignment (core-restore-file -> restoreFile). The quick-action old command (core-restore-file-quick-action) also maps to restoreFile. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-restore-file-quick-action",
+      "new_command": "restoreFile",
+      "endpoint": "/endpoints/restore",
+      "old_endpoint_raw": "/endpoints/restore",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/restore",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:1173",
+      "new_source_file": "pkg/corecontent/commands/files/commands.go:79",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/restore'. The quick-action command collapses onto the same new command as core-restore-file (restoreFile). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-terminate-causality",
+      "new_command": "terminateCausality",
+      "endpoint": "/endpoints/terminate_causality",
+      "old_endpoint_raw": "/endpoints/terminate_causality",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/terminate_causality/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3984",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:515",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/terminate_causality' by name alignment (core-terminate-causality -> terminateCausality). Endpoint const terminateCausalityAPIPath at endpoints/commands.go:38. The quick-action old command (core-terminate-causality-quick-action) also maps to terminateCausality. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-terminate-causality-quick-action",
+      "new_command": "terminateCausality",
+      "endpoint": "/endpoints/terminate_causality",
+      "old_endpoint_raw": "/endpoints/terminate_causality",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/endpoints/terminate_causality/",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3984",
+      "new_source_file": "pkg/corecontent/commands/endpoints/commands.go:515",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/endpoints/terminate_causality'. The quick-action command collapses onto the same new command as core-terminate-causality (terminateCausality). Endpoint const terminateCausalityAPIPath at endpoints/commands.go:38. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-list-system-users",
+      "new_command": "getSystemUsers",
+      "endpoint": "/rbac/get_users",
+      "old_endpoint_raw": "/rbac/get_users",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/rbac/get_users",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:3342",
+      "new_source_file": "pkg/corecontent/commands/users/commands.go:34",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group '/rbac/get_users' by name/operation alignment (core-list-system-users -> getSystemUsers). The old core-list-users command remains unpaired. args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-get-appsec-issues",
+      "new_command": "getAppSecIssues",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/api/webapp/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:2368",
+      "new_source_file": "pkg/corecontent/commands/issues/commands.go:382",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/get_data' group by name alignment (core-get-appsec-issues -> getAppSecIssues). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-get-asset-coverage",
+      "new_command": "getAssetCoverage",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/api/webapp/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:348",
+      "new_source_file": "pkg/corecontent/commands/coverage/commands.go:53",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/get_data' group by name alignment (core-get-asset-coverage -> getAssetCoverage). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-search-asset-groups",
+      "new_command": "getAssetGroup",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/api/webapp/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:1582",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:127",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/get_data' group by name alignment (core-search-asset-groups -> getAssetGroup, asset-group operation; shared descriptions confirm same operation). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-list-brokers",
+      "new_command": "getBrokers",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/api/webapp/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:4239",
+      "new_source_file": "pkg/corecontent/commands/brokers/commands.go:30",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/get_data' group by name alignment (core-list-brokers -> getBrokers, brokers operation). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-get-vulnerabilities",
+      "new_command": "getVulnerabilities",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/api/webapp/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:1611",
+      "new_source_file": "pkg/corecontent/commands/vulnerabilities/commands.go:38",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/get_data' group by name alignment (core-get-vulnerabilities -> getVulnerabilities). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-get-issues",
+      "new_command": "listIssues",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/api/webapp/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:696",
+      "new_source_file": "pkg/corecontent/commands/issues/commands.go:300",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/get_data' group by name/operation alignment (core-get-issues -> listIssues; shared descriptions confirm same issues-listing operation). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-run-script-agentix",
+      "new_command": "runScriptAgentix",
+      "endpoint": "/scripts/run_script",
+      "old_endpoint_raw": "/scripts/run_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_script",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:2813",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:190",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/scripts/run_script' group by name alignment (core-run-script-agentix -> runScriptAgentix). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-run-script-delete-file",
+      "new_command": "runScriptDeleteFile",
+      "endpoint": "/scripts/run_script",
+      "old_endpoint_raw": "/scripts/run_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_script",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:2358",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:273",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/scripts/run_script' group by name alignment (core-run-script-delete-file -> runScriptDeleteFile). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-run-script-execute-commands",
+      "new_command": "runScriptExecuteCommands",
+      "endpoint": "/scripts/run_script",
+      "old_endpoint_raw": "/scripts/run_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_script",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:2295",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:233",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/scripts/run_script' group by name alignment (core-run-script-execute-commands -> runScriptExecuteCommands). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-run-script-file-exists",
+      "new_command": "runScriptFileExists",
+      "endpoint": "/scripts/run_script",
+      "old_endpoint_raw": "/scripts/run_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_script",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:2421",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:292",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/scripts/run_script' group by name alignment (core-run-script-file-exists -> runScriptFileExists). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-run-script-kill-process",
+      "new_command": "runScriptKillProcess",
+      "endpoint": "/scripts/run_script",
+      "old_endpoint_raw": "/scripts/run_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_script",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:2484",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:254",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/scripts/run_script' group by name alignment (core-run-script-kill-process -> runScriptKillProcess). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-script-run",
+      "new_command": "scriptRun",
+      "endpoint": "/scripts/run_script",
+      "old_endpoint_raw": "/scripts/run_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_script",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3759",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:311",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from shared '/scripts/run_script' group by name alignment (core-script-run -> scriptRun). args/output diffs left empty to avoid guessing."
+    },
+    {
+      "old_command": "core-xql-generic-query-platform",
+      "new_command": "runXQLQuery",
+      "endpoint": "/xql_queries/results/info",
+      "old_endpoint_raw": "/xql_queries/results/info/",
+      "new_endpoint_raw": "/api/webapp/xql_queries/results/info/",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:4758",
+      "new_source_file": "pkg/corecontent/commands/xql/commands.go:59",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "GenericXQLQuery.widget_name",
+          "GenericXQLQuery.widget_description",
+          "GenericXQLQuery.query_name",
+          "GenericXQLQuery.timeframe",
+          "GenericXQLQuery.view_def",
+          "GenericXQLQuery.graph_data"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group (any_of_endpoint) by output+behavior comparison. Both submit-and-run an XQL query: old start_xql_query_platform posts /xql_queries/submit/ (CortexPlatformCore.py:4893) then polls /xql_queries/results/info/ (CortexPlatformCore.py:4758); new runXQLQuery posts xqlSubmitPath /xql_queries/submit/ (xql/commands.go:19) then reads xqlResultsInfoPath /xql_queries/results/info/ (xql/commands.go:20). Old outputs (CortexPlatformCore.yml:3393-3413: GenericXQLQuery.execution_id/status/error_details/query_url/number_of_results/results/query_limit_modified) are all present on the new GenericQueryResponse (xql/commands.go:83-95, context path GenericXQLQuery); the new command adds widget_name/widget_description/query_name/timeframe/view_def/graph_data."
+    },
+    {
+      "old_command": "core-list-exception-rules",
+      "new_command": "getExceptionRules",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:3260",
+      "new_source_file": "pkg/corecontent/commands/exceptions/commands.go:89",
+      "args_changes": {
+        "added": [
+          "limit"
+        ],
+        "removed": [
+          "retrieve_all"
+        ],
+        "moved": {
+          "id": "ids",
+          "rule_name": "rule_names",
+          "platform": "platforms",
+          "user_email": "user_emails",
+          "rule_type": "rule_types"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {
+          "GENERATING_ALERT_ID": "GENERATING_ISSUE_ID",
+          "TRIGGER_ALERTS": "TRIGGER_ISSUES"
+        },
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group ('/get_data') by args+output comparison. Old core-list-exception-rules and new getExceptionRules both operate on exception rules with identical Core.ExceptionRules.* context; args align 1:1 except old-only retrieve_all vs new-only limit, with several old singular arg names mapped to new plural (id->ids, rule_name->rule_names, platform->platforms, user_email->user_emails, rule_type->rule_types); outputs are identical apart from two alert->issue renames (GENERATING_ALERT_ID->GENERATING_ISSUE_ID, TRIGGER_ALERTS->TRIGGER_ISSUES)."
+    },
+    {
+      "old_command": "core-get-issue-recommendations",
+      "new_command": "getIssueRecommendations",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/xsoar/quickactions (+ /xsoar/playbooks/metadata)",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:1804",
+      "new_source_file": "pkg/corecontent/commands/issues/commands.go:360",
+      "args_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group ('/get_data') by args+output comparison. Same operation and identical Core.IssueRecommendations context; single required array arg issue_ids on both sides, and outputs are an exact 1:1 (23 fields, none added/removed). The new command changed the underlying endpoint: old wraps /get_data while new uses /xsoar/quickactions (plus /xsoar/playbooks/metadata)."
+    },
+    {
+      "old_command": "core-list-scripts",
+      "new_command": "getScripts",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:2758",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:115",
+      "args_changes": {
+        "added": [
+          "script_descriptions",
+          "created_by",
+          "is_high_risk",
+          "windows_supported",
+          "linux_supported",
+          "macos_supported",
+          "limit",
+          "offset"
+        ],
+        "removed": [
+          "supported_platforms",
+          "page_size",
+          "page_number"
+        ],
+        "moved": {
+          "script_name": "script_names"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "modification_date",
+          "created_by",
+          "is_high_risk"
+        ],
+        "removed": [
+          "script_id",
+          "script_inputs",
+          "Core.ScriptsMetadata.returned_count",
+          "Core.ScriptsMetadata.filtered_count"
+        ],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group ('/get_data') by args+output comparison. Same operation and identical Core.Scripts context; old script_name -> new script_names, old supported_platforms split into new windows_supported/linux_supported/macos_supported, old pagination page_size/page_number -> new limit/offset, and new adds script_descriptions/created_by/is_high_risk. Core output fields (name/description/*_supported/script_uid) match; new adds modification_date/created_by/is_high_risk and drops old script_id/script_inputs and Core.ScriptsMetadata.returned_count/filtered_count."
+    },
+    {
+      "old_command": "core-search-assets",
+      "new_command": "getAssets",
+      "endpoint": "/get_data",
+      "old_endpoint_raw": "/get_data",
+      "new_endpoint_raw": "/assets",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:1511",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:146",
+      "args_changes": {
+        "added": [
+          "filter_object"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [
+          "tags",
+          "type.id",
+          "type.category",
+          "type.class",
+          "type.name",
+          "group_ids",
+          "related_issues.critical_issues",
+          "related_issues.issues_critical",
+          "related_issues.issues_breakdown",
+          "related_cases.critical_cases",
+          "related_cases.cases_critical",
+          "related_cases.cases_breakdown",
+          "cloud.region",
+          "kubernetes.cluster.version",
+          "software_package.version"
+        ],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group ('/get_data') by args+output comparison. Same operation and identical Core.Asset context; args are almost exact 1:1 with new adding filter_object. Eight core scalar outputs match (name, id[primary], provider, external_provider_id, first_observed, last_observed, realm, strong_id); the old command declared many nested/breakdown fields that are not declared as struct fields on the new command (listed under removed). The new command changed the underlying endpoint: old wraps /get_data while new uses /assets."
+    },
+    {
+      "old_command": "core-list-users",
+      "new_command": "getSystemUsers",
+      "endpoint": "/rbac/get_users",
+      "old_endpoint_raw": "/rbac/get_users",
+      "new_endpoint_raw": "/api/webapp/rbac/get_users",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:3602",
+      "new_source_file": "pkg/corecontent/commands/users/commands.go:34",
+      "args_changes": {
+        "added": [
+          "emails",
+          "names",
+          "limit"
+        ],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [],
+        "removed": [],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group ('/rbac/get_users') by args+output comparison. This is a 2-old-to-1-new collapse: getSystemUsers is already matched to core-list-system-users, and per user a separate matched object is recorded here for core-list-users. getSystemUsers with no filter equals core-list-users. Old core-list-users has no args; new adds emails/names/limit filters. Outputs are identical 8 Core.User.* fields with no changes."
+    },
+    {
+      "old_command": "core-execute-command",
+      "new_command": "runScriptExecuteCommands",
+      "endpoint": "/scripts/run_script",
+      "old_endpoint_raw": "/scripts/run_script",
+      "new_endpoint_raw": "/api/webapp/public_api/v1/scripts/run_script",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.yml:4234",
+      "new_source_file": "pkg/corecontent/commands/scripts/commands.go:233",
+      "args_changes": {
+        "added": [],
+        "removed": [
+          "hide_polling_output",
+          "is_core",
+          "script_uid",
+          "parameters",
+          "command_separator"
+        ],
+        "moved": {
+          "command": "commands",
+          "incident_id": "case_id",
+          "polling_interval_in_seconds": "interval_in_seconds",
+          "polling_timeout_in_seconds": "timeout_in_seconds"
+        },
+        "changed": {}
+      },
+      "output_changes": {
+        "added": [
+          "Core.ScriptRun.endpoints_count"
+        ],
+        "removed": [
+          "Core.ScriptResult.results.retrieved_files",
+          "Core.ScriptResult.results.endpoint_ip_address",
+          "Core.ScriptResult.results.endpoint_name",
+          "Core.ScriptResult.results.failed_files",
+          "Core.ScriptResult.results.endpoint_status",
+          "Core.ScriptResult.results.domain",
+          "Core.ScriptResult.results.endpoint_id",
+          "Core.ScriptResult.results.execution_status",
+          "Core.ScriptResult.results.return_value",
+          "Core.ScriptResult.results.standard_output",
+          "Core.ScriptResult.results.retention_date",
+          "Core.ScriptResult.results.command"
+        ],
+        "moved": {},
+        "changed": {}
+      },
+      "match_basis": "ambiguous_resolved",
+      "note": "Resolved from ambiguous group ('/scripts/run_script') by args+output comparison. This is a 2-old-to-1-new collapse: runScriptExecuteCommands is already matched to core-run-script-execute-commands, and per user a separate matched object is recorded here for core-execute-command. Core inputs overlap (endpoint_ids, timeout, is_raw_command, command_type, action_id[hidden]); old command(array) -> new commands, old incident_id -> new case_id, old polling_interval_in_seconds/polling_timeout_in_seconds -> new interval_in_seconds/timeout_in_seconds; old-only args removed on new: hide_polling_output/is_core/script_uid/parameters/command_separator. The context node changed from ScriptResult to ScriptRun: old emitted full per-endpoint Core.ScriptResult.results.* while new emits only a trigger summary Core.ScriptRun.action_id + endpoints_count (action_id already common; endpoints_count added)."
+    }
+  ],
+  "not_migrated": [
+    {
+      "old_command": "core-create-endpoint-policy",
+      "endpoint": "/agent/policy/update",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1136"
+    },
+    {
+      "old_command": "core-create-windows-exploit-profile",
+      "endpoint": "/profiles/prevention/add",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1083"
+    },
+    {
+      "old_command": "core-create-windows-malware-profile",
+      "endpoint": "/profiles/prevention/add",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1083"
+    },
+    {
+      "old_command": "core-delete-endpoint-policy",
+      "endpoint": "/agent/policy/update",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1136"
+    },
+    {
+      "old_command": "core-delete-profile",
+      "endpoint": "/profiles/delete_profiles",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1104"
+    },
+    {
+      "old_command": "core-get-ai-model-activity",
+      "endpoint": "/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:3667",
+      "note": "Resolved from ambiguous group ('/get_data'). No new AIModelActivity command exists, so left as not_migrated for human review."
+    },
+    {
+      "old_command": "core-get-asset-details",
+      "endpoint": "/unified-asset-inventory/get_asset",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:101"
+    },
+    {
+      "old_command": "core-get-case-extra-data",
+      "endpoint": "/incidents/get_incident_extra_data",
+      "old_source_file": "Core/CortexPlatformCore/CoreIRApiModule.py:445"
+    },
+    {
+      "old_command": "core-get-cloud-original-alerts",
+      "endpoint": "/alerts/get_original_alerts",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:944"
+    },
+    {
+      "old_command": "core-get-contributing-event",
+      "endpoint": "/alerts/get_correlation_alert_data",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:232"
+    },
+    {
+      "old_command": "core-get-distribution-url",
+      "endpoint": "/distributions/get_dist_url",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:587",
+      "note": "Not a suffix match. A likely semantic successor exists (getDistributionURL, distributions/commands.go:19) but its endpoint suffix is 'distributions/get_signed_url' (const distributionsGetSignedURLAPIPath at distributions/commands.go:19), which differs from the old suffix 'get_dist_url'. Endpoint was renamed, not just re-prefixed, so it is left as not_migrated for human review."
+    },
+    {
+      "old_command": "core-get-dynamic-analysis",
+      "endpoint": "/alerts/get_original_alerts",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:944"
+    },
+    {
+      "old_command": "core-get-incidents",
+      "endpoint": "/incidents/get_incidents",
+      "old_source_file": "Core/CortexCoreIR/CoreIRApiModule.py:416"
+    },
+    {
+      "old_command": "core-iocs-create-sync-file",
+      "endpoint": "/none (client-side)",
+      "old_source_file": "Core/CoreIOCs/CoreIOCs.py:433"
+    },
+    {
+      "old_command": "core-iocs-set-sync-time",
+      "endpoint": "/none (client-side)",
+      "old_source_file": "Core/CoreIOCs/CoreIOCs.py:419"
+    },
+    {
+      "old_command": "core-iocs-sync",
+      "endpoint": "/sync_tim_iocs",
+      "old_source_file": "Core/CoreIOCs/CoreIOCs.py:243"
+    },
+    {
+      "old_command": "core-list-endpoints",
+      "endpoint": "/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:2945",
+      "note": "Resolved from ambiguous group ('/get_data'). The closest new command getEndpoints aligns with a different old command (core-get-endpoints) and uses /endpoints/get_endpoint, so this is left as not_migrated for human review."
+    },
+    {
+      "old_command": "core-list-findings",
+      "endpoint": "/get_data",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.yml:3468",
+      "note": "Resolved from ambiguous group ('/get_data'). No new command emits Core.Finding, so left as not_migrated for human review."
+    },
+    {
+      "old_command": "core-report-incorrect-wildfire",
+      "endpoint": "/wfReportIncorrectVerdict",
+      "old_source_file": "Core/CortexCoreIR/CortexCoreIR.py:82",
+      "note": "Not a suffix match. A likely semantic successor exists (reportIncorrectWildfire, files/commands.go:19) but its endpoint suffix is 'wildfire/report_as_incorrect' (const wildfireReportAPIPath at files/commands.go:19), which differs from the old suffix 'wfReportIncorrectVerdict'. Endpoint was renamed, not just re-prefixed, so it is left as not_migrated for human review."
+    },
+    {
+      "old_command": "core-send-endpoint-heartbeat",
+      "endpoint": "/call_home",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:885"
+    },
+    {
+      "old_command": "core-update-windows-exploit-profile",
+      "endpoint": "/profiles/edit_profile",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1097"
+    },
+    {
+      "old_command": "core-update-windows-malware-profile",
+      "endpoint": "/profiles/edit_profile",
+      "old_source_file": "Core/CortexPlatformCore/CortexPlatformCore.py:1097"
+    },
+    {
+      "old_command": "xdr-xql-dll-module-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-dns-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-event-log-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-file-dropper-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-file-event-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-generic-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-get-query-results",
+      "endpoint": "/xql/get_query_results",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:151"
+    },
+    {
+      "old_command": "xdr-xql-get-quota",
+      "endpoint": "/xql/get_quota",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:168"
+    },
+    {
+      "old_command": "xdr-xql-network-connection-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-process-causality-network-activity-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-process-event-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-process-instance-network-activity-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    },
+    {
+      "old_command": "xdr-xql-registry-query",
+      "endpoint": "/xql/start_xql_query",
+      "old_source_file": "Core/CortexCoreXQLQueryEngine/CoreXQLApiModule.py:140"
+    }
+  ],
+  "newly_added": [
+    {
+      "new_command": "createAssetGroup",
+      "endpoint": "/asset-groups/create",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:16"
+    },
+    {
+      "new_command": "createBIOCRule",
+      "endpoint": "/bioc/insert",
+      "new_source_file": "pkg/corecontent/commands/bioc/commands.go:16"
+    },
+    {
+      "new_command": "createCorrelationRule",
+      "endpoint": "/correlations/insert",
+      "new_source_file": "pkg/corecontent/commands/correlations/commands.go:16"
+    },
+    {
+      "new_command": "createRCSScan",
+      "endpoint": "/remediation_confirmation_scanning/requests/get_or_create",
+      "new_source_file": "pkg/corecontent/commands/rcs/commands.go:13"
+    },
+    {
+      "new_command": "createTimelineRecord",
+      "endpoint": "/incident/timeline/add_record",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:19"
+    },
+    {
+      "new_command": "createWarRoomEntry",
+      "endpoint": "/entry",
+      "new_source_file": "pkg/corecontent/commands/warroom/commands.go:14"
+    },
+    {
+      "new_command": "createXQLLibraries",
+      "endpoint": "/public_api/xql_library/insert",
+      "new_source_file": "pkg/corecontent/commands/xqllibraries/commands.go:15"
+    },
+    {
+      "new_command": "deleteAPIKeys",
+      "endpoint": "/api_keys/delete",
+      "new_source_file": "pkg/corecontent/commands/apikeys/commands.go:13"
+    },
+    {
+      "new_command": "deleteAssetGroup",
+      "endpoint": "/{}/{}",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:452"
+    },
+    {
+      "new_command": "deleteBIOCRule",
+      "endpoint": "/bioc/delete",
+      "new_source_file": "pkg/corecontent/commands/bioc/commands.go:17"
+    },
+    {
+      "new_command": "deleteCorrelationRule",
+      "endpoint": "/correlations/delete",
+      "new_source_file": "pkg/corecontent/commands/correlations/commands.go:17"
+    },
+    {
+      "new_command": "deleteDistribution",
+      "endpoint": "/distributions/delete",
+      "new_source_file": "pkg/corecontent/commands/distributions/commands.go:16"
+    },
+    {
+      "new_command": "deleteTimelineRecord",
+      "endpoint": "/incident/timeline/delete_record",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:20"
+    },
+    {
+      "new_command": "deleteXQLLibraries",
+      "endpoint": "/public_api/xql_library/delete",
+      "new_source_file": "pkg/corecontent/commands/xqllibraries/commands.go:16"
+    },
+    {
+      "new_command": "getAPIKeys",
+      "endpoint": "/api_keys/get_api_keys",
+      "new_source_file": "pkg/corecontent/commands/apikeys/commands.go:12"
+    },
+    {
+      "new_command": "getAffectedSoftware",
+      "endpoint": "/public_api/uvem/v1/get_affected_software",
+      "new_source_file": "pkg/corecontent/commands/uvem/commands.go:14"
+    },
+    {
+      "new_command": "getAssetSchema",
+      "endpoint": "/assets/schema",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:14"
+    },
+    {
+      "new_command": "getAssetSchemaFieldOptions",
+      "endpoint": "/{}/{}",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:249"
+    },
+    {
+      "new_command": "getAssets",
+      "endpoint": "/assets",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:20"
+    },
+    {
+      "new_command": "getBIOCRules",
+      "endpoint": "/bioc/get",
+      "new_source_file": "pkg/corecontent/commands/bioc/commands.go:15"
+    },
+    {
+      "new_command": "getCorrelationRules",
+      "endpoint": "/correlations/get",
+      "new_source_file": "pkg/corecontent/commands/correlations/commands.go:15"
+    },
+    {
+      "new_command": "getDistributionURL",
+      "endpoint": "/distributions/get_signed_url",
+      "new_source_file": "pkg/corecontent/commands/distributions/commands.go:19"
+    },
+    {
+      "new_command": "getIssueRecommendations",
+      "endpoint": "/quickactions",
+      "new_source_file": "pkg/corecontent/commands/issues/commands.go:24"
+    },
+    {
+      "new_command": "getSystemGroups",
+      "endpoint": "/rbac/get_groups_np",
+      "new_source_file": "pkg/corecontent/commands/groups/commands.go:11"
+    },
+    {
+      "new_command": "getTriagePresets",
+      "endpoint": "/get_triage_presets",
+      "new_source_file": "pkg/corecontent/commands/triage/commands.go:12"
+    },
+    {
+      "new_command": "getVulnerabilityDetails",
+      "endpoint": "/public_api/uvem/v1/vulnerabilities",
+      "new_source_file": "pkg/corecontent/commands/uvem/commands.go:13"
+    },
+    {
+      "new_command": "getXQLLibraries",
+      "endpoint": "/public_api/xql_library/get",
+      "new_source_file": "pkg/corecontent/commands/xqllibraries/commands.go:14"
+    },
+    {
+      "new_command": "linkRecordToTimeline",
+      "endpoint": "/incident/timeline/set_timelines",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:24"
+    },
+    {
+      "new_command": "listTimelineRecords",
+      "endpoint": "/incident/timeline/get_tags",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:22"
+    },
+    {
+      "new_command": "listTimelineTags",
+      "endpoint": "/incident/timeline/get_tags",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:22"
+    },
+    {
+      "new_command": "listTimelines",
+      "endpoint": "/incident/timeline/get_timelines",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:23"
+    },
+    {
+      "new_command": "markTimelineRecordAsEvidence",
+      "endpoint": "/incident/timeline/mark_as_evidence",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:26"
+    },
+    {
+      "new_command": "pollRCSScan",
+      "endpoint": "/remediation_confirmation_scanning/requests/get",
+      "new_source_file": "pkg/corecontent/commands/rcs/commands.go:14"
+    },
+    {
+      "new_command": "reportIncorrectWildfire",
+      "endpoint": "/wildfire/report_as_incorrect",
+      "new_source_file": "pkg/corecontent/commands/files/commands.go:19"
+    },
+    {
+      "new_command": "runHealthcheck",
+      "endpoint": "/healthcheck",
+      "new_source_file": "pkg/corecontent/commands/system/commands.go:12"
+    },
+    {
+      "new_command": "setAssetGroup",
+      "endpoint": "/{}/{}",
+      "new_source_file": "pkg/corecontent/commands/assets/commands.go:414"
+    },
+    {
+      "new_command": "setBIOCRule",
+      "endpoint": "/bioc/insert",
+      "new_source_file": "pkg/corecontent/commands/bioc/commands.go:16"
+    },
+    {
+      "new_command": "setCorrelationRule",
+      "endpoint": "/correlations/insert",
+      "new_source_file": "pkg/corecontent/commands/correlations/commands.go:16"
+    },
+    {
+      "new_command": "triageEndpoints",
+      "endpoint": "/triage_endpoint",
+      "new_source_file": "pkg/corecontent/commands/triage/commands.go:13"
+    },
+    {
+      "new_command": "triggerAssetScan",
+      "endpoint": "/public_api/vulnerability-management/v1/scan",
+      "new_source_file": "pkg/corecontent/commands/vulnerabilitymanagement/commands.go:14"
+    },
+    {
+      "new_command": "updateException",
+      "endpoint": "/issue_exceptions/update_approval",
+      "new_source_file": "pkg/corecontent/commands/exceptions/commands.go:17"
+    },
+    {
+      "new_command": "updateTimelineRecordTags",
+      "endpoint": "/incident/timeline/set_tags",
+      "new_source_file": "pkg/corecontent/commands/timeline/commands.go:21"
+    },
+    {
+      "new_command": "uploadVulnerabilityScan",
+      "endpoint": "/public_api/vulnerability-management/v1/external-scans/assets",
+      "new_source_file": "pkg/corecontent/commands/vulnerabilitymanagement/commands.go:15"
+    }
+  ],
+  "ambiguous_matches": []
+}
