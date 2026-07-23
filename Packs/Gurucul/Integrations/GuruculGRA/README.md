@@ -1,4 +1,4 @@
-[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors This Integration facilitates retrieval of High Risk Entities identified by GRA by creating a case for each entity within GRA. These high risk entities are fetched in Cortex XSOAR and a corresponding incident is created for each entity in Cortex XSOAR. As a part of this integration, workflows can be configured at Cortex XSOAR based on different commands provided by GRA. These will define the actions to be taken on a particular high risk entity based on the Risk Score.
+[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors. This integration fetches GRA Incidents or Alerts into Cortex XSOAR and exposes War Room commands for investigation and actions.  Workflows can be configured in Cortex XSOAR based on the commands provided by GRA.
 
 Please make sure you look at the integration source code and comments.
 
@@ -16,6 +16,37 @@ Please make sure you look at the integration source code and comments.
 | proxy | Use system proxy settings | False |
 | first_fetch | First fetch time | False |
 | max_fetch | Maximum number of incidents per fetch | False |
+| fetch_type | What to import from GRA (`Incidents` or `Alerts`). Cases are no longer fetched. Use a separate instance for Alerts. | False |
+
+### Fetch setup (Incidents vs Alerts)
+
+Use two integration instances when you need both types:
+
+| Instance | Fetch type | Classifier | Mapper (incoming) | Incident type |
+| --- | --- | --- | --- | --- |
+| Incidents | Incidents | GRAIncident-Classifier | GRAIncident-Mapper | GRAIncident |
+| Alerts | Alerts | GRAAlert-Classifier | GRAAlert-Mapper | GRAAlert |
+
+The integration defaults are the Incident classifier and mapper. On an Alerts instance, change Classifier, Mapper, and Incident type to the Alert values above so fields and layouts map correctly.
+
+## Upgrading from Case fetch (2.1.0)
+
+If you already run a Gurucul instance that fetched **Cases**, update carefully so fetch does not run with the wrong type/classifier mid-upgrade:
+
+1. **Disable** **Fetches incidents** on the existing Cases instance (or disable the instance).
+2. **Update** the Gurucul pack to **2.1.0** (Marketplace or demisto-sdk upload).
+3. Open the same instance and set:
+   - **Fetch type** = `Incidents`
+   - **Classifier** = `GRAIncident-Classifier`
+   - **Mapper (incoming)** = `GRAIncident-Mapper`
+   - **Incident type** = `GRAIncident`
+4. Save, then **re-enable** fetch.
+
+Notes:
+
+- Existing **GRACase** incidents in XSOAR remain; use `gra-case-*` commands for actions on them. Cases are no longer fetched.
+- If the instance last-run still has `maxCaseId` and no `maxIncidentId`, that Case cursor is reused as `maxIncidentId` so the first Incident fetch does not date-bootstrap from **First fetch time**.
+- For Alerts, create a **separate** instance using the Alerts row in the table above.
 
 ## Commands
 
@@ -1146,6 +1177,334 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
     }
 ]
 ```
+
+#### Human Readable Output
+
+### gra-incidents
+
+***
+Retrieve list of GRA incidents for a specified status.
+
+#### Base Command
+
+`gra-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Incident Status. | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incidents.incidentId | Number | Incident Id. |
+| Gra.Incidents.entity | String | Entity Name. |
+| Gra.Incidents.status | String | Status. |
+| Gra.Incidents.openDate | Date | Open Date. |
+| Gra.Incidents.anomalies | String | Anomalies. |
+
+#### Command Example
+
+```!gra-incidents status="OPEN" page=1 max=25```
+
+#### Human Readable Output
+
+### gra-incident-action
+
+***
+Close a GRA incident and update anomaly status as Closed / Risk Managed / Model Reviewed.
+
+#### Base Command
+
+`gra-incident-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action (closeIncident, modelReviewIncident, riskManageIncident). | Required |
+| incidentId | Incident Id. | Required |
+| subOption | Sub Option. | Required |
+| incidentComment | Incident Comment. | Required |
+| riskAcceptDate | Risk Accept Date in yyyy-MM-dd format (riskManageIncident only). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incident.Action.Message | String | Message. |
+
+#### Command Example
+
+```!gra-incident-action action=closeIncident incidentId=5 subOption="True Incident" incidentComment="Closed from XSOAR"```
+
+#### Human Readable Output
+
+### gra-incident-action-anomaly
+
+***
+Close anomalies within a GRA incident.
+
+#### Base Command
+
+`gra-incident-action-anomaly`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action (closeIncidentAnomaly, modelReviewIncidentAnomaly, riskAcceptIncidentAnomaly). | Required |
+| incidentId | Incident Id. | Required |
+| anomalyNames | Anomaly Names. | Required |
+| subOption | Sub Option. | Required |
+| incidentComment | Incident Comment. | Required |
+| riskAcceptDate | Risk Accept Date in yyyy-MM-dd format (riskAcceptIncidentAnomaly only). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incident.Action.Anomaly.Message | String | Message. |
+
+#### Command Example
+
+```!gra-incident-action-anomaly action=closeIncidentAnomaly incidentId=5 anomalyNames=anomalyName1 subOption="True Incident" incidentComment="Done"```
+
+#### Human Readable Output
+
+### gra-incidents-anomaly
+
+***
+Retrieve anomalies for a specified GRA incident id.
+
+#### Base Command
+
+`gra-incidents-anomaly`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incidentId | GRA Incident Id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incidents.anomalies.anomalyName | String | Incident Anomaly name. |
+| Gra.Incidents.anomalies.status | String | Current status of anomaly. |
+| Gra.Incidents.anomalies.resourceName | String | Resource Name. |
+| Gra.Incidents.anomalies.assignee | String | Assignee name. |
+| Gra.Incidents.anomalies.assigneeType | String | Assignee type (User/Role). |
+| Gra.Incidents.anomalies.riskScore | Number | Risk score for anomaly. |
+| Gra.Incidents.anomalies.riskAcceptedDate | Date | Risk accepted date of anomaly. |
+
+#### Command Example
+
+```!gra-incidents-anomaly incidentId=10```
+
+#### Human Readable Output
+
+### gra-alerts
+
+***
+Retrieve list of GRA alerts for a specified status and date range.
+
+#### Base Command
+
+`gra-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Status (OPEN, CLOSED, IN PROGRESS, ALL). | Required |
+| startDate | Start Date (yyyy-MM-dd HH:mm:ss). | Required |
+| endDate | End Date (yyyy-MM-dd HH:mm:ss). | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alerts.alertId | Number | Alert Id. |
+| Gra.Alerts.anomalyName | String | Anomaly Name. |
+| Gra.Alerts.entity | String | Entity. |
+| Gra.Alerts.statusName | String | Status. |
+| Gra.Alerts.detectionTimestamp | Date | Detection Timestamp. |
+| Gra.Alerts.severity | Number | Severity. |
+| Gra.Alerts.riskScore | Number | Risk Score. |
+| Gra.Alerts.resourceName | String | Resource Name. |
+| Gra.Alerts.graweblink | String | GRA Weblink. |
+
+#### Command Example
+
+```!gra-alerts status="OPEN" startDate="2026-01-01 00:00:00" endDate="2026-12-31 23:59:59" page=1 max=25```
+
+#### Human Readable Output
+
+### gra-alert-get
+
+***
+Retrieve a single GRA alert by id.
+
+#### Base Command
+
+`gra-alert-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Alert Id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.alertId | Number | Alert Id. |
+| Gra.Alert.anomalyName | String | Anomaly Name. |
+| Gra.Alert.entity | String | Entity. |
+| Gra.Alert.statusName | String | Status. |
+| Gra.Alert.analyticalFeatures | String | Analytical Features. |
+| Gra.Alert.graweblink | String | GRA Weblink. |
+
+#### Command Example
+
+```!gra-alert-get id=101```
+
+#### Human Readable Output
+
+### gra-alert-action
+
+***
+Perform an action on a GRA alert (close, assign, in progress, comment).
+
+#### Base Command
+
+`gra-alert-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action (closeAlert, inProgressAlert, assignAlert, addCommentOnAlert). | Required |
+| alertId | Alert Id. | Required |
+| alertComment | Alert Comment. | Required |
+| incidentType | Incident or Not An Incident (closeAlert). | Optional |
+| subStatus | Close sub-status (closeAlert). | Optional |
+| assigneeType | Assignee type (assignAlert). | Optional |
+| assigneeName | Assignee name (assignAlert). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.Action.Message | String | Message. |
+
+#### Command Example
+
+```!gra-alert-action action=closeAlert alertId=101 alertComment="Closed" incidentType="Incident" subStatus="True Positive"```
+
+#### Human Readable Output
+
+### gra-alert-comment
+
+***
+Add a comment on a GRA alert (thin wrapper for addCommentOnAlert).
+
+#### Base Command
+
+`gra-alert-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+| alertComment | Alert Comment. | Required |
+
+#### Command Example
+
+```!gra-alert-comment alertId=101 alertComment="Investigating"```
+
+#### Human Readable Output
+
+### gra-alert-assign
+
+***
+Assign a GRA alert (thin wrapper for assignAlert).
+
+#### Base Command
+
+`gra-alert-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+| assigneeType | Assignee type. | Required |
+| assigneeName | Assignee name. | Required |
+| alertComment | Alert Comment. | Optional |
+
+#### Command Example
+
+```!gra-alert-assign alertId=101 assigneeType=GRA_USER assigneeName="Yuki.Jacob" alertComment="Assigning via XSOAR"```
+
+#### Human Readable Output
+
+### gra-alert-in-progress
+
+***
+Mark a GRA alert in progress (thin wrapper for inProgressAlert).
+
+#### Base Command
+
+`gra-alert-in-progress`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+| alertComment | Alert Comment. | Optional |
+
+#### Command Example
+
+```!gra-alert-in-progress alertId=101 alertComment="Working this alert"```
+
+#### Human Readable Output
+
+### gra-alert-update-history
+
+***
+Retrieve update history for a GRA alert.
+
+#### Base Command
+
+`gra-alert-update-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.History.alertDetails | String | Alert history details. |
+
+#### Command Example
+
+```!gra-alert-update-history alertId=101```
 
 #### Human Readable Output
 

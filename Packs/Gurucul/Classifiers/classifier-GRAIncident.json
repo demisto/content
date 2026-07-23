@@ -1,0 +1,22 @@
+{
+    "defaultIncidentType": "GRAIncident",
+    "feed": false,
+    "id": "GRAIncident-Classifier",
+    "keyTypeMap": {
+        "GRAIncident": "GRAIncident"
+    },
+    "name": "GRAIncident-Classifier",
+    "transformer": {
+        "complex": {
+            "accessor": "",
+            "filters": [],
+            "root": "incidentType",
+            "transformers": []
+        },
+        "simple": ""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "description": "Classifies Gurucul GRA Incident."
+}
