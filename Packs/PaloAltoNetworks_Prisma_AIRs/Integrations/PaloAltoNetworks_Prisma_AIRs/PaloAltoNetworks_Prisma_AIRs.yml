@@ -3965,6 +3965,199 @@ script:
     - contextPath: PrismaAIRs.RedTeamCategory.sub_categories
       description: Array of subcategory objects.
       type: Unknown
+  - name: prisma-airs-redteam-network-channels-list
+    description: List Red Team network broker channels. Network channels are the data-plane relays that connect Red Team clients to targets.
+    arguments:
+    - name: limit
+      required: false
+      description: Maximum number of channels to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: Number of channels to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: Free-text search filter.
+    - name: status
+      required: false
+      description: Filter by channel status. Supports a comma-separated list to filter by multiple statuses.
+      auto: PREDEFINED
+      predefined:
+      - ONLINE
+      - OFFLINE
+      - DRAFT
+      isArray: true
+    - name: include_all_if_empty
+      required: false
+      description: If the other filters match nothing, return all channels.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.uuid
+      description: Channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.name
+      description: Channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.description
+      description: Channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.status
+      description: Channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.added_by
+      description: UUID of the user that created the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.last_online_at
+      description: Timestamp the channel was last online.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.connected_clients_count
+      description: Number of currently connected clients.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count
+      description: Number of connected clients running an outdated version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.oldest_client_version
+      description: Oldest client version currently connected to the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.features
+      description: Map of feature flags enabled on the channel.
+      type: Unknown
+  - name: prisma-airs-redteam-network-channels-create
+    description: Create a new Red Team network broker channel.
+    arguments:
+    - name: name
+      required: true
+      description: Channel name (1-64 characters).
+    - name: description
+      required: false
+      description: Channel description.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.uuid
+      description: Channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.name
+      description: Channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.description
+      description: Channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.status
+      description: Channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.added_by
+      description: UUID of the user that created the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.updated_at
+      description: Last update timestamp.
+      type: Date
+  - name: prisma-airs-redteam-network-channels-stats
+    description: Retrieve Red Team network broker channel statistics and deployment info (broker domain, docker registry/image, helm chart, online/total counts).
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.network_channels_server_domain
+      description: Network channels broker server domain.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.docker_registry
+      description: Docker registry proxy domain for the channel client image.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.helm_chart
+      description: Helm chart path for deploying the channel client.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.docker_image
+      description: Docker image path for the channel client.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.online_channels
+      description: Number of online channels.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.total_channels
+      description: Total number of channels.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.client_version
+      description: Current channel client version.
+      type: String
+  - name: prisma-airs-redteam-network-channels-get
+    description: Get a single Red Team network broker channel by UUID.
+    arguments:
+    - name: channel_id
+      required: true
+      description: The channel UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.uuid
+      description: Channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.name
+      description: Channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.description
+      description: Channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.status
+      description: Channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.added_by
+      description: UUID of the user that created the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.created_at
+      description: Creation timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.updated_at
+      description: Last update timestamp.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.last_online_at
+      description: Timestamp the channel was last online.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.connected_clients_count
+      description: Number of currently connected clients.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count
+      description: Number of connected clients running an outdated version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.oldest_client_version
+      description: Oldest client version currently connected to the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.features
+      description: Map of feature flags enabled on the channel.
+      type: Unknown
+  - name: prisma-airs-redteam-network-channels-update
+    description: Update a Red Team network broker channel's name and/or description. At least one of name or description is required.
+    arguments:
+    - name: channel_id
+      required: true
+      description: The channel UUID.
+    - name: name
+      required: false
+      description: New channel name (1-64 characters).
+    - name: description
+      required: false
+      description: New channel description.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.uuid
+      description: Channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.name
+      description: Channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.description
+      description: Channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.status
+      description: Channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at
+      description: Last update timestamp.
+      type: Date
   - name: prisma-airs-redteam-report-get
     description: Get Red Team scan report with attack results and recommendations.
     arguments:

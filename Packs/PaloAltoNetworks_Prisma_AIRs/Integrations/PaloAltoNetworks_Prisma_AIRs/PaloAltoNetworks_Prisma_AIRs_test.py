@@ -60,6 +60,11 @@ from PaloAltoNetworks_Prisma_AIRs import (
     model_security_scans_evaluations_command,
     model_security_scans_files_command,
     redteam_categories_list_command,
+    redteam_network_channels_list_command,
+    redteam_network_channels_create_command,
+    redteam_network_channels_stats_command,
+    redteam_network_channels_get_command,
+    redteam_network_channels_update_command,
     redteam_eula_status_command,
     redteam_eula_content_command,
     redteam_eula_accept_command,
@@ -1588,6 +1593,159 @@ class TestCommands:
         assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetProbe"
         assert result.outputs_key_field == "uuid"
         assert result.outputs["uuid"] == "t-1"
+
+    @patch.object(Client, "http_request")
+    def test_redteam_network_channels_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """network-channels-list parses the data envelope, serializes status list, and hits the data-plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "pagination": {"total_items": 1},
+            "data": [{"uuid": "ch-1", "name": "prod-relay", "status": "ONLINE"}],
+        }
+
+        result = redteam_network_channels_list_command(mock_client, {"status": "ONLINE,DRAFT", "limit": "10", "skip": "5"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamNetworkChannel"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs[0]["uuid"] == "ch-1"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/network-broker/v1/channels"
+        assert kwargs["use_redteam_data"] is True
+        assert kwargs["params"]["status"] == ["ONLINE", "DRAFT"]
+        assert kwargs["params"]["limit"] == 10
+        assert kwargs["params"]["skip"] == 5
+
+    @patch.object(Client, "http_request")
+    def test_redteam_network_channels_create_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """network-channels-create posts name/description and writes to the create context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ch-1", "name": "prod-relay", "status": "DRAFT"}
+
+        result = redteam_network_channels_create_command(mock_client, {"name": "prod-relay", "description": "Production broker"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamNetworkChannelCreate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ch-1"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/network-broker/v1/channels"
+        assert kwargs["json_data"] == {"name": "prod-relay", "description": "Production broker"}
+        assert kwargs["use_redteam_data"] is True
+
+    def test_redteam_network_channels_create_command_requires_name(self, mock_client: Client) -> None:
+        """network-channels-create raises when name is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="name is required"):
+            redteam_network_channels_create_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_network_channels_stats_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """network-channels-stats maps the stats fields and hits the /stats sub-path.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "network_channels_server_domain": "broker.example.com",
+            "online_channels": 3,
+            "total_channels": 5,
+            "client_version": "1.4.0",
+        }
+
+        result = redteam_network_channels_stats_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamNetworkChannelStats"
+        assert result.outputs["online_channels"] == 3
+        assert result.outputs["client_version"] == "1.4.0"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/network-broker/v1/channels/stats"
+        assert kwargs["use_redteam_data"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_network_channels_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """network-channels-get fetches a single channel by UUID.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ch-1", "name": "prod-relay", "status": "ONLINE"}
+
+        result = redteam_network_channels_get_command(mock_client, {"channel_id": "ch-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamNetworkChannel"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ch-1"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/network-broker/v1/channels/ch-1"
+        assert kwargs["use_redteam_data"] is True
+
+    def test_redteam_network_channels_get_command_requires_channel_id(self, mock_client: Client) -> None:
+        """network-channels-get raises when channel_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="channel_id is required"):
+            redteam_network_channels_get_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_network_channels_update_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """network-channels-update PATCHes only provided fields to the update context.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"uuid": "ch-1", "name": "prod-relay", "description": "Updated", "status": "ONLINE"}
+
+        result = redteam_network_channels_update_command(mock_client, {"channel_id": "ch-1", "description": "Updated"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamNetworkChannelUpdate"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs["uuid"] == "ch-1"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "PATCH"
+        assert kwargs["url_suffix"] == "/network-broker/v1/channels/ch-1"
+        assert kwargs["json_data"] == {"description": "Updated"}
+        assert kwargs["use_redteam_data"] is True
+
+    def test_redteam_network_channels_update_command_requires_channel_id(self, mock_client: Client) -> None:
+        """network-channels-update raises when channel_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="channel_id is required"):
+            redteam_network_channels_update_command(mock_client, {"name": "x"})
+
+    def test_redteam_network_channels_update_command_requires_a_field(self, mock_client: Client) -> None:
+        """network-channels-update raises when no updatable field is provided.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="At least one of name or description is required"):
+            redteam_network_channels_update_command(mock_client, {"channel_id": "ch-1"})
 
     @patch.object(Client, "http_request")
     def test_runtime_api_keys_create_command(self, mock_http: Mock, mock_client: Client) -> None:

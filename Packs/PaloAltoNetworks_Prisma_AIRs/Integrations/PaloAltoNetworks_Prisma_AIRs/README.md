@@ -4275,6 +4275,292 @@ There are no input arguments for this command.
 >| BRAND | Brand Reputation | Select categories for testing off-brand content. | 4 |
 >| COMPLIANCE | Compliance | Select framework to understand compliance across security and safety standards. | 4 |
 
+### prisma-airs-redteam-network-channels-list
+
+***
+List Red Team network broker channels. Network channels are the data-plane relays that connect Red Team clients to targets.
+
+#### Base Command
+
+`prisma-airs-redteam-network-channels-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of channels to return. Default is 50. | Optional |
+| skip | Number of channels to skip from the start (for pagination). | Optional |
+| search | Free-text search filter. | Optional |
+| status | Filter by channel status. Supports a comma-separated list to filter by multiple statuses. Possible values are: ONLINE, OFFLINE, DRAFT. | Optional |
+| include_all_if_empty | If the other filters match nothing, return all channels. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamNetworkChannel.uuid | String | Channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannel.name | String | Channel name. |
+| PrismaAIRs.RedTeamNetworkChannel.description | String | Channel description. |
+| PrismaAIRs.RedTeamNetworkChannel.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannel.added_by | String | UUID of the user that created the channel. |
+| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp. |
+| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online. |
+| PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | Number of currently connected clients. |
+| PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | Number of connected clients running an outdated version. |
+| PrismaAIRs.RedTeamNetworkChannel.features | Unknown | Map of feature flags enabled on the channel. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-network-channels-list status=ONLINE,DRAFT limit=10
+```
+
+#### Context Example
+
+```json
+[
+    {
+        "created_at": "2026-04-14T10:22:00Z",
+        "description": "Production network broker channel",
+        "last_online_at": "2026-04-20T18:03:11Z",
+        "name": "prod-relay",
+        "status": "ONLINE",
+        "updated_at": "2026-04-20T18:03:11Z",
+        "uuid": "550e8400-e29b-41d4-a716-446655440000"
+    }
+]
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Red Team Network Channels
+>
+>|Uuid|Name|Status|Description|Last Online At|Created At|
+>|---|---|---|---|---|---|
+>| 550e8400-e29b-41d4-a716-446655440000 | prod-relay | ONLINE | Production network broker channel | 2026-04-20T18:03:11Z | 2026-04-14T10:22:00Z |
+
+### prisma-airs-redteam-network-channels-create
+
+***
+Create a new Red Team network broker channel.
+
+#### Base Command
+
+`prisma-airs-redteam-network-channels-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Channel name (1-64 characters). | Required |
+| description | Channel description. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamNetworkChannelCreate.uuid | String | Channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.name | String | Channel name. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.description | String | Channel description. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannelCreate.added_by | String | UUID of the user that created the channel. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.created_at | Date | Creation timestamp. |
+| PrismaAIRs.RedTeamNetworkChannelCreate.updated_at | Date | Last update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-network-channels-create name="prod-relay" description="Production network broker channel"
+```
+
+#### Context Example
+
+```json
+{
+    "created_at": "2026-04-14T10:22:00Z",
+    "description": "Production network broker channel",
+    "name": "prod-relay",
+    "status": "DRAFT",
+    "uuid": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+#### Human Readable Output
+
+>### Red Team Network Channel Created: prod-relay
+>
+>|Uuid|Name|Status|Description|Created At|
+>|---|---|---|---|---|
+>| 550e8400-e29b-41d4-a716-446655440000 | prod-relay | DRAFT | Production network broker channel | 2026-04-14T10:22:00Z |
+
+### prisma-airs-redteam-network-channels-stats
+
+***
+Retrieve Red Team network broker channel statistics and deployment info (broker domain, docker registry/image, helm chart, online/total counts).
+
+#### Base Command
+
+`prisma-airs-redteam-network-channels-stats`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamNetworkChannelStats.network_channels_server_domain | String | Network channels broker server domain. |
+| PrismaAIRs.RedTeamNetworkChannelStats.docker_registry | String | Docker registry proxy domain for the channel client image. |
+| PrismaAIRs.RedTeamNetworkChannelStats.helm_chart | String | Helm chart path for deploying the channel client. |
+| PrismaAIRs.RedTeamNetworkChannelStats.docker_image | String | Docker image path for the channel client. |
+| PrismaAIRs.RedTeamNetworkChannelStats.online_channels | Number | Number of online channels. |
+| PrismaAIRs.RedTeamNetworkChannelStats.total_channels | Number | Total number of channels. |
+| PrismaAIRs.RedTeamNetworkChannelStats.client_version | String | Current channel client version. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-network-channels-stats
+```
+
+#### Context Example
+
+```json
+{
+    "client_version": "1.4.0",
+    "docker_image": "images/network-channels-client",
+    "docker_registry": "registry.example.com",
+    "helm_chart": "charts/network-channels-client",
+    "network_channels_server_domain": "broker.example.com/tunnels",
+    "online_channels": 3,
+    "total_channels": 5
+}
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Red Team Network Channel Stats
+>
+>|Network Channels Server Domain|Online Channels|Total Channels|Docker Registry|Docker Image|Helm Chart|Client Version|
+>|---|---|---|---|---|---|---|
+>| broker.example.com/tunnels | 3 | 5 | registry.example.com | images/network-channels-client | charts/network-channels-client | 1.4.0 |
+
+### prisma-airs-redteam-network-channels-get
+
+***
+Get a single Red Team network broker channel by UUID.
+
+#### Base Command
+
+`prisma-airs-redteam-network-channels-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel_id | The channel UUID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamNetworkChannel.uuid | String | Channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannel.name | String | Channel name. |
+| PrismaAIRs.RedTeamNetworkChannel.description | String | Channel description. |
+| PrismaAIRs.RedTeamNetworkChannel.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannel.added_by | String | UUID of the user that created the channel. |
+| PrismaAIRs.RedTeamNetworkChannel.created_at | Date | Creation timestamp. |
+| PrismaAIRs.RedTeamNetworkChannel.updated_at | Date | Last update timestamp. |
+| PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | Timestamp the channel was last online. |
+| PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | Number of currently connected clients. |
+| PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | Number of connected clients running an outdated version. |
+| PrismaAIRs.RedTeamNetworkChannel.features | Unknown | Map of feature flags enabled on the channel. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-network-channels-get channel_id="550e8400-e29b-41d4-a716-446655440000"
+```
+
+#### Context Example
+
+```json
+{
+    "connected_clients_count": 2,
+    "created_at": "2026-04-14T10:22:00Z",
+    "description": "Production network broker channel",
+    "last_online_at": "2026-04-20T18:03:11Z",
+    "name": "prod-relay",
+    "outdated_clients_count": 0,
+    "status": "ONLINE",
+    "updated_at": "2026-04-20T18:03:11Z",
+    "uuid": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Red Team Network Channel
+>
+>|Uuid|Name|Status|Description|Last Online At|Created At|Updated At|
+>|---|---|---|---|---|---|---|
+>| 550e8400-e29b-41d4-a716-446655440000 | prod-relay | ONLINE | Production network broker channel | 2026-04-20T18:03:11Z | 2026-04-14T10:22:00Z | 2026-04-20T18:03:11Z |
+
+### prisma-airs-redteam-network-channels-update
+
+***
+Update a Red Team network broker channel's name and/or description. At least one of name or description is required.
+
+#### Base Command
+
+`prisma-airs-redteam-network-channels-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| channel_id | The channel UUID. | Required |
+| name | New channel name (1-64 characters). | Optional |
+| description | New channel description. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.uuid | String | Channel UUID. |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.name | String | Channel name. |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.description | String | Channel description. |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.status | String | Channel status \(ONLINE, OFFLINE, DRAFT\). |
+| PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at | Date | Last update timestamp. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-network-channels-update channel_id="550e8400-e29b-41d4-a716-446655440000" description="Updated description"
+```
+
+#### Context Example
+
+```json
+{
+    "description": "Updated description",
+    "name": "prod-relay",
+    "status": "ONLINE",
+    "updated_at": "2026-04-21T09:15:42Z",
+    "uuid": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+#### Human Readable Output
+
+>### Red Team Network Channel Updated: 550e8400-e29b-41d4-a716-446655440000
+>
+>|Uuid|Name|Status|Description|Updated At|
+>|---|---|---|---|---|
+>| 550e8400-e29b-41d4-a716-446655440000 | prod-relay | ONLINE | Updated description | 2026-04-21T09:15:42Z |
+
 ### prisma-airs-redteam-report-get
 
 ***

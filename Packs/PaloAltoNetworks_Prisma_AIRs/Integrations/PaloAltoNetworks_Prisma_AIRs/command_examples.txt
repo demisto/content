@@ -55,3 +55,5 @@
 !prisma-airs-redteam-eula-status
 !prisma-airs-redteam-eula-content
 !prisma-airs-redteam-prompt-sets-list
+!prisma-airs-redteam-network-channels-list
+!prisma-airs-redteam-network-channels-stats

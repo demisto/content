@@ -32,6 +32,9 @@ RED_TEAM_CUSTOM_ATTACK_ENDPOINT = "/v1/custom-attack"  # For prompts within prom
 RED_TEAM_EULA_ENDPOINT = "/v1/eula"
 RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT = "/v1/registry-credentials"
 RED_TEAM_TEMPLATE_ENDPOINT = "/v1/template"
+# Network broker channels live on a distinct data-plane sub-path (/network-broker), used with use_redteam_data=True.
+# Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_CHANNELS_PATH + network-broker base URL)
+RED_TEAM_NETWORK_CHANNELS_ENDPOINT = "/network-broker/v1/channels"
 # DLP API path suffixes (v2 API) - uses separate base URL
 # Reference: ./knowledge/prisma-airs-sdk-main/src/constants.ts
 # CRITICAL: DLP v2 API uses https://api.dlp.paloaltonetworks.com (NOT the SCM base URL)
@@ -4996,6 +4999,264 @@ def redteam_categories_list_command(client: Client, args: dict[str, Any]) -> Com
     )
 
 
+def _parse_network_channel(channel: dict[str, Any]) -> dict[str, Any]:
+    """Extract the fields of a single Red Team network broker channel.
+
+    Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team-network-broker.ts (ChannelSchema)
+
+    Args:
+        channel: A single channel object from the API response.
+
+    Returns:
+        dict: Normalized channel fields.
+    """
+    return {
+        "uuid": channel.get("uuid"),
+        "name": channel.get("name"),
+        "description": channel.get("description"),
+        "status": channel.get("status"),
+        "added_by": channel.get("added_by"),
+        "created_at": channel.get("created_at"),
+        "updated_at": channel.get("updated_at"),
+        "last_online_at": channel.get("last_online_at"),
+        "connected_clients_count": channel.get("connected_clients_count"),
+        "outdated_clients_count": channel.get("outdated_clients_count"),
+        "oldest_client_version": channel.get("oldest_client_version"),
+        "features": channel.get("features"),
+    }
+
+
+def redteam_network_channels_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List Red Team network broker channels.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
+    skip = arg_to_number(args.get("skip"))
+    search = args.get("search")
+    status = argToList(args.get("status"))
+    include_all_if_empty = args.get("include_all_if_empty")
+
+    # Build query parameters
+    params: dict[str, Any] = {"limit": limit}
+    if skip is not None:
+        params["skip"] = skip
+    if search:
+        params["search"] = search
+    if status:
+        # Spec uses style=form, explode=true -> repeated `status` query params.
+        params["status"] = status
+    if include_all_if_empty is not None:
+        params["include_all_if_empty"] = str(argToBoolean(include_all_if_empty)).lower()
+
+    # Call Red Team network broker channels list endpoint (data-plane /network-broker sub-path).
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/network-broker-client.ts (listChannels)
+    response = client.http_request(
+        method="GET", url_suffix=RED_TEAM_NETWORK_CHANNELS_ENDPOINT, params=params, use_redteam_data=True
+    )
+
+    channels = [_parse_network_channel(channel) for channel in response.get("data", [])]
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Red Team Network Channels",
+        channels,
+        headers=["uuid", "name", "status", "description", "last_online_at", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamNetworkChannel",
+        outputs_key_field="uuid",
+        outputs=channels,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_network_channels_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new Red Team network broker channel.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    name = args.get("name")
+    if not name:
+        raise ValueError("name is required")
+
+    # Build request body according to CreateChannelRequestSchema.
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team-network-broker.ts
+    request_body: dict[str, Any] = {"name": name}
+    if args.get("description"):
+        request_body["description"] = args.get("description")
+
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/network-broker-client.ts (createChannel)
+    response = client.http_request(
+        method="POST", url_suffix=RED_TEAM_NETWORK_CHANNELS_ENDPOINT, json_data=request_body, use_redteam_data=True
+    )
+
+    channel_info = _parse_network_channel(response)
+
+    readable_output = tableToMarkdown(
+        f"Red Team Network Channel Created: {name}",
+        [channel_info],
+        headers=["uuid", "name", "status", "description", "created_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamNetworkChannelCreate",
+        outputs_key_field="uuid",
+        outputs=channel_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_network_channels_stats_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get Red Team network broker channel statistics and deployment info.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/network-broker-client.ts (getChannelStats)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team-network-broker.ts (ChannelStatsSchema)
+    response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_NETWORK_CHANNELS_ENDPOINT}/stats", use_redteam_data=True)
+
+    stats_info = {
+        "network_channels_server_domain": response.get("network_channels_server_domain"),
+        "docker_registry": response.get("docker_registry"),
+        "helm_chart": response.get("helm_chart"),
+        "docker_image": response.get("docker_image"),
+        "online_channels": response.get("online_channels"),
+        "total_channels": response.get("total_channels"),
+        "client_version": response.get("client_version"),
+    }
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Red Team Network Channel Stats",
+        [stats_info],
+        headers=[
+            "network_channels_server_domain",
+            "online_channels",
+            "total_channels",
+            "docker_registry",
+            "docker_image",
+            "helm_chart",
+            "client_version",
+        ],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamNetworkChannelStats",
+        outputs=stats_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_network_channels_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a single Red Team network broker channel by UUID.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    channel_id = args.get("channel_id")
+    if not channel_id:
+        raise ValueError("channel_id is required")
+
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/network-broker-client.ts (getChannel)
+    response = client.http_request(
+        method="GET", url_suffix=f"{RED_TEAM_NETWORK_CHANNELS_ENDPOINT}/{channel_id}", use_redteam_data=True
+    )
+
+    channel_info = _parse_network_channel(response)
+
+    readable_output = tableToMarkdown(
+        "Prisma AIRs Red Team Network Channel",
+        [channel_info],
+        headers=["uuid", "name", "status", "description", "last_online_at", "created_at", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamNetworkChannel",
+        outputs_key_field="uuid",
+        outputs=channel_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_network_channels_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update a Red Team network broker channel's name and/or description.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    channel_id = args.get("channel_id")
+    if not channel_id:
+        raise ValueError("channel_id is required")
+
+    # Build request body according to UpdateChannelRequestSchema (only provided fields).
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team-network-broker.ts
+    request_body: dict[str, Any] = {}
+    if args.get("name"):
+        request_body["name"] = args.get("name")
+    if args.get("description") is not None:
+        request_body["description"] = args.get("description")
+
+    if not request_body:
+        raise ValueError("At least one of name or description is required")
+
+    # PATCH uses plain application/json (not merge-patch).
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/network-broker-client.ts (updateChannel)
+    response = client.http_request(
+        method="PATCH",
+        url_suffix=f"{RED_TEAM_NETWORK_CHANNELS_ENDPOINT}/{channel_id}",
+        json_data=request_body,
+        use_redteam_data=True,
+    )
+
+    channel_info = _parse_network_channel(response)
+
+    readable_output = tableToMarkdown(
+        f"Red Team Network Channel Updated: {channel_id}",
+        [channel_info],
+        headers=["uuid", "name", "status", "description", "updated_at"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamNetworkChannelUpdate",
+        outputs_key_field="uuid",
+        outputs=channel_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get Red Team scan report.
 
@@ -8504,6 +8765,22 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-categories-list":
             return_results(redteam_categories_list_command(client, args))
+
+        # Red Team Network Broker Channels Commands (5 commands)
+        elif command == "prisma-airs-redteam-network-channels-list":
+            return_results(redteam_network_channels_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-network-channels-create":
+            return_results(redteam_network_channels_create_command(client, args))
+
+        elif command == "prisma-airs-redteam-network-channels-stats":
+            return_results(redteam_network_channels_stats_command(client, args))
+
+        elif command == "prisma-airs-redteam-network-channels-get":
+            return_results(redteam_network_channels_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-network-channels-update":
+            return_results(redteam_network_channels_update_command(client, args))
 
         elif command == "prisma-airs-redteam-report-get":
             return_results(redteam_report_get_command(client, args))
