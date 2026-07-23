@@ -17,7 +17,7 @@ ignorable_errors = [
     "TR101",
     "VC100", "VC101",
     "AS103",
-    "AG112", "AG117"
+    "AG112", "AG117",
     
 ]
 
