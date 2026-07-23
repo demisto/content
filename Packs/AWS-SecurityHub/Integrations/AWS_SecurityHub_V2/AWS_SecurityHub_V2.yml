@@ -156,7 +156,7 @@ configuration:
   required: false
 - display: Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub
   name: resolve_finding
-  additionalinfo: 'Whether closing an incident in Cortex XSOAR sets the corresponding finding's status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
+  additionalinfo: 'Whether closing an incident in Cortex XSOAR sets the corresponding finding''s status to Resolved in AWS Security Hub (applies to outgoing mirroring).'
   type: 8
   section: Collect
   defaultvalue: 'false'

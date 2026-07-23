@@ -24,8 +24,9 @@ MIRROR_DIRECTION_MAPPING = {
 OCSF_STATUS_ID_TO_CLOSE_REASON = {4: "Resolved", 3: "Other"}
 # OCSF status_ids that reopen the mirrored-in XSOAR incident. New=1, In Progress=2.
 OCSF_OPEN_STATUS_IDS = {1, 2}
-# Outgoing mapping schema surfaced by get-mapping-fields. Includes the built-in "severity" field,
-# which is translated (not written verbatim) to OCSF SeverityId in update_remote_system_command.
+# Outgoing mapping schema surfaced by get-mapping-fields.
+# "severity" = built-in XSOAR Severity field (0-4), translated to an OCSF SeverityId.
+# "severityid" = raw OCSF severity_id (1-6, incl. Fatal=6); takes precedence over "severity".
 OUTGOING_FIELD_DESCRIPTIONS = {
     "severityid": "The OCSF severity_id to set on the finding (1=Informational .. 6=Fatal).",
     "statusid": "The OCSF status_id to set on the finding (1=New, 2=In Progress, 3=Suppressed, 4=Resolved).",
@@ -108,6 +109,15 @@ FILTER_CONFIGS: dict[str, dict] = {
 def parse_filter_entries(filters_str: str) -> list[dict]:
     """Parse a filter argument (";"-separated entries of ","-separated key=value pairs) into dicts.
 
+    Example:
+        ``"field_name=severity,value=High;field_name=status,value=New,comparison=NOT_EQUALS"``
+        parses to::
+
+            [
+                {"field_name": "severity", "value": "High"},
+                {"field_name": "status", "value": "New", "comparison": "NOT_EQUALS"},
+            ]
+
     Args:
         filters_str (str): The raw filter argument string.
 
@@ -134,7 +144,11 @@ def parse_filters(filters_str: str, category: str) -> list[dict]:
     """Parse a filter argument into the API ``{FieldName, Filter}`` structure using FILTER_CONFIGS.
 
     Backs the string/number/boolean/map/ip categories (date is handled by parse_date_filters).
-    Entries missing ``field_name`` or a category-required key are skipped.
+
+    Example (``category="string"``):
+        ``"field_name=severity,value=High,comparison=EQUALS"`` parses to::
+
+            [{"FieldName": "severity", "Filter": {"Value": "High", "Comparison": "EQUALS"}}]
 
     Args:
         filters_str (str): The raw filter argument string.
@@ -142,6 +156,9 @@ def parse_filters(filters_str: str, category: str) -> list[dict]:
 
     Returns:
         list[dict]: A list of ``{FieldName, Filter}`` dictionaries.
+
+    Raises:
+        DemistoException: If an entry is missing ``field_name`` or any category-required field.
     """
     config = FILTER_CONFIGS[category]
     fields, required = config["fields"], config["required"]
@@ -149,14 +166,18 @@ def parse_filters(filters_str: str, category: str) -> list[dict]:
     filters = []
 
     for entry in parse_filter_entries(filters_str):
-        field_name = entry.get("field_name")
-        if not field_name:
-            continue
-        if any(not entry.get(key) for key in required):
-            continue
+        missing = []
+        if not entry.get("field_name"):
+            missing.append("field_name")
+        missing.extend(key for key in required if not entry.get(key))
         if require_any and not any(entry.get(key) for key in require_any):
-            continue
+            missing.append(f"one of {require_any}")
+        if missing:
+            error_message = f"Invalid '{category}' filter entry {entry}: missing required field(s): {', '.join(missing)}."
+            demisto.error(f"[AWS_Security_Hub_V2] {error_message}")
+            raise DemistoException(error_message)
 
+        field_name = entry["field_name"]
         merged = {**config["defaults"], **{key: value for key, value in entry.items() if key in fields}}
         api_filter = {fields[key][0]: fields[key][1](value) for key, value in merged.items()}
         filters.append({"FieldName": field_name, "Filter": api_filter})
@@ -169,6 +190,19 @@ def parse_date_filters(filters_str: str) -> list[dict]:
 
     Each entry uses exactly one form: absolute (``start`` + ``end``) or relative DateRange
     (``value`` with optional ``unit``/``comparison``; ``days`` is an alias for ``value`` + ``unit=DAYS``).
+
+    Examples:
+        Absolute range::
+
+            "field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-01-31T00:00:00Z"
+            -> [{"FieldName": "finding_info.created_time_dt",
+                 "Filter": {"Start": "2024-01-01T00:00:00Z", "End": "2024-01-31T00:00:00Z"}}]
+
+        Relative DateRange (``days`` shorthand)::
+
+            "field_name=finding_info.created_time_dt,days=7"
+            -> [{"FieldName": "finding_info.created_time_dt",
+                 "Filter": {"DateRange": {"Value": 7, "Unit": "DAYS"}}}]
 
     Args:
         filters_str (str): The raw date filters argument string.
@@ -183,9 +217,10 @@ def parse_date_filters(filters_str: str) -> list[dict]:
     for e in parse_filter_entries(filters_str):
         field_name = e.get("field_name")
         if not field_name:
+            demisto.error(f"[AWS_Security_Hub_V2] Skipping date filter entry with no field_name: {e}")
             continue
         start, end = e.get("start"), e.get("end")
-        # "days" is a convenience alias for the DateRange "value" with Unit=DAYS.
+        # "days" is our own shorthand (documented in the date_filters arg) for "value" with Unit=DAYS; not an AWS field.
         value = e.get("value") or e.get("days")
         has_range = bool(value)
         has_absolute = bool(start or end)
@@ -222,16 +257,16 @@ def generate_filters_for_get_findings(args: dict) -> dict | None:
     Returns:
         dict | None: The composite ``Filters`` structure, or ``None`` when no filters were supplied.
     """
-    composite_filter: dict = {
-        "StringFilters": parse_filters(args.get("string_filters", ""), "string"),
-        "DateFilters": parse_date_filters(args.get("date_filters", "")),
-        "BooleanFilters": parse_filters(args.get("boolean_filters", ""), "boolean"),
-        "NumberFilters": parse_filters(args.get("number_filters", ""), "number"),
-        "MapFilters": parse_filters(args.get("map_filters", ""), "map"),
-        "IpFilters": parse_filters(args.get("ip_filters", ""), "ip"),
-    }
-    # Drop empty filter categories; if no actual conditions remain, there is no filter to apply.
-    composite_filter = {key: value for key, value in composite_filter.items() if value}
+    composite_filter: dict = remove_empty_elements(
+        {
+            "StringFilters": parse_filters(args.get("string_filters", ""), "string"),
+            "DateFilters": parse_date_filters(args.get("date_filters", "")),
+            "BooleanFilters": parse_filters(args.get("boolean_filters", ""), "boolean"),
+            "NumberFilters": parse_filters(args.get("number_filters", ""), "number"),
+            "MapFilters": parse_filters(args.get("map_filters", ""), "map"),
+            "IpFilters": parse_filters(args.get("ip_filters", ""), "ip"),
+        }
+    )
     if not composite_filter:
         return None
 
@@ -249,16 +284,26 @@ def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
 
     Returns:
         list[dict]: A list of ``{CloudAccountUid, FindingInfoUid, MetadataProductUid}`` dictionaries.
+
+    Raises:
+        DemistoException: If an entry is missing any of the three required uid fields.
     """
-    return [
-        {
-            "CloudAccountUid": e["cloud_account_uid"],
-            "FindingInfoUid": e["finding_info_uid"],
-            "MetadataProductUid": e["metadata_product_uid"],
-        }
-        for e in parse_filter_entries(identifiers_str)
-        if e.get("cloud_account_uid") and e.get("finding_info_uid") and e.get("metadata_product_uid")
-    ]
+    required_keys = ("cloud_account_uid", "finding_info_uid", "metadata_product_uid")
+    identifiers = []
+    for e in parse_filter_entries(identifiers_str):
+        missing = [key for key in required_keys if not e.get(key)]
+        if missing:
+            error_message = f"Invalid finding identifier entry {e}: missing required field(s): {', '.join(missing)}."
+            demisto.error(f"[AWS_Security_Hub_V2] {error_message}")
+            raise DemistoException(error_message)
+        identifiers.append(
+            {
+                "CloudAccountUid": e["cloud_account_uid"],
+                "FindingInfoUid": e["finding_info_uid"],
+                "MetadataProductUid": e["metadata_product_uid"],
+            }
+        )
+    return identifiers
 
 
 def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None, additional_filters: str | None) -> dict:
@@ -306,6 +351,115 @@ def parse_tags(tags_str: str) -> dict:
     """
     regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
     return dict(regex.findall(tags_str))
+
+
+def filter_new_findings(findings: list, last_fetch: str, fetched_ids: list) -> list:
+    """Drop findings already seen against the previous fetch boundary (inclusive ``Start``).
+
+    A finding is dropped if it was created before ``last_fetch`` (stale) or exactly at ``last_fetch``
+    with its uid in ``fetched_ids`` (already ingested).
+
+    Args:
+        findings (list): Raw OCSF findings returned by ``get_findings_v2``.
+        last_fetch (str): ISO8601 boundary timestamp from the previous run.
+        fetched_ids (list): Uids already ingested at the ``last_fetch`` boundary.
+
+    Returns:
+        list: The findings that have not been ingested yet.
+    """
+    new_findings: list = []
+    for finding in findings:
+        created_time = (finding.get("finding_info") or {}).get("created_time_dt")
+        uid = finding.get("metadata", {}).get("uid")
+
+        if created_time and last_fetch and created_time < last_fetch:
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Dedup: skipping STALE finding uid={uid} (created={created_time} < Start={last_fetch})."
+            )
+            continue
+        if created_time and last_fetch and created_time == last_fetch and uid in fetched_ids:
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Dedup: skipping ALREADY-SEEN boundary finding uid={uid} (created={created_time})."
+            )
+            continue
+
+        new_findings.append(finding)
+
+    return new_findings
+
+
+def findings_to_incidents(findings: list, mirror_direction: str | None = None) -> list:
+    """Build XSOAR incidents from OCSF findings, stamping mirroring metadata when enabled.
+
+    Args:
+        findings (list): The (already deduped) OCSF findings to convert.
+        mirror_direction (str | None): XSOAR mirror direction to stamp on findings, or ``None`` to disable.
+
+    Returns:
+        list: XSOAR incident dicts (name/occurred/severity/rawJSON).
+    """
+    incidents: list = []
+    for finding in findings:
+        finding_info = finding.get("finding_info") or {}
+        uid = finding.get("metadata", {}).get("uid")
+
+        if mirror_direction:
+            finding["mirror_direction"] = mirror_direction
+            finding["mirror_instance"] = demisto.integrationInstance()
+
+        severity_id = finding.get("severity_id") or 0
+        xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
+        incidents.append(
+            {
+                "name": finding_info.get("title") or uid,
+                "occurred": finding_info.get("created_time_dt"),
+                "severity": xsoar_severity,
+                "rawJSON": json.dumps(finding),
+            }
+        )
+
+    return incidents
+
+
+def build_close_reopen_entries(finding: dict) -> list:
+    """Build the incoming-mirror entries that close or reopen the XSOAR incident based on AWS status.
+
+    Full lifecycle sync: an OCSF ``status_id`` of Resolved (4) or Suppressed (3) closes the XSOAR
+    incident (``dbotIncidentClose``); an open status (New/In Progress) reopens it
+    (``dbotIncidentReopen``). Any other/unknown status yields no entry so the incident is left as-is.
+
+    Args:
+        finding (dict): The OCSF finding returned by AWS Security Hub V2.
+
+    Returns:
+        list: A single-element entry list instructing the server to close/reopen, or an empty list.
+    """
+    status_id = finding.get("status_id")
+    if status_id is None:
+        return []
+    close_reason = OCSF_STATUS_ID_TO_CLOSE_REASON.get(status_id)
+    if close_reason:
+        finding_status = finding.get("status") or close_reason
+        return [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": close_reason,
+                    "closeNotes": f"Closed by mirroring: AWS Security Hub finding status is '{finding_status}'.",
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+    if status_id in OCSF_OPEN_STATUS_IDS:
+        return [
+            {
+                "Type": EntryType.NOTE,
+                "Contents": {"dbotIncidentReopen": True},
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        ]
+    return []
 
 
 def build_client(params: dict) -> BotoClient:
@@ -425,7 +579,7 @@ def findings_get_command(client: BotoClient, args: dict) -> CommandResults:
         {
             "Filters": generate_filters_for_get_findings(args),
             "SortCriteria": sort_criteria,
-            "MaxResults":  min(arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT),
+            "MaxResults": min(arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH, MAX_FETCH_LIMIT),
             "NextToken": args.get("next_token"),
         }
     )
@@ -480,13 +634,15 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
         CommandResults: The processed and unprocessed findings returned by the API.
 
     Raises:
-        DemistoException: If neither ``metadata_uids`` nor ``finding_identifiers`` is provided.
+        DemistoException: If not exactly one of ``metadata_uids`` / ``finding_identifiers`` is provided.
     """
     metadata_uids = argToList(args.get("metadata_uids"))
     finding_identifiers = parse_finding_identifiers(args.get("finding_identifiers", ""))
 
-    if not metadata_uids and not finding_identifiers:
-        raise DemistoException("You must provide either 'metadata_uids' or 'finding_identifiers' to target findings.")
+    if bool(metadata_uids) == bool(finding_identifiers):
+        raise DemistoException(
+            "You must provide exactly one of 'metadata_uids' or 'finding_identifiers' to target findings, not both or neither."
+        )
 
     kwargs = remove_empty_elements(
         {
@@ -523,60 +679,6 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
     )
 
 
-def dedup_findings(findings: list, last_fetch: str, fetched_ids: list, mirror_direction: str | None = None) -> tuple[list, list]:
-    """Drop already-seen findings and build XSOAR incidents from the new ones.
-
-    Against the previous fetch boundary (inclusive ``Start``), a finding is dropped if it was created
-    before ``last_fetch`` (stale) or exactly at ``last_fetch`` with its uid in ``fetched_ids`` (already
-    ingested). Surviving findings are tagged with mirroring metadata when ``mirror_direction`` is set.
-
-    Args:
-        findings (list): Raw OCSF findings returned by ``get_findings_v2``.
-        last_fetch (str): ISO8601 boundary timestamp from the previous run.
-        fetched_ids (list): Uids already ingested at the ``last_fetch`` boundary.
-        mirror_direction (str | None): XSOAR mirror direction to stamp on incidents, or ``None`` to disable.
-
-    Returns:
-        tuple[list, list]: ``(new_findings, incidents)``.
-    """
-    incidents: list = []
-    new_findings: list = []
-    for finding in findings:
-        finding_info = finding.get("finding_info") or {}
-        created_time = finding_info.get("created_time_dt")
-        uid = finding.get("metadata", {}).get("uid")
-
-        if created_time and last_fetch and created_time < last_fetch:
-            demisto.debug(
-                f"[AWS_Security_Hub_V2] Dedup: skipping STALE finding uid={uid} (created={created_time} < Start={last_fetch})."
-            )
-            continue
-        if created_time and last_fetch and created_time == last_fetch and uid in fetched_ids:
-            demisto.debug(
-                f"[AWS_Security_Hub_V2] Dedup: skipping ALREADY-SEEN boundary finding uid={uid} (created={created_time})."
-            )
-            continue
-
-        if mirror_direction:
-            finding["mirror_direction"] = mirror_direction
-            finding["mirror_instance"] = demisto.integrationInstance()
-
-        severity_id = finding.get("severity_id") or 0
-        xsoar_severity = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
-        incidents.append(
-            {
-                "name": finding_info.get("title") or uid,
-                "occurred": created_time,
-                "severity": xsoar_severity,
-                "rawJSON": json.dumps(finding),
-            }
-        )
-
-        new_findings.append(finding)
-
-    return new_findings, incidents
-
-
 def fetch_incidents(client: BotoClient, params: dict) -> None:
     """Fetch AWS Security Hub V2 findings as XSOAR incidents.
 
@@ -595,11 +697,14 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
         f"[AWS_Security_Hub_V2] Fetch: raw lastRun from server: {last_run}, min_severity={params.get('min_severity')},"
         f" fetch_filters={params.get('fetch_filters')}, {max_fetch=}"
     )
-    first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
-    format_first_fetch = parse(f"{first_fetch} UTC")
-    if not format_first_fetch:
-        raise DemistoException(f"Invalid 'First fetch time' value: {first_fetch!r}.")
-    last_fetch = last_run.get("last_fetch") or format_first_fetch.isoformat()
+    last_fetch = last_run.get("last_fetch")
+    if not last_fetch:
+        # No saved boundary yet (first run): derive the window start from the first_fetch param.
+        first_fetch = (params.get("first_fetch") or DEFAULT_FIRST_FETCH).strip()
+        format_first_fetch = parse(f"{first_fetch} UTC")
+        if not format_first_fetch:
+            raise DemistoException(f"Invalid 'First fetch time' value: {first_fetch!r}.")
+        last_fetch = format_first_fetch.isoformat()
     next_token = last_run.get("next_token")
     fetched_ids: list = list(last_run.get("fetched_ids") or [])
 
@@ -607,7 +712,10 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     filters = json.loads(raw_filters) if isinstance(raw_filters, str) else raw_filters
 
     if next_token:
-        demisto.debug("[AWS_Security_Hub_V2] Fetch: continuing previous page using next_token.")
+        demisto.debug(
+            f"[AWS_Security_Hub_V2] Fetch: continuing previous page. get_findings_v2 args: "
+            f"NextToken=<set>, MaxResults={max_fetch}, Filters={json.dumps(filters)}, SortCriteria={FETCH_SORT_CRITERIA}"
+        )
         try:
             response = client.get_findings_v2(
                 NextToken=next_token, MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA
@@ -623,7 +731,6 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
             )
             raise DemistoException(e.response.get("Error", {}).get("Message", ""))
     else:
-        demisto.debug("[AWS_Security_Hub_V2] Fetch: fresh window query for findings.")
         try:
             filters = build_fetch_filters(
                 start_time=last_fetch,
@@ -631,7 +738,10 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
                 min_severity=params.get("min_severity"),
                 additional_filters=params.get("fetch_filters"),
             )
-
+            demisto.debug(
+                f"[AWS_Security_Hub_V2] Fetch: fresh window query. get_findings_v2 args: "
+                f"MaxResults={max_fetch}, Filters={json.dumps(filters)}, SortCriteria={FETCH_SORT_CRITERIA}"
+            )
             response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA)
             demisto.debug("[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
         except client.exceptions.ClientError as e:
@@ -642,7 +752,8 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings.")
 
     mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction", "None"))
-    new_findings, incidents = dedup_findings(findings, last_fetch, fetched_ids, mirror_direction)
+    new_findings = filter_new_findings(findings, last_fetch, fetched_ids)
+    incidents = findings_to_incidents(new_findings, mirror_direction)
 
     sorted_findings = sorted(new_findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
     matching_uids = fetched_ids
@@ -669,47 +780,6 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     demisto.setLastRun(new_last_run)
     demisto.incidents(incidents)
     demisto.debug("[AWS_Security_Hub_V2] Fetch: ===== fetch-incidents END =====")
-
-
-def build_close_reopen_entries(finding: dict) -> list:
-    """Build the incoming-mirror entries that close or reopen the XSOAR incident based on AWS status.
-
-    Full lifecycle sync: an OCSF ``status_id`` of Resolved (4) or Suppressed (3) closes the XSOAR
-    incident (``dbotIncidentClose``); an open status (New/In Progress) reopens it
-    (``dbotIncidentReopen``). Any other/unknown status yields no entry so the incident is left as-is.
-
-    Args:
-        finding (dict): The OCSF finding returned by AWS Security Hub V2.
-
-    Returns:
-        list: A single-element entry list instructing the server to close/reopen, or an empty list.
-    """
-    status_id = finding.get("status_id")
-    if status_id is None:
-        return []
-    close_reason = OCSF_STATUS_ID_TO_CLOSE_REASON.get(status_id)
-    if close_reason:
-        finding_status = finding.get("status") or close_reason
-        return [
-            {
-                "Type": EntryType.NOTE,
-                "Contents": {
-                    "dbotIncidentClose": True,
-                    "closeReason": close_reason,
-                    "closeNotes": f"Closed by mirroring: AWS Security Hub finding status is '{finding_status}'.",
-                },
-                "ContentsFormat": EntryFormat.JSON,
-            }
-        ]
-    if status_id in OCSF_OPEN_STATUS_IDS:
-        return [
-            {
-                "Type": EntryType.NOTE,
-                "Contents": {"dbotIncidentReopen": True},
-                "ContentsFormat": EntryFormat.JSON,
-            }
-        ]
-    return []
 
 
 def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResponse:

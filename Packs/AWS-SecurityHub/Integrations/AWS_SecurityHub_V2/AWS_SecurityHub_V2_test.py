@@ -6,12 +6,16 @@ from AWS_SecurityHub_V2 import (
     disable_security_hub_command,
     enable_security_hub_command,
     fetch_incidents,
+    filter_new_findings,
+    test_module,
     findings_batch_update_command,
     findings_get_command,
+    findings_to_incidents,
     generate_filters_for_get_findings,
     get_mapping_fields_command,
     get_remote_data_command,
     parse_date_filters,
+    parse_filter_entries,
     parse_filters,
     parse_finding_identifiers,
     parse_tags,
@@ -146,6 +150,16 @@ def test_parse_filters_number():
     assert result == [{"FieldName": "severity_id", "Filter": {"Gte": 3}}]
 
 
+def test_parse_filters_number_multiple_operators():
+    """
+    Given: A single number_filters entry that specifies multiple operators (gte and lt).
+    When: parse_filters is called for the "number" category.
+    Then: All operators are mapped to their API keys within one Filter, with numeric values.
+    """
+    result = parse_filters("field_name=severity_id,gte=2,lt=5", "number")
+    assert result == [{"FieldName": "severity_id", "Filter": {"Gte": 2, "Lt": 5}}]
+
+
 def test_parse_filters_boolean():
     """
     Given: A boolean_filters argument.
@@ -176,16 +190,47 @@ def test_parse_filters_ip():
     assert result == [{"FieldName": "evidences.src_endpoint.ip", "Filter": {"Cidr": "10.0.0.1"}}]
 
 
-def test_parse_filters_skips_invalid_entries():
+@pytest.mark.parametrize(
+    "filters_str, category, missing_field",
+    [
+        ("value=High", "string", "field_name"),  # missing field_name
+        ("field_name=severity", "string", "value"),  # missing required value
+        ("field_name=severity_id", "number", "one of"),  # number entry without any operator
+    ],
+)
+def test_parse_filters_raises_on_missing_fields(filters_str, category, missing_field):
     """
-    Given: Filter entries missing the field_name or a required key.
+    Given: A filter entry missing field_name, a required key, or all require_any keys.
     When: parse_filters is called.
-    Then: Invalid entries are skipped while valid ones are kept.
+    Then: A DemistoException is raised naming the missing field(s).
     """
-    # Missing field_name, missing value, and a number entry without any operator are all skipped.
-    assert parse_filters("value=High", "string") == []
-    assert parse_filters("field_name=severity", "string") == []
-    assert parse_filters("field_name=severity_id", "number") == []
+    with pytest.raises(DemistoException, match=missing_field):
+        parse_filters(filters_str, category)
+
+
+def test_parse_filter_entries_multiple():
+    """
+    Given: A ";"-separated string of two entries, one with an extra comparison key.
+    When: parse_filter_entries is called.
+    Then: Each entry is parsed into a lower-cased key/value dict.
+    """
+    result = parse_filter_entries("field_name=severity,value=High;field_name=status,value=New,comparison=NOT_EQUALS")
+    assert result == [
+        {"field_name": "severity", "value": "High"},
+        {"field_name": "status", "value": "New", "comparison": "NOT_EQUALS"},
+    ]
+
+
+def test_parse_filter_entries_empty_and_malformed():
+    """
+    Given: An empty string, blank entries, and pairs without '='.
+    When: parse_filter_entries is called.
+    Then: Empty/blank entries yield nothing and pairs without '=' are ignored.
+    """
+    assert parse_filter_entries("") == []
+    assert parse_filter_entries("  ;  ") == []
+    # "noequals" has no '=' and is dropped; the valid pair is still parsed.
+    assert parse_filter_entries("field_name=severity,noequals") == [{"field_name": "severity"}]
 
 
 def test_generate_filters_for_get_findings_empty():
@@ -296,10 +341,88 @@ def test_parse_finding_identifiers_incomplete():
     """
     Given: A finding_identifiers entry missing a required key.
     When: parse_finding_identifiers is called.
-    Then: The incomplete entry is dropped.
+    Then: A DemistoException is raised naming the missing field.
     """
-    result = parse_finding_identifiers("cloud_account_uid=123,finding_info_uid=f-1")
-    assert result == []
+    with pytest.raises(DemistoException, match="metadata_product_uid"):
+        parse_finding_identifiers("cloud_account_uid=123,finding_info_uid=f-1")
+
+
+def _finding(uid, created_time, severity_id=3, title=None):
+    return {
+        "metadata": {"uid": uid},
+        "finding_info": {"created_time_dt": created_time, "title": title},
+        "severity_id": severity_id,
+    }
+
+
+def test_filter_new_findings_drops_stale_and_seen():
+    """
+    Given: Findings created before the boundary (stale), exactly at it (one already seen), and after it.
+    When: filter_new_findings is called with the boundary and the already-seen uid.
+    Then: Only the not-yet-ingested findings (the unseen boundary one and the newer one) are returned.
+    """
+    last_fetch = "2024-01-02T00:00:00Z"
+    findings = [
+        _finding("stale", "2024-01-01T00:00:00Z"),  # before boundary -> dropped
+        _finding("seen", last_fetch),  # at boundary, already seen -> dropped
+        _finding("boundary-new", last_fetch),  # at boundary, not seen -> kept
+        _finding("newer", "2024-01-03T00:00:00Z"),  # after boundary -> kept
+    ]
+
+    result = filter_new_findings(findings, last_fetch, fetched_ids=["seen"])
+
+    assert [f["metadata"]["uid"] for f in result] == ["boundary-new", "newer"]
+
+
+def test_filter_new_findings_no_boundary_keeps_all():
+    """
+    Given: An empty last_fetch (first run) and two findings.
+    When: filter_new_findings is called.
+    Then: All findings are kept (no boundary to dedup against).
+    """
+    findings = [_finding("a", "2024-01-01T00:00:00Z"), _finding("b", "2024-01-02T00:00:00Z")]
+
+    result = filter_new_findings(findings, last_fetch="", fetched_ids=[])
+
+    assert [f["metadata"]["uid"] for f in result] == ["a", "b"]
+
+
+def test_findings_to_incidents_builds_and_tags(mocker):
+    """
+    Given: A finding and a mirror direction.
+    When: findings_to_incidents is called.
+    Then: An incident is built with the mapped XSOAR severity, and the finding is stamped for mirroring.
+    """
+    from AWS_SecurityHub_V2 import IncidentSeverity
+
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    findings = [_finding("uid-1", "2024-01-01T00:00:00Z", severity_id=3, title="My Finding")]
+
+    incidents = findings_to_incidents(findings, mirror_direction="Both")
+
+    assert len(incidents) == 1
+    incident = incidents[0]
+    assert incident["name"] == "My Finding"
+    assert incident["occurred"] == "2024-01-01T00:00:00Z"
+    assert incident["severity"] == IncidentSeverity.MEDIUM  # OCSF severity_id 3 -> XSOAR Medium
+    # The finding was stamped with mirroring metadata that the rawJSON carries to the mapper.
+    assert findings[0]["mirror_direction"] == "Both"
+    assert findings[0]["mirror_instance"] == "instance-1"
+
+
+def test_findings_to_incidents_no_mirror_leaves_finding_untagged():
+    """
+    Given: A finding and no mirror direction.
+    When: findings_to_incidents is called.
+    Then: An incident is built but no mirroring metadata is stamped, and the name falls back to the uid.
+    """
+    findings = [_finding("uid-1", "2024-01-01T00:00:00Z", title=None)]
+
+    incidents = findings_to_incidents(findings, mirror_direction=None)
+
+    assert incidents[0]["name"] == "uid-1"  # no title -> falls back to uid
+    assert "mirror_direction" not in findings[0]
+    assert "mirror_instance" not in findings[0]
 
 
 def test_findings_batch_update_command_success(mocker):
@@ -465,14 +588,14 @@ def test_build_fetch_filters_with_severity_and_additional():
     assert composite["StringFilters"] == [{"FieldName": "cloud.region", "Filter": {"Value": "us-east-1", "Comparison": "EQUALS"}}]
 
 
-def test_fetch_incidents_first_run(mocker):
+def test_fetch_incidents_with_existing_last_fetch(mocker):
     """
     Given: A previous last_fetch window and a client returning two OCSF findings newer than it.
     When: fetch_incidents is called.
     Then: It builds incidents with mapped severity, sets last_fetch to the latest created time (no 1ms
           bump), records the boundary finding id in fetched_ids, and stores the returned next_token.
     """
-    import AWS_SecurityHub_V2
+    from AWS_SecurityHub_V2 import IncidentSeverity
 
     mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
@@ -502,8 +625,8 @@ def test_fetch_incidents_first_run(mocker):
     incidents = incidents_mock.call_args[0][0]
     assert len(incidents) == 2
     assert incidents[0]["name"] == "Finding One"
-    assert incidents[0]["severity"] == AWS_SecurityHub_V2.IncidentSeverity.HIGH
-    assert incidents[1]["severity"] == AWS_SecurityHub_V2.IncidentSeverity.CRITICAL
+    assert incidents[0]["severity"] == IncidentSeverity.HIGH
+    assert incidents[1]["severity"] == IncidentSeverity.CRITICAL
     assert incidents[1]["occurred"] == "2024-01-01T12:00:00.000Z"
 
     # last_fetch = latest created time (no bump); only the boundary id is stored; next_token persisted.
@@ -515,9 +638,13 @@ def test_fetch_incidents_first_run(mocker):
     # A fresh query uses Filters (not a NextToken), with a bounded [Start, End] window from last_fetch.
     call_kwargs = mock_client.get_findings_v2.call_args[1]
     assert call_kwargs["MaxResults"] == 50
-    date_filter = call_kwargs["Filters"]["CompositeFilters"][0]["DateFilters"][0]["Filter"]
+    assert "NextToken" not in call_kwargs
+    composite = call_kwargs["Filters"]["CompositeFilters"][0]
+    date_filter = composite["DateFilters"][0]["Filter"]
     assert date_filter["Start"] == "2024-01-01T00:00:00.000Z"
     assert "End" in date_filter
+    # min_severity=High is translated to an OCSF severity_id >= 4 NumberFilter in the query.
+    assert composite["NumberFilters"] == [{"FieldName": "severity_id", "Filter": {"Gte": 4}}]
 
 
 def test_fetch_incidents_continues_with_next_token(mocker):
@@ -904,3 +1031,49 @@ def test_build_close_reopen_entries_no_action_for_other_status(finding):
     Then: No entries are returned (the incident is left untouched).
     """
     assert build_close_reopen_entries(finding) == []
+
+
+def _mock_client_with_exceptions(mocker):
+    """Return a mock securityhub client whose ``exceptions.*`` are real Exception subclasses."""
+    mock_client = mocker.Mock()
+    mock_client.exceptions.ResourceNotFoundException = type("ResourceNotFoundException", (Exception,), {})
+    mock_client.exceptions.AccessDeniedException = type("AccessDeniedException", (Exception,), {})
+    return mock_client
+
+
+def test_test_module_success(mocker):
+    """
+    Given: A client whose describe_security_hub_v2 call succeeds.
+    When: test_module is called.
+    Then: It returns 'ok'.
+    """
+    mock_client = _mock_client_with_exceptions(mocker)
+    mock_client.describe_security_hub_v2.return_value = {}
+
+    assert test_module(mock_client) == "ok"
+
+
+def test_test_module_not_enabled_raises(mocker):
+    """
+    Given: A client whose describe_security_hub_v2 raises ResourceNotFoundException.
+    When: test_module is called.
+    Then: A DemistoException about Security Hub V2 not being enabled is raised.
+    """
+    mock_client = _mock_client_with_exceptions(mocker)
+    mock_client.describe_security_hub_v2.side_effect = mock_client.exceptions.ResourceNotFoundException()
+
+    with pytest.raises(DemistoException, match="not enabled"):
+        test_module(mock_client)
+
+
+def test_test_module_access_denied_raises(mocker):
+    """
+    Given: A client whose describe_security_hub_v2 raises AccessDeniedException.
+    When: test_module is called.
+    Then: A DemistoException about access being denied is raised.
+    """
+    mock_client = _mock_client_with_exceptions(mocker)
+    mock_client.describe_security_hub_v2.side_effect = mock_client.exceptions.AccessDeniedException()
+
+    with pytest.raises(DemistoException, match="Access denied"):
+        test_module(mock_client)
