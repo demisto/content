@@ -1,0 +1,42 @@
+commonfields:
+  id: SpecTestScriptLargeMemory
+  version: -1
+name: SpecTestScriptLargeMemory
+comment: >-
+  Test script WITH the spec field set to L (large memory allocation).
+  Used to validate the new SDK spec field for dedicated worker memory allocation on Scripts.
+script: ''
+type: python
+subtype: python3
+tags:
+- Utility
+enabled: true
+args:
+- name: input_data
+  required: true
+  default: true
+  description: Input data to process (simulates a memory-intensive operation).
+- name: operation
+  description: The operation to perform on the input data.
+  defaultValue: transform
+  auto: PREDEFINED
+  predefined:
+  - transform
+  - analyze
+  - aggregate
+outputs:
+- contextPath: SpecTestScriptLargeMemory.Result.Status
+  description: The processing status.
+  type: String
+- contextPath: SpecTestScriptLargeMemory.Result.OutputSize
+  description: The size of the output in bytes.
+  type: Number
+- contextPath: SpecTestScriptLargeMemory.Result.Data
+  description: The processed output data.
+  type: String
+scripttarget: 0
+dockerimage: demisto/python3:3.9.9.25564
+spec: L
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
