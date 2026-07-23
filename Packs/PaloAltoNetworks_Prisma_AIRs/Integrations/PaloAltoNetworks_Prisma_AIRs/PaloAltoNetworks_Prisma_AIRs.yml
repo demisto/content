@@ -4158,6 +4158,33 @@ script:
     - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at
       description: Last update timestamp.
       type: Date
+  - name: prisma-airs-redteam-languages-list
+    description: List the tenant's allowed languages for Red Team scans. Queries the data plane by default; set use_management=true to query the management plane.
+    arguments:
+    - name: use_management
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      description: If true, query the management plane instead of the data plane. Both return the same shape; the management plane may expose a different subset.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamLanguages.multilingual_enabled
+      description: Whether multilingual Red Team scanning is enabled for the tenant.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamLanguages.supported_job_types
+      description: Scan job types the languages apply to (for example STATIC, DYNAMIC).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamLanguages.plane
+      description: Which plane the list was retrieved from (data or management).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamLanguages.languages.code
+      description: Language code (for example en, es).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamLanguages.languages.name
+      description: Language display name (for example English, Spanish).
+      type: String
   - name: prisma-airs-redteam-report-get
     description: Get Red Team scan report with attack results and recommendations.
     arguments:

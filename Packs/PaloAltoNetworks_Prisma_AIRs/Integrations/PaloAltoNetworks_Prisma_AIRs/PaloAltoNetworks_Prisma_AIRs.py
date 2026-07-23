@@ -32,6 +32,9 @@ RED_TEAM_CUSTOM_ATTACK_ENDPOINT = "/v1/custom-attack"  # For prompts within prom
 RED_TEAM_EULA_ENDPOINT = "/v1/eula"
 RED_TEAM_REGISTRY_CREDENTIALS_ENDPOINT = "/v1/registry-credentials"
 RED_TEAM_TEMPLATE_ENDPOINT = "/v1/template"
+# Supported languages endpoint - identical path served on both the data plane and the mgmt plane.
+# Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_LANGUAGES_PATH)
+RED_TEAM_LANGUAGES_ENDPOINT = "/v1/languages"
 # Network broker channels live on a distinct data-plane sub-path (/network-broker), used with use_redteam_data=True.
 # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_CHANNELS_PATH + network-broker base URL)
 RED_TEAM_NETWORK_CHANNELS_ENDPOINT = "/network-broker/v1/channels"
@@ -5257,6 +5260,60 @@ def redteam_network_channels_update_command(client: Client, args: dict[str, Any]
     )
 
 
+def redteam_languages_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List the tenant's allowed languages for Red Team scans.
+
+    Served from the data plane by default; set use_management=true to query the
+    management plane (identical response shape, possibly a different subset).
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    use_management = argToBoolean(args.get("use_management", False))
+
+    # Same path on both planes; the plane selector picks data vs mgmt.
+    # Reference: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/client.ts
+    #   (getLanguages -> data plane, getManagementLanguages -> mgmt plane)
+    # SDK schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (TenantLanguagesResponseSchema)
+    if use_management:
+        response = client.http_request(method="GET", url_suffix=RED_TEAM_LANGUAGES_ENDPOINT, use_redteam_mgmt=True)
+    else:
+        response = client.http_request(method="GET", url_suffix=RED_TEAM_LANGUAGES_ENDPOINT, use_redteam_data=True)
+
+    # Keep the metadata attached to the language list in a single output object.
+    languages = response.get("languages") or []
+    languages_info = {
+        "multilingual_enabled": response.get("multilingual_enabled"),
+        "supported_job_types": response.get("supported_job_types"),
+        "plane": "management" if use_management else "data",
+        "languages": [{"code": lang.get("code"), "name": lang.get("name")} for lang in languages],
+    }
+
+    supported = ", ".join(languages_info["supported_job_types"] or [])
+    title = (
+        f"Prisma AIRs Red Team Supported Languages "
+        f"(multilingual_enabled: {languages_info['multilingual_enabled']}; job types: {supported or 'N/A'})"
+    )
+    readable_output = tableToMarkdown(
+        title,
+        languages_info["languages"],
+        headers=["code", "name"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamLanguages",
+        outputs=languages_info,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def redteam_report_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get Red Team scan report.
 
@@ -8781,6 +8838,9 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-network-channels-update":
             return_results(redteam_network_channels_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-languages-list":
+            return_results(redteam_languages_list_command(client, args))
 
         elif command == "prisma-airs-redteam-report-get":
             return_results(redteam_report_get_command(client, args))

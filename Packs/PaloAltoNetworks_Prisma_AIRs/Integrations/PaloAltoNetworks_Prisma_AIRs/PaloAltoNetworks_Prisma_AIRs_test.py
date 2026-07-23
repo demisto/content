@@ -65,6 +65,7 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_network_channels_stats_command,
     redteam_network_channels_get_command,
     redteam_network_channels_update_command,
+    redteam_languages_list_command,
     redteam_eula_status_command,
     redteam_eula_content_command,
     redteam_eula_accept_command,
@@ -1746,6 +1747,57 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="At least one of name or description is required"):
             redteam_network_channels_update_command(mock_client, {"channel_id": "ch-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_languages_list_command_data_plane(self, mock_http: Mock, mock_client: Client) -> None:
+        """languages-list defaults to the data plane and keeps metadata with the language list.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "multilingual_enabled": True,
+            "supported_job_types": ["STATIC", "DYNAMIC", "CUSTOM"],
+            "languages": [{"code": "en", "name": "English"}, {"code": "es", "name": "Spanish"}],
+        }
+
+        result = redteam_languages_list_command(mock_client, {})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamLanguages"
+        assert result.outputs["multilingual_enabled"] is True
+        assert result.outputs["supported_job_types"] == ["STATIC", "DYNAMIC", "CUSTOM"]
+        assert result.outputs["plane"] == "data"
+        assert result.outputs["languages"] == [{"code": "en", "name": "English"}, {"code": "es", "name": "Spanish"}]
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/languages"
+        assert kwargs["use_redteam_data"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_languages_list_command_management_plane(self, mock_http: Mock, mock_client: Client) -> None:
+        """languages-list with use_management=true routes to the management plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "multilingual_enabled": True,
+            "supported_job_types": ["STATIC"],
+            "languages": [{"code": "en", "name": "English"}],
+        }
+
+        result = redteam_languages_list_command(mock_client, {"use_management": "true"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamLanguages"
+        assert result.outputs["plane"] == "management"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/languages"
+        assert kwargs["use_redteam_mgmt"] is True
 
     @patch.object(Client, "http_request")
     def test_runtime_api_keys_create_command(self, mock_http: Mock, mock_client: Client) -> None:

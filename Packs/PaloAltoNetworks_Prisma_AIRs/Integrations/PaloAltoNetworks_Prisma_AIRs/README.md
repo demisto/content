@@ -4561,6 +4561,72 @@ Update a Red Team network broker channel's name and/or description. At least one
 >|---|---|---|---|---|
 >| 550e8400-e29b-41d4-a716-446655440000 | prod-relay | ONLINE | Updated description | 2026-04-21T09:15:42Z |
 
+### prisma-airs-redteam-languages-list
+
+***
+List the tenant's allowed languages for Red Team scans. Queries the data plane by default; set use_management=true to query the management plane. Both planes return the same shape (and, in practice, the same list).
+
+#### Base Command
+
+`prisma-airs-redteam-languages-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| use_management | If true, query the management plane instead of the data plane. Both return the same shape; the management plane may expose a different subset. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamLanguages.multilingual_enabled | Boolean | Whether multilingual Red Team scanning is enabled for the tenant. |
+| PrismaAIRs.RedTeamLanguages.supported_job_types | Unknown | Scan job types the languages apply to \(for example STATIC, DYNAMIC\). |
+| PrismaAIRs.RedTeamLanguages.plane | String | Which plane the list was retrieved from \(data or management\). |
+| PrismaAIRs.RedTeamLanguages.languages.code | String | Language code \(for example en, es\). |
+| PrismaAIRs.RedTeamLanguages.languages.name | String | Language display name \(for example English, Spanish\). |
+
+#### Command example
+
+```
+!prisma-airs-redteam-languages-list
+```
+
+#### Context Example
+
+```json
+{
+    "languages": [
+        {"code": "en", "name": "English"},
+        {"code": "fr", "name": "French"},
+        {"code": "de", "name": "German"},
+        {"code": "hi", "name": "Hindi"},
+        {"code": "ja", "name": "Japanese"},
+        {"code": "pt", "name": "Portuguese"},
+        {"code": "es", "name": "Spanish"},
+        {"code": "th", "name": "Thai"}
+    ],
+    "multilingual_enabled": true,
+    "plane": "data",
+    "supported_job_types": ["STATIC", "DYNAMIC", "CUSTOM"]
+}
+```
+
+#### Human Readable Output
+
+>### Prisma AIRs Red Team Supported Languages (multilingual_enabled: True; job types: STATIC, DYNAMIC, CUSTOM)
+>
+>|Code|Name|
+>|---|---|
+>| en | English |
+>| fr | French |
+>| de | German |
+>| hi | Hindi |
+>| ja | Japanese |
+>| pt | Portuguese |
+>| es | Spanish |
+>| th | Thai |
+
 ### prisma-airs-redteam-report-get
 
 ***
