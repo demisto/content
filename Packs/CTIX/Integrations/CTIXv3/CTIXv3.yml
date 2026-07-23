@@ -5,7 +5,6 @@ fromversion: 6.0.0
 name: CTIX v3
 display: Cyware Intel Exchange
 category: Data Enrichment & Threat Intelligence
-provider: Cyware Labs
 sectionorder:
 - Connect
 - Collect
@@ -41,27 +40,37 @@ configuration:
   section: Connect
 - display: Timeout
   name: timeout
-  defaultvalue: "180"
   type: 0
   required: false
   section: Connect
+  defaultvalue: "180"
   advanced: true
   additionalinfo: The connection timeout, in seconds.
 - display: Fetch incidents
   name: isFetch
+  type: 8
+  required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
   section: Collect
   required: false
-  type: 8
+  defaultvalue: "12 hours"
+  additionalinfo: The frequency at which the platform polls CTIX for new incidents (e.g. "30 minutes", "1 hour", "12 hours"). Controls the Cortex XSOAR Incident scheduler cadence.
 - display: Incident type
   name: incidentType
   type: 13
   section: Collect
   required: false
   defaultvalue: CTIX Intel
-- additionalinfo: The reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, url, ip, file, and cve reputation commands. Does not affect indicators fetched via the indicator feed (see the separate Source Reliability param under Connect).
-  defaultvalue: C - Fairly reliable
-  display: Source Reliability
+- display: Source Reliability
   name: integrationReliability
+  type: 15
+  section: Collect
+  required: false
+  defaultvalue: C - Fairly reliable
+  additionalinfo: The reliability of the source providing the intelligence data. Applies to fetched incidents and to the reliability of results returned by the domain, url, ip, file, and cve reputation commands. Does not affect indicators fetched via the indicator feed (see the separate Source Reliability param under Connect).
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -70,9 +79,6 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  type: 15
-  required: false
-  section: Collect
 - display: First fetch time
   name: first_fetch
   type: 19
@@ -81,24 +87,24 @@ configuration:
   required: false
   additionalinfo: 'The date and time from which to start fetching on the first run, used as the initial lookback window for both incident fetch and indicator feed fetch when no previous run exists. If left empty, defaults to 3 days ago. For example, 10 days or P10D.'
 - display: Maximum number of incidents per fetch
-  additionalinfo: Allowed range is 1-200.
   name: max_fetch
   type: 0
   section: Collect
-  defaultvalue: '10'
   required: false
+  additionalinfo: Allowed range is 1-200.
+  defaultvalue: '10'
 - display: Incident Fetch CQL Query
   name: incident_fetch_query
   type: 0
   section: Collect
   required: false
   additionalinfo: The custom CQL query used when fetching incidents. Updates the default CQL query. For example, type = "report" AND confidence_score = "90"
-- defaultvalue: "true"
-  display: Fetch indicators
+- display: Fetch indicators
   name: feed
   type: 8
-  required: false
   section: Connect
+  defaultvalue: "true"
+  required: false
 - display: Saved Result Set Label
   name: saved_result_set_label
   type: 0
@@ -110,22 +116,22 @@ configuration:
   type: 15
   section: Connect
   required: false
+  additionalinfo: The version of Saved Result Set to use.
   options:
   - v2
   - v3
-  additionalinfo: The version of Saved Result Set to use.
 - display: Retrieve Enriched Data
   name: retrieve_enriched_data
   type: 8
   section: Connect
   required: false
   additionalinfo: Whether to enrich indicators via bulk IOC lookup (with relations and enrichment data) before ingestion.
-- display: Feed Fetch Interval
+- defaultvalue: "12 hours"
+  display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
-  section: Connect
   required: false
-  defaultvalue: "12 hours"
+  section: Connect
   additionalinfo: The frequency at which the platform polls CTIX for new indicators (e.g. "30 minutes", "1 hour", "12 hours"). Controls the Cortex XSOAR feed scheduler cadence.
 - additionalinfo: The reliability of the source providing the intelligence data. Applies only to indicators retrieved via the indicator feed (see the separate Source Reliability param under Collect, which governs incident fetch and reputation commands instead).
   defaultvalue: A - Completely reliable
@@ -168,24 +174,24 @@ configuration:
   display: ''
   type: 1
   section: Connect
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- name: tlp_color
   display: Traffic Light Protocol Color
-  name: tlp_color
+  type: 15
+  required: false
+  section: Connect
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   options:
   - RED
   - AMBER
   - GREEN
   - WHITE
-  required: false
-  type: 15
-  section: Connect
-- name: feedBypassExclusionList
+- additionalinfo: Whether to ignore the exclusion list for indicators from this feed. If enabled, an indicator from this feed that is on the exclusion list might still be added to the system.
   display: Bypass exclusion list
-  type: 8
+  name: feedBypassExclusionList
   required: false
+  type: 8
   section: Connect
   advanced: true
-  additionalinfo: Whether to ignore the exclusion list for indicators from this feed. If enabled, an indicator from this feed that is on the exclusion list might still be added to the system.
 - additionalinfo: A comma-separated list of tags to apply to indicators fetched via the indicator feed.
   display: Tags
   name: feedTags
