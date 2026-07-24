@@ -103,6 +103,18 @@ script:
       required: false
       secret: false
       default: false
+    - name: name
+      isArray: false
+      description: The endpoint name filter. Returns endpoints whose hostnames start with the specified value. The value must be at least 3 characters long. Supports an optional single leading '*' wildcard pattern.
+      required: false
+      secret: false
+      default: false
+    - name: node_id
+      isArray: false
+      description: The ID of the target GravityZone company or network inventory group. If not specified, the default value is the ID of the company associated with the API key used to make the request.
+      required: false
+      secret: false
+      default: false
     outputs:
     - contextPath: GravityZone.EndpointsList.ID
       description: The endpoint ID.
@@ -121,6 +133,15 @@ script:
       type: String
     - contextPath: GravityZone.EndpointsList.Vendor
       description: The endpoint vendor.
+      type: String
+    - contextPath: GravityZone.EndpointsList.FQDN
+      description: The endpoint fully qualified domain name (FQDN).
+      type: String
+    - contextPath: GravityZone.EndpointsList.CompanyID
+      description: The GravityZone company ID where the endpoint is located.
+      type: String
+    - contextPath: GravityZone.EndpointsList.GroupID
+      description: The GravityZone group ID where the endpoint is located.
       type: String
 
   - name: gz-endpoint-get
