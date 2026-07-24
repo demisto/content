@@ -1,0 +1,325 @@
+id: ETD Email Reclassification And Remediation
+version: 12
+contentitemexportablefields:
+  contentitemfields:
+    packID: ""
+    packName: ""
+    itemVersion: ""
+    fromServerVersion: 6.10.0
+    toServerVersion: ""
+    definitionid: ""
+    prevname: ""
+    isoverridable: false
+vcShouldKeepItemLegacyProdMachine: false
+name: ETD Email Reclassification And Remediation
+description: |-
+  Review the Cisco ETD email before taking action.
+
+  Message ID:
+  ${incident.etdmessageid}
+
+  Select a new verdict for the email.
+
+  Available verdicts:
+  • BEC
+  • Scam
+  • Malicious
+  • Phishing
+  • Spam
+  • Graymail
+  • Neutral
+
+  Select a remediation action.
+
+  Available actions:
+  • Inbox
+  • Junk
+  • Quarantine
+  • Trash
+  • Delete
+
+  Warning:
+  Delete permanently removes the email and cannot be undone.
+tags:
+- ETD
+- Email
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fbb16e0e-906f-4621-88e6-22d0812feb5b
+    type: start
+    task:
+      id: fbb16e0e-906f-4621-88e6-22d0812feb5b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f0f00870-2e54-4f33-9075-c486a49fadcd
+    type: condition
+    task:
+      id: f0f00870-2e54-4f33-9075-c486a49fadcd
+      version: -1
+      name: Check ETD Integration
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    scriptarguments:
+      brandname:
+        simple: ETDXsoarConnector
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 675ed55d-bf8e-4a25-88c0-0aecb25944a0
+    type: collection
+    task:
+      id: 675ed55d-bf8e-4a25-88c0-0aecb25944a0
+      version: -1
+      name: Collect Reclassification And Remediation
+      description: |-
+        Review the ETD email before remediation.
+        Message ID:
+        ${incident.etdmessageid}
+        Verify the email details and decide:
+        Reclassification:
+        - bec
+        - scam
+        - malicious
+        - phishing
+        - spam
+        - graymail
+        - neutral
+
+        Remediation:
+        - quarantine
+        - inbox
+        - junk
+        - trash
+        - delete
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Select the new verdict
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: bec
+        - simple: scam
+        - simple: spam
+        - simple: malicious
+        - simple: phishing
+        - simple: graymail
+        - simple: neutral
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Select remediation action
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: quarantine
+        - simple: inbox
+        - simple: trash
+        - simple: junk
+        - simple: delete
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: ETD Email Reclassification And Remediation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 52af1d11-55ce-486b-9b0d-a9fdb249da29
+    type: regular
+    task:
+      id: 52af1d11-55ce-486b-9b0d-a9fdb249da29
+      version: -1
+      name: cisco-etd-move-message
+      description: Reclassifies and remediates an ETD message.
+      script: ETDXsoarConnector|||cisco-etd-move-message
+      type: regular
+      iscommand: true
+      brand: ETDXsoarConnector
+    nexttasks:
+      '#error#':
+      - "4"
+    scriptarguments:
+      folder:
+        simple: ${ETD Email Reclassification And Remediation.Answers.1}
+      message_id:
+        simple: ${incident.etdmessageid}
+      verdict:
+        simple: ${ETD Email Reclassification And Remediation.Answers.0}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 891d96d5-f64e-48a9-9008-2a372b76f1af
+    type: regular
+    task:
+      id: 891d96d5-f64e-48a9-9008-2a372b76f1af
+      version: -1
+      name: Remediation Failed
+      description: |-
+        Cisco ETD remediation failed.
+
+        Possible reasons:
+        • Cisco ETD integration is unavailable.
+        • The Message ID is invalid.
+        • Authentication failed.
+        • The selected remediation action is not supported.
+
+        Review the previous task's error details and retry if appropriate.
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    defaultassigneecomplex:
+      simple: Analyst
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 390,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+inputSections:
+- inputs: []
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+dirtyInputs: true
