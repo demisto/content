@@ -886,6 +886,154 @@ script:
     - name: caseNumber
       description: The case number.
     description: Deletes a case.
+  - name: salesforce-delete-file
+    arguments:
+    - name: type
+      description: The Salesforce sObject type. Defaults to ContentDocument.
+      defaultValue: ContentDocument
+    - name: id
+      description: The ContentDocument record ID to delete.
+      required: true
+    - name: ignore_not_found
+      description: If true, a 404/NOT_FOUND response is treated as success. Defaults to true.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    description: Soft-deletes a file (ContentDocument), moving it to the Recycle Bin and cascading to its versions. Recoverable for 15 days.
+    outputs:
+    - contextPath: Salesforce.Remediation.Action
+      description: The remediation action performed.
+      type: string
+    - contextPath: Salesforce.Remediation.ObjectType
+      description: The Salesforce sObject type acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Id
+      description: The record ID acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Status
+      description: The result status of the remediation action.
+      type: string
+  - name: salesforce-archive-knowledge-article
+    arguments:
+    - name: type
+      description: The Salesforce sObject type. Defaults to KnowledgeArticleVersion.
+      defaultValue: KnowledgeArticleVersion
+    - name: id
+      description: The Knowledge article version ID (the __kav record ID, starting with 'ka') to archive.
+      required: true
+    - name: ignore_not_found
+      description: If true, a 404/NOT_FOUND response is treated as success. Defaults to true.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    description: Archives a Knowledge article (non-destructive). Sets PublishStatus to Archived via the standard archiveKnowledgeArticles action. Reversible to Draft/Online.
+    outputs:
+    - contextPath: Salesforce.Remediation.Action
+      description: The remediation action performed.
+      type: string
+    - contextPath: Salesforce.Remediation.ObjectType
+      description: The Salesforce sObject type acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Id
+      description: The record ID acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Status
+      description: The result status of the remediation action.
+      type: string
+  - name: salesforce-list-file-public-links
+    arguments:
+    - name: id
+      description: The ContentDocument record ID whose public links (ContentDistribution rows) should be listed.
+      required: true
+    description: Lists all public links (ContentDistribution records) for a given ContentDocument ID. Use the returned ContentDistribution IDs with salesforce-remove-file-public-links to remove each link.
+    outputs:
+    - contextPath: Salesforce.ContentDistribution.Id
+      description: The ContentDistribution record ID (use with salesforce-remove-file-public-links).
+      type: string
+    - contextPath: Salesforce.ContentDistribution.ContentDocumentId
+      description: The parent ContentDocument ID.
+      type: string
+    - contextPath: Salesforce.ContentDistribution.Name
+      description: The name of the content distribution.
+      type: string
+    - contextPath: Salesforce.ContentDistribution.PublicUrl
+      description: The public distribution URL.
+      type: string
+  - name: salesforce-remove-file-public-links
+    arguments:
+    - name: type
+      description: The Salesforce sObject type. Defaults to ContentDistribution.
+      defaultValue: ContentDistribution
+    - name: id
+      description: The ContentDistribution record ID to delete (severs the public link). Use salesforce-list-file-public-links to obtain distribution IDs for a ContentDocument.
+      required: true
+    - name: ignore_not_found
+      description: If true, a 404/NOT_FOUND response is treated as success. Defaults to true.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    description: Removes a file public link by deleting a single ContentDistribution record. The external link is severed immediately and irreversibly.
+    outputs:
+    - contextPath: Salesforce.Remediation.Action
+      description: The remediation action performed.
+      type: string
+    - contextPath: Salesforce.Remediation.ObjectType
+      description: The Salesforce sObject type acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Id
+      description: The ContentDistribution record ID acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Status
+      description: The result status of the remediation action.
+      type: string
+  - name: salesforce-draft-knowledge-article
+    arguments:
+    - name: type
+      description: The Salesforce sObject type. Defaults to KnowledgeArticleVersion.
+      defaultValue: KnowledgeArticleVersion
+    - name: id
+      description: The Knowledge article ID (KnowledgeArticleId, starting with 'kA') or article version ID (starting with 'ka'). Used with the standard createDraftFromOnlineKnowledgeArticle action.
+      required: true
+    - name: unpublish
+      description: If true (default), archives the current online version (removing it from public visibility) and creates a new draft. If false, keeps the article online and creates an editable draft alongside it.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    - name: ignore_not_found
+      description: If true, a 404/NOT_FOUND response is treated as success. Defaults to true.
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "true"
+    description: Moves a published Knowledge article to Draft using the standard createDraftFromOnlineKnowledgeArticle action. By default (unpublish=true) the online version is removed from public visibility and an editable draft is created.
+    outputs:
+    - contextPath: Salesforce.Remediation.Action
+      description: The remediation action performed.
+      type: string
+    - contextPath: Salesforce.Remediation.ObjectType
+      description: The Salesforce sObject type acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Id
+      description: The record ID acted on.
+      type: string
+    - contextPath: Salesforce.Remediation.Status
+      description: The result status of the remediation action.
+      type: string
+    - contextPath: Salesforce.Remediation.Unpublished
+      description: Whether the online version was unpublished (removed from public visibility).
+      type: boolean
+    - contextPath: Salesforce.Remediation.DraftVersionId
+      description: The ID of the newly created draft article version.
+      type: string
   - name: salesforce-get-casecomment
     arguments:
     - name: oid
