@@ -17,6 +17,7 @@ This is Zero Trust Access data. The API token needs the
 "Access: Audit Logs Read" permission (with "Account Settings Read" as a
 fallback some configurations require) and must be scoped to the account.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
@@ -100,9 +101,7 @@ def dedup_events(events: list[dict], last_ids: set) -> tuple[list[dict], str, se
         return [], "", last_ids
 
     newest_ts = max(e.get("created_at", "") for e in new_events)
-    newest_ids = {
-        e["ray_id"] for e in new_events if e.get("created_at") == newest_ts and e.get("ray_id")
-    }
+    newest_ids = {e["ray_id"] for e in new_events if e.get("created_at") == newest_ts and e.get("ray_id")}
     return new_events, newest_ts, newest_ids
 
 
@@ -126,9 +125,7 @@ def fetch_access_logs_for_account(
     seen_ray_ids: set = set(last_ids)
 
     while len(collected) < max_fetch:
-        response = client.get_access_logs(
-            account_id=account_id, since=cursor, until=until, limit=limit, direction="asc"
-        )
+        response = client.get_access_logs(account_id=account_id, since=cursor, until=until, limit=limit, direction="asc")
         results = response.get("result") or []
         if not results:
             break

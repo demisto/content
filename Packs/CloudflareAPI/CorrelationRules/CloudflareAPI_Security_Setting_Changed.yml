@@ -1,4 +1,5 @@
 name: Cloudflare - Security or Configuration Setting Changed - by GoCortexIO
+description: Detects a change to a Cloudflare security or firewall configuration setting.
 severity: SEV_030_MEDIUM
 xql_query: |-
   datamodel dataset = cloudflare_account_audit_raw

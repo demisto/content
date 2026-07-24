@@ -10,6 +10,7 @@ Collection window: the fetch advances a per-account high-water mark (the newest
 audit ``when`` timestamp seen), not a fixed poll-interval offset. Each run resumes
 from that mark, so a delayed, skipped, or overlapping poll never leaves a gap.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the Cloudflare Audit Logs Event Collector."""
+
 import json
 import os
 
@@ -14,6 +15,7 @@ from CloudflareAuditLogsEventCollector import (
     fetch_audit_logs_for_account,
     get_events_command,
 )
+
 # Aliased so pytest does not collect the integration's ``test_module`` as a test case.
 from CloudflareAuditLogsEventCollector import test_module as run_test_module
 
@@ -77,9 +79,7 @@ def test_dedup_events_same_timestamp_tracks_all_ids():
 
 def test_fetch_audit_logs_paginates(mocker, client, data):
     """Two pages are combined and metadata is attached."""
-    mocker.patch.object(
-        client, "get_audit_logs", side_effect=[data["page_1"], data["page_2"]]
-    )
+    mocker.patch.object(client, "get_audit_logs", side_effect=[data["page_1"], data["page_2"]])
     events, newest_ts, newest_ids = fetch_audit_logs_for_account(
         client=client,
         account_id=ACCOUNT_A,
@@ -176,9 +176,7 @@ def test_fetch_events_dedups_across_runs(mocker, client, data):
 
 
 def test_get_events_command(mocker, client, data):
-    mocker.patch.object(
-        client, "get_audit_logs", side_effect=[data["page_1"], data["page_2"]]
-    )
+    mocker.patch.object(client, "get_audit_logs", side_effect=[data["page_1"], data["page_2"]])
     args = {"account_ids": ACCOUNT_A, "since": "3 days", "limit": "10"}
     events, results = get_events_command(client, args, hide_user_logs=False)
     assert len(events) == 3

@@ -1,4 +1,5 @@
 name: Cloudflare - API Token Created or Rolled - by GoCortexIO
+description: Detects creation or rolling of a Cloudflare API token, a persistence vector after account compromise.
 severity: SEV_040_HIGH
 xql_query: |-
   datamodel dataset = cloudflare_account_audit_raw

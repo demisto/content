@@ -7,13 +7,13 @@ Collects Security Center insights (findings) from the Cloudflare API
 ``cloudflare_security_insights_raw`` dataset. Insights are current findings
 (an inventory), so each run sends the full snapshot.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 import urllib3
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import datetime, UTC
 
 urllib3.disable_warnings()
 
@@ -47,9 +47,9 @@ class CloudflareClient(BaseClient):
 def cf_fetch_all(
     client: "CloudflareClient",
     url_suffix: str,
-    base_params: Optional[dict] = None,
+    base_params: dict | None = None,
     max_fetch: int = 10000,
-    result_key: Optional[str] = None,
+    result_key: str | None = None,
     per_page: int = CF_API_MAX_PER_PAGE,
 ) -> list:
     """Page through a non-time-series Cloudflare list endpoint and return all items.
@@ -93,7 +93,7 @@ def _insights_suffix(account_id: str) -> str:
 
 
 def _now_rfc3339() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def fetch_events(client: CloudflareClient, account_ids: list, max_fetch: int) -> list:

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the Cloudflare Access Authentication Logs Event Collector."""
+
 import CloudflareAccessAuthLogsEventCollector as collector
 
 
@@ -17,8 +18,14 @@ class MockClient:
 
 
 def _rec(ray_id, created_at, **kw):
-    r = {"ray_id": ray_id, "created_at": created_at, "user_email": "u@x.com",
-         "ip_address": "1.2.3.4", "allowed": True, "app_domain": "app.x.com"}
+    r = {
+        "ray_id": ray_id,
+        "created_at": created_at,
+        "user_email": "u@x.com",
+        "ip_address": "1.2.3.4",
+        "allowed": True,
+        "app_domain": "app.x.com",
+    }
     r.update(kw)
     return r
 
@@ -47,7 +54,8 @@ def test_metadata_added():
     pages = {"2026-07-19T00:00:00Z": [_rec("a", "2026-07-20T10:00:00Z")]}
     client = MockClient(pages)
     events, ts, ids = collector.fetch_access_logs_for_account(
-        client, "acc-1", "2026-07-19T00:00:00Z", "2026-07-21T00:00:00Z", 100, set())
+        client, "acc-1", "2026-07-19T00:00:00Z", "2026-07-21T00:00:00Z", 100, set()
+    )
     e = events[0]
     assert e["_time"] == "2026-07-20T10:00:00Z"
     assert e["source_log_type"] == "access_auth"

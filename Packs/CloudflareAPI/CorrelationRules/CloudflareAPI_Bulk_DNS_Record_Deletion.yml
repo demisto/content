@@ -1,4 +1,5 @@
 name: Cloudflare - Bulk DNS Record Deletion - by GoCortexIO
+description: Detects an actor deleting many Cloudflare DNS records in a short window, a destructive or service-disrupting action.
 severity: SEV_040_HIGH
 xql_query: |-
   datamodel dataset = cloudflare_account_audit_raw
