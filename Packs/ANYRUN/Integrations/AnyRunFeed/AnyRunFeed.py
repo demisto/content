@@ -8,7 +8,7 @@ from anyrun.iterators import FeedsIterator
 from anyrun import RunTimeException
 
 DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
-VERSION = "PA-XSOAR:2.3.0"
+VERSION = "PA-XSOAR:2.4.0"
 
 
 def test_module(params: dict) -> str:  # pragma: no cover
@@ -77,17 +77,39 @@ def convert_indicators(indicators: list[dict]) -> list[dict]:
     for indicator in indicators:
         indicator_type, indicator_value = extract_indicator_data(indicator)
 
+        fields: dict[str, Any] = {
+            "firstseenbysource": indicator.get("created"),
+            "first_seen": indicator.get("created"),
+            "modified": indicator.get("modified"),
+            "last_seen": indicator.get("modified"),
+            "vendor": "ANY.RUN",
+            "source": "ANY.RUN TI Feed",
+            "tags": indicator.get("labels", []),
+            "publications": [
+                {
+                    "title": ref.get("source_name", ""),
+                    "link": ref["url"],
+                    "source": "ANY.RUN TI Feed",
+                    "timestamp": indicator.get("created"),
+                }
+                for ref in indicator.get("external_references", [])
+                if ref.get("url")
+            ],
+        }
+        if indicator_type == "domain-name":
+            fields["communitynotes"] = [
+                {
+                    "notes": ref["url"],
+                    "timestamp": indicator.get("created"),
+                }
+                for ref in indicator.get("external_references", [])
+                if ref.get("url")
+            ]
+
         indicator_payload = {
             "value": indicator_value,
             "type": {"ipv4-addr": "IP", "url": "URL", "domain-name": "Domain"}.get(indicator_type),
-            "fields": {
-                "firstseenbysource": indicator.get("created"),
-                "first_seen": indicator.get("created"),
-                "modified": indicator.get("modified"),
-                "last_seen": indicator.get("modified"),
-                "vendor": "ANY.RUN",
-                "source": "ANY.RUN TI Feed",
-            },
+            "fields": fields,
         }
 
         converted_indicators.append(indicator_payload)
