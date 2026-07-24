@@ -1,0 +1,112 @@
+[MODEL: dataset=cloudflare_account_audit_raw]
+filter
+    action != null
+| alter
+    tmp_id = id,
+    tmp_action_type = json_extract_scalar(action, "$.type"),
+    tmp_result = json_extract_scalar(action, "$.result"),
+    tmp_email = json_extract_scalar(actor, "$.email"),
+    tmp_actor_id = json_extract_scalar(actor, "$.id"),
+    tmp_ip = json_extract_scalar(actor, "$.ip"),
+    tmp_actor_type = json_extract_scalar(actor, "$.type"),
+    tmp_interface = interface,
+    tmp_meta_name = json_extract_scalar(metadata, "$.name"),
+    tmp_zone_name = json_extract_scalar(metadata, "$.zone_name"),
+    tmp_token_name = json_extract_scalar(metadata, "$.token_name"),
+    tmp_res_type = json_extract_scalar(resource, "$.type"),
+    tmp_res_id = json_extract_scalar(resource, "$.id"),
+    tmp_new_value = newValue,
+    tmp_old_value = oldValue,
+    tmp_account_id = cloudflare_account_id,
+    tmp_owner_id = json_extract_scalar(owner, "$.id")
+| alter
+    tmp_action_lc = lowercase(coalesce(tmp_action_type, "")),
+    tmp_is_login = if(lowercase(coalesce(tmp_action_type, "")) contains "login", "yes", null)
+| alter
+    xdm.observer.vendor = "cloudflare",
+    xdm.observer.product = "account_audit",
+    xdm.event.id = tmp_id,
+    xdm.event.original_event_type = coalesce(tmp_action_type, "GOCORTEX_UNMODELLED"),
+    xdm.event.type = if(
+        tmp_is_login != null, "authentication",
+        tmp_action_type != null, "audit",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(
+        tmp_is_login != null, arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION, XDM_CONST.EVENT_TAG_SAAS),
+        tmp_action_type != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+        null),
+    xdm.event.operation = if(
+        tmp_is_login != null, XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+        tmp_action_lc contains "delete" or tmp_action_lc contains "remove" or tmp_action_lc contains "revoke", XDM_CONST.OPERATION_TYPE_DELETE,
+        tmp_action_lc contains "create" or tmp_action_lc contains "add" or tmp_action_lc contains "order" or tmp_action_lc contains "issue" or tmp_action_lc contains "provision", XDM_CONST.OPERATION_TYPE_CREATE,
+        tmp_action_lc contains "change" or tmp_action_lc contains "update" or tmp_action_lc contains "modify" or tmp_action_lc contains "edit" or tmp_action_lc contains "rotate" or tmp_action_lc contains "roll" or tmp_action_lc contains "deploy" or tmp_action_lc contains "enable" or tmp_action_lc contains "disable", XDM_CONST.OPERATION_TYPE_UPDATE,
+        tmp_action_lc contains "get" or tmp_action_lc contains "list" or tmp_action_lc contains "view" or tmp_action_lc contains "read" or tmp_action_lc contains "export", XDM_CONST.OPERATION_TYPE_READ,
+        tmp_action_type != null, XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.event.outcome = if(
+        tmp_result = "true", XDM_CONST.OUTCOME_SUCCESS,
+        tmp_result = "false", XDM_CONST.OUTCOME_FAILED,
+        null),
+    xdm.event.operation_sub_type = tmp_interface,
+    xdm.source.user.username = tmp_email,
+    xdm.source.user.upn = if(tmp_email contains "@", tmp_email, tmp_email != null, concat(tmp_email, "@localhost"), null),
+    xdm.source.user.identifier = tmp_actor_id,
+    xdm.source.user.user_type = if(
+        tmp_actor_type = "Cloudflare" or tmp_actor_type = "system", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        tmp_actor_type = "user" or tmp_actor_type = "admin", XDM_CONST.USER_TYPE_REGULAR,
+        null),
+    xdm.source.user.identity_type = if(
+        tmp_actor_type = "Cloudflare" or tmp_actor_type = "system", XDM_CONST.IDENTITY_TYPE_MACHINE,
+        tmp_actor_type = "user" or tmp_actor_type = "admin", XDM_CONST.IDENTITY_TYPE_USER,
+        null),
+    xdm.source.ipv4 = if(tmp_ip contains ".", tmp_ip, null),
+    xdm.auth.service = if(tmp_is_login != null, "Login", null),
+    xdm.source.port = if(tmp_is_login != null, to_integer(0), null),
+    xdm.target.ipv4 = if(tmp_is_login != null, "", null),
+    xdm.target.port = if(tmp_is_login != null, to_integer(0), null),
+    xdm.network.ip_protocol = if(tmp_is_login != null, XDM_CONST.IP_PROTOCOL_IP, null),
+    xdm.source.cloud.project = tmp_account_id,
+    xdm.target.cloud.project = tmp_owner_id,
+    xdm.target.resource.type = tmp_res_type,
+    xdm.target.resource.id = tmp_res_id,
+    xdm.target.resource.name = coalesce(tmp_zone_name, tmp_token_name),
+    xdm.target.resource.sub_type = tmp_meta_name,
+    xdm.target.resource.value = tmp_new_value,
+    xdm.target.resource_before.value = tmp_old_value,
+    xdm.event.description = concat(
+        "Cloudflare audit: ", coalesce(tmp_email, "unknown actor"),
+        " performed ", coalesce(tmp_action_type, "unknown action"),
+        " on ", coalesce(tmp_res_type, "resource"),
+        " (result=", coalesce(tmp_result, "n/a"), ")")
+;
+
+[MODEL: dataset=cloudflare_security_insights_raw]
+filter
+    id != null
+| alter
+    tmp_zone_tag = json_extract_scalar(payload, "$.zone_tag")
+| alter
+    xdm.observer.vendor = "cloudflare",
+    xdm.observer.product = "security_insights",
+    xdm.event.id = id,
+    xdm.event.type = coalesce(issue_type, "security_insight"),
+    xdm.event.original_event_type = issue_class,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.alert.name = issue_class,
+    xdm.alert.subcategory = issue_type,
+    xdm.alert.severity = if(
+        severity = "Critical", "Critical",
+        severity = "High", "High",
+        severity = "Medium", "Medium",
+        severity = "Low", "Low",
+        severity != null, severity,
+        "Informational"),
+    xdm.target.resource.name = subject,
+    xdm.target.resource.id = tmp_zone_tag,
+    xdm.target.resource.type = "zone",
+    xdm.source.cloud.project = cloudflare_account_id,
+    xdm.event.description = concat(
+        "Cloudflare security insight: ", coalesce(issue_class, "unknown"),
+        " (", coalesce(severity, "n/a"), ") on ", coalesce(subject, "unknown"),
+        " -- status ", coalesce(status, "unknown"))
+;

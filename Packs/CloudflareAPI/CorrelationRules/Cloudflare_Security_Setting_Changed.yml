@@ -1,0 +1,34 @@
+name: Cloudflare - Security or Configuration Setting Changed - by GoCortexIO
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = cloudflare_account_audit_raw
+  | alter event_verb = lowercase(to_string(xdm.event.original_event_type))
+  | filter (event_verb contains "change" or event_verb contains "update" or event_verb contains "modify" or event_verb contains "edit" or event_verb contains "enable" or event_verb contains "disable" or event_verb contains "rotate" or event_verb contains "roll" or event_verb contains "deploy") and (event_verb contains "setting" or event_verb contains "security" or event_verb contains "firewall" or event_verb contains "waf")
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.operation_sub_type, xdm.event.original_event_type, xdm.event.outcome, xdm.event.description, xdm.auth.service, xdm.network.ip_protocol, xdm.source.ipv4, xdm.source.port, xdm.target.ipv4, xdm.target.port, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.source.cloud.project, xdm.target.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: Cloudflare security or configuration change - $xdm.event.original_event_type by $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A Cloudflare security or configuration setting was changed by $xdm.source.user.username, which may indicate an attempt to impair defenses.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562.001 - Impair Defenses - Disable or Modify Tools
+suppression_fields:
+- xdm.event.id
+- xdm.source.user.username
+global_rule_id: 53f4f511-fe40-40b1-b9e4-33db2b4bf471
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 1 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: ''
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
