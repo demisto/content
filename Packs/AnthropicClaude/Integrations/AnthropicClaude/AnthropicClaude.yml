@@ -527,6 +527,40 @@ script:
     - contextPath: AnthropicClaude.ProjectDocument.content
       description: The document text content.
       type: String
+  - arguments:
+    - description: 'The Claude file ID to permanently delete (e.g., claude_file_...). Deletes a file uploaded in a conversation or a project binary file (project_file). This is an irreversible hard delete.'
+      name: file_id
+      required: true
+    description: 'Permanently delete a Claude file (a conversation file or a project binary file) via the Compliance API. This is an irreversible hard delete, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown file ID succeeds (idempotent).'
+    execution: true
+    name: claude-chat-file-delete
+    outputs:
+    - contextPath: AnthropicClaude.DeletedFile.id
+      description: The ID of the file that was deleted.
+      type: String
+    - contextPath: AnthropicClaude.DeletedFile.type
+      description: The deletion confirmation type (claude_file_deleted).
+      type: String
+    - contextPath: AnthropicClaude.DeletedFile.Deleted
+      description: The deletion result for the file (true when deleted).
+      type: Boolean
+  - arguments:
+    - description: 'The Claude project document ID to permanently delete (e.g., claude_proj_doc_...). Applies to project plain-text documents (project_doc). This is an irreversible hard delete.'
+      name: document_id
+      required: true
+    description: 'Permanently delete a Claude project document (a plain-text project_doc) via the Compliance API. This is an irreversible hard delete, and it requires a Compliance Access Key with the delete:compliance_user_data scope. Deleting an already-deleted or unknown document ID succeeds (idempotent).'
+    execution: true
+    name: claude-project-document-delete
+    outputs:
+    - contextPath: AnthropicClaude.DeletedProjectDocument.id
+      description: The ID of the project document that was deleted.
+      type: String
+    - contextPath: AnthropicClaude.DeletedProjectDocument.type
+      description: The deletion confirmation type (claude_project_document_deleted).
+      type: String
+    - contextPath: AnthropicClaude.DeletedProjectDocument.Deleted
+      description: The deletion result for the project document (true when deleted).
+      type: Boolean
   dockerimage: demisto/parse-emails:0.1.48.10569905
   runonce: false
   script: ''
