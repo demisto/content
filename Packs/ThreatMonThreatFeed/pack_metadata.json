@@ -1,0 +1,36 @@
+{
+    "name": "ThreatMon Threat Feed",
+    "description": "Fetches Indicators of Compromise (IOCs) such as IPs, domains, URLs and file hashes from the ThreatMon IOC platform and ingests them into Cortex as indicators.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "ThreatMon",
+    "url": "https://www.threatmon.io",
+    "email": "integration@threatmonit.io",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "ThreatMon",
+        "IOC",
+        "Feed",
+        "Threat Intelligence",
+        "Indicators"
+    ],
+    "created": "2026-07-22T10:30:00Z",
+    "githubUser": [
+        "ByCh4n"
+    ],
+    "certification": "certified",
+    "premium": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}
