@@ -95,7 +95,7 @@ script:
       description: The list of URLs and IPs on the denylist.
       type: String
   - name: zia-denylist-update
-    description: Updates the list of URLs and IPs that are in the denylist.
+    description: Updates the list of URLs in the denylist.
     execution: true
     compliantpolicies:
     - Domain Blockage
@@ -105,7 +105,8 @@ script:
       description: A comma-separated list of URLs to update the denylist. For example, snapchat.com,facebook.com.
       isArray: true
     - name: ip
-      description: A comma-separated list of IPs to update the denylist. For example, 1.2.3.4,8.8.8.8.
+      description: Deprecated. The Zscaler blacklistUrls field only supports URLs. Use the url argument instead.
+      deprecated: true
       isArray: true
     - name: action
       description: The action applied to the denylist.
@@ -141,7 +142,7 @@ script:
       description: The list of URLs in the allowlist.
       type: String
   - name: zia-allowlist-update
-    description: Updates the list of URLs that are in the allowlist.
+    description: Updates the list of URLs in the allowlist.
     execution: true
     compliantpolicies:
     - Domain Blockage
@@ -151,7 +152,8 @@ script:
       description: A comma-separated list of URLs to update in the allowlist. For example, snapchat.com,facebook.com.
       isArray: true
     - name: ip
-      description: A comma-separated list of IPs to update in the allowlist. For example, 1.2.3.4,8.8.8.8.
+      description: Deprecated. The Zscaler whitelistUrls field only supports URLs. Use the url argument instead.
+      deprecated: true
       isArray: true
     - name: action
       description: The action applied to the allowlist.

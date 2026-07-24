@@ -763,3 +763,36 @@ def test_build_indicators_propagates_inherited_event_tag():
     tags = indicators[0]["fields"]["Tags"]
     assert "tlp:white" in tags
     assert "attribute-tag" in tags
+
+
+def test_fetch_empty_response_preserves_last_run(mocker):
+    """
+    Given:
+        - A previously stored watermark (last_indicator_timestamp/value) from an earlier fetch.
+    When:
+        - The next fetch returns an empty response (no new attributes), so no candidate is produced.
+    Then:
+        - setLastRun must NOT be called (the existing watermark is left untouched), instead of being
+          overwritten with nulls which would reset the incremental cursor and cause a full re-fetch.
+    """
+    client = Client(
+        base_url="example",
+        authorization="auth",
+        verify=False,
+        proxy=False,
+        timeout=60,
+        performance=False,
+        max_indicator_to_fetch=2000,
+    )
+    # Empty MISP response -> the while loop never runs, no candidate is produced.
+    mocker.patch.object(Client, "_http_request", side_effect=[{"response": {"Attribute": []}}])
+    mocked_last_run = {"last_indicator_timestamp": "1607517728", "last_indicator_value": "test"}
+    mocker.patch.object(demisto, "getLastRun", return_value=mocked_last_run)
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+
+    fetch_attributes_command(client, {})
+
+    # No new indicators should be created, and the watermark must be preserved (setLastRun not called).
+    assert not create_indicators.called
+    assert not set_last_run.called

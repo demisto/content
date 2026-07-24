@@ -933,7 +933,7 @@ script:
       description: Get the list of signal IDs that were modified since lastUpdate. This command is used for debugging the mirroring integration.
     - name: get-mapping-fields
       description: Get the mapping fields for Datadog Cloud SIEM security signals. This command is used for debugging the mirroring integration and returns the schema of available fields.
-  dockerimage: demisto/datadog-api-client:1.0.0.5598595
+  dockerimage: demisto/datadog-api-client:1.0.0.10133006
   isfetch: true
   ismappable: true
   isremotesyncin: true

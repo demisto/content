@@ -244,7 +244,7 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"title": "XSOAR_Page", "type": "page", "space_key": "XSOAR"}
+    args = {"title": "test_page", "type": "page", "space_key": "XSOAR"}
     response = confluence_cloud_content_create_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -290,7 +290,7 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"title": "XSOAR_Page", "type": "page", "space_key": "XSOAR"}
+    args = {"title": "test_page", "type": "page", "space_key": "XSOAR"}
     response = confluence_cloud_content_create_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -741,7 +741,7 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
     with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -787,7 +787,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
     with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "2097159", "title": "XSOAR_Page", "type": "page", "version": 2}
+    args = {"content_id": "2097159", "title": "test_page", "type": "page", "version": 2}
     response = confluence_cloud_content_update_command(client, args)
 
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -1163,13 +1163,15 @@ def test_confluence_cloud_content_get_command_when_valid_response_is_returned(re
     from AtlassianConfluenceCloud import confluence_cloud_content_get_command
 
     expected_response = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
-    requests_mock.get("https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage", json=expected_response)
+    requests_mock.get(
+        "https://dummy.atlassian.com/wiki/rest/api/content/test-page-id?expand=body.storage", json=expected_response
+    )
     expected_context_output = util_load_json(os.path.join("test_data", "content_get/content_get_command_context.json"))
 
     with open(os.path.join("test_data", "content_get/content_get_command.md")) as f:
         expected_readable_output = f.read()
 
-    args = {"content_id": "2097159"}
+    args = {"content_id": "test-page-id"}
 
     response = confluence_cloud_content_get_command(client, args)
     assert response.outputs_prefix == "ConfluenceCloud.Content"
@@ -1440,3 +1442,84 @@ class TestOAuthFunctions:
         }
         result = create_client(params)
         assert isinstance(result, Client)
+
+
+@pytest.mark.parametrize(
+    "url, expected_id",
+    [
+        ("https://mysite.atlassian.net/wiki/spaces/TEST/pages/2097159/My+Page", "2097159"),
+        ("https://mysite.atlassian.net/wiki/rest/api/content/12345", "12345"),
+        ("https://mysite.atlassian.net/wiki/pages/viewpage.action?pageId=99999", "99999"),
+        ("https://mysite.atlassian.net/wiki/spaces/DEV/pages/111222/Some+Title?extra=param", "111222"),
+    ],
+)
+def test_extract_content_id_from_url(url: str, expected_id: str):
+    """
+    Given:
+        A Confluence page URL in various supported formats.
+    When:
+        Calling _extract_content_id_from_url to parse the URL.
+    Then:
+        The correct content ID is extracted from the URL.
+    """
+    from AtlassianConfluenceCloud import _extract_content_id_from_url
+
+    assert _extract_content_id_from_url(url) == expected_id
+
+
+def test_extract_content_id_from_url_invalid():
+    """
+    Given:
+        An unsupported URL format that does not contain a Confluence content ID.
+    When:
+        Calling _extract_content_id_from_url to parse the URL.
+    Then:
+        A ValueError is raised with a descriptive error message.
+    """
+    from AtlassianConfluenceCloud import _extract_content_id_from_url
+
+    with pytest.raises(ValueError, match="Could not extract content ID from URL"):
+        _extract_content_id_from_url("https://example.com/not-a-confluence-url")
+
+
+def test_generic_file_get_command_success(requests_mock):
+    """
+    Given:
+        A valid Confluence page URL pointing to an existing page.
+    When:
+        Calling the generic-file-get command with the URL.
+    Then:
+        The command returns a FileContent output with the correct title, type, content, and ID.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_generic_file_get_command
+
+    expected_response = util_load_json(os.path.join("test_data", "content_get/generic_file_get_response.json"))
+    requests_mock.get(
+        "https://dummy.atlassian.com/wiki/rest/api/content/2097159?expand=body.storage",
+        json=expected_response,
+    )
+
+    args = {"url": "https://dummy.atlassian.net/wiki/spaces/TEST/pages/2097159/test_page"}
+    result = confluence_cloud_generic_file_get_command(client, args)
+
+    assert result.outputs_prefix == "FileContent"
+    assert result.outputs["Id"] == "2097159"
+    assert result.outputs["Title"] == "test_page"
+    assert result.outputs["Type"] == "text/html"
+    assert result.outputs["Content"] == "<p>This is the page content</p>"
+    assert result.outputs["Url"] == args["url"]
+
+
+def test_generic_file_get_command_missing_url():
+    """
+    Given:
+        No URL argument provided to the generic-file-get command.
+    When:
+        Calling the generic-file-get command without a URL.
+    Then:
+        A ValueError is raised indicating the url argument is required.
+    """
+    from AtlassianConfluenceCloud import confluence_cloud_generic_file_get_command
+
+    with pytest.raises(ValueError, match="'url' argument is required"):
+        confluence_cloud_generic_file_get_command(client, {})

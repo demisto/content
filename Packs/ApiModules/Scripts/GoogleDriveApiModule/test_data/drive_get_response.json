@@ -1,0 +1,32 @@
+{
+    "kind": "drive#drive",
+    "id": "17",
+    "name": "My Drive 17",
+    "colorRgb": "#039be5",
+    "capabilities": {"canAddChildren": true,
+    "canChangeCopyRequiresWriterPermissionRestriction": true,
+    "canChangeDomainUsersOnlyRestriction": true,
+    "canChangeDriveBackground": true,
+    "canChangeDriveMembersOnlyRestriction": true,
+    "canComment": true,
+    "canCopy": true,
+    "canDeleteChildren": true,
+    "canDeleteDrive": true,
+    "canDownload": true,
+    "canEdit": true,
+    "canListChildren": true,
+    "canManageMembers": true,
+    "canReadRevisions": true,
+    "canRename": true,
+    "canRenameDrive": true,
+    "canShare": true,
+    "canTrashChildren": true},
+    "createdTime": "2020-11-10T07:28:48.669Z",
+    "hidden": false,
+    "restrictions": {
+        "adminManagedRestrictions": false,
+        "copyRequiresWriterPermission": false,
+        "domainUsersOnly": false,
+        "driveMembersOnly": false
+    }
+}

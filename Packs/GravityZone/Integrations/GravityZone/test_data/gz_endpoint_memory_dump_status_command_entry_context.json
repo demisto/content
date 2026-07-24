@@ -1,0 +1,14 @@
+{
+    "GravityZone.MemoryDump(val.EndpointID && val.EndpointID == obj.EndpointID)": {
+        "TaskID": "TASK_ID",
+        "TaskType": "CreateMemoryDump",
+        "Status": "Processed",
+        "EndpointID": "ENDPOINT_ID",
+        "Hostname": "ENDPOINT_NAME",
+        "StartDate": "2026-05-25T10:00:00Z",
+        "EndDate": "2026-05-25T10:01:00Z",
+        "ErrorCode": "Success",
+        "Error": "Success",
+        "DownloadURL": "https://example.com/memory-dump.zip"
+    }
+}

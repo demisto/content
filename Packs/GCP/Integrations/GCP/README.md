@@ -5,7 +5,7 @@ This integration was integrated and tested with version v1 (Compute, Storage, Co
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. Required for Cortex XSOAR and Cortex XSIAM \(version &amp;lt; 3.0\). On Cortex XSIAM \(version &amp;gt;= 3.0\) and Cortex Cloud, authentication is handled automatically via the cloud connector, so this can be left empty. In the Google Cloud Console, go to IAM &amp;amp; Admin &amp;gt; Service Accounts, create a service account with the required roles, then under its 'Keys' tab create a JSON key. Paste the downloaded JSON contents here. | False |
+| Service Account Private Key (JSON) | The full content of a GCP Service Account private key JSON file. In the Google Cloud Console, go to IAM & Admin > Service Accounts and create a service account with the required roles. Then under the Keys tab, create a JSON key. Paste the downloaded JSON contents here. | True |
 | GCP Project ID | The GCP project ID to authenticate against when testing the integration \(e.g. my-project-123\). If left empty, the project ID from the Service Account private key JSON is used. | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
@@ -28,7 +28,7 @@ Updates a specific firewall rule with the data included in the request. Required
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Name of the firewall rule to update. | Required |
 | description | An optional description of this resource, which you provide when you create the resource. | Optional |
 | network | URL of the network resource for this firewall rule. If not specified when creating a firewall rule, the default network is used. | Optional |
@@ -85,15 +85,13 @@ Removes an entity from a bucket's Access Control List. Required permissions: sto
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Name of the GCS bucket. | Required |
 | entity | Entity to remove from the Access Control List.<br/>Common entity formats are:<br/>*user:&lt;userId or email&gt;<br/>* group:&lt;groupId or email&gt;<br/>*allUsers<br/>* allAuthenticatedUsers<br/>For more options and details, see: https://cloud.google.com/storage/docs/json_api/v1/bucketAccessControls#resource . Default is allUsers. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
-
-### gcp-compute-subnet-update
 
 ### gcp-compute-subnet-update
 
@@ -108,7 +106,7 @@ Enables flow logs or Private Google Access on a subnet. Required permissions: co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | GCP region. | Required |
 | resource_name | Subnet name. | Required |
 | enable_flow_logs | Enable VPC Flow Logs. Possible values are: true, false. | Optional |
@@ -143,7 +141,7 @@ Configures security settings for GKE clusters, including access controls and vis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | GCP region. | Required |
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
@@ -192,7 +190,7 @@ Updates Google Cloud Storage (GCS) bucket metadata, including settings such as v
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Name of the bucket. | Required |
 | enable_versioning | Enable versioning. Possible values are: true, false. | Optional |
 | enable_uniform_access | Enable uniform bucket-level access. Possible values are: true, false. | Optional |
@@ -239,7 +237,7 @@ Removes a specified IAM role binding from a GCP project. Required permissions: r
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | member | Member to remove (e.g., user:test@example.com). | Required |
 | role | Role to remove (e.g., roles/viewer). | Required |
 
@@ -260,7 +258,7 @@ Sets the service account for a GCP Compute Engine VM instance. The instance must
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the VM instance. | Required |
 | service_account_email | Email of the service account. | Required |
@@ -306,7 +304,7 @@ Removes the service account associated with a GCP Compute Engine VM instance. Th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the VM instance. | Required |
 
@@ -350,7 +348,7 @@ Starts an instance that was stopped using the instances().stop method. Required 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the instance resource to start. | Required |
 
@@ -394,7 +392,7 @@ Stops and cleanly shuts down a running instance, allowing you to restart the ins
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the instance resource to stop. | Required |
 
@@ -438,7 +436,7 @@ Retrieves the list of instances in the specified zone. Required permission: comp
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | filters | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance. | Optional |
 | limit | The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
@@ -511,7 +509,7 @@ Sets labels on an instance. Required permission: compute.instances.setLabels.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | instance | Name of the instance resource to return. | Required |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | labels | An object containing a list of "key": value pairs, without spaces. Example: key=abc,value=123;key=ABC,value=321. | Required |
 | label_fingerprint | Fingerprint of the previous set of labels for this resource, used to prevent conflicts. Provide the latest fingerprint value when making a request to add or change labels. | Required |
@@ -556,7 +554,7 @@ Returns a specific instance resource. To get a list of available instances, make
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | instance | Name of the instance resource to return. | Required |
 
@@ -628,8 +626,6 @@ Returns a specific instance resource. To get a list of available instances, make
 
 ### gcp-storage-bucket-list
 
-### gcp-storage-bucket-list
-
 ***
 Retrieves the list of buckets in the project associated with the client. Required permission: storage.buckets.list.
 
@@ -641,7 +637,7 @@ Retrieves the list of buckets in the project associated with the client. Require
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of buckets to return. | Optional |
 | prefix | Filter results to buckets whose names begin with this prefix. | Optional |
 | page_token | Token for pagination. | Optional |
@@ -665,9 +661,6 @@ Retrieves the list of buckets in the project associated with the client. Require
 | GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
 | GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
 
-***
-Retrieves information about a specific bucket. Required Permissions: storage.buckets.get.
-
 ### gcp-storage-bucket-get
 
 ***
@@ -681,7 +674,7 @@ Retrieves information about a specific bucket. Required permission: storage.buck
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to retrieve. | Required |
 
 #### Context Output
@@ -716,7 +709,7 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to list objects from. | Required |
 | prefix | Filter results to objects whose names begin with this prefix. | Optional |
 | delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
@@ -746,10 +739,6 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 | GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
 | GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
 
-#### Base Command
-
-`gcp-storage-bucket-policy-list`
-
 ### gcp-storage-bucket-policy-list
 
 ***
@@ -763,7 +752,7 @@ Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.get
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to retrieve IAM policy from. | Required |
 | requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
 
@@ -790,11 +779,37 @@ Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPol
 
 `gcp-storage-bucket-policy-set`
 
+#### Usage
+
+- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
+- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
+
+> Warning: Use this command with extreme caution. Running it without explicitly merging (i.e., with `add=false`) will overwrite the bucket's existing IAM policy with the provided `policy`. If you intend to keep current bindings and add new ones, use `add=true`.
+
+#### Policy structure
+
+- **bindings**: Array of binding objects. Each binding:
+  - **role**: String. For example, `roles/storage.objectViewer`, `roles/storage.admin`.
+  - **members**: Array of strings. Allowed formats:
+    - `user:<email>` (e.g., `user:alice@example.com`)
+    - `group:<email>`
+    - `serviceAccount:<email>`
+    - `domain:<domain>` (e.g., `domain:example.com`)
+    - `allUsers` | `allAuthenticatedUsers`
+- **version**: Number. Required to be `3` or greater if any binding includes `condition`.
+- **etag**: String. Recommended for replace flow (`add=false`) to avoid overwriting concurrent updates.
+- Optional fields like `kind`, `resourceId` may appear in responses but are not required in requests.
+
+Notes:
+
+- For `add=true` (merge), only a valid `bindings` array is required; other top-level fields are taken from the existing policy.
+- For `add=false` (replace), the provided object becomes the entire policy on the bucket.
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
 | add | When true, merges the provided policy bindings into the current bucket policy (per role, deduplicating members) by first calling getIamPolicy and then setIamPolicy with the merged result. When false, replaces the entire policy with the provided JSON via setIamPolicy.<br/>. Possible values are: true, false. Default is false. | Optional |
@@ -806,24 +821,6 @@ Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPol
 | GCP.Storage.BucketPolicy.version | Number | IAM policy version after update. |
 | GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
 | GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
-
-### gcp-storage-bucket-object-policy-set
-
-***
-Sets the IAM policy for a specific object in a bucket. Required Permissions: storage.objects.setIamPolicy.
-
-#### Base Command
-
-`gcp-storage-bucket-object-policy-set`
-
-> Note: If UBLA is enabled on the bucket, the command does not modify object ACLs and instead returns guidance to manage permissions via the bucket IAM policy.
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | GCP project ID. | Required |
-| bucket_name | Name of the bucket containing the object. | Required |
 
 ### gcp-storage-bucket-object-policy-list
 
@@ -838,7 +835,7 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket containing the object. | Required |
 | object_name | Name of the object to retrieve IAM policy from. | Required |
 | generation | Generation of the object. | Optional |
@@ -864,7 +861,7 @@ Sets the IAM policy for a specific object in a bucket. Required permission: stor
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | bucket_name | Name of the bucket containing the object. | Required |
 | object_name | Name of the object to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
@@ -877,108 +874,6 @@ Sets the IAM policy for a specific object in a bucket. Required permission: stor
 | GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
 | GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
 | GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
-| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Firewall.id | String | Unique identifier for the firewall rule. |
-| GCP.Compute.Firewall.name | String | Name of the firewall rule. |
-| GCP.Compute.Firewall.kind | String | Type of the resource \(for example, compute\#firewall\). |
-| GCP.Compute.Firewall.description | String | Description of the firewall rule. |
-| GCP.Compute.Firewall.direction | String | Direction of traffic for the rule \(INGRESS or EGRESS\). |
-| GCP.Compute.Firewall.disabled | Boolean | Indicates whether the firewall rule is disabled. |
-| GCP.Compute.Firewall.priority | Number | Priority value of the firewall rule. |
-| GCP.Compute.Firewall.network | String | The network URL this firewall rule applies to. |
-| GCP.Compute.Firewall.selfLink | String | Server-defined URL for the resource. |
-| GCP.Compute.Firewall.creationTimestamp | Date | The creation timestamp of the firewall rule. |
-| GCP.Compute.Firewall.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
-| GCP.Compute.Firewall.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
-| GCP.Compute.Firewall.targetTags | Unknown | List of target instance tags to which the rule applies. |
-| GCP.Compute.FirewallNextToken | String | Next page token for pagination. |
-
-### gcp-compute-firewall-get
-
-***
-Retrieves a specific firewall rule by name. Required permission: compute.firewalls.get.
-
-#### Base Command
-
-`gcp-compute-firewall-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| resource_name | Firewall rule name. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Firewall.name | string | Firewall rule name. |
-| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
-| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
-| GCP.Compute.Firewall.priority | number | Priority of the rule. |
-| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
-| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
-| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
-
-### gcp-compute-snapshots-list
-
-***
-Lists snapshots in a specific project. Required permission: compute.snapshots.list.
-
-#### Base Command
-
-`gcp-compute-snapshots-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
-| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
-| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
 
 ### gcp-compute-snapshot-get
 
@@ -993,7 +888,7 @@ Retrieves details for a specific snapshot. Required permission: compute.snapshot
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Snapshot name. | Required |
 
 #### Context Output
@@ -1036,7 +931,7 @@ Returns an aggregated list of instances across all zones that can be filtered by
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
@@ -1065,7 +960,7 @@ Adds a network tag to a VM instance (merges with existing tags). Required permis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | Zone of the VM (e.g., us-central1-a). | Required |
 | resource_name | Instance name. | Required |
 | tag | Tag to add. | Required |
@@ -1089,76 +984,6 @@ Adds a network tag to a VM instance (merges with existing tags). Required permis
 | GCP.Compute.Operations.startTime | string | Time when the operation started. |
 | GCP.Compute.Operations.selfLink | string | URL for this operation resource. |
 | GCP.Compute.Operations.kind | string | Type of the resource \(e.g., compute\#operation\). |
-
-### gcp-compute-image-get
-
-***
-Returns a specific image. Required permission: compute.images.get.
-
-#### Base Command
-
-`gcp-compute-image-get`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | Project ID for this request. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| image | Name of the image resource to return. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.Compute.Images.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.Images.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
-| GCP.Compute.Images.name | string | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
-| GCP.Compute.Images.description | string | An optional description of this resource. |
-| GCP.Compute.Images.sourceType | string | The type of the image used to create this disk. The default and only value is RAW. |
-| GCP.Compute.Images.rawDisk | string | The parameters of the raw disk image. |
-| GCP.Compute.Images.rawDisk.source | string | The full Google Cloud Storage URL where the disk image is stored. You must provide either this property or the sourceDisk property but not both. |
-| GCP.Compute.Images.rawDisk.sha1Checksum | string | An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created. |
-| GCP.Compute.Images.rawDisk.containerType | string | The format used to encode and transmit the block device, which should be TAR. This is just a container and transmission format and not a runtime format. Provided by the client when the disk image is created. |
-| GCP.Compute.Images.deprecated | string | The deprecation status associated with this image. |
-| GCP.Compute.Images.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
-| GCP.Compute.Images.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
-| GCP.Compute.Images.deprecated.deprecated | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Images.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Images.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
-| GCP.Compute.Images.status | string | The status of the image. An image can be used to create other resources, such as instances, only after the image has been successfully created and the status is set to READY. Possible values are FAILED, PENDING, or READY. |
-| GCP.Compute.Images.archiveSizeBytes | string | Size of the image tar.gz archive stored in Google Cloud Storage \(in bytes\). |
-| GCP.Compute.Images.diskSizeGb | string | Size of the image when restored onto a persistent disk \(in GB\). |
-| GCP.Compute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk. |
-| GCP.Compute.Images.sourceDiskId | string | The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name. |
-| GCP.Compute.Images.licenses | string | Any applicable license URI. |
-| GCP.Compute.Images.family | string | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. |
-| GCP.Compute.Images.imageEncryptionKey | string | Encrypts the image using a customer-supplied encryption key. After you encrypt an image with a customer-supplied key, you must provide the same key if you use the image later \(e.g. to create a disk from the image\). Customer-supplied encryption keys do not protect access to metadata of the disk. If you do not provide an encryption key when creating the image, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the image later. |
-| GCP.Compute.Images.imageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
-| GCP.Compute.Images.imageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.imageEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
-| GCP.Compute.Images.sourceDiskEncryptionKey | string | The customer-supplied encryption key of the source disk. Required if the source disk is protected by a customer-supplied encryption key. |
-| GCP.Compute.Images.sourceDiskEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
-| GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
-| GCP.Compute.Images.selfLink | string | Server-defined URL for the resource. |
-| GCP.Compute.Images.labels | string | Labels to apply to this image. These can be later modified by the setLabels method. |
-| GCP.Compute.Images.labelFingerprint | string | A fingerprint for the labels being applied to this image, which is essentially a hash of the labels used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet. |
-| GCP.Compute.Images.guestOsFeatures | string | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. |
-| GCP.Compute.Images.guestOsFeatures.type | string | The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. |
-| GCP.Compute.Images.licenseCodes | string | Integer license codes indicating which licenses are attached to this image. |
-| GCP.Compute.Images.sourceImage | string | URL of the source image used to create this image. This can be a full or valid partial URL. |
-| GCP.Compute.Images.sourceImageId | string | The ID value of the image used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given image name. |
-| GCP.Compute.Images.sourceImageEncryptionKey | string | The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key. |
-| GCP.Compute.Images.sourceImageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
-| GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | string |  The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
-| GCP.Compute.Images.sourceSnapshot | string | URL of the source snapshot used to create this image. This can be a full or valid partial URL. |
-| GCP.Compute.Images.sourceSnapshotId | string |  The ID value of the snapshot used to create this image. This value may be used to determine whether the snapshot was taken from the current or a previous instance of a given snapshot name. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey | string | The customer-supplied encryption key of the source snapshot. Required if the source snapshot is protected by a customer-supplied encryption key. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
-| GCP.Compute.Images.kind | string | Type of the resource. Always compute\#image for images. |
 
 ### gcp-compute-image-get
 
@@ -1316,12 +1141,168 @@ Returns a specific zone resource. Required permission: compute.zones.get.
 
 `gcp-compute-zone-get`
 
+### gcp-compute-image-get
+
+***
+Returns a specific image. Required permission: compute.images.get.
+
+#### Base Command
+
+`gcp-compute-image-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The project ID for this request. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| image | Name of the image resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Images.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Images.creationTimestamp | string | Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Images.name | string | Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression \[a-z\]\(\[-a-z0-9\]\*\[a-z0-9\]\)? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. |
+| GCP.Compute.Images.description | string | An optional description of this resource. |
+| GCP.Compute.Images.sourceType | string | The type of the image used to create this disk. The default and only value is RAW. |
+| GCP.Compute.Images.rawDisk | string | The parameters of the raw disk image. |
+| GCP.Compute.Images.rawDisk.source | string | The full Google Cloud Storage URL where the disk image is stored. You must provide either this property or the sourceDisk property but not both. |
+| GCP.Compute.Images.rawDisk.sha1Checksum | string | An optional SHA1 checksum of the disk image before unpackaging provided by the client when the disk image is created. |
+| GCP.Compute.Images.rawDisk.containerType | string | The format used to encode and transmit the block device, which should be TAR. This is just a container and transmission format and not a runtime format. Provided by the client when the disk image is created. |
+| GCP.Compute.Images.deprecated | string | The deprecation status associated with this image. |
+| GCP.Compute.Images.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
+| GCP.Compute.Images.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
+| GCP.Compute.Images.deprecated.deprecated | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Images.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Images.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Images.status | string | The status of the image. An image can be used to create other resources, such as instances, only after the image has been successfully created and the status is set to READY. Possible values are FAILED, PENDING, or READY. |
+| GCP.Compute.Images.archiveSizeBytes | string | Size of the image tar.gz archive stored in Google Cloud Storage \(in bytes\). |
+| GCP.Compute.Images.diskSizeGb | string | Size of the image when restored onto a persistent disk \(in GB\). |
+| GCP.Compute.Images.sourceDisk | string | URL of the source disk used to create this image. This can be a full or valid partial URL. You must provide either this property or the rawDisk.source property but not both to create an image. For example, the following are valid values: https://www.googleapis.com/compute/v1/projects/project/zones/zone/disks/disk , projects/project/zones/zone/disks/disk , zones/zone/disks/disk. |
+| GCP.Compute.Images.sourceDiskId | string | The ID value of the disk used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given disk name. |
+| GCP.Compute.Images.licenses | string | Any applicable license URI. |
+| GCP.Compute.Images.family | string | The name of the image family to which this image belongs. You can create disks by specifying an image family instead of a specific image name. The image family always returns its latest image that is not deprecated. The name of the image family must comply with RFC1035. |
+| GCP.Compute.Images.imageEncryptionKey | string | Encrypts the image using a customer-supplied encryption key. After you encrypt an image with a customer-supplied key, you must provide the same key if you use the image later \(e.g. to create a disk from the image\). Customer-supplied encryption keys do not protect access to metadata of the disk. If you do not provide an encryption key when creating the image, then the disk will be encrypted using an automatically generated key and you do not need to provide a key to use the image later. |
+| GCP.Compute.Images.imageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.imageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.imageEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.sourceDiskEncryptionKey | string | The customer-supplied encryption key of the source disk. Required if the source disk is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Images.labels | string | Labels to apply to this image. These can be later modified by the setLabels method. |
+| GCP.Compute.Images.labelFingerprint | string | A fingerprint for the labels being applied to this image, which is essentially a hash of the labels used for optimistic locking. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. You must always provide an up-to-date fingerprint hash in order to update or change labels, otherwise the request will fail with error 412 conditionNotMet. |
+| GCP.Compute.Images.guestOsFeatures | string | A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. |
+| GCP.Compute.Images.guestOsFeatures.type | string | The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. |
+| GCP.Compute.Images.licenseCodes | string | Integer license codes indicating which licenses are attached to this image. |
+| GCP.Compute.Images.sourceImage | string | URL of the source image used to create this image. This can be a full or valid partial URL. |
+| GCP.Compute.Images.sourceImageId | string | The ID value of the image used to create this image. This value may be used to determine whether the image was taken from the current or a previous instance of a given image name. |
+| GCP.Compute.Images.sourceImageEncryptionKey | string | The customer-supplied encryption key of the source image. Required if the source image is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceImageEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | string |  The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.sourceSnapshot | string | URL of the source snapshot used to create this image. This can be a full or valid partial URL. |
+| GCP.Compute.Images.sourceSnapshotId | string |  The ID value of the snapshot used to create this image. This value may be used to determine whether the snapshot was taken from the current or a previous instance of a given snapshot name. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey | string | The customer-supplied encryption key of the source snapshot. Required if the source snapshot is protected by a customer-supplied encryption key. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.rawKey | string | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | string | The name of the encryption key that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | string | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource. |
+| GCP.Compute.Images.kind | string | Type of the resource. Always compute\#image for images. |
+
+### gcp-compute-instance-group-get
+
+***
+Returns a specific instance group. Required permission: compute.instanceGroups.get.
+
+#### Base Command
+
+`gcp-compute-instance-group-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| instance_group | The name of the instance group. | Required |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance group is located. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.InstanceGroups.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 text format. |
+| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.description | string | An optional description of this resource. |
+| GCP.Compute.InstanceGroups.namedPorts | string | Assigns a name to a port number. |
+| GCP.Compute.InstanceGroups.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.namedPorts.port | string | The port number, which can be a value between 1 and 65535. |
+| GCP.Compute.InstanceGroups.network | string | The URL of the network to which all instances in the instance group belong. |
+| GCP.Compute.InstanceGroups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
+| GCP.Compute.InstanceGroups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
+| GCP.Compute.InstanceGroups.selfLink | string | The URL for this instance group. The server generates this URL. |
+| GCP.Compute.InstanceGroups.size | string | The total number of instances in the instance group. |
+| GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
+| GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
+| GCP.Compute.InstanceGroups.kind | string |  The resource type, which is always compute\#instance_group for instance groups. |
+
+### gcp-compute-region-get
+
+***
+Returns a specific region resource. Required permission: compute.regions.get.
+
+#### Base Command
+
+`gcp-compute-region-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | Name of the region resource to return. | Required |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Regions.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Regions.creationTimestamp | string |  Creation timestamp in RFC3339 text format. |
+| GCP.Compute.Regions.name | string | Name of the resource. |
+| GCP.Compute.Regions.description | string | Textual description of the resource. |
+| GCP.Compute.Regions.status | string | Status of the region, either UP or DOWN. |
+| GCP.Compute.Regions.zones | string | A list of zones available in this region, in the form of resource URLs. |
+| GCP.Compute.Regions.quotas | string | Quotas assigned to this region. |
+| GCP.Compute.Regions.quotas.metric | string | Name of the quota metric. |
+| GCP.Compute.Regions.quotas.limit | string | Quota limit for this metric. |
+| GCP.Compute.Regions.quotas.usage | string |  Current usage of this metric. |
+| GCP.Compute.Regions.quotas.owner | string | Owning resource. The resource to which this quota applies. |
+| GCP.Compute.Regions.deprecated | string | The deprecation status associated with this region. |
+| GCP.Compute.Regions.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
+| GCP.Compute.Regions.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
+| GCP.Compute.Regions.deprecated.deprecated | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.deprecated.obsolete | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.deprecated.deleted | string | An optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.selfLink | string | Server-defined URL for the resource. |
+| GCP.Compute.Regions.kind | string | Type of the resource. Always compute\#region for regions. |
+
+### gcp-compute-zone-get
+
+***
+Returns a specific zone resource. Required permission: compute.zones.get.
+
+#### Base Command
+
+`gcp-compute-zone-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | zone | Name of the zone resource to return. | Required |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 
 #### Context Output
 
@@ -1356,7 +1337,7 @@ Retrieves a list of networks available for the specified project. Required permi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 50, inclusive. Default is 50. | Optional |
 | filters | A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance. | Optional |
 | order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). Use this to sort resources like operations so that the newest operation is returned first. | Optional |
@@ -1398,8 +1379,8 @@ Creates a network in the specified project using the data included in the reques
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| name | The name of the network to create. | Required |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| name | Name of the resource. Provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
 | description | An optional description of this resource. | Optional |
 | auto_create_sub_networks | When set to true, the VPC network is created in "auto" mode. When set to false, the VPC network is created in "custom" mode. An auto mode VPC network starts with one subnet per region. Each subnet has a predetermined range as described in Auto mode VPC network IP ranges. Possible values are: true, false. | Optional |
 | routing_config_routing_mode | The network-wide routing mode to use. If set to REGIONAL, this network's cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this network's cloud routers will advertise routes with all subnets of this network, across regions. Possible values are: REGIONAL, GLOBAL. | Optional |
@@ -1454,7 +1435,7 @@ Returns the specified network.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | network | Name of the network to return. | Required |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 
 #### Context Output
 
@@ -1479,64 +1460,6 @@ Returns the specified network.
 | GCP.Compute.Networks.routingConfig.routingMode | string | The network-wide routing mode to use. If set to REGIONAL, this networks cloud routers will only advertise routes with subnets of this network in the same region as the router. If set to GLOBAL, this networks cloud routers will advertise routes with all subnets of this network, across regions. |
 | GCP.Compute.Networks.kind | string | Type of the resource. Always compute\#network for networks. |
 
-### gcp-bq-dataset-policy-remove
-
-***
-Removes an email from the BigQuery dataset policy. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy.
-
-#### Base Command
-
-`gcp-bq-dataset-policy-remove`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
-| dataset_id | The dataset ID of the requested dataset. | Required |
-| email | The email address to remove from the dataset access list. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| GCP.BigQuery.Datasets.kind | String | The resource type. |
-| GCP.BigQuery.Datasets.etag | String | A hash of the resource. |
-| GCP.BigQuery.Datasets.id | String | The fully-qualified unique name of the dataset in the format projectId:datasetId. |
-| GCP.BigQuery.Datasets.selfLink | String | A URL that can be used to access the resource again. |
-| GCP.BigQuery.Datasets.datasetReference | Unknown | A reference that identifies the dataset. |
-| GCP.BigQuery.Datasets.friendlyName | String | A descriptive name for the dataset. |
-| GCP.BigQuery.Datasets.description | String | A user-friendly description of the dataset. |
-| GCP.BigQuery.Datasets.defaultTableExpirationMs | String | The default lifetime of all tables in the dataset, in milliseconds. |
-| GCP.BigQuery.Datasets.defaultPartitionExpirationMs | String | The default partition expiration, in milliseconds. |
-| GCP.BigQuery.Datasets.labels | String | The labels associated with this dataset. |
-| GCP.BigQuery.Datasets.access.role | String | The role assigned to the entity. |
-| GCP.BigQuery.Datasets.access.userByEmail | String | An email address of a user to grant access to. |
-| GCP.BigQuery.Datasets.access.groupByEmail | String | An email address of a group to grant access to. |
-| GCP.BigQuery.Datasets.access.domain | String | A domain to grant access to. |
-| GCP.BigQuery.Datasets.access.specialGroup | String | A special group to grant access to. |
-| GCP.BigQuery.Datasets.access.iamMember | String | A type of member that appears in the IAM Policy that isn't a user, group, domain, or special group. |
-| GCP.BigQuery.Datasets.access.view | Unknown | A view from a different dataset to grant access to. |
-| GCP.BigQuery.Datasets.access.routine | Unknown | A routine from a different dataset to grant access to. |
-| GCP.BigQuery.Datasets.access.dataset | Unknown | A grant authorizing access to this dataset for all resources of a particular type. |
-| GCP.BigQuery.Datasets.access.condition | Unknown | The binding condition. |
-| GCP.BigQuery.Datasets.creationTime | String | The time since the epoch the dataset was created, in milliseconds. |
-| GCP.BigQuery.Datasets.lastModifiedTime | String | The time since the epoch the dataset was last modified, in milliseconds. |
-| GCP.BigQuery.Datasets.location | String | The geographic location where the dataset resides. |
-| GCP.BigQuery.Datasets.defaultEncryptionConfiguration | String | The default encryption configuration for all tables in the dataset. |
-| GCP.BigQuery.Datasets.type | String | The type of the dataset. |
-| GCP.BigQuery.Datasets.linkedDatasetSource | Unknown | The source dataset reference when the dataset is of type LINKED. |
-| GCP.BigQuery.Datasets.linkedDatasetMetadata | Unknown | Metadata about the LinkedDataset. |
-| GCP.BigQuery.Datasets.externalDatasetReference | Unknown | Reference to a read-only external dataset defined in data catalogs outside of BigQuery. |
-| GCP.BigQuery.Datasets.externalCatalogDatasetOptions | Unknown | Options defining open source compatible datasets in the BigQuery catalog. Contains metadata of the open source database, schema, or namespace of the current dataset. |
-| GCP.BigQuery.Datasets.isCaseInsensitive | String | True if the dataset and its table names are case-insensitive. |
-| GCP.BigQuery.Datasets.defaultCollation | String | The default collation specification of future tables created in the dataset. |
-| GCP.BigQuery.Datasets.defaultRoundingMode | String | The default rounding mode specification of new tables created within this dataset. |
-| GCP.BigQuery.Datasets.maxTimeTravelHours | String | The time travel window in hours. |
-| GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
-| GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
-| GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
-
 ### gcp-compute-firewall-insert
 
 ***
@@ -1550,7 +1473,7 @@ Creates a new firewall rule in a specific project. Required permission: compute.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_name | Name of the firewall rule to create. | Required |
 | description | An optional description for the firewall rule. | Optional |
 | network | URL of the network, e.g., global/networks/default. | Optional |
@@ -1597,7 +1520,7 @@ Lists the firewall rules in a specific project. Required permission: compute.fir
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex XSIAM (version &gt;= 3.0) and Cortex Cloud; optional for Cortex XSOAR and Cortex XSIAM (version &lt; 3.0), where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
 | page_token | Token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
@@ -1620,3 +1543,135 @@ Lists the firewall rules in a specific project. Required permission: compute.fir
 | GCP.Compute.Firewall.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
 | GCP.Compute.Firewall.targetTags | Unknown | List of target instance tags to which the rule applies. |
 | GCP.Compute.FirewallNextToken | String | Next page token for pagination. |
+
+### gcp-compute-firewall-get
+
+***
+Retrieves a specific firewall rule by name. Required permission: compute.firewalls.get.
+
+#### Base Command
+
+`gcp-compute-firewall-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_name | Firewall rule name. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewall.name | string | Firewall rule name. |
+| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
+| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
+| GCP.Compute.Firewall.priority | number | Priority of the rule. |
+| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
+| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
+| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
+
+### gcp-compute-snapshots-list
+
+***
+Lists snapshots in a specific project. Required permission: compute.snapshots.list.
+
+#### Base Command
+
+`gcp-compute-snapshots-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | Token for pagination. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
+
+### gcp-bq-dataset-policy-remove
+
+***
+Removes an email from the BigQuery dataset policy. Required Permissions: bigquery.datasets.update, bigquery.datasets.get, bigquery.datasets.getIamPolicy, bigquery.datasets.setIamPolicy.
+
+#### Base Command
+
+`gcp-bq-dataset-policy-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| dataset_id | The dataset ID of the requested dataset. | Required |
+| email | The email address to remove from the dataset access list. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.BigQuery.Datasets.kind | String | The resource type. |
+| GCP.BigQuery.Datasets.etag | String | A hash of the resource. |
+| GCP.BigQuery.Datasets.id | String | The fully-qualified unique name of the dataset in the format projectId:datasetId. |
+| GCP.BigQuery.Datasets.selfLink | String | A URL that can be used to access the resource again. |
+| GCP.BigQuery.Datasets.datasetReference | Unknown | A reference that identifies the dataset. |
+| GCP.BigQuery.Datasets.friendlyName | String | A descriptive name for the dataset. |
+| GCP.BigQuery.Datasets.description | String | A user-friendly description of the dataset. |
+| GCP.BigQuery.Datasets.defaultTableExpirationMs | String | The default lifetime of all tables in the dataset, in milliseconds. |
+| GCP.BigQuery.Datasets.defaultPartitionExpirationMs | String | The default partition expiration, in milliseconds. |
+| GCP.BigQuery.Datasets.labels | String | The labels associated with this dataset. |
+| GCP.BigQuery.Datasets.access.role | String | The role assigned to the entity. |
+| GCP.BigQuery.Datasets.access.userByEmail | String | An email address of a user to grant access to. |
+| GCP.BigQuery.Datasets.access.groupByEmail | String | An email address of a group to grant access to. |
+| GCP.BigQuery.Datasets.access.domain | String | A domain to grant access to. |
+| GCP.BigQuery.Datasets.access.specialGroup | String | A special group to grant access to. |
+| GCP.BigQuery.Datasets.access.iamMember | String | A type of member that appears in the IAM Policy that isn't a user, group, domain, or special group. |
+| GCP.BigQuery.Datasets.access.view | Unknown | A view from a different dataset to grant access to. |
+| GCP.BigQuery.Datasets.access.routine | Unknown | A routine from a different dataset to grant access to. |
+| GCP.BigQuery.Datasets.access.dataset | Unknown | A grant authorizing access to this dataset for all resources of a particular type. |
+| GCP.BigQuery.Datasets.access.condition | Unknown | The binding condition. |
+| GCP.BigQuery.Datasets.creationTime | String | The time since the epoch the dataset was created, in milliseconds. |
+| GCP.BigQuery.Datasets.lastModifiedTime | String | The time since the epoch the dataset was last modified, in milliseconds. |
+| GCP.BigQuery.Datasets.location | String | The geographic location where the dataset resides. |
+| GCP.BigQuery.Datasets.defaultEncryptionConfiguration | String | The default encryption configuration for all tables in the dataset. |
+| GCP.BigQuery.Datasets.type | String | The type of the dataset. |
+| GCP.BigQuery.Datasets.linkedDatasetSource | Unknown | The source dataset reference when the dataset is of type LINKED. |
+| GCP.BigQuery.Datasets.linkedDatasetMetadata | Unknown | Metadata about the LinkedDataset. |
+| GCP.BigQuery.Datasets.externalDatasetReference | Unknown | Reference to a read-only external dataset defined in data catalogs outside of BigQuery. |
+| GCP.BigQuery.Datasets.externalCatalogDatasetOptions | Unknown | Options defining open source compatible datasets in the BigQuery catalog. Contains metadata of the open source database, schema, or namespace of the current dataset. |
+| GCP.BigQuery.Datasets.isCaseInsensitive | String | True if the dataset and its table names are case-insensitive. |
+| GCP.BigQuery.Datasets.defaultCollation | String | The default collation specification of future tables created in the dataset. |
+| GCP.BigQuery.Datasets.defaultRoundingMode | String | The default rounding mode specification of new tables created within this dataset. |
+| GCP.BigQuery.Datasets.maxTimeTravelHours | String | The time travel window in hours. |
+| GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
+| GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
+| GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |

@@ -4369,7 +4369,7 @@ script:
   script: "-"
   subtype: python3
   type: python
-  dockerimage: demisto/google-cloud-storage:1.0.0.7837600
+  dockerimage: demisto/google-cloud-storage:1.0.0.10120494
 tests:
   - No tests
 fromversion: 6.2.0

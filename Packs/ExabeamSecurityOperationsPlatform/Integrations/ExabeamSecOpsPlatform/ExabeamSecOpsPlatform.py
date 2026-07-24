@@ -998,7 +998,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     demisto.debug(f"Last run before the fetch run: {last_run}")
 
     filter_query = params.get("fetch_query")
-    limit = arg_to_number(params.get("max_fetch"))
+    limit = arg_to_number(params.get("max_fetch", DEFAULT_LIMIT)) or DEFAULT_LIMIT
     demisto.debug(f"Fetching incidents with limit={limit}")
 
     first_fetch = params.get("first_fetch", "3 days")
@@ -1251,7 +1251,7 @@ def main() -> None:  # pragma: no cover
             demisto.setLastRun(next_run)
 
         elif command == "fetch-events" and (is_xsiam() or is_platform()):
-            max_fetch = arg_to_number(params.get("max_events_fetch")) or FETCH_EVENTS_DEFAULT_LIMIT
+            max_fetch = arg_to_number(params.get("max_events_fetch", FETCH_EVENTS_DEFAULT_LIMIT)) or FETCH_EVENTS_DEFAULT_LIMIT
             last_run = demisto.getLastRun()
             events, next_run = fetch_events(client, max_fetch, last_run)
             send_events_to_xsiam(events, product=PRODUCT, vendor=VENDOR)

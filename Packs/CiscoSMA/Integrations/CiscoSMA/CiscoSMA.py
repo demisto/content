@@ -1745,13 +1745,13 @@ def main() -> None:
     password = params.get("credentials", {}).get("password")
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_FETCH))
-    first_fetch = params.get("first_fetch")
+    first_fetch = params.get("first_fetch") or "7 days"
     filter_by = params.get("filter_by")
     filter_operator = params.get("filter_operator")
     filter_value = params.get("filter_value")
     recipient_filter_operator = params.get("recipient_filter_operator")
     recipient_filter_value = params.get("recipient_filter_value")
-    timeout = arg_to_number(params.get("timeout"))
+    timeout = arg_to_number(params.get("timeout") or 60)
     verify_certificate: bool = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 

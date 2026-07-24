@@ -1,5 +1,8 @@
 category: Messaging and Conferencing
 provider: Open Source
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: ActiveMQ
   version: -1
@@ -8,53 +11,65 @@ configuration:
   name: hostname
   required: true
   type: 0
+  section: Connect
 - defaultvalue: '61613'
   display: Port
   name: port
   type: 0
   required: false
+  section: Connect
 - defaultvalue: Demisto
   display: Client ID
   name: client-id
   type: 0
   required: false
+  section: Connect
 - display: '---------------------------- Basic Authentication ----------------------------                         Username'
   name: credentials
   type: 9
   required: false
+  section: Connect
 - display: '--------------------- Certificate Authentication ---------------------                         Client certificate (.pem)'
   name: client_cert
   type: 14
   required: false
+  section: Connect
 - display: Client certificate key (.key)
   name: client_key
   type: 14
   required: false
+  section: Connect
 - display: Root Certificate
   name: root_ca
   type: 12
   required: false
+  section: Connect
 - defaultvalue: '1'
   display: '---------------------------- Fetch Incidents ----------------------------                         Subscription ID'
   name: subscription-id
   type: 0
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Topic Name (for subscription)
   name: topic-name
   type: 0
   required: false
+  section: Collect
 - display: Queue Name (for subscription)
   name: queue_name
   type: 0
   required: false
+  section: Collect
 description: Integration with ActiveMQ queue.
 display: ActiveMQ
 name: ActiveMQ
@@ -82,7 +97,7 @@ script:
       name: queue-name
     description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     name: activemq-subscribe
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.10404775
   isfetch: true
   runonce: false
   script: '-'

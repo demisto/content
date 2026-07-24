@@ -1,0 +1,345 @@
+{
+    "labels": [
+                {
+                    "appliedCapabilities": {
+                        "canApply": true,
+                        "canRead": true,
+                        "canRemove": true
+                    },
+                    "appliedLabelPolicy": {
+                        "copyMode": "COPY_APPLIABLE"
+                    },
+                    "createTime": "2022-11-17T23:42:19.350072Z",
+                    "creator": {
+                        "person": "people/102317454261294562702"
+                    },
+                    "customer": "customers/C02mckshm",
+                    "displayHints": {
+                        "priority": "16687285390000",
+                        "shownInApply": true
+                    },
+                    "fields": [
+                        {
+                            "appliedCapabilities": {
+                                "canRead": true,
+                                "canSearch": true,
+                                "canWrite": true
+                            },
+                            "creator": {
+                                "person": "people/102317454261294562702"
+                            },
+                            "displayHints": {
+                                "required": true,
+                                "shownInApply": true
+                            },
+                            "id": "5B6668EE11",
+                            "lifecycle": {
+                                "state": "PUBLISHED"
+                            },
+                            "properties": {
+                                "displayName": "File sensitivity",
+                                "required": true
+                            },
+                            "publisher": {
+                                "person": "people/102317454261294562702"
+                            },
+                            "queryKey": "labels/vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb.5B6668EE11",
+                            "schemaCapabilities": {},
+                            "selectionOptions": {
+                                "choices": [
+                                    {
+                                        "appliedCapabilities": {
+                                            "canRead": true,
+                                            "canSearch": true,
+                                            "canSelect": true
+                                        },
+                                        "displayHints": {
+                                            "badgeColors": {
+                                                "backgroundColor": {
+                                                    "blue": 0.14509805,
+                                                    "green": 0.1882353,
+                                                    "red": 0.8509804
+                                                },
+                                                "foregroundColor": {
+                                                    "blue": 1,
+                                                    "green": 1,
+                                                    "red": 1
+                                                },
+                                                "soloColor": {
+                                                    "blue": 0.07058824,
+                                                    "green": 0.078431375,
+                                                    "red": 0.7019608
+                                                }
+                                            },
+                                            "badgePriority": "16687285390000",
+                                            "darkBadgeColors": {
+                                                "backgroundColor": {
+                                                    "blue": 0.50980395,
+                                                    "green": 0.54509807,
+                                                    "red": 0.9490196
+                                                },
+                                                "foregroundColor": {
+                                                    "blue": 0.14117648,
+                                                    "green": 0.12941177,
+                                                    "red": 0.1254902
+                                                },
+                                                "soloColor": {
+                                                    "blue": 0.8117647,
+                                                    "green": 0.8235294,
+                                                    "red": 0.98039216
+                                                }
+                                            },
+                                            "shownInApply": true
+                                        },
+                                        "id": "17F9F7CA2F",
+                                        "lifecycle": {
+                                            "state": "PUBLISHED"
+                                        },
+                                        "properties": {
+                                            "badgeConfig": {
+                                                "color": {
+                                                    "blue": 0.14509805,
+                                                    "green": 0.1882353,
+                                                    "red": 0.8509804
+                                                }
+                                            },
+                                            "displayName": "Restricted"
+                                        },
+                                        "schemaCapabilities": {}
+                                    },
+                                    {
+                                        "appliedCapabilities": {
+                                            "canRead": true,
+                                            "canSearch": true,
+                                            "canSelect": true
+                                        },
+                                        "displayHints": {
+                                            "badgeColors": {
+                                                "backgroundColor": {
+                                                    "blue": 0.015686275,
+                                                    "green": 0.7372549,
+                                                    "red": 0.9843137
+                                                },
+                                                "foregroundColor": {
+                                                    "blue": 0.14117648,
+                                                    "green": 0.12941177,
+                                                    "red": 0.1254902
+                                                },
+                                                "soloColor": {
+                                                    "blue": 0.14117648,
+                                                    "green": 0.12941177,
+                                                    "red": 0.1254902
+                                                }
+                                            },
+                                            "badgePriority": "16687285390001",
+                                            "darkBadgeColors": {
+                                                "backgroundColor": {
+                                                    "blue": 0.3882353,
+                                                    "green": 0.8392157,
+                                                    "red": 0.99215686
+                                                },
+                                                "foregroundColor": {
+                                                    "blue": 0.14117648,
+                                                    "green": 0.12941177,
+                                                    "red": 0.1254902
+                                                },
+                                                "soloColor": {
+                                                    "blue": 0.7647059,
+                                                    "green": 0.9372549,
+                                                    "red": 0.99607843
+                                                }
+                                            },
+                                            "shownInApply": true
+                                        },
+                                        "id": "795CA12FF4",
+                                        "lifecycle": {
+                                            "state": "PUBLISHED"
+                                        },
+                                        "properties": {
+                                            "badgeConfig": {
+                                                "color": {
+                                                    "blue": 0.015686275,
+                                                    "green": 0.7372549,
+                                                    "red": 0.9843137
+                                                }
+                                            },
+                                            "displayName": "Confidential"
+                                        },
+                                        "schemaCapabilities": {}
+                                    },
+                                    {
+                                        "appliedCapabilities": {
+                                            "canRead": true,
+                                            "canSearch": true,
+                                            "canSelect": true
+                                        },
+                                        "displayHints": {
+                                            "shownInApply": true
+                                        },
+                                        "id": "1442530133",
+                                        "lifecycle": {
+                                            "state": "PUBLISHED"
+                                        },
+                                        "properties": {
+                                            "displayName": "Internal"
+                                        },
+                                        "schemaCapabilities": {}
+                                    },
+                                    {
+                                        "appliedCapabilities": {
+                                            "canRead": true,
+                                            "canSearch": true,
+                                            "canSelect": true
+                                        },
+                                        "displayHints": {
+                                            "badgeColors": {
+                                                "backgroundColor": {
+                                                    "blue": 0.21960784,
+                                                    "green": 0.5019608,
+                                                    "red": 0.09411765
+                                                },
+                                                "foregroundColor": {
+                                                    "blue": 1,
+                                                    "green": 1,
+                                                    "red": 1
+                                                },
+                                                "soloColor": {
+                                                    "blue": 0.2,
+                                                    "green": 0.4509804,
+                                                    "red": 0.07450981
+                                                }
+                                            },
+                                            "badgePriority": "16687285390003",
+                                            "darkBadgeColors": {
+                                                "backgroundColor": {
+                                                    "blue": 0.58431375,
+                                                    "green": 0.7882353,
+                                                    "red": 0.5058824
+                                                },
+                                                "foregroundColor": {
+                                                    "blue": 0.14117648,
+                                                    "green": 0.12941177,
+                                                    "red": 0.1254902
+                                                },
+                                                "soloColor": {
+                                                    "blue": 0.8392157,
+                                                    "green": 0.91764706,
+                                                    "red": 0.80784315
+                                                }
+                                            },
+                                            "shownInApply": true
+                                        },
+                                        "id": "9451C6F0E3",
+                                        "lifecycle": {
+                                            "state": "PUBLISHED"
+                                        },
+                                        "properties": {
+                                            "badgeConfig": {
+                                                "color": {
+                                                    "blue": 0.21960784,
+                                                    "green": 0.5019608,
+                                                    "red": 0.09411765
+                                                }
+                                            },
+                                            "displayName": "Public"
+                                        },
+                                        "schemaCapabilities": {}
+                                    }
+                                ]
+                            },
+                            "updater": {
+                                "person": "people/102317454261294562702"
+                            }
+                        }
+                    ],
+                    "id": "vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb",
+                    "labelType": "ADMIN",
+                    "lifecycle": {
+                        "state": "PUBLISHED"
+                    },
+                    "name": "labels/vFmXsMA1fQMz1BdE59YSkisZV4DiKdpxxLQRNNEbbFcb@5",
+                    "properties": {
+                        "title": "File sensitivity"
+                    },
+                    "publishTime": "2022-11-17T23:43:29.969288Z",
+                    "publisher": {
+                        "person": "people/102317454261294562702"
+                    },
+                    "revisionCreateTime": "2022-11-17T23:43:29.969288Z",
+                    "revisionCreator": {
+                        "person": "people/102317454261294562702"
+                    },
+                    "revisionId": "5",
+                    "schemaCapabilities": {}
+                },
+                {
+                    "appliedCapabilities": {
+                        "canApply": true,
+                        "canRead": true,
+                        "canRemove": true
+                    },
+                    "appliedLabelPolicy": {
+                        "copyMode": "COPY_APPLIABLE"
+                    },
+                    "createTime": "2022-11-17T23:47:59.390505Z",
+                    "creator": {
+                        "person": "people/102317454261294562702"
+                    },
+                    "customer": "customers/C02mckshm",
+                    "displayHints": {
+                        "priority": "16687288790000",
+                        "shownInApply": true
+                    },
+                    "fields": [
+                        {
+                            "appliedCapabilities": {
+                                "canRead": true,
+                                "canSearch": true,
+                                "canWrite": true
+                            },
+                            "creator": {
+                                "person": "people/102317454261294562702"
+                            },
+                            "displayHints": {
+                                "shownInApply": true
+                            },
+                            "id": "5AEFADC503",
+                            "lifecycle": {
+                                "state": "PUBLISHED"
+                            },
+                            "properties": {
+                                "displayName": "New field"
+                            },
+                            "publisher": {
+                                "person": "people/102317454261294562702"
+                            },
+                            "queryKey": "labels/xaEgCaYEAuAFTsN7dDiU36zUj8gMMWLPB9XRNNEbbFcb.5AEFADC503",
+                            "schemaCapabilities": {},
+                            "updater": {
+                                "person": "people/102317454261294562702"
+                            },
+                            "userOptions": {}
+                        }
+                    ],
+                    "id": "xaEgCaYEAuAFTsN7dDiU36zUj8gMMWLPB9XRNNEbbFcb",
+                    "labelType": "ADMIN",
+                    "lifecycle": {
+                        "state": "PUBLISHED"
+                    },
+                    "name": "labels/xaEgCaYEAuAFTsN7dDiU36zUj8gMMWLPB9XRNNEbbFcb@4",
+                    "properties": {
+                        "title": "HR"
+                    },
+                    "publishTime": "2022-11-17T23:49:53.572937Z",
+                    "publisher": {
+                        "person": "people/102317454261294562702"
+                    },
+                    "revisionCreateTime": "2022-11-17T23:49:53.572937Z",
+                    "revisionCreator": {
+                        "person": "people/102317454261294562702"
+                    },
+                    "revisionId": "4",
+                    "schemaCapabilities": {}
+                }
+            ]
+}

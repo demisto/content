@@ -1,5 +1,5 @@
-Trend Micro Deep Security
-This integration was integrated and tested with version 20.0 of Trend Micro Deep Security, and v1 of the API.
+TrendAI™ Deep Security™
+This integration was integrated and tested with version 20.0 of TrendAI™ Deep Security™, and v1 of the API.
 
 ## Changes compared to TrendMicroDsm
 
@@ -44,7 +44,7 @@ This integration was integrated and tested with version 20.0 of Trend Micro Deep
 37. trendmicro-modify-default-policy-setting - New command.
 38. trendmicro-reset-default-policy-setting - New command.
 
-## Configure Trend Micro Deep Security in Cortex
+## Configure TrendAI™ Deep Security™ in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |

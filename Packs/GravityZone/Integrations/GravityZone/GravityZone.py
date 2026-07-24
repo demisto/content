@@ -31,6 +31,8 @@ COMMAND_KILL_PROCESS = "KillProcess"
 COMMAND_ISOLATE = "Isolate"
 COMMAND_RESTORE_FROM_ISOLATION = "Deisolate"
 COMMAND_UPLOAD_FILE = "UploadFile"
+COMMAND_GET_ACTIVE_SESSIONS = "GetActiveSessions"
+COMMAND_CREATE_MEMORY_DUMP = "CreateMemoryDump"
 
 ACTIVITY_STATUS_SUCCESS = "success"
 ACTIVITY_STATUS_PENDING = "pending"
@@ -55,6 +57,7 @@ LOOPBACK_DAYS = 1
 
 POLL_TIMEOUT = 1200
 POLL_INTERVAL = 10
+MEMORY_DUMP_POLL_TIMEOUT = 7200
 
 FETCH_LIMIT = 50
 
@@ -62,11 +65,15 @@ TASK_TYPE_ISOLATE_ENDPOINT_PARENT = 16
 TASK_TYPE_RESTORE_ENDPOINT_PARENT = 17
 TASK_TYPE_KILL_PROCESS_PARENT = 21
 TASK_TYPE_REMOTE_ACCESS_DOWNLOAD_PARENT = 24
+TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT = 26
+TASK_TYPE_CREATE_MEMORY_DUMP_PARENT = 27
 TASK_NUMERIC_TO_COMMAND_NAME = {
     TASK_TYPE_KILL_PROCESS_PARENT: COMMAND_KILL_PROCESS,
     TASK_TYPE_ISOLATE_ENDPOINT_PARENT: COMMAND_ISOLATE,
     TASK_TYPE_RESTORE_ENDPOINT_PARENT: COMMAND_RESTORE_FROM_ISOLATION,
     TASK_TYPE_REMOTE_ACCESS_DOWNLOAD_PARENT: COMMAND_UPLOAD_FILE,
+    TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT: COMMAND_GET_ACTIVE_SESSIONS,
+    TASK_TYPE_CREATE_MEMORY_DUMP_PARENT: COMMAND_CREATE_MEMORY_DUMP,
 }
 TASK_STATUS_PENDING = 1
 TASK_STATUS_PROCESSING = 2
@@ -89,13 +96,13 @@ INCIDENT_STATUS_INT_MAPPING = {
     INCIDENT_STATUS_STR_OPEN: IncidentStatus.PENDING,
     INCIDENT_STATUS_STR_CLOSED: IncidentStatus.DONE,
     INCIDENT_STATUS_STR_IN_PROGRESS: IncidentStatus.ACTIVE,
-    INCIDENT_STATUS_STR_FALSE_POSITIVE: IncidentStatus.DONE,
+    INCIDENT_STATUS_STR_FALSE_POSITIVE: IncidentStatus.ARCHIVE,
 }
 INCIDENT_STATUS_STR_MAPPING = {
     INCIDENT_STATUS_STR_OPEN: "Pending",
     INCIDENT_STATUS_STR_CLOSED: "Done",
     INCIDENT_STATUS_STR_IN_PROGRESS: "Active",
-    INCIDENT_STATUS_STR_FALSE_POSITIVE: "Done",
+    INCIDENT_STATUS_STR_FALSE_POSITIVE: "Archived",
 }
 
 GRAVITY_ZONE_INCIDENT_STATUS_OPEN = 1
@@ -105,7 +112,7 @@ GRAVITY_ZONE_INCIDENT_STATUS_FALSE_POSITIVE = 4
 
 INCIDENT_STATUS_MAPPING = {
     IncidentStatus.DONE: GRAVITY_ZONE_INCIDENT_STATUS_DONE,
-    IncidentStatus.ARCHIVE: GRAVITY_ZONE_INCIDENT_STATUS_DONE,
+    IncidentStatus.ARCHIVE: GRAVITY_ZONE_INCIDENT_STATUS_FALSE_POSITIVE,
     IncidentStatus.PENDING: GRAVITY_ZONE_INCIDENT_STATUS_OPEN,
     IncidentStatus.ACTIVE: GRAVITY_ZONE_INCIDENT_STATUS_IN_PROGRESS,
 }
@@ -116,11 +123,13 @@ ENDPOINTS_PER_PAGE = 100
 LIVE_SEARCH_PER_PAGE = 100
 INCIDENTS_PER_PAGE = 100
 
+MEMORY_DUMP_STATUS_PROCESSED = "Processed"
+MEMORY_DUMP_STATUS_PENDING = "Pending"
+
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    @logger
     def __init__(
         self,
         url: str,
@@ -453,6 +462,38 @@ class Client(BaseClient):
             "/v1.0/jsonrpc/investigation",
             "collectInvestigationPackage",
             {"targetId": target_id},
+        )
+
+    @logger
+    def start_get_active_sessions_on_endpoint(self, endpoint_id: str) -> Any:
+        """
+        Start active session collection on one endpoint.
+        Args:
+            endpoint_id (str): The ID of the target endpoint.
+        Returns:
+            Any: The response containing the task ID.
+        """
+        return self.call(
+            "/v1.0/jsonrpc/network",
+            "createGetActiveSessionsTask",
+            {"endpointId": endpoint_id},
+        )
+
+    @logger
+    def start_create_memory_dump_on_endpoint(self, endpoint_id: str, path: str, password: str) -> Any:
+        """
+        Start memory dump creation on one endpoint.
+        Args:
+            endpoint_id (str): The ID of the target endpoint.
+            path (str): The folder path on endpoint where the dump archive is generated.
+            password (str): Password used to protect the resulting dump archive.
+        Returns:
+            Any: The response containing the memory dump task ID.
+        """
+        return self.call(
+            "/v1.0/jsonrpc/network",
+            "createMemoryDumpTask",
+            {"endpointId": endpoint_id, "path": path, "password": password},
         )
 
     @logger
@@ -956,7 +997,7 @@ def check_task_status(
                 task_output,
                 metadata,
                 error_code=next(
-                    (subtask["errorCode"] for subtask in task_output.get("subtasks", []) if subtask.get("status") == 2),
+                    (subtask["errorCode"] for subtask in (task_output.get("subtasks") or []) if subtask.get("status") == 2),
                     None,
                 ),
             )
@@ -1721,7 +1762,7 @@ def generate_processed_task_command_result(
     task_output_prefix = f"GravityZone.Command.{command_name_from_task_type}"
     outputs = []
     hosts = []
-    for subtask in task_output.get("subtasks", []):
+    for subtask in task_output.get("subtasks") or []:
         data = generate_task_output(
             task_id=task_id,
             task_type=command_name_from_task_type,
@@ -1793,6 +1834,254 @@ def generate_task_output(
         "Error": error if error else "Invalid Command Arguments",
         "StartDate": f"{start_date}Z" if start_date else datetime.now(UTC).strftime(DATE_FORMAT),
     }
+
+
+def _extract_active_sessions_from_task(task_output: dict[str, Any]) -> list[dict[str, Any]]:
+    sessions: list[dict[str, Any]] = []
+    for subtask in task_output.get("subtasks") or []:
+        if subtask.get("status") != TASK_STATUS_PROCESSED:
+            continue
+
+        for session in subtask.get("result", []) or []:
+            user_data = session.get("user", {})
+            username = user_data.get("displayName", "")
+
+            row: dict[str, Any] = {
+                "Username": username,
+                "ConnectionType": session.get("connection", {}).get("type"),
+                "StartTime": session.get("connection", {}).get("started"),
+            }
+
+            if user_data.get("sid"):
+                row["UserSID"] = user_data.get("sid")
+
+            domain_sid = user_data.get("domain", {}).get("sid")
+            if domain_sid:
+                row["DomainSID"] = domain_sid
+
+            ou_dn = user_data.get("organizationalUnit", {}).get("distinguishedName")
+            if ou_dn:
+                row["OrganizationalUnitDN"] = ou_dn
+
+            member_of_sids = [
+                group.get("sid") for group in user_data.get("memberOf", []) if isinstance(group, dict) and group.get("sid")
+            ]
+            if member_of_sids:
+                row["MemberOfSIDs"] = member_of_sids
+
+            sessions.append(row)
+
+    return sessions
+
+
+def _extract_endpoint_summary_from_task(task_output: dict[str, Any], endpoint_id: str) -> tuple[str, str]:
+    resolved_endpoint_id = endpoint_id
+    resolved_hostname = ""
+
+    for subtask in task_output.get("subtasks") or []:
+        subtask_endpoint_id = subtask.get("endpointId") or ""
+        subtask_hostname = subtask.get("endpointName") or ""
+
+        if not resolved_endpoint_id and subtask_endpoint_id:
+            resolved_endpoint_id = subtask_endpoint_id
+
+        if resolved_endpoint_id and subtask_endpoint_id == resolved_endpoint_id:
+            resolved_hostname = subtask_hostname
+            break
+
+        if not resolved_hostname and subtask_hostname:
+            resolved_hostname = subtask_hostname
+
+    return resolved_endpoint_id, resolved_hostname
+
+
+def _validate_task_type_for_command(
+    task_output: dict[str, Any],
+    task_id: str,
+    expected_task_type: int,
+    command_name: str,
+) -> CommandResults | None:
+    task_type = task_output.get("type")
+    if task_type is None:
+        return CommandResults(
+            raw_response=task_output,
+            readable_output=(
+                f"Task '{task_id}' does not have a type. "
+                f"Cannot determine if it matches the expected type for command '{command_name}'."
+            ),
+            entry_type=EntryType.ERROR,
+        )
+
+    if task_type == expected_task_type:
+        return None
+
+    expected_task_name = TASK_NUMERIC_TO_COMMAND_NAME.get(expected_task_type, str(expected_task_type))
+    received_task_name = (
+        TASK_NUMERIC_TO_COMMAND_NAME.get(task_type, str(task_type)) if isinstance(task_type, int) else str(task_type)
+    )
+    return CommandResults(
+        raw_response=task_output,
+        readable_output=(
+            f"Task '{task_id}' has unexpected type '{received_task_name}' ({task_type}). "
+            f"Command '{command_name}' supports only '{expected_task_name}' ({expected_task_type}) tasks."
+        ),
+        entry_type=EntryType.ERROR,
+    )
+
+
+def _build_users_loggedin_results(task_output: dict[str, Any], endpoint_id: str) -> CommandResults:
+    """Build endpoint-scoped command results for active logged-in sessions."""
+    endpoint_id, endpoint_hostname = _extract_endpoint_summary_from_task(task_output, endpoint_id)
+
+    sessions = _extract_active_sessions_from_task(task_output)
+    endpoint_output: dict[str, Any] = {
+        "ID": endpoint_id,
+        "Hostname": endpoint_hostname,
+        "ActiveSessions": sessions or [],
+    }
+
+    if not sessions:
+        return CommandResults(
+            raw_response=task_output,
+            readable_output=f"No active sessions found on endpoint {endpoint_id}.",
+            outputs=endpoint_output,
+            outputs_prefix="GravityZone.Endpoint",
+            outputs_key_field="ID",
+            entry_type=EntryType.NOTE,
+        )
+
+    return CommandResults(
+        raw_response=task_output,
+        readable_output=tableToMarkdown(
+            f"Active sessions on endpoint {endpoint_id}",
+            sessions,
+            headers=[
+                "Username",
+                "ConnectionType",
+                "StartTime",
+                "UserSID",
+                "DomainSID",
+                "OrganizationalUnitDN",
+                "MemberOfSIDs",
+            ],
+        ),
+        outputs=endpoint_output,
+        outputs_prefix="GravityZone.Endpoint",
+        outputs_key_field="ID",
+        entry_type=EntryType.NOTE,
+    )
+
+
+def _extract_memory_dump_summary(
+    task_output: dict[str, Any],
+    endpoint_id: str,
+) -> tuple[str, str, dict[str, Any] | None, str]:
+    resolved_endpoint_id = endpoint_id
+    resolved_hostname = ""
+    fallback_subtask: dict[str, Any] = {}
+    processed_subtask: dict[str, Any] = {}
+    download_url = ""
+
+    for subtask in task_output.get("subtasks") or []:
+        subtask_endpoint_id = subtask.get("endpointId") or ""
+        subtask_hostname = subtask.get("endpointName") or ""
+
+        if endpoint_id and subtask_endpoint_id != endpoint_id:
+            continue
+
+        if not resolved_endpoint_id and subtask_endpoint_id:
+            resolved_endpoint_id = subtask_endpoint_id
+
+        if not resolved_hostname and subtask_hostname:
+            resolved_hostname = subtask_hostname
+
+        if not fallback_subtask:
+            fallback_subtask = subtask
+
+        if subtask.get("status") == TASK_STATUS_PROCESSED:
+            if not processed_subtask:
+                processed_subtask = subtask
+            if not download_url:
+                download_url = subtask.get("downloadURL") or ""
+
+        if resolved_endpoint_id and subtask_endpoint_id == resolved_endpoint_id and subtask_hostname:
+            resolved_hostname = subtask_hostname
+
+    return resolved_endpoint_id, resolved_hostname, (processed_subtask or fallback_subtask or None), download_url
+
+
+def _build_memory_dump_results(
+    task_output: dict[str, Any],
+    task_id: str,
+    endpoint_id: str,
+    readable_headers: list[str] | None = None,
+) -> CommandResults:
+    """Build endpoint-scoped command results for memory dump status polling."""
+    endpoint_id, endpoint_hostname, memory_dump_subtask, download_url = _extract_memory_dump_summary(task_output, endpoint_id)
+
+    if memory_dump_subtask is None:
+        available_endpoint_ids = [
+            subtask.get("endpointId") for subtask in (task_output.get("subtasks") or []) if subtask.get("endpointId")
+        ]
+        if endpoint_id:
+            return CommandResults(
+                raw_response=task_output,
+                readable_output=f"Invalid Endpoint ID. Available endpoint IDs for task '{task_id}': {available_endpoint_ids}",
+                entry_type=EntryType.ERROR,
+            )
+
+        return CommandResults(
+            raw_response=task_output,
+            readable_output=f"Task '{task_id}' has no memory dump results.",
+            entry_type=EntryType.ERROR,
+        )
+
+    status = MEMORY_DUMP_STATUS_PROCESSED if task_output.get("status") == TASK_STATUS_PROCESSED else MEMORY_DUMP_STATUS_PENDING
+    subtask_end_date = memory_dump_subtask.get("endDate")
+    subtask_error_code = memory_dump_subtask.get("errorCode")
+    subtask_error = memory_dump_subtask.get("errorMessage")
+
+    endpoint_output = generate_task_output(
+        task_id=task_id,
+        task_type=COMMAND_CREATE_MEMORY_DUMP,
+        endpoint_id=endpoint_id,
+        status=status,
+        end_date=subtask_end_date,
+        host_name=endpoint_hostname,
+        error_code=subtask_error_code,
+        error=subtask_error,
+        start_date=memory_dump_subtask.get("startDate"),
+    )
+    if status == MEMORY_DUMP_STATUS_PENDING:
+        endpoint_output["EndDate"] = f"{subtask_end_date}Z" if subtask_end_date else ""
+        endpoint_output["ErrorCode"] = subtask_error_code or ""
+        endpoint_output["Error"] = subtask_error or ""
+    endpoint_output["DownloadURL"] = download_url
+
+    return CommandResults(
+        raw_response=task_output,
+        readable_output=tableToMarkdown(
+            f"Memory dump for endpoint {endpoint_id}",
+            [endpoint_output],
+            headers=readable_headers if readable_headers is not None else TASK_OUTPUT_HEADERS + ["DownloadURL"],
+        ),
+        outputs=endpoint_output,
+        outputs_prefix="GravityZone.MemoryDump",
+        outputs_key_field="EndpointID",
+        entry_type=EntryType.NOTE,
+    )
+
+
+def _extract_memory_dump_task_id(task_data: Any) -> str:
+    if isinstance(task_data, dict):
+        task_id = task_data.get("taskId")
+        if isinstance(task_id, str) and task_id:
+            return task_id
+
+    if not isinstance(task_data, str) or not task_data:
+        raise DemistoException("createMemoryDumpTask response is missing task ID.")
+
+    return task_data
 
 
 def fetch_incidents(client: Client, start_fetch_time, end_fetch_time, fetch_limit=FETCH_LIMIT) -> list[dict]:
@@ -2609,6 +2898,137 @@ def gz_endpoint_kill_process_command(client: Client, args: dict[str, Any]) -> Po
     return get_task_results(client, kill_task_id, {"targetId": endpoint_id, "processId": process_id})
 
 
+@polling_function(
+    name="gz-poll-endpoint-users-loggedin-status",
+    timeout=POLL_TIMEOUT,
+    interval=POLL_INTERVAL,
+    requires_polling_arg=False,
+)
+def check_endpoint_users_loggedin_status(args: dict[str, Any], client: Client) -> PollResult:
+    task_id = args.get("task_id", "")
+    endpoint_id = args.get("endpoint_id", "")
+    if not task_id:
+        return PollResult(
+            CommandResults(
+                readable_output="`task_id` must be provided.",
+                entry_type=EntryType.ERROR,
+            )
+        )
+
+    task_output = client.get_task_status(task_id)
+    invalid_task_type_result = _validate_task_type_for_command(
+        task_output,
+        task_id,
+        TASK_TYPE_GET_ACTIVE_SESSIONS_PARENT,
+        "gz-poll-endpoint-users-loggedin-status",
+    )
+    if invalid_task_type_result:
+        return PollResult(invalid_task_type_result)
+
+    current_status = task_output.get("status")
+
+    if current_status == TASK_STATUS_PROCESSED:
+        return PollResult(_build_users_loggedin_results(task_output, endpoint_id))
+
+    return PollResult(
+        continue_to_poll=True,
+        response=CommandResults(
+            raw_response=task_output,
+            readable_output=f"Task '{task_id}' still pending.",
+            entry_type=EntryType.NOTE,
+        ),
+    )
+
+
+def gz_poll_endpoint_users_loggedin_status_command(args: dict[str, Any], client: Client) -> PollResult:
+    return check_endpoint_users_loggedin_status(args, client)
+
+
+@logger
+def gz_endpoint_users_loggedin_command(client: Client, args: dict[str, Any]) -> PollResult:
+    endpoint_id = args.get("id", "")
+    task_id = client.start_get_active_sessions_on_endpoint(endpoint_id)
+
+    return check_endpoint_users_loggedin_status({"task_id": task_id, "endpoint_id": endpoint_id}, client)
+
+
+@polling_function(
+    name="gz-endpoint-memory-dump-status",
+    timeout=MEMORY_DUMP_POLL_TIMEOUT,
+    interval=POLL_INTERVAL,
+    requires_polling_arg=True,
+)
+def check_endpoint_memory_dump_status(args: dict[str, Any], client: Client) -> PollResult:
+    task_id = args.get("task_id", "")
+    endpoint_id = args.get("endpoint_id", "")
+    if not task_id:
+        return PollResult(
+            CommandResults(
+                readable_output="`task_id` must be provided.",
+                entry_type=EntryType.ERROR,
+            )
+        )
+
+    task_output = client.get_task_status(task_id)
+    invalid_task_type_result = _validate_task_type_for_command(
+        task_output,
+        task_id,
+        TASK_TYPE_CREATE_MEMORY_DUMP_PARENT,
+        "gz-endpoint-memory-dump-status",
+    )
+    if invalid_task_type_result:
+        return PollResult(invalid_task_type_result)
+
+    current_status = task_output.get("status")
+
+    if current_status == TASK_STATUS_PROCESSED:
+        return PollResult(_build_memory_dump_results(task_output, task_id, endpoint_id))
+
+    return PollResult(
+        continue_to_poll=True,
+        response=CommandResults(
+            raw_response=task_output,
+            readable_output=f"Task '{task_id}' still pending.",
+            entry_type=EntryType.NOTE,
+        ),
+    )
+
+
+@logger
+def gz_endpoint_memory_dump_status_command(client: Client, args: dict[str, Any]) -> PollResult:
+    if "polling" not in args:
+        args = {**args, "polling": True}
+    return check_endpoint_memory_dump_status(args, client)
+
+
+@logger
+def gz_endpoint_create_memory_dump_command(client: Client, args: dict[str, Any]) -> PollResult | CommandResults:
+    endpoint_id = args.get("id", "")
+    path = args.get("path", "")
+    password = args.get("password", "")
+    polling = argToBoolean(args.get("polling", True))
+
+    task_response = client.start_create_memory_dump_on_endpoint(endpoint_id, path, password)
+    task_id = _extract_memory_dump_task_id(task_response)
+
+    if polling:
+        return check_endpoint_memory_dump_status(
+            {
+                "task_id": task_id,
+                "endpoint_id": endpoint_id,
+                "polling": True,
+            },
+            client,
+        )
+
+    task_output = (
+        task_response
+        if isinstance(task_response, dict)
+        else {"taskId": task_id, "status": TASK_STATUS_PENDING, "subtasks": [{"endpointId": endpoint_id}]}
+    )
+    return _build_memory_dump_results(task_output, task_id, endpoint_id, readable_headers=["TaskID", "EndpointID"])
+
+
 def main():
     command: str = demisto.command()
 
@@ -2635,9 +3055,13 @@ def main():
             "gz-poll-task-status": gz_poll_task_status_command,
             "gz-poll-investigation-activity-status": gz_poll_investigation_activity_status_command,
             "gz-poll-live-search-status": gz_poll_live_search_status_command,
+            "gz-poll-endpoint-users-loggedin-status": gz_poll_endpoint_users_loggedin_status_command,
             ### GravityZone Endpoint Commands ###
             "gz-endpoint-list": gz_endpoint_list_command,
             "gz-endpoint-get": gz_endpoint_get_command,
+            "gz-endpoint-users-loggedin": gz_endpoint_users_loggedin_command,
+            "gz-endpoint-create-memory-dump": gz_endpoint_create_memory_dump_command,
+            "gz-endpoint-memory-dump-status": gz_endpoint_memory_dump_status_command,
             "gz-endpoint-download-investigation-package": gz_endpoint_download_investigation_package_command,
             "gz-endpoint-download-file": gz_endpoint_download_file_command,
             "gz-endpoint-isolate": gz_endpoint_isolate_command,
@@ -2664,6 +3088,7 @@ def main():
             "gz-poll-task-status",
             "gz-poll-investigation-activity-status",
             "gz-poll-live-search-status",
+            "gz-poll-endpoint-users-loggedin-status",
         ]
 
         if command in command_function_map:

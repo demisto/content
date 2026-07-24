@@ -1,18 +1,24 @@
 category: Data Enrichment & Threat Intelligence
 provider: Open Source
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: PhishTank V2
   version: -1
 configuration:
 - display: Username
+  section: Connect
   name: username
   type: 0
 - defaultvalue: 'false'
+  section: Connect
   display: Use HTTPS connection
   name: use_https
   type: 8
   required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
+  section: Collect
   defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
@@ -29,13 +35,16 @@ configuration:
 - defaultvalue: '1'
   display: Database refresh interval (number of hours to wait between each loading)
   name: fetchIntervalHours
+  section: Collect
   type: 0
   required: false
 - display: Use system proxy settings
+  section: Connect
   name: proxy
   type: 8
   required: false
 - display: Trust any certificate (not secure)
+  section: Connect
   name: insecure
   type: 8
   required: false
@@ -82,7 +91,7 @@ script:
     name: phishtank-reload
   - description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
     name: phishtank-status
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10325753
   runonce: false
   script: '-'
   subtype: python3

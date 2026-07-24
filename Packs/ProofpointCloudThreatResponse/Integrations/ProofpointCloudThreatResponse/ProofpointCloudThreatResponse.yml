@@ -263,7 +263,7 @@ script:
     - contextPath: ProofPointCloud.Incident.activities
       description: The activities associated with the incident.
       type: Array
-  dockerimage: demisto/fastapi:0.125.0.9094740
+  dockerimage: demisto/fastapi:0.125.0.10158186
   isfetch: true
   runonce: false
   script: '-'
