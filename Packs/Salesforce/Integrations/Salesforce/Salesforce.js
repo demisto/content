@@ -501,6 +501,247 @@ function deleteObject(path) {
     return 'object ' + path + 'was successfully deleted.';
 }
 
+function isNotFoundError(err) {
+    var msg = ('' + err).toUpperCase();
+    return msg.indexOf('404') !== -1 || msg.indexOf('NOT_FOUND') !== -1 || msg.indexOf('ENTITY_IS_DELETED') !== -1;
+}
+
+function remediationEntry(action, objectType, id, status) {
+    var outputs = { Action: action, ObjectType: objectType, Id: id, Status: status };
+    return {
+        Type: entryTypes.note,
+        Contents: outputs,
+        ContentsFormat: formats.json,
+        ReadableContentsFormat: formats.markdown,
+        HumanReadable: tableToMarkdown('Salesforce Remediation - ' + action, outputs),
+        EntryContext: { 'Salesforce.Remediation(val.Id == obj.Id)': outputs }
+    };
+}
+
+function deleteSobject(action, defaultType, args) {
+    var objectType = args.type || defaultType;
+    var id = args.id;
+    if (!id) {
+        throw "The 'id' argument is required.";
+    }
+    var ignoreNotFound = (args.ignore_not_found === undefined) ? true : (String(args.ignore_not_found) === 'true');
+    try {
+        deleteObject(objectType + '/' + id);
+    } catch (err) {
+        if (ignoreNotFound && isNotFoundError(err)) {
+            return remediationEntry(action, objectType, id, 'NotFound (ignored)');
+        }
+        throw err;
+    }
+    return remediationEntry(action, objectType, id, 'Deleted');
+}
+
+function deleteFile(args) {
+    return deleteSobject('Delete File', 'ContentDocument', args);
+}
+
+function listFilePublicLinks(args) {
+    var id = args.id;
+    if (!id) {
+        throw "The 'id' argument is required.";
+    }
+    var records = queryObjects(['Id', 'ContentDocumentId', 'Name', 'DistributionPublicUrl'], 'ContentDistribution', "ContentDocumentId='" + id + "'").records || [];
+    var distributions = [];
+    for (var i = 0; i < records.length; i++) {
+        distributions.push({
+            Id: records[i].Id,
+            ContentDocumentId: records[i].ContentDocumentId,
+            Name: records[i].Name,
+            PublicUrl: records[i].DistributionPublicUrl
+        });
+    }
+    return {
+        Type: entryTypes.note,
+        Contents: { records: distributions },
+        ContentsFormat: formats.json,
+        ReadableContentsFormat: formats.markdown,
+        HumanReadable: tableToMarkdown('Salesforce File Public Links (ContentDistribution) for ' + id, distributions),
+        EntryContext: { 'Salesforce.ContentDistribution(val.Id == obj.Id)': distributions }
+    };
+}
+
+function removeFilePublicLinks(args) {
+    return deleteSobject('Remove File Public Link', 'ContentDistribution', args);
+}
+
+function extractActionError(first) {
+    // Standard knowledge actions report failure detail in outputValues (keyed by
+    // article id) while errors is often null. Surface whichever is present.
+    if (first.errors && first.errors.length) {
+        return JSON.stringify(first.errors);
+    }
+    if (first.outputValues) {
+        return JSON.stringify(first.outputValues);
+    }
+    return JSON.stringify(first);
+}
+
+function deleteExistingDraft(id) {
+    // Salesforce allows at most one draft per article. A lingering draft blocks
+    // archive/unpublish of the online version. Delete it so the action can proceed.
+    var draftId = findExistingDraftVersionId(id);
+    if (draftId) {
+        try {
+            deleteObject('Knowledge__kav/' + draftId);
+            return draftId;
+        } catch (e) {
+            // fall through: report original failure if we can't clear the draft
+        }
+    }
+    return '';
+}
+
+function findExistingDraftVersionId(id) {
+    // Resolve the KnowledgeArticleId, then look for an existing Draft version.
+    try {
+        var articleId = id;
+        if (id.length > 2 && id.substring(0, 2) === 'ka') {
+            var kav = queryObjects(['KnowledgeArticleId'], 'Knowledge__kav', "Id='" + id + "'").records || [];
+            if (kav.length > 0 && kav[0].KnowledgeArticleId) {
+                articleId = kav[0].KnowledgeArticleId;
+            }
+        }
+        var drafts = queryObjects(['Id'], 'Knowledge__kav', "KnowledgeArticleId='" + articleId + "' AND PublishStatus='Draft'").records || [];
+        return (drafts.length > 0) ? drafts[0].Id : '';
+    } catch (e) {
+        return '';
+    }
+}
+
+function draftKnowledgeArticle(args) {
+    var objectType = args.type || 'KnowledgeArticleVersion';
+    var id = args.id;
+    if (!id) {
+        throw "The 'id' argument is required.";
+    }
+    var ignoreNotFound = (args.ignore_not_found === undefined) ? true : (String(args.ignore_not_found) === 'true');
+    // unpublish=true archives the current online version (removes it from public)
+    // and creates an editable draft. unpublish=false keeps it online.
+    var unpublish = (args.unpublish === undefined) ? true : (String(args.unpublish) === 'true');
+    // The standard action accepts either an Article ID (kA...) or an Article Version ID (ka...).
+    var input = { action: 'EDIT_AS_DRAFT_ARTICLE', unpublish: unpublish };
+    if (id.length > 2 && id.substring(0, 2) === 'kA') {
+        input.articleId = id;
+    } else {
+        input.articleVersionId = id;
+    }
+    var body = JSON.stringify({ inputs: [input] });
+    var response;
+    try {
+        response = sendRequestInSession('POST', 'actions/standard/createDraftFromOnlineKnowledgeArticle', body);
+    } catch (err) {
+        if (ignoreNotFound && isNotFoundError(err)) {
+            return remediationEntry('Draft Knowledge Article', objectType, id, 'NotFound (ignored)');
+        }
+        throw err;
+    }
+    var parsed = JSON.parse(response.Body);
+    var first = (parsed && parsed.length) ? parsed[0] : {};
+    if (first.isSuccess === false) {
+        // A draft may already exist (Salesforce allows only one per article),
+        // which blocks the action. When unpublish=true the goal is remediation
+        // (remove from public), so a lingering draft that still leaves the
+        // article Online is NOT success - clear the draft and retry.
+        if (unpublish) {
+            var clearedDraftId = deleteExistingDraft(id);
+            if (clearedDraftId) {
+                var retryResp = sendRequestInSession('POST', 'actions/standard/createDraftFromOnlineKnowledgeArticle', body);
+                var retryParsed = JSON.parse(retryResp.Body);
+                first = (retryParsed && retryParsed.length) ? retryParsed[0] : {};
+                if (first.isSuccess === false) {
+                    throw 'Failed to draft Knowledge article ' + id + ' (after clearing draft ' + clearedDraftId + '): ' + extractActionError(first);
+                }
+                // fall through to success handling below
+            } else {
+                throw 'Failed to draft Knowledge article ' + id + ': ' + extractActionError(first);
+            }
+        } else {
+            // unpublish=false: an existing editable Draft satisfies the request.
+            var existingDraftId = findExistingDraftVersionId(id);
+            if (existingDraftId) {
+                var idemOutputs = {
+                    Action: 'Draft Knowledge Article',
+                    ObjectType: objectType,
+                    Id: id,
+                    Status: 'Draft (already exists)',
+                    Unpublished: unpublish,
+                    DraftVersionId: existingDraftId
+                };
+                return {
+                    Type: entryTypes.note,
+                    Contents: idemOutputs,
+                    ContentsFormat: formats.json,
+                    ReadableContentsFormat: formats.markdown,
+                    HumanReadable: tableToMarkdown('Salesforce Remediation - Draft Knowledge Article', idemOutputs),
+                    EntryContext: { 'Salesforce.Remediation(val.Id == obj.Id)': idemOutputs }
+                };
+            }
+            throw 'Failed to draft Knowledge article ' + id + ': ' + extractActionError(first);
+        }
+    }
+    var draftVersionId = (first.outputValues && first.outputValues.draftId) ? first.outputValues.draftId : '';
+    var status = unpublish ? 'Unpublished (Draft created)' : 'Draft created';
+    var outputs = {
+        Action: 'Draft Knowledge Article',
+        ObjectType: objectType,
+        Id: id,
+        Status: status,
+        Unpublished: unpublish,
+        DraftVersionId: draftVersionId
+    };
+    return {
+        Type: entryTypes.note,
+        Contents: outputs,
+        ContentsFormat: formats.json,
+        ReadableContentsFormat: formats.markdown,
+        HumanReadable: tableToMarkdown('Salesforce Remediation - Draft Knowledge Article', outputs),
+        EntryContext: { 'Salesforce.Remediation(val.Id == obj.Id)': outputs }
+    };
+}
+
+function archiveKnowledgeArticle(args) {
+    var objectType = args.type || 'KnowledgeArticleVersion';
+    var id = args.id;
+    if (!id) {
+        throw "The 'id' argument is required.";
+    }
+    var ignoreNotFound = (args.ignore_not_found === undefined) ? true : (String(args.ignore_not_found) === 'true');
+    var body = JSON.stringify({ inputs: [{ articleVersionIdList: [id] }] });
+    var response;
+    try {
+        response = sendRequestInSession('POST', 'actions/standard/archiveKnowledgeArticles', body);
+    } catch (err) {
+        if (ignoreNotFound && isNotFoundError(err)) {
+            return remediationEntry('Archive Knowledge Article', objectType, id, 'NotFound (ignored)');
+        }
+        throw err;
+    }
+    var parsed = JSON.parse(response.Body);
+    var first = (parsed && parsed.length) ? parsed[0] : {};
+    if (first.isSuccess === false) {
+        // A lingering Draft (Salesforce allows only one per article) blocks the
+        // archive of the Online version with a "current state" error. Clear the
+        // draft and retry once so the article can actually be archived.
+        var clearedDraftId = deleteExistingDraft(id);
+        if (clearedDraftId) {
+            var retryResponse = sendRequestInSession('POST', 'actions/standard/archiveKnowledgeArticles', body);
+            var retryParsed = JSON.parse(retryResponse.Body);
+            var retryFirst = (retryParsed && retryParsed.length) ? retryParsed[0] : {};
+            if (retryFirst.isSuccess === false) {
+                throw 'Failed to archive Knowledge article ' + id + ' (after clearing draft ' + clearedDraftId + '): ' + extractActionError(retryFirst);
+            }
+            return remediationEntry('Archive Knowledge Article', objectType, id, 'Archived (cleared draft ' + clearedDraftId + ')');
+        }
+        throw 'Failed to archive Knowledge article ' + id + ': ' + extractActionError(first);
+    }
+    return remediationEntry('Archive Knowledge Article', objectType, id, 'Archived');
+}
+
 function getCase(oid, caseNumber) {
     if (caseNumber !== undefined) {
         var condition = "CaseNumber='" + caseNumber + "'";
@@ -904,6 +1145,16 @@ switch (command) {
         return closeCase(args.oid, args.caseNumber);
     case 'salesforce-delete-case':
         return deleteCase(args.oid, args.caseNumber);
+    case 'salesforce-delete-file':
+        return deleteFile(args);
+    case 'salesforce-archive-knowledge-article':
+        return archiveKnowledgeArticle(args);
+    case 'salesforce-list-file-public-links':
+        return listFilePublicLinks(args);
+    case 'salesforce-remove-file-public-links':
+        return removeFilePublicLinks(args);
+    case 'salesforce-draft-knowledge-article':
+        return draftKnowledgeArticle(args);
     case 'salesforce-push-comment':
         return pushComment(args.oid, args.text, args.link);
     case 'salesforce-push-comment-threads':
