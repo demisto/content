@@ -1,0 +1,586 @@
+description: Test playbook for Prisma AIRs Model Security integration. Tests CRUD operations for model security groups.
+id: PaloAltoNetworks_Prisma_AIRs_Model_Security_Test
+inputs:
+- key: GroupName
+  value:
+    simple: test-hf-security-group
+  required: false
+  description: Name of the test security group to create
+  playbookInputQuery:
+- key: GroupDescription
+  value:
+    simple: Test Hugging Face security group created by test playbook
+  required: false
+  description: Description of the test security group
+  playbookInputQuery:
+- key: GroupSourceType
+  value:
+    simple: HUGGING_FACE
+  required: false
+  description: Source type for the security group (HUGGING_FACE, LOCAL, S3, GCS, AZURE)
+  playbookInputQuery:
+- key: UpdatedGroupName
+  value:
+    simple: test-hf-security-group-updated
+  required: false
+  description: Updated name for the security group
+  playbookInputQuery:
+- key: UpdatedGroupDescription
+  value:
+    simple: Updated test group name
+  required: false
+  description: Updated description for the security group
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_Model_Security_Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+    type: start
+    task:
+      id: a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e
+    type: regular
+    task:
+      id: b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f
+    type: title
+    task:
+      id: c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f
+      version: -1
+      name: Model Security Groups - CRUD Operations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d4e5f6a7-b8c9-4d5e-1f2a-3b4c5d6e7f8a
+    type: regular
+    task:
+      id: d4e5f6a7-b8c9-4d5e-1f2a-3b4c5d6e7f8a
+      version: -1
+      name: prisma-airs-model-security-groups-list
+      description: List all model security groups.
+      script: '|||prisma-airs-model-security-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e5f6a7b8-c9d0-4e5f-2a3b-4c5d6e7f8a9b
+    type: regular
+    task:
+      id: e5f6a7b8-c9d0-4e5f-2a3b-4c5d6e7f8a9b
+      version: -1
+      name: prisma-airs-model-security-groups-create
+      description: Create a new model security group.
+      script: '|||prisma-airs-model-security-groups-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.GroupName
+      source_type:
+        complex:
+          root: inputs.GroupSourceType
+      description:
+        complex:
+          root: inputs.GroupDescription
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f6a7b8c9-d0e1-4f5a-3b4c-5d6e7f8a9b0c
+    type: regular
+    task:
+      id: f6a7b8c9-d0e1-4f5a-3b4c-5d6e7f8a9b0c
+      version: -1
+      name: prisma-airs-model-security-groups-update
+      description: Update a model security group.
+      script: '|||prisma-airs-model-security-groups-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      uuid:
+        complex:
+          root: PrismaAIRs.ModelSecurityGroupAdd
+          accessor: uuid
+      name:
+        complex:
+          root: inputs.UpdatedGroupName
+      description:
+        complex:
+          root: inputs.UpdatedGroupDescription
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a7b8c9d0-e1f2-4a5b-4c5d-6e7f8a9b0c1d
+    type: regular
+    task:
+      id: a7b8c9d0-e1f2-4a5b-4c5d-6e7f8a9b0c1d
+      version: -1
+      name: prisma-airs-model-security-groups-list
+      description: List all model security groups.
+      script: '|||prisma-airs-model-security-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b8c9d0e1-f2a3-4b5c-5d6e-7f8a9b0c1d2e
+    type: regular
+    task:
+      id: b8c9d0e1-f2a3-4b5c-5d6e-7f8a9b0c1d2e
+      version: -1
+      name: prisma-airs-model-security-groups-get
+      description: Get a model security group by UUID.
+      script: '|||prisma-airs-model-security-groups-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      uuid:
+        complex:
+          root: PrismaAIRs.ModelSecurityGroupAdd
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f
+    type: condition
+    task:
+      id: c9d0e1f2-a3b4-4c5d-6e7f-8a9b0c1d2e3f
+      version: -1
+      name: Validate Group Exists
+      description: Check that group exists with updated name and correct source type
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.ModelSecurityGroupGet
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.UpdatedGroupName
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.ModelSecurityGroupGet
+                accessor: source_type
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.GroupSourceType
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d0e1f2a3-b4c5-4d6e-7f8a-9b0c1d2e3f4a
+    type: regular
+    task:
+      id: d0e1f2a3-b4c5-4d6e-7f8a-9b0c1d2e3f4a
+      version: -1
+      name: prisma-airs-model-security-groups-delete
+      description: Delete a model security group.
+      script: '|||prisma-airs-model-security-groups-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      uuid:
+        complex:
+          root: PrismaAIRs.ModelSecurityGroupAdd
+          accessor: uuid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b
+    type: regular
+    task:
+      id: e1f2a3b4-c5d6-4e7f-8a9b-0c1d2e3f4a5b
+      version: -1
+      name: prisma-airs-model-security-groups-list
+      description: List all model security groups.
+      script: '|||prisma-airs-model-security-groups-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: f2a3b4c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c
+    type: condition
+    task:
+      id: f2a3b4c5-d6e7-4f8a-9b0c-1d2e3f4a5b6c
+      version: -1
+      name: Validate Group Deleted
+      description: Verify delete succeeded with correct UUID
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.ModelSecurityGroupDelete
+                accessor: deleted
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.ModelSecurityGroupDelete
+                accessor: uuid
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PrismaAIRs.ModelSecurityGroupAdd
+                accessor: uuid
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+    type: regular
+    task:
+      id: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      version: -1
+      name: Test Passed - Close Investigation
+      description: All validations passed successfully
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+      closeReason:
+        simple: Test passed - All Model Security Group CRUD operations validated successfully
+      closeNotes:
+        simple: "Test playbook completed successfully:\n- Create: Group created\n- Update: Group name updated\n- Get: Group retrieved successfully\n- Delete: Group deleted successfully"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b2c3d4e5-f678-9012-bcde-f12345678901
+    type: regular
+    task:
+      id: b2c3d4e5-f678-9012-bcde-f12345678901
+      version: -1
+      name: Test Failed - Print Error
+      description: Validation failed - print error to fail CI pipeline
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "TEST FAILED: Model Security Group CRUD validation failed. Either Get validation (updated name/source_type) or Delete validation (deleted=true and correct UUID) did not pass. Check context: PrismaAIRs.ModelSecurityGroupGet, PrismaAIRs.ModelSecurityGroupDelete, and PrismaAIRs.ModelSecurityGroupAdd"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 2190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2240,
+        "width": 800,
+        "x": 240,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0

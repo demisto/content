@@ -1,0 +1,11 @@
+[file:knowledge]
+ignore=*
+
+[file:shared]
+ignore=*
+
+[file:CLAUDE.md]
+ignore=*
+
+[file:.gitignore]
+ignore=*
