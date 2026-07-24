@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f72d3fe9-707f-4413-8ee2-17af6a3f6710
+    taskid: 6e742996-a6d3-4c02-871b-9e0e3baff532
     type: start
     task:
-      id: f72d3fe9-707f-4413-8ee2-17af6a3f6710
+      id: 6e742996-a6d3-4c02-871b-9e0e3baff532
       version: -1
       name: ""
       iscommand: false
@@ -18,12 +18,13 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -36,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4a8c2b89-376c-43fa-8464-7224c263ccd7
+    taskid: d88be1fd-68cc-4416-8b0b-5b8e053f3ff7
     type: title
     task:
-      id: 4a8c2b89-376c-43fa-8464-7224c263ccd7
+      id: d88be1fd-68cc-4416-8b0b-5b8e053f3ff7
       version: -1
       name: Done
       type: title
@@ -51,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 580
+          "x": 280,
+          "y": 540
         }
       }
     note: false
@@ -64,10 +65,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: a86dbba9-493d-46bb-87ff-067a5bfcb1e6
+    taskid: f4c4eade-6ee0-4516-83ea-05822456483c
     type: condition
     task:
-      id: a86dbba9-493d-46bb-87ff-067a5bfcb1e6
+      id: f4c4eade-6ee0-4516-83ea-05822456483c
       version: -1
       name: Is the object type Fileset, Volume Group, or VM?
       description: Checks whether the object type contains fileset, volume group or the VM.
@@ -134,10 +135,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 1cb54c33-0f08-4ef7-8852-95d374988334
+    taskid: 96cc3558-fdaa-4113-81cd-819d17611042
     type: playbook
     task:
-      id: 1cb54c33-0f08-4ef7-8852-95d374988334
+      id: 96cc3558-fdaa-4113-81cd-819d17611042
       version: -1
       name: Rubrik File Context Analysis - Rubrik Polaris
       description: This playbook fetches file context information for the provided file, folder, or file share name and the object ID to get the policy hits.
@@ -164,8 +165,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 390
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -175,14 +176,74 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9629042c-938d-4f55-8bfe-ac9ceea6541a
+    type: regular
+    task:
+      id: 9629042c-938d-4f55-8bfe-ac9ceea6541a
+      version: -1
+      name: Retrieve the object details
+      description: Get the matched object for Threat Monitoring.
+      script: '|||rubrik-threat-monitoring-matched-object-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      object_id:
+        complex:
+          root: inputs.object_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 472.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Rubrik Object Location
+      output:
+        complex:
+          root: RubrikPolaris.ThreatMonitoring.logicalPath.name
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: RubrikPolaris.ThreatMonitoring.logicalPath.name
+                iscontext: true
+              right:
+                value:
+                  simple: vm
+          transformers:
+          - operator: ReverseList
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: /
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "7_5_#default#": 0.36,
+      "7_8_Yes": 0.48
+    },
     "paper": {
       "dimensions": {
-        "height": 595,
-        "width": 610,
-        "x": 10,
+        "height": 555,
+        "width": 802.5,
+        "x": 50,
         "y": 50
       }
     }
