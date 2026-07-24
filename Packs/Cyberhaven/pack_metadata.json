@@ -1,0 +1,60 @@
+{
+    "name": "Cyberhaven",
+    "description": "Fetches DLP incidents from the Cyberhaven data security platform and enables investigation of events and data lineage.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Cyberhaven, Inc",
+    "url": "https://support.cyberhaven.io",
+    "email": "support@cyberhaven.com",
+    "created": "2026-06-20T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Alerts",
+        "Incident Handling",
+        "Incident Response",
+        "Forensics",
+        "Compliance",
+        "PII"
+    ],
+    "useCases": [
+        "Incident Response",
+        "Case Management",
+        "Compliance",
+        "Hunting"
+    ],
+    "keywords": [
+        "Security Incident Response",
+        "Data Detection & Response",
+        "DLP Case Management"
+    ],
+    "dependencies": {
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ],
+    "displayedImages": [
+        "FiltersAndTransformers",
+        "CommonScripts",
+        "CommonTypes"
+    ]
+}
