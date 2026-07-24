@@ -79,6 +79,17 @@ configuration:
   type: 8
   section: Collect
   required: false
+- additionalinfo: >-
+    The time in minutes to look back when fetching incidents, used to retrieve
+    incidents that were created before the last run time and did not match the
+    query when they were created.
+  defaultvalue: '0'
+  display: 'Advanced: Time in minutes to look back when fetching incidents'
+  name: look_back
+  type: 0
+  section: Collect
+  advanced: true
+  required: false
 script:
   commands:
   - name: netcraft-attack-report
@@ -1498,9 +1509,42 @@ script:
     - contextPath: InfoFile.Extension
       description: The file extension of the screenshot.
       type: string
+  - name: netcraft-get-incidents
+    description: Retrieves incidents from Netcraft using the same API request as fetch-incidents, filtered by ID.
+    arguments:
+    - name: id_after
+      required: true
+      description: The ID threshold. Only incidents with an ID greater than this value are returned.
+    - name: max_results
+      description: The maximum number of incidents to return.
+      defaultValue: '10'
+    - name: region
+      description: The region to filter by. If not specified, the configured region will be used.
+    outputs:
+    - contextPath: Netcraft.Incident.id
+      description: The ID of the incident.
+      type: Number
+    - contextPath: Netcraft.Incident.attack_url
+      description: The URL of the attack.
+      type: String
+    - contextPath: Netcraft.Incident.attack_type
+      description: The type of the attack.
+      type: String
+    - contextPath: Netcraft.Incident.status
+      description: The status of the incident.
+      type: String
+    - contextPath: Netcraft.Incident.date_submitted
+      description: The date the incident was submitted.
+      type: String
+    - contextPath: Netcraft.Incident.last_updated
+      description: The date the incident was last updated.
+      type: String
+    - contextPath: Netcraft.Incident.target_brand
+      description: The target brand of the incident.
+      type: String
   script: '-'
   type: python
-  dockerimage: demisto/python3:3.12.12.5490952
+  dockerimage: demisto/python3:3.12.13.10404775
   subtype: python3
   isfetch: true
   runonce: false
