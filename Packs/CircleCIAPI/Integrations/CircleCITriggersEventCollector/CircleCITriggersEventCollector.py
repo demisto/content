@@ -23,13 +23,14 @@ GET /project/{project-slug}, and collects triggers for every project found.
 Discovery only sees projects with pipeline activity; configure explicit
 project IDs for dormant projects.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 import urllib3
 import urllib.parse
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 
 urllib3.disable_warnings()
@@ -61,9 +62,7 @@ class Client(BaseClient):
         params: dict[str, Any] = {}
         if page_token:
             params["page-token"] = page_token
-        return self._http_request(
-            method="GET", url_suffix=f"/projects/{project_id}/pipeline-definitions", params=params
-        )
+        return self._http_request(method="GET", url_suffix=f"/projects/{project_id}/pipeline-definitions", params=params)
 
     def list_triggers(self, project_id: str, definition_id: str, page_token: Optional[str] = None) -> dict:
         """Fetch a single page of triggers for a pipeline definition."""
@@ -90,7 +89,7 @@ class Client(BaseClient):
 
 
 def _now_rfc3339() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def discover_project_ids(
@@ -169,15 +168,13 @@ def _paginate(fetch_page, max_fetch: int) -> list[dict]:
 def fetch_triggers_for_project(client: Client, project_id: str, max_fetch: int) -> list[dict]:
     """Collect the full trigger inventory for one project across its pipeline definitions."""
     collected: list[dict] = []
-    definitions = _paginate(
-        lambda token: client.list_pipeline_definitions(project_id, token), max_fetch
-    )
+    definitions = _paginate(lambda token: client.list_pipeline_definitions(project_id, token), max_fetch)
     for definition in definitions:
         definition_id = definition.get("id")
         if not definition_id:
             continue
         triggers = _paginate(
-            lambda token: client.list_triggers(project_id, definition_id, token),
+            lambda token, did=definition_id: client.list_triggers(project_id, did, token),
             max_fetch - len(collected),
         )
         for trigger in triggers:
@@ -277,8 +274,7 @@ def main() -> None:  # pragma: no cover
     try:
         if not project_ids and not org_slugs:
             raise DemistoException(
-                "Configure at least one CircleCI project ID, or an organisation slug "
-                "for automatic project discovery."
+                "Configure at least one CircleCI project ID, or an organisation slug " "for automatic project discovery."
             )
 
         client = Client(base_url=base_url, api_token=api_token, verify=verify, proxy=proxy)
@@ -298,14 +294,10 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             last_run = demisto.getLastRun() or {}
             slug_cache = last_run.get("project_slug_cache", {})
-            all_project_ids, slug_cache = resolve_project_ids(
-                client, project_ids, org_slugs, slug_cache
-            )
+            all_project_ids, slug_cache = resolve_project_ids(client, project_ids, org_slugs, slug_cache)
             events = fetch_events(client, all_project_ids, max_fetch)
             push_events(events)
-            demisto.setLastRun(
-                {"last_snapshot": _now_rfc3339(), "project_slug_cache": slug_cache}
-            )
+            demisto.setLastRun({"last_snapshot": _now_rfc3339(), "project_slug_cache": slug_cache})
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")

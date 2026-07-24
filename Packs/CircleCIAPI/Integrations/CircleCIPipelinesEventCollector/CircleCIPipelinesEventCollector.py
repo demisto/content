@@ -11,12 +11,13 @@ The fetch advances a per-organisation high-water mark (the newest pipeline
 ``created_at`` seen): each run pages until it reaches the previous mark, so a
 delayed, skipped, or overlapping poll never leaves a gap.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 import urllib3
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 
 urllib3.disable_warnings()
@@ -58,7 +59,7 @@ def _cutoff_from_first_fetch(first_fetch: str) -> datetime:
     dt = arg_to_datetime(first_fetch, required=True)
     assert dt is not None
     if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=timezone.utc)
+        dt = dt.replace(tzinfo=UTC)
     return dt
 
 

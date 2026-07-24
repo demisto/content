@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the CircleCI Triggers Event Collector."""
+
 import CircleCITriggersEventCollector as collector
 
 
@@ -50,13 +51,17 @@ def test_snapshot_walks_definitions_and_stamps_metadata():
 
 
 def test_pagination_on_both_levels():
-    defs = {"p1": {
-        "first": {"items": [{"id": "d1", "name": "a"}], "next_page_token": "t2"},
-        "t2": {"items": [{"id": "d2", "name": "b"}], "next_page_token": None},
-    }}
+    defs = {
+        "p1": {
+            "first": {"items": [{"id": "d1", "name": "a"}], "next_page_token": "t2"},
+            "t2": {"items": [{"id": "d2", "name": "b"}], "next_page_token": None},
+        }
+    }
     trigs = {
-        "d1": {"first": {"items": [_trigger("t1")], "next_page_token": "n2"},
-               "n2": {"items": [_trigger("t2")], "next_page_token": None}},
+        "d1": {
+            "first": {"items": [_trigger("t1")], "next_page_token": "n2"},
+            "n2": {"items": [_trigger("t2")], "next_page_token": None},
+        },
         "d2": {"first": {"items": [_trigger("t3")], "next_page_token": None}},
     }
     events = collector.fetch_events(MockClient(defs, trigs), ["p1"], 100)

@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the CircleCI Project Settings Event Collector."""
+
 import CircleCIProjectSettingsEventCollector as collector
 
 
@@ -19,8 +20,7 @@ class MockClient:
 
 
 def _settings(**adv):
-    base = {"build_fork_prs": False, "forks_receive_secret_env_vars": False,
-            "disable_ssh": False, "oss": False}
+    base = {"build_fork_prs": False, "forks_receive_secret_env_vars": False, "disable_ssh": False, "oss": False}
     base.update(adv)
     return {"advanced": base}
 
@@ -47,8 +47,7 @@ def test_slug_split_for_settings_endpoint():
 
 
 def test_nested_and_array_settings_skipped():
-    settings = {"gh/o/p": {"advanced": {"oss": True, "pr_only_branch_overrides": ["main"],
-                                        "nested": {"x": 1}}}}
+    settings = {"gh/o/p": {"advanced": {"oss": True, "pr_only_branch_overrides": ["main"], "nested": {"x": 1}}}}
     events = collector.fetch_events(MockClient(settings), ["gh/o/p"], 100)
     e = events[0]
     assert e["oss"] is True
@@ -70,6 +69,7 @@ def test_fetch_error_skips_project():
             if project_slug == "gh/o/bad":
                 raise collector.DemistoException("[404] not found")
             return self.settings[project_slug]
+
     settings = {"gh/o/good": _settings()}
     events = ErrClient(settings).__class__(settings).__init__ if False else None
     c = ErrClient({"gh/o/good": _settings()})

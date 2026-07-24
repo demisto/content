@@ -2,7 +2,7 @@
   "name": "CircleCI API",
   "description": "Integrates the CircleCI v2 API with Cortex, collecting CircleCI activity into Cortex datasets and mapping it to the XDM data model. Ships per-endpoint event collectors (pipelines and the outbound webhook inventory), each with its own dataset and XDM modelling. CircleCI API by GoCortexIO.",
   "support": "community",
-  "currentVersion": "2.0.2",
+  "currentVersion": "2.0.3",
   "author": "GoCortexIO",
   "url": "",
   "email": "",

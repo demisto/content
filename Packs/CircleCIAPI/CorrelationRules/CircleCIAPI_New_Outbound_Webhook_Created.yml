@@ -1,4 +1,5 @@
 name: CircleCI - New Outbound Webhook Created - by GoCortexIO
+description: Detects a newly created CircleCI outbound webhook, a potential data-exfiltration channel or attacker-controlled callback.
 severity: SEV_040_HIGH
 xql_query: |-
   datamodel dataset = circleci_webhooks_raw

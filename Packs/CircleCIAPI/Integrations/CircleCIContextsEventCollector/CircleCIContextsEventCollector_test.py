@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the CircleCI Contexts Event Collector."""
+
 import CircleCIContextsEventCollector as collector
 
 
@@ -65,10 +66,12 @@ def test_context_pagination():
 
 def test_envvar_pagination():
     contexts = {"first": {"items": [_context("c1", "deploy")], "next_page_token": None}}
-    envvars = {"c1": {
-        "first": {"items": [_envvar("A")], "next_page_token": "n2"},
-        "n2": {"items": [_envvar("B")], "next_page_token": None},
-    }}
+    envvars = {
+        "c1": {
+            "first": {"items": [_envvar("A")], "next_page_token": "n2"},
+            "n2": {"items": [_envvar("B")], "next_page_token": None},
+        }
+    }
     events = collector.fetch_events(MockClient(contexts, envvars), ["org"], 100)
     variables = [e["variable"] for e in events if e["source_log_type"] == "context_envvar"]
     assert variables == ["A", "B"]

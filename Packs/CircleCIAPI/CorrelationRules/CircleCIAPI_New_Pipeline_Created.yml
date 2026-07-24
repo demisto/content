@@ -1,4 +1,5 @@
 name: CircleCI - New Pipeline Created - by GoCortexIO
+description: Detects a newly created CircleCI pipeline, surfacing unexpected build or deployment activity in the CI/CD environment.
 severity: SEV_020_LOW
 xql_query: |-
   datamodel dataset = circleci_pipelines_raw

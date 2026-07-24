@@ -19,13 +19,14 @@ explicit project slugs for dormant projects.
 Hyphenated API keys (public-key, created-at) are normalised to underscores
 before ingestion.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 import urllib3
 import urllib.parse
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 
 urllib3.disable_warnings()
@@ -53,9 +54,7 @@ class Client(BaseClient):
         params: dict[str, Any] = {}
         if page_token:
             params["page-token"] = page_token
-        return self._http_request(
-            method="GET", url_suffix=f"/project/{encoded}/checkout-key", params=params
-        )
+        return self._http_request(method="GET", url_suffix=f"/project/{encoded}/checkout-key", params=params)
 
     def list_pipelines(self, org_slug: str, page_token: Optional[str] = None) -> dict:
         """Fetch a single page of pipelines for an organisation (used for project discovery)."""
@@ -66,7 +65,7 @@ class Client(BaseClient):
 
 
 def _now_rfc3339() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def normalise_keys(record: dict) -> dict:
@@ -203,8 +202,7 @@ def main() -> None:  # pragma: no cover
     try:
         if not project_slugs and not org_slugs:
             raise DemistoException(
-                "Configure at least one CircleCI project slug, or an organisation slug "
-                "for automatic project discovery."
+                "Configure at least one CircleCI project slug, or an organisation slug " "for automatic project discovery."
             )
         client = Client(base_url=base_url, api_token=api_token, verify=verify, proxy=proxy)
 

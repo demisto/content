@@ -19,12 +19,13 @@ per environment variable with source_log_type "context_envvar". Contexts are
 owned by an organisation, so configuration takes organisation slugs directly;
 no project discovery is required.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 import urllib3
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 
 urllib3.disable_warnings()
@@ -59,13 +60,11 @@ class Client(BaseClient):
         params: dict[str, Any] = {}
         if page_token:
             params["page-token"] = page_token
-        return self._http_request(
-            method="GET", url_suffix=f"/context/{context_id}/environment-variable", params=params
-        )
+        return self._http_request(method="GET", url_suffix=f"/context/{context_id}/environment-variable", params=params)
 
 
 def _now_rfc3339() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def _paginate(fetch_page, max_fetch: int) -> list[dict]:
@@ -105,7 +104,7 @@ def fetch_events_for_org(client: Client, owner_slug: str, max_fetch: int) -> lis
         if not context_id:
             continue
         envvars = _paginate(
-            lambda token: client.list_context_envvars(context_id, token),
+            lambda token, cid=context_id: client.list_context_envvars(cid, token),
             max_fetch - len(events),
         )
         for envvar in envvars:

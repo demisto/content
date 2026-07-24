@@ -1,14 +1,15 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the CircleCI Pipelines Event Collector."""
-from datetime import datetime, timedelta, timezone
+
+from datetime import datetime, timedelta, UTC
 
 import CircleCIPipelinesEventCollector as collector
 
 
 def _ts(hours_ago):
     """A timestamp N hours before now, so window-relative tests are deterministic."""
-    return (datetime.now(timezone.utc) - timedelta(hours=hours_ago)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+    return (datetime.now(UTC) - timedelta(hours=hours_ago)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
 class MockClient:

@@ -1,4 +1,5 @@
 name: CircleCI - Insecure Fork Build Settings - by GoCortexIO
+description: Detects a CircleCI project configured to build forked pull requests or expose the project's secrets to them, a Poisoned Pipeline Execution precondition.
 severity: SEV_040_HIGH
 xql_query: |-
   datamodel dataset = circleci_project_settings_raw

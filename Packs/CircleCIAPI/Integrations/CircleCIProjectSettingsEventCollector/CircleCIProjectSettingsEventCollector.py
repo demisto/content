@@ -22,13 +22,14 @@ project_slug found. The settings endpoint splits the slug into its provider,
 organisation and project segments. Discovery only sees projects with pipeline
 activity; configure explicit project slugs for dormant projects.
 """
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401,F403
 from CommonServerUserPython import *  # noqa: F401,F403
 
 import urllib3
 import urllib.parse
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 from typing import Any
 
 urllib3.disable_warnings()
@@ -58,9 +59,7 @@ class Client(BaseClient):
         provider, organization, project = project_slug.split("/", 2)
         org = urllib.parse.quote(organization, safe="")
         proj = urllib.parse.quote(project, safe="")
-        return self._http_request(
-            method="GET", url_suffix=f"/project/{provider}/{org}/{proj}/settings"
-        )
+        return self._http_request(method="GET", url_suffix=f"/project/{provider}/{org}/{proj}/settings")
 
     def list_pipelines(self, org_slug: str, page_token: Optional[str] = None) -> dict:
         """Fetch a single page of pipelines for an organisation (used for project discovery)."""
@@ -71,7 +70,7 @@ class Client(BaseClient):
 
 
 def _now_rfc3339() -> str:
-    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def discover_project_slugs(client: Client, org_slugs: list[str]) -> list[str]:
@@ -109,7 +108,7 @@ def build_settings_event(project_slug: str, settings: dict, now: str) -> dict:
     event: dict[str, Any] = {}
     for key, value in advanced.items():
         # Skip nested/array settings; keep the scalar posture flags.
-        if isinstance(value, (bool, str, int, float)) or value is None:
+        if isinstance(value, bool | str | int | float) or value is None:
             event[key] = value
     event["_time"] = now
     event["snapshot_at"] = now
@@ -179,8 +178,14 @@ def get_events_command(client: Client, args: dict) -> tuple[list[dict], CommandR
     human_readable = tableToMarkdown(
         "CircleCI Project Settings",
         events,
-        headers=["circleci_project_slug", "build_fork_prs", "forks_receive_secret_env_vars",
-                 "disable_ssh", "oss", "write_settings_requires_admin"],
+        headers=[
+            "circleci_project_slug",
+            "build_fork_prs",
+            "forks_receive_secret_env_vars",
+            "disable_ssh",
+            "oss",
+            "write_settings_requires_admin",
+        ],
         removeNull=True,
     )
     return events, CommandResults(readable_output=human_readable, raw_response=events)
@@ -203,8 +208,7 @@ def main() -> None:  # pragma: no cover
     try:
         if not project_slugs and not org_slugs:
             raise DemistoException(
-                "Configure at least one CircleCI project slug, or an organisation slug "
-                "for automatic project discovery."
+                "Configure at least one CircleCI project slug, or an organisation slug " "for automatic project discovery."
             )
         client = Client(base_url=base_url, api_token=api_token, verify=verify, proxy=proxy)
 

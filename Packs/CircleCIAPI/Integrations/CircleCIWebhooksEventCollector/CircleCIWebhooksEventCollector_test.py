@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the CircleCI Webhooks Event Collector."""
+
 import CircleCIWebhooksEventCollector as collector
 
 
@@ -53,9 +54,7 @@ def test_pagination_follows_next_page_token():
 
 
 def test_max_fetch_caps_collection():
-    pages = {
-        "p1": {"first": {"items": [_webhook(f"w{i}") for i in range(5)], "next_page_token": None}}
-    }
+    pages = {"p1": {"first": {"items": [_webhook(f"w{i}") for i in range(5)], "next_page_token": None}}}
     client = MockClient(pages)
     events = collector.fetch_events(client, ["p1"], 3)
     assert len(events) == 3
