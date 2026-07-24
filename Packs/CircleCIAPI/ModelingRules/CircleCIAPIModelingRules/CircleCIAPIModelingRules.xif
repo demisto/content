@@ -1,0 +1,314 @@
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-fable-5"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.0"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// Vendor:  circleci (tenant-adjustable: xdm.observer.vendor)
+// Product: pipelines (tenant-adjustable: xdm.observer.product)
+// Dataset: circleci_pipelines_raw (tenant-adjustable: [MODEL: dataset=...])
+//
+// CircleCI pipeline records from the v2 API (GET /pipeline), ingested by the
+// CircleCI Pipelines Event Collector as pre-parsed top-level columns
+// (Pattern D: _raw_log is null; nested objects arrive as JSON-string
+// columns). Each record is one pipeline: SaaS CI/CD activity, not an
+// authentication event -- the "login" keys inside trigger/trigger_parameters
+// are GitHub username field names, so the authentication story does not
+// apply. Basis: live tenant sample cross-checked against the CircleCI v2
+// OpenAPI specification.
+//
+// EVENT FIELD MAPPING
+//   id                                        -> xdm.event.id, xdm.target.resource.id
+//   source_log_type ("pipeline")              -> xdm.event.type
+//   trigger_parameters.circleci.event_type    -> xdm.event.original_event_type (fallback trigger.type)
+//   (record = a pipeline being created)       -> xdm.event.operation = OPERATION_TYPE_CREATE
+//   state                                     -> xdm.event.operation_sub_type; "errored" -> xdm.event.outcome = FAILED
+//   errors (non-empty JSON array)             -> xdm.event.outcome_reason
+//   trigger.actor.login                       -> xdm.source.user.username (fallback circleci.provider_login)
+//   trigger_parameters.circleci.actor_id      -> xdm.source.user.identifier
+//   github_app.commit_author_email            -> xdm.source.user.upn (only when it contains "@")
+//   circleci_org_slug                         -> xdm.source.cloud.project
+//   project_slug                              -> xdm.target.cloud.project
+//   github_app.repo_name                      -> xdm.target.resource.name (fallback project_slug)
+//   github_app.branch                         -> xdm.target.resource.sub_type
+//   github_app.repo_url                       -> xdm.target.resource.value
+//   (summary)                                 -> xdm.event.description
+//
+// NOT MAPPED
+//   number            -- pipeline sequence number; no XDM home (summarised in description)
+//   created_at/updated_at -- epoch-ms ints; _time already carries created_at from the collector
+//   warnings          -- config warnings array; operational noise, no XDM home
+//   github_app.checkout_sha -- git commit SHA-1; not a file hash, no XDM home
+//   vcs               -- absent from observed records; revisit if it appears
+//
+// REVIEW UNMODELLED
+//   datamodel dataset = circleci_pipelines_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | fields xdm.event.id, xdm.event.description
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+[MODEL: dataset=circleci_pipelines_raw]
+filter id != null
+| alter
+    tmp_actor_login = json_extract_scalar(trigger, "$.actor.login"),
+    tmp_trigger_type = json_extract_scalar(trigger, "$.type"),
+    tmp_event_type = json_extract_scalar(trigger_parameters, "$.circleci.event_type"),
+    tmp_actor_id = json_extract_scalar(trigger_parameters, "$.circleci.actor_id"),
+    tmp_provider_login = json_extract_scalar(trigger_parameters, "$.circleci.provider_login"),
+    tmp_repo_name = json_extract_scalar(trigger_parameters, "$.github_app.repo_name"),
+    tmp_repo_url = json_extract_scalar(trigger_parameters, "$.github_app.repo_url"),
+    tmp_branch = json_extract_scalar(trigger_parameters, "$.github_app.branch"),
+    tmp_commit_email = json_extract_scalar(trigger_parameters, "$.github_app.commit_author_email"),
+    tmp_commit_title = json_extract_scalar(trigger_parameters, "$.github_app.commit_title"),
+    tmp_state = state,
+    tmp_errors = errors
+| alter
+    xdm.observer.vendor = "circleci",
+    xdm.observer.product = "pipelines",
+    xdm.event.id = id,
+    xdm.event.type = coalesce(source_log_type, "pipeline"),
+    xdm.event.original_event_type = coalesce(tmp_event_type, tmp_trigger_type, "GOCORTEX_UNMODELLED"),
+    xdm.event.operation = XDM_CONST.OPERATION_TYPE_CREATE,
+    xdm.event.operation_sub_type = tmp_state,
+    xdm.event.outcome = if(tmp_state = "errored", XDM_CONST.OUTCOME_FAILED, null),
+    xdm.event.outcome_reason = if(tmp_errors != null and tmp_errors != "[]", tmp_errors, null),
+    xdm.event.tags = if(source_log_type = "pipeline", arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
+    xdm.source.user.username = coalesce(tmp_actor_login, tmp_provider_login),
+    xdm.source.user.identifier = tmp_actor_id,
+    xdm.source.user.upn = if(tmp_commit_email contains "@", tmp_commit_email, null),
+    xdm.source.cloud.project = circleci_org_slug,
+    xdm.target.cloud.project = project_slug,
+    xdm.target.resource.type = "pipeline",
+    xdm.target.resource.id = id,
+    xdm.target.resource.name = coalesce(tmp_repo_name, project_slug),
+    xdm.target.resource.sub_type = tmp_branch,
+    xdm.target.resource.value = tmp_repo_url,
+    xdm.event.description = concat(
+        "CircleCI pipeline ", coalesce(tmp_state, "unknown"),
+        " on ", coalesce(tmp_repo_name, project_slug, "unknown project"),
+        " triggered by ", coalesce(tmp_actor_login, tmp_provider_login, "unknown actor"),
+        " via ", coalesce(tmp_event_type, tmp_trigger_type, "unknown"),
+        if(tmp_commit_title != null, concat(" -- ", tmp_commit_title), ""))
+;
+
+// Vendor:  circleci / Product: webhooks / Dataset: circleci_webhooks_raw
+// Outbound webhook inventory snapshots from the CircleCI v2 API
+// (GET /webhook), ingested hourly by the CircleCI Webhooks Event Collector.
+// Each record is one configured webhook at snapshot time (Pattern D).
+//
+// EVENT FIELD MAPPING
+//   id                    -> xdm.event.id, xdm.target.resource.id
+//   source_log_type       -> xdm.event.type
+//   name                  -> xdm.target.resource.name
+//   url                   -> xdm.target.resource.value (webhook destination)
+//   events (JSON array)   -> xdm.target.resource.sub_type (subscribed events)
+//   circleci_project_id   -> xdm.source.cloud.project
+//   (summary)             -> xdm.event.description
+//
+// NOT MAPPED
+//   verify_tls        -- boolean config flag; summarised in description, raw dataset holds it
+//   scope             -- always {project}; project id already mapped
+//   signing_secret    -- masked by the API
+//   created_at/updated_at/snapshot_at -- epoch-ms ints; _time carries snapshot time
+[MODEL: dataset=circleci_webhooks_raw]
+filter id != null
+| alter
+    tmp_hook_name = name,
+    tmp_hook_url = url,
+    tmp_hook_events = events,
+    tmp_project_id = circleci_project_id,
+    tmp_is_new = if(timestamp_diff(_time, created_at, "MILLISECOND") <= 86400000, "yes", "no")
+| alter
+    xdm.observer.vendor = "circleci",
+    xdm.observer.product = "webhooks",
+    xdm.event.id = id,
+    xdm.event.type = coalesce(source_log_type, "webhook"),
+    xdm.event.original_event_type = if(
+        tmp_is_new = "yes", "webhook_created",
+        source_log_type != null, "webhook_inventory",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.operation = if(
+        tmp_is_new = "yes", XDM_CONST.OPERATION_TYPE_CREATE,
+        XDM_CONST.OPERATION_TYPE_AUDIT),
+    xdm.event.tags = if(source_log_type = "webhook", arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
+    xdm.source.cloud.project = tmp_project_id,
+    xdm.target.resource.type = "webhook",
+    xdm.target.resource.id = id,
+    xdm.target.resource.name = tmp_hook_name,
+    xdm.target.resource.value = tmp_hook_url,
+    xdm.target.resource.sub_type = tmp_hook_events,
+    xdm.event.description = concat(
+        "CircleCI webhook ", coalesce(tmp_hook_name, "unnamed"),
+        " delivers to ", coalesce(tmp_hook_url, "unknown destination"),
+        " for events ", coalesce(tmp_hook_events, "[]"),
+        " on project ", coalesce(tmp_project_id, "unknown"))
+;
+
+// Vendor:  circleci / Product: triggers / Dataset: circleci_triggers_raw
+// Pipeline trigger inventory snapshots from the CircleCI v2 API
+// (GET /projects/{id}/pipeline-definitions/{id}/triggers), ingested hourly by
+// the CircleCI Triggers Event Collector. Each record is one configured
+// trigger at snapshot time (Pattern D). Spec-backed: event_source.provider
+// is classified over the full spec enum (github_app, github_server,
+// github_oauth, webhook, schedule), not only the providers observed so far.
+//
+// EVENT FIELD MAPPING
+//   id                          -> xdm.event.id, xdm.target.resource.id
+//   source_log_type             -> xdm.event.type
+//   (created_at vs snapshot)    -> xdm.event.original_event_type trigger_created/trigger_inventory
+//   event_preset                -> xdm.event.operation_sub_type
+//   event_source.provider       -> xdm.target.resource.sub_type
+//   event_name/description/name -> xdm.target.resource.name
+//   schedule.cron_expression or repo.full_name -> xdm.target.resource.value
+//   schedule.attribution_actor.id -> xdm.source.user.identifier
+//   circleci_project_id         -> xdm.source.cloud.project
+//   (summary)                   -> xdm.event.description
+//
+// NOT MAPPED
+//   disabled          -- boolean config flag; raw dataset holds it
+//   parameters        -- arbitrary user key-value config; raw dataset holds it
+//   checkout_ref/config_ref -- git refs, summarised in description
+//   pipeline_definition_id/name -- collector context, summarised in description
+[MODEL: dataset=circleci_triggers_raw]
+filter id != null
+| alter
+    tmp_provider = json_extract_scalar(event_source, "$.provider"),
+    tmp_cron = json_extract_scalar(event_source, "$.schedule.cron_expression"),
+    tmp_sched_actor = json_extract_scalar(event_source, "$.schedule.attribution_actor.id"),
+    tmp_repo_full = json_extract_scalar(event_source, "$.repo.full_name"),
+    tmp_trigger_name = coalesce(event_name, description, name),
+    tmp_def_name = pipeline_definition_name,
+    tmp_is_new = if(timestamp_diff(_time, created_at, "MILLISECOND") <= 86400000, "yes", "no")
+| alter
+    xdm.observer.vendor = "circleci",
+    xdm.observer.product = "triggers",
+    xdm.event.id = id,
+    xdm.event.type = coalesce(source_log_type, "trigger"),
+    xdm.event.original_event_type = if(
+        tmp_is_new = "yes", "trigger_created",
+        source_log_type != null, "trigger_inventory",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.operation = if(
+        tmp_is_new = "yes", XDM_CONST.OPERATION_TYPE_CREATE,
+        XDM_CONST.OPERATION_TYPE_AUDIT),
+    xdm.event.operation_sub_type = event_preset,
+    xdm.event.tags = if(source_log_type = "trigger", arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
+    xdm.source.user.identifier = tmp_sched_actor,
+    xdm.source.cloud.project = circleci_project_id,
+    xdm.target.resource.type = "trigger",
+    xdm.target.resource.id = id,
+    xdm.target.resource.name = tmp_trigger_name,
+    xdm.target.resource.sub_type = tmp_provider,
+    xdm.target.resource.value = coalesce(tmp_cron, tmp_repo_full),
+    xdm.event.description = concat(
+        "CircleCI trigger ", coalesce(tmp_trigger_name, "unnamed"),
+        " (", coalesce(tmp_provider, "unknown provider"), ")",
+        " on definition ", coalesce(tmp_def_name, "unknown"),
+        ", project ", coalesce(circleci_project_id, "unknown"),
+        if(tmp_cron != null, concat(", cron ", tmp_cron), ""))
+;
+
+// Vendor:  circleci / Product: context_envvars / Dataset: circleci_context_envvars_raw
+// Shared-context and context environment-variable name inventory from the
+// CircleCI v2 API (GET /context and its /environment-variable list), ingested
+// hourly by the CircleCI Contexts Event Collector. Values are masked by the
+// API, so this is a names-only inventory (Pattern D). Two record kinds share
+// the dataset: source_log_type "context" (one per context) and
+// "context_envvar" (one per secret name). Spec-backed.
+//
+// EVENT FIELD MAPPING
+//   id / variable               -> xdm.event.id, xdm.target.resource.id
+//   source_log_type             -> xdm.event.type
+//   (created_at vs snapshot)    -> xdm.event.original_event_type *_created / *_inventory
+//   circleci_org_slug           -> xdm.source.cloud.project
+//   name (context) / variable   -> xdm.target.resource.name
+//   context_name                -> xdm.target.resource.sub_type (for env-var records)
+//   (summary)                   -> xdm.event.description
+//
+// NOT MAPPED
+//   updated_at        -- epoch/RFC3339; _time carries snapshot time
+//   context_id        -- carried in the description for env-var records
+[MODEL: dataset=circleci_context_envvars_raw]
+filter source_log_type != null
+| alter
+    tmp_kind = source_log_type,
+    tmp_ident = coalesce(variable, id),
+    tmp_name = coalesce(name, variable),
+    tmp_ctx = context_name,
+    tmp_is_new = if(timestamp_diff(_time, created_at, "MILLISECOND") <= 86400000, "yes", "no")
+| alter
+    xdm.observer.vendor = "circleci",
+    xdm.observer.product = "context_envvars",
+    xdm.event.id = tmp_ident,
+    xdm.event.type = tmp_kind,
+    xdm.event.original_event_type = if(
+        tmp_is_new = "yes" and tmp_kind = "context", "context_created",
+        tmp_is_new = "yes" and tmp_kind = "context_envvar", "context_envvar_created",
+        tmp_kind = "context", "context_inventory",
+        tmp_kind = "context_envvar", "context_envvar_inventory",
+        "GOCORTEX_UNMODELLED"),
+    xdm.event.operation = if(
+        tmp_is_new = "yes", XDM_CONST.OPERATION_TYPE_CREATE,
+        XDM_CONST.OPERATION_TYPE_AUDIT),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.source.cloud.project = circleci_org_slug,
+    xdm.target.resource.type = tmp_kind,
+    xdm.target.resource.id = tmp_ident,
+    xdm.target.resource.name = tmp_name,
+    xdm.target.resource.sub_type = tmp_ctx,
+    xdm.event.description = concat(
+        "CircleCI ", coalesce(tmp_kind, "context record"), " ", coalesce(tmp_name, "unnamed"),
+        if(tmp_ctx != null, concat(" in context ", tmp_ctx), ""),
+        " for organisation ", coalesce(circleci_org_slug, "unknown"))
+;
+
+// Vendor:  circleci / Product: project_settings / Dataset: circleci_project_settings_raw
+// Advanced project-settings posture snapshots from the CircleCI v2 API
+// (GET /project/{provider}/{org}/{project}/settings), ingested by the CircleCI
+// Project Settings Event Collector with the advanced object flattened to
+// top-level boolean columns (Pattern D). Spec-backed: classifies the Poisoned
+// Pipeline Execution preconditions from the advanced settings booleans.
+//
+// EVENT FIELD MAPPING
+//   circleci_project_slug       -> xdm.event.id, xdm.target.resource.id, xdm.target.resource.name
+//   source_log_type             -> xdm.event.type
+//   forks_receive_secret_env_vars / build_fork_prs -> xdm.event.original_event_type (risk class)
+//   (risk present)              -> xdm.alert.severity
+//   (summary)                   -> xdm.event.description
+//
+// NOT MAPPED
+//   disable_ssh / oss / write_settings_requires_admin / setup_workflows -- summarised in description
+[MODEL: dataset=circleci_project_settings_raw]
+filter circleci_project_slug != null
+| alter
+    tmp_fork_secrets = lowercase(to_string(forks_receive_secret_env_vars)),
+    tmp_build_forks = lowercase(to_string(build_fork_prs)),
+    tmp_disable_ssh = lowercase(to_string(disable_ssh)),
+    tmp_write_admin = lowercase(to_string(write_settings_requires_admin)),
+    tmp_slug = circleci_project_slug
+| alter
+    xdm.observer.vendor = "circleci",
+    xdm.observer.product = "project_settings",
+    xdm.event.id = tmp_slug,
+    xdm.event.type = coalesce(source_log_type, "project_settings"),
+    xdm.event.original_event_type = if(
+        tmp_fork_secrets = "true", "forks_receive_secrets",
+        tmp_build_forks = "true", "forks_build_enabled",
+        "project_settings_inventory"),
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.source.cloud.project = tmp_slug,
+    xdm.target.resource.type = "project_settings",
+    xdm.target.resource.id = tmp_slug,
+    xdm.target.resource.name = tmp_slug,
+    xdm.event.description = concat(
+        "CircleCI project ", coalesce(tmp_slug, "unknown"), " settings:",
+        " forks_receive_secret_env_vars=", coalesce(tmp_fork_secrets, "n/a"),
+        ", build_fork_prs=", coalesce(tmp_build_forks, "n/a"),
+        ", disable_ssh=", coalesce(tmp_disable_ssh, "n/a"),
+        ", write_settings_requires_admin=", coalesce(tmp_write_admin, "n/a"))
+;

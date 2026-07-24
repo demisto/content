@@ -1,0 +1,32 @@
+name: CircleCI - Insecure Fork Build Settings - by GoCortexIO
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = circleci_project_settings_raw
+  | filter xdm.event.original_event_type in ("forks_receive_secrets", "forks_build_enabled")
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.*
+alert_name: CircleCI insecure fork build settings on $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: CircleCI project $xdm.target.resource.name has fork-build settings enabled that are Poisoned Pipeline Execution preconditions. When forks_receive_secret_env_vars is on, a pull request from an external fork runs with the project's secrets and can exfiltrate them. Review whether forked pull request builds and secret exposure are intended.
+alert_domain: DOMAIN_POSTURE
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1195 - Supply Chain Compromise
+suppression_fields:
+- xdm.event.id
+global_rule_id: 47b01437-eff0-44b3-b412-c6f710c761f2
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '0 */6 * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: ''
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

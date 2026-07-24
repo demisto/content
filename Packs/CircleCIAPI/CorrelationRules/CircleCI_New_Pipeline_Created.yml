@@ -1,0 +1,32 @@
+name: CircleCI - New Pipeline Created - by GoCortexIO
+severity: SEV_020_LOW
+xql_query: |-
+  datamodel dataset = circleci_pipelines_raw
+  | filter xdm.event.type = "pipeline"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.operation_sub_type, xdm.event.original_event_type, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.cloud.project, xdm.target.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: CircleCI new pipeline on $xdm.target.resource.name by $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A new CircleCI pipeline appeared on project $xdm.target.resource.name, triggered by $xdm.source.user.username. New pipeline activity can indicate unexpected build or deployment actions in the CI/CD environment.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0002 - Execution:
+  - T1072 - Software Deployment Tools
+suppression_fields:
+- xdm.event.id
+global_rule_id: 16affcdd-2406-4c48-8cf4-b2e021ff309a
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '0 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: ''
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
