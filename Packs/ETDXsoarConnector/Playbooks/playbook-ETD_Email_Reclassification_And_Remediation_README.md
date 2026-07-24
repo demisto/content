@@ -1,4 +1,5 @@
-Allows analysts to reclassify and remediate Cisco ETD emails.
+Allows analysts to review Cisco ETD emails, reclassify message verdicts, and perform remediation actions.
+
 
 ## Dependencies
 
@@ -14,7 +15,8 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* IsIntegrationAvailable
+* Print
 
 ### Commands
 
@@ -30,4 +32,8 @@ There are no inputs for this playbook.
 ---
 There are no outputs for this playbook.
 
+## Playbook Image
 
+---
+
+![ETD Email Reclassification And Remediation](../doc_files/ETD_Email_Reclassification_And_Remediation.png)

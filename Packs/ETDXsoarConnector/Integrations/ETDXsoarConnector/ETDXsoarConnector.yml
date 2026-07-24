@@ -35,6 +35,9 @@ script:
     - contextPath: ETD.Message.Folder
       description: The updated folder.
       type: String
+sectionorder:
+- Connect
+- Collect
 configuration:
 - display: ETD Base URL
   name: etd_base_url
