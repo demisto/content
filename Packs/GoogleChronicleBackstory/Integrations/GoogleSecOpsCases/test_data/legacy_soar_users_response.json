@@ -1,0 +1,59 @@
+{
+  "legacySoarUsers": [
+    {
+      "name": "projects/test-project/locations/us/instances/test-instance/legacySoarUsers/1",
+      "firstName": "Active",
+      "lastName": "User",
+      "socRoles": [1],
+      "email": "active.user@example.com",
+      "userType": "EXTERNAL",
+      "lastLoginTime": "0",
+      "environmentsJson": "[\"*\"]",
+      "permissionGroups": [{"id": "1", "name": "Admins"}],
+      "accountState": "ACTIVE",
+      "loginIdentifier": "active.user@example.com",
+      "providerName": "SecOps",
+      "allowedPlatforms": ["0"],
+      "displayName": "00000000-0000-0000-0000-000000000111",
+      "userFullName": "Active User",
+      "hasAllEnvironmentsAccess": true
+    },
+    {
+      "name": "projects/test-project/locations/us/instances/test-instance/legacySoarUsers/2",
+      "firstName": "No",
+      "lastName": "Display",
+      "socRoles": [1],
+      "email": "nodisplay.user@example.com",
+      "userType": "EXTERNAL",
+      "lastLoginTime": "0",
+      "environmentsJson": "[\"*\"]",
+      "permissionGroups": [{"id": "1", "name": "Admins"}],
+      "accountState": "ACTIVE",
+      "loginIdentifier": "nodisplay.user@example.com",
+      "providerName": "SecOps",
+      "allowedPlatforms": ["0"],
+      "displayName": "",
+      "userFullName": "No Display",
+      "hasAllEnvironmentsAccess": true
+    },
+    {
+      "name": "projects/test-project/locations/us/instances/test-instance/legacySoarUsers/3",
+      "firstName": "Inactive",
+      "lastName": "User",
+      "socRoles": [1],
+      "email": "inactive.user@example.com",
+      "userType": "EXTERNAL",
+      "lastLoginTime": "0",
+      "environmentsJson": "[\"*\"]",
+      "permissionGroups": [{"id": "1", "name": "Admins"}],
+      "accountState": "DISABLED",
+      "loginIdentifier": "inactive.user@example.com",
+      "providerName": "SecOps",
+      "allowedPlatforms": ["0"],
+      "displayName": "00000000-0000-0000-0000-000000000333",
+      "userFullName": "Inactive User",
+      "hasAllEnvironmentsAccess": false
+    }
+  ],
+  "totalSize": 3
+}

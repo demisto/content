@@ -1,0 +1,1314 @@
+id: Case Investigation - Google SecOps
+version: -1
+name: Case Investigation - Google SecOps
+description: This playbook investigates a Google SecOps case by retrieving the latest case information, related alerts, and their entities, and updating the case stage. It also calculates severity from IOC scores, updates the incident and case priority accordingly, creates entities in the case from the identified IOCs, and posts a summary comment on the case.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: cbef25ff-77fe-4330-833c-c37995a9e8ad
+    type: start
+    task:
+      id: cbef25ff-77fe-4330-833c-c37995a9e8ad
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 57c29639-e104-486e-88dd-8d0efc9548d0
+    type: condition
+    task:
+      id: 57c29639-e104-486e-88dd-8d0efc9548d0
+      version: -1
+      name: Is Google SecOps Cases integration enabled?
+      description: Checks whether Google SecOps Cases integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: GoogleSecOpsCases
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a9d93bec-4145-41d7-8732-52204155f344
+    type: regular
+    task:
+      id: a9d93bec-4145-41d7-8732-52204155f344
+      version: -1
+      name: Clear previous output
+      description: Delete the custom keys from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: Provide the case information,Provide the new stage for the case,FoundIndicators,calculated_severity,Provide the alert ID
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5386b01a-0379-4122-8319-05f2c5a44b47
+    type: condition
+    task:
+      id: 5386b01a-0379-4122-8319-05f2c5a44b47
+      version: -1
+      name: Check whether the case information is available in playbook input
+      description: Check whether the object ID and snapshot ID are available or not in the playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "YES":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.case_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a875243d-d537-4ecd-8816-0a0d5a0ff08a
+    type: collection
+    task:
+      id: a875243d-d537-4ecd-8816-0a0d5a0ff08a
+      version: -1
+      name: Collect Case Information
+      description: Collecting case ID to retrieve the case data.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide the case ID.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the case ID.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The case ID. Note: Use gcb-case-list command to retrieve case ID.'
+        readonly: false
+      title: Provide the case information
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2b7c7ede-167b-49f6-8707-b94303e66edc
+    type: regular
+    task:
+      id: 2b7c7ede-167b-49f6-8707-b94303e66edc
+      version: -1
+      name: Retrieve case data
+      description: Syncs the latest case information, related alerts and alert entities from Google SecOps and updates the XSOAR incident data.
+      scriptName: GoogleSecOpsSyncCaseInformation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alert_page_size:
+        complex:
+          root: inputs.alert_limit
+      case_id:
+        complex:
+          root: inputs.case_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide the case information.Answers.0
+                iscontext: true
+      entity_page_size:
+        complex:
+          root: inputs.entity_limit
+    reputationcalc: 2
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e8de9b17-b56d-4e01-81b0-a2f108fd1e83
+    type: regular
+    task:
+      id: e8de9b17-b56d-4e01-81b0-a2f108fd1e83
+      version: -1
+      name: Fetch Indicators from incident
+      description: commands.local.cmd.find.indicators
+      script: Builtin|||findIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+      - "16"
+      - "7"
+    scriptarguments:
+      extend-context:
+        simple: FoundIndicators=.={"value":val.value,"indicator_type":val.indicator_type,"score":val.score}
+      query:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'investigationIDs:'
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 30255c69-18e5-499e-80b9-06ef799d26fb
+    type: title
+    task:
+      id: 30255c69-18e5-499e-80b9-06ef799d26fb
+      version: -1
+      name: Create the entities in the case
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d1d79010-0262-4f52-8902-d7609212605e
+    type: condition
+    task:
+      id: d1d79010-0262-4f52-8902-d7609212605e
+      version: -1
+      name: Are the new IOCs data available?
+      description: Checks whether any new IOCs are available that are not present in the case's entity data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "Yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: FoundIndicators.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: incident.googlesecopsentitydetails.identifier
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c959d71e-0a87-41cb-8c1e-76cf70ae76cc
+    type: condition
+    task:
+      id: c959d71e-0a87-41cb-8c1e-76cf70ae76cc
+      version: -1
+      name: Whether to create the entities in the case
+      description: Create the entities in Google SecOps Case?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "No":
+      - "21"
+      "Yes":
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Create the entities in Google SecOps Case?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: fdc1f963-f761-4e4a-8523-ebe9bbe6bce5
+    type: collection
+    task:
+      id: fdc1f963-f761-4e4a-8523-ebe9bbe6bce5
+      version: -1
+      name: Collect the alert ID in which to create the entity
+      description: Collect the alert ID for create the entity
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the alert ID
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the alert ID in which to create the entity.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - complex:
+            root: incident.googlesecopsalertdetails
+            accessor: alertId
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The alert ID. Note: Use gcb-case-alert-list to retrieve alert ID.'
+        readonly: false
+      title: Provide the alert ID
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 24827572-7729-4d13-84da-497fae58eb39
+    type: regular
+    task:
+      id: 24827572-7729-4d13-84da-497fae58eb39
+      version: -1
+      name: Create the entities from the IOCs
+      description: Manually create a new involved entity within a case alert.
+      script: '|||gcb-case-alert-entity-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      alert_id:
+        complex:
+          root: Provide the alert ID.Answers
+          accessor: "0"
+      case_id:
+        complex:
+          root: inputs.case_id
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide the case information.Answers.0
+                iscontext: true
+      entity_type:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: FoundIndicators.value
+                iscontext: true
+              right:
+                value:
+                  simple: incident.googlesecopsentitydetails.identifier
+                iscontext: true
+          accessor: indicator_type
+          transformers:
+          - operator: toUpperCase
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ADDRESS
+              toReplace:
+                value:
+                  simple: IPV6
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ADDRESS
+              toReplace:
+                value:
+                  simple: IP
+      identifier:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: FoundIndicators.value
+                iscontext: true
+              right:
+                value:
+                  simple: incident.googlesecopsentitydetails.identifier
+                iscontext: true
+          accessor: value
+      suspicious:
+        complex:
+          root: FoundIndicators
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: FoundIndicators.value
+                iscontext: true
+              right:
+                value:
+                  simple: incident.googlesecopsentitydetails.identifier
+                iscontext: true
+          accessor: score
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs>rhs
+              conditionB: {}
+              conditionInBetween: {}
+              else:
+                value:
+                  simple: "false"
+              equals: {}
+              lhs: {}
+              lhsB: {}
+              options:
+                value:
+                  simple: input_data_type:lhs=value
+              optionsB: {}
+              rhs:
+                value:
+                  simple: "1"
+              rhsB: {}
+              then:
+                value:
+                  simple: "true"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 42da3881-8203-4ffb-8881-bba679d0fd13
+    type: title
+    task:
+      id: 42da3881-8203-4ffb-8881-bba679d0fd13
+      version: -1
+      name: Update the stage of the case
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 11ce8876-8b0d-4cd6-8869-5749ca464119
+    type: condition
+    task:
+      id: 11ce8876-8b0d-4cd6-8869-5749ca464119
+      version: -1
+      name: Whether to update the stage of the case
+      description: Update the stage of Google SecOps Case?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "No":
+      - "21"
+      "Yes":
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Update the stage of violation?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6695d8ae-8f7e-4d91-8a2b-f7635998bb94
+    type: collection
+    task:
+      id: 6695d8ae-8f7e-4d91-8a2b-f7635998bb94
+      version: -1
+      name: Collect the new stage of the case
+      description: Collect the new stage of the case.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect the new stage of case
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the new stage for case.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - {}
+        - simple: OPEN
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'The new workflow stage name. Note: Use gcb-case-stage-definition-list to retrieve case stage definition list.'
+        readonly: false
+      title: Provide the new stage for the case
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 43b89c2d-fffc-4979-8319-daa51e20a60e
+    type: regular
+    task:
+      id: 43b89c2d-fffc-4979-8319-daa51e20a60e
+      version: -1
+      name: Update the stage of the case
+      description: Change the workflow stage of the specified cases.
+      script: '|||gcb-case-stage-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      case_ids:
+        complex:
+          root: inputs.case_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide the case information.Answers.0
+                iscontext: true
+      stage:
+        complex:
+          root: Provide the new stage for the case.Answers
+          accessor: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 936f190f-f030-4b9e-8669-b9b750cecbed
+    type: title
+    task:
+      id: 936f190f-f030-4b9e-8669-b9b750cecbed
+      version: -1
+      name: Update the incident severity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d8714e95-9df8-43cb-8df0-a976f5415b8c
+    type: regular
+    task:
+      id: d8714e95-9df8-43cb-8df0-a976f5415b8c
+      version: -1
+      name: Set calculated severity
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      key:
+        simple: calculated_severity
+      value:
+        complex:
+          root: FoundIndicators
+          accessor: score
+          transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
+          - operator: FirstArrayElement
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "0"
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 0,1,2,3
+              mapped_values:
+                value:
+                  simple: 0,0.5,2,3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 47c0dd3e-9268-476e-8d53-bc996c708d04
+    type: condition
+    task:
+      id: 47c0dd3e-9268-476e-8d53-bc996c708d04
+      version: -1
+      name: Is calculated severity higher?
+      description: Compares calculated severity against current incident severity.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              complex:
+                root: calculated_severity
+            iscontext: true
+          right:
+            value:
+              simple: incident.severity
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: d8097fd6-6a7a-412d-8165-33ea76ef41aa
+    type: regular
+    task:
+      id: d8097fd6-6a7a-412d-8165-33ea76ef41aa
+      version: -1
+      name: Set Incident severity
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      severity:
+        complex:
+          root: calculated_severity
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: e71311cb-bf37-43af-8de9-7d6c7d8a21a6
+    type: regular
+    task:
+      id: e71311cb-bf37-43af-8de9-7d6c7d8a21a6
+      version: -1
+      name: Update the case priority
+      description: Change the priority of the specified cases.
+      script: '|||gcb-case-priority-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      case_ids:
+        complex:
+          root: inputs.case_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide the case information.Answers.0
+                iscontext: true
+      priority:
+        complex:
+          root: calculated_severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 0,0.5,2,3
+              mapped_values:
+                value:
+                  simple: UNSPECIFIED,INFO,MEDIUM,HIGH
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: d67b28e2-9d0d-4153-8784-c44cf1e3db67
+    type: regular
+    task:
+      id: d67b28e2-9d0d-4153-8784-c44cf1e3db67
+      version: -1
+      name: Add comment in the case
+      description: Add a comment to the specified case.
+      script: '|||gcb-case-comment-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      case_id:
+        complex:
+          root: inputs.case_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide the case information.Answers.0
+                iscontext: true
+      comment:
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'This case has been automatically processed by XSOAR. The XSOAR incident ID is '
+              suffix:
+                value:
+                  simple: .
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1790e897-8421-406d-8708-9430e259b45f
+    type: title
+    task:
+      id: 1790e897-8421-406d-8708-9430e259b45f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -190,
+          "y": 2140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d2afbb97-23fe-4bc8-8ec5-41a35d1a1733
+    type: condition
+    task:
+      id: d2afbb97-23fe-4bc8-8ec5-41a35d1a1733
+      version: -1
+      name: Are the IOCs data available?
+      description: Checks whether the IOCs data are available in the incident context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FoundIndicators
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_14_Yes": 0.55,
+      "13_21_No": 0.45,
+      "18_19_yes": 0.56,
+      "18_21_#default#": 0.35,
+      "1_22_#default#": 0.52,
+      "1_2_yes": 0.45,
+      "23_17_yes": 0.41,
+      "23_21_#default#": 0.23,
+      "3_4_#default#": 0.61,
+      "3_5_YES": 0.49,
+      "8_21_#default#": 0.28,
+      "8_9_Yes": 0.41,
+      "9_10_Yes": 0.51,
+      "9_21_No": 0.34
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 1360,
+        "x": -450,
+        "y": -280
+      }
+    }
+  }
+inputs:
+- key: case_id
+  value:
+    complex:
+      root: incident
+      accessor: googlesecopscaseid
+  required: false
+  description: |-
+    The ID of the case.
+
+    Note: Use gcb-case-list command to retrieve case ID.
+  playbookInputQuery:
+- key: alert_limit
+  value:
+    simple: "1000"
+  required: false
+  description: Number of alerts to retrieve in the response. The maximum allowed size is 1000.
+  playbookInputQuery:
+- key: entity_limit
+  value:
+    simple: "1000"
+  required: false
+  description: Number of entities to retrieve in the response. The maximum allowed size is 1000.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
