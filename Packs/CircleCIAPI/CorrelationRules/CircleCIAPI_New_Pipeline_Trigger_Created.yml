@@ -1,0 +1,33 @@
+name: CircleCI - New Pipeline Trigger Created - by GoCortexIO
+description: Detects a newly created CircleCI pipeline trigger (scheduled or push), a persistence vector for recurring execution.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = circleci_triggers_raw
+  | filter xdm.event.original_event_type = "trigger_created"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.operation_sub_type, xdm.event.original_event_type, xdm.event.description, xdm.source.user.identifier, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: CircleCI new $xdm.target.resource.sub_type trigger $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A new pipeline trigger ($xdm.target.resource.name, provider $xdm.target.resource.sub_type) appeared on CircleCI project $xdm.source.cloud.project. New triggers, particularly scheduled ones, can establish persistent execution in the CI/CD environment and should be verified.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0003 - Persistence:
+  - T1053 - Scheduled Task/Job
+suppression_fields:
+- xdm.event.id
+global_rule_id: a9f93dc4-a54a-4c1d-8c45-fd6b6e95899d
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '30 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: ''
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

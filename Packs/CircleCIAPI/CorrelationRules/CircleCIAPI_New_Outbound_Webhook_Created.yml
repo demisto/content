@@ -1,0 +1,33 @@
+name: CircleCI - New Outbound Webhook Created - by GoCortexIO
+description: Detects a newly created CircleCI outbound webhook, a potential data-exfiltration channel or attacker-controlled callback.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = circleci_webhooks_raw
+  | filter xdm.event.original_event_type = "webhook_created"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.operation, xdm.event.original_event_type, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.value, xdm.target.resource.sub_type, xdm.*
+alert_name: CircleCI new outbound webhook $xdm.target.resource.name to $xdm.target.resource.value
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A new outbound webhook ($xdm.target.resource.name) appeared on CircleCI project $xdm.source.cloud.project delivering to $xdm.target.resource.value. New webhooks can exfiltrate build metadata or provide attacker-controlled callbacks and should be verified.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0010 - Exfiltration:
+  - T1567 - Exfiltration Over Web Service
+suppression_fields:
+- xdm.event.id
+global_rule_id: a88b8daf-ea74-4be6-825b-dd3ce321e6c7
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '15 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: ''
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
