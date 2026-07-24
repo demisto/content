@@ -59,3 +59,4 @@
 !prisma-airs-redteam-network-channels-list
 !prisma-airs-redteam-network-channels-stats
 !prisma-airs-redteam-languages-list
+!prisma-airs-redteam-targets-templates

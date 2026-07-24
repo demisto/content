@@ -4890,6 +4890,120 @@ def redteam_targets_metadata_command(client: Client, args: dict[str, Any]) -> Co
     )
 
 
+def redteam_targets_validate_auth_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Validate authentication credentials for a Red Team target.
+
+    Checks whether the supplied auth configuration is accepted by the target provider
+    without creating or modifying a target. Useful for verifying credentials before
+    creating a target.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    import json
+
+    # Required arguments
+    auth_type = args.get("auth_type")
+    if not auth_type:
+        raise ValueError("auth_type is required")
+
+    auth_config_raw = args.get("auth_config")
+    if not auth_config_raw:
+        raise ValueError("auth_config is required (JSON object)")
+
+    # Build request body according to TargetAuthValidationRequestSchema
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/models/red-team.ts (TargetAuthValidationRequestSchema)
+    request_body: dict[str, Any] = {
+        "auth_type": auth_type,
+        "auth_config": json.loads(auth_config_raw),
+    }
+
+    # Optional identifiers
+    if args.get("target_id"):
+        request_body["target_id"] = args.get("target_id")
+    if args.get("network_broker_channel_uuid"):
+        request_body["network_broker_channel_uuid"] = args.get("network_broker_channel_uuid")
+
+    # Call Red Team target auth validation endpoint
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/red-team/targets-client.ts (validateAuth method)
+    # Endpoint: POST /v1/target/validate-auth
+    # Response: TargetAuthValidationResponse - { validated, token_preview?, expires_in? }
+    url_suffix = f"{RED_TEAM_TARGETS_ENDPOINT}/validate-auth"
+    response = client.http_request(method="POST", url_suffix=url_suffix, json_data=request_body, use_redteam_mgmt=True)
+
+    result = response if isinstance(response, dict) else {}
+
+    validation_info = {
+        "auth_type": auth_type,
+        "validated": result.get("validated"),
+        "token_preview": result.get("token_preview"),
+        "expires_in": result.get("expires_in"),
+    }
+
+    readable_output = tableToMarkdown(
+        "Red Team Target Auth Validation",
+        [validation_info],
+        headers=["auth_type", "validated", "token_preview", "expires_in"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetAuthValidation",
+        outputs=result,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_targets_templates_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List Red Team target configuration templates per provider.
+
+    Returns provider-keyed templates (e.g., OPENAI, HUGGING_FACE, DATABRICKS, BEDROCK,
+    REST, STREAMING, WEBSOCKET) describing the connection fields expected for each
+    target provider type.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    # Call Red Team target templates endpoint
+    # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/red-team/targets-client.ts (getTargetTemplates method)
+    # Endpoint: GET /v1/template/target-templates
+    # Response: TargetTemplateCollection - provider-keyed dict of template definitions
+    url_suffix = f"{RED_TEAM_TEMPLATE_ENDPOINT}/target-templates"
+    response = client.http_request(method="GET", url_suffix=url_suffix, use_redteam_mgmt=True)
+
+    templates = response if isinstance(response, dict) else {}
+
+    # Summarize as one row per provider showing the available field names.
+    template_rows = []
+    for provider, definition in templates.items():
+        fields = ", ".join(definition.keys()) if isinstance(definition, dict) else str(definition)
+        template_rows.append({"Provider": provider, "Fields": fields})
+
+    readable_output = tableToMarkdown(
+        "Red Team Target Templates",
+        template_rows,
+        headers=["Provider", "Fields"],
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamTargetTemplate",
+        outputs=templates,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def redteam_scan_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a new Red Team scan job.
 
@@ -9108,6 +9222,12 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-targets-metadata":
             return_results(redteam_targets_metadata_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-validate-auth":
+            return_results(redteam_targets_validate_auth_command(client, args))
+
+        elif command == "prisma-airs-redteam-targets-templates":
+            return_results(redteam_targets_templates_command(client, args))
 
         elif command == "prisma-airs-redteam-scan-create":
             return_results(redteam_scan_create_command(client, args))

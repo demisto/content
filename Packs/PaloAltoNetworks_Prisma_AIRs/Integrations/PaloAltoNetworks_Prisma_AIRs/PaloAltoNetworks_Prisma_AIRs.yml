@@ -4005,6 +4005,36 @@ script:
     - contextPath: PrismaAIRs.RedTeamTargetMetadata
       description: Field metadata dictionary with field definitions.
       type: Unknown
+  - name: prisma-airs-redteam-targets-validate-auth
+    description: Validate authentication credentials for a Red Team target provider without creating or modifying a target. Useful for verifying credentials before creating a target.
+    arguments:
+    - name: auth_type
+      description: The authentication type to validate (for example, HEADERS, BEARER, API_KEY).
+      required: true
+    - name: auth_config
+      description: 'Authentication configuration as a JSON object (for example: {"Authorization": "Bearer sk-xxx"}).'
+      required: true
+    - name: target_id
+      description: Optional UUID of an existing target to validate credentials against.
+    - name: network_broker_channel_uuid
+      description: Optional network broker channel UUID to route the validation through.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetAuthValidation.validated
+      description: Whether the supplied credentials were successfully validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetAuthValidation.token_preview
+      description: A masked preview of the validated token, if provided.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetAuthValidation.expires_in
+      description: The number of seconds until the validated token expires, if provided.
+      type: Number
+  - name: prisma-airs-redteam-targets-templates
+    description: List Red Team target configuration templates per provider (for example, OPENAI, HUGGING_FACE, DATABRICKS, BEDROCK, REST, STREAMING, WEBSOCKET). Each template describes the connection fields expected for that target provider type.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetTemplate
+      description: Provider-keyed dictionary of target configuration templates.
+      type: Unknown
   - name: prisma-airs-redteam-scan-create
     description: Create a new Red Team scan job. This command submits the scan and returns immediately without polling. Use prisma-airs-redteam-scan-get to check status.
     arguments:

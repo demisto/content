@@ -4170,6 +4170,87 @@ There are no input arguments for this command.
 | --- | --- | --- |
 | PrismaAIRs.RedTeamTargetMetadata | Unknown | Field metadata dictionary with field definitions. |
 
+### prisma-airs-redteam-targets-validate-auth
+
+***
+Validate authentication credentials for a Red Team target provider without creating or modifying a target. Useful for verifying credentials before creating a target. The server proxies the credentials against the target provider's endpoint, so valid live credentials (and typically a `target_id`) are required for a successful validation.
+
+#### Base Command
+
+`prisma-airs-redteam-targets-validate-auth`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| auth_type | The authentication type to validate. Supported values include HEADERS, BASIC_AUTH, OAUTH2. | Required |
+| auth_config | Authentication configuration as a JSON object \(e.g., \`{"headers": {"Authorization": "Bearer sk-xxx"}}\`\). | Required |
+| target_id | Optional UUID of an existing target to validate credentials against. | Optional |
+| network_broker_channel_uuid | Optional network broker channel UUID to route the validation through. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamTargetAuthValidation.validated | Boolean | Whether the supplied credentials were successfully validated. |
+| PrismaAIRs.RedTeamTargetAuthValidation.token_preview | String | A masked preview of the validated token, if provided. |
+| PrismaAIRs.RedTeamTargetAuthValidation.expires_in | Number | The number of seconds until the validated token expires, if provided. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-targets-validate-auth auth_type="HEADERS" auth_config=`{"headers":{"Authorization":"Bearer sk-your-api-key"}}` target_id="1b127819-8e52-4b38-aaab-4a967e107fe9"
+```
+
+#### Human Readable Output
+
+>### Red Team Target Auth Validation
+>
+>|Auth Type|Validated|Token Preview|Expires In|
+>|---|---|---|---|
+>| HEADERS | true | sk-\*\*\*xyz | 3600 |
+
+### prisma-airs-redteam-targets-templates
+
+***
+List Red Team target configuration templates per provider. Each template describes the connection fields expected for that target provider type. Read-only.
+
+#### Base Command
+
+`prisma-airs-redteam-targets-templates`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaAIRs.RedTeamTargetTemplate | Unknown | Provider-keyed dictionary of target configuration templates. |
+
+#### Command example
+
+```
+!prisma-airs-redteam-targets-templates
+```
+
+#### Human Readable Output
+
+>### Red Team Target Templates
+>
+>|Provider|Fields|
+>|---|---|
+>| OPENAI | id, name, is_custom, url, request_json, file_request_json, response_json |
+>| HUGGING_FACE | id, name, is_custom, url, request_json, response_json |
+>| DATABRICKS | id, name, is_custom, url, request_json, response_json |
+>| BEDROCK | id, name, is_custom, url, request_json, file_request_json, response_json |
+>| REST | id, name, is_custom, url, request_json, file_request_json, response_json |
+>| STREAMING | id, name, url, is_custom, request_json, file_request_json, response_json |
+>| WEBSOCKET | id, name, is_custom, url, request_json, file_request_json, response_json, streaming_request_json, streaming_response_json |
+>| MS_COPILOT_STUDIO | id, name, is_custom |
+>| CUSTOM_TARGET_ADAPTER | id, name, is_custom |
+
 ### prisma-airs-redteam-scan-create
 
 ***

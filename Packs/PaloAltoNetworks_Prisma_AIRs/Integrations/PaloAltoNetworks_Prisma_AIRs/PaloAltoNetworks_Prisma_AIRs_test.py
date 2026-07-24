@@ -115,6 +115,8 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_targets_profile_command,
     redteam_targets_update_profile_command,
     redteam_targets_metadata_command,
+    redteam_targets_templates_command,
+    redteam_targets_validate_auth_command,
 )
 
 
@@ -970,6 +972,55 @@ class TestCommands:
         assert result.outputs["rate_limit"]["type"] == "number"
         assert result.outputs["multi_turn"]["type"] == "boolean"
         assert result.outputs["base_model"]["required"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_validate_auth_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam targets validate-auth command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"validated": True, "token_preview": "sk-***xyz", "expires_in": 3600}
+
+        args = {"auth_type": "HEADERS", "auth_config": '{"Authorization": "Bearer sk-xxx"}'}
+        result = redteam_targets_validate_auth_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetAuthValidation"
+        assert result.outputs["validated"] is True
+        assert result.outputs["expires_in"] == 3600
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "POST"
+        assert kwargs["url_suffix"] == "/v1/target/validate-auth"
+        assert kwargs["use_redteam_mgmt"] is True
+        assert kwargs["json_data"]["auth_type"] == "HEADERS"
+        assert kwargs["json_data"]["auth_config"] == {"Authorization": "Bearer sk-xxx"}
+
+    @patch.object(Client, "http_request")
+    def test_redteam_targets_templates_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """Test redteam targets templates command.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "OPENAI": {"api_key": "string", "model": "string"},
+            "REST": {"url": "string", "headers": "object"},
+        }
+
+        args: dict[str, str] = {}
+        result = redteam_targets_templates_command(mock_client, args)
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamTargetTemplate"
+        assert "OPENAI" in result.outputs
+        assert result.outputs["OPENAI"]["model"] == "string"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/template/target-templates"
+        assert kwargs["use_redteam_mgmt"] is True
 
     @patch.object(Client, "http_request")
     def test_runtime_dlp_profiles_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
