@@ -1,0 +1,86 @@
+{
+    "cloudflare_account_audit_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "owner": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource": {
+            "type": "string",
+            "is_array": false
+        },
+        "metadata": {
+            "type": "string",
+            "is_array": false
+        },
+        "newValue": {
+            "type": "string",
+            "is_array": false
+        },
+        "oldValue": {
+            "type": "string",
+            "is_array": false
+        },
+        "interface": {
+            "type": "string",
+            "is_array": false
+        },
+        "cloudflare_account_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "cloudflare_security_insights_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "issue_class": {
+            "type": "string",
+            "is_array": false
+        },
+        "issue_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "subject": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "payload": {
+            "type": "string",
+            "is_array": false
+        },
+        "cloudflare_account_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

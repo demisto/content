@@ -1,0 +1,37 @@
+name: Cloudflare - Bulk DNS Record Deletion - by GoCortexIO
+description: Detects an actor deleting many Cloudflare DNS records in a short window, a destructive or service-disrupting action.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = cloudflare_account_audit_raw
+  | alter event_verb = lowercase(to_string(xdm.event.original_event_type))
+  | filter (event_verb contains "del" or event_verb contains "remove") and xdm.target.resource.type = "dns.record"
+  | comp count() as deletion_count by xdm.event.type, xdm.source.cloud.project, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.target.resource.type
+  | filter deletion_count >= 10
+  | fields xdm.event.type, xdm.source.cloud.project, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.target.resource.type, deletion_count
+alert_name: Cloudflare bulk DNS record deletion - $deletion_count records
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A large number of Cloudflare DNS records were deleted, which may indicate data manipulation, service disruption or destruction of resources.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0040 - Impact:
+  - T1565 - Data Manipulation
+suppression_fields:
+- xdm.source.cloud.project
+- xdm.source.user.username
+global_rule_id: 49daf49b-2403-4073-a728-3bd4216d69d0
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 1 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: ''
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

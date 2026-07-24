@@ -1,0 +1,32 @@
+name: Cloudflare - Security Posture Finding - by GoCortexIO
+description: Detects a Cloudflare Security Center finding above informational severity.
+severity: User Defined
+user_defined_severity: xdm.alert.severity
+xql_query: |-
+  datamodel dataset = cloudflare_security_insights_raw
+  | filter xdm.alert.severity in ("Medium", "High", "Critical")
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.alert.name, xdm.alert.severity, xdm.alert.subcategory, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.*
+alert_name: Cloudflare posture finding - $xdm.alert.name on $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.subcategory
+alert_description: $xdm.event.description
+alert_domain: DOMAIN_POSTURE
+mitre_defs: {}
+suppression_fields:
+- xdm.event.id
+global_rule_id: 5a5df95f-d590-40c5-ae9e-183294bf2979
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 1 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: ''
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

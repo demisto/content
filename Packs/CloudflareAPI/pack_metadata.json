@@ -1,0 +1,28 @@
+{
+  "name": "Cloudflare API",
+  "description": "Integrates the Cloudflare API with Cortex, collecting Cloudflare logs and activity into Cortex datasets and mapping them to the XDM data model. Ships a growing set of per-endpoint event collectors (starting with the Cloudflare Audit Logs collector), each with its own dataset and XDM modelling.",
+  "support": "community",
+  "currentVersion": "2.0.2",
+  "author": "GoCortexIO",
+  "url": "",
+  "email": "",
+  "categories": [
+    "Analytics & SIEM"
+  ],
+  "tags": [
+    "Event Collector"
+  ],
+  "useCases": [],
+  "keywords": [
+    "Cloudflare",
+    "Audit Logs",
+    "Event Collector",
+    "XDM"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2",
+    "platform"
+  ],
+  "githubUser": []
+}
