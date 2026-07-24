@@ -1,7 +1,14 @@
 # SPDX-FileCopyrightText: GoCortexIO
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Unit tests for the CircleCI Pipelines Event Collector."""
+from datetime import datetime, timedelta, timezone
+
 import CircleCIPipelinesEventCollector as collector
+
+
+def _ts(hours_ago):
+    """A timestamp N hours before now, so window-relative tests are deterministic."""
+    return (datetime.now(timezone.utc) - timedelta(hours=hours_ago)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
 class MockClient:
@@ -109,15 +116,16 @@ def test_fetch_events_keeps_cursor_when_nothing_new():
 
 
 def test_fetch_events_isolates_per_org_state():
+    recent = _ts(1)  # within the first_fetch window regardless of run date
     pages = {
         "first": {
-            "items": [_pipeline("x", "2026-07-20T14:00:00.000Z")],
+            "items": [_pipeline("x", recent)],
             "next_page_token": None,
         }
     }
     client = MockClient(pages)
-    last_run = {"org1": {"last_ts": "2026-07-20T13:00:00.000Z", "last_ids": ["d"]}}
+    last_run = {"org1": {"last_ts": _ts(2), "last_ids": ["d"]}}
     events, next_run = collector.fetch_events(client, ["org1", "org2"], last_run, "3 days", 100)
     assert len(events) == 2  # one per org
     assert set(next_run.keys()) == {"org1", "org2"}
-    assert next_run["org1"]["last_ts"] == "2026-07-20T14:00:00.000Z"
+    assert next_run["org1"]["last_ts"] == recent

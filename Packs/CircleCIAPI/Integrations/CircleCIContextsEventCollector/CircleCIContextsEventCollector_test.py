@@ -33,7 +33,8 @@ def test_emits_context_and_envvar_records():
     assert len(events) == 3  # 1 context + 2 env vars
     ctx = [e for e in events if e["source_log_type"] == "context"]
     var = [e for e in events if e["source_log_type"] == "context_envvar"]
-    assert len(ctx) == 1 and len(var) == 2
+    assert len(ctx) == 1
+    assert len(var) == 2
     assert ctx[0]["name"] == "deploy"
     assert all(e["context_name"] == "deploy" for e in var)
     assert all(e["circleci_org_slug"] == "org" for e in events)

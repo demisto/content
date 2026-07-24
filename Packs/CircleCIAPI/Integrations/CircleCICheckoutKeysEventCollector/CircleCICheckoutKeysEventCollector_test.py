@@ -28,8 +28,10 @@ def test_snapshot_normalises_keys_and_adds_metadata():
     events = collector.fetch_events(MockClient(pages), ["org/proj"], 100)
     assert len(events) == 1
     e = events[0]
-    assert e["public_key"] == "ssh-rsa AAAA" and "public-key" not in e
-    assert e["created_at"] == "2026-07-23T10:00:00Z" and "created-at" not in e
+    assert e["public_key"] == "ssh-rsa AAAA"
+    assert "public-key" not in e
+    assert e["created_at"] == "2026-07-23T10:00:00Z"
+    assert "created-at" not in e
     assert e["source_log_type"] == "checkout_key"
     assert e["circleci_project_slug"] == "org/proj"
     assert e["_time"] == e["snapshot_at"]

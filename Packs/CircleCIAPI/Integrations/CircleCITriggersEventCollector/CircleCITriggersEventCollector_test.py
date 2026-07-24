@@ -75,9 +75,11 @@ def test_discovery_resolves_and_caches():
     projects = {"org/a": {"id": "uuid-a"}}
     client = MockClient({}, {}, pipeline_pages, projects)
     ids, cache = collector.discover_project_ids(client, ["org"], {})
-    assert ids == ["uuid-a"] and cache == {"org/a": "uuid-a"}
+    assert ids == ["uuid-a"]
+    assert cache == {"org/a": "uuid-a"}
     ids2, _ = collector.discover_project_ids(client, ["org"], cache)
-    assert ids2 == ["uuid-a"] and client.project_calls == 1  # second pass cached
+    assert ids2 == ["uuid-a"]
+    assert client.project_calls == 1  # second pass cached
 
 
 def test_empty_inventory_returns_empty_list():
