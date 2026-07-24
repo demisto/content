@@ -623,7 +623,34 @@
                         "wrapLabels": true,
                         "x": 2,
                         "y": 15
-                    }
+                    },
+					{
+						"displayType": "CARD",
+						"h": 3,
+						"hideName": true,
+						"i": "js3vpk9qph-d385488f-5234-4168-93dc-d41e663b784d",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "vegarecommendedactions",
+								"height": 106,
+								"id": "87382501-d894-4b3a-8a44-5d4bcd276ef6",
+								"index": 0,
+								"listId": "js3vpk9qph-d385488f-5234-4168-93dc-d41e663b784d",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Recommended Actions",
+						"static": false,
+						"w": 3,
+						"x": 0,
+						"y": 16
+					}
                 ],
                 "type": "custom"
             }

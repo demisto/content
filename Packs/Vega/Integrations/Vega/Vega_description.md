@@ -29,3 +29,16 @@ You can configure the integration to fetch alerts, incidents, or both using the 
 - Mirrored fields for alerts: status, severity, verdict, verdict reasoning, and comments.
 - Mirrored fields for incidents: severity, status, verdict, verdict reasoning, and comments.
 - Use the **Vega New Comment** field in the Comment section to add a comment from Cortex XSOAR that will be created in Vega.
+
+### Vega Recommended Actions
+
+When Vega incidents are ingested, the integration maps the API `recommendedActions` field to the **Vega Recommended Actions** incident grid field. Each row includes:
+
+- **Name**: The recommended action title.
+- **Description**: A human-readable explanation of the action.
+- **Action Key**: The Vega action identifier (for example, `block_ip`, `revoke_user_sessions`, `reset_user_password`).
+- **Target Params**: The action parameters returned by Vega (for example, `user_id` or `ip`).
+
+The integration normalizes recommended action descriptions during ingestion by ensuring each description ends with a trailing newline. This prevents long descriptions from being truncated in the XSOAR grid UI and allows the full text to wrap and display correctly.
+
+When `recommendedActions` is empty (`[]`) or missing, the grid shows a single row with **No recommended Actions found**.

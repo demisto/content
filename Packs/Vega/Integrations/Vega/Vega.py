@@ -320,7 +320,7 @@ GET_INCIDENTS_QUERY = (
     "   comments { text addedBy addedAt } "
     "   incidentSummary incidentFindings assets observables alertsCount "
     "   alerts { alertId name createdAt } "
-    "   recommendedActions { name description } "
+    "   recommendedActions { name description actionKey targetParams } "
     "   investigationPlan { stepName stepConclusion cells { cellName query queryId } } "
     "   link } "
     "  total limit offset "
@@ -1723,9 +1723,44 @@ def _format_bullet_list(value: Any, empty_display: str | None = None) -> Any:
     return "\n".join(f"• {item}" for item in items)
 
 
+def _ensure_recommended_action_description_newline(description: Any) -> str:
+    """Ensure a recommended-action description ends with a newline for XSOAR grid wrapping."""
+    text = str(description or "")
+    if text and not text.endswith("\n"):
+        text = f"{text}\n"
+    return text
+
+
 VEGA_EMPTY_FIELD_DISPLAY = "N/A"
 VEGA_NO_ASSETS_DISPLAY = "No assets present."
 VEGA_NO_OBSERVABLES_DISPLAY = "No observables present."
+VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY = "No recommended Actions found"
+
+
+def _format_recommended_actions_for_grid(actions: Any) -> Any:
+    """Normalize recommendedActions for the Vega Recommended Actions grid field.
+
+    Empty lists show a placeholder row in the incident layout. XSOAR longText grid cells
+    truncate single-line values; a trailing newline forces wrap so the full description
+    is visible.
+    """
+    if actions is None or (isinstance(actions, list) and not actions):
+        return [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
+    if not isinstance(actions, list):
+        return actions
+
+    formatted_actions: list[Any] = []
+    for action in actions:
+        if not isinstance(action, dict):
+            formatted_actions.append(action)
+            continue
+
+        formatted_action = dict(action)
+        if "description" in formatted_action and formatted_action.get("description") is not None:
+            formatted_description = _ensure_recommended_action_description_newline(formatted_action.get("description"))
+            formatted_action["description"] = formatted_description
+        formatted_actions.append(formatted_action)
+    return formatted_actions
 
 
 def _empty_to_na(value: Any) -> str:
@@ -2285,6 +2320,8 @@ def _format_raw_entity_for_xsoar(raw: dict) -> None:
         raw["vegaIncidentFindings"] = _format_key_findings_html(findings_source, assets, observables)
     if entity_type in ("Vega Incident", "Vega Alert") and "comments" in raw:
         raw["vegaComments"] = _format_vega_comments_html(raw.get("comments"))
+    if "recommendedActions" in raw:
+        raw["recommendedActions"] = _format_recommended_actions_for_grid(raw.get("recommendedActions"))
     _apply_vega_mitre_attack_format(raw)
 
 
