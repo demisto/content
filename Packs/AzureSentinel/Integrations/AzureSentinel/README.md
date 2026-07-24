@@ -46,26 +46,36 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
 2. Search for Azure Sentinel.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                    | **Required** |
-    |----------------------------------------------------------------------------------|--------------|
-    | Azure Cloud                                                                      | False        |
-    | Tenant ID                                                                        | False        |
-    | Client ID                                                                        | False        |
-    | Azure Managed Identities Client ID                                               | False        |
-    | Subscription ID                                                                  | True         |
-    | Resource Group Name                                                              | True         |
-    | Workspace Name                                                                   | True         |
-    | Fetch incidents                                                                  | False        |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False        |
-    | The minimum severity of incidents to fetch                                       | False        |
-    | Incident type                                                                    | False        |
-    | Trust any certificate (not secure)                                               | False        |
-    | Use system proxy settings                                                        | False        |
-    | Additional info to fetch                                                         | False        |
-    | Mirroring Direction                                                              | False        |
-    | Close Mirrored XSOAR Incident                                                    | False        |
-    | Close Mirrored Microsoft Sentinel Ticket                                         | False        |
-    | Server URL, see note below regarding Azure cloud options.                        | False        |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Azure Cloud | When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud | False |
+| Maximum number of incidents per fetch. |  | False |
+| Tenant ID |  | False |
+| Client ID | The Application \(Client\) ID of the Azure app registration. | False |
+| Client Secret |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key |  | False |
+| Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+| Azure Managed Identities Client ID | The Managed Identities client id for authentication - relevant only if the integration is running on Azure VM. | False |
+| Default Subscription ID | The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail. | True |
+| Default Resource Group Name | The parameter can be saved as 000-000 and added as an argument to each command, but the Test button will fail. | True |
+| Workspace Name |  | True |
+| Fetch incidents |  | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+| The minimum severity of incidents to fetch |  | False |
+| Incident type |  | False |
+| Server URL | Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication\#using-national-cloud | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Additional info to fetch | Choose what additional info to fetch for each incident.<br/>Note that this will increase the number of API calls.<br/> | False |
+| Mirroring Direction |  | False |
+| Close Mirrored XSOAR Incident | When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR. | False |
+| Close Mirrored Microsoft Sentinel Ticket | When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel. | False |
+| Incident Statuses to Fetch | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. | False |
+| Incidents Fetch Interval |  | False |
+| Minutes to look back when fetching | The lookback time window for incidents/issues created before the last run time that did not initially match the query. Small values \(for example, 1-5 minutes\) are recommended to avoid performance issues. | False |
+| Incident Titles to not Fetch | The case-sensitive titles of the incidents that will not be fetched. This will also match if the title provided is contained in the incident's title. If no title is provided then all incidents will be fetched. | False |
+| Alert Product Names to not Fetch | The alert product names of the incidents that will not be fetched. For example: &lt;Microsoft Entra ID Protection&gt;, &lt;Microsoft Sentinel&gt;. If no alert product name is provided then incidents will be fetched normally. | False |
 
 4. Azure cloud options
 
