@@ -812,6 +812,39 @@ script:
       isArray: false
       name: external_id
       required: false
+    description: Perform actions such as revoking accounts and forcing password reset for identity accounts that are observed in Microsoft Defender for Identity. To learn more about the possible actions, see https://learn.microsoft.com/en-us/graph/api/security-identityaccounts-invokeaction?view=graph-rest-1.0&tabs=http.
+    execution: false
+    name: msg-invoke-action
+  - arguments:
+    - description: The identifier of the accounts that are monitored for suspicious or malicious activity by Microsoft Defender for Identity.
+      isArray: false
+      name: identityAccountsId
+      required: true
+    - description: The identifier of the account to perform the action on.
+      isArray: false
+      name: accountId
+      required: true
+    - auto: PREDEFINED
+      description: The type of action to perform on the account.
+      isArray: false
+      name: action
+      predefined:
+      - 'disable'
+      - 'enable'
+      - 'forcePasswordReset'
+      - 'revokeAllSessions'
+      - 'requireUserToSignInAgain'
+      - 'markUserAsCompromised'
+      required: true
+    - auto: PREDEFINED
+      description: The identity provider associated with the account.
+      isArray: false
+      name: identityProvider
+      predefined:
+      - 'entraID'
+      - 'activeDirectory'
+      - 'okta'
+      required: true
     description: Create a new eDiscovery case. This command only creates an eDiscovery (Premium) case using the new case format. To learn more about the new case format in eDiscovery, see https://learn.microsoft.com/en-us/microsoft-365/compliance/advanced-ediscovery-new-case-format.
     execution: false
     name: msg-create-ediscovery-case
