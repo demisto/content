@@ -10,7 +10,7 @@ from AWS_SecurityHub_V2 import (
     enable_security_hub_command,
     fetch_incidents,
     filter_new_findings,
-    test_module,
+    test_module as run_test_module,
     findings_batch_update_command,
     findings_get_command,
     findings_to_incidents,
@@ -63,9 +63,9 @@ def test_enable_security_hub_command_success(mocker):
 
     call_kwargs = mock_client.enable_security_hub_v2.call_args[1]
     assert call_kwargs["Tags"] == {"env": "prod"}
-    assert result.outputs_prefix == "AWS.SecurityHubV2.Hub"
+    assert result.outputs_prefix == "AWS.SecurityHubV2.EnableHubV2"
     assert result.outputs == {"HubV2Arn": "dummy_arn"}
-    assert "AWS Security Hub V2 Enabled" in result.readable_output
+    assert "AWS Security Hub V2 successfully enabled." in result.readable_output
 
 
 def test_enable_security_hub_command_no_tags(mocker):
@@ -201,12 +201,13 @@ def test_parse_filters_ip():
         ("field_name=severity_id", "number", "one of"),  # number entry without any operator
     ],
 )
-def test_parse_filters_raises_on_missing_fields(filters_str, category, missing_field):
+def test_parse_filters_raises_on_missing_fields(mocker, filters_str, category, missing_field):
     """
     Given: A filter entry missing field_name, a required key, or all require_any keys.
     When: parse_filters is called.
     Then: A DemistoException is raised naming the missing field(s).
     """
+    mocker.patch.object(demisto, "error")
     with pytest.raises(DemistoException, match=missing_field):
         parse_filters(filters_str, category)
 
@@ -292,7 +293,7 @@ def test_findings_get_command_success(mocker):
     result = findings_get_command(mock_client, args)
 
     call_kwargs = mock_client.get_findings_v2.call_args[1]
-    assert call_kwargs["MaxResults"] == 10
+    assert call_kwargs["MaxResults"] == 1
     assert call_kwargs["SortCriteria"] == [{"Field": "time", "SortOrder": "desc"}]
     assert call_kwargs["Filters"]["CompositeFilters"][0]["StringFilters"][0]["FieldName"] == "severity"
     findings_output = result.outputs["AWS.SecurityHubV2.Findings(val.metadata.uid && val.metadata.uid == obj.metadata.uid)"]
@@ -307,14 +308,14 @@ def test_findings_get_command_no_results(mocker):
     """
     Given: A mocked securityhub client returning no findings.
     When: findings_get_command is called.
-    Then: It returns a 'No findings found.' readable output.
+    Then: It returns a 'No findings were found.' readable output.
     """
     mock_client = mocker.Mock()
     mock_client.get_findings_v2.return_value = {"Findings": []}
 
     result = findings_get_command(mock_client, {})
 
-    assert result.readable_output == "No findings found."
+    assert result.readable_output == "No findings were found."
 
 
 def test_findings_get_command_error(mocker):
@@ -340,12 +341,13 @@ def test_parse_finding_identifiers():
     assert result == [{"CloudAccountUid": "123456789012", "FindingInfoUid": "f-1", "MetadataProductUid": "p-1"}]
 
 
-def test_parse_finding_identifiers_incomplete():
+def test_parse_finding_identifiers_incomplete(mocker):
     """
     Given: A finding_identifiers entry missing a required key.
     When: parse_finding_identifiers is called.
     Then: A DemistoException is raised naming the missing field.
     """
+    mocker.patch.object(demisto, "error")
     with pytest.raises(DemistoException, match="metadata_product_uid"):
         parse_finding_identifiers("cloud_account_uid=123,finding_info_uid=f-1")
 
@@ -544,12 +546,13 @@ def test_parse_date_filters_invalid_combinations_raise(filters_str, match):
         parse_date_filters(filters_str)
 
 
-def test_parse_date_filters_skips_entry_without_field_name():
+def test_parse_date_filters_skips_entry_without_field_name(mocker):
     """
     Given: A date_filters string whose entry has no field_name.
     When: parse_date_filters is called.
     Then: The entry is skipped and an empty list is returned (no exception raised).
     """
+    mocker.patch.object(demisto, "error")
     assert parse_date_filters("days=7") == []
 
 
@@ -644,9 +647,7 @@ def test_query_findings_page_client_error_raises(mocker):
 
     mock_client = mocker.Mock()
     mock_client.exceptions.ClientError = ClientError
-    mock_client.get_findings_v2.side_effect = ClientError(
-        {"Error": {"Code": "ValidationException", "Message": "bad filters"}}
-    )
+    mock_client.get_findings_v2.side_effect = ClientError({"Error": {"Code": "ValidationException", "Message": "bad filters"}})
 
     with pytest.raises(DemistoException, match="bad filters"):
         _query_findings_page(mock_client, {"CompositeFilters": []}, 10, None)
@@ -1287,7 +1288,7 @@ def test_test_module_success(mocker):
     mock_client = _mock_client_with_exceptions(mocker)
     mock_client.describe_security_hub_v2.return_value = {}
 
-    assert test_module(mock_client) == "ok"
+    assert run_test_module(mock_client) == "ok"
 
 
 def test_test_module_not_enabled_raises(mocker):
@@ -1300,7 +1301,7 @@ def test_test_module_not_enabled_raises(mocker):
     mock_client.describe_security_hub_v2.side_effect = mock_client.exceptions.ResourceNotFoundException()
 
     with pytest.raises(DemistoException, match="not enabled"):
-        test_module(mock_client)
+        run_test_module(mock_client)
 
 
 def test_test_module_access_denied_raises(mocker):
@@ -1313,4 +1314,4 @@ def test_test_module_access_denied_raises(mocker):
     mock_client.describe_security_hub_v2.side_effect = mock_client.exceptions.AccessDeniedException()
 
     with pytest.raises(DemistoException, match="Access denied"):
-        test_module(mock_client)
+        run_test_module(mock_client)
