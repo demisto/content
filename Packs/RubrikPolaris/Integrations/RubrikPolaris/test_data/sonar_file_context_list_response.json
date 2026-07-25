@@ -15,7 +15,11 @@
                 "size": 85708,
                 "lastAccessTime": 1648099578,
                 "lastModifiedTime": 1648099578,
+                "creationTime": 1648099578,
+                "lastScanTime": 1648099578,
                 "directory": "/C:/File Shares",
+                "createdBy": "admin",
+                "modifiedBy": "admin",
                 "numDescendantFiles": 0,
                 "numDescendantErrorFiles": 0,
                 "numDescendantSkippedExtFiles": 0,
@@ -93,22 +97,138 @@
                     "violatedCount": 0,
                     "__typename": "SummaryCount"
                   },
+                  "noRiskFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
+                  "totalFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 1,
+                    "__typename": "SummaryCount"
+                  },
                   "__typename": "SensitiveFiles"
                 },
+                "sensitiveHits": {
+                  "highRiskHits": {
+                    "totalHits": 1500,
+                    "violatedHits": 1500,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 400,
+                    "violatedHits": 400,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 100,
+                    "violatedHits": 100,
+                    "__typename": "SummaryHits"
+                  },
+                  "noRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "analyzerRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 1500,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 400,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 100,
+                    "__typename": "SummaryHits"
+                  },
+                  "noRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "AnalyzerHits"
+                },
+                "analyzerResults": [
+                  {
+                    "hits": {
+                      "totalHits": 0,
+                      "violations": 0,
+                      "__typename": "Hits"
+                    },
+                    "analyzer": {
+                      "id": "00000000-0000-0000-0000-000000000001",
+                      "name": "UK UTR",
+                      "analyzerType": "UK_UTR",
+                      "__typename": "Analyzer"
+                    },
+                    "__typename": "AnalyzerResult"
+                  }
+                ],
                 "openAccessType": "INHERITED",
                 "stalenessType": "IS_STALE",
                 "numActivities": 0,
                 "numActivitiesDelta": 0,
+                "exposureSummary": [
+                  {
+                    "exposureType": "OPEN_ACCESS",
+                    "fileCount": {
+                      "totalCount": 0,
+                      "violatedCount": 1,
+                      "__typename": "SummaryCount"
+                    },
+                    "__typename": "ExposureSummary"
+                  }
+                ],
+                "dbEntityType": "NAS",
+                "mipLabelsSummary": [
+                  {
+                    "mipLabel": {
+                      "siteId": "00000000-0000-0000-0000-000000000001",
+                      "labelName": "Confidential",
+                      "labelId": "00000000-0000-0000-0000-000000000002",
+                      "hasProtection": true,
+                      "__typename": "MipLabel"
+                    },
+                    "filesCount": {
+                      "violatedCount": 1,
+                      "totalCount": 0,
+                      "__typename": "SummaryCount"
+                    },
+                    "__typename": "MipLabelSummary"
+                  }
+                ],
+                "documentTypesSummary": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "name": "Spreadsheet",
+                    "filesCount": {
+                      "totalCount": 0,
+                      "violatedCount": 1,
+                      "__typename": "SummaryCount"
+                    },
+                    "__typename": "DocumentTypeSummary"
+                  }
+                ],
                 "__typename": "FileResult"
               },
               "__typename": "FileResultEdge"
             }
           ],
           "pageInfo": {
+            "startCursor": "cursor_1",
             "endCursor": "cursor_2",
             "hasNextPage": true,
+            "hasPreviousPage": false,
             "__typename": "PageInfo"
           },
+          "hasLatestData": true,
           "__typename": "FileResultConnection"
         },
         "__typename": "PolicyObj"
@@ -131,7 +251,11 @@
                 "size": 85708,
                 "lastAccessTime": 1648099578,
                 "lastModifiedTime": 1648099578,
+                "creationTime": 1648099578,
+                "lastScanTime": 1648099578,
                 "directory": "/C:/File Shares",
+                "createdBy": "admin",
+                "modifiedBy": "admin",
                 "numDescendantFiles": 0,
                 "numDescendantErrorFiles": 0,
                 "numDescendantSkippedExtFiles": 0,
@@ -185,7 +309,7 @@
                     ],
                     "hits": {
                       "totalHits": 2000,
-                      "violations": 0,
+                      "violations": 2000,
                       "violationsDelta": 0,
                       "totalHitsDelta": 0,
                       "__typename": "Hits"
@@ -209,22 +333,138 @@
                     "violatedCount": 0,
                     "__typename": "SummaryCount"
                   },
+                  "noRiskFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
+                  "totalFileCount": {
+                    "totalCount": 1,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
                   "__typename": "SensitiveFiles"
                 },
+                "sensitiveHits": {
+                  "highRiskHits": {
+                    "totalHits": 1500,
+                    "violatedHits": 1500,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 400,
+                    "violatedHits": 400,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 100,
+                    "violatedHits": 100,
+                    "__typename": "SummaryHits"
+                  },
+                  "noRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "SensitiveHits"
+                },
+                "analyzerRiskHits": {
+                  "highRiskHits": {
+                    "totalHits": 1500,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "mediumRiskHits": {
+                    "totalHits": 400,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "lowRiskHits": {
+                    "totalHits": 100,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "noRiskHits": {
+                    "totalHits": 0,
+                    "violatedHits": 0,
+                    "__typename": "SummaryHits"
+                  },
+                  "__typename": "AnalyzerHits"
+                },
+                "analyzerResults": [
+                  {
+                    "hits": {
+                      "totalHits": 0,
+                      "violations": 0,
+                      "__typename": "Hits"
+                    },
+                    "analyzer": {
+                      "id": "00000000-0000-0000-0000-000000000001",
+                      "name": "UK UTR",
+                      "analyzerType": "UK_UTR",
+                      "__typename": "Analyzer"
+                    },
+                    "__typename": "AnalyzerResult"
+                  }
+                ],
                 "openAccessType": "INHERITED",
                 "stalenessType": "IS_STALE",
                 "numActivities": 0,
                 "numActivitiesDelta": 0,
+                "exposureSummary": [
+                  {
+                    "exposureType": "OPEN_ACCESS",
+                    "fileCount": {
+                      "totalCount": 1,
+                      "violatedCount": 0,
+                      "__typename": "SummaryCount"
+                    },
+                    "__typename": "ExposureSummary"
+                  }
+                ],
+                "dbEntityType": "NAS",
+                "mipLabelsSummary": [
+                  {
+                    "mipLabel": {
+                      "siteId": "00000000-0000-0000-0000-000000000001",
+                      "labelName": "Confidential",
+                      "labelId": "00000000-0000-0000-0000-000000000002",
+                      "hasProtection": true,
+                      "__typename": "MipLabel"
+                    },
+                    "filesCount": {
+                      "violatedCount": 0,
+                      "totalCount": 1,
+                      "__typename": "SummaryCount"
+                    },
+                    "__typename": "MipLabelSummary"
+                  }
+                ],
+                "documentTypesSummary": [
+                  {
+                    "id": "00000000-0000-0000-0000-000000000003",
+                    "name": "Spreadsheet",
+                    "filesCount": {
+                      "totalCount": 1,
+                      "violatedCount": 0,
+                      "__typename": "SummaryCount"
+                    },
+                    "__typename": "DocumentTypeSummary"
+                  }
+                ],
                 "__typename": "FileResult"
               },
               "__typename": "FileResultEdge"
             }
           ],
           "pageInfo": {
+            "startCursor": "cursor_1",
             "endCursor": "cursor_2",
             "hasNextPage": true,
+            "hasPreviousPage": false,
             "__typename": "PageInfo"
           },
+          "hasLatestData": true,
           "__typename": "FileResultConnection"
         },
         "__typename": "PolicyObj"
@@ -243,7 +483,11 @@
       "size": 85708,
       "lastAccessTime": 1648099578,
       "lastModifiedTime": 1648099578,
+      "creationTime": 1648099578,
+      "lastScanTime": 1648099578,
       "directory": "/C:/File Shares",
+      "createdBy": "admin",
+      "modifiedBy": "admin",
       "numDescendantFiles": 0,
       "numDescendantErrorFiles": 0,
       "numDescendantSkippedExtFiles": 0,
@@ -321,12 +565,125 @@
           "violatedCount": 0,
           "__typename": "SummaryCount"
         },
+        "noRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "totalFileCount": {
+          "totalCount": 0,
+          "violatedCount": 1,
+          "__typename": "SummaryCount"
+        },
         "__typename": "SensitiveFiles"
       },
+      "sensitiveHits": {
+        "highRiskHits": {
+          "totalHits": 1500,
+          "violatedHits": 1500,
+          "__typename": "SummaryHits"
+        },
+        "mediumRiskHits": {
+          "totalHits": 400,
+          "violatedHits": 400,
+          "__typename": "SummaryHits"
+        },
+        "lowRiskHits": {
+          "totalHits": 100,
+          "violatedHits": 100,
+          "__typename": "SummaryHits"
+        },
+        "noRiskHits": {
+          "totalHits": 0,
+          "violatedHits": 0,
+          "__typename": "SummaryHits"
+        },
+        "__typename": "SensitiveHits"
+      },
+      "analyzerRiskHits": {
+        "highRiskHits": {
+          "totalHits": 0,
+          "violatedHits": 1500,
+          "__typename": "SummaryHits"
+        },
+        "mediumRiskHits": {
+          "totalHits": 0,
+          "violatedHits": 400,
+          "__typename": "SummaryHits"
+        },
+        "lowRiskHits": {
+          "totalHits": 0,
+          "violatedHits": 100,
+          "__typename": "SummaryHits"
+        },
+        "noRiskHits": {
+          "totalHits": 0,
+          "violatedHits": 0,
+          "__typename": "SummaryHits"
+        },
+        "__typename": "AnalyzerHits"
+      },
+      "analyzerResults": [
+        {
+          "hits": {
+            "totalHits": 0,
+            "violations": 0,
+            "__typename": "Hits"
+          },
+          "analyzer": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "name": "UK UTR",
+            "analyzerType": "UK_UTR",
+            "__typename": "Analyzer"
+          },
+          "__typename": "AnalyzerResult"
+        }
+      ],
       "openAccessType": "INHERITED",
       "stalenessType": "IS_STALE",
       "numActivities": 0,
       "numActivitiesDelta": 0,
+      "exposureSummary": [
+        {
+          "exposureType": "OPEN_ACCESS",
+          "fileCount": {
+            "totalCount": 0,
+            "violatedCount": 1,
+            "__typename": "SummaryCount"
+          },
+          "__typename": "ExposureSummary"
+        }
+      ],
+      "dbEntityType": "NAS",
+      "mipLabelsSummary": [
+        {
+          "mipLabel": {
+            "siteId": "00000000-0000-0000-0000-000000000001",
+            "labelName": "Confidential",
+            "labelId": "00000000-0000-0000-0000-000000000002",
+            "hasProtection": true,
+            "__typename": "MipLabel"
+          },
+          "filesCount": {
+            "violatedCount": 1,
+            "totalCount": 0,
+            "__typename": "SummaryCount"
+          },
+          "__typename": "MipLabelSummary"
+        }
+      ],
+      "documentTypesSummary": [
+        {
+          "id": "00000000-0000-0000-0000-000000000003",
+          "name": "Spreadsheet",
+          "filesCount": {
+            "totalCount": 0,
+            "violatedCount": 1,
+            "__typename": "SummaryCount"
+          },
+          "__typename": "DocumentTypeSummary"
+        }
+      ],
       "__typename": "FileResult"
     }
   ],
@@ -339,7 +696,11 @@
       "size": 85708,
       "lastAccessTime": 1648099578,
       "lastModifiedTime": 1648099578,
+      "creationTime": 1648099578,
+      "lastScanTime": 1648099578,
       "directory": "/C:/File Shares",
+      "createdBy": "admin",
+      "modifiedBy": "admin",
       "numDescendantFiles": 0,
       "numDescendantErrorFiles": 0,
       "numDescendantSkippedExtFiles": 0,
@@ -393,7 +754,7 @@
           ],
           "hits": {
             "totalHits": 2000,
-            "violations": 0,
+            "violations": 2000,
             "violationsDelta": 0,
             "totalHitsDelta": 0,
             "__typename": "Hits"
@@ -417,18 +778,133 @@
           "violatedCount": 0,
           "__typename": "SummaryCount"
         },
+        "noRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "totalFileCount": {
+          "totalCount": 1,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
         "__typename": "SensitiveFiles"
       },
+      "sensitiveHits": {
+        "highRiskHits": {
+          "totalHits": 1500,
+          "violatedHits": 1500,
+          "__typename": "SummaryHits"
+        },
+        "mediumRiskHits": {
+          "totalHits": 400,
+          "violatedHits": 400,
+          "__typename": "SummaryHits"
+        },
+        "lowRiskHits": {
+          "totalHits": 100,
+          "violatedHits": 100,
+          "__typename": "SummaryHits"
+        },
+        "noRiskHits": {
+          "totalHits": 0,
+          "violatedHits": 0,
+          "__typename": "SummaryHits"
+        },
+        "__typename": "SensitiveHits"
+      },
+      "analyzerRiskHits": {
+        "highRiskHits": {
+          "totalHits": 1500,
+          "violatedHits": 0,
+          "__typename": "SummaryHits"
+        },
+        "mediumRiskHits": {
+          "totalHits": 400,
+          "violatedHits": 0,
+          "__typename": "SummaryHits"
+        },
+        "lowRiskHits": {
+          "totalHits": 100,
+          "violatedHits": 0,
+          "__typename": "SummaryHits"
+        },
+        "noRiskHits": {
+          "totalHits": 0,
+          "violatedHits": 0,
+          "__typename": "SummaryHits"
+        },
+        "__typename": "AnalyzerHits"
+      },
+      "analyzerResults": [
+        {
+          "hits": {
+            "totalHits": 0,
+            "violations": 0,
+            "__typename": "Hits"
+          },
+          "analyzer": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "name": "UK UTR",
+            "analyzerType": "UK_UTR",
+            "__typename": "Analyzer"
+          },
+          "__typename": "AnalyzerResult"
+        }
+      ],
       "openAccessType": "INHERITED",
       "stalenessType": "IS_STALE",
       "numActivities": 0,
       "numActivitiesDelta": 0,
+      "exposureSummary": [
+        {
+          "exposureType": "OPEN_ACCESS",
+          "fileCount": {
+            "totalCount": 1,
+            "violatedCount": 0,
+            "__typename": "SummaryCount"
+          },
+          "__typename": "ExposureSummary"
+        }
+      ],
+      "dbEntityType": "NAS",
+      "mipLabelsSummary": [
+        {
+          "mipLabel": {
+            "siteId": "00000000-0000-0000-0000-000000000001",
+            "labelName": "Confidential",
+            "labelId": "00000000-0000-0000-0000-000000000002",
+            "hasProtection": true,
+            "__typename": "MipLabel"
+          },
+          "filesCount": {
+            "violatedCount": 0,
+            "totalCount": 1,
+            "__typename": "SummaryCount"
+          },
+          "__typename": "MipLabelSummary"
+        }
+      ],
+      "documentTypesSummary": [
+        {
+          "id": "00000000-0000-0000-0000-000000000003",
+          "name": "Spreadsheet",
+          "filesCount": {
+            "totalCount": 1,
+            "violatedCount": 0,
+            "__typename": "SummaryCount"
+          },
+          "__typename": "DocumentTypeSummary"
+        }
+      ],
       "__typename": "FileResult"
     }
   ],
   "page_token": {
+    "startCursor": "cursor_1",
     "endCursor": "cursor_2",
     "hasNextPage": true,
+    "hasPreviousPage": false,
     "name": "rubrik-sonar-file-context-list"
   }
 }
