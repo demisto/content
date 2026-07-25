@@ -193,3 +193,42 @@ def test_test_module_propagates_error(mocker, client):
     mocker.patch.object(client, "get_audit_logs", side_effect=Exception("401 Unauthorized"))
     with pytest.raises(Exception, match="401 Unauthorized"):
         run_test_module(client, [ACCOUNT_A], hide_user_logs=False)
+
+
+def test_a_failing_account_keeps_its_cursor_and_does_not_block_others(mocker):
+    """One failing account must not discard every account's cursor.
+
+    If the exception escaped fetch_events, setLastRun would never run and all
+    accounts would re-read their whole window on the next poll.
+    """
+    from CommonServerPython import DemistoException
+
+    prior = {
+        "bad-acct": {"last_ts": "2026-07-20T10:00:00Z", "last_ids": ["x"]},
+        "good-acct": {"last_ts": "2026-07-20T09:00:00Z", "last_ids": ["y"]},
+    }
+
+    def side_effect(client, account_id, since, max_fetch, last_ids, hide_user_logs):
+        if account_id == "bad-acct":
+            raise DemistoException("[403] Forbidden")
+        return ([{"id": "new-1"}], "2026-07-21T00:00:00Z", {"new-1"})
+
+    mocker.patch(
+        "CloudflareAuditLogsEventCollector.fetch_audit_logs_for_account",
+        side_effect=side_effect,
+    )
+
+    events, next_run = fetch_events(
+        client=None,
+        account_ids=["bad-acct", "good-acct"],
+        last_run=prior,
+        first_fetch="2026-07-19T00:00:00Z",
+        max_fetch=100,
+        hide_user_logs=False,
+    )
+
+    # The healthy account still collected and advanced.
+    assert [e["id"] for e in events] == ["new-1"]
+    assert next_run["good-acct"]["last_ts"] == "2026-07-21T00:00:00Z"
+    # The failing account kept its previous cursor exactly, losing nothing.
+    assert next_run["bad-acct"] == prior["bad-acct"]

@@ -183,14 +183,23 @@ def fetch_events(
         since = account_state.get("last_ts") or first_fetch
         last_ids = set(account_state.get("last_ids", []))
 
-        events, new_ts, new_ids = fetch_audit_logs_for_account(
-            client=client,
-            account_id=account_id,
-            since=since,
-            max_fetch=max_fetch,
-            last_ids=last_ids,
-            hide_user_logs=hide_user_logs,
-        )
+        try:
+            events, new_ts, new_ids = fetch_audit_logs_for_account(
+                client=client,
+                account_id=account_id,
+                since=since,
+                max_fetch=max_fetch,
+                last_ids=last_ids,
+                hide_user_logs=hide_user_logs,
+            )
+        except DemistoException as e:
+            # Carry this account's cursor forward untouched and keep going. If
+            # the exception escaped, setLastRun would never run and EVERY
+            # account would re-read its whole window on the next poll.
+            demisto.error(f"Cloudflare: fetch failed for account {account_id}, keeping its cursor: {e}")
+            next_run[account_id] = account_state
+            continue
+
         all_events.extend(events)
         next_run[account_id] = {"last_ts": new_ts, "last_ids": list(new_ids)}
         demisto.debug(f"Cloudflare: fetched {len(events)} events for account {account_id}")

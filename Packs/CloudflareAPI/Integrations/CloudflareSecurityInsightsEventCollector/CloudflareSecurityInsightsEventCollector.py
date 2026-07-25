@@ -110,6 +110,9 @@ def fetch_events(client: CloudflareClient, account_ids: list, max_fetch: int) ->
         )
         for issue in issues:
             issue["_time"] = issue.get("timestamp") or now
+            # Snapshot collectors stamp the collection time so a query can tell
+            # successive snapshots of the same finding apart from a real change.
+            issue["snapshot_at"] = now
             issue["source_log_type"] = SOURCE_LOG_TYPE
             issue["cloudflare_account_id"] = account_id
         all_events.extend(issues)

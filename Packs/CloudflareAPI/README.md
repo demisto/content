@@ -54,3 +54,10 @@ following correlation rules:
 
 Licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later).
 Copyright (c) GoCortexIO.
+
+## About GoCortex
+
+Independent tools, projects, and ideas to complement and extend the Palo Alto Networks Cortex
+ecosystem.
+
+[gocortex.io](https://gocortex.io)
