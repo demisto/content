@@ -1,0 +1,460 @@
+// SPDX-FileCopyrightText: GoCortexIO
+// SPDX-License-Identifier: AGPL-3.0-or-later
+//
+// Generated via
+// GOCORTEX_SKILLS_MODEL="claude-opus-4-8"
+// GOCORTEX_SKILLS_SKILL_NAME="cortex-platform-xdm-author"
+// GOCORTEX_SKILLS_SKILL_VERSION="1.8.0"
+// GOCORTEX_SKILLS_SKILL_WARNING_COUNT="0"
+// GOCORTEX_SKILLS_SOURCE_BASIS="spec-backed"
+//
+// Vendor:  portkey
+// Product: audit
+// Dataset: portkey_audit_raw
+//
+// Portkey control-plane audit logs from the Admin API (GET /audit-logs). Each
+// record is a mutating administrative call against the Portkey organisation:
+// who performed it, which resource family it touched, the HTTP verb and result,
+// and the originating address. The endpoint records mutations only, so the
+// method vocabulary is POST, PUT and DELETE. Vendor, product and dataset are
+// tenant-adjustable at three touch-points: xdm.observer.vendor,
+// xdm.observer.product and the [MODEL: dataset=...] header.
+//
+// EVENT FIELD MAPPING
+//   request_id            -> xdm.event.id
+//   action                -> xdm.event.original_event_type, xdm.event.operation
+//   action, method        -> xdm.event.operation (action first, method as fallback)
+//   source_log_type       -> xdm.event.type
+//   response_status_code  -> xdm.event.outcome, xdm.network.http.response_code
+//   method                -> xdm.network.http.method
+//   uri                   -> xdm.network.http.url
+//   uri                   -> xdm.target.resource.id (trailing UUID path segment)
+//   resource_type         -> xdm.target.resource.type
+//   workspace_id          -> xdm.target.resource.parent_id
+//   organisation_id       -> xdm.source.cloud.project
+//   user_id               -> xdm.source.user.identifier
+//   user_type             -> xdm.source.user.user_type, xdm.source.user.identity_type
+//   client_ip             -> xdm.source.ipv4
+//   country               -> xdm.source.location.country
+//
+// NOTES
+//   The audit record identifies the actor by UUID only. Portkey does not return
+//   an email address or display name on this endpoint, so no username or UPN is
+//   mapped rather than synthesising one from the identifier.
+//   action and resource_type are free-form strings in the OpenAPI specification
+//   with no enumeration, so the operation verb is derived by classifying the
+//   action text and falling back to the HTTP method, rather than matching the
+//   handful of values the sample happened to contain.
+//
+// NOT MAPPED
+//   request_headers         -- transport headers, values are partially masked by
+//                              Portkey and carry no reliable analytic content.
+//   request_body            -- free-form JSON payload that varies per resource
+//                              family; no single XDM field represents it.
+//   query_params            -- request filter parameters, already represented by
+//                              the resource identifiers extracted from the URI.
+//   portkey_organisation_id -- collector-stamped duplicate of organisation_id.
+//   timestamp               -- ingestion time source for _time.
+//
+// REVIEW UNMODELLED -- records that matched no classification branch:
+//   datamodel dataset = portkey_audit_raw
+//   | filter xdm.event.original_event_type = "GOCORTEX_UNMODELLED"
+//   | fields _time, action, resource_type, method, uri
+//
+// RAISE SKILL ISSUES -- if this rule mis-modelled something, please open
+// an issue and include the REVIEW UNMODELLED output above:
+//   https://github.com/gocortexio/skills/issues
+
+[MODEL: dataset=portkey_audit_raw]
+filter
+    request_id != null
+| alter
+    tmp_action = action,
+    tmp_action_lc = lowercase(coalesce(action, "")),
+    tmp_method = uppercase(coalesce(method, "")),
+    tmp_uri = uri,
+    tmp_resource_type = resource_type,
+    tmp_workspace = workspace_id,
+    tmp_org = organisation_id,
+    tmp_user_id = user_id,
+    tmp_user_type = lowercase(coalesce(user_type, "")),
+    tmp_client_ip = client_ip,
+    tmp_country = country,
+    tmp_status = to_integer(response_status_code),
+    tmp_request_id = request_id,
+    tmp_log_type = source_log_type
+| alter
+    tmp_resource_id = arrayindex(regextract(coalesce(tmp_uri, ""), "/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})"), 0),
+    tmp_is_audit = if(coalesce(tmp_action, tmp_resource_type) != null, "yes", null)
+| alter
+    xdm.observer.vendor = "portkey",
+    xdm.observer.product = "audit",
+    xdm.event.id = tmp_request_id,
+    xdm.event.original_event_type = coalesce(tmp_action, "GOCORTEX_UNMODELLED"),
+    xdm.event.type = if(tmp_is_audit != null, coalesce(tmp_log_type, "audit"), "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(tmp_is_audit != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
+    xdm.event.operation = if(
+        tmp_action_lc contains "create" or tmp_action_lc contains "add" or tmp_action_lc contains "invite" or tmp_action_lc contains "generate" or tmp_action_lc contains "provision", XDM_CONST.OPERATION_TYPE_CREATE,
+        tmp_action_lc contains "delete" or tmp_action_lc contains "remove" or tmp_action_lc contains "revoke", XDM_CONST.OPERATION_TYPE_DELETE,
+        tmp_action_lc contains "update" or tmp_action_lc contains "modify" or tmp_action_lc contains "edit" or tmp_action_lc contains "rotate" or tmp_action_lc contains "change" or tmp_action_lc contains "enable" or tmp_action_lc contains "disable", XDM_CONST.OPERATION_TYPE_UPDATE,
+        tmp_action_lc contains "read" or tmp_action_lc contains "list" or tmp_action_lc contains "view" or tmp_action_lc contains "export", XDM_CONST.OPERATION_TYPE_READ,
+        tmp_method = "POST", XDM_CONST.OPERATION_TYPE_CREATE,
+        tmp_method = "PUT", XDM_CONST.OPERATION_TYPE_UPDATE,
+        tmp_method = "DELETE", XDM_CONST.OPERATION_TYPE_DELETE,
+        tmp_is_audit != null, XDM_CONST.OPERATION_TYPE_AUDIT,
+        null),
+    xdm.event.outcome = if(
+        tmp_status = null, null,
+        tmp_status < 400, XDM_CONST.OUTCOME_SUCCESS,
+        XDM_CONST.OUTCOME_FAILED),
+    xdm.network.http.method = if(
+        tmp_method = "GET", XDM_CONST.HTTP_METHOD_GET,
+        tmp_method = "POST", XDM_CONST.HTTP_METHOD_POST,
+        tmp_method = "PUT", XDM_CONST.HTTP_METHOD_PUT,
+        tmp_method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH,
+        tmp_method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE,
+        tmp_method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD,
+        tmp_method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS,
+        tmp_method = "CONNECT", XDM_CONST.HTTP_METHOD_CONNECT,
+        tmp_method = "TRACE", XDM_CONST.HTTP_METHOD_TRACE,
+        null),
+    xdm.network.http.response_code = if(
+        tmp_status = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE,
+        tmp_status = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS,
+        tmp_status = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING,
+        tmp_status = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS,
+        tmp_status = 200, XDM_CONST.HTTP_RSP_CODE_OK,
+        tmp_status = 201, XDM_CONST.HTTP_RSP_CODE_CREATED,
+        tmp_status = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED,
+        tmp_status = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION,
+        tmp_status = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT,
+        tmp_status = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT,
+        tmp_status = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT,
+        tmp_status = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS,
+        tmp_status = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED,
+        tmp_status = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED,
+        tmp_status = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES,
+        tmp_status = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY,
+        tmp_status = 302, XDM_CONST.HTTP_RSP_CODE_FOUND,
+        tmp_status = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER,
+        tmp_status = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED,
+        tmp_status = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY,
+        tmp_status = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT,
+        tmp_status = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT,
+        tmp_status = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST,
+        tmp_status = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED,
+        tmp_status = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED,
+        tmp_status = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN,
+        tmp_status = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND,
+        tmp_status = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED,
+        tmp_status = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE,
+        tmp_status = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED,
+        tmp_status = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT,
+        tmp_status = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT,
+        tmp_status = 410, XDM_CONST.HTTP_RSP_CODE_GONE,
+        tmp_status = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED,
+        tmp_status = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED,
+        tmp_status = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE,
+        tmp_status = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG,
+        tmp_status = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE,
+        tmp_status = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE,
+        tmp_status = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED,
+        tmp_status = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST,
+        tmp_status = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT,
+        tmp_status = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED,
+        tmp_status = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY,
+        tmp_status = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY,
+        tmp_status = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED,
+        tmp_status = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED,
+        tmp_status = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS,
+        tmp_status = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE,
+        tmp_status = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS,
+        tmp_status = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR,
+        tmp_status = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED,
+        tmp_status = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY,
+        tmp_status = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE,
+        tmp_status = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT,
+        tmp_status = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED,
+        tmp_status = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES,
+        tmp_status = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE,
+        tmp_status = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED,
+        tmp_status = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED),
+    xdm.network.http.url = tmp_uri,
+    xdm.target.resource.type = tmp_resource_type,
+    xdm.target.resource.id = tmp_resource_id,
+    xdm.target.resource.parent_id = if(tmp_workspace = "", null, tmp_workspace),
+    xdm.source.cloud.project = tmp_org,
+    xdm.source.user.identifier = tmp_user_id,
+    xdm.source.user.user_type = if(
+        tmp_user_type = "user", XDM_CONST.USER_TYPE_REGULAR,
+        tmp_user_type = "api_key", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        null),
+    xdm.source.user.identity_type = if(
+        tmp_user_type = "user", XDM_CONST.IDENTITY_TYPE_USER,
+        tmp_user_type = "api_key", XDM_CONST.IDENTITY_TYPE_MACHINE,
+        null),
+    xdm.source.ipv4 = if(tmp_client_ip contains ".", tmp_client_ip, null),
+    xdm.source.location.country = tmp_country,
+    xdm.event.description = concat(
+        "Portkey audit: ", coalesce(tmp_user_type, "unknown actor"),
+        " ", coalesce(tmp_user_id, "unknown"),
+        " performed ", coalesce(tmp_action, "unknown action"),
+        " on ", coalesce(tmp_resource_type, "resource"),
+        " (", coalesce(tmp_method, "n/a"),
+        " status ", coalesce(to_string(tmp_status), "n/a"), ")")
+;
+
+// Vendor:  portkey
+// Product: api_keys
+// Dataset: portkey_api_keys_raw
+//
+// Portkey API key inventory from the Admin API (GET /api-keys), collected as a
+// full snapshot each run. Raw dataset columns are not readable in datamodel
+// mode, so the key hygiene facts a correlation needs are encoded into XDM here:
+// the risk markers are concatenated into xdm.target.resource.value, which a
+// correlation tests with `contains`.
+//
+// EVENT FIELD MAPPING
+//   id                    -> xdm.event.id, xdm.target.resource.id
+//   name                  -> xdm.target.resource.name
+//   object                -> xdm.target.resource.type
+//   type                  -> xdm.event.original_event_type
+//   status                -> xdm.target.resource.sub_type
+//   workspace_id          -> xdm.target.resource.parent_id
+//   organisation_id       -> xdm.source.cloud.project
+//   user_id               -> xdm.source.user.identifier
+//   source_log_type       -> xdm.event.type
+//   has_expiry, has_usage_limit, rate_limit_count, allow_config_override,
+//   status, creation_mode, scopes -> xdm.target.resource.value (risk markers)
+//
+// NOTES
+//   The enumerations are mapped over their complete specification membership,
+//   not the single value the tenant currently shows: status covers active and
+//   exhausted, type covers the organisation and workspace key families, and
+//   creation_mode covers ui, api and auto. A key minted through the API rather
+//   than the console, and a key that has exhausted its usage limit, are both
+//   detection-relevant and neither appears in the sample.
+//
+// NOT MAPPED
+//   key                 -- the masked key prefix, of no analytic value.
+//   defaults            -- free-form JSON defaults object with no XDM home.
+//   api_key_defaults_id -- internal identifier with no XDM home.
+//   snapshot_at         -- collection time, already carried by _time.
+
+[MODEL: dataset=portkey_api_keys_raw]
+filter
+    id != null
+| alter
+    tmp_id = id,
+    tmp_name = name,
+    tmp_object = object,
+    tmp_type = type,
+    tmp_status = lowercase(coalesce(status, "")),
+    tmp_creation_mode = lowercase(coalesce(creation_mode, "")),
+    tmp_workspace = workspace_id,
+    tmp_org = organisation_id,
+    tmp_user_id = user_id,
+    tmp_log_type = source_log_type,
+    tmp_scopes = lowercase(coalesce(scopes, "")),
+    tmp_has_expiry = has_expiry,
+    tmp_has_usage_limit = has_usage_limit,
+    tmp_rate_limit_count = to_integer(rate_limit_count),
+    tmp_scope_count = to_integer(scope_count),
+    tmp_config_override = to_integer(allow_config_override)
+| alter
+    tmp_m_expiry = if(tmp_has_expiry = false, "no_expiry|", ""),
+    tmp_m_usage = if(tmp_has_usage_limit = false, "no_usage_limit|", ""),
+    tmp_m_rate = if(tmp_rate_limit_count = 0, "no_rate_limit|", ""),
+    tmp_m_override = if(tmp_config_override = 1, "config_override|", ""),
+    tmp_m_exhausted = if(tmp_status = "exhausted", "exhausted|", ""),
+    tmp_m_api_made = if(tmp_creation_mode = "api", "created_via_api|", ""),
+    tmp_m_key_create = if(tmp_scopes contains "api_keys.create", "can_create_api_keys|", ""),
+    tmp_m_key_delete = if(tmp_scopes contains "api_keys.delete", "can_delete_api_keys|", ""),
+    tmp_m_user_admin = if(tmp_scopes contains "users.create" or tmp_scopes contains "users.update", "can_manage_users|", "")
+| alter
+    xdm.observer.vendor = "portkey",
+    xdm.observer.product = "api_keys",
+    xdm.event.id = tmp_id,
+    xdm.event.type = if(tmp_id != null, coalesce(tmp_log_type, "api_key"), "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = coalesce(tmp_type, "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(tmp_id != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
+    xdm.event.operation = if(tmp_id != null, XDM_CONST.OPERATION_TYPE_AUDIT, null),
+    xdm.target.resource.id = tmp_id,
+    xdm.target.resource.name = tmp_name,
+    xdm.target.resource.type = coalesce(tmp_object, "api-key"),
+    xdm.target.resource.sub_type = if(
+        tmp_status = "active", "active",
+        tmp_status = "exhausted", "exhausted",
+        tmp_status != "", tmp_status,
+        null),
+    xdm.target.resource.parent_id = if(tmp_workspace = "", null, tmp_workspace),
+    xdm.source.cloud.project = tmp_org,
+    xdm.source.user.identifier = tmp_user_id,
+    xdm.target.resource.value = concat(
+        tmp_m_expiry, tmp_m_usage, tmp_m_rate, tmp_m_override,
+        tmp_m_exhausted, tmp_m_api_made, tmp_m_key_create,
+        tmp_m_key_delete, tmp_m_user_admin),
+    xdm.event.description = concat(
+        "Portkey API key ", coalesce(tmp_name, "unnamed"),
+        " (", coalesce(tmp_type, "unknown type"), ", ", coalesce(tmp_status, "unknown status"),
+        ") holds ", coalesce(to_string(tmp_scope_count), "0"), " scopes, created via ",
+        coalesce(tmp_creation_mode, "unknown"))
+;
+
+// Vendor:  portkey
+// Product: workspaces
+// Dataset: portkey_workspaces_raw
+//
+// Portkey workspace security posture from the Admin API
+// (GET /admin/workspaces), collected as a full snapshot each run. The
+// security_settings permission model is flattened by the collector into
+// top-level booleans; because raw columns are not readable in datamodel mode,
+// the permissions that widen the blast radius are encoded into
+// xdm.target.resource.value, which a posture correlation tests with `contains`.
+//
+// EVENT FIELD MAPPING
+//   id                    -> xdm.event.id, xdm.target.resource.id
+//   name                  -> xdm.target.resource.name
+//   object                -> xdm.target.resource.type
+//   slug                  -> xdm.target.resource.sub_type
+//   status                -> xdm.event.original_event_type
+//   source_log_type       -> xdm.event.type
+//   membersWrite* / membersViewAllData / membersViewApiKeys /
+//   has_usage_limits / has_rate_limits -> xdm.target.resource.value (markers)
+//
+// NOTES
+//   Only the member permissions are encoded as markers. A manager or an
+//   organisation administrator holding a write permission is the expected
+//   design of the product, whereas the same permission granted to ordinary
+//   members is what widens the blast radius, so encoding both would make the
+//   marker string fire on every workspace and carry no signal.
+//
+// NOT MAPPED
+//   icon, description, defaults, scim_source_id -- presentation or integration
+//                          metadata with no XDM home.
+//   manager and organisation administrator permission flags -- collected in the
+//                          dataset for review, but deliberately not encoded as
+//                          risk markers, per the note above.
+//   snapshot_at         -- collection time, already carried by _time.
+
+[MODEL: dataset=portkey_workspaces_raw]
+filter
+    id != null
+| alter
+    tmp_id = id,
+    tmp_name = name,
+    tmp_slug = slug,
+    tmp_object = object,
+    tmp_status = status,
+    tmp_log_type = source_log_type,
+    tmp_w_keys = membersWriteApiKeys,
+    tmp_w_guardrails = membersWriteGuardrails,
+    tmp_w_configs = membersWriteConfigs,
+    tmp_w_prompts = membersWritePrompts,
+    tmp_w_vkeys = membersWriteVirtualKeys,
+    tmp_v_alldata = membersViewAllData,
+    tmp_v_keys = membersViewApiKeys,
+    tmp_has_usage = has_usage_limits,
+    tmp_has_rate = has_rate_limits,
+    tmp_member_writes = to_integer(member_write_permission_count)
+| alter
+    tmp_m_wkeys = if(tmp_w_keys = true, "members_write_api_keys|", ""),
+    tmp_m_wguard = if(tmp_w_guardrails = true, "members_write_guardrails|", ""),
+    tmp_m_wconf = if(tmp_w_configs = true, "members_write_configs|", ""),
+    tmp_m_wprompt = if(tmp_w_prompts = true, "members_write_prompts|", ""),
+    tmp_m_wvkeys = if(tmp_w_vkeys = true, "members_write_virtual_keys|", ""),
+    tmp_m_valldata = if(tmp_v_alldata = true, "members_view_all_data|", ""),
+    tmp_m_vkeys = if(tmp_v_keys = true, "members_view_api_keys|", ""),
+    tmp_m_nousage = if(tmp_has_usage = false, "no_usage_limit|", ""),
+    tmp_m_norate = if(tmp_has_rate = false, "no_rate_limit|", "")
+| alter
+    xdm.observer.vendor = "portkey",
+    xdm.observer.product = "workspaces",
+    xdm.event.id = tmp_id,
+    xdm.event.type = if(tmp_id != null, coalesce(tmp_log_type, "workspace_posture"), "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = coalesce(tmp_status, "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(tmp_id != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
+    xdm.event.operation = if(tmp_id != null, XDM_CONST.OPERATION_TYPE_AUDIT, null),
+    xdm.target.resource.id = tmp_id,
+    xdm.target.resource.name = tmp_name,
+    xdm.target.resource.type = coalesce(tmp_object, "workspace"),
+    xdm.target.resource.sub_type = tmp_slug,
+    xdm.target.resource.value = concat(
+        tmp_m_wkeys, tmp_m_wguard, tmp_m_wconf, tmp_m_wprompt, tmp_m_wvkeys,
+        tmp_m_valldata, tmp_m_vkeys, tmp_m_nousage, tmp_m_norate),
+    xdm.event.description = concat(
+        "Portkey workspace ", coalesce(tmp_name, "unnamed"),
+        " (", coalesce(tmp_slug, "no slug"), ") grants ",
+        coalesce(to_string(tmp_member_writes), "0"),
+        " write permissions to ordinary members")
+;
+
+// Vendor:  portkey
+// Product: configs
+// Dataset: portkey_configs_raw
+//
+// Portkey gateway config inventory from the Admin API (GET /configs), collected
+// as a full snapshot each run. A config determines how a request is routed: the
+// provider and model chosen, the fallback behaviour, and the guardrails
+// attached. The list endpoint returns metadata only; the config body needs the
+// separate configs.read scope and is not collected, so this rule models
+// ownership and lifecycle rather than routing content.
+//
+// EVENT FIELD MAPPING
+//   id                    -> xdm.event.id, xdm.target.resource.id
+//   name                  -> xdm.target.resource.name
+//   object                -> xdm.target.resource.type
+//   slug                  -> xdm.target.resource.sub_type
+//   status                -> xdm.event.original_event_type
+//   workspace_id          -> xdm.target.resource.parent_id
+//   organisation_id       -> xdm.source.cloud.project
+//   owner_id              -> xdm.source.user.identifier
+//   updated_by            -> xdm.target.user.identifier
+//   source_log_type       -> xdm.event.type
+//   updated_by_owner, is_default -> xdm.target.resource.value (markers)
+//
+// NOT MAPPED
+//   snapshot_at -- collection time, already carried by _time.
+
+[MODEL: dataset=portkey_configs_raw]
+filter
+    id != null
+| alter
+    tmp_id = id,
+    tmp_name = name,
+    tmp_slug = slug,
+    tmp_object = object,
+    tmp_status = status,
+    tmp_log_type = source_log_type,
+    tmp_workspace = workspace_id,
+    tmp_org = organisation_id,
+    tmp_owner = owner_id,
+    tmp_updated_by = updated_by,
+    tmp_by_owner = updated_by_owner,
+    tmp_is_default = to_integer(is_default)
+| alter
+    tmp_m_foreign = if(tmp_by_owner = false, "changed_by_non_owner|", ""),
+    tmp_m_default = if(tmp_is_default = 1, "default_config|", "")
+| alter
+    xdm.observer.vendor = "portkey",
+    xdm.observer.product = "configs",
+    xdm.event.id = tmp_id,
+    xdm.event.type = if(tmp_id != null, coalesce(tmp_log_type, "config"), "GOCORTEX_UNMODELLED"),
+    xdm.event.original_event_type = coalesce(tmp_status, "GOCORTEX_UNMODELLED"),
+    xdm.event.tags = if(tmp_id != null, arraycreate(XDM_CONST.EVENT_TAG_SAAS), null),
+    xdm.event.operation = if(tmp_id != null, XDM_CONST.OPERATION_TYPE_AUDIT, null),
+    xdm.target.resource.id = tmp_id,
+    xdm.target.resource.name = tmp_name,
+    xdm.target.resource.type = coalesce(tmp_object, "config"),
+    xdm.target.resource.sub_type = tmp_slug,
+    xdm.target.resource.parent_id = if(tmp_workspace = "", null, tmp_workspace),
+    xdm.source.cloud.project = tmp_org,
+    xdm.source.user.identifier = tmp_owner,
+    xdm.target.user.identifier = tmp_updated_by,
+    xdm.target.resource.value = concat(tmp_m_foreign, tmp_m_default),
+    xdm.event.description = concat(
+        "Portkey config ", coalesce(tmp_name, "unnamed"),
+        " (", coalesce(tmp_slug, "no slug"), ") owned by ",
+        coalesce(tmp_owner, "unknown"), ", last changed by ",
+        coalesce(tmp_updated_by, "unknown"))
+;

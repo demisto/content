@@ -1,0 +1,478 @@
+{
+    "portkey_audit_raw": {
+        "timestamp": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "method": {
+            "type": "string",
+            "is_array": false
+        },
+        "uri": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_body": {
+            "type": "string",
+            "is_array": false
+        },
+        "query_params": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_headers": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "organisation_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "portkey_organisation_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "workspace_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "response_status_code": {
+            "type": "int",
+            "is_array": false
+        },
+        "resource_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "client_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "country": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "portkey_api_keys_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "key": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "organisation_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "workspace_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "creation_mode": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "last_updated_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "expires_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "last_reset_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "rate_limits": {
+            "type": "string",
+            "is_array": false
+        },
+        "usage_limits": {
+            "type": "string",
+            "is_array": false
+        },
+        "defaults": {
+            "type": "string",
+            "is_array": false
+        },
+        "scopes": {
+            "type": "string",
+            "is_array": false
+        },
+        "alert_emails": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_key_defaults_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "reset_usage": {
+            "type": "int",
+            "is_array": false
+        },
+        "expiry_enforced": {
+            "type": "int",
+            "is_array": false
+        },
+        "allow_config_override": {
+            "type": "int",
+            "is_array": false
+        },
+        "scope_count": {
+            "type": "int",
+            "is_array": false
+        },
+        "rate_limit_count": {
+            "type": "int",
+            "is_array": false
+        },
+        "has_usage_limit": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_expiry": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        }
+    },
+    "portkey_workspaces_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "slug": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "icon": {
+            "type": "string",
+            "is_array": false
+        },
+        "description": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "scim_source_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "defaults": {
+            "type": "string",
+            "is_array": false
+        },
+        "usage_limits": {
+            "type": "string",
+            "is_array": false
+        },
+        "rate_limits": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "last_updated_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "is_default": {
+            "type": "int",
+            "is_array": false
+        },
+        "member_write_permission_count": {
+            "type": "int",
+            "is_array": false
+        },
+        "has_usage_limits": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_rate_limits": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "managersUpdateWs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewAllData": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewAnalytics": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewApiKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewConfigs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewGuardrails": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewLogMetadata": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewLogs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewPrompts": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersViewVirtualKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteApiKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteConfigs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteGuardrails": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteMcpServers": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWritePrompts": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteVirtualKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteWsIntegrations": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteWsMcpIntegrations": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "managersWriteWsUsers": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewAllData": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewAnalytics": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewApiKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewConfigs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewGuardrails": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewLogMetadata": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewLogs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewPrompts": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersViewVirtualKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersWriteApiKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersWriteConfigs": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersWriteGuardrails": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersWritePrompts": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "membersWriteVirtualKeys": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "organisationAdminsViewLogMetadata": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "organisationAdminsViewLogs": {
+            "type": "boolean",
+            "is_array": false
+        }
+    },
+    "portkey_configs_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "slug": {
+            "type": "string",
+            "is_array": false
+        },
+        "object": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "workspace_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "organisation_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "owner_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "updated_by": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "last_updated_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "snapshot_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "is_default": {
+            "type": "int",
+            "is_array": false
+        },
+        "updated_by_owner": {
+            "type": "boolean",
+            "is_array": false
+        }
+    }
+}
