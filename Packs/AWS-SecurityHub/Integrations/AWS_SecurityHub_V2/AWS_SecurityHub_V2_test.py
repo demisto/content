@@ -1189,6 +1189,54 @@ def test_update_remote_system_resolves_on_close(mocker):
     assert call_kwargs["StatusId"] == 4
 
 
+def test_update_remote_system_reopens_on_reopen(mocker):
+    """
+    Given: A reopened incident (status ACTIVE, delta clears closingUserId and runStatus).
+    When: update_remote_system_command is called.
+    Then: batch_update_findings_v2 forces StatusId=2 (In Progress) to reopen the finding in AWS.
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"closingUserId": "", "runStatus": ""}, status=IncidentStatus.ACTIVE)
+    update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["StatusId"] == 2
+
+
+def test_update_remote_system_routine_active_edit_does_not_reopen(mocker):
+    """
+    Given: A routine edit on an active incident (comment changed) that is NOT a reopen.
+    When: update_remote_system_command is called.
+    Then: No StatusId is forced (the finding is not reopened on every active edit).
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"comment": "still working"}, status=IncidentStatus.ACTIVE)
+    update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert "StatusId" not in call_kwargs
+
+
+def test_update_remote_system_reopen_respects_explicit_statusid(mocker):
+    """
+    Given: A reopened incident that also carries an explicit statusid delta.
+    When: update_remote_system_command is called.
+    Then: The explicit statusid wins and the reopen default (StatusId=2) does not override it.
+    """
+    mock_client = mocker.Mock()
+    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
+
+    args = _update_remote_args({"statusid": "1", "closingUserId": "", "runStatus": ""}, status=IncidentStatus.ACTIVE)
+    update_remote_system_command(mock_client, args, resolve_finding=False)
+
+    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
+    assert call_kwargs["StatusId"] == 1
+
+
 @pytest.mark.parametrize(
     "delta,expected_severity_id,expect_call",
     [

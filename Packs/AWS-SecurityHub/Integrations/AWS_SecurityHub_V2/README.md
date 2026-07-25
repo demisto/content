@@ -193,3 +193,14 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex and AWS - Security Hub v2.
+
+### Close and reopen synchronization
+
+The integration keeps the open/closed lifecycle in sync in both directions:
+
+| **Action** | **Result** | **Requires** |
+| --- | --- | --- |
+| Close an incident in Cortex XSOAR | The finding is set to Resolved (status_id 4) in AWS Security Hub. | Outgoing mirroring and the *Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub* parameter enabled. |
+| Resolve or Suppress a finding in AWS Security Hub | The corresponding Cortex XSOAR incident is closed. | Incoming mirroring. |
+| Reopen an incident in Cortex XSOAR | The finding is set to In Progress (status_id 2) in AWS Security Hub. | Outgoing mirroring. |
+| Reopen a resolved finding in AWS Security Hub (status_id back to New/In Progress) | The corresponding Cortex XSOAR incident is reopened. | Incoming mirroring. |

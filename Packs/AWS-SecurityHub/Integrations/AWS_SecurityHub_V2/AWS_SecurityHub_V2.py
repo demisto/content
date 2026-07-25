@@ -900,11 +900,28 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
+def _is_incident_reopened(parsed_args: UpdateRemoteSystemArgs) -> bool:
+    """Detect whether the incident was reopened in XSOAR from the outgoing-mirror args.
+
+    Reopening a closed incident clears the ``closingUserId`` and ``runStatus`` fields, so XSOAR surfaces
+    both as empty strings in the delta while the incident status is back to Active.
+
+    Args:
+        parsed_args (UpdateRemoteSystemArgs): The parsed ``update-remote-system`` arguments.
+
+    Returns:
+        bool: True if the incident was reopened, otherwise False.
+    """
+    delta = parsed_args.delta or {}
+    return parsed_args.inc_status == IncidentStatus.ACTIVE and delta.get("closingUserId") == "" and delta.get("runStatus") == ""
+
+
 def update_remote_system_command(client: BotoClient, args: dict, resolve_finding: bool) -> str:
     """Push local (XSOAR) incident changes to the corresponding finding via batch_update_findings_v2.
 
     Mirrors out only the whitelisted delta fields (severityid, statusid, comment) plus the built-in severity.
-    When ``resolve_finding`` is enabled and the incident is closed, the finding is set to Resolved.
+    When ``resolve_finding`` is enabled and the incident is closed, the finding is set to Resolved (status_id 4).
+    Reopening the incident always reopens the finding (In Progress, status_id 2) unless a statusid delta was set.
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
@@ -951,6 +968,11 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
         demisto.debug(
             "[AWS_Security_Hub_V2] Mirror-out: incident closed and resolve_finding enabled; " "forcing StatusId=4 (Resolved)."
         )
+    # Reopening a closed incident clears closingUserId/runStatus in the delta; reopen the finding in AWS
+    # (unless an explicit statusid delta was set).
+    elif _is_incident_reopened(parsed_args) and "StatusId" not in kwargs:
+        kwargs["StatusId"] = 2  # OCSF status_id 2 = In Progress (open).
+        demisto.debug("[AWS_Security_Hub_V2] Mirror-out: incident reopened; forcing StatusId=2 (In Progress).")
 
     if not kwargs:
         demisto.debug(
