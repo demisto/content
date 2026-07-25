@@ -271,7 +271,7 @@ def generate_filters_for_get_findings(args: dict) -> dict | None:
         return None
 
     composite_filter["Operator"] = args.get("filter_operator", "AND")
-    return {"CompositeFilters": [composite_filter], "CompositeOperator": args.get("composite_operator", "AND")}
+    return {"CompositeFilters": [composite_filter]}
 
 
 def parse_finding_identifiers(identifiers_str: str) -> list[dict]:
@@ -337,7 +337,8 @@ def build_fetch_filters(start_time: str, end_time: str, min_severity: str | None
         composite_filter["StringFilters"] = string_filters
 
     composite_filter["Operator"] = "AND"
-    return {"CompositeFilters": [composite_filter], "CompositeOperator": "AND"}
+    # Only one composite filter is built, so CompositeOperator (which combines multiple composites) is omitted.
+    return {"CompositeFilters": [composite_filter]}
 
 
 def parse_tags(tags_str: str) -> dict:
@@ -351,6 +352,24 @@ def parse_tags(tags_str: str) -> dict:
     """
     regex = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.*-]+)", flags=re.I)
     return dict(regex.findall(tags_str))
+
+
+def handle_client_error(e: Exception, context: str) -> None:
+    """Log a boto3 ``ClientError`` with its code/message and re-raise it as a ``DemistoException``.
+
+    Args:
+        e (Exception): The caught ``ClientError`` (carries a ``response`` mapping).
+        context (str): Short caller context for the debug log (e.g. ``"Fetch: page query"``).
+
+    Raises:
+        DemistoException: Always, wrapping the API error message.
+    """
+    error = getattr(e, "response", {}).get("Error", {})
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] {context} raised {type(e).__name__} "
+        f"(Code={error.get('Code', '')}, Message={error.get('Message', '')})."
+    )
+    raise DemistoException(error.get("Message", ""))
 
 
 def filter_new_findings(findings: list, last_fetch: str, fetched_ids: list) -> list:
@@ -679,11 +698,68 @@ def findings_batch_update_command(client: BotoClient, args: dict) -> CommandResu
     )
 
 
+def _query_findings_page(client: BotoClient, filters: dict, max_results: int, next_token: str | None) -> tuple[list, str | None]:
+    """Run a single ``get_findings_v2`` page query and return its findings and next token.
+
+    Args:
+        client (BotoClient): The boto3 ``securityhub`` client.
+        filters (dict): The composite ``Filters`` object to query with (reused across pages).
+        max_results (int): ``MaxResults`` for this page (the still-needed count).
+        next_token (str | None): Pagination token to continue a previous page, or ``None`` for a fresh query.
+
+    Returns:
+        tuple[list, str | None]: The page's findings and the ``NextToken`` for the next page (or ``None``).
+
+    Raises:
+        DemistoException: If the API raises a ``ClientError``.
+    """
+    kwargs: dict = {"MaxResults": max_results, "Filters": filters, "SortCriteria": FETCH_SORT_CRITERIA}
+    if next_token:
+        kwargs["NextToken"] = next_token
+    demisto.debug(
+        f"[AWS_Security_Hub_V2] Fetch: get_findings_v2 page. NextToken={'<set>' if next_token else None}, "
+        f"MaxResults={max_results}, Filters={json.dumps(filters)}, SortCriteria={FETCH_SORT_CRITERIA}"
+    )
+    try:
+        response = client.get_findings_v2(**kwargs)
+    except client.exceptions.ClientError as e:
+        handle_client_error(e, "Fetch: page query")
+    return response.get("Findings", []), response.get("NextToken")
+
+
+def _compute_fetch_boundary(new_findings: list, last_fetch: str, fetched_ids: list) -> tuple[str, list]:
+    """Compute the next boundary state (``last_fetch`` + ``fetched_ids``) from the accumulated new findings.
+
+    Findings are returned already sorted ascending by ``created_time_dt`` (see ``FETCH_SORT_CRITERIA``),
+    so the last element carries the latest creation time. The boundary advances to that time and
+    ``fetched_ids`` becomes every uid sharing it (so the next inclusive-``Start`` query can dedup them).
+
+    Args:
+        new_findings (list): All deduped findings collected across the pages fetched this cycle.
+        last_fetch (str): The current boundary (returned unchanged when there are no new findings).
+        fetched_ids (list): The current boundary uids (returned unchanged when there are no new findings).
+
+    Returns:
+        tuple[str, list]: The new ``last_fetch`` and ``fetched_ids``.
+    """
+    if not new_findings:
+        return last_fetch, fetched_ids
+    latest_finding_creation_time = (new_findings[-1].get("finding_info") or {}).get("created_time_dt") or ""
+    boundary_ids = [
+        f.get("metadata", {}).get("uid")
+        for f in new_findings
+        if (f.get("finding_info") or {}).get("created_time_dt") == latest_finding_creation_time
+    ]
+    return latest_finding_creation_time, boundary_ids
+
+
 def fetch_incidents(client: BotoClient, params: dict) -> None:
     """Fetch AWS Security Hub V2 findings as XSOAR incidents.
 
-    Queries findings by ascending created time over an inclusive [last_fetch, now] window,
-    paginating via next_token and deduping against boundary state saved in the last run.
+    Queries findings by ascending created time over an inclusive [last_fetch, now] window and pages
+    through results, deduping each page against boundary state saved in the last run. Pages are pulled
+    until ``max_fetch`` new findings are collected or the API returns no next token, so a single fetch
+    cycle still fills up to ``max_fetch`` incidents even when earlier pages are fully deduped away.
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
@@ -708,71 +784,38 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
     next_token = last_run.get("next_token")
     fetched_ids: list = list(last_run.get("fetched_ids") or [])
 
-    raw_filters = last_run.get("filters") or {}
-    filters = json.loads(raw_filters) if isinstance(raw_filters, str) else raw_filters
-
+    # Reuse the persisted filters when resuming a paginated window; otherwise build a fresh window query.
     if next_token:
-        demisto.debug(
-            f"[AWS_Security_Hub_V2] Fetch: continuing previous page. get_findings_v2 args: "
-            f"NextToken=<set>, MaxResults={max_fetch}, Filters={json.dumps(filters)}, SortCriteria={FETCH_SORT_CRITERIA}"
-        )
-        try:
-            response = client.get_findings_v2(
-                NextToken=next_token, MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA
-            )
-            demisto.debug("[AWS_Security_Hub_V2] Fetch: token query succeeded.")
-        except client.exceptions.ClientError as e:
-            error = e.response.get("Error", {})
-            error_code = error.get("Code", "")
-            error_message = error.get("Message", "")
-            demisto.debug(
-                f"[AWS_Security_Hub_V2] Fetch: token query raised {type(e).__name__} "
-                f"(Code={error_code}, Message={error_message})."
-            )
-            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
+        raw_filters = last_run.get("filters") or {}
+        filters = json.loads(raw_filters) if isinstance(raw_filters, str) else raw_filters
     else:
-        try:
-            filters = build_fetch_filters(
-                start_time=last_fetch,
-                end_time=datetime.now(UTC).isoformat(),
-                min_severity=params.get("min_severity"),
-                additional_filters=params.get("fetch_filters"),
-            )
-            demisto.debug(
-                f"[AWS_Security_Hub_V2] Fetch: fresh window query. get_findings_v2 args: "
-                f"MaxResults={max_fetch}, Filters={json.dumps(filters)}, SortCriteria={FETCH_SORT_CRITERIA}"
-            )
-            response = client.get_findings_v2(MaxResults=max_fetch, Filters=filters, SortCriteria=FETCH_SORT_CRITERIA)
-            demisto.debug("[AWS_Security_Hub_V2] Fetch: fresh window query succeeded.")
-        except client.exceptions.ClientError as e:
-            raise DemistoException(e.response.get("Error", {}).get("Message", ""))
+        filters = build_fetch_filters(
+            start_time=last_fetch,
+            end_time=datetime.now(UTC).isoformat(),
+            min_severity=params.get("min_severity"),
+            additional_filters=params.get("fetch_filters"),
+        )
 
-    findings = response.get("Findings", [])
-    new_next_token = response.get("NextToken")
-    demisto.debug(f"[AWS_Security_Hub_V2] Fetch: API returned {len(findings)} findings.")
+    # Page-fill loop: keep pulling pages (requesting only the still-needed count) until we have max_fetch
+    # new findings or there is no next token. This backfills incidents dropped by per-page dedup.
+    new_findings: list = []
+    while True:
+        remaining = max_fetch - len(new_findings)
+        page_findings, next_token = _query_findings_page(client, filters, remaining, next_token)
+        new_findings.extend(filter_new_findings(page_findings, last_fetch, fetched_ids))
+        if len(new_findings) >= max_fetch or not next_token:
+            break
 
     mirror_direction = MIRROR_DIRECTION_MAPPING.get(params.get("mirror_direction", "None"))
-    new_findings = filter_new_findings(findings, last_fetch, fetched_ids)
     incidents = findings_to_incidents(new_findings, mirror_direction)
+    last_fetch, fetched_ids = _compute_fetch_boundary(new_findings, last_fetch, fetched_ids)
 
-    sorted_findings = sorted(new_findings, key=lambda x: (x.get("finding_info") or {}).get("created_time_dt") or "", reverse=True)
-    matching_uids = fetched_ids
-    if sorted_findings:
-        first_finding_info = sorted_findings[0].get("finding_info") or {}
-        first_created_time = first_finding_info.get("created_time_dt")
-        matching_uids = [
-            finding.get("metadata", {}).get("uid")
-            for finding in sorted_findings
-            if (finding.get("finding_info") or {}).get("created_time_dt") == first_created_time
-        ]
-
-        last_fetch = first_created_time
-
-    next_token_to_persist = new_next_token if new_findings else None
+    # Persist the token (and the filters it is valid against) only when we stopped mid-window on max_fetch.
+    next_token_to_persist = next_token if next_token else None
     new_last_run = {
         "last_fetch": last_fetch,
         "next_token": next_token_to_persist,
-        "fetched_ids": matching_uids,
+        "fetched_ids": fetched_ids,
         "filters": json.dumps(filters) if next_token_to_persist else {},
     }
 
@@ -808,21 +851,13 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
                 "Operator": "AND",
             }
         ],
-        "CompositeOperator": "AND",
     }
 
     try:
         response = client.get_findings_v2(Filters=filters, MaxResults=1)
         demisto.debug("[AWS_Security_Hub_V2] Mirror-in: get_findings_v2 query succeeded.")
     except client.exceptions.ClientError as e:
-        error = e.response.get("Error", {})
-        error_code = error.get("Code", "")
-        error_message = error.get("Message", "")
-        demisto.debug(
-            f"[AWS_Security_Hub_V2] Mirror-in: get-remote-data query raised {type(e).__name__} "
-            f"(Code={error_code}, Message={error_message})."
-        )
-        raise DemistoException(error_message)
+        handle_client_error(e, "Mirror-in: get-remote-data query")
 
     findings = response.get("Findings", [])
     if not findings:
@@ -930,14 +965,7 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
         response = client.batch_update_findings_v2(**kwargs)
         demisto.debug("[AWS_Security_Hub_V2] Mirror-out: batch_update_findings_v2 succeeded.")
     except client.exceptions.ClientError as e:
-        error = e.response.get("Error", {})
-        error_code = error.get("Code", "")
-        error_message = error.get("Message", "")
-        demisto.debug(
-            f"[AWS_Security_Hub_V2] Mirror-out: batch_update_findings_v2 raised {type(e).__name__} "
-            f"(Code={error_code}, Message={error_message})."
-        )
-        raise DemistoException(error_message)
+        handle_client_error(e, "Mirror-out: batch_update_findings_v2")
 
     unprocessed = response.get("UnprocessedFindings", [])
     if unprocessed:

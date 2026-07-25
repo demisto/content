@@ -1,8 +1,11 @@
 import demistomock as demisto
 import pytest
 from AWS_SecurityHub_V2 import (
+    _compute_fetch_boundary,
+    _query_findings_page,
     build_close_reopen_entries,
     build_fetch_filters,
+    handle_client_error,
     disable_security_hub_command,
     enable_security_hub_command,
     fetch_incidents,
@@ -244,18 +247,18 @@ def test_generate_filters_for_get_findings_empty():
 
 def test_generate_filters_for_get_findings_composite():
     """
-    Given: Args with string and date filters and a custom composite operator.
+    Given: Args with string, number, and date filters.
     When: generate_filters_for_get_findings is called.
-    Then: It builds the composite Filters structure with the conditions and operators.
+    Then: It builds a single composite Filters entry with the conditions and its filter operator
+          (no top-level CompositeOperator, since only one composite is built).
     """
     args = {
         "string_filters": "field_name=severity,value=High",
         "number_filters": "field_name=severity_id,gte=4",
         "date_filters": "field_name=finding_info.created_time_dt,start=2024-01-01T00:00:00Z,end=2024-02-01T00:00:00Z",
-        "composite_operator": "OR",
     }
     result = generate_filters_for_get_findings(args)
-    assert result["CompositeOperator"] == "OR"
+    assert "CompositeOperator" not in result
     composite = result["CompositeFilters"][0]
     assert composite["Operator"] == "AND"
     assert composite["StringFilters"] == [{"FieldName": "severity", "Filter": {"Value": "High", "Comparison": "EQUALS"}}]
@@ -554,12 +557,12 @@ def test_build_fetch_filters_time_only():
     """
     Given: A bounded fetch window (start and end) with no severity or additional filters.
     When: build_fetch_filters is called.
-    Then: It builds a composite with only a bounded created_time_dt DateFilter (Start and End) and
-          AND operators.
+    Then: It builds a single composite with only a bounded created_time_dt DateFilter (Start and End)
+          and an AND filter operator (no top-level CompositeOperator, since only one composite is built).
     """
     result = build_fetch_filters("2024-01-01T00:00:00.000Z", "2024-01-02T00:00:00.000Z", None, None)
     composite = result["CompositeFilters"][0]
-    assert result["CompositeOperator"] == "AND"
+    assert "CompositeOperator" not in result
     assert composite["Operator"] == "AND"
     assert composite["DateFilters"] == [
         {
@@ -588,12 +591,128 @@ def test_build_fetch_filters_with_severity_and_additional():
     assert composite["StringFilters"] == [{"FieldName": "cloud.region", "Filter": {"Value": "us-east-1", "Comparison": "EQUALS"}}]
 
 
+def test_query_findings_page_fresh_query(mocker):
+    """
+    Given: Filters and a max_results with no next_token (a fresh page query).
+    When: _query_findings_page is called.
+    Then: It calls get_findings_v2 without a NextToken, passing MaxResults/Filters/SortCriteria, and
+          returns the page findings and next token.
+    """
+    from AWS_SecurityHub_V2 import FETCH_SORT_CRITERIA
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {"Findings": [{"metadata": {"uid": "uid-1"}}], "NextToken": "tok-2"}
+
+    findings, next_token = _query_findings_page(mock_client, {"CompositeFilters": []}, 25, None)
+
+    assert findings == [{"metadata": {"uid": "uid-1"}}]
+    assert next_token == "tok-2"
+    call_kwargs = mock_client.get_findings_v2.call_args[1]
+    assert call_kwargs["MaxResults"] == 25
+    assert call_kwargs["Filters"] == {"CompositeFilters": []}
+    assert call_kwargs["SortCriteria"] == FETCH_SORT_CRITERIA
+    assert "NextToken" not in call_kwargs
+
+
+def test_query_findings_page_with_token(mocker):
+    """
+    Given: Filters, a max_results, and a next_token (continuing a previous page).
+    When: _query_findings_page is called.
+    Then: It forwards the NextToken and returns the page findings with a null next token when exhausted.
+    """
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.return_value = {"Findings": [], "NextToken": None}
+
+    findings, next_token = _query_findings_page(mock_client, {"CompositeFilters": []}, 10, "tok-prev")
+
+    assert findings == []
+    assert next_token is None
+    assert mock_client.get_findings_v2.call_args[1]["NextToken"] == "tok-prev"
+
+
+def test_query_findings_page_client_error_raises(mocker):
+    """
+    Given: A client whose get_findings_v2 raises a ClientError.
+    When: _query_findings_page is called.
+    Then: It surfaces the error message as a DemistoException.
+    """
+
+    class ClientError(Exception):
+        def __init__(self, response):
+            super().__init__(response.get("Error", {}).get("Message", ""))
+            self.response = response
+
+    mock_client = mocker.Mock()
+    mock_client.exceptions.ClientError = ClientError
+    mock_client.get_findings_v2.side_effect = ClientError(
+        {"Error": {"Code": "ValidationException", "Message": "bad filters"}}
+    )
+
+    with pytest.raises(DemistoException, match="bad filters"):
+        _query_findings_page(mock_client, {"CompositeFilters": []}, 10, None)
+
+
+def test_handle_client_error_logs_and_raises(mocker):
+    """
+    Given: A ClientError carrying an AWS error code and message.
+    When: handle_client_error is called with a caller context.
+    Then: It logs the context/code/message via debug and re-raises the message as a DemistoException.
+    """
+    debug_mock = mocker.patch.object(demisto, "debug")
+
+    class ClientError(Exception):
+        def __init__(self, response):
+            super().__init__(response.get("Error", {}).get("Message", ""))
+            self.response = response
+
+    error = ClientError({"Error": {"Code": "AccessDeniedException", "Message": "not authorized"}})
+
+    with pytest.raises(DemistoException, match="not authorized"):
+        handle_client_error(error, "Mirror-out: batch_update_findings_v2")
+
+    logged = debug_mock.call_args[0][0]
+    assert "Mirror-out: batch_update_findings_v2" in logged
+    assert "AccessDeniedException" in logged
+    assert "not authorized" in logged
+
+
+def test_compute_fetch_boundary_advances_and_collects_tied_ids():
+    """
+    Given: New findings whose latest created_time_dt is shared by two findings.
+    When: _compute_fetch_boundary is called.
+    Then: last_fetch advances to that latest timestamp and fetched_ids contains every uid at it.
+    """
+    new_findings = [
+        {"metadata": {"uid": "a"}, "finding_info": {"created_time_dt": "2024-01-01T00:00:00Z"}},
+        {"metadata": {"uid": "b"}, "finding_info": {"created_time_dt": "2024-01-03T00:00:00Z"}},
+        {"metadata": {"uid": "c"}, "finding_info": {"created_time_dt": "2024-01-03T00:00:00Z"}},
+    ]
+
+    last_fetch, fetched_ids = _compute_fetch_boundary(new_findings, "2024-01-01T00:00:00Z", ["old"])
+
+    assert last_fetch == "2024-01-03T00:00:00Z"
+    assert sorted(fetched_ids) == ["b", "c"]
+
+
+def test_compute_fetch_boundary_no_findings_returns_unchanged():
+    """
+    Given: No new findings.
+    When: _compute_fetch_boundary is called.
+    Then: The current boundary and fetched_ids are returned unchanged.
+    """
+    last_fetch, fetched_ids = _compute_fetch_boundary([], "2024-01-01T00:00:00Z", ["keep"])
+
+    assert last_fetch == "2024-01-01T00:00:00Z"
+    assert fetched_ids == ["keep"]
+
+
 def test_fetch_incidents_with_existing_last_fetch(mocker):
     """
-    Given: A previous last_fetch window and a client returning two OCSF findings newer than it.
+    Given: A previous last_fetch window and a client returning two OCSF findings newer than it, with the
+           window exhausted (no next token).
     When: fetch_incidents is called.
     Then: It builds incidents with mapped severity, sets last_fetch to the latest created time (no 1ms
-          bump), records the boundary finding id in fetched_ids, and stores the returned next_token.
+          bump), records the boundary finding id in fetched_ids, and persists no next_token.
     """
     from AWS_SecurityHub_V2 import IncidentSeverity
 
@@ -616,7 +735,7 @@ def test_fetch_incidents_with_existing_last_fetch(mocker):
                 "finding_info": {"title": "Finding Two", "created_time_dt": "2024-01-01T12:00:00.000Z"},
             },
         ],
-        "NextToken": "tok-next",
+        "NextToken": None,
     }
 
     fetch_incidents(mock_client, {"max_fetch": 50, "min_severity": "High"})
@@ -629,13 +748,14 @@ def test_fetch_incidents_with_existing_last_fetch(mocker):
     assert incidents[1]["severity"] == IncidentSeverity.CRITICAL
     assert incidents[1]["occurred"] == "2024-01-01T12:00:00.000Z"
 
-    # last_fetch = latest created time (no bump); only the boundary id is stored; next_token persisted.
+    # last_fetch = latest created time (no bump); only the boundary id is stored; no token persisted (window done).
     last_run = set_last_run.call_args[0][0]
     assert last_run["last_fetch"] == "2024-01-01T12:00:00.000Z"
     assert last_run["fetched_ids"] == ["uid-2"]
-    assert last_run["next_token"] == "tok-next"
+    assert last_run["next_token"] is None
 
-    # A fresh query uses Filters (not a NextToken), with a bounded [Start, End] window from last_fetch.
+    # A single page is fetched (window exhausted), using Filters (not a NextToken) with a bounded window.
+    assert mock_client.get_findings_v2.call_count == 1
     call_kwargs = mock_client.get_findings_v2.call_args[1]
     assert call_kwargs["MaxResults"] == 50
     assert "NextToken" not in call_kwargs
@@ -660,7 +780,7 @@ def test_fetch_incidents_continues_with_next_token(mocker):
         return_value={
             "last_fetch": "2024-01-01T00:00:00.000Z",
             "next_token": "tok-prev",
-            "filters": {"CompositeOperator": "AND", "CompositeFilters": []},
+            "filters": {"CompositeFilters": []},
         },
     )
     mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
@@ -684,7 +804,7 @@ def test_fetch_incidents_continues_with_next_token(mocker):
     call_kwargs = mock_client.get_findings_v2.call_args[1]
     assert call_kwargs["NextToken"] == "tok-prev"
     # The persisted filters are re-sent alongside the token to keep the page valid.
-    assert call_kwargs["Filters"] == {"CompositeOperator": "AND", "CompositeFilters": []}
+    assert call_kwargs["Filters"] == {"CompositeFilters": []}
 
     # The token page returns newer findings, so the boundary advances to that finding's created time.
     last_run = set_last_run.call_args[0][0]
@@ -832,6 +952,123 @@ def test_fetch_incidents_mirror_tagging(mocker, mirror_direction, expected_dbot_
     else:
         assert "mirror_direction" not in raw
         assert "mirror_instance" not in raw
+
+
+def test_fetch_incidents_page_fills_after_deduped_page(mocker):
+    """
+    Given: A first page whose only finding is deduped away (already fetched at the boundary) but that
+           still returns a next token, followed by a second page with a genuinely new finding.
+    When: fetch_incidents is called with max_fetch larger than the yield.
+    Then: The loop pulls the second page to backfill the gap, and the new finding becomes an incident.
+    """
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"last_fetch": "2024-01-01T10:00:00.000Z", "fetched_ids": ["uid-1"]},
+    )
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.side_effect = [
+        {
+            # Entire page is deduped away (uid-1 already fetched at the boundary), but a token remains.
+            "Findings": [
+                {
+                    "metadata": {"uid": "uid-1"},
+                    "severity_id": 4,
+                    "finding_info": {"title": "Already Seen", "created_time_dt": "2024-01-01T10:00:00.000Z"},
+                }
+            ],
+            "NextToken": "tok-page2",
+        },
+        {
+            # Second page carries a genuinely new finding.
+            "Findings": [
+                {
+                    "metadata": {"uid": "uid-2"},
+                    "severity_id": 3,
+                    "finding_info": {"title": "New Finding", "created_time_dt": "2024-01-02T09:00:00.000Z"},
+                }
+            ],
+            "NextToken": None,
+        },
+    ]
+
+    fetch_incidents(mock_client, {"max_fetch": 50})
+
+    # Both pages were pulled to backfill the deduped-away first page.
+    assert mock_client.get_findings_v2.call_count == 2
+    incidents = incidents_mock.call_args[0][0]
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "New Finding"
+
+    # Window exhausted (no token on the second page): boundary advances to the new finding, no token persisted.
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["last_fetch"] == "2024-01-02T09:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-2"]
+    assert last_run["next_token"] is None
+
+
+def test_fetch_incidents_stops_on_max_fetch_and_persists_token(mocker):
+    """
+    Given: max_fetch=2 and pages that each yield one new finding while a next token still remains.
+    When: fetch_incidents is called.
+    Then: The loop stops once max_fetch new findings are collected, persists the remaining token and the
+          filters it is valid against, requests only the still-needed count per page, and advances the
+          boundary using all accumulated findings.
+    """
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00.000Z"})
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    mock_client.get_findings_v2.side_effect = [
+        {
+            "Findings": [
+                {
+                    "metadata": {"uid": "uid-1"},
+                    "severity_id": 3,
+                    "finding_info": {"title": "One", "created_time_dt": "2024-01-02T00:00:00.000Z"},
+                }
+            ],
+            "NextToken": "tok-2",
+        },
+        {
+            "Findings": [
+                {
+                    "metadata": {"uid": "uid-2"},
+                    "severity_id": 3,
+                    "finding_info": {"title": "Two", "created_time_dt": "2024-01-03T00:00:00.000Z"},
+                }
+            ],
+            "NextToken": "tok-3",
+        },
+    ]
+
+    fetch_incidents(mock_client, {"max_fetch": 2})
+
+    # Exactly two pages pulled to reach max_fetch=2; the loop stops even though tok-3 remains.
+    assert mock_client.get_findings_v2.call_count == 2
+    incidents = incidents_mock.call_args[0][0]
+    assert len(incidents) == 2
+
+    # First page requests max_fetch (2); second page requests only the still-needed count (1).
+    first_call, second_call = mock_client.get_findings_v2.call_args_list
+    assert first_call[1]["MaxResults"] == 2
+    assert "NextToken" not in first_call[1]
+    assert second_call[1]["MaxResults"] == 1
+    assert second_call[1]["NextToken"] == "tok-2"
+
+    # Stopped mid-window on max_fetch: the remaining token and its filters are persisted for the next cycle.
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["next_token"] == "tok-3"
+    assert isinstance(last_run["filters"], str)  # filters are JSON-serialized when a token is persisted
+    # Boundary advances to the latest created time across all accumulated findings.
+    assert last_run["last_fetch"] == "2024-01-03T00:00:00.000Z"
+    assert last_run["fetched_ids"] == ["uid-2"]
 
 
 def test_get_remote_data_command_returns_finding(mocker):

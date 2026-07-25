@@ -94,7 +94,6 @@ Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required I
 | map_filters | The map field filters. Each entry: "field_name=&lt;OCSF field&gt;,key=&lt;key&gt;,value=&lt;value&gt;,comparison=&lt;EQUALS\|NOT_EQUALS&gt;", multiple entries separated by ";". Comparison defaults to EQUALS. | Optional |
 | ip_filters | The IP field filters. Each entry: "field_name=&lt;field&gt;,cidr=&lt;IP address&gt;", multiple entries separated by ";". Allowed field_name values: evidences.src_endpoint.ip, evidences.dst_endpoint.ip. The cidr value must be a plain IPv4 or IPv6 address (CIDR ranges like 10.0.0.0/8 are not accepted). Example: field_name=evidences.src_endpoint.ip,cidr=10.0.0.1. | Optional |
 | filter_operator | The logical operator used to combine the filter conditions within the composite filter. Possible values are: AND, OR. Default is AND. | Optional |
-| composite_operator | The logical operator used to combine multiple composite filters. Possible values are: AND, OR. Default is AND. | Optional |
 | sort_field | The finding field to sort the results by. | Optional |
 | sort_order | The order to sort the results by. Possible values are: asc, desc. | Optional |
 | limit | The maximum number of findings to return. Default is 50. | Optional |
