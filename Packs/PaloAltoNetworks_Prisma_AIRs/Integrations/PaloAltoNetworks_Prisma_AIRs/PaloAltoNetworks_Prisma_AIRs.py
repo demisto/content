@@ -7593,6 +7593,472 @@ def redteam_sentiment_update_command(client: Client, args: dict[str, Any]) -> Co
     )
 
 
+def _build_report_listing_params(args: dict[str, Any]) -> dict[str, Any]:
+    """Build the canonical skip/limit/search listing params shared by report list endpoints.
+
+    Args:
+        args: Command arguments from XSOAR.
+
+    Returns:
+        dict: Query parameters populated only with the provided listing fields.
+    """
+    params: dict[str, Any] = {}
+    skip = arg_to_number(args.get("skip"))
+    if skip is not None:
+        params["skip"] = str(skip)
+    limit = arg_to_number(args.get("limit"))
+    if limit is not None:
+        params["limit"] = str(limit)
+    search = args.get("search")
+    if search:
+        params["search"] = search
+    return params
+
+
+def _parse_prompt_set_summary(item: Any) -> dict[str, Any]:
+    """Normalize a custom-attack prompt-set summary object.
+
+    Args:
+        item: A single prompt-set summary object from the API.
+
+    Returns:
+        dict: Normalized prompt-set summary fields.
+    """
+    data = item if isinstance(item, dict) else {}
+    return {
+        "prompt_set_id": data.get("prompt_set_id"),
+        "prompt_set_name": data.get("prompt_set_name"),
+        "total_prompts": data.get("total_prompts"),
+        "total_attacks": data.get("total_attacks"),
+        "total_threats": data.get("total_threats"),
+        "failed_attacks": data.get("failed_attacks"),
+        "threat_rate": data.get("threat_rate"),
+        "property_names": data.get("property_names"),
+        "property_statistics": data.get("property_statistics"),
+    }
+
+
+def _parse_prompt_detail(item: Any) -> dict[str, Any]:
+    """Normalize a custom-attack prompt detail object.
+
+    Args:
+        item: A single prompt detail object from the API.
+
+    Returns:
+        dict: Normalized prompt detail fields.
+    """
+    data = item if isinstance(item, dict) else {}
+    return {
+        "prompt_id": data.get("prompt_id"),
+        "prompt_text": data.get("prompt_text"),
+        "goal": data.get("goal"),
+        "user_defined_goal": data.get("user_defined_goal"),
+        "properties": data.get("properties"),
+        "attack_id": data.get("attack_id"),
+        "threat": data.get("threat"),
+        "attack_outputs": data.get("attack_outputs"),
+        "asr": data.get("asr"),
+        "prompt_set_id": data.get("prompt_set_id"),
+        "prompt_set_name": data.get("prompt_set_name"),
+    }
+
+
+def redteam_custom_attack_report_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the custom-attack report summary for a scan job.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - job_id (required): The job UUID of the custom-attack scan.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Call Red Team custom-attacks report endpoint (data-plane).
+    # SDK: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/custom-attack-reports-client.ts (getReport)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (CustomAttackReportResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACKS_ENDPOINT}/report/{job_id}",
+        use_redteam_data=True,
+    )
+
+    data = response if isinstance(response, dict) else {}
+    report = {
+        "job_id": job_id,
+        "total_prompts": data.get("total_prompts"),
+        "total_attacks": data.get("total_attacks"),
+        "total_threats": data.get("total_threats"),
+        "failed_attacks": data.get("failed_attacks"),
+        "score": data.get("score"),
+        "asr": data.get("asr"),
+        "custom_attack_reports": data.get("custom_attack_reports"),
+        "property_statistics": data.get("property_statistics"),
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Custom Attack Report: {job_id}",
+        [report],
+        headers=["total_prompts", "total_attacks", "total_threats", "failed_attacks", "score", "asr"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCustomAttackReport",
+        outputs_key_field="job_id",
+        outputs=report,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_custom_attack_report_prompt_sets_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the prompt-set breakdown for a custom-attack scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - job_id (required): The job UUID of the custom-attack scan.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Call Red Team custom-attacks report prompt-sets endpoint (data-plane).
+    # SDK: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/custom-attack-reports-client.ts (getPromptSets)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (PromptSetsReportResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACKS_ENDPOINT}/report/{job_id}/prompt-sets",
+        use_redteam_data=True,
+    )
+
+    data = response if isinstance(response, dict) else {}
+    raw_sets = data.get("prompt_sets") or []
+    prompt_sets = [_parse_prompt_set_summary(item) for item in raw_sets]
+
+    readable_output = tableToMarkdown(
+        f"Red Team Custom Attack Report Prompt Sets ({data.get('total_prompt_sets', len(prompt_sets))})",
+        prompt_sets,
+        headers=[
+            "prompt_set_id",
+            "prompt_set_name",
+            "total_prompts",
+            "total_attacks",
+            "total_threats",
+            "failed_attacks",
+            "threat_rate",
+        ],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCustomAttackReportPromptSet",
+        outputs_key_field="prompt_set_id",
+        outputs=prompt_sets,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_custom_attack_report_prompts_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List prompts for a specific prompt set within a custom-attack scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - job_id (required): The job UUID of the custom-attack scan.
+              - prompt_set_id (required): The prompt-set UUID.
+              - is_threat (optional): Filter to threat prompts only.
+              - skip / limit / search (optional): Pagination and search.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+    prompt_set_id = args.get("prompt_set_id")
+    if not prompt_set_id:
+        raise ValueError("prompt_set_id is required")
+
+    params = _build_report_listing_params(args)
+    is_threat = args.get("is_threat")
+    if is_threat is not None:
+        params["is_threat"] = str(argToBoolean(is_threat)).lower()
+
+    # Call Red Team custom-attacks report prompts-by-set endpoint (data-plane).
+    # SDK: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/custom-attack-reports-client.ts (getPromptsBySet)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (PromptDetailResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACKS_ENDPOINT}/report/{job_id}/prompt-set/{prompt_set_id}/prompts",
+        params=params or None,
+        use_redteam_data=True,
+    )
+
+    raw_prompts: list = response if isinstance(response, list) else []
+    prompts = [_parse_prompt_detail(item) for item in raw_prompts]
+
+    readable_output = tableToMarkdown(
+        f"Red Team Custom Attack Prompts ({len(prompts)})",
+        prompts,
+        headers=["prompt_id", "prompt_text", "goal", "threat", "asr", "attack_id"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCustomAttackPrompt",
+        outputs_key_field="prompt_id",
+        outputs=prompts,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_custom_attack_report_prompt_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get details for a single prompt within a custom-attack scan report.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - job_id (required): The job UUID of the custom-attack scan.
+              - prompt_id (required): The prompt UUID.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+    prompt_id = args.get("prompt_id")
+    if not prompt_id:
+        raise ValueError("prompt_id is required")
+
+    # Call Red Team custom-attacks report prompt-detail endpoint (data-plane).
+    # SDK: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/custom-attack-reports-client.ts (getPromptDetail)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (PromptDetailResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACKS_ENDPOINT}/report/{job_id}/prompt/{prompt_id}",
+        use_redteam_data=True,
+    )
+
+    prompt = _parse_prompt_detail(response)
+
+    readable_output = tableToMarkdown(
+        f"Red Team Custom Attack Prompt: {prompt.get('prompt_id') or prompt_id}",
+        [prompt],
+        headers=["prompt_id", "prompt_text", "goal", "user_defined_goal", "threat", "asr", "attack_id", "prompt_set_name"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCustomAttackPrompt",
+        outputs_key_field="prompt_id",
+        outputs=prompt,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_custom_attacks_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List custom attacks for a scan job.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - job_id (required): The job UUID of the custom-attack scan.
+              - threat (optional): Filter to threat attacks only.
+              - prompt_set_id (optional): Filter by prompt-set UUID.
+              - property_value (optional): Filter by property value.
+              - skip / limit / search (optional): Pagination and search.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    params = _build_report_listing_params(args)
+    threat = args.get("threat")
+    if threat is not None:
+        params["threat"] = str(argToBoolean(threat)).lower()
+    if args.get("prompt_set_id"):
+        params["prompt_set_id"] = args.get("prompt_set_id")
+    if args.get("property_value"):
+        params["property_value"] = args.get("property_value")
+
+    # Call Red Team custom-attacks list endpoint (data-plane).
+    # SDK: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/custom-attack-reports-client.ts (listCustomAttacks)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (CustomAttacksListResponseSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACKS_ENDPOINT}/job/{job_id}/list-custom-attacks",
+        params=params or None,
+        use_redteam_data=True,
+    )
+
+    data = response if isinstance(response, dict) else {}
+    attacks = data.get("data") or []
+    summary = {
+        "job_id": job_id,
+        "total_attacks": data.get("total_attacks"),
+        "total_threats": data.get("total_threats"),
+        "total_items": (data.get("pagination") or {}).get("total_items") if isinstance(data.get("pagination"), dict) else None,
+    }
+
+    readable_output = tableToMarkdown(
+        f"Red Team Custom Attacks (total_attacks={summary['total_attacks']}, total_threats={summary['total_threats']})",
+        attacks if attacks else [summary],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCustomAttack",
+        outputs_key_field="uuid",
+        outputs={"job_id": job_id, "attacks": attacks, "summary": summary},
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_custom_attack_outputs_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List the target outputs for a single custom attack.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - job_id (required): The job UUID of the custom-attack scan.
+              - attack_id (required): The custom-attack UUID.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+    attack_id = args.get("attack_id")
+    if not attack_id:
+        raise ValueError("attack_id is required")
+
+    # Call Red Team custom-attacks attack-outputs endpoint (data-plane).
+    # SDK: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/custom-attack-reports-client.ts (getAttackOutputs)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (CustomAttackOutputSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACKS_ENDPOINT}/job/{job_id}/attack/{attack_id}/list-outputs",
+        use_redteam_data=True,
+    )
+
+    raw_outputs: list = response if isinstance(response, list) else []
+    outputs = []
+    for item in raw_outputs:
+        data = item if isinstance(item, dict) else {}
+        outputs.append(
+            {
+                "uuid": data.get("uuid"),
+                "tsg_id": data.get("tsg_id"),
+                "custom_attack_id": data.get("custom_attack_id"),
+                "job_id": data.get("job_id"),
+                "target_id": data.get("target_id"),
+                "output": data.get("output"),
+                "threat": data.get("threat"),
+                "marked_safe": data.get("marked_safe"),
+            }
+        )
+
+    readable_output = tableToMarkdown(
+        f"Red Team Custom Attack Outputs ({len(outputs)})",
+        outputs,
+        headers=["uuid", "custom_attack_id", "target_id", "output", "threat", "marked_safe"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCustomAttackOutput",
+        outputs_key_field="uuid",
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
+def redteam_custom_attack_property_stats_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get per-property attack-success statistics for a custom-attack scan.
+
+    Args:
+        client: Prisma AIRs API client.
+        args: Command arguments from XSOAR.
+              - job_id (required): The job UUID of the custom-attack scan.
+
+    Returns:
+        CommandResults: Results to return to XSOAR.
+    """
+    job_id = args.get("job_id")
+    if not job_id:
+        raise ValueError("job_id is required")
+
+    # Call Red Team custom-attacks property-stats endpoint (data-plane).
+    # SDK: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/red-team/custom-attack-reports-client.ts (getPropertyStats)
+    # Schema: ./knowledge/versions/0-13-2/prisma-airs-sdk-main/src/models/red-team.ts (PropertyStatisticSchema)
+    response = client.http_request(
+        method="GET",
+        url_suffix=f"{RED_TEAM_CUSTOM_ATTACKS_ENDPOINT}/job/{job_id}/property-stats",
+        use_redteam_data=True,
+    )
+
+    raw_stats: list = response if isinstance(response, list) else []
+    stats = []
+    flat_rows = []
+    for item in raw_stats:
+        data = item if isinstance(item, dict) else {}
+        property_name = data.get("property_name")
+        values = data.get("values") or []
+        stats.append({"property_name": property_name, "values": values})
+        for value in values:
+            v = value if isinstance(value, dict) else {}
+            flat_rows.append(
+                {
+                    "property_name": property_name,
+                    "value": v.get("value"),
+                    "successful_attack_count": v.get("successful_attack_count"),
+                    "total_attack_count": v.get("total_attack_count"),
+                    "success_rate": v.get("success_rate"),
+                }
+            )
+
+    readable_output = tableToMarkdown(
+        f"Red Team Custom Attack Property Stats ({len(stats)})",
+        flat_rows,
+        headers=["property_name", "value", "successful_attack_count", "total_attack_count", "success_rate"],
+        headerTransform=lambda h: h.replace("_", " ").title(),
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix=f"{PA_OUTPUT_PREFIX}RedTeamCustomAttackPropertyStat",
+        outputs_key_field="property_name",
+        outputs=stats,
+        readable_output=readable_output,
+        raw_response=response,
+    )
+
+
 def runtime_topics_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """List custom topics.
 
@@ -9853,6 +10319,27 @@ def main() -> None:
 
         elif command == "prisma-airs-redteam-sentiment-update":
             return_results(redteam_sentiment_update_command(client, args))
+
+        elif command == "prisma-airs-redteam-custom-attack-report-get":
+            return_results(redteam_custom_attack_report_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-custom-attack-report-prompt-sets":
+            return_results(redteam_custom_attack_report_prompt_sets_command(client, args))
+
+        elif command == "prisma-airs-redteam-custom-attack-report-prompts":
+            return_results(redteam_custom_attack_report_prompts_command(client, args))
+
+        elif command == "prisma-airs-redteam-custom-attack-report-prompt-get":
+            return_results(redteam_custom_attack_report_prompt_get_command(client, args))
+
+        elif command == "prisma-airs-redteam-custom-attacks-list":
+            return_results(redteam_custom_attacks_list_command(client, args))
+
+        elif command == "prisma-airs-redteam-custom-attack-outputs":
+            return_results(redteam_custom_attack_outputs_command(client, args))
+
+        elif command == "prisma-airs-redteam-custom-attack-property-stats":
+            return_results(redteam_custom_attack_property_stats_command(client, args))
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")

@@ -65,3 +65,10 @@
 !prisma-airs-redteam-sentiment-get job_id="87dcf504-3e57-486a-b6a0-69a4ff896130"
 !prisma-airs-redteam-prompt-sets-active-list
 !prisma-airs-redteam-prompt-sets-reference uuid="adf6e1bd-61f1-4e57-9650-b40f26b981cb"
+!prisma-airs-redteam-custom-attack-report-get job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e"
+!prisma-airs-redteam-custom-attack-report-prompt-sets job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e"
+!prisma-airs-redteam-custom-attack-report-prompts job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" prompt_set_id="73eea776-ecbf-4a5d-9098-a37744441fca" limit="3"
+!prisma-airs-redteam-custom-attack-report-prompt-get job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" prompt_id="13f0d707-d966-446b-bca0-a616602092c9"
+!prisma-airs-redteam-custom-attacks-list job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" limit="3"
+!prisma-airs-redteam-custom-attack-outputs job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e" attack_id="673d38a0-c695-4149-a7c7-387a66be7093"
+!prisma-airs-redteam-custom-attack-property-stats job_id="b1a4598e-cbe0-4810-821c-4d55fe87bf1e"

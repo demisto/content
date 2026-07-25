@@ -79,6 +79,13 @@ from PaloAltoNetworks_Prisma_AIRs import (
     redteam_prompt_sets_reference_command,
     redteam_prompt_sets_version_info_command,
     redteam_prompt_sets_active_list_command,
+    redteam_custom_attack_report_get_command,
+    redteam_custom_attack_report_prompt_sets_command,
+    redteam_custom_attack_report_prompts_command,
+    redteam_custom_attack_report_prompt_get_command,
+    redteam_custom_attacks_list_command,
+    redteam_custom_attack_outputs_command,
+    redteam_custom_attack_property_stats_command,
     redteam_prompts_create_command,
     redteam_prompts_list_command,
     redteam_prompts_get_command,
@@ -1840,6 +1847,243 @@ class TestCommands:
         result = redteam_prompt_sets_active_list_command(mock_client, {})
 
         assert result.outputs == []
+
+    @patch.object(Client, "http_request")
+    def test_redteam_custom_attack_report_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """custom-attack-report-get returns the summary keyed by job_id on the data plane.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "total_prompts": 100,
+            "total_attacks": 80,
+            "total_threats": 12,
+            "failed_attacks": 0,
+            "score": 0.85,
+            "asr": 0.15,
+        }
+
+        result = redteam_custom_attack_report_get_command(mock_client, {"job_id": "job-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCustomAttackReport"
+        assert result.outputs_key_field == "job_id"
+        assert result.outputs["job_id"] == "job-1"
+        assert result.outputs["total_threats"] == 12
+        assert result.outputs["asr"] == 0.15
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["method"] == "GET"
+        assert kwargs["url_suffix"] == "/v1/custom-attacks/report/job-1"
+        assert kwargs["use_redteam_data"] is True
+
+    def test_redteam_custom_attack_report_get_requires_job_id(self, mock_client: Client) -> None:
+        """custom-attack-report-get raises when job_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="job_id is required"):
+            redteam_custom_attack_report_get_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_custom_attack_report_prompt_sets_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """custom-attack-report-prompt-sets normalizes the prompt_sets array.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "total_prompt_sets": 1,
+            "prompt_sets": [
+                {
+                    "prompt_set_id": "ps-1",
+                    "prompt_set_name": "jailbreaks",
+                    "total_prompts": 10,
+                    "total_attacks": 8,
+                    "total_threats": 3,
+                    "failed_attacks": 0,
+                    "threat_rate": 0.375,
+                }
+            ],
+        }
+
+        result = redteam_custom_attack_report_prompt_sets_command(mock_client, {"job_id": "job-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCustomAttackReportPromptSet"
+        assert result.outputs_key_field == "prompt_set_id"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["prompt_set_name"] == "jailbreaks"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/custom-attacks/report/job-1/prompt-sets"
+        assert kwargs["use_redteam_data"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_custom_attack_report_prompts_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """custom-attack-report-prompts parses the array and passes filter params.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = [
+            {"prompt_id": "p-1", "prompt_text": "inject", "threat": True, "asr": 1.0},
+            {"prompt_id": "p-2", "prompt_text": "benign", "threat": False},
+        ]
+
+        result = redteam_custom_attack_report_prompts_command(
+            mock_client,
+            {"job_id": "job-1", "prompt_set_id": "ps-1", "is_threat": "true", "limit": "20"},
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCustomAttackPrompt"
+        assert result.outputs_key_field == "prompt_id"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["prompt_id"] == "p-1"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/custom-attacks/report/job-1/prompt-set/ps-1/prompts"
+        assert kwargs["params"] == {"limit": "20", "is_threat": "true"}
+        assert kwargs["use_redteam_data"] is True
+
+    def test_redteam_custom_attack_report_prompts_requires_prompt_set_id(self, mock_client: Client) -> None:
+        """custom-attack-report-prompts raises when prompt_set_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="prompt_set_id is required"):
+            redteam_custom_attack_report_prompts_command(mock_client, {"job_id": "job-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_custom_attack_report_prompt_get_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """custom-attack-report-prompt-get returns a single prompt keyed by prompt_id.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "prompt_id": "p-1",
+            "prompt_text": "inject system prompt",
+            "goal": "exfiltrate",
+            "threat": True,
+        }
+
+        result = redteam_custom_attack_report_prompt_get_command(mock_client, {"job_id": "job-1", "prompt_id": "p-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCustomAttackPrompt"
+        assert result.outputs["prompt_id"] == "p-1"
+        assert result.outputs["goal"] == "exfiltrate"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/custom-attacks/report/job-1/prompt/p-1"
+        assert kwargs["use_redteam_data"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_custom_attacks_list_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """custom-attacks-list returns attacks + summary and serializes filters.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {
+            "pagination": {"total_items": 3},
+            "data": [{"uuid": "a-1"}, {"uuid": "a-2"}, {"uuid": "a-3"}],
+            "total_attacks": 3,
+            "total_threats": 1,
+        }
+
+        result = redteam_custom_attacks_list_command(
+            mock_client,
+            {"job_id": "job-1", "threat": "true", "prompt_set_id": "ps-1", "property_value": "jailbreak", "limit": "20"},
+        )
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCustomAttack"
+        assert result.outputs["job_id"] == "job-1"
+        assert len(result.outputs["attacks"]) == 3
+        assert result.outputs["summary"]["total_attacks"] == 3
+        assert result.outputs["summary"]["total_items"] == 3
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/custom-attacks/job/job-1/list-custom-attacks"
+        assert kwargs["params"] == {
+            "limit": "20",
+            "threat": "true",
+            "prompt_set_id": "ps-1",
+            "property_value": "jailbreak",
+        }
+        assert kwargs["use_redteam_data"] is True
+
+    @patch.object(Client, "http_request")
+    def test_redteam_custom_attack_outputs_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """custom-attack-outputs normalizes the outputs array keyed by uuid.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = [
+            {
+                "uuid": "o-1",
+                "tsg_id": "tsg-1",
+                "custom_attack_id": "a-1",
+                "job_id": "job-1",
+                "target_id": "t-1",
+                "output": "response text",
+                "threat": True,
+                "marked_safe": False,
+            }
+        ]
+
+        result = redteam_custom_attack_outputs_command(mock_client, {"job_id": "job-1", "attack_id": "a-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCustomAttackOutput"
+        assert result.outputs_key_field == "uuid"
+        assert result.outputs[0]["output"] == "response text"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/custom-attacks/job/job-1/attack/a-1/list-outputs"
+        assert kwargs["use_redteam_data"] is True
+
+    def test_redteam_custom_attack_outputs_requires_attack_id(self, mock_client: Client) -> None:
+        """custom-attack-outputs raises when attack_id is missing.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="attack_id is required"):
+            redteam_custom_attack_outputs_command(mock_client, {"job_id": "job-1"})
+
+    @patch.object(Client, "http_request")
+    def test_redteam_custom_attack_property_stats_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """custom-attack-property-stats keeps nested values and flattens rows for display.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = [
+            {
+                "property_name": "category",
+                "values": [{"value": "jailbreak", "successful_attack_count": 3, "total_attack_count": 10, "success_rate": 0.3}],
+            }
+        ]
+
+        result = redteam_custom_attack_property_stats_command(mock_client, {"job_id": "job-1"})
+
+        assert result.outputs_prefix == "PrismaAIRs.RedTeamCustomAttackPropertyStat"
+        assert result.outputs_key_field == "property_name"
+        assert result.outputs[0]["property_name"] == "category"
+        assert result.outputs[0]["values"][0]["value"] == "jailbreak"
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"] == "/v1/custom-attacks/job/job-1/property-stats"
+        assert kwargs["use_redteam_data"] is True
 
     @patch.object(Client, "http_request")
     def test_redteam_prompts_create_command(self, mock_http: Mock, mock_client: Client) -> None:

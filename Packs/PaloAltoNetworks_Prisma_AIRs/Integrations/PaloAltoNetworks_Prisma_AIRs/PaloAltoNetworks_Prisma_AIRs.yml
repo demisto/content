@@ -5284,6 +5284,254 @@ script:
     - contextPath: PrismaAIRs.RedTeamSentiment.down_vote
       description: Whether the report was down-voted.
       type: Boolean
+  - name: prisma-airs-redteam-custom-attack-report-get
+    description: Get the custom-attack report summary (totals, score, and attack success rate) for a scan job.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.job_id
+      description: The job UUID of the custom-attack scan.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.total_prompts
+      description: Total number of prompts in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.total_attacks
+      description: Total number of attacks executed.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.total_threats
+      description: Total number of attacks that produced a threat.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.failed_attacks
+      description: Total number of attacks that failed to execute.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.score
+      description: The overall report score.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.asr
+      description: The attack success rate.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.custom_attack_reports
+      description: Per-prompt-set summary breakdown.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.property_statistics
+      description: Per-property attack-success statistics.
+      type: Unknown
+  - name: prisma-airs-redteam-custom-attack-report-prompt-sets
+    description: Get the prompt-set breakdown for a custom-attack scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.prompt_set_id
+      description: The prompt-set UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.prompt_set_name
+      description: The prompt-set name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_prompts
+      description: Total number of prompts in the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_attacks
+      description: Total number of attacks executed for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_threats
+      description: Total number of threats found for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.failed_attacks
+      description: Total number of failed attacks for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.threat_rate
+      description: The threat rate for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_names
+      description: Property names associated with the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_statistics
+      description: Per-property attack-success statistics for the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-custom-attack-report-prompts
+    description: List prompts for a specific prompt set within a custom-attack scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: prompt_set_id
+      required: true
+      description: The prompt-set UUID.
+    - name: is_threat
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Filter to prompts that produced a threat.
+    - name: skip
+      description: Number of records to skip from the start.
+    - name: limit
+      description: Maximum number of records to return.
+    - name: search
+      description: Free-text search filter.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_id
+      description: The prompt UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_text
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.goal
+      description: The attack goal for the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.user_defined_goal
+      description: Whether the goal was user-defined.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.properties
+      description: Property assignments for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.attack_id
+      description: The attack UUID associated with the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.threat
+      description: Whether the prompt produced a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.asr
+      description: The attack success rate for the prompt.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_id
+      description: The prompt-set UUID the prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_name
+      description: The prompt-set name the prompt belongs to.
+      type: String
+  - name: prisma-airs-redteam-custom-attack-report-prompt-get
+    description: Get details for a single prompt within a custom-attack scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: prompt_id
+      required: true
+      description: The prompt UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_id
+      description: The prompt UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_text
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.goal
+      description: The attack goal for the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.user_defined_goal
+      description: Whether the goal was user-defined.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.properties
+      description: Property assignments for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.attack_id
+      description: The attack UUID associated with the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.threat
+      description: Whether the prompt produced a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.attack_outputs
+      description: The target outputs generated for the prompt's attack.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.asr
+      description: The attack success rate for the prompt.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_id
+      description: The prompt-set UUID the prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_name
+      description: The prompt-set name the prompt belongs to.
+      type: String
+  - name: prisma-airs-redteam-custom-attacks-list
+    description: List custom attacks for a scan job, with optional threat, prompt-set, and property filters.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: threat
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Filter to attacks that produced a threat.
+    - name: prompt_set_id
+      description: Filter attacks by prompt-set UUID.
+    - name: property_value
+      description: Filter attacks by property value.
+    - name: skip
+      description: Number of records to skip from the start.
+    - name: limit
+      description: Maximum number of records to return.
+    - name: search
+      description: Free-text search filter.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.job_id
+      description: The job UUID of the custom-attack scan.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.attacks
+      description: The list of custom attacks.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.summary.total_attacks
+      description: Total number of attacks matching the filters.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.summary.total_threats
+      description: Total number of threats matching the filters.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.summary.total_items
+      description: Total number of paginated items.
+      type: Number
+  - name: prisma-airs-redteam-custom-attack-outputs
+    description: List the target outputs generated for a single custom attack.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: attack_id
+      required: true
+      description: The custom-attack UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.uuid
+      description: The output UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.tsg_id
+      description: The tenant service group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.custom_attack_id
+      description: The custom-attack UUID the output belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.job_id
+      description: The job UUID the output belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.target_id
+      description: The target UUID that produced the output.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.output
+      description: The target output text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.threat
+      description: Whether the output was classified as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.marked_safe
+      description: Whether the output was manually marked safe.
+      type: Boolean
+  - name: prisma-airs-redteam-custom-attack-property-stats
+    description: Get per-property attack-success statistics for a custom-attack scan.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPropertyStat.property_name
+      description: The property name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPropertyStat.values
+      description: Per-value attack-success statistics (value, successful_attack_count, total_attack_count, success_rate).
+      type: Unknown
   dockerimage: demisto/python3:3.10.14.95956
   runonce: false
   script: '-'
