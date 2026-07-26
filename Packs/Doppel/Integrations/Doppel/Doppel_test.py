@@ -20,6 +20,11 @@ from Doppel import (
     _get_last_fetch_datetime,
     _get_mirroring_fields,
     _get_remote_updated_incident_data_with_entry,
+    _parse_fetch_timeout,
+    _parse_max_fetch,
+    _incident_alert_id,
+    _alert_to_incident,
+    _xsoar_severity,
     Client,
 )
 
@@ -147,16 +152,16 @@ def test_fetch_incidents_command(mocker):
     assert "name" in incident
     assert "type" in incident
     assert "rawJSON" in incident
-    assert incident["name"].startswith("Doppel Incident"), "Incident name format mismatch"
+    assert incident["name"].startswith("Doppel Alert"), "Incident name format mismatch"
     assert incident["occurred"] != "", "Occurred timestamp should not be empty"
 
     # Verify last run update
     last_run_data = demisto.setLastRun.call_args[0][0]
     assert "last_run" in last_run_data, "last_run not updated"
 
-    # Update last run and queue for next cycle
+    # The cursor advances, but no raw incident data may be persisted in lastRun.
     last_run = last_run_data["last_run"]
-    incidents_queue = last_run_data["incidents_queue"]
+    assert "incidents_queue" not in last_run_data, "lastRun must not store raw incident data"
 
 
 def test_fetch_incidents_timeout(mocker):
@@ -204,16 +209,16 @@ def test_fetch_incidents_timeout(mocker):
     assert "name" in incident
     assert "type" in incident
     assert "rawJSON" in incident
-    assert incident["name"].startswith("Doppel Incident"), "Incident name format mismatch"
+    assert incident["name"].startswith("Doppel Alert"), "Incident name format mismatch"
     assert incident["occurred"] != "", "Occurred timestamp should not be empty"
 
     # Verify last run update
     last_run_data = demisto.setLastRun.call_args[0][0]
     assert "last_run" in last_run_data, "last_run not updated"
 
-    # Update last run and queue for next cycle
+    # The cursor advances, but no raw incident data may be persisted in lastRun.
     last_run = last_run_data["last_run"]
-    incidents_queue = last_run_data["incidents_queue"]
+    assert "incidents_queue" not in last_run_data, "lastRun must not store raw incident data"
 
 
 def test_fetch_incidents_max_fetch(mocker):
@@ -261,16 +266,16 @@ def test_fetch_incidents_max_fetch(mocker):
     assert "name" in incident
     assert "type" in incident
     assert "rawJSON" in incident
-    assert incident["name"].startswith("Doppel Incident"), "Incident name format mismatch"
+    assert incident["name"].startswith("Doppel Alert"), "Incident name format mismatch"
     assert incident["occurred"] != "", "Occurred timestamp should not be empty"
 
     # Verify last run update
     last_run_data = demisto.setLastRun.call_args[0][0]
     assert "last_run" in last_run_data, "last_run not updated"
 
-    # Update last run and queue for next cycle
+    # The cursor advances, but no raw incident data may be persisted in lastRun.
     last_run = last_run_data["last_run"]
-    incidents_queue = last_run_data["incidents_queue"]
+    assert "incidents_queue" not in last_run_data, "lastRun must not store raw incident data"
 
 
 def test_fetch_incidents_no_alerts(mocker):
@@ -292,8 +297,8 @@ def test_fetch_incidents_no_alerts(mocker):
     fetch_incidents_command(client=None, args={})
 
     # Assertions
-    demisto.info.assert_called_with("No incidents to create. Exiting fetch_incidents_command.")
     demisto.incidents.assert_called_with([])  # Ensure no incidents are created
+    demisto.debug.assert_any_call("Doppel - Created 0 incident(s) in XSOAR.")
 
 
 def test_get_remote_data_command(mocker, requests_mock):
@@ -907,6 +912,7 @@ def test_paginated_call_to_get_alerts():
         "sort_type": "date_sourced",
         "sort_order": "asc",
         "page": page,
+        "page_size": 200,
     }
 
     mock_client.get_alerts.assert_called_once_with(params=expected_query_params)  # Ensure correct API call
@@ -982,6 +988,104 @@ def test_get_remote_updated_incident_data_with_entry():
 
     # Assertions
     assert updated_alert or updated_alert is None, "Updated alert should be either valid or None"
+
+
+def test_get_remote_updated_incident_data_never_synced_timestamp():
+    """
+    Given:
+        - A lastUpdate timestamp of a never-synced incident ("0001-01-01T00:00:00Z", no microseconds).
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - The unparseable timestamp does not raise, and the updated alert is still returned
+          so the first incoming mirror sync completes.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+        "audit_logs": [{"timestamp": "2024-11-27T06:51:50.357664", "type": "alert_create"}],
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "0001-01-01T00:00:00Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert len(entries) == 1
+
+
+def test_get_remote_updated_incident_data_no_audit_logs():
+    """
+    Given:
+        - An updated alert whose payload has no audit logs.
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - The alert field updates are still returned (not discarded), with no note entries.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "2025-02-24T14:30:00.120000Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert entries == []
+
+
+def test_get_remote_updated_incident_data_empty_audit_logs():
+    """
+    Given:
+        - An updated alert whose audit_logs list is empty.
+    When:
+        - Running _get_remote_updated_incident_data_with_entry.
+    Then:
+        - No exception is raised and the alert field updates are still returned.
+    """
+    mock_client = MagicMock()
+    mock_client.get_alert.return_value = {
+        "id": "12345",
+        "queue_state": "actioned",
+        "audit_logs": [],
+    }
+
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "12345", "2025-02-24T14:30:00.120000Z")
+
+    assert updated_alert is not None
+    assert updated_alert["queue_state"] == "actioned"
+    assert entries == []
+
+
+def test_get_modified_remote_data_command_paginates(mocker):
+    """
+    Given:
+        - More modified alerts than fit in a single API page.
+    When:
+        - Running get_modified_remote_data_command.
+    Then:
+        - All pages are drained and every modified alert ID is returned exactly once.
+    """
+    mock_client = MagicMock()
+    first_page = [{"id": f"alert-{i:03d}"} for i in range(200)]
+    second_page = [{"id": f"alert-{i:03d}"} for i in range(200, 250)]
+    mock_client.get_alerts.side_effect = [{"alerts": first_page}, {"alerts": second_page}]
+
+    mocker.patch.object(demisto, "debug")
+
+    result = get_modified_remote_data_command(mock_client, {"lastUpdate": "2025-02-24T14:30:00Z"})
+
+    assert len(result.modified_incident_ids) == 250
+    assert result.modified_incident_ids[0] == "alert-000"
+    assert result.modified_incident_ids[-1] == "alert-249"
+    assert mock_client.get_alerts.call_count == 2
+    first_call_params = mock_client.get_alerts.call_args_list[0][1]["params"]
+    second_call_params = mock_client.get_alerts.call_args_list[1][1]["params"]
+    assert first_call_params["page"] == 0
+    assert second_call_params["page"] == 1
+    assert first_call_params["page_size"] == 200
 
 
 def test_client_initialization_with_proxy(mocker):
@@ -1103,3 +1207,134 @@ def test_main_function_with_proxy_disabled(mocker):
     mock_client_init.assert_called_once()
     call_kwargs = mock_client_init.call_args[1]
     assert call_kwargs["proxy"] is False
+
+
+def test_parse_fetch_timeout(mocker):
+    """fetch_timeout is parsed to a float; blank/invalid/missing yields no limit (None)."""
+    mocker.patch.object(demisto, "params", return_value={"fetch_timeout": "30"})
+    assert _parse_fetch_timeout() == 30.0
+    mocker.patch.object(demisto, "params", return_value={"fetch_timeout": ""})
+    assert _parse_fetch_timeout() is None
+    mocker.patch.object(demisto, "params", return_value={"fetch_timeout": None})
+    assert _parse_fetch_timeout() is None
+    mocker.patch.object(demisto, "params", return_value={"fetch_timeout": "abc"})
+    assert _parse_fetch_timeout() is None
+    mocker.patch.object(demisto, "params", return_value={})
+    assert _parse_fetch_timeout() is None
+
+
+def test_parse_max_fetch(mocker):
+    """max_fetch is parsed to a positive int; blank/invalid/non-positive falls back to the default."""
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": "25"})
+    assert _parse_max_fetch() == 25
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": ""})
+    assert _parse_max_fetch() == 10
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": "0"})
+    assert _parse_max_fetch() == 10
+    mocker.patch.object(demisto, "params", return_value={"max_fetch": "-5"})
+    assert _parse_max_fetch() == 10
+    mocker.patch.object(demisto, "params", return_value={})
+    assert _parse_max_fetch() == 10
+
+
+def test_incident_alert_id():
+    """The Doppel alert id is read from dbotMirrorId first, then from rawJSON, else empty."""
+    assert _incident_alert_id({"dbotMirrorId": "TET-1"}) == "TET-1"
+    assert _incident_alert_id({"rawJSON": json.dumps({"id": "TET-2"})}) == "TET-2"
+    assert _incident_alert_id({"rawJSON": "not-json"}) == ""
+    assert _incident_alert_id({}) == ""
+
+
+def test_alert_to_incident():
+    """An alert becomes an incident named by its external id, with dbotMirrorId, severity, and merged mirroring fields."""
+    alert = {"id": "TET-1953443", "created_at": "2025-01-27T07:55:10.063742", "severity": "high"}
+    incident = _alert_to_incident(alert, {"mirror_direction": "In"})
+    assert incident["name"] == "Doppel Alert TET-1953443"
+    assert incident["type"] == "Doppel Alert"
+    assert incident["dbotMirrorId"] == "TET-1953443"
+    assert incident["occurred"] == "2025-01-27T07:55:10Z"
+    assert incident["severity"] == 3
+    raw = json.loads(incident["rawJSON"])
+    assert raw["mirror_direction"] == "In"
+
+
+def test_xsoar_severity():
+    """Doppel severities map to XSOAR numeric severities; unknown/blank values default to 0 (Unknown)."""
+    assert _xsoar_severity({"severity": "low"}) == 1
+    assert _xsoar_severity({"severity": "Medium"}) == 2
+    assert _xsoar_severity({"severity": "HIGH"}) == 3
+    assert _xsoar_severity({"severity": "critical"}) == 4
+    assert _xsoar_severity({"severity": "bogus"}) == 0
+    assert _xsoar_severity({}) == 0
+
+
+def _fetch_demisto_mocks(mocker, params, last_run):
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "incidents")
+    mocker.patch.object(demisto, "info")
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "integrationInstance", return_value="inst")
+    return set_last_run
+
+
+def test_fetch_incidents_dedupes_within_run(mocker):
+    """A duplicated alert id inside a single page creates only one incident."""
+    _fetch_demisto_mocks(
+        mocker,
+        params={"max_fetch": 50, "fetch_timeout": "30", "mirror_direction": "None"},
+        last_run={},
+    )
+    page = [
+        {"id": "TET-1", "created_at": "2025-01-27T07:55:10.063742"},
+        {"id": "TET-1", "created_at": "2025-01-27T07:55:10.063742"},  # duplicate id in same page
+        {"id": "TET-2", "created_at": "2025-01-27T07:55:11.063742"},
+    ]
+    mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[page, []])
+
+    fetch_incidents_command(client=MagicMock(), args={})
+
+    created = demisto.incidents.call_args[0][0]
+    assert sorted(i["name"] for i in created) == ["Doppel Alert TET-1", "Doppel Alert TET-2"]
+
+
+def test_fetch_incidents_skips_recently_seen_ids(mocker):
+    """Ids persisted from the previous run's boundary second are not re-created on the inclusive re-pull."""
+    _fetch_demisto_mocks(
+        mocker,
+        params={"max_fetch": 50, "fetch_timeout": "30", "mirror_direction": "None"},
+        last_run={"last_run": "2025-01-27T07:55:10Z", "incidents_queue": [], "recently_seen_ids": ["TET-1"]},
+    )
+    page = [
+        {"id": "TET-1", "created_at": "2025-01-27T07:55:10.063742"},  # seen on the prior run
+        {"id": "TET-2", "created_at": "2025-01-27T07:55:12.063742"},  # genuinely new
+    ]
+    mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[page, []])
+
+    fetch_incidents_command(client=MagicMock(), args={})
+
+    created = demisto.incidents.call_args[0][0]
+    assert [i["name"] for i in created] == ["Doppel Alert TET-2"]
+
+
+def test_fetch_incidents_persists_boundary_ids(mocker):
+    """The cursor advances to the newest alert second and only that second's ids are persisted."""
+    set_last_run = _fetch_demisto_mocks(
+        mocker,
+        params={"max_fetch": 50, "fetch_timeout": "30", "mirror_direction": "None"},
+        last_run={},
+    )
+    page = [
+        {"id": "TET-1", "created_at": "2025-01-27T07:55:10.063742"},
+        {"id": "TET-2", "created_at": "2025-01-27T07:55:12.063742"},  # newest second
+    ]
+    mocker.patch("Doppel._paginated_call_to_get_alerts", side_effect=[page, []])
+
+    fetch_incidents_command(client=MagicMock(), args={})
+
+    created = demisto.incidents.call_args[0][0]
+    assert all(i["dbotMirrorId"] for i in created)
+    last_run_data = set_last_run.call_args[0][0]
+    assert last_run_data["last_run"] == "2025-01-27T07:55:12Z"
+    assert last_run_data["recently_seen_ids"] == ["TET-2"]
