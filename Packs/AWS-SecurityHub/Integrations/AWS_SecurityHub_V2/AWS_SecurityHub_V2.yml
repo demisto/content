@@ -1,6 +1,7 @@
 name: AWS - Security Hub v2
 display: AWS - Security Hub v2
 category: IT Services
+provider: Amazon Web Services
 sectionorder:
 - Connect
 - Collect
@@ -121,6 +122,12 @@ configuration:
   name: isFetch
   type: 8
   section: Collect
+  required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
   required: false
 - display: Incident type
   name: incidentType
@@ -312,7 +319,7 @@ script:
     - name: remoteId
       description: The remote finding metadata UID to update.
       required: false
-  dockerimage: demisto/boto3py3:1.0.0.7704170
+  dockerimage: demisto/boto3py3:1.0.0.11314142
   isfetch: true
   ismappable: true
   isremotesyncin: true
