@@ -2,16 +2,22 @@
     "name": "Doppel",
     "description": "This Content pack for Doppel mirrors the alerts created by Doppel as XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.",
     "support": "partner",
-    "currentVersion": "1.0.7",
+    "currentVersion": "1.0.8",
     "author": "Doppel Inc",
     "url": "https://www.doppel.com/",
     "email": "integrations@doppel.com",
+    "githubUser": [
+        "evan-ishibashi"
+    ],
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Doppel"
+    ],
+    "created": "2025-04-16T14:56:36Z",
     "marketplaces": [
         "xsoar",
         "marketplacev2",
