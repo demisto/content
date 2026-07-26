@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Microsoft will begin retiring Exchange Web Services (EWS) in Exchange Online starting October 2026. Customers using a **Self-Deployed Application** must add this integration's Application (Client) ID to the tenant's `EwsAllowedAppIds` allow list before the enforcement date. Customers using the **Cortex Application** authentication method are not required to take action. For more information, see the [integration documentation](https://xsoar.pan.dev/docs/reference/integrations/ewso365)."
+}
