@@ -1,0 +1,35 @@
+name: Portkey - Workspace Guardrails Writable By Members - by GoCortexIO
+description: Detects a Portkey workspace where ordinary members may change guardrails or routing configs, allowing the AI safety and governance controls to be weakened without administrator involvement.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = portkey_workspaces_raw
+  | filter xdm.target.resource.value contains "members_write_guardrails" or xdm.target.resource.value contains "members_write_configs"
+  | sort desc _time
+  | dedup xdm.target.resource.id
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: Portkey workspace guardrails writable by members - $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Portkey workspace $xdm.target.resource.name allows ordinary members to change guardrails or routing configs. Guardrails are the controls that filter prompts and responses, so a member able to edit them can disable the protection that stops sensitive data leaving through a model, and can reroute traffic to an unapproved provider. Restrict guardrail and config changes to managers.
+alert_domain: DOMAIN_POSTURE
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562 - Impair Defenses
+suppression_fields:
+- xdm.event.id
+global_rule_id: 956ae0bf-9a58-4354-bd33-140c6ac8918d
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '0 */6 * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_workspaces_raw | filter id = $xdm.target.resource.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

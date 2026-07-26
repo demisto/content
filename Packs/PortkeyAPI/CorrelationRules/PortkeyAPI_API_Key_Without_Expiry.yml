@@ -1,0 +1,35 @@
+name: Portkey - API Key Without Expiry - by GoCortexIO
+description: Detects a Portkey API key that has no expiry date set, so a leaked or forgotten credential remains valid indefinitely.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = portkey_api_keys_raw
+  | filter xdm.target.resource.value contains "no_expiry"
+  | sort desc _time
+  | dedup xdm.target.resource.id
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: Portkey API key without expiry - $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Portkey API key $xdm.target.resource.name has no expiry date, so it stays valid until somebody revokes it by hand. A key that leaks, or that outlives the person or service it was issued for, gives an attacker durable access to the AI gateway. Set an expiry, or confirm the key is deliberately long lived and compensating monitoring is in place.
+alert_domain: DOMAIN_POSTURE
+mitre_defs:
+  TA0003 - Persistence:
+  - T1098 - Account Manipulation
+suppression_fields:
+- xdm.event.id
+global_rule_id: 66fece3c-7f2f-4f8c-861f-a4dbf71189af
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '0 */6 * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_api_keys_raw | filter id = $xdm.target.resource.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

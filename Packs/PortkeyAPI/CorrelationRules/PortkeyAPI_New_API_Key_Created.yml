@@ -1,0 +1,35 @@
+name: Portkey - New API Key Created - by GoCortexIO
+description: Detects the creation of a new Portkey API key, so a credential issued outside the normal process is noticed while it is still recent.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = portkey_audit_raw
+  | alter event_verb = lowercase(to_string(xdm.event.original_event_type))
+  | filter event_verb contains "create" and xdm.target.resource.type = "api-keys"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.description, xdm.source.cloud.project, xdm.source.user.identifier, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.source.ipv4, xdm.source.location.country, xdm.network.http.method, xdm.network.http.url, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.parent_id, xdm.*
+alert_name: Portkey API key created by $xdm.source.user.identifier
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A new Portkey API key was created by user $xdm.source.user.identifier from $xdm.source.ipv4 in $xdm.source.location.country. A new key is a new route to the models and the data behind them, so confirm the creation was expected, that the requester is who the account says, and that the key was given an expiry and a spend limit.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0003 - Persistence:
+  - T1098 - Account Manipulation
+suppression_fields:
+- xdm.source.cloud.project
+- xdm.source.user.identifier
+global_rule_id: 4d64630b-9836-49d9-abcb-f6cea772a494
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_audit_raw | filter resource_type = "api-keys"
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

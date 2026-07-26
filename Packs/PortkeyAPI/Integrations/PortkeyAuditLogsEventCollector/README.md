@@ -12,6 +12,7 @@ Collects control-plane audit logs from the Portkey Admin API and ingests them in
 | First fetch time | Time range fetched on the first run (default `3 days`). |
 | Maximum number of events per fetch | Ceiling per run (default `5000`). |
 | Page size | Records requested per page (default `100`). |
+| Events Fetch Interval | How often the collector runs (default 5 minutes). Audit logs are the near real time source. |
 
 ## Commands
 

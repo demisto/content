@@ -1,0 +1,35 @@
+name: Portkey - API Key Without Spend or Rate Limit - by GoCortexIO
+description: Detects a Portkey API key with neither a usage limit nor a rate limit, leaving model spend and request volume uncapped if the key is abused.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = portkey_api_keys_raw
+  | filter xdm.target.resource.value contains "no_usage_limit" and xdm.target.resource.value contains "no_rate_limit"
+  | sort desc _time
+  | dedup xdm.target.resource.id
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: Portkey API key without spend or rate limit - $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Portkey API key $xdm.target.resource.name has no usage limit and no rate limit, so model spend and request volume through it are uncapped. A stolen key can therefore run up unbounded cost, or be used to exhaust the gateway for everyone else, before anyone notices. Apply a usage limit and a rate limit proportionate to what the key is for.
+alert_domain: DOMAIN_POSTURE
+mitre_defs:
+  TA0040 - Impact:
+  - T1496 - Resource Hijacking
+suppression_fields:
+- xdm.event.id
+global_rule_id: 993cde83-11a8-483d-9c02-7476cc41a386
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '0 */6 * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_api_keys_raw | filter id = $xdm.target.resource.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

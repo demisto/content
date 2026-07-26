@@ -1,0 +1,34 @@
+name: Portkey - Guardrail Blocked or Flagged Content - by GoCortexIO
+description: Detects a request that Portkey's own guardrails denied or flagged, which is the gateway's authoritative verdict on the content rather than an inference drawn from the prompt text.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = portkey_llm_requests_raw
+  | filter xdm.observer.action in ("denied", "soft_denied", "flagged")
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
+alert_name: Portkey guardrail $xdm.observer.action content from $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Portkey's guardrails returned a verdict of $xdm.observer.action for a request from $xdm.source.user.username to $xdm.target.resource.name, with the categories $xdm.event.outcome_reason. This is the gateway's own decision, produced by the checks configured on the workspace, so it carries more weight than any inference drawn from the prompt text. Confirm which check fired, whether the categories match the content, and whether the request was blocked or merely recorded.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562 - Impair Defenses
+suppression_fields:
+- xdm.source.user.identifier
+- xdm.target.resource.parent_id
+global_rule_id: 5b2e8a41-7c94-4d06-b3f1-9e07d2a6c518
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter id = $xdm.event.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

@@ -26,6 +26,12 @@ configuration:
   defaultvalue: "5000"
   advanced: true
   additionalinfo: The maximum number of API key records to fetch on each run.
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: "60"
+  additionalinfo: How often the collector runs, in minutes. The API key inventory is current configuration (a snapshot) and changes rarely, so an hourly interval is appropriate and keeps ingestion proportionate.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

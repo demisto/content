@@ -1,0 +1,90 @@
+commonfields:
+  id: Portkey LLM Request Logs Event Collector
+  version: -1
+name: Portkey LLM Request Logs Event Collector
+display: Portkey LLM Request Logs Event Collector
+category: Analytics & SIEM
+description: Collect Portkey gateway request logs, including the prompt, completion, model, token usage and cost, and ingest them into the Cortex Platform.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  required: true
+  defaultvalue: https://api.portkey.ai/v1
+  additionalinfo: The Portkey API base URL.
+- display: API Key
+  name: credentials
+  type: 9
+  required: true
+  displaypassword: API Key
+  hiddenusername: true
+  additionalinfo: A Portkey admin API key with the log export scopes (logs.list, logs.view and logs.export). Provide the key in the password field; it is sent as the x-portkey-api-key header.
+- display: Workspace slugs
+  name: workspace_slugs
+  type: 0
+  required: true
+  additionalinfo: Comma-separated Portkey workspace slugs to collect, for example ws-example-a1b2c3. Use the slug, not the workspace UUID. The export API accepts a UUID and then silently returns no records.
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  required: false
+  defaultvalue: 1 day
+  additionalinfo: 'How far back to collect on the first run (e.g. "1 day", "12 hours").'
+- display: Collection lag (minutes)
+  name: lag_minutes
+  type: 0
+  required: false
+  defaultvalue: "5"
+  advanced: true
+  additionalinfo: How far behind the present each export window stops, in minutes. A window is never collected twice, so this lag gives a log that arrives late a chance to be included before the window closes behind it.
+- display: Include prompt and response bodies
+  name: include_bodies
+  type: 8
+  required: false
+  defaultvalue: "true"
+  additionalinfo: Collect the full prompt and completion text. These dominate the record size, roughly 26 KB per record in testing, and may contain sensitive content. Turn this off to collect only the metadata (model, provider, tokens, cost, status), which still supports usage and cost detections.
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: "5"
+  additionalinfo: How often the collector runs, in minutes. An export is asynchronous and is carried across runs, so this controls collection latency rather than how much is collected.
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  advanced: true
+script:
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.13.10404775
+  isfetchevents: true
+  defaultEnabled: true
+  commands:
+  - name: portkey-log-exports-get-events
+    description: Report how many request logs are available for a time window, without running an export. Used for testing and for sizing ingestion before enabling collection.
+    arguments:
+    - name: since
+      description: 'How far back to count (e.g. "1 day", "12 hours").'
+      defaultValue: 1 day
+    outputs: []
+fromversion: 6.8.0
+defaultEnabled: true
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- C1
+- C3
+- X1
+- X3
+- X5
+- ENT_PLUS
+tests:
+- No tests (auto formatted)

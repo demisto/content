@@ -39,6 +39,12 @@ configuration:
   defaultvalue: "100"
   advanced: true
   additionalinfo: The number of records to request per page.
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: "5"
+  additionalinfo: How often the collector runs, in minutes. Audit logs are a time series and this is the near real time source, so a short interval is appropriate. The correlation that reads it runs every ten minutes, so collecting more often than every five minutes adds no detection speed.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

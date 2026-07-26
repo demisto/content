@@ -1,0 +1,35 @@
+name: Portkey - API Key Able to Manage API Keys - by GoCortexIO
+description: Detects a Portkey API key whose scopes let it create or delete other API keys, a privilege escalation path that lets one credential mint further credentials.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = portkey_api_keys_raw
+  | filter xdm.target.resource.value contains "can_create_api_keys" or xdm.target.resource.value contains "can_delete_api_keys"
+  | sort desc _time
+  | dedup xdm.target.resource.id
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: Portkey API key can manage API keys - $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Portkey API key $xdm.target.resource.name holds scopes that allow it to create or delete other API keys. An attacker who obtains this key can mint further credentials that outlive its revocation, or delete the keys legitimate services depend on. Confirm the key genuinely needs key management, and remove those scopes if it does not.
+alert_domain: DOMAIN_POSTURE
+mitre_defs:
+  TA0004 - Privilege Escalation:
+  - T1098 - Account Manipulation
+suppression_fields:
+- xdm.event.id
+global_rule_id: f4726b14-5f39-49ef-afbc-c685afea9e17
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '0 */6 * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_api_keys_raw | filter id = $xdm.target.resource.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

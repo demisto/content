@@ -1,0 +1,42 @@
+name: Portkey - Prompt Injection Impersonating Tooling or Authority - by GoCortexIO
+description: Detects a prompt that casts the model as a terminal or command runner, claims an authority that permits disclosure, or dictates the opening words of the reply to steer it past a refusal.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = portkey_llm_requests_raw
+  | alter prompt = lowercase(to_string(xdm.target.resource.value))
+  | filter prompt contains "you are a linux terminal" or prompt contains "you are a system agent"
+      or prompt contains "you are a terminal" or prompt contains "print only the output"
+      or prompt contains "act as a python repl" or prompt contains "act as a repl"
+      or prompt contains "chief information security officer" or prompt contains "i am authorising"
+      or prompt contains "for the soc 2 audit" or prompt contains "i am the penetration tester"
+      or prompt contains "disclosure is explicitly in scope" or prompt contains "begin your reply with"
+      or prompt contains "begin your response with" or prompt contains "start your response with"
+      or prompt contains "respond with only"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
+alert_name: Portkey - Prompt Injection Impersonating Tooling or Authority - $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A prompt sent by $xdm.source.user.username to $xdm.target.resource.name used a social or structural pretext, casting the model as a terminal or command interpreter, claiming an authority such as an auditor or security officer that permits disclosure, or dictating the first words of the reply so a refusal becomes harder. These techniques are individually weaker than a direct override and are commonly combined with one.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1656 - Impersonation
+suppression_fields:
+- xdm.source.user.identifier
+- xdm.target.resource.parent_id
+global_rule_id: e9a67454-ca76-445b-848d-cbf95d67aa68
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter id = $xdm.event.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

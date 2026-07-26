@@ -1,0 +1,68 @@
+name: Portkey - Sustained Prompt Injection Campaign - by GoCortexIO
+description: Detects one identity making repeated prompt injection attempts across several technique families in a short window, which distinguishes a deliberate campaign from a single opportunistic prompt.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = portkey_llm_requests_raw
+  | alter prompt = lowercase(to_string(xdm.target.resource.value))
+  | filter prompt contains "<|im_start|>" or prompt contains "<|im_end|>" or prompt contains "[/inst]"
+      or prompt contains "### system:" or prompt contains "### user:" or prompt contains "<<sys>>"
+      or prompt contains "<|system|>" or prompt contains "<|start_header_id|>" or prompt contains "</user>"
+      or prompt contains "<system>" or prompt contains "</system>" or prompt contains "ignore all previous"
+      or prompt contains "ignore previous instruction" or prompt contains "disregard all prior"
+      or prompt contains "disregard previous" or prompt contains "prior directives are revoked"
+      or prompt contains "restrictions lifted" or prompt contains "restrictions suspended"
+      or prompt contains "disclosure policy updated" or prompt contains "new directive is"
+      or prompt contains "priority override" or prompt contains "confidentiality disabled"
+      or prompt contains "you are dan" or prompt contains "developer mode" or prompt contains "maintenance mode"
+      or prompt contains "with no restrictions" or prompt contains "opposite day"
+      or prompt contains "pretend you have no" or prompt contains "system prompt"
+      or prompt contains "exact instructions were you given" or prompt contains "repeat everything written above"
+      or prompt contains "context window" or prompt contains "instructions you were given"
+      or prompt contains "initial prompt" or prompt contains "verbatim" or prompt contains "initialisation text"
+      or prompt contains "initialisation material" or prompt contains "initialization material"
+      or prompt contains "were initialised" or prompt contains "were initialized" or prompt contains "base64"
+      or prompt contains "rot13" or prompt contains "morse code" or prompt contains "leetspeak"
+      or prompt contains "character order reversed" or prompt contains "transliterate"
+      or prompt contains "chief information security officer" or prompt contains "i am authorising"
+      or prompt contains "for the soc 2 audit" or prompt contains "i am the penetration tester"
+      or prompt contains "disclosure is explicitly in scope" or prompt contains "begin your reply with"
+      or prompt contains "begin your response with" or prompt contains "start your response with"
+      or prompt contains "respond with only" or prompt contains "you are a linux terminal"
+      or prompt contains "you are a system agent" or prompt contains "you are a terminal"
+      or prompt contains "print only the output" or prompt contains "act as a python repl"
+      or prompt contains "act as a repl" or prompt contains "is now declassified" or prompt contains "end classified"
+      or prompt contains "tool_result:" or prompt contains "tool result:"
+  | comp count_distinct(xdm.event.id) as flagged_requests,
+         count_distinct(xdm.target.resource.name) as models_targeted,
+         min(_time) as first_attempt,
+         max(_time) as last_attempt
+       by xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type
+  | filter flagged_requests >= 5
+  | fields xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.parent_id, xdm.event.type, flagged_requests, models_targeted, first_attempt, last_attempt
+alert_name: Portkey sustained injection campaign by $xdm.source.user.username - $flagged_requests attempts
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: $xdm.source.user.username made $flagged_requests prompt injection attempts against workspace $xdm.target.resource.parent_id within the search window. Repetition across techniques indicates deliberate probing rather than a single opportunistic prompt, and someone iterating in this way is usually working towards a technique the guardrails do not cover. The techniques attempted and the time span are included so the progression can be read directly.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0043 - Reconnaissance:
+  - T1595 - Active Scanning
+suppression_fields:
+- xdm.source.user.identifier
+- xdm.target.resource.parent_id
+global_rule_id: 4205567b-e2e7-4e53-a814-0c175c337b12
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 4 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter json_extract_scalar(metadata, "$._user") = $xdm.source.user.identifier
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

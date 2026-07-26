@@ -10,6 +10,7 @@ Collects the Portkey API key inventory from the Admin API and ingests it into th
 | Server URL | The Portkey API base URL (default `https://api.portkey.ai/v1`). |
 | API Key | A Portkey admin API key with the API key list scopes, sent as the `x-portkey-api-key` header. |
 | Maximum number of events per fetch | Ceiling per run (default `5000`). |
+| Events Fetch Interval | How often the collector runs (default 60 minutes). The key inventory changes rarely. |
 
 ## Dataset
 

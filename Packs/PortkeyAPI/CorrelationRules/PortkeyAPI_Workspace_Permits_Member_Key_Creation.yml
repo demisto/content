@@ -1,0 +1,35 @@
+name: Portkey - Workspace Lets Members Create API Keys - by GoCortexIO
+description: Detects a Portkey workspace whose permission model lets ordinary members create API keys or provider credentials, widening who can issue access to the AI gateway.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = portkey_workspaces_raw
+  | filter xdm.target.resource.value contains "members_write_api_keys" or xdm.target.resource.value contains "members_write_virtual_keys"
+  | sort desc _time
+  | dedup xdm.target.resource.id
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*
+alert_name: Portkey workspace lets members create API keys - $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Portkey workspace $xdm.target.resource.name allows ordinary members, not only managers, to create API keys or provider credentials. Any member can therefore issue a credential that reaches the models and the data behind them, and can do so without an administrator being involved. Restrict key creation to managers unless members genuinely need it.
+alert_domain: DOMAIN_POSTURE
+mitre_defs:
+  TA0004 - Privilege Escalation:
+  - T1098 - Account Manipulation
+suppression_fields:
+- xdm.event.id
+global_rule_id: 1201cbe7-0237-4ce1-a067-3829d4414653
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '0 */6 * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_workspaces_raw | filter id = $xdm.target.resource.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

@@ -1,0 +1,36 @@
+name: Portkey - Gateway Config Changed By Non Owner - by GoCortexIO
+description: Detects a Portkey gateway config whose last editor was not its owner, surfacing a change to request routing or attached guardrails made by somebody else.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = portkey_configs_raw
+  | filter xdm.target.resource.value contains "changed_by_non_owner"
+  | sort desc _time
+  | dedup xdm.target.resource.id
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.description, xdm.source.cloud.project, xdm.target.resource.type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.*, xdm.target.user.identifier
+alert_name: Portkey config changed by non owner - $xdm.target.resource.name
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: Portkey gateway config $xdm.target.resource.name was last changed by somebody other than its owner. A config decides which provider and model a request reaches, the fallback behaviour, and which guardrails apply, so an unexpected editor can silently reroute traffic or drop the safety controls. Confirm the change was intended and review the current routing.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562 - Impair Defenses
+suppression_fields:
+- xdm.event.id
+- xdm.target.user.identifier
+global_rule_id: fc1a7b25-a5b0-475c-9087-1695133de8f1
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '0 */6 * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_configs_raw | filter id = $xdm.target.resource.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

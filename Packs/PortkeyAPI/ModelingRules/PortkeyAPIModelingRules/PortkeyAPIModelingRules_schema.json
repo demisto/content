@@ -474,5 +474,147 @@
             "type": "boolean",
             "is_array": false
         }
+    },
+    "portkey_llm_requests_raw": {
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "trace_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "created_at": {
+            "type": "string",
+            "is_array": false
+        },
+        "generated_at": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "request": {
+            "type": "string",
+            "is_array": false
+        },
+        "response": {
+            "type": "string",
+            "is_array": false
+        },
+        "request_details": {
+            "type": "string",
+            "is_array": false
+        },
+        "response_details": {
+            "type": "string",
+            "is_array": false
+        },
+        "portkeyHeaders": {
+            "type": "string",
+            "is_array": false
+        },
+        "metadata": {
+            "type": "string",
+            "is_array": false
+        },
+        "config": {
+            "type": "string",
+            "is_array": false
+        },
+        "prompt_slug": {
+            "type": "string",
+            "is_array": false
+        },
+        "ai_model": {
+            "type": "string",
+            "is_array": false
+        },
+        "ai_org": {
+            "type": "string",
+            "is_array": false
+        },
+        "mode": {
+            "type": "string",
+            "is_array": false
+        },
+        "cost_currency": {
+            "type": "string",
+            "is_array": false
+        },
+        "portkey_workspace_slug": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "req_units": {
+            "type": "int",
+            "is_array": false
+        },
+        "res_units": {
+            "type": "int",
+            "is_array": false
+        },
+        "total_units": {
+            "type": "int",
+            "is_array": false
+        },
+        "response_time": {
+            "type": "int",
+            "is_array": false
+        },
+        "response_status_code": {
+            "type": "int",
+            "is_array": false
+        },
+        "cost": {
+            "type": "int",
+            "is_array": false
+        },
+        "is_success": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "user_prompt": {
+            "type": "string",
+            "is_array": false
+        },
+        "guardrail_evaluated": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "guardrail_verdict": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "guardrail_denied": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "guardrail_soft_denied": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "guardrail_flagged": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "guardrail_flagged_categories": {
+            "type": "string",
+            "is_array": false
+        },
+        "guardrail_check_ids": {
+            "type": "string",
+            "is_array": false
+        },
+        "guardrail_top_category": {
+            "type": "string",
+            "is_array": false
+        },
+        "guardrail_top_score": {
+            "type": "float",
+            "is_array": false
+        }
     }
 }

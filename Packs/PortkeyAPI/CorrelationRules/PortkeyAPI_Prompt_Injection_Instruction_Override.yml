@@ -1,0 +1,43 @@
+name: Portkey - Prompt Injection Overriding Model Instructions - by GoCortexIO
+description: Detects a prompt that tries to revoke the model's operating instructions or to substitute an unrestricted persona, the two most common ways of removing the constraints an application relies on.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = portkey_llm_requests_raw
+  | alter prompt = lowercase(to_string(xdm.target.resource.value))
+  | filter prompt contains "ignore all previous" or prompt contains "ignore previous instruction"
+      or prompt contains "disregard all prior" or prompt contains "disregard previous"
+      or prompt contains "prior directives are revoked" or prompt contains "restrictions lifted"
+      or prompt contains "restrictions suspended" or prompt contains "disclosure policy updated"
+      or prompt contains "new directive is" or prompt contains "priority override"
+      or prompt contains "confidentiality disabled" or prompt contains "you are dan"
+      or prompt contains "developer mode" or prompt contains "maintenance mode"
+      or prompt contains "with no restrictions" or prompt contains "opposite day"
+      or prompt contains "pretend you have no"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
+alert_name: Portkey - Prompt Injection Overriding Model Instructions - $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A prompt sent by $xdm.source.user.username to $xdm.target.resource.name attempted to override the model's instructions or adopt an unrestricted persona, for example by revoking prior directives, declaring restrictions lifted, or asking the model to act as an unconstrained assistant. Confirm what the model returned and whether the application's safeguards held.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562 - Impair Defenses
+suppression_fields:
+- xdm.source.user.identifier
+- xdm.target.resource.parent_id
+global_rule_id: fb5aeacc-2077-4db6-aea6-e932083a5cec
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter id = $xdm.event.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

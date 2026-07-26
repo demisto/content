@@ -1,0 +1,43 @@
+name: Portkey - System Prompt or Context Extraction Attempt - by GoCortexIO
+description: Detects a prompt seeking the model's own instructions or context, including attempts to have it re-encoded so the text is not returned literally.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  datamodel dataset = portkey_llm_requests_raw
+  | alter prompt = lowercase(to_string(xdm.target.resource.value))
+  | filter prompt contains "system prompt" or prompt contains "exact instructions were you given"
+      or prompt contains "repeat everything written above" or prompt contains "context window"
+      or prompt contains "instructions you were given" or prompt contains "initial prompt"
+      or prompt contains "verbatim" or prompt contains "initialisation text"
+      or prompt contains "initialisation material" or prompt contains "initialization material"
+      or prompt contains "were initialised" or prompt contains "were initialized" or prompt contains "base64"
+      or prompt contains "rot13" or prompt contains "morse code" or prompt contains "leetspeak"
+      or prompt contains "character order reversed" or prompt contains "transliterate"
+      or prompt contains "is now declassified" or prompt contains "end classified"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
+alert_name: Portkey - System Prompt or Context Extraction Attempt - $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A prompt sent by $xdm.source.user.username to $xdm.target.resource.name sought the model's instructions or context, or asked for material to be re-encoded, for example as base64, reversed or transliterated, which is how an attacker retrieves protected text without asking for it directly. A system prompt often carries credentials, internal endpoints and business logic, so confirm what the response contained.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0007 - Discovery:
+  - T1082 - System Information Discovery
+suppression_fields:
+- xdm.source.user.identifier
+- xdm.target.resource.parent_id
+global_rule_id: 4e8ca13c-83db-4d52-a332-c6b36e8a5261
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter id = $xdm.event.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0

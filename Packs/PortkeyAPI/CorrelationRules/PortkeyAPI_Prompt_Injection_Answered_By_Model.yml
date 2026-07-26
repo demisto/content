@@ -1,0 +1,63 @@
+name: Portkey - Prompt Injection Answered By The Model - by GoCortexIO
+description: Detects a prompt matching a known injection technique that the model then answered successfully, which separates an attempt that was refused or blocked from one the model may have complied with.
+severity: SEV_040_HIGH
+xql_query: |-
+  datamodel dataset = portkey_llm_requests_raw
+  | alter prompt = lowercase(to_string(xdm.target.resource.value))
+  | filter prompt contains "<|im_start|>" or prompt contains "<|im_end|>" or prompt contains "[/inst]"
+      or prompt contains "### system:" or prompt contains "### user:" or prompt contains "<<sys>>"
+      or prompt contains "<|system|>" or prompt contains "<|start_header_id|>" or prompt contains "</user>"
+      or prompt contains "<system>" or prompt contains "</system>" or prompt contains "ignore all previous"
+      or prompt contains "ignore previous instruction" or prompt contains "disregard all prior"
+      or prompt contains "disregard previous" or prompt contains "prior directives are revoked"
+      or prompt contains "restrictions lifted" or prompt contains "restrictions suspended"
+      or prompt contains "disclosure policy updated" or prompt contains "new directive is"
+      or prompt contains "priority override" or prompt contains "confidentiality disabled"
+      or prompt contains "you are dan" or prompt contains "developer mode" or prompt contains "maintenance mode"
+      or prompt contains "with no restrictions" or prompt contains "opposite day"
+      or prompt contains "pretend you have no" or prompt contains "system prompt"
+      or prompt contains "exact instructions were you given" or prompt contains "repeat everything written above"
+      or prompt contains "context window" or prompt contains "instructions you were given"
+      or prompt contains "initial prompt" or prompt contains "verbatim" or prompt contains "initialisation text"
+      or prompt contains "initialisation material" or prompt contains "initialization material"
+      or prompt contains "were initialised" or prompt contains "were initialized" or prompt contains "base64"
+      or prompt contains "rot13" or prompt contains "morse code" or prompt contains "leetspeak"
+      or prompt contains "character order reversed" or prompt contains "transliterate"
+      or prompt contains "chief information security officer" or prompt contains "i am authorising"
+      or prompt contains "for the soc 2 audit" or prompt contains "i am the penetration tester"
+      or prompt contains "disclosure is explicitly in scope" or prompt contains "begin your reply with"
+      or prompt contains "begin your response with" or prompt contains "start your response with"
+      or prompt contains "respond with only" or prompt contains "you are a linux terminal"
+      or prompt contains "you are a system agent" or prompt contains "you are a terminal"
+      or prompt contains "print only the output" or prompt contains "act as a python repl"
+      or prompt contains "act as a repl" or prompt contains "is now declassified" or prompt contains "end classified"
+      or prompt contains "tool_result:" or prompt contains "tool result:"
+  | filter to_string(xdm.event.outcome) = "SUCCESS"
+  | fields xdm.observer.vendor, xdm.observer.product, xdm.observer.action, xdm.observer.name, xdm.event.id, xdm.event.type, xdm.event.tags, xdm.event.original_event_type, xdm.event.operation, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.sub_type, xdm.target.resource.parent_id, xdm.target.host.hostname, xdm.network.http.url, xdm.network.http.response_code, xdm.*
+alert_name: Portkey injection attempt answered by the model - $xdm.source.user.username
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A prompt from $xdm.source.user.username matching a known injection technique was answered successfully by $xdm.target.resource.name, rather than being rejected upstream. A successful response does not prove the model complied, since it may have refused in prose, but it does mean the request reached the model and produced output, so this is the population worth reading first. Retrieve the completion and confirm whether protected material was returned.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0009 - Collection:
+  - T1119 - Automated Collection
+suppression_fields:
+- xdm.source.user.identifier
+- xdm.target.resource.parent_id
+global_rule_id: 8c3d21b9-5f7a-4e60-9d84-2f1ab6c07e35
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 2 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_llm_requests_raw | filter id = $xdm.event.id
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
