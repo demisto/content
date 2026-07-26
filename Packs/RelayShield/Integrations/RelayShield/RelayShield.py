@@ -26,7 +26,7 @@ def score_for(verdict: str | None, found: bool) -> int:
     Deliberately never returns Good(1) for a clean result -- only Unknown(0)
     or higher, per the no_known_finding-is-not-verified-safe principle.
     """
-    if not found or verdict in (None, "NONE", "CLEAN"):
+    if not found or verdict is None or verdict in ("NONE", "CLEAN"):
         return 0  # Common.DBotScore.NONE (Unknown)
     return DBOT_SCORE_MAP.get(verdict, 2)
 

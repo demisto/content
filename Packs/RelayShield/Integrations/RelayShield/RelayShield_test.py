@@ -25,7 +25,7 @@ def test_domain_command_finding():
     assert len(results) == 1
     r = results[0]
     assert r.indicator.dbot_score.score == 3
-    assert "evil.com" in r.readable_output
+    assert r.indicator.domain == "evil.com"
 
 
 def test_domain_command_clean_maps_to_unknown_not_good():
