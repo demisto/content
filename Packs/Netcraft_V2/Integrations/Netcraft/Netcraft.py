@@ -603,7 +603,7 @@ def fetch_incidents_by_id(client: Client) -> list[dict[str, str]]:
     # debug message for tracing the incidents returned by the API
     fields = {"last_updated", "date_authed", "date_submitted", "id"}
     filtered_incidents = [{k: incident.get(k) for k in fields} for incident in incidents]
-    demisto.debug(f"{prefix}Found {len(incidents)} incidents:\n{filtered_incidents}")
+    demisto.debug(f"{prefix}Found {len(incidents)} incidents.")
 
     if incidents:
         last_fetched_id = incidents[-1]["id"]
@@ -650,7 +650,7 @@ def get_incidents_command(args: dict, client: Client) -> CommandResults:
     demisto.debug(f"[netcraft-get-incidents] Fetching incidents with params: {params}")
 
     incidents = client.get_takedowns(params) or []
-    demisto.debug(f"[netcraft-get-incidents] Found {len(incidents)} incidents:\n{incidents}")
+    demisto.debug(f"[netcraft-get-incidents] Found {len(incidents)} incidents.")
 
     readable = tableToMarkdown(
         "Netcraft Incidents",
