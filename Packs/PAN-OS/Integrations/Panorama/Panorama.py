@@ -12573,8 +12573,10 @@ def get_jobs_command(args: dict):
     )
     command_results = dataclasses_to_command_results(result, empty_result_message="No jobs returned")
 
-    # Polling only if a single job id was supplied.
-    if not job_id:
+    # Polling only if a single job id was supplied. With an id, get_jobs is
+    # guaranteed to return a single ShowJobsAllResultData (or raise
+    # DemistoException if the job is not found on any device)
+    if not job_id or not isinstance(result, ShowJobsAllResultData):
         return PollResult(response=command_results, continue_to_poll=False)
 
     is_terminal = (result.status or "").upper() == "FIN"
