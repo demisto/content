@@ -123,6 +123,9 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -136,6 +139,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Log Type
   name: log_types
   type: 16
@@ -222,12 +228,18 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   section: Collect
   type: 19
+  supportedModules:
+  - agentix
+  - xsiam
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -8677,7 +8689,7 @@ script:
       description: The interval between poll attempts, in seconds.
       name: interval_in_seconds
     - defaultValue: '3600'
-      description: The maximum time to wait for the job to reach a terminal state, in seconds.
+      description: The maximum time to wait for the job to reach a terminal state, in seconds. If the timeout is reached before the job finishes, the command returns the last known result.
       name: timeout_in_seconds
     description: >-
       Gets all the jobs from the devices in the environment, or a single job when the ID is specified.
