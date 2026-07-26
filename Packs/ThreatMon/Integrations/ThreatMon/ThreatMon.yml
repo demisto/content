@@ -38,6 +38,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Incident type
   name: incidentType
   type: 13
@@ -58,6 +61,15 @@ configuration:
   name: fetchInterval
   defaultvalue: "5"
   type: 0
+  required: false
+  section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
   required: false
   section: Collect
   supportedModules:
@@ -224,7 +236,7 @@ script:
       type: Date
     description: Retrieves a paginated list of CVEs affecting products that the authenticated company (or a specified child customer) is actively subscribed to.
   isfetch: true
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10404775
 fromversion: 5.0.0
 tests:
 - No tests
