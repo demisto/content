@@ -17,7 +17,7 @@ In Cortex, configure the following integration settings.
 - **Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub**: When enabled, closing an incident in Cortex sets the corresponding finding's status to Resolved in AWS Security Hub (applies to outgoing mirroring).
 
 
-#### Required Permissions
+### Required Permissions
 - securityhub:EnableSecurityHubV2
 - securityhub:DisableSecurityHubV2
 - securityhub:DescribeSecurityHubV2
