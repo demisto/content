@@ -59,6 +59,7 @@
     ],
     "supportedModules": [
         "agentix",
-        "xsiam"
+        "xsiam",
+        "xti"
     ]
 }
