@@ -2002,6 +2002,9 @@ script:
     - name: user_name
       description: The username for Kubernetes authentication.
       required: false
+    - name: tags
+      description: "The metadata tags to apply to the access entry. Format: key=<key>,value=<value>;key=<key>,value=<value>."
+      required: false
     outputs:
     - contextPath: AWS.EKS.AccessEntry.clusterName
       description: The name of the cluster.

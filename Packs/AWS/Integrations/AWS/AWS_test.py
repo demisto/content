@@ -14912,6 +14912,7 @@ def test_eks_create_access_entry_command_success(mocker):
         "principal_arn": "arn:aws:iam::123456789012:role/test-role",
         "kubernetes_groups": "group1,group2",
         "type": "Standard",
+        "tags": "key=Owner,value=SysAdmin;key=Env,value=Prod",
     }
 
     result = EKS.create_access_entry_command(mock_client, args)
@@ -14928,6 +14929,7 @@ def test_eks_create_access_entry_command_success(mocker):
     assert call_kwargs["principalArn"] == "arn:aws:iam::123456789012:role/test-role"
     assert call_kwargs["kubernetesGroups"] == ["group1", "group2"]
     assert call_kwargs["type"] == "Standard"
+    assert call_kwargs["tags"] == {"Owner": "SysAdmin", "Env": "Prod"}
 
 
 def test_eks_create_access_entry_command_minimal_args(mocker):
