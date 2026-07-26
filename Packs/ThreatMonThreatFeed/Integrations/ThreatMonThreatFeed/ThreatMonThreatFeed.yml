@@ -5,7 +5,6 @@ commonfields:
 name: ThreatMon Threat Feed
 display: ThreatMon Threat Feed
 provider: ThreatMon
-supportlevelheader: community
 description: Fetches Indicators of Compromise (IOCs) from the ThreatMon IOC platform and ingests them into Cortex as indicators.
 sectionorder:
 - Connect
@@ -40,6 +39,9 @@ configuration:
   type: 8
   required: false
   section: Connect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Data Type to Fetch
   additionalinfo: The type of IOC data to fetch from ThreatMon.
   name: data_type
@@ -77,6 +79,9 @@ configuration:
   - Bad
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Reliability of the source providing the intelligence data.
   display: Source Reliability
   name: feedReliability
@@ -91,6 +96,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   display: Traffic Light Protocol Color
   name: tlp_color
@@ -102,6 +110,9 @@ configuration:
   type: 15
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
@@ -110,6 +121,9 @@ configuration:
   hidden: true
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ''
   name: feedExpirationPolicy
   defaultvalue: indicatorType
@@ -120,30 +134,45 @@ configuration:
   - indicatorType
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ''
   name: feedExpirationInterval
   defaultvalue: '20160'
   type: 1
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Feed Fetch Interval
   name: feedFetchInterval
   defaultvalue: '240'
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: feedTags
   display: Tags
   type: 0
   additionalinfo: Supports CSV values.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python
