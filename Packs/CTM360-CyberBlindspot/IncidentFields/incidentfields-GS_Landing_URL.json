@@ -1,0 +1,31 @@
+{
+    "id": "incident_ctm360_cyberblindspot_gslandingurl",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "name": "CTM360 CyberBlindspot GS Landing URL",
+    "ownerOnly": false,
+    "description": "Landing page URL observed for the site.",
+    "cliName": "ctm360cyberblindspotgslandingurl",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CyberBlindspot Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}
