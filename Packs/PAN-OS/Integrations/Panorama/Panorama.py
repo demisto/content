@@ -12545,6 +12545,50 @@ def get_jobs(
     return UniversalCommand.show_jobs(topology, device_filter_string, job_type=job_type, status=status, id=_id, target=target)
 
 
+@polling_function(
+    name="pan-os-platform-get-jobs",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 3600)),
+    requires_polling_arg=True,
+)
+def get_jobs_command(args: dict):
+    """
+    Wrapper for pan-os-platform-get-jobs that adds native polling support.
+
+    When polling=true and a single id is supplied, keep polling until the
+    job reaches a terminal status (FIN) or the timeout is reached. Without
+    polling (or when no id is supplied), behaves like the original
+    non-polling command.
+    """
+    topology = get_topology()
+    job_id = args.get("id")
+
+    result = get_jobs(
+        topology,
+        device_filter_string=args.get("device_filter_string"),
+        status=args.get("status"),
+        job_type=args.get("job_type"),
+        id=job_id,
+        target=args.get("target"),
+    )
+    command_results = dataclasses_to_command_results(result, empty_result_message="No jobs returned")
+
+    # Polling only if a single job id was supplied.
+    if not job_id:
+        return PollResult(response=command_results, continue_to_poll=False)
+
+    is_terminal = (result.status or "").upper() == "FIN"
+
+    return PollResult(
+        response=command_results,
+        continue_to_poll=not is_terminal,
+        args_for_next_run=args,
+        partial_result=CommandResults(
+            readable_output=f"Waiting for job ID {job_id} to reach a terminal state (current status: {result.status})...",
+        ),
+    )
+
+
 def download_software(
     topology: Topology,
     version: str,
@@ -16899,10 +16943,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "pan-os-platform-get-jobs":
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(get_jobs(topology, **demisto.args()), empty_result_message="No jobs returned")
-            )
+            return_results(get_jobs_command(demisto.args()))
         elif command == "pan-os-platform-download-software":
             topology = get_topology()
             return_results(
