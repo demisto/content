@@ -1,5 +1,6 @@
 """Unit tests for the Microsoft Defender for Cloud Apps Event Collector."""
 
+import demistomock as demisto
 import pytest
 
 from MicrosoftDefenderEventCollector import (
@@ -95,6 +96,42 @@ class TestRunPaginationRegression:
         result = get_events.run()
 
         assert len(result) == 30
+
+    def test_one_type_crashing_does_not_stop_other_types(self, mocker):
+        """XSUP-72224 crash-isolation: a failure fetching one type must not abort the others.
+
+        activities_login raises mid-fetch; activities_admin and alerts must still be
+        collected. The failing type contributes nothing (its watermark won't advance),
+        while the healthy types are returned in full.
+        """
+        # The failure path logs via demisto.error; mock it so nothing leaks to stdout
+        # (the test harness fails on unexpected stdout) and to assert the error is logged.
+        error_mock = mocker.patch.object(demisto, "error")
+        options = IntegrationOptions.parse_obj({"limit": 1000})
+        get_events = DefenderGetEvents.__new__(DefenderGetEvents)
+        get_events.options = options
+        get_events.filter_name_to_attributes = {
+            "activities_login": {},
+            "activities_admin": {},
+            "alerts": {},
+        }
+
+        def failing_iter(event_type_name, _endpoint_details):
+            if event_type_name == "activities_login":
+                raise RuntimeError("simulated API failure (e.g., 429/timeout)")
+            yield _events(event_type_name, 20)
+
+        get_events._iter_events = failing_iter  # type: ignore[method-assign]
+
+        result = get_events.run()
+
+        by_type = {t: len([e for e in result if e["event_type_name"] == t]) for t in ("activities_admin", "alerts")}
+        assert by_type["activities_admin"] == 20  # healthy type not blocked by the crash
+        assert by_type["alerts"] == 20  # healthy type not blocked by the crash
+        # The crashing type contributes zero events (watermark stays put, retried next cycle).
+        assert not [e for e in result if e["event_type_name"] == "activities_login"]
+        # The failure was logged (and not raised) so the cycle completed for the healthy types.
+        assert error_mock.called
 
     def test_low_volume_types_are_not_discarded_when_below_limit(self):
         """Regression for XSUP-72224 second bug: low-volume types must NOT be dropped.
