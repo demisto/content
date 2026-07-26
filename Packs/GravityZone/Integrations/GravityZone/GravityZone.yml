@@ -135,7 +135,7 @@ script:
       description: The endpoint vendor.
       type: String
     - contextPath: GravityZone.EndpointsList.FQDN
-      description: The endpoint fully qualified domain name (FQDN).
+      description: The endpoint's fully qualified domain name (FQDN).
       type: String
     - contextPath: GravityZone.EndpointsList.CompanyID
       description: The GravityZone company ID where the endpoint is located.

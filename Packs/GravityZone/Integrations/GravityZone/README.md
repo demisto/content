@@ -60,7 +60,7 @@ Retrieves the list of managed endpoints.
 | GravityZone.EndpointsList.OS | String | The endpoint operating system version. |
 | GravityZone.EndpointsList.MAC | String | The endpoint MAC address. |
 | GravityZone.EndpointsList.Vendor | String | The endpoint vendor. |
-| GravityZone.EndpointsList.FQDN | String | The endpoint fully qualified domain name \(FQDN\). |
+| GravityZone.EndpointsList.FQDN | String | The endpoint's fully qualified domain name \(FQDN\). |
 | GravityZone.EndpointsList.CompanyID | String | The GravityZone company ID where the endpoint is located. |
 | GravityZone.EndpointsList.GroupID | String | The GravityZone group ID where the endpoint is located. |
 
