@@ -3432,7 +3432,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     current_fetch_info_detections = update_last_run_object(
         last_run=current_fetch_info_detections,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -5350,14 +5350,14 @@ def fetch_detections_by_product_type(
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
-            incidents_res=detections, last_run=current_fetch_info, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
+            incidents_res=detections, last_run=current_fetch_info, fetch_limit=fetch_limit, id_field="name"
         )
 
     demisto.debug(f"CrowdstrikeFalconMsg: last_run before update: {current_fetch_info}")
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,

@@ -1875,6 +1875,74 @@ class TestFetchFunctionsTimestampFormatting:
             pytest.fail(f"Unexpected error during fetch_endpoint_detections with non-zero offset: {str(e)}")
 
 
+class TestFetchLimitPerFlow:
+    """
+    Regression tests for XSUP-73525.
+
+    On the XSIAM fetch-events path (is_fetch_events=True) the fetch limit used for
+    de-duplication and for advancing the last_run time window must be the locally
+    computed fetch_limit (MAX_FETCH_DETECTION_PER_API_CALL = 10000), NOT the
+    INCIDENTS_PER_FETCH global (default 15). Passing 15 there caused the time
+    pointer to advance only ~15 events per cycle, re-fetching the rest and
+    creating a 1.5-2 hour ingestion lag.
+    """
+
+    def test_fetch_endpoint_detections_uses_xsiam_fetch_limit(self, mocker):
+        """
+        Given: The XSIAM fetch-events path (is_fetch_events=True) with an empty last_run.
+        When: fetch_endpoint_detections is executed.
+        Then: update_last_run_object is called with fetch_limit=MAX_FETCH_DETECTION_PER_API_CALL (10000),
+              not INCIDENTS_PER_FETCH.
+        """
+        from CrowdStrikeFalcon import MAX_FETCH_DETECTION_PER_API_CALL, fetch_endpoint_detections
+
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
+        mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+        mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": []})
+        update_last_run_mock = mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={})
+
+        fetch_endpoint_detections({}, look_back=0, is_fetch_events=True)
+
+        assert update_last_run_mock.call_args.kwargs["fetch_limit"] == MAX_FETCH_DETECTION_PER_API_CALL
+
+    def test_fetch_detections_by_product_type_uses_xsiam_fetch_limit(self, mocker):
+        """
+        Given: The XSIAM fetch-events path (is_fetch_events=True) with an empty last_run.
+        When: fetch_detections_by_product_type is executed with detections returned.
+        Then: both filter_incidents_by_duplicates_and_limit and update_last_run_object are
+              called with fetch_limit=MAX_FETCH_DETECTION_PER_API_CALL (10000), not INCIDENTS_PER_FETCH.
+        """
+        from CrowdStrikeFalcon import MAX_FETCH_DETECTION_PER_API_CALL, fetch_detections_by_product_type
+
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
+        mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={"resources": ["123"]})
+        mocker.patch(
+            "CrowdStrikeFalcon.get_detection_entities",
+            return_value={
+                "resources": [{"created_timestamp": "2024-02-13T09:24:00.841616429Z", "composite_id": "123", "name": "name123"}]
+            },
+        )
+        filter_mock = mocker.patch(
+            "CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit",
+            side_effect=lambda incidents_res, **kwargs: incidents_res,
+        )
+        update_last_run_mock = mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={})
+
+        fetch_detections_by_product_type(
+            current_fetch_info={},
+            look_back=0,
+            product_type="idp",
+            fetch_query="",
+            detections_type="IDP Detection",
+            detection_name_prefix="IDP Detection",
+            start_time_key="created_timestamp",
+            is_fetch_events=True,
+        )
+
+        assert filter_mock.call_args.kwargs["fetch_limit"] == MAX_FETCH_DETECTION_PER_API_CALL
+        assert update_last_run_mock.call_args.kwargs["fetch_limit"] == MAX_FETCH_DETECTION_PER_API_CALL
+
+
 class TestFetch:
     """Test the logic of the fetch"""
 
