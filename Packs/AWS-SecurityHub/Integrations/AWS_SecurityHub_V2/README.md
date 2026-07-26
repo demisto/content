@@ -15,11 +15,10 @@ This integration was integrated and tested with the AWS Security Hub V2 API.
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | AWS Default Region |  | True |
-| Access Key |  | False |
-| Secret Key |  | False |
-| Role Arn |  | False |
-| Role Session Name |  | False |
-| Role Session Duration |  | False |
+| Access Key | The AWS Access Key ID \(username\) and Secret Access Key \(password\) paired together. If a 'Role Arn' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials. | False |
+| Role Arn | The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'. | False |
+| Role Session Name | The role session name to use for authentication. | False |
+| Role Session Duration | The maximum role session duration, in seconds. | False |
 | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. Note: Increasing the number of retries will increase the execution time. | False |
 | PrivateLink service URL. |  | False |
@@ -61,6 +60,28 @@ Enables AWS Security Hub V2 for the configured account and region. Required IAM 
 | --- | --- | --- |
 | AWS.SecurityHubV2.Hub.HubV2Arn | String | The ARN of the enabled Security Hub V2 resource. |
 
+#### Command example
+
+```!aws-securityhub-v2-security-hub-enable tags=key=env,value=prod```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "SecurityHubV2": {
+            "Hub": {
+                "HubV2Arn": "arn:aws:securityhub:us-east-1:123456789012:hub/v2/default"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>AWS Security Hub V2 successfully enabled.
+
 ### aws-securityhub-v2-security-hub-disable
 
 ***
@@ -73,6 +94,14 @@ Disables AWS Security Hub V2 for the configured account and region. Required IAM
 #### Input
 
 There are no input arguments for this command.
+
+#### Command example
+
+```!aws-securityhub-v2-security-hub-disable```
+
+#### Human Readable Output
+
+>AWS Security Hub V2 successfully disabled.
 
 ### aws-securityhub-v2-findings-get
 
@@ -105,6 +134,45 @@ Retrieves a list of OCSF-formatted findings from AWS Security Hub V2. Required I
 | --- | --- | --- |
 | AWS.SecurityHubV2.Findings | Unknown | The list of OCSF-formatted findings returned by Security Hub V2. Each finding is a free-form OCSF object containing fields such as metadata, finding_info, severity, status, cloud, resources, and time. |
 | AWS.SecurityHubV2.FindingsNextToken | String | The pagination token to use when requesting the next set of findings. |
+
+#### Command example
+
+```!aws-securityhub-v2-findings-get string_filters="field_name=severity,value=High,comparison=EQUALS" limit=1```
+
+#### Context Example
+
+```json
+{
+    "AWS": {
+        "SecurityHubV2": {
+            "Findings": [
+                {
+                    "metadata": {
+                        "uid": "9f1e0c2b6a7d4e3f8b5c1a2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f"
+                    },
+                    "class_name": "Compliance Finding",
+                    "severity": "High",
+                    "status": "New",
+                    "resources": [
+                        {
+                            "uid": "arn:aws:s3:::my-example-bucket"
+                        }
+                    ]
+                }
+            ],
+            "FindingsNextToken": "eyJuZXh0IjoxfQ=="
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS Security Hub V2 Findings
+>
+>|uid|severity|status|class_name|resource_uid|
+>|---|---|---|---|---|
+>| 9f1e0c2b6a7d4e3f8b5c1a2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f | High | New | Compliance Finding | arn:aws:s3:::my-example-bucket |
 
 ### aws-securityhub-v2-findings-batch-update
 

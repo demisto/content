@@ -798,8 +798,10 @@ def fetch_incidents(client: BotoClient, params: dict) -> None:
 
     # Page-fill loop: keep pulling pages (requesting only the still-needed count) until we have max_fetch
     # new findings or there is no next token. This backfills incidents dropped by per-page dedup.
+    # Bounded by max_fetch iterations to guard against the API returning a next token indefinitely
+    # while every page is fully deduped away.
     new_findings: list = []
-    while True:
+    for _ in range(max_fetch):
         remaining = max_fetch - len(new_findings)
         page_findings, next_token = _query_findings_page(client, filters, remaining, next_token)
         new_findings.extend(filter_new_findings(page_findings, last_fetch, fetched_ids))

@@ -53,23 +53,27 @@ configuration:
   name: credentials
   type: 9
   displaypassword: Secret Key
+  additionalinfo: "The AWS Access Key ID (username) and Secret Access Key (password) paired together. If a 'Role Arn' is also provided, these credentials will be used to call AWS STS AssumeRole to obtain temporary credentials."
   section: Connect
   required: false
 - display: Role Arn
   name: role_arn
   type: 0
+  additionalinfo: "The full ARN of the role to assume via AWS STS, for example 'arn:aws:iam::123456789012:role/MyRole'."
   section: Connect
   advanced: true
   required: false
 - display: Role Session Name
   name: role_session_name
   type: 0
+  additionalinfo: The role session name to use for authentication.
   section: Connect
   advanced: true
   required: false
 - display: Role Session Duration
   name: session_duration
   type: 0
+  additionalinfo: The maximum role session duration, in seconds.
   section: Connect
   advanced: true
   required: false

@@ -1072,6 +1072,46 @@ def test_fetch_incidents_stops_on_max_fetch_and_persists_token(mocker):
     assert last_run["fetched_ids"] == ["uid-2"]
 
 
+def test_fetch_incidents_page_loop_is_bounded(mocker):
+    """
+    Given: An API that always returns a page fully deduped away (uid-1 already fetched) while a next
+           token is present on every page, which would loop forever with an unbounded while True.
+    When: fetch_incidents is called with a small max_fetch.
+    Then: The loop is bounded to at most max_fetch page pulls and returns without hanging.
+    """
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={"last_fetch": "2024-01-01T10:00:00.000Z", "fetched_ids": ["uid-1"]},
+    )
+    mocker.patch.object(demisto, "integrationInstance", return_value="instance-1")
+    set_last_run = mocker.patch.object(demisto, "setLastRun")
+    incidents_mock = mocker.patch.object(demisto, "incidents")
+
+    mock_client = mocker.Mock()
+    # Every page is the same deduped-away finding and always carries a next token (would loop forever).
+    mock_client.get_findings_v2.return_value = {
+        "Findings": [
+            {
+                "metadata": {"uid": "uid-1"},
+                "severity_id": 4,
+                "finding_info": {"title": "Already Seen", "created_time_dt": "2024-01-01T10:00:00.000Z"},
+            }
+        ],
+        "NextToken": "tok-forever",
+    }
+
+    fetch_incidents(mock_client, {"max_fetch": 3})
+
+    # Bounded: at most max_fetch (3) page pulls, then the loop exits instead of hanging.
+    assert mock_client.get_findings_v2.call_count == 3
+    incidents = incidents_mock.call_args[0][0]
+    assert incidents == []
+    # A token still remains, so it is persisted for the next cycle.
+    last_run = set_last_run.call_args[0][0]
+    assert last_run["next_token"] == "tok-forever"
+
+
 def test_get_remote_data_command_returns_finding(mocker):
     """
     Given: A client returning a single finding for the requested uid.

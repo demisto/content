@@ -2,7 +2,7 @@
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-#### Configure the AWS - Security Hub v2 Integration in Cortex  
+### Configure the AWS - Security Hub v2 Integration in Cortex
 
 In Cortex, configure the following integration settings.
 - **AWS Default Region**: The AWS region to connect to.
