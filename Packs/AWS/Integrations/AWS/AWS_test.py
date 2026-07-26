@@ -21320,16 +21320,17 @@ def test_parse_key_value_items_field_single_item_multiple_fields():
 def test_parse_key_value_items_field_multiple_items():
     """
     Given:
-        - A semicolon-separated string with two items, each holding several fields.
+        - A semicolon-separated string with two items, where the second omits the optional IPAddressType field.
     When:
         - parse_key_value_items_field is called.
     Then:
-        - It should return a list of two dicts, one per item.
+        - It should not raise and should return a list of two dicts, each containing only the fields that were
+          provided for that item.
     """
     from AWS import parse_key_value_items_field
 
     # Given
-    items_string = "SubnetId=subnet-1,IPAddressType=IPV4;SubnetId=subnet-2,IPAddressType=DUALSTACK"
+    items_string = "SubnetId=subnet-1,IPAddressType=IPV4;SubnetId=subnet-2"
 
     # When
     result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1,IPAddressType=type1")
@@ -21337,7 +21338,7 @@ def test_parse_key_value_items_field_multiple_items():
     # Then
     assert result == [
         {"SubnetId": "subnet-1", "IPAddressType": "IPV4"},
-        {"SubnetId": "subnet-2", "IPAddressType": "DUALSTACK"},
+        {"SubnetId": "subnet-2"},
     ]
 
 
