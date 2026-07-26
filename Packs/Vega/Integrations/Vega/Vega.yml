@@ -6,10 +6,7 @@ commonfields:
 sectionorder:
   - Connect
   - Collect
-  - Vega Entities
-  - Autoclosure
-  - Alerts
-  - Incidents
+  - Mirroring
 configuration:
   - display: Base URL
     additionalinfo: The Base URL of the Vega API.
@@ -68,7 +65,7 @@ configuration:
     additionalinfo: The Vega entities to fetch as Cortex XSOAR incidents.
     name: vega_entities
     type: 16
-    section: Vega Entities
+    section: Collect
     required: true
     options:
       - Alerts
@@ -80,7 +77,7 @@ configuration:
       Use 0 for today only. Valid range is 0–365.
     name: backfill_days
     type: 1
-    section: Vega Entities
+    section: Collect
     required: true
     defaultvalue: "30"
   - display: Enable Cortex XSOAR to Vega mirroring
@@ -92,7 +89,7 @@ configuration:
       When disabled, Vega to Cortex XSOAR mirroring remains enabled.
     name: autoclosure
     type: 8
-    section: Autoclosure
+    section: Mirroring
     required: false
     defaultvalue: "true"
   - display: Outgoing fields to mirror
@@ -104,7 +101,7 @@ configuration:
       Any custom values entered outside the available options are ignored.
     name: outgoing_mirror_fields
     type: 16
-    section: Autoclosure
+    section: Mirroring
     required: false
     options:
       - Status
@@ -120,7 +117,7 @@ configuration:
       the fetch cycle.
     name: alert_severities
     type: 16
-    section: Alerts
+    section: Collect
     required: false
     options:
       - LOW
@@ -135,7 +132,7 @@ configuration:
       the fetch cycle.
     name: alert_statuses
     type: 16
-    section: Alerts
+    section: Collect
     required: false
     options:
       - OPEN
@@ -150,7 +147,7 @@ configuration:
       the fetch cycle.
     name: alert_verdicts
     type: 16
-    section: Alerts
+    section: Collect
     required: false
     options:
       - MALICIOUS
@@ -169,7 +166,7 @@ configuration:
       At least one option must be selected.
     name: alert_has_related_incidents
     type: 16
-    section: Alerts
+    section: Collect
     required: true
     options:
       - "Yes"
@@ -183,7 +180,7 @@ configuration:
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_severities
     type: 16
-    section: Incidents
+    section: Collect
     required: false
     options:
       - LOW
@@ -199,7 +196,7 @@ configuration:
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_statuses
     type: 16
-    section: Incidents
+    section: Collect
     required: false
     options:
       - NEW
@@ -220,7 +217,7 @@ configuration:
       Any custom values entered outside the available options are ignored and will not affect the fetch cycle.
     name: incident_verdicts
     type: 16
-    section: Incidents
+    section: Collect
     required: false
     options:
       - MALICIOUS
@@ -536,5 +533,6 @@ fromversion: 6.10.0
 marketplaces:
   - xsoar
   - marketplacev2
+  - platform
 tests:
   - No tests (auto formatted)
