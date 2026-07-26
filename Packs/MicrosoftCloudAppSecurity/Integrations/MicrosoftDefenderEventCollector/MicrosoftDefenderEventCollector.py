@@ -181,14 +181,16 @@ class IntegrationGetEvents(ABC):
         # - activities with different filter to get the login events
         # - alerts with no filter
         for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
-            stored_per_type = []
+            stored_per_type: list = []
             for logs in self._iter_events(event_type_name, endpoint_details):
                 stored_per_type.extend(logs)
                 if self.options.limit and len(stored_per_type) >= self.options.limit:
                     demisto.debug(f"MD: reached {self.options.limit=} for {event_type_name=}, slicing per type.")
-                    final_stored_all_types.extend(stored_per_type[: self.options.limit])
+                    stored_per_type = stored_per_type[: self.options.limit]
                     break
-        demisto.debug(f"MD: Sliced events, keeping {len(final_stored_all_types)} events from all event types")
+            final_stored_all_types.extend(stored_per_type)
+            demisto.debug(f"MD: kept {len(stored_per_type)} events for {event_type_name=}")
+        demisto.debug(f"MD: keeping {len(final_stored_all_types)} events from all event types")
         return final_stored_all_types
 
     def call(self) -> requests.Response:

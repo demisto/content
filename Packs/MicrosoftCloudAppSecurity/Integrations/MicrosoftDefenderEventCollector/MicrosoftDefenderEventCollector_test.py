@@ -95,3 +95,30 @@ class TestRunPaginationRegression:
         result = get_events.run()
 
         assert len(result) == 30
+
+    def test_low_volume_types_are_not_discarded_when_below_limit(self):
+        """Regression for XSUP-72224 second bug: low-volume types must NOT be dropped.
+
+        Reproduces production: one high-volume type (activities_login) hits the
+        per-type limit while two low-volume types (activities_admin, alerts) stay
+        below it. The previous run() only kept a type's events when it reached the
+        limit, so the sub-limit types were silently discarded every cycle - starving
+        those datasets. All three types must be present in the result.
+        """
+        options = IntegrationOptions.parse_obj({"limit": 1000})
+        pages = {
+            # 12 pages of 100 => 1200 login events, exceeds the 1000 limit -> sliced to 1000.
+            "activities_login": [_events("activities_login", 100, start=s) for s in range(0, 1200, 100)],
+            # Low-volume types well below the limit - must still be kept in full.
+            "activities_admin": [_events("activities_admin", 10)],
+            "alerts": [_events("alerts", 5)],
+        }
+        get_events = _make_get_events(options, pages)
+
+        result = get_events.run()
+
+        by_type = {t: len([e for e in result if e["event_type_name"] == t]) for t in pages}
+        assert by_type["activities_login"] == 1000  # high-volume type capped at the limit
+        assert by_type["activities_admin"] == 10  # low-volume type NOT discarded
+        assert by_type["alerts"] == 5  # low-volume type NOT discarded
+        assert len(result) == 1015
