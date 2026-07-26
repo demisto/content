@@ -10897,12 +10897,7 @@ class NetworkFirewall:
             outputs_prefix="AWS.NetworkFirewall.Firewalls",
             outputs_key_field="FirewallArn",
             outputs=response_outputs,
-            readable_output=tableToMarkdown(
-                "AWS Network Firewall Disassociate Subnets",
-                response_outputs.get("SubnetMappings", []),
-                removeNull=True,
-                headerTransform=pascalToSpace,
-            ),
+            readable_output=tableToMarkdown("AWS Network Firewall Subnets Disassociated Successfully", []),
             raw_response=response,
         )
 

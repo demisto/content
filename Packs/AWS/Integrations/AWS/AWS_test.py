@@ -20124,7 +20124,7 @@ def test_disassociate_subnets_command_success_with_name(mocker):
     """
     Given: A mocked boto3 NetworkFirewall client, a valid firewall name and subnet IDs.
     When: disassociate_subnets_command is called successfully.
-    Then: It should return CommandResults with the remaining subnet mappings.
+    Then: It should return CommandResults with a success readable output and the raw subnet mappings in outputs.
     """
     from AWS import NetworkFirewall
 
@@ -20148,6 +20148,7 @@ def test_disassociate_subnets_command_success_with_name(mocker):
     assert result.outputs["FirewallName"] == "test-firewall"
     assert result.outputs["SubnetMappings"] == [{"SubnetId": "subnet-1111", "IPAddressType": "IPV4"}]
     assert "ResponseMetadata" not in result.outputs
+    assert "AWS Network Firewall Subnets Disassociated Successfully" in result.readable_output
     mock_client.disassociate_subnets.assert_called_once_with(FirewallName="test-firewall", SubnetIds=["subnet-2222"])
 
 
@@ -21293,3 +21294,313 @@ def test_parse_json_arg_when_invalid_json_raises_demisto_exception():
     # When / Then
     with pytest.raises(DemistoException, match="Invalid JSON in 'ip_sets'"):
         parse_json_arg(args, "ip_sets")
+
+
+def test_parse_key_value_items_field_single_item_multiple_fields():
+    """
+    Given:
+        - A single item string with multiple 'Key=Value' fields separated by ','.
+    When:
+        - parse_key_value_items_field is called with the required key present.
+    Then:
+        - It should return a list with one dict mapping each field key to its value.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId=subnet-1,IPAddressType=IPV4"
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1,IPAddressType=type1")
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1", "IPAddressType": "IPV4"}]
+
+
+def test_parse_key_value_items_field_multiple_items():
+    """
+    Given:
+        - A semicolon-separated string with two items, each holding several fields.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should return a list of two dicts, one per item.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId=subnet-1,IPAddressType=IPV4;SubnetId=subnet-2,IPAddressType=DUALSTACK"
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1,IPAddressType=type1")
+
+    # Then
+    assert result == [
+        {"SubnetId": "subnet-1", "IPAddressType": "IPV4"},
+        {"SubnetId": "subnet-2", "IPAddressType": "DUALSTACK"},
+    ]
+
+
+def test_parse_key_value_items_field_strips_whitespace():
+    """
+    Given:
+        - An item string whose keys and values are padded with surrounding whitespace.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should strip the whitespace from both keys and values.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = " SubnetId = subnet-1 , IPAddressType = IPV4 "
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+    # Then
+    assert result == [{"SubnetId": "subnet-1", "IPAddressType": "IPV4"}]
+
+
+@pytest.mark.parametrize("items_string", [None, ""])
+def test_parse_key_value_items_field_empty_input_returns_empty_list(items_string):
+    """
+    Given:
+        - An empty or None items string.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should return an empty list.
+    """
+    from AWS import parse_key_value_items_field
+
+    # When
+    result = parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+    # Then
+    assert result == []
+
+
+def test_parse_key_value_items_field_missing_required_key_raises():
+    """
+    Given:
+        - An item string that does not contain the required key.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should raise a ValueError naming the required key as required for each item.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "IPAddressType=IPV4"
+
+    # When / Then
+    with pytest.raises(ValueError, match="SubnetId is required for each item"):
+        parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+
+def test_parse_key_value_items_field_field_without_separator_raises():
+    """
+    Given:
+        - An item string containing a field with no '=' separator.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should raise a ValueError indicating the field could not be parsed and include the format hint.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId=subnet-1,IPAddressType"
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field: SubnetId=subnet-1,IPAddressType. .*SubnetId=id1"):
+        parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+
+def test_parse_key_value_items_field_field_with_empty_value_raises():
+    """
+    Given:
+        - An item string containing a field with a key but an empty value.
+    When:
+        - parse_key_value_items_field is called.
+    Then:
+        - It should raise a ValueError indicating the field could not be parsed.
+    """
+    from AWS import parse_key_value_items_field
+
+    # Given
+    items_string = "SubnetId="
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_key_value_items_field(items_string, required_key="SubnetId", format_hint="SubnetId=id1")
+
+
+def test_parse_stateful_rule_group_references_field_single_full_reference():
+    """
+    Given:
+        - A single stateful rule group reference string containing all fields
+          (ResourceArn, Priority, Override and DeepThreatInspection).
+    When:
+        - parse_stateful_rule_group_references_field is called with the string.
+    Then:
+        - It should return a list with one dict where Priority is an int and
+          Override is nested under {"Action": ...}.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1,"
+        "Priority=100,Override=DROP_TO_ALERT,DeepThreatInspection=True"
+    )
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1",
+            "Priority": 100,
+            "Override": {"Action": "DROP_TO_ALERT"},
+            "DeepThreatInspection": True,
+        }
+    ]
+
+
+def test_parse_stateful_rule_group_references_field_multiple_references_with_optional_fields():
+    """
+    Given:
+        - A semicolon-separated string with one full reference and one
+          containing only the required ResourceArn plus Priority.
+    When:
+        - parse_stateful_rule_group_references_field is called with the string.
+    Then:
+        - It should return a list of two dicts where the optional fields absent
+          from the second reference are omitted.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = (
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1,"
+        "Priority=100,Override=DROP_TO_ALERT,DeepThreatInspection=True;"
+        "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg2,Priority=200"
+    )
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == [
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1",
+            "Priority": 100,
+            "Override": {"Action": "DROP_TO_ALERT"},
+            "DeepThreatInspection": True,
+        },
+        {
+            "ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg2",
+            "Priority": 200,
+        },
+    ]
+
+
+def test_parse_stateful_rule_group_references_field_only_resource_arn():
+    """
+    Given:
+        - A reference string containing only the required ResourceArn field.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should return a list with a single dict containing only ResourceArn.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == [{"ResourceArn": "arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1"}]
+
+
+@pytest.mark.parametrize("refs_string", [None, ""])
+def test_parse_stateful_rule_group_references_field_empty_input_returns_empty_list(refs_string):
+    """
+    Given:
+        - An empty or None references string.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should return an empty list.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # When
+    result = parse_stateful_rule_group_references_field(refs_string)
+
+    # Then
+    assert result == []
+
+
+def test_parse_stateful_rule_group_references_field_missing_resource_arn_raises():
+    """
+    Given:
+        - A reference string that omits the required ResourceArn field.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should raise a ValueError indicating ResourceArn is required.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "Priority=100,Override=DROP_TO_ALERT"
+
+    # When / Then
+    with pytest.raises(ValueError, match="ResourceArn is required for each item"):
+        parse_stateful_rule_group_references_field(refs_string)
+
+
+def test_parse_stateful_rule_group_references_field_malformed_field_raises():
+    """
+    Given:
+        - A reference string containing a field without a '=' value.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should raise a ValueError because the field cannot be parsed.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "ResourceArn=arn:aws:network-firewall:us-east-1:123456789012:stateful-rulegroup/rg1,Priority"
+
+    # When / Then
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_stateful_rule_group_references_field(refs_string)
+
+
+def test_parse_stateful_rule_group_references_field_invalid_arn_raises():
+    """
+    Given:
+        - A reference string whose ResourceArn value is not a valid 'arn:aws' ARN.
+    When:
+        - parse_stateful_rule_group_references_field is called.
+    Then:
+        - It should raise a ValueError indicating the ARN is invalid.
+    """
+    from AWS import parse_stateful_rule_group_references_field
+
+    # Given
+    refs_string = "ResourceArn=not-an-arn,Priority=100"
+
+    # When / Then
+    with pytest.raises(ValueError, match="ResourceArn must be a valid ARN"):
+        parse_stateful_rule_group_references_field(refs_string)
