@@ -601,8 +601,6 @@ def fetch_incidents_by_id(client: Client) -> list[dict[str, str]]:
     incidents = client.get_takedowns(params) or []
 
     # debug message for tracing the incidents returned by the API
-    fields = {"last_updated", "date_authed", "date_submitted", "id"}
-    filtered_incidents = [{k: incident.get(k) for k in fields} for incident in incidents]
     demisto.debug(f"{prefix}Found {len(incidents)} incidents.")
 
     if incidents:
