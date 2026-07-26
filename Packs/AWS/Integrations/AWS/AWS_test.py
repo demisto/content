@@ -271,6 +271,97 @@ def test_list_bucket_objects_command(mocker, mock_contents, expected_readable_fr
         assert result.outputs["Objects"][0]["Size"] == 1024
 
 
+@pytest.mark.parametrize(
+    "mock_contents, expected_readable_fragment, expected_output_len",
+    [
+        # Case 1: Bucket has objects (Success)
+        (
+            [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+            "AWS S3 Bucket Object",
+            1,
+        ),
+        ([], "No objects found in bucket", 0),  # Case 2: Bucket is empty (Success but no content)
+    ],
+)
+def test_list_bucket_objects_v2_command(mocker, mock_contents, expected_readable_fragment, expected_output_len):
+    """
+    Given: A mocked S3 client returning a ListObjectsV2 response with (or without) objects.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should call list_objects_v2 and return CommandResults with the expected objects/readable output.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_response = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK}, "Contents": mock_contents}
+
+    mock_client.list_objects_v2.return_value = mock_response
+
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+    args = {"bucket": "test-bucket"}
+
+    result = S3.list_bucket_objects_v2_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert expected_readable_fragment in result.readable_output
+    mock_client.list_objects_v2.assert_called_once()
+
+    if expected_output_len > 0:
+        bucket_output = result.outputs["AWS.S3.Buckets(val.BucketName && val.BucketName == obj.BucketName)"]
+        assert len(bucket_output["Objects"]) == expected_output_len
+        assert bucket_output["BucketName"] == "test-bucket"
+        assert bucket_output["Objects"][0]["Key"] == "test.txt"
+        assert bucket_output["Objects"][0]["Size"] == 1024
+
+
+def test_list_bucket_objects_v2_command_pagination(mocker):
+    """
+    Given: A mocked S3 client returning a truncated ListObjectsV2 response with a NextContinuationToken,
+           and next_token / start_after arguments supplied by the caller.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should pass ContinuationToken and StartAfter to list_objects_v2 and surface
+          NextContinuationToken as ObjectsNextToken in the outputs.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_response = {
+        "ResponseMetadata": {"HTTPStatusCode": HTTPStatus.OK},
+        "Contents": [{"Key": "test.txt", "Size": 1024, "LastModified": "2023-01-01", "StorageClass": "STANDARD"}],
+        "IsTruncated": True,
+        "NextContinuationToken": "next-token-value",
+    }
+    mock_client.list_objects_v2.return_value = mock_response
+    mocker.patch("AWS.serialize_response_with_datetime_encoding", return_value=mock_response)
+
+    args = {"bucket": "test-bucket", "next_token": "prev-token-value", "start_after": "aaa.txt"}
+
+    result = S3.list_bucket_objects_v2_command(mock_client, args)
+
+    call_kwargs = mock_client.list_objects_v2.call_args[1]
+    assert call_kwargs["ContinuationToken"] == "prev-token-value"
+    assert call_kwargs["StartAfter"] == "aaa.txt"
+    assert result.outputs["AWS.S3(true)"]["ObjectsNextToken"] == "next-token-value"
+
+
+def test_list_bucket_objects_v2_command_error_response(mocker):
+    """
+    Given: A mocked S3 client returning a non-OK HTTP status from list_objects_v2.
+    When: list_bucket_objects_v2_command is called.
+    Then: It should call AWSErrorHandler.handle_response_error.
+    """
+    from AWS import S3
+
+    mock_client = mocker.Mock()
+    mock_client.list_objects_v2.return_value = {"ResponseMetadata": {"HTTPStatusCode": HTTPStatus.BAD_REQUEST}}
+    mock_handle_error = mocker.patch("AWS.AWSErrorHandler.handle_response_error")
+
+    args = {"bucket": "test-bucket"}
+
+    S3.list_bucket_objects_v2_command(mock_client, args)
+
+    mock_handle_error.assert_called_once()
+
+
 def test_s3_put_bucket_logging_command_enable_logging(mocker):
     """
     Given: A mocked boto3 S3 client and arguments to enable bucket logging.
