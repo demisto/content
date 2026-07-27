@@ -29,8 +29,8 @@ The integration supports automatic incident fetching without duplicates.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL (e.g. <https://api.brandefense.io>) |  | True |
-| API Key | You can reach out your access token: <https://brandefense.io/> | True |
+| Server URL (e.g. https://api.brandefense.io) |  | True |
+| API Key | You can reach out your access token: https://brandefense.io/ | True |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch incidents |  | False |
@@ -38,6 +38,8 @@ The integration supports automatic incident fetching without duplicates.
 | First time fetching |  | False |
 | Incident type |  | False |
 | Max Results |  | False |
+| Maximum incidents per fetch | Maximum number of incidents to fetch per cycle. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 | Incident Category | This parameter will request and show the incident's related module category. | False |
 | Incident Module | This parameter will request and show the incident's related module. | False |
 | Incident Status | This parameter will request incident's by status. | False |

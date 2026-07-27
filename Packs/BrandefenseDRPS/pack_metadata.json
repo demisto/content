@@ -1,5 +1,4 @@
 {
-    "id": "BrandefenseDRPS",
     "name": "Brandefense Digital Risk Protection Services",
     "description": "Brandefense Digital Risk Protection, External Attack Surface Management, and Actionable Threat Intelligence integration for Cortex XSOAR.",
     "support": "partner",
@@ -13,18 +12,12 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Digital Risk Protection",
-        "External Attack Surface Management",
         "Threat Intelligence",
-        "Dark Web Monitoring",
-        "Brand Protection",
-        "DRPS",
-        "EASM"
+        "TIM"
     ],
     "useCases": [
         "Threat Intelligence Management",
-        "Indicator Enrichment",
-        "Phishing Response"
+        "Phishing"
     ],
     "keywords": [
         "brandefense",
@@ -36,6 +29,10 @@
         "phishing",
         "IOC",
         "CTI"
+    ],
+    "itemPrefix": [
+        "Brandefense",
+        "Brandefense Digital Risk Protection Services"
     ],
     "dependencies": {},
     "marketplaces": [

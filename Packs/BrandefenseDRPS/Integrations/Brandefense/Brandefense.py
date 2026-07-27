@@ -2100,6 +2100,7 @@ def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
 
     first_fetch_time = get_first_time_fetch(params.get("first_fetch"))
+    reliability = params.get("integrationReliability", DBotScoreReliability.B)
 
     try:
         headers = {"authorization": f"Bearer {api_key}"}
@@ -2126,7 +2127,8 @@ def main() -> None:
             intelligence_search = params.get("IntelligenceSearch")
             fetching_issue_types = params.get("FetchingIssueTypes")
             incident_rules = params.get("IncidentRules")
-            max_results = int(params.get("MaxResults", 30))
+            # max_fetch takes precedence over the legacy MaxResults param
+            max_results = int(params.get("max_fetch") or params.get("MaxResults") or 30)
 
             next_run, incidents = fetch_incidents(
                 client=client,
@@ -2146,12 +2148,16 @@ def main() -> None:
             demisto.incidents(incidents)
 
         elif command == "ip":
+            args.setdefault("reliability", reliability)
             return_results(search_ip_command(client, args))
         elif command == "domain":
+            args.setdefault("reliability", reliability)
             return_results(search_domain_command(client, args))
         elif command == "file":
+            args.setdefault("reliability", reliability)
             return_results(search_hash_command(client, args))
         elif command == "url":
+            args.setdefault("reliability", reliability)
             return_results(search_url_command(client, args))
         elif command == "brandefense_get_incidents":
             return_results(get_incidents_command(client, args))
