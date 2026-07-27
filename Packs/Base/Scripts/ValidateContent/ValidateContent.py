@@ -786,18 +786,21 @@ def main():
             demisto.debug(f"created {tmp_dir=}")
 
             # Setup Demisto SDK's logging.
-            # logging_setup's signature differs between demisto-sdk versions: newer
-            # versions require a `calling_function` argument while the version bundled
-            # in some Docker images does not accept it. Introspect the signature and
-            # only pass `calling_function` when it is supported, keeping the script
-            # compatible across SDK/Docker image versions.
-            logging_setup_kwargs: dict = {
+            # logging_setup's signature differs across demisto-sdk / Docker image
+            # versions: some versions accept `calling_function`, `console_threshold`
+            # and `propagate`, while others accept none of them. Introspect the
+            # signature and only pass the keyword arguments that are supported,
+            # keeping the script compatible across SDK/Docker image versions.
+            supported_params = inspect.signature(logging_setup).parameters
+            desired_kwargs: dict = {
+                "calling_function": "ValidateContent",
                 "console_threshold": "DEBUG" if is_debug_mode() else "ERROR",
                 "propagate": True,
             }
-            if "calling_function" in inspect.signature(logging_setup).parameters:
-                logging_setup_kwargs["calling_function"] = "ValidateContent"
-            logging_setup(**logging_setup_kwargs)
+            logging_setup_kwargs = {key: value for key, value in desired_kwargs.items() if key in supported_params}
+            # The call is built dynamically from the runtime signature, so pylint's
+            # static check against the pinned lint image may raise a false E1123.
+            logging_setup(**logging_setup_kwargs)  # pylint: disable=unexpected-keyword-arg
             demisto.debug("Finished setting logger.")
 
             path_to_validate: str = setup_content_dir(filename, data, entry_id, verify_ssl)
