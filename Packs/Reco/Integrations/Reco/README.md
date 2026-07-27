@@ -109,6 +109,7 @@ List all accounts flagged as risky (auto-paginates all results).
 | Reco.RiskyUsers.isAdmin | Boolean | Whether the account has admin privileges |
 | Reco.RiskyUsers.isRiskyUser | Boolean | Whether the account is flagged as risky |
 | Reco.RiskyUsers.lastSeen | Date | Last activity timestamp |
+| Reco.RiskyUsers | Unknown | Risky Users. |
 
 ### reco-add-risky-user-label
 
@@ -190,6 +191,13 @@ Find sensitive assets by name.
 | Reco.SensitiveAssets.permissionVisibility | String | Permission visibility (PUBLIC / INTERNAL / RESTRICTED) |
 | Reco.SensitiveAssets.location | String | File path |
 | Reco.SensitiveAssets.dataCategories | Unknown | Detected data categories |
+| Reco.SensitiveAssets.file_name | String | The name of the asset. |
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset. |
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name. |
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users. |
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset. |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset. |
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset. |
 
 ### reco-get-sensitive-assets-by-id
 
@@ -218,6 +226,13 @@ Find sensitive assets by ID.
 | Reco.SensitiveAssets.permissionVisibility | String | Permission visibility (PUBLIC / INTERNAL / RESTRICTED) |
 | Reco.SensitiveAssets.location | String | File path |
 | Reco.SensitiveAssets.dataCategories | Unknown | Detected data categories |
+| Reco.SensitiveAssets.file_name | String | The name of the asset. |
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset. |
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name. |
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users. |
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset. |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset. |
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset. |
 
 ### reco-get-assets-by-id
 
@@ -246,6 +261,13 @@ Find any asset by ID.
 | Reco.SensitiveAssets.permissionVisibility | String | Permission visibility (PUBLIC / INTERNAL / RESTRICTED) |
 | Reco.SensitiveAssets.location | String | File path |
 | Reco.SensitiveAssets.dataCategories | Unknown | Detected data categories |
+| Reco.SensitiveAssets.file_name | String | The name of the asset. |
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset. |
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name. |
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users. |
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset. |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset. |
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset. |
 
 ### reco-get-link-to-user-overview-page
 
@@ -375,6 +397,12 @@ Get identity context for a user by email address.
 | Reco.User.isInternal | Boolean | Whether the user is an internal employee |
 | Reco.User.openAlerts | Number | Number of open alerts |
 | Reco.User.lastSeen | Date | Last activity timestamp |
+| Reco.User.email_account | String | The email of the user. |
+| Reco.User.full_name | String | The user full name. |
+| Reco.User.job_titles | String | Job Title. |
+| Reco.User.category | String | Category. |
+| Reco.User.groups | String | The groups user is member of. |
+| Reco.User.labels | Unknown | User Labels. |
 
 ### reco-get-files-exposed-to-email-address
 
@@ -494,6 +522,14 @@ List all discovered SaaS applications (auto-paginates all results).
 | Reco.Apps.vendorGrade | String | The vendor security grade of the application. |
 | Reco.Apps.aiCapability | String | The AI capability description for the application. |
 | Reco.Apps.lastSeen | Date | The last activity timestamp for the application. |
+| Reco.Apps.app_name | String | The name of the application. |
+| Reco.Apps.app_id | String | The unique identifier of the application. |
+| Reco.Apps.risk_score | Number | The risk score of the application. |
+| Reco.Apps.users_count | Number | The number of users with access to the application. |
+| Reco.Apps.data_access | String | The data access level of the application. |
+| Reco.Apps.updated_at | Date | The last update timestamp of the application. |
+| Reco.Apps.created_at | Date | The creation timestamp of the application. |
+| Reco.Apps.status | String | The status of the application. |
 
 ### reco-set-app-authorization-status
 

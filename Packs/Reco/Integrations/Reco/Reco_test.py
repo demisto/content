@@ -45,6 +45,7 @@ from Reco import (
     list_threat_detection_policies_command,
     list_exclusions_command,
     list_app_instances_command,
+    add_legacy_output_aliases,
 )
 
 from test_data.structs import (
@@ -308,6 +309,19 @@ def test_parse_minimum_risk_level_empty_returns_none():
     assert parse_minimum_risk_level("") is None
 
 
+def test_add_legacy_output_aliases_copies_new_field_to_old_key():
+    items = [{"id": "1", "name": "foo"}, {"id": "2", "name": "bar"}]
+    add_legacy_output_aliases(items, {"app_name": "name"})
+    assert items[0]["app_name"] == "foo"
+    assert items[1]["app_name"] == "bar"
+
+
+def test_add_legacy_output_aliases_skips_missing_new_key():
+    items = [{"id": "1"}]
+    add_legacy_output_aliases(items, {"app_name": "name"})
+    assert "app_name" not in items[0]
+
+
 def test_parse_alerts_to_incidents_numeric_risk():
     """parse_alerts_to_incidents maps numeric risk_level (10-40) to severity."""
     alerts = [
@@ -466,11 +480,27 @@ def test_get_sensitive_assets_by_name(requests_mock, reco_client: RecoClient) ->
 
 
 def test_get_sensitive_assets_by_id(requests_mock, reco_client: RecoClient) -> None:
-    files = [{"id": "asset-id", "name": "sensitive.txt", "owner": "test@acme.com", "sensitivityLevel": "40"}]
+    files = [
+        {
+            "id": "asset-id",
+            "name": "sensitive.txt",
+            "owner": "test@acme.com",
+            "url": "https://drive.example.com/sensitive.txt",
+            "sensitivityLevel": "40",
+            "permissionVisibility": "PUBLIC",
+        }
+    ]
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/files/list", json={"files": files, "totalResults": len(files)})
     actual_result = get_sensitive_assets_by_id(reco_client=reco_client, asset_id="asset-id")
     assert len(actual_result.outputs) == len(files)
-    assert actual_result.outputs[0].get("id") is not None
+    output = actual_result.outputs[0]
+    assert output.get("id") is not None
+    # legacy pre-migration field names must still be populated for backward compatibility
+    assert output.get("file_name") == "sensitive.txt"
+    assert output.get("file_owner") == "test@acme.com"
+    assert output.get("file_url") == "https://drive.example.com/sensitive.txt"
+    assert output.get("sensitivity_level") == "40"
+    assert output.get("visibility") == "PUBLIC"
 
 
 def test_get_link_to_user_overview_page(requests_mock, reco_client: RecoClient) -> None:
@@ -617,12 +647,25 @@ def test_get_alert_summary_error(capfd, requests_mock, reco_client: RecoClient) 
 
 
 def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> None:
-    users = [{"email": "charles@corp.com", "fullName": "Yossi", "departments": ["Pro"], "category": "external"}]
+    users = [
+        {
+            "email": "charles@corp.com",
+            "name": "Yossi",
+            "departments": ["Pro"],
+            "jobTitles": ["VP Product"],
+            "isInternal": False,
+        }
+    ]
     requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/external-api/users/list", json={"users": users, "totalResults": len(users)})
     res = get_user_context_by_email_address(reco_client, "charles@corp.com")
     assert res.outputs_prefix == "Reco.User"
     assert res.outputs.get("email") != ""
     assert res.outputs.get("email") == "charles@corp.com"
+    # legacy pre-migration field names must still be populated for backward compatibility
+    assert res.outputs.get("email_account") == "charles@corp.com"
+    assert res.outputs.get("full_name") == "Yossi"
+    assert res.outputs.get("job_titles") == ["VP Product"]
+    assert res.outputs.get("category") == "external"
 
 
 def test_get_app_discovery_with_filters(requests_mock, reco_client: RecoClient) -> None:
@@ -713,6 +756,11 @@ def test_get_apps_command(requests_mock, reco_client: RecoClient) -> None:
     assert isinstance(result.outputs, list)
     assert len(result.outputs) == 1
     assert "App Discovery" in result.readable_output
+    # legacy pre-migration field names must still be populated for backward compatibility
+    output = result.outputs[0]
+    assert output.get("app_id") == "slack.com"
+    assert output.get("app_name") == "Slack"
+    assert output.get("users_count") == 10
 
 
 def test_set_app_authorization_status_error(capfd, requests_mock, reco_client: RecoClient) -> None:

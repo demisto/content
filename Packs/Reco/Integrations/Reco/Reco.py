@@ -836,6 +836,19 @@ class RecoClient(BaseClient):
 # --- Helpers ---
 
 
+def add_legacy_output_aliases(items: list[dict[str, Any]], aliases: dict[str, str]) -> list[dict[str, Any]]:
+    """Copy renamed External API fields back onto their pre-migration key names, in place.
+
+    Restores backward compatibility for playbooks/automations built against the old
+    internal-API field names, alongside the new camelCase External API fields.
+    """
+    for item in items:
+        for old_key, new_key in aliases.items():
+            if new_key in item:
+                item[old_key] = item[new_key]
+    return items
+
+
 def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
     """Decode a table row returned by Reco's internal Table API (base64-encoded cells)."""
     if alert is None:
@@ -1207,8 +1220,18 @@ def get_files_shared_with_3rd_parties(
     )
 
 
+LEGACY_ASSET_FIELD_ALIASES = {
+    "file_name": "name",
+    "file_owner": "owner",
+    "file_url": "url",
+    "sensitivity_level": "sensitivityLevel",
+    "visibility": "permissionVisibility",
+}
+
+
 def assets_to_command_result(files: list[dict[str, Any]]) -> CommandResults:
     """Convert File objects (external API) to CommandResults for asset commands."""
+    add_legacy_output_aliases(files, LEGACY_ASSET_FIELD_ALIASES)
     return CommandResults(
         readable_output=tableToMarkdown(
             "Assets",
@@ -1237,10 +1260,24 @@ def get_sensitive_assets_by_id(reco_client: RecoClient, asset_id: str) -> Comman
     return assets_to_command_result(files)
 
 
+LEGACY_USER_FIELD_ALIASES = {
+    "email_account": "email",
+    "full_name": "name",
+    "job_titles": "jobTitles",
+}
+
+
 def get_user_context_by_email_address(reco_client: RecoClient, email_address: str) -> CommandResults:
     """Return identity context for an email address (external API)."""
     users = reco_client.get_user_context_by_email_address(email_address)
     user_data = users[0] if users else None
+    if user_data:
+        add_legacy_output_aliases([user_data], LEGACY_USER_FIELD_ALIASES)
+        # "category" has no direct External API field; approximate from isInternal, matching
+        # the old values ("internal"/"external"). "groups" and "labels" have no equivalent
+        # data in the External API and are not populated.
+        if "isInternal" in user_data:
+            user_data["category"] = "internal" if user_data["isInternal"] else "external"
     return CommandResults(
         readable_output=tableToMarkdown("User", user_data, headers=list(user_data.keys()) if user_data else []),
         outputs_prefix="Reco.User",
@@ -1281,11 +1318,22 @@ def get_link_to_user_overview_page(reco_client: RecoClient, entity: str, link_ty
     return CommandResults(outputs_prefix="Reco.Link", outputs={"link": link}, raw_response=link)
 
 
+LEGACY_APP_FIELD_ALIASES = {
+    "app_id": "id",
+    "app_name": "name",
+    "users_count": "usersCount",
+    "created_at": "firstSeen",
+}
+
+
 def get_apps_command(
     reco_client: RecoClient, before: datetime | None = None, after: datetime | None = None, limit: int = PAGE_SIZE
 ) -> CommandResults:
     """List discovered apps from the external API."""
     apps = reco_client.get_app_discovery(before=before, after=after, limit=limit)
+    # "risk_score", "data_access", "status", and "updated_at" have no equivalent field in the
+    # External API and are not populated.
+    add_legacy_output_aliases(apps, LEGACY_APP_FIELD_ALIASES)
     headers = ["id", "name", "category", "usersCount", "authorization", "isUsingAi", "vendorGrade", "aiCapability", "lastSeen"]
     return CommandResults(
         readable_output=tableToMarkdown("App Discovery", apps, headers=headers),

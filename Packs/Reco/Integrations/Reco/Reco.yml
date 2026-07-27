@@ -87,7 +87,7 @@ description: Reco is the leader in SaaS & AI Security, providing full visibility
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10404775
   isfetch: true
   runonce: false
   script: "-"
@@ -136,6 +136,8 @@ script:
     description: Get Risky Users from Reco.
     name: reco-get-risky-users
     outputs:
+    - contextPath: Reco.RiskyUsers
+      description: Risky Users.
     - contextPath: Reco.RiskyUsers.id
       description: The account ID.
       type: String
@@ -196,6 +198,52 @@ script:
       type: Boolean
     description: Get all sensitive assets from Reco by name.
     name: reco-get-sensitive-assets-by-name
+    outputs:
+    - contextPath: Reco.SensitiveAssets.id
+      description: The unique identifier of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.name
+      description: The name of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.owner
+      description: The owner of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.url
+      description: The URL of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.sensitivityLevel
+      description: The sensitivity level of the asset (numeric).
+      type: Number
+    - contextPath: Reco.SensitiveAssets.permissionVisibility
+      description: The visibility/permission level of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.location
+      description: The path of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.dataCategories
+      description: The data categories detected in the asset.
+      type: Unknown
+    - contextPath: Reco.SensitiveAssets.file_name
+      description: The name of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_owner
+      description: The owner of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_url
+      description: Json string of the asset's url and the name.
+      type: Unknown
+    - contextPath: Reco.SensitiveAssets.currently_permitted_users
+      description: List of currently permitted users.
+      type: String
+    - contextPath: Reco.SensitiveAssets.visibility
+      description: Visibility of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.sensitivity_level
+      description: The sensitivity level of the asset.
+      type: Number
   - arguments:
     - description: Asset id to search for.
       name: asset_id
@@ -227,6 +275,27 @@ script:
     - contextPath: Reco.SensitiveAssets.dataCategories
       description: The data categories detected in the asset.
       type: Unknown
+    - contextPath: Reco.SensitiveAssets.file_name
+      description: The name of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_owner
+      description: The owner of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_url
+      description: Json string of the asset's url and the name.
+      type: Unknown
+    - contextPath: Reco.SensitiveAssets.currently_permitted_users
+      description: List of currently permitted users.
+      type: String
+    - contextPath: Reco.SensitiveAssets.visibility
+      description: Visibility of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.sensitivity_level
+      description: The sensitivity level of the asset.
+      type: Number
   - arguments:
     - description: Entity Type (RM_LINK_TYPE_USER).
       name: entity
@@ -360,6 +429,24 @@ script:
     - contextPath: Reco.User.lastSeen
       description: The last activity timestamp for the identity.
       type: Date
+    - contextPath: Reco.User.email_account
+      description: The email of the user.
+      type: String
+    - contextPath: Reco.User.full_name
+      description: The user full name.
+      type: String
+    - contextPath: Reco.User.job_titles
+      description: Job Title.
+      type: String
+    - contextPath: Reco.User.category
+      description: Category.
+      type: String
+    - contextPath: Reco.User.groups
+      description: The groups user is member of.
+      type: String
+    - contextPath: Reco.User.labels
+      description: User Labels.
+      type: Unknown
     description: Get user context by email address from Reco.
     name: reco-get-user-context-by-email-address
   - arguments:
@@ -474,6 +561,27 @@ script:
     - contextPath: Reco.SensitiveAssets.dataCategories
       description: The data categories detected in the asset.
       type: Unknown
+    - contextPath: Reco.SensitiveAssets.file_name
+      description: The name of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_owner
+      description: The owner of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.file_url
+      description: Json string of the asset's url and the name.
+      type: Unknown
+    - contextPath: Reco.SensitiveAssets.currently_permitted_users
+      description: List of currently permitted users.
+      type: String
+    - contextPath: Reco.SensitiveAssets.visibility
+      description: Visibility of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.source
+      description: SaaS tool source of the asset.
+      type: String
+    - contextPath: Reco.SensitiveAssets.sensitivity_level
+      description: The sensitivity level of the asset.
+      type: Number
   - arguments:
     - description: Alert ID.
       name: alert_id
@@ -531,6 +639,30 @@ script:
     - contextPath: Reco.Apps.lastSeen
       description: The last activity timestamp for the application.
       type: Date
+    - contextPath: Reco.Apps.app_name
+      description: The name of the application.
+      type: String
+    - contextPath: Reco.Apps.app_id
+      description: The unique identifier of the application.
+      type: String
+    - contextPath: Reco.Apps.risk_score
+      description: The risk score of the application.
+      type: Number
+    - contextPath: Reco.Apps.users_count
+      description: The number of users with access to the application.
+      type: Number
+    - contextPath: Reco.Apps.data_access
+      description: The data access level of the application.
+      type: String
+    - contextPath: Reco.Apps.updated_at
+      description: The last update timestamp of the application.
+      type: Date
+    - contextPath: Reco.Apps.created_at
+      description: The creation timestamp of the application.
+      type: Date
+    - contextPath: Reco.Apps.status
+      description: The status of the application.
+      type: String
   - arguments:
     - description: Application ID to update authorization status for.
       name: app_id
@@ -1012,4 +1144,4 @@ script:
       type: Number
 tests:
 - No tests
-fromversion: 6.8.0
+fromversion: 6.5.0
