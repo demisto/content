@@ -4226,7 +4226,7 @@ def main() -> None:
     password = credentials.get("password")  # type: ignore[union-attr]
 
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH))
-    first_fetch = params.get("first_fetch")
+    first_fetch = params.get("first_fetch") or "7 days"
     ticket_types = argToList(params.get("ticket_type"))
     ticket_statuses = argToList(params.get("ticket_status"))
     ticket_impacts = argToList(params.get("ticket_impact"))

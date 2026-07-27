@@ -43,7 +43,7 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
-  section: Collect
+  section: Connect
 - display: Access Key
   name: access_key
   type: 0

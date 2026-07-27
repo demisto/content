@@ -25,6 +25,13 @@ configuration:
   required: false
   additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."
   section: Connect
+- display: Token URL
+  name: token_url
+  type: 0
+  required: false
+  additionalinfo: "The OAuth 2.0 token endpoint base URL override. Leave empty to use the default Trellix IAM endpoint. For Trellix GovCloud tenants, set to https://iam.us.trellix-gov.com."
+  section: Connect
+  advanced: true
 - displaypassword: API Key
   additionalinfo: The API Key allows you to integrate with the Trellix Email Security - Cloud.
   name: credentials
@@ -95,7 +102,7 @@ script:
       required: true
     description: Gets events from Trellix Email Security - Cloud. This command is used for developing/ debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
     name: fireeye-etp-get-events
-  dockerimage: demisto/python3:3.12.11.4508456
+  dockerimage: demisto/python3:3.12.13.10404775
   isfetchevents: true
   script: ""
   subtype: python3

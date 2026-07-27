@@ -11,7 +11,9 @@ def main():
             demisto.results("")
         else:
             for location in argToList(loc_names):
-                names.append(pycountry.countries.get(alpha_3=location).name)
+                country = pycountry.countries.get(alpha_3=location)
+                if country is not None:
+                    names.append(country.name)
             demisto.results(names)
     except AttributeError:
         demisto.results("")
