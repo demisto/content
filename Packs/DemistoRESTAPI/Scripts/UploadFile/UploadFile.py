@@ -25,7 +25,7 @@ def is_transient_error(entry: Any) -> bool:
     """
     if not is_error(entry):
         return False
-    contents = str(entry.get("Contents", "")).lower()
+    contents = get_error(entry).lower()
     return any(marker in contents for marker in TRANSIENT_ERROR_MARKERS)
 
 
