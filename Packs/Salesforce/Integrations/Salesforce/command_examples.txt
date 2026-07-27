@@ -1,0 +1,5 @@
+!salesforce-delete-file id=069dn000007LEQYAA4
+!salesforce-list-file-public-links id=069dn000007LEQYAA4
+!salesforce-remove-file-public-links id=05Tdn000004C1a2EAC
+!salesforce-archive-knowledge-article id=kA0dn0000004CabCAE
+!salesforce-draft-knowledge-article id=kA0dn0000004CabCAE unpublish=true
