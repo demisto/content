@@ -22,8 +22,6 @@ MIRROR_DIRECTION_MAPPING = {
 # OCSF status_ids (https://schema.ocsf.io) that close the mirrored-in XSOAR incident,
 # mapped to the XSOAR close reason. Resolved=4, Suppressed=3.
 OCSF_STATUS_ID_TO_CLOSE_REASON = {4: "Resolved", 3: "Other"}
-# OCSF status_ids that reopen the mirrored-in XSOAR incident. New=1, In Progress=2.
-OCSF_OPEN_STATUS_IDS = {1, 2}
 # Outgoing mapping schema surfaced by get-mapping-fields.
 # "severity" = built-in XSOAR Severity field (0-4), translated to an OCSF SeverityId.
 # "severityid" = raw OCSF severity_id (1-6, incl. Fatal=6); takes precedence over "severity".
@@ -440,18 +438,18 @@ def findings_to_incidents(findings: list, mirror_direction: str | None = None) -
     return incidents
 
 
-def build_close_reopen_entries(finding: dict) -> list:
-    """Build the incoming-mirror entries that close or reopen the XSOAR incident based on AWS status.
+def build_close_entries(finding: dict) -> list:
+    """Build the incoming-mirror entry that closes the XSOAR incident based on AWS status.
 
-    Full lifecycle sync: an OCSF ``status_id`` of Resolved (4) or Suppressed (3) closes the XSOAR
-    incident (``dbotIncidentClose``); an open status (New/In Progress) reopens it
-    (``dbotIncidentReopen``). Any other/unknown status yields no entry so the incident is left as-is.
+    An OCSF ``status_id`` of Resolved (4) or Suppressed (3) closes the XSOAR incident
+    (``dbotIncidentClose``). Any other status yields no entry so the incident is left as-is.
+    Reopening a closed incident from AWS is not supported.
 
     Args:
         finding (dict): The OCSF finding returned by AWS Security Hub V2.
 
     Returns:
-        list: A single-element entry list instructing the server to close/reopen, or an empty list.
+        list: A single-element entry list instructing the server to close, or an empty list.
     """
     status_id = finding.get("status_id")
     if status_id is None:
@@ -467,14 +465,6 @@ def build_close_reopen_entries(finding: dict) -> list:
                     "closeReason": close_reason,
                     "closeNotes": f"Closed by mirroring: AWS Security Hub finding status is '{finding_status}'.",
                 },
-                "ContentsFormat": EntryFormat.JSON,
-            }
-        ]
-    if status_id in OCSF_OPEN_STATUS_IDS:
-        return [
-            {
-                "Type": EntryType.NOTE,
-                "Contents": {"dbotIncidentReopen": True},
                 "ContentsFormat": EntryFormat.JSON,
             }
         ]
@@ -839,7 +829,7 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
         args (dict): Command arguments. ``id`` - the finding ``metadata.uid`` to retrieve.
 
     Returns:
-        GetRemoteDataResponse: The updated finding object and any close/reopen entries.
+        GetRemoteDataResponse: The updated finding object and any close entries.
     """
     demisto.debug("[AWS_Security_Hub_V2] Mirror-in: ===== get-remote-data START =====")
     remote_args = GetRemoteDataArgs(args)
@@ -874,13 +864,13 @@ def get_remote_data_command(client: BotoClient, args: dict) -> GetRemoteDataResp
     severity_id = finding.get("severity_id") or 0
     finding["xsoar_severity"] = OCSF_SEVERITY_ID_TO_XSOAR.get(severity_id, IncidentSeverity.UNKNOWN)
 
-    # Lifecycle sync: close/reopen the XSOAR incident to match the AWS finding status.
-    entries = build_close_reopen_entries(finding)
+    # Lifecycle sync: close the XSOAR incident to match the AWS finding status.
+    entries = build_close_entries(finding)
 
     demisto.debug(
         f"[AWS_Security_Hub_V2] Mirror-in: returning current finding uid={finding_uid} "
         f"(severity_id={severity_id} -> xsoar_severity={finding['xsoar_severity']}, "
-        f"status_id={finding.get('status_id')}, close/reopen entries={len(entries)}). "
+        f"status_id={finding.get('status_id')}, close entries={len(entries)}). "
         "===== get-remote-data END ====="
     )
     return GetRemoteDataResponse(mirrored_object=finding, entries=entries)
@@ -902,28 +892,12 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def _is_incident_reopened(parsed_args: UpdateRemoteSystemArgs) -> bool:
-    """Detect whether the incident was reopened in XSOAR from the outgoing-mirror args.
-
-    Reopening a closed incident clears the ``closingUserId`` and ``runStatus`` fields, so XSOAR surfaces
-    both as empty strings in the delta while the incident status is back to Active.
-
-    Args:
-        parsed_args (UpdateRemoteSystemArgs): The parsed ``update-remote-system`` arguments.
-
-    Returns:
-        bool: True if the incident was reopened, otherwise False.
-    """
-    delta = parsed_args.delta or {}
-    return parsed_args.inc_status == IncidentStatus.ACTIVE and delta.get("closingUserId") == "" and delta.get("runStatus") == ""
-
-
 def update_remote_system_command(client: BotoClient, args: dict, resolve_finding: bool) -> str:
     """Push local (XSOAR) incident changes to the corresponding finding via batch_update_findings_v2.
 
     Mirrors out only the whitelisted delta fields (severityid, statusid, comment) plus the built-in severity.
     When ``resolve_finding`` is enabled and the incident is closed, the finding is set to Resolved (status_id 4).
-    Reopening the incident always reopens the finding (In Progress, status_id 2) unless a statusid delta was set.
+    Reopening an incident is not mirrored out.
 
     Args:
         client (BotoClient): The boto3 ``securityhub`` client.
@@ -970,11 +944,6 @@ def update_remote_system_command(client: BotoClient, args: dict, resolve_finding
         demisto.debug(
             "[AWS_Security_Hub_V2] Mirror-out: incident closed and resolve_finding enabled; " "forcing StatusId=4 (Resolved)."
         )
-    # Reopening a closed incident clears closingUserId/runStatus in the delta; reopen the finding in AWS
-    # (unless an explicit statusid delta was set).
-    elif _is_incident_reopened(parsed_args) and "StatusId" not in kwargs:
-        kwargs["StatusId"] = 2  # OCSF status_id 2 = In Progress (open).
-        demisto.debug("[AWS_Security_Hub_V2] Mirror-out: incident reopened; forcing StatusId=2 (In Progress).")
 
     if not kwargs:
         demisto.debug(

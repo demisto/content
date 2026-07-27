@@ -30,7 +30,7 @@ This integration was integrated and tested with the AWS Security Hub V2 API.
 | First fetch time | The time range to consider for the initial data fetch, in the format &lt;number&gt; &lt;unit&gt; \(for example, 3 days, 12 hours, 7 minutes\). | False |
 | Maximum number of incidents per fetch | The maximum number of findings to fetch per cycle. The maximum is 100. | False |
 | Minimum severity to fetch | The minimum severity of findings to fetch, based on the OCSF severity_id. Findings with this severity or higher are fetched. Leave empty to fetch all severities. | False |
-| Additional fetch filters | The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "field_name=&lt;OCSF field&gt;,value=&lt;value&gt;,comparison=&lt;comparison&gt;", multiple entries separated by ";". All entries are combined with the time and severity filters using AND. Defaults to excluding closed findings \(status Resolved or Suppressed\); clear or edit this value to fetch closed findings. | False |
+| Additional fetch filters | The extra string filters used to narrow the fetch, in the same format as the string_filters command argument: "field_name=&lt;OCSF field&gt;,value=&lt;value&gt;,comparison=&lt;comparison&gt;", multiple entries separated by ";". All entries are combined with the time and severity filters using AND. Defaults to excluding closed findings \(status Resolved or Suppressed\): "field_name=status,value=Resolved,comparison=NOT_EQUALS;field_name=status,value=Suppressed,comparison=NOT_EQUALS"; clear or edit this value to fetch closed findings. | False |
 | Incident Mirroring Direction | The direction to mirror the finding: Incoming \(from AWS - Security Hub to Cortex\), Outgoing \(from Cortex to AWS - Security Hub\), or Incoming And Outgoing \(from/to Cortex and AWS - Security Hub\). | False |
 | Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub | Whether closing an incident in Cortex sets the corresponding finding's status to Resolved in AWS Security Hub \(applies to outgoing mirroring\). | False |
 
@@ -262,13 +262,13 @@ To set up the mirroring:
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex and AWS - Security Hub v2.
 
-### Close and reopen synchronization
+### Close synchronization
 
-The integration keeps the open/closed lifecycle in sync in both directions:
+The integration syncs incident/finding closing in both directions:
 
 | **Action** | **Result** | **Requires** |
 | --- | --- | --- |
 | Close an incident in Cortex XSOAR | The finding is set to Resolved (status_id 4) in AWS Security Hub. | Outgoing mirroring and the *Resolve finding of closed incident from Cortex XSOAR in AWS Security Hub* parameter enabled. |
 | Resolve or Suppress a finding in AWS Security Hub | The corresponding Cortex XSOAR incident is closed. | Incoming mirroring. |
-| Reopen an incident in Cortex XSOAR | The finding is set to In Progress (status_id 2) in AWS Security Hub. | Outgoing mirroring. |
-| Reopen a resolved finding in AWS Security Hub (status_id back to New/In Progress) | The corresponding Cortex XSOAR incident is reopened. | Incoming mirroring. |
+
+**Note:** Reopening is not supported in either direction. Reopening a closed incident in Cortex XSOAR does not reopen the finding in AWS Security Hub, and reopening a resolved finding in AWS Security Hub does not reopen the corresponding Cortex XSOAR incident.

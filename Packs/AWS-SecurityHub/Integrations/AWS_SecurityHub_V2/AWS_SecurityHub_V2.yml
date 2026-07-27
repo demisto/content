@@ -163,7 +163,8 @@ configuration:
   required: false
 - display: Additional fetch filters
   name: fetch_filters
-  additionalinfo: 'The additional string filters used to narrow the fetch. Follows the same format as the string_filters command argument: "field_name=<OCSF field>,value=<value>,comparison=<comparison>" (multiple entries must be separated by semicolons). These filters are combined with the time and severity filters using an AND operator.'
+  defaultvalue: field_name=status,value=Resolved,comparison=NOT_EQUALS;field_name=status,value=Suppressed,comparison=NOT_EQUALS
+  additionalinfo: 'The additional string filters used to narrow the fetch. Follows the same format as the string_filters command argument: "field_name=<OCSF field>,value=<value>,comparison=<comparison>" (multiple entries must be separated by semicolons). These filters are combined with the time and severity filters using an AND operator. Defaults to excluding closed findings (status Resolved or Suppressed); clear or edit this value to fetch closed findings.'
   type: 0
   section: Collect
   advanced: true

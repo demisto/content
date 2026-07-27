@@ -3,7 +3,7 @@ import pytest
 from AWS_SecurityHub_V2 import (
     _compute_fetch_boundary,
     _query_findings_page,
-    build_close_reopen_entries,
+    build_close_entries,
     build_fetch_filters,
     handle_client_error,
     disable_security_hub_command,
@@ -1229,54 +1229,6 @@ def test_update_remote_system_resolves_on_close(mocker):
     assert call_kwargs["StatusId"] == 4
 
 
-def test_update_remote_system_reopens_on_reopen(mocker):
-    """
-    Given: A reopened incident (status ACTIVE, delta clears closingUserId and runStatus).
-    When: update_remote_system_command is called.
-    Then: batch_update_findings_v2 forces StatusId=2 (In Progress) to reopen the finding in AWS.
-    """
-    mock_client = mocker.Mock()
-    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
-
-    args = _update_remote_args({"closingUserId": "", "runStatus": ""}, status=IncidentStatus.ACTIVE)
-    update_remote_system_command(mock_client, args, resolve_finding=False)
-
-    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
-    assert call_kwargs["StatusId"] == 2
-
-
-def test_update_remote_system_routine_active_edit_does_not_reopen(mocker):
-    """
-    Given: A routine edit on an active incident (comment changed) that is NOT a reopen.
-    When: update_remote_system_command is called.
-    Then: No StatusId is forced (the finding is not reopened on every active edit).
-    """
-    mock_client = mocker.Mock()
-    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
-
-    args = _update_remote_args({"comment": "still working"}, status=IncidentStatus.ACTIVE)
-    update_remote_system_command(mock_client, args, resolve_finding=False)
-
-    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
-    assert "StatusId" not in call_kwargs
-
-
-def test_update_remote_system_reopen_respects_explicit_statusid(mocker):
-    """
-    Given: A reopened incident that also carries an explicit statusid delta.
-    When: update_remote_system_command is called.
-    Then: The explicit statusid wins and the reopen default (StatusId=2) does not override it.
-    """
-    mock_client = mocker.Mock()
-    mock_client.batch_update_findings_v2.return_value = {"ProcessedFindings": [{}], "UnprocessedFindings": []}
-
-    args = _update_remote_args({"statusid": "1", "closingUserId": "", "runStatus": ""}, status=IncidentStatus.ACTIVE)
-    update_remote_system_command(mock_client, args, resolve_finding=False)
-
-    call_kwargs = mock_client.batch_update_findings_v2.call_args[1]
-    assert call_kwargs["StatusId"] == 1
-
-
 @pytest.mark.parametrize(
     "delta,expected_severity_id,expect_call",
     [
@@ -1322,13 +1274,13 @@ def test_get_mapping_fields_command():
     "status_id,expected_reason",
     [(4, "Resolved"), (3, "Other")],
 )
-def test_build_close_reopen_entries_closes_on_resolved_or_suppressed(status_id, expected_reason):
+def test_build_close_entries_closes_on_resolved_or_suppressed(status_id, expected_reason):
     """
     Given: A finding whose OCSF status_id is Resolved (4) or Suppressed (3).
-    When: build_close_reopen_entries is called.
+    When: build_close_entries is called.
     Then: A single dbotIncidentClose entry with the mapped close reason is returned.
     """
-    entries = build_close_reopen_entries({"status_id": status_id, "status": "Resolved"})
+    entries = build_close_entries({"status_id": status_id, "status": "Resolved"})
 
     assert len(entries) == 1
     contents = entries[0]["Contents"]
@@ -1336,27 +1288,14 @@ def test_build_close_reopen_entries_closes_on_resolved_or_suppressed(status_id, 
     assert contents["closeReason"] == expected_reason
 
 
-@pytest.mark.parametrize("status_id", [1, 2])
-def test_build_close_reopen_entries_reopens_on_open_status(status_id):
+@pytest.mark.parametrize("finding", [{}, {"status_id": 0}, {"status_id": 1}, {"status_id": 2}, {"status_id": 99}])
+def test_build_close_entries_no_action_for_non_close_status(finding):
     """
-    Given: A finding whose OCSF status_id is New (1) or In Progress (2).
-    When: build_close_reopen_entries is called.
-    Then: A single dbotIncidentReopen entry is returned.
+    Given: A finding with a missing or non-close OCSF status_id (including open statuses New/In Progress).
+    When: build_close_entries is called.
+    Then: No entries are returned (reopening a closed incident is not supported; the incident is left untouched).
     """
-    entries = build_close_reopen_entries({"status_id": status_id})
-
-    assert len(entries) == 1
-    assert entries[0]["Contents"] == {"dbotIncidentReopen": True}
-
-
-@pytest.mark.parametrize("finding", [{}, {"status_id": 0}, {"status_id": 99}])
-def test_build_close_reopen_entries_no_action_for_other_status(finding):
-    """
-    Given: A finding with a missing or non-actionable OCSF status_id.
-    When: build_close_reopen_entries is called.
-    Then: No entries are returned (the incident is left untouched).
-    """
-    assert build_close_reopen_entries(finding) == []
+    assert build_close_entries(finding) == []
 
 
 def _mock_client_with_exceptions(mocker):
