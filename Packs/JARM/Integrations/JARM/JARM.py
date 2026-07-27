@@ -14,7 +14,7 @@ from CommonServerUserPython import *  # noqa
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-DEFAULT_PORT = 443  # noqa: E262  # Testing lock machine mechanism.
+DEFAULT_PORT = 443
 
 """ CLIENT CLASS """
 
