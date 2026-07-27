@@ -61,7 +61,32 @@ BRACKETS_URL_TO_FORMAT = [
     ("[[https://www.test.com", "https://www.test.com"),  # disable-secrets-detection
     ("'https://www.test.com/test'", "https://www.test.com/test"),  # disable-secrets-detection
     ("'https://www.test.com/?a='b''", "https://www.test.com/?a='b'"),  # disable-secrets-detection
-    ("https://www.test.com/?q=((A)%20and%20(B))", "https://www.test.com/?q=((A) and (B))"),  # disable-secrets-detection)
+    ("https://www.test.com/?q=((A)%20and%20(B))", "https://www.test.com/?q=((A)%20and%20(B))"),  # disable-secrets-detection)
+]
+
+# URLs containing spaces (literal or percent-encoded). A space is not a valid URL character and must be
+# percent-encoded as %20 rather than decoded back to a literal space (which produces an invalid URL). See XSUP-73627.
+SPACE_ENCODING = [
+    # Percent-encoded spaces must be preserved, not decoded to literal spaces.
+    (
+        "https://www.google.com/some%20thing%20else",  # disable-secrets-detection
+        "https://www.google.com/some%20thing%20else",  # disable-secrets-detection
+    ),
+    # Literal spaces must be encoded to %20 so the resulting URL stays valid.
+    (
+        "https://www.google.com/some thing else",  # disable-secrets-detection
+        "https://www.google.com/some%20thing%20else",  # disable-secrets-detection
+    ),
+    # A mix of literal and encoded spaces should normalize to encoded spaces.
+    (
+        "https://www.google.com/a b%20c",  # disable-secrets-detection
+        "https://www.google.com/a%20b%20c",  # disable-secrets-detection
+    ),
+    # Spaces in the query part.
+    (
+        "https://www.test.com/?q=a b",  # disable-secrets-detection
+        "https://www.test.com/?q=a%20b",  # disable-secrets-detection
+    ),
 ]
 
 ATP_REDIRECTS = [
@@ -475,6 +500,22 @@ class TestFormatURL:
 
         Then:
         - Ensure URL is formatted as expected
+        """
+
+        assert URLFormatter(url_).__str__() == expected
+
+    @pytest.mark.parametrize("url_, expected", SPACE_ENCODING)
+    def test_space_encoding(self, url_: str, expected: str):
+        """
+        Given:
+        - A URL containing literal spaces or percent-encoded spaces (%20).
+
+        When:
+        - The URL is formatted.
+
+        Then:
+        - Ensure literal spaces are encoded to %20 and existing %20 sequences are preserved,
+          so the resulting URL remains valid (XSUP-73627).
         """
 
         assert URLFormatter(url_).__str__() == expected
