@@ -504,6 +504,15 @@ script:
     - name: profile_id
       required: true
       description: Profile UUID to delete.
+    - name: force
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      description: If true, force-delete the profile, bypassing safety checks. Requires updated_by.
+    - name: updated_by
+      description: Email of the user performing the deletion. Required when force is true.
     outputs:
     - contextPath: PrismaAIRs.SecurityProfileDeleted.profile_id
       description: Deleted profile ID.
@@ -513,6 +522,9 @@ script:
       type: String
     - contextPath: PrismaAIRs.SecurityProfileDeleted.deleted
       description: Boolean indicating successful deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.SecurityProfileDeleted.force
+      description: Whether the profile was force-deleted.
       type: Boolean
   - name: prisma-airs-runtime-customer-apps-list
     description: List all customer applications.
@@ -2293,11 +2305,20 @@ script:
       type: Date
   - name: prisma-airs-runtime-topics-delete
     execution: true
-    description: Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is referenced by any security profile.
+    description: Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is referenced by any security profile (use force to override).
     arguments:
     - name: topic_id
       required: true
       description: Topic UUID to delete.
+    - name: force
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      description: If true, force-delete the topic, removing it from any referencing profiles.
+    - name: updated_by
+      description: Email of the user performing the deletion. Optional for force-delete.
     outputs:
     - contextPath: PrismaAIRs.TopicDeleted.topic_id
       description: Deleted topic ID.
@@ -2307,6 +2328,9 @@ script:
       type: String
     - contextPath: PrismaAIRs.TopicDeleted.deleted
       description: Boolean indicating successful deletion.
+      type: Boolean
+    - contextPath: PrismaAIRs.TopicDeleted.force
+      description: Whether the topic was force-deleted.
       type: Boolean
   - name: prisma-airs-runtime-topics-apply
     description: Apply a topic to a security profile (additive - preserves existing topics). This command orchestrates multiple API calls to assign a custom topic to a profile's topic-guardrails configuration.

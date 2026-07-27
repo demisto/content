@@ -3208,6 +3208,35 @@ class TestCommands:
             runtime_profiles_delete_command(mock_client, {})
 
     @patch.object(Client, "http_request")
+    def test_runtime_profiles_force_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-profiles-delete with force hits the /force endpoint and passes updated_by.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"message": "force deleted"}
+
+        result = runtime_profiles_delete_command(
+            mock_client, {"profile_id": "sp-1", "force": "true", "updated_by": "admin@example.com"}
+        )
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"].endswith("/profile/sp-1/force")
+        assert kwargs["params"] == {"updated_by": "admin@example.com"}
+        assert result.outputs["force"] is True
+        assert result.outputs["deleted"] is True
+
+    def test_runtime_profiles_force_delete_requires_updated_by(self, mock_client: Client) -> None:
+        """runtime-profiles-delete with force but no updated_by raises.
+
+        Args:
+            mock_client: Mock client fixture.
+        """
+        with pytest.raises(ValueError, match="updated_by is required when force is true"):
+            runtime_profiles_delete_command(mock_client, {"profile_id": "sp-1", "force": "true"})
+
+    @patch.object(Client, "http_request")
     def test_runtime_topics_list_command(self, mock_http: Mock, mock_client: Client) -> None:
         """runtime-topics-list returns the list under the base Topic key.
 
@@ -3295,6 +3324,24 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="topic_id is required"):
             runtime_topics_delete_command(mock_client, {})
+
+    @patch.object(Client, "http_request")
+    def test_runtime_topics_force_delete_command(self, mock_http: Mock, mock_client: Client) -> None:
+        """runtime-topics-delete with force hits /topic/force/{id}; updated_by is optional.
+
+        Args:
+            mock_http: Mocked http_request method.
+            mock_client: Mock client fixture.
+        """
+        mock_http.return_value = {"message": "force deleted"}
+
+        result = runtime_topics_delete_command(mock_client, {"topic_id": "t-1", "force": "true"})
+
+        _, kwargs = mock_http.call_args
+        assert kwargs["url_suffix"].endswith("/topic/force/t-1")
+        assert kwargs["params"] is None
+        assert result.outputs["force"] is True
+        assert result.outputs["deleted"] is True
 
     @patch.object(Client, "scanner_request")
     def test_runtime_bulk_scan_command(self, mock_scanner: Mock, mock_client: Client) -> None:

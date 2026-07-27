@@ -688,6 +688,8 @@ Delete a security profile. WARNING - This action cannot be undone and permanentl
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_id | Profile UUID to delete. | Required |
+| force | If true, force-delete the profile, bypassing safety checks. Requires updated_by. Possible values are: true, false. Default is false. | Optional |
+| updated_by | Email of the user performing the deletion. Required when force is true. | Optional |
 
 #### Context Output
 
@@ -696,6 +698,7 @@ Delete a security profile. WARNING - This action cannot be undone and permanentl
 | PrismaAIRs.SecurityProfileDeleted.profile_id | String | Deleted profile ID. |
 | PrismaAIRs.SecurityProfileDeleted.message | String | Deletion confirmation message. |
 | PrismaAIRs.SecurityProfileDeleted.deleted | Boolean | Boolean indicating successful deletion. |
+| PrismaAIRs.SecurityProfileDeleted.force | Boolean | Whether the profile was force-deleted. |
 
 #### Command example
 
@@ -724,9 +727,26 @@ Delete a security profile. WARNING - This action cannot be undone and permanentl
 
 >### Security Profile Deleted
 >
->|Profile Id|Message|Deleted|
->|---|---|---|
->| a0e6e9b0-edda-44cc-b1ed-37407ab7098c | successfully deleted profileId: a0e6e9b0-edda-44cc-b1ed-37407ab7098c | true |
+>|Profile Id|Message|Deleted|Force|
+>|---|---|---|---|
+>| a0e6e9b0-edda-44cc-b1ed-37407ab7098c | successfully deleted profileId: a0e6e9b0-edda-44cc-b1ed-37407ab7098c | true | false |
+>
+>
+>**⚠️ WARNING:** This action cannot be undone. The security profile has been permanently deleted.
+
+#### Command example (force-delete)
+
+```
+!prisma-airs-runtime-profiles-delete profile_id="96f9d6c1-1613-40db-bcca-74aeb3ff6ba1" force="true" updated_by="admin@example.com"
+```
+
+#### Human Readable Output (force-delete)
+
+>### Security Profile Force-Deleted
+>
+>|Profile Id|Message|Deleted|Force|
+>|---|---|---|---|
+>| 96f9d6c1-1613-40db-bcca-74aeb3ff6ba1 | successfully force deleted profileId: 96f9d6c1-1613-40db-bcca-74aeb3ff6ba1 | true | true |
 >
 >
 >**⚠️ WARNING:** This action cannot be undone. The security profile has been permanently deleted.
@@ -2587,7 +2607,9 @@ Update an existing custom topic. WARNING - Modifying topic definition can break 
 ### prisma-airs-runtime-topics-delete
 
 ***
-Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is referenced by any security profile.
+Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is referenced by any security profile (use force to override).
+
+> **Note:** The force-delete endpoint (`.../topic/force/{id}`) currently returns HTTP 403 (`Access denied`) on tenants where the OAuth client has not been granted the force-delete permission. Regular delete and the force request path are both validated; force-delete succeeds once the tenant grants the permission.
 
 #### Base Command
 
@@ -2598,6 +2620,8 @@ Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | topic_id | Topic UUID to delete. | Required |
+| force | If true, force-delete the topic, removing it from any referencing profiles. Possible values are: true, false. Default is false. | Optional |
+| updated_by | Email of the user performing the deletion. Optional for force-delete. | Optional |
 
 #### Context Output
 
@@ -2606,6 +2630,7 @@ Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is
 | PrismaAIRs.TopicDeleted.topic_id | String | Deleted topic ID. |
 | PrismaAIRs.TopicDeleted.message | String | Deletion confirmation message. |
 | PrismaAIRs.TopicDeleted.deleted | Boolean | Boolean indicating successful deletion. |
+| PrismaAIRs.TopicDeleted.force | Boolean | Whether the topic was force-deleted. |
 
 #### Command example
 
@@ -2627,9 +2652,9 @@ Delete a custom topic. WARNING - This action cannot be undone. Fails if topic is
 
 >### Custom Topic Deleted
 >
->|Topic Id|Message|Deleted|
->|---|---|---|
->| 6d62aa1f-4457-4eb5-afb1-7cde3d3bc0ad | successfully deleted topicId: 6d62aa1f-4457-4eb5-afb1-7cde3d3bc0ad | true |
+>|Topic Id|Message|Deleted|Force|
+>|---|---|---|---|
+>| 6d62aa1f-4457-4eb5-afb1-7cde3d3bc0ad | successfully deleted topicId: 6d62aa1f-4457-4eb5-afb1-7cde3d3bc0ad | true | false |
 >
 >
 >**⚠️ WARNING:** This action cannot be undone. The custom topic has been permanently deleted.

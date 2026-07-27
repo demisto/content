@@ -1129,27 +1129,41 @@ def runtime_profiles_delete_command(client: Client, args: dict[str, Any]) -> Com
     if not profile_id:
         raise ValueError("profile_id is required")
 
+    force = argToBoolean(args.get("force", False))
+    updated_by = args.get("updated_by")
+
     # Call Management API to delete profile
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/profiles.ts
-    # SDK: ProfilesClient.delete(profileId)
-    # Endpoint: DELETE /v1/mgmt/profile/{profileId}
     # Response: { message: "deleted" } (or plain string transformed to object)
-    url_suffix = f"{MGMT_API_V1_PREFIX}/profile/{profile_id}"
-
-    response = client.http_request(method="DELETE", url_suffix=url_suffix, use_mgmt_base=True)
+    if force:
+        # SDK: ProfilesClient.forceDelete(profileId, updatedBy)
+        # Endpoint: DELETE /v1/mgmt/profile/{profileId}/force?updated_by=...
+        # Force-delete bypasses safety checks; the force endpoint requires updated_by.
+        if not updated_by:
+            raise ValueError("updated_by is required when force is true")
+        url_suffix = f"{MGMT_API_V1_PREFIX}/profile/{profile_id}/force"
+        response = client.http_request(
+            method="DELETE", url_suffix=url_suffix, params={"updated_by": updated_by}, use_mgmt_base=True
+        )
+    else:
+        # SDK: ProfilesClient.delete(profileId)
+        # Endpoint: DELETE /v1/mgmt/profile/{profileId}
+        url_suffix = f"{MGMT_API_V1_PREFIX}/profile/{profile_id}"
+        response = client.http_request(method="DELETE", url_suffix=url_suffix, use_mgmt_base=True)
 
     # Parse response - SDK handles both string and object responses
     # DeleteProfileResponseSchema transforms plain string to { message: "..." }
-    message = response.get("message", "Security profile deleted successfully") if isinstance(response, dict) else str(response)
+    default_message = "Security profile force-deleted successfully" if force else "Security profile deleted successfully"
+    message = response.get("message", default_message) if isinstance(response, dict) else str(response)
 
     # Create readable output
     # Context output
-    context_output = {"profile_id": profile_id, "message": message, "deleted": True}
+    context_output = {"profile_id": profile_id, "message": message, "deleted": True, "force": force}
 
     readable_output = tableToMarkdown(
-        "Security Profile Deleted",
+        "Security Profile Force-Deleted" if force else "Security Profile Deleted",
         context_output,
-        headers=["profile_id", "message", "deleted"],
+        headers=["profile_id", "message", "deleted", "force"],
         headerTransform=lambda h: h.replace("_", " ").title(),
         removeNull=True,
     )
@@ -8383,28 +8397,39 @@ def runtime_topics_delete_command(client: Client, args: dict[str, Any]) -> Comma
     if not topic_id:
         raise ValueError("topic_id is required")
 
+    force = argToBoolean(args.get("force", False))
+    updated_by = args.get("updated_by")
+
     # Call Management API to delete topic
     # Reference: ./knowledge/versions/current/prisma-airs-sdk/src/management/topics.ts
-    # SDK: TopicsClient.delete(topicId)
-    # Endpoint: DELETE /v1/mgmt/topic/{topicId}
     # Response: { message: "deleted" } (or plain string transformed to object)
-    # NOTE: Fails with 409 Conflict if topic is referenced by any profile
-    url_suffix = f"{MGMT_API_V1_PREFIX}/topic/{topic_id}"
-
-    response = client.http_request(method="DELETE", url_suffix=url_suffix, use_mgmt_base=True)
+    if force:
+        # SDK: TopicsClient.forceDelete(topicId, updatedBy?)
+        # Endpoint: DELETE /v1/mgmt/topic/force/{topicId}[?updated_by=...]
+        # Force-delete removes the topic from any referencing profiles; updated_by is optional.
+        url_suffix = f"{MGMT_API_V1_PREFIX}/topic/force/{topic_id}"
+        params = {"updated_by": updated_by} if updated_by else None
+        response = client.http_request(method="DELETE", url_suffix=url_suffix, params=params, use_mgmt_base=True)
+    else:
+        # SDK: TopicsClient.delete(topicId)
+        # Endpoint: DELETE /v1/mgmt/topic/{topicId}
+        # NOTE: Fails with 409 Conflict if topic is referenced by any profile
+        url_suffix = f"{MGMT_API_V1_PREFIX}/topic/{topic_id}"
+        response = client.http_request(method="DELETE", url_suffix=url_suffix, use_mgmt_base=True)
 
     # Parse response - SDK handles both string and object responses
     # DeleteTopicResponseSchema transforms plain string to { message: "..." }
-    message = response.get("message", "Custom topic deleted successfully") if isinstance(response, dict) else str(response)
+    default_message = "Custom topic force-deleted successfully" if force else "Custom topic deleted successfully"
+    message = response.get("message", default_message) if isinstance(response, dict) else str(response)
 
     # Create readable output
     # Context output
-    context_output = {"topic_id": topic_id, "message": message, "deleted": True}
+    context_output = {"topic_id": topic_id, "message": message, "deleted": True, "force": force}
 
     readable_output = tableToMarkdown(
-        "Custom Topic Deleted",
+        "Custom Topic Force-Deleted" if force else "Custom Topic Deleted",
         context_output,
-        headers=["topic_id", "message", "deleted"],
+        headers=["topic_id", "message", "deleted", "force"],
         headerTransform=lambda h: h.replace("_", " ").title(),
         removeNull=True,
     )
