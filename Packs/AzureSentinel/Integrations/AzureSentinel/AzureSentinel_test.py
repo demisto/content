@@ -2467,6 +2467,46 @@ def test_statuses_to_fetch_parameter_multiple_statuses(mocker):
     }
 
 
+def test_odata_filter_parameters(mocker):
+    """
+    Given:
+        - Multiple filter parameters.
+
+    When:
+        - Execute the fetch-incidents command.
+
+    Then:
+        - Ensure the filter query contains all the provided filter parameters.
+    """
+    # prepare
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    params = {
+        "titles_to_not_fetch": ["test_title"],
+        "alert_product_names_to_not_fetch": ["test_alert_product_name"],
+    }
+
+    # execute
+    fetch_incidents_command(client, params)
+
+    # validate
+    expected_filter = (
+        "properties/createdTimeUtc ge 2022-03-16T13:01:08Z and "
+        "(not properties/additionalData/alertProductNames/any(x:x eq 'test_alert_product_name')) and "
+        "((contains(properties/title, 'test_title') ne true))"
+    )
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 20,
+            "$filter": expected_filter,
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
 def test_main_uses_new_separate_client_id(mocker):
     """
     Given
