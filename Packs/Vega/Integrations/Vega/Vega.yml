@@ -1,4 +1,5 @@
 name: Vega
+provider: Vega
 category: Analytics & SIEM
 commonfields:
   id: Vega
