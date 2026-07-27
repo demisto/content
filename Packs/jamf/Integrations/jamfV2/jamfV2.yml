@@ -839,14 +839,14 @@ script:
       description: The computer's UDID.
       type: String
   - arguments:
-    - description: A 6-digit passcode to be used to unlock the computer after it was locked.
+    - description: A 6-digit passcode that can be used to unlock the computer after it was locked.
       name: passcode
       secret: true
     - description: The ID of the computer that you want to lock.
       name: id
-    - description: A message to display on the locked screen.
+    - description: A message to display on the lock screen.
       name: lock_message
-    - description: A phone number to display on the locked screen.
+    - description: A phone number to display on the lock screen.
       name: phone_number
     - description: The device-level management ID of the computer to lock. Provide either "id" or "management_id".
       name: management_id
@@ -892,9 +892,9 @@ script:
   - arguments:
     - description: If provided, returns a single user with the given ID.
       name: id
-    - description: If provided, returns users with the given username.
+    - description: If provided, returns a list of users with the given username.
       name: name
-    - description: If provided, returns users with the given email address.
+    - description: If provided, returns a list of users with the given email address.
       name: email
     - defaultValue: '50'
       description: Maximum number of users to retrieve. The maximum value is 200.
@@ -2345,9 +2345,9 @@ script:
       description: The device-level management ID of the mobile device.
       type: String
   - arguments:
-    - description: 'Filter results to a specific command UUID.'
+    - description: 'Filter results by a specific command UUID.'
       name: command_uuid
-    - description: 'Filter results to commands for a specific device management ID.'
+    - description: 'Filter results by a specific device management ID.'
       name: management_id
     - auto: PREDEFINED
       description: Filter results by command status.
@@ -2357,7 +2357,7 @@ script:
       - Acknowledged
       - NotNow
       - Error
-    - description: 'Filter results to a specific command name. Possible value: REMOVE_PROFILE.'
+    - description: 'Filter results by a specific command name. For example: `REMOVE_PROFILE`.'
       name: command_name
     - description: An advanced RSQL query string for filtering results. When provided, it takes precedence over the other filter arguments.
       name: filter

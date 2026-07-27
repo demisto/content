@@ -2598,10 +2598,10 @@ Jamf Pro Server Objects → Computers → Create
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| passcode | A 6-digit passcode to be used to unlock the computer after it was locked. | Optional |
+| passcode | A 6-digit passcode that can be used to unlock the computer after it was locked. | Optional |
 | id | The ID of the computer that you want to lock. | Optional |
-| lock_message | A message to display on the locked screen. | Optional |
-| phone_number | A phone number to display on the locked screen. | Optional |
+| lock_message | A message to display on the lock screen. | Optional |
+| phone_number | A phone number to display on the lock screen. | Optional |
 | management_id | The device-level management ID of the computer to lock. Provide either "id" or "management_id". | Optional |
 
 #### Context Output
@@ -2714,8 +2714,8 @@ Jamf Pro Server Objects → Users → Read
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | If provided, returns a single user with the given ID. | Optional |
-| name | If provided, returns users with the given username. | Optional |
-| email | If provided, returns users with the given email address. | Optional |
+| name | If provided, returns a list of users with the given username. | Optional |
+| email | If provided, returns a list of users with the given email address. | Optional |
 | limit | Maximum number of users to retrieve. The maximum value is 200. Default is 50. | Optional |
 | page | The number of the requested page. Default is 0. | Optional |
 
@@ -4810,10 +4810,10 @@ Returns the status of MDM commands. At least one filter must be provided - eithe
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| command_uuid | Filter results to a specific command UUID. | Optional |
-| management_id | Filter results to commands for a specific device management ID. | Optional |
+| command_uuid | Filter results by a specific command UUID. | Optional |
+| management_id | Filter results by a specific device management ID. | Optional |
 | status | Filter results by command status. Possible values are: Pending, Acknowledged, NotNow, Error. | Optional |
-| command_name | Filter results to a specific command name. Possible value: REMOVE_PROFILE. | Optional |
+| command_name | Filter results by a specific command name. For example: `REMOVE_PROFILE`. | Optional |
 | filter | An advanced RSQL query string for filtering results. When provided, it takes precedence over the other filter arguments. | Optional |
 | limit | Maximum number of commands to retrieve. The maximum value is 200. Default is 50. | Optional |
 | page | The number of the requested page. Default is 0. | Optional |
