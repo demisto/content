@@ -1,0 +1,4 @@
+!aws-iam-account-password-policy-get account_id=test-account
+!aws-iam-account-password-policy-update account_id=test-account
+!aws-s3-public-access-block-update account_id=test-account bucket=test-bucket region=us-east-1
+!aws-ec2-instance-metadata-options-modify account_id=test-account instance_id=test-instance region=us-east-1 http_endpoint=enabled http_tokens=optional
