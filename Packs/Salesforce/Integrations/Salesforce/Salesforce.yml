@@ -20,7 +20,7 @@ configuration:
   name: credentials
   defaultvalue: ""
   type: 9
-  required: true
+  required: false
   section: Connect
 - display: Consumer Key
   name: clientID
