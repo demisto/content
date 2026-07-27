@@ -1,0 +1,15 @@
+{
+  "id": 1,
+  "name": "NODE-002",
+  "status": "Available",
+  "workingDirectory": "C:\\automate\\updatedTemp",
+  "address": "automate-node-2",
+  "applications": [
+    {
+      "ApplicationId": 1,
+      "ApplicationName": "AXIOM Process",
+      "ApplicationVersion": "7.0.0",
+      "ApplicationPath": "C:\\Program Files\\Magnet Forensics\\Magnet AUTOMATE\\agent\\AXIOM Process\\AXIOMProcess.CLI.exe"
+    }
+  ]
+}

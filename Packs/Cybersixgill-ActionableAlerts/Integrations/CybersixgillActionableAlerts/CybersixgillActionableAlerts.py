@@ -60,6 +60,7 @@ def item_to_incidents(item_info, sixgill_alerts_client):
         sub_incident = copy.deepcopy(incident)
         # add all other fields
         add_sub_alerts_fields(sub_incident, item, sixgill_alerts_client)
+        item["org_id"] = demisto.params().get("org_id", "")
         sub_incident["rawJSON"] = json.dumps(item)
         incidents.append(sub_incident)
     return incidents
@@ -70,12 +71,13 @@ def add_sub_alerts_shared_fields(incident, item_info):
     incident_date = datetime.strptime(item_info.get("date"), DATETIME_FORMAT)
     incident["occurred"] = incident_date.strftime(DEMISTO_DATETIME_FORMAT)
     incident["severity"] = THREAT_LEVEL_TO_SEVERITY[item_info.get("threat_level", "unknown")]
+    org = demisto.params().get("org_id", "")
     incident["CustomFields"] = {
         "cybersixgillthreatlevel": item_info.get("threat_level", "unknown"),
         "cybersixgillthreattype": item_info.get("threats", []),
         "cybersixgillassessment": item_info.get("assessment", None),
         "cybersixgillrecommendations": "\n\n-----------\n\n".join(item_info.get("recommendations", [])),
-        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}",
+        "incidentlink": f"https://portal.cybersixgill.com/#/?actionable_alert={item_info.get('id', '')}&org={org}",
         "cve": None,
         "cybersixgillattributes": None,
     }
@@ -90,18 +92,13 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
         get_alert_content(content_item, item_info, incident, sixgill_alerts_client)
     except Exception as e:
         demisto.error(f"Could not get alert content: {e}")
-    incident["details"] = (
-        f"{content_item.get('description', '')}\n\n{content_item.get('title', '')}\n"
-        f"\n{content_item.get('content', '')}\n{content_item.get('Repository Name', '')}"
-        f"\n{content_item.get('Customer Keywords', '')}\n{content_item.get('GitURL', '')}"
-        f"\n{content_item.get('Actor', '')}\n{content_item.get('BIN', '')}"
-        f"\n{content_item.get('Site', '')}\n{content_item.get('Text', '')}"
-        f"\n{content_item.get('Detection time', '')}\n{content_item.get('IP addresses', '')}"
-        f"\n{content_item.get('Suspicious domain', '')}\n{content_item.get('Triggered domain', '')}"
-        f"\n{content_item.get('Already Seen', '')}\n{content_item.get('Breach Date', '')}"
-        f"\n{content_item.get('Description', '')}\n{content_item.get('Email', '')}"
-        f"\n{content_item.get('Created Time', '')}"
+    detail_sections = (
+        str(content_item.get("description", "")),
+        str(content_item.get("title", "")),
+        str(content_item.get("content", "")),
+        *content_item.get("entries", []),
     )
+    incident["details"] = "\n\n".join(section for section in detail_sections if section)
     triggered_assets = []
     for key, value in item_info.get("additional_info", {}).items():
         if "matched_" in key:
@@ -114,6 +111,39 @@ def add_sub_alerts_fields(incident, item_info, sixgill_alerts_client):
             "cybersixgilltriggeredassets": triggered_assets,
         }
     )
+
+
+def format_content_item_entry(item: dict) -> list[str]:
+    """Format a single alert content item into detail lines, based on the alert type it belongs to."""
+    if item.get("Additional Keywords") is not None:  # Github Alert
+        return [
+            "Repository name: " + item.get("Repository name", ""),
+            "Customer Keywords: " + item.get("Customer Keywords", ""),
+            "GitURL: " + item.get("URL", ""),
+        ]
+    if item.get("Actor") is not None:  # Compromised Alerts
+        return [
+            "Actor: " + item.get("Actor", ""),
+            "BIN: " + item.get("BIN", ""),
+            "Site: " + item.get("Site", ""),
+            "Text: " + item.get("Text", ""),
+        ]
+    if item.get("Detection time") is not None:  # Phishing Alerts
+        return [
+            "Detection time: " + item.get("Detection time", ""),
+            "IP addresses: " + item.get("IP addresses", ""),
+            "Suspicious domain: " + item.get("Suspicious domain", ""),
+            "Triggered domain: " + item.get("Triggered domain", ""),
+        ]
+    if item.get("breach_date") is not None:  # Leaked Credentials Alerts
+        return [
+            "Already Seen: " + item.get("already_seen", ""),
+            "Breach Date: " + item.get("breach_date", ""),
+            "Description: " + item.get("description", ""),
+            "Email: " + item.get("email", ""),
+            "Created Time: " + item.get("create_time", ""),
+        ]
+    return []
 
 
 def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
@@ -138,31 +168,8 @@ def get_alert_content(content_item, item_info, incident, sixgill_alerts_client):
         )
         content_items = content.get("items")
         if content_items:
-            for item in content_items:
-                additional_keywords = item.get("Additional Keywords")  # for Github Alert
-                alert_actor = item.get("Actor")  # For Compromised Alerts
-                alert_detection = item.get("Detection time")  # For Phishing Alerts
-                breach_date = item.get("breach_date")
-                if additional_keywords is not None:
-                    content_item["Repository name"] = "Repository name: " + item.get("Repository name", "")
-                    content_item["Customer Keywords"] = "Customer Keywords: " + item.get("Customer Keywords", "")
-                    content_item["GitURL"] = "GitURL: " + item.get("URL", "")
-                elif alert_actor is not None:
-                    content_item["Actor"] = "Actor: " + alert_actor
-                    content["BIN"] = "BIN: " + item.get("BIN", "")
-                    content_item["Site"] = "Site: " + item.get("Site", "")
-                    content_item["Text"] = "Text: " + item.get("Text", "")
-                elif alert_detection is not None:
-                    content_item["Detection time"] = "Detection time: " + alert_detection
-                    content_item["IP addresses"] = "IP addresses: " + item.get("IP addresses", "")
-                    content_item["Suspicious domain"] = "Suspicious domain: " + item.get("Suspicious domain", "")
-                    content_item["Triggered domain"] = "Triggered domain: " + item.get("Triggered domain", "")
-                elif breach_date is not None:
-                    content_item["Already Seen"] = "Already Seen: " + item.get("already_seen", "")
-                    content_item["Breach Date"] = "Breach Date: " + breach_date
-                    content_item["Description"] = "Description: " + item.get("description", "")
-                    content_item["Email"] = "Email: " + item.get("email", "")
-                    content_item["Created Time"] = "Created Time: " + item.get("create_time", "")
+            entries = ("\n".join(format_content_item_entry(item)) for item in content_items)
+            content_item["entries"] = [entry for entry in entries if entry]
     else:
         aggregate_alert_id = item_info.get("aggregate_alert_id", None)
         if not isinstance(aggregate_alert_id, int):

@@ -448,14 +448,14 @@ def main() -> None:
     demisto.debug(f"Command being called is {demisto.command()}")
 
     # fetch incidents params
-    severity = params.get("severity")
+    severity = params.get("severity") or ["All"]
     if "All" in severity:
         severity = None
     elif severity:
         severity = ",".join(severity)
     source = params.get("source")
     destination = params.get("destination")
-    incident_type = params.get("incident_type")
+    incident_type = params.get("incident_type") or ["All"]
     if "All" in incident_type:
         incident_type = None
     elif incident_type:

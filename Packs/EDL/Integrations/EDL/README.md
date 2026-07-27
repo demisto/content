@@ -46,9 +46,7 @@ For Cortex XSOAR On-prem -
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
 
 For Cortex XSIAM -
-`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
-or
-`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the url to `crtx`.
+`https://ext-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log` and replace the `xdr` in the URL with `crtx`.
 
 ## Use Cases
 
@@ -98,8 +96,8 @@ or
 | Exclude top level domainGlobs        | Option to remove top level domainGlobs from the list. For example - \*.com.                                                                                                                                                                                     | False         |
 | Advanced: NGINX Global Directives  | NGINX global directives to be passed on the command line using the -g option. Each directive should end with `;`. For example: `worker_processes 4; timer_resolution 100ms;`. Advanced configuration to be used only if instructed by Cortex XSOAR Support. | False        |
 | Advanced: NGINX Server Conf        | NGINX server configuration to be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support.                                                                  | False        |
-| Cache Lock Timeout                | How long a concurrent request waits for an in-flight upstream response before bypassing the cache lock. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout to prevent upstream stampedes when responses take longer than this value. Default is 1h.                                                                                                                                                                                                                      | False        |
-| Cache Lock Age                    | How long the cache lock holder is allowed to populate the cache before another request is permitted to retry. Should be greater than or equal to the Request Timeout; smaller values will be automatically raised to the Request Timeout. Default is 1h.                                                                                                                                                                                                                          | False        |
+| Cache Lock Timeout (Deprecated)   | The parameter is deprecated and no longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.                                                              | False        |
+| Cache Lock Age (Deprecated)       | The parameter is deprecated and no longer used. Cache locking was replaced by a two-tier fail-fast design that rejects excess concurrent cache-building requests instead of queuing them.                                                              | False        |
 | Cache 404 TTL                     | The TTL for 404 responses in the cache.                                                                                                                                                                                                              | False        |
 | Cache Default TTL                 | The default TTL for responses in the cache.                                                                                                                                                                                                          | False        |
 | Advanced: NGINX Read Timeout       | NGNIX read timeout in seconds.                                                                                                                                                                                                                       | False        |
@@ -195,14 +193,18 @@ For Cortex XSOAR On-prem (6.x or 8) or when using engines, you can set up authen
 **Note:**  
 For Cortex XSOAR 8 On-prem, you need to add the `ext-` FQDN DNS record to map the Cortex XSOAR DNS name to the external IP address.  
 For example, `ext-xsoar.mycompany.com`.
-  
-For Cortex XSOAR 8 Cloud, Cortex XSOAR On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as cURL.
 
-- If the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`  
-  Note: For Cortex XSIAM, you can use the `edl-` prefix. Alternatively, if using the `ext-` prefix, replace the `xdr` in the url to `crtx`.  
+For Cortex XSOAR 8 Cloud, Cortex XSOAR 8 On-prem and Cortex XSIAM, you can only access the Export Indicators Service using a third-party tool such as curl.
+
+- For Cortex XSOAR, if the integration is configured to run on a tenant, use `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>`.
 
   For example: `curl -v -u user:pass https://ext-mytenant.paloaltonetworks.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
-- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`  
+
+- For Cortex XSIAM, if the integration is configured to run on a tenant, you must replace the `xdr` in the URL with `crtx`. For example, if the tenant URL is `https://platform-test.xdr-qa2-uat.us.example.com/`, use `https://ext-platform-test.crtx-qa2-uat.us.example.com/`.
+
+  For example: `curl -v -u user:pass https://ext-platform-test.crtx-qa2-uat.us.example.com/xsoar/instance/execute/edl_instance_01?q=type:ip`
+
+- If the integration is configured to run on an engine, use `http://<engine-address>:<integration listen port>`.
 
   For example: `curl -v -u user:pass http://<engine_address>:<listen_port>?n=50`
 

@@ -7,7 +7,13 @@ def test_get_all_values_returns_expected_list():
     """
     Ensure get_all_values returns all brand values in the correct order.
     """
-    expected_list = ["FireEyeHX v2", "CrowdstrikeFalcon", "Cortex Core - IR", "Microsoft Defender Advanced Threat Protection"]
+    expected_list = [
+        "FireEyeHX v2",
+        "CrowdstrikeFalcon",
+        "Cortex Core - IR",
+        "Builtin",
+        "Microsoft Defender Advanced Threat Protection",
+    ]
     assert Brands.get_all_values() == expected_list
 
 

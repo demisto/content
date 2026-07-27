@@ -43,7 +43,7 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
-  section: Collect
+  section: Connect
 - display: Access Key
   name: access_key
   type: 0
@@ -888,7 +888,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.8544956
+  dockerimage: demisto/boto3py3:1.0.0.10221838
   isfetch: true
   runonce: false
   script: '-'

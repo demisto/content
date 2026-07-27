@@ -2992,11 +2992,75 @@ async def test_stream_report_success(mocker):
 
     assert results == expected_results
 
-    # Verify http_request was called with the correct parameters
-    mock_client.http_request.assert_called_once_with("GET", "/api/3/reports/test-report-id/history/test-instance-id/output")
+    # Verify http_request was called with the correct parameters, including the
+    # CSV Accept header override (the default application/json would cause HTTP 406).
+    mock_client.http_request.assert_called_once_with(
+        "GET",
+        "/api/3/reports/test-report-id/history/test-instance-id/output",
+        headers={"Accept": "text/csv, */*"},
+    )
 
     # Verify the response was released
     mock_response.release.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_stream_report_requests_csv_accept_header(mocker):
+    """
+    Given:
+      - The report `/output` endpoint serves CSV, but the client's default
+        Accept header is "application/json", which makes the server respond
+        with HTTP 406 (Not Acceptable). This is the root cause of
+        "Failed to parse CSV header on line 1: Client API Error (406)".
+
+    When:
+      - Calling stream_report to download the report output.
+
+    Then:
+      - Ensure stream_report instructs http_request to accept CSV (i.e. passes
+        a `headers` override whose Accept is not "application/json"), so the
+        server returns the CSV body instead of a 406.
+    """
+    mock_client = mocker.AsyncMock()
+
+    mock_response = mocker.AsyncMock()
+    mock_response.release = mocker.AsyncMock()
+
+    class MockAsyncIterator:
+        def __init__(self, chunks):
+            self.chunks = chunks
+            self.index = 0
+
+        def __aiter__(self):
+            return self
+
+        async def __anext__(self):
+            if self.index < len(self.chunks):
+                chunk = self.chunks[self.index]
+                self.index += 1
+                return chunk
+            raise StopAsyncIteration
+
+    mock_content = mocker.AsyncMock()
+    mock_content.iter_any = lambda: MockAsyncIterator([b"id,name\n1,server1\n"])
+    mock_response.content = mock_content
+
+    mock_client.http_request = mocker.AsyncMock(return_value=mock_response)
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+
+    async for _ in stream_report(mock_client, "test-report-id", "test-instance-id", "asset"):
+        pass
+
+    # Inspect the headers passed to http_request for the CSV download.
+    _, call_kwargs = mock_client.http_request.call_args
+    headers = call_kwargs.get("headers") or {}
+    accept = headers.get("Accept", "")
+    assert accept, "stream_report must pass an explicit Accept header for the CSV /output endpoint"
+    assert "application/json" not in accept, (
+        "stream_report must not request application/json for the CSV /output endpoint "
+        "(this causes the HTTP 406 'Failed to parse CSV header on line 1' failure)"
+    )
+    assert "csv" in accept.lower() or "*/*" in accept
 
 
 @pytest.mark.asyncio
@@ -3165,9 +3229,9 @@ async def test_xsiam_api_call_async_with_retries_cimultidictproxy_headers(mocker
     mocker.patch("Rapid7_Nexpose.demisto.debug")
     mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
 
-    # Call the function under test — should NOT raise TypeError
-    # It will return after the error handling path (num_of_attempts=1 means only 1 try)
-    with capfd.disabled():
+    # Call the function under test — should NOT raise TypeError (the CIMultiDictProxy headers must be
+    # converted before json.dumps). A non-retryable 403 now re-raises after logging, so assert that.
+    with capfd.disabled(), pytest.raises(aiohttp.ClientResponseError):
         await xsiam_api_call_async_with_retries(
             xsiam_url="https://example.com",
             zipped_data=b"test-data",
@@ -3190,3 +3254,185 @@ async def test_xsiam_api_call_async_with_retries_cimultidictproxy_headers(mocker
     assert "application/json" in error_call_args
     assert "X-Request-Id" in error_call_args
     assert "abc123" in error_call_args
+
+
+def _make_session_cm(mocker, response):
+    """Build a mocked aiohttp.ClientSession context manager whose post() returns `response`."""
+    mock_post_cm = mocker.AsyncMock()
+    mock_post_cm.__aenter__ = mocker.AsyncMock(return_value=response)
+    mock_post_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    mock_session = mocker.AsyncMock()
+    mock_session.post = mocker.MagicMock(return_value=mock_post_cm)
+
+    mock_session_cm = mocker.AsyncMock()
+    mock_session_cm.__aenter__ = mocker.AsyncMock(return_value=mock_session)
+    mock_session_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+    return mock_session_cm
+
+
+@pytest.mark.asyncio
+async def test_xsiam_api_call_async_retries_on_transfer_encoding_error(mocker):
+    """
+    Given:
+      - The first send attempt raises aiohttp.ClientPayloadError (the base class of TransferEncodingError,
+        i.e. a truncated/cut-off response), and the second attempt succeeds with HTTP 200.
+
+    When:
+      - xsiam_api_call_async_with_retries is called with num_of_attempts=3.
+
+    Then:
+      - The transient transport error is retried (it must NOT abort), and the function returns the
+        successful 200 response. This is the XSUP-69895 regression: previously such errors bypassed the
+        retry loop entirely and failed the whole fetch.
+    """
+    import Rapid7_Nexpose
+
+    # Reset the module-level semaphore so the test is independent of other tests.
+    Rapid7_Nexpose._XSIAM_SEND_SEMAPHORE = None
+
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.error")
+    mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    # Avoid real backoff sleeps.
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep", new=mocker.AsyncMock())
+
+    # Attempt 1: session.post(...).__aenter__ raises a payload (truncation) error.
+    failing_post_cm = mocker.AsyncMock()
+    failing_post_cm.__aenter__ = mocker.AsyncMock(side_effect=aiohttp.ClientPayloadError("Response payload is not completed"))
+    failing_post_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+    failing_session = mocker.AsyncMock()
+    failing_session.post = mocker.MagicMock(return_value=failing_post_cm)
+    failing_session_cm = mocker.AsyncMock()
+    failing_session_cm.__aenter__ = mocker.AsyncMock(return_value=failing_session)
+    failing_session_cm.__aexit__ = mocker.AsyncMock(return_value=False)
+
+    # Attempt 2: success (200).
+    ok_response = mocker.AsyncMock()
+    ok_response.status = 200
+    ok_response.raise_for_status = mocker.MagicMock()  # no error
+    ok_session_cm = _make_session_cm(mocker, ok_response)
+
+    mocker.patch("aiohttp.ClientSession", side_effect=[failing_session_cm, ok_session_cm])
+
+    response = await xsiam_api_call_async_with_retries(
+        xsiam_url="https://example.com",
+        zipped_data=b"test-data",
+        headers={"authorization": "test-token"},
+        num_of_attempts=3,
+        data_type="vulnerability",
+    )
+
+    assert response is ok_response
+    # Two ClientSession instances were created => exactly one retry happened.
+    assert aiohttp.ClientSession.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_xsiam_api_call_async_retries_then_raises_on_persistent_transport_error(mocker):
+    """
+    Given:
+      - Every send attempt raises a transient transport error (ConnectionTimeoutError).
+
+    When:
+      - xsiam_api_call_async_with_retries is called with num_of_attempts=2.
+
+    Then:
+      - After exhausting retries, the transport error is raised so the caller can fail/abort, and module
+        health is updated with the error.
+    """
+    import Rapid7_Nexpose
+
+    Rapid7_Nexpose._XSIAM_SEND_SEMAPHORE = None
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.demisto.error")
+    mock_health = mocker.patch("Rapid7_Nexpose.demisto.updateModuleHealth")
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep", new=mocker.AsyncMock())
+
+    def make_failing_session_cm(*_args, **_kwargs):
+        cm = mocker.AsyncMock()
+        cm.__aenter__ = mocker.AsyncMock(side_effect=aiohttp.ServerTimeoutError("Connection timeout to host"))
+        cm.__aexit__ = mocker.AsyncMock(return_value=False)
+        return cm
+
+    mocker.patch("aiohttp.ClientSession", side_effect=make_failing_session_cm)
+
+    with pytest.raises(aiohttp.ServerTimeoutError):
+        await xsiam_api_call_async_with_retries(
+            xsiam_url="https://example.com",
+            zipped_data=b"test-data",
+            headers={"authorization": "test-token"},
+            num_of_attempts=2,
+            data_type="vulnerability",
+        )
+
+    assert mock_health.called
+
+
+@pytest.mark.asyncio
+async def test_xsiam_send_semaphore_caps_concurrency(mocker):
+    """
+    Given:
+      - MAX_CONCURRENT_XSIAM_SENDS in-flight cap, and more concurrent send coroutines than that cap.
+
+    When:
+      - Many xsiam_api_call_async_with_retries coroutines run concurrently, each holding the connection
+        open briefly.
+
+    Then:
+      - The number of simultaneously-open HTTP requests never exceeds MAX_CONCURRENT_XSIAM_SENDS.
+    """
+    import Rapid7_Nexpose
+
+    Rapid7_Nexpose._XSIAM_SEND_SEMAPHORE = None
+    mocker.patch("Rapid7_Nexpose.demisto.debug")
+    mocker.patch("Rapid7_Nexpose.asyncio.sleep", new=mocker.AsyncMock())
+
+    in_flight = 0
+    max_in_flight = 0
+
+    class TrackingPostCM:
+        async def __aenter__(self):
+            nonlocal in_flight, max_in_flight
+            in_flight += 1
+            max_in_flight = max(max_in_flight, in_flight)
+            await asyncio.sleep(0)  # yield so other coroutines can interleave
+            resp = mocker.AsyncMock()
+            resp.status = 200
+            resp.raise_for_status = mocker.MagicMock()
+            return resp
+
+        async def __aexit__(self, *_):
+            nonlocal in_flight
+            in_flight -= 1
+            return False
+
+    class TrackingSessionCM:
+        async def __aenter__(self):
+            session = mocker.AsyncMock()
+            session.post = mocker.MagicMock(return_value=TrackingPostCM())
+            return session
+
+        async def __aexit__(self, *_):
+            return False
+
+    mocker.patch("aiohttp.ClientSession", side_effect=lambda *a, **k: TrackingSessionCM())
+
+    num_coros = Rapid7_Nexpose.MAX_CONCURRENT_XSIAM_SENDS * 4
+    await asyncio.gather(
+        *[
+            xsiam_api_call_async_with_retries(
+                xsiam_url="https://example.com",
+                zipped_data=b"d",
+                headers={"authorization": "t"},
+                num_of_attempts=1,
+                data_type="vulnerability",
+            )
+            for _ in range(num_coros)
+        ]
+    )
+
+    assert max_in_flight <= Rapid7_Nexpose.MAX_CONCURRENT_XSIAM_SENDS, (
+        f"In-flight requests ({max_in_flight}) exceeded the cap "
+        f"({Rapid7_Nexpose.MAX_CONCURRENT_XSIAM_SENDS}) — semaphore not throttling."
+    )

@@ -16376,10 +16376,10 @@ def main():  # pragma: no cover
         # Fetch incidents
         elif command == "fetch-incidents":
             last_run: LastRun = demisto.getLastRun()  # type: ignore
-            first_fetch = params["first_fetch"]
-            configured_max_fetch = arg_to_number(params["max_fetch"])
+            first_fetch = params.get("first_fetch") or "24 hours"
+            configured_max_fetch = arg_to_number(params.get("max_fetch") or "100")
             queries = log_types_queries_to_dict(params)
-            fetch_max_attempts = arg_to_number(params["fetch_job_polling_max_num_attempts"])
+            fetch_max_attempts = arg_to_number(params.get("fetch_job_polling_max_num_attempts") or "10")
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
 
             new_last_run, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
@@ -16847,7 +16847,15 @@ def main():  # pragma: no cover
             )
         elif command == "pan-os-platform-get-system-info":
             topology = get_topology()
-            return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
+            return_results(
+                dataclasses_to_command_results(
+                    get_system_info(
+                        topology,
+                        device_filter_string=args.get("device_filter_string"),
+                        target=args.get("target"),
+                    )
+                )
+            )
         elif command == "pan-os-platform-get-device-groups":
             topology = get_topology()
             return_results(

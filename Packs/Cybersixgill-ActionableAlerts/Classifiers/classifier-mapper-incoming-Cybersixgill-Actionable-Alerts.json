@@ -60,7 +60,7 @@
                                 "args": {
                                     "prefix": {
                                         "value": {
-                                            "simple": "https://portal.cybersixgill.com/#/alerts?actionable_alert_content_id={id}\u0026aggregatedIndex={aggregate_alert_id}\u0026filters.alert_id={id}"
+                                            "simple": "https://portal.cybersixgill.com/#/alerts?actionable_alert_content_id={id}\u0026aggregatedIndex={aggregate_alert_id}\u0026filters.alert_id={id}\u0026org={org_id}"
                                         }
                                     },
                                     "suffix": {}
@@ -96,6 +96,23 @@
                                     "toReplace": {
                                         "value": {
                                             "simple": "{aggregate_alert_id}"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "org_id"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "{org_id}"
                                         }
                                     }
                                 },

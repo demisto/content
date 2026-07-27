@@ -1,0 +1,30 @@
+commonfields:
+  id: RubrikPullIRViolationInformation
+  version: -1
+name: RubrikPullIRViolationInformation
+script: ''
+type: python
+tags: []
+comment: Syncs the IR violation information from RSC to Cortex XSOAR.
+enabled: true
+args:
+- name: violation_id
+  description: "The ID of the IR Violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+- name: policy_type
+  description: "The policy type of the IR Violation.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+  auto: PREDEFINED
+  predefined:
+  - IDENTITY
+  - IDP
+  - IDENTITY_EVENT
+  - CROWDSTRIKE
+  - MICROSOFT_DEFENDER
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.9059085
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

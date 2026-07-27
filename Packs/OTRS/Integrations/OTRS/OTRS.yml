@@ -510,7 +510,7 @@ script:
     - contextPath: OTRS.Ticket.Article.ContentType
       description: Ticket article content type.
       type: string
-  dockerimage: demisto/pyotrs:1.0.0.6979213
+  dockerimage: demisto/pyotrs:1.0.0.10133006
   isfetch: true
   runonce: false
   script: '-'

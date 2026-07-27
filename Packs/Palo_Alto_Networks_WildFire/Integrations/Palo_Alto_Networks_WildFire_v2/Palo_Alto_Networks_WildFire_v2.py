@@ -686,6 +686,13 @@ def wildfire_get_verdicts(file_path):
 
     verdicts_data = result["wildfire"]["get-verdict-info"]
 
+    # When only a single hash is submitted, the WildFire API returns a plain dict
+    # instead of a list (xmltodict collapses single-element XML arrays to a dict).
+    # Normalize to a list so prettify_verdicts() always iterates over dicts, not string keys.
+    if isinstance(verdicts_data, dict):
+        demisto.debug("Verdicts data is a dict (single hash response), wrapping in a list.")
+        verdicts_data = [verdicts_data]
+
     return result, verdicts_data
 
 

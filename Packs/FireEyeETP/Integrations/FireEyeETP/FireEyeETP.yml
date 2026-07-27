@@ -30,6 +30,13 @@ configuration:
   required: false
   additionalinfo: "Space-separated list of OAuth scopes. Note: Only include scopes that your application's Client ID has already been authorized to use."
   section: Connect
+- display: Token URL
+  name: token_url
+  type: 0
+  required: false
+  additionalinfo: "The OAuth 2.0 token endpoint base URL override. Leave empty to use the default Trellix IAM endpoint. For Trellix GovCloud tenants, set to https://iam.us.trellix-gov.com."
+  section: Connect
+  advanced: true
 - display: API key
   name: api_key
   defaultvalue: ""
@@ -482,7 +489,7 @@ script:
       Cloud message ID.
   isfetch: true
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.10404775
 tests:
 - No Test
 defaultclassifier: Trellix Incident Classifier

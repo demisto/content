@@ -1,0 +1,11 @@
+[file:README.md]
+ignore=RM104
+
+[file:GoogleDriveStandardConnector.yml]
+ignore=PR101,BA129
+
+[file:GoogleDriveStandardConnector_image.png]
+ignore=IM111
+
+[known_words]
+corpora

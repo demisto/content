@@ -735,6 +735,153 @@ script:
       name: query
     description: Deletes the specified object in store. The search can be a basic key-value pair or a full query.
     name: splunk-kv-store-collection-delete-entry
+  - arguments:
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application namespace.
+      name: app
+      type: string
+    - defaultValue: nobody
+      description: The Access Control List (ACL) owner for the namespace.
+      name: owner
+      type: string
+    - defaultValue: '50'
+      description: The maximum number of configuration files to return. Range 1-500.
+      name: limit
+      type: number
+    description: Lists the configuration (.conf) files available in the given Splunk app namespace.
+    name: splunk-configuration-file-list
+    outputs:
+    - contextPath: Splunk.ConfigurationFile.FileName
+      description: The configuration file name (without the .conf suffix).
+      type: String
+    - contextPath: Splunk.ConfigurationFile.App
+      description: The Splunk app namespace the configuration file belongs to.
+      type: String
+  - arguments:
+    - description: The name of the new configuration file to create (without the .conf extension).
+      name: conf_file_name
+      required: true
+      type: string
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application namespace in which to create the file.
+      name: app
+      type: string
+    - defaultValue: nobody
+      description: The Access Control List (ACL) owner for the namespace.
+      name: owner
+      type: string
+    description: Creates a new, empty configuration (.conf) file in the given Splunk app namespace.
+    name: splunk-configuration-file-create
+  - arguments:
+    - description: The configuration file name (without the .conf extension), for example, "transforms", "props", or "inputs".
+      name: conf_file
+      required: true
+      type: string
+    - description: The name of the new stanza to create.
+      name: stanza_name
+      required: true
+      type: string
+    - description: 'The JSON object string of attributes to set on creation, e.g., {"external_type": "kvstore", "collection": "my_collection"}. If omitted, an empty stanza is created.'
+      name: key_value_pairs
+      type: string
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application namespace.
+      name: app
+      type: string
+    - defaultValue: nobody
+      description: The Access Control List (ACL) owner for the namespace.
+      name: owner
+      type: string
+    description: Creates a new stanza (configuration entry) in a Splunk .conf file, optionally with attributes.
+    name: splunk-configuration-stanza-create
+  - arguments:
+    - description: The configuration file name (without the .conf extension).
+      name: conf_file
+      required: true
+      type: string
+    - description: The name of the stanza to return. If provided, returns the key/value content of that single stanza. If omitted, returns the list of all stanza names in the configuration file.
+      name: stanza_name
+      type: string
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application namespace.
+      name: app
+      type: string
+    - defaultValue: nobody
+      description: The Access Control List (ACL) owner for the namespace.
+      name: owner
+      type: string
+    - defaultValue: '50'
+      description: The maximum number of stanzas to return when stanza_name is omitted. Range 1-500.
+      name: limit
+      type: number
+    description: Lists the stanzas in a .conf file, or returns the key/value content of a single stanza when stanza_name is provided.
+    name: splunk-configuration-stanza-list
+    outputs:
+    - contextPath: Splunk.ConfigurationStanza.StanzaName
+      description: The stanza name.
+      type: String
+    - contextPath: Splunk.ConfigurationStanza.App
+      description: The Splunk app namespace the stanza belongs to.
+      type: String
+    - contextPath: Splunk.ConfigurationStanza.Owner
+      description: The Access Control List (ACL) owner of the stanza.
+      type: String
+    - contextPath: Splunk.ConfigurationStanza.Sharing
+      description: The sharing level of the stanza.
+      type: String
+    - contextPath: Splunk.ConfigurationStanza.Content
+      description: The key/value content of the stanza (only returned when a single stanza_name is provided).
+      type: Unknown
+  - arguments:
+    - description: The configuration file name (without the .conf extension).
+      name: conf_file
+      required: true
+      type: string
+    - description: The name of the existing stanza to update.
+      name: stanza_name
+      required: true
+      type: string
+    - description: 'The JSON object string of attributes to upsert, e.g., {"attribute_1": "A_updated", "new_attr": "X"}. Existing keys are overwritten; missing keys are left untouched (Splunk''s properties endpoint is upsert-only).'
+      name: key_value_pairs
+      required: true
+      type: string
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application namespace.
+      name: app
+      type: string
+    - defaultValue: nobody
+      description: The Access Control List (ACL) owner for the namespace.
+      name: owner
+      type: string
+    description: Updates (upserts) attributes on an existing stanza in a Splunk .conf file.
+    name: splunk-configuration-stanza-update
+  - arguments:
+    - description: The target configuration file name (without the .conf extension).
+      name: conf_file
+      required: true
+      type: string
+    - description: The name of the stanza to be removed.
+      name: stanza_name
+      required: true
+      type: string
+    - default: true
+      defaultValue: search
+      description: The name of the Splunk application namespace.
+      name: app
+      type: string
+    - defaultValue: nobody
+      description: The Access Control List (ACL) owner for the namespace.
+      name: owner
+      type: string
+    description: |-
+      Deletes a stanza (configuration entry) from a Splunk .conf file (for example, transforms.conf) via the Splunk REST API configuration endpoints. This is useful for cleaning up KV Store transformations that remain after deleting KV Store records.
+      To identify the correct stanza for deletion, use the splunk-configuration-file-list and splunk-configuration-stanza-list commands. This command is potentially harmful as it irreversibly deletes a stanza from a .conf file.
+    name: splunk-configuration-stanza-delete
   - description: Query Splunk to retrieve a list of sample alerts by alert type. Used for mapping fetched incidents through the Get Schema option.
     name: get-mapping-fields
     arguments: []
@@ -983,7 +1130,7 @@ script:
     - contextPath: Splunk.Investigation.risk_object_type
       description: The list of risk object types for a finding, finding group, or investigation.
       type: Unknown
-  dockerimage: demisto/splunksdk-py3:1.0.0.8936013
+  dockerimage: demisto/splunksdk-py3:1.0.0.10133006
   isfetch: true
   ismappable: true
   isremotesyncin: true

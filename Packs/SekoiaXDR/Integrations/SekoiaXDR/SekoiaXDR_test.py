@@ -727,6 +727,36 @@ def test_fetch_incidents_with_same_time(client, requests_mock):
     assert len(results[1]) == 2
 
 
+def test_fetch_incidents_with_all_events_uses_now_as_latest_time(client, requests_mock, mocker):
+    """When fetching with all events, the event search upper bound must be "now".
+
+    Regression test: a window capped at the alert's last_seen_at could miss events whose
+    timestamp is slightly later (or indexed with a small delay), producing alerts without events.
+    """
+    # Isolate the integration context so the cached (pending) incidents do not leak to other tests
+    mocker.patch.object(SekoiaXDR, "get_integration_context", return_value={})
+    mocker.patch.object(SekoiaXDR, "set_integration_context")
+
+    mock_alerts = util_load_json("test_data/SekoiaXDR_get_alerts.json")
+    requests_mock.get(MOCK_URL + "/v1/sic/alerts", json=mock_alerts)
+
+    query_job = util_load_json("test_data/SekoiaXDR_query_events.json")
+    post_mock = requests_mock.post(MOCK_URL + "/v1/sic/conf/events/search/jobs", json=query_job)
+
+    # Keep the search job pending so the alerts are cached (no event retrieval needed for this test)
+    status_pending = util_load_json("test_data/SekoiaXDR_query_events_status_in_progress.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/conf/events/search/jobs/df904d2e-2c57-488f",
+        json=status_pending,
+    )
+
+    last_run = {"last_fetch": 1574065501}
+    SekoiaXDR.fetch_incidents(client, 100, last_run, None, None, None, None, "Fetch With All Events", None, None, None)
+
+    assert post_mock.called
+    assert post_mock.last_request.json()["latest_time"] == "now"
+
+
 """ TEST BACKWARD COMPATIBILITY - url_sufix vs url_suffix """
 
 
@@ -1208,3 +1238,27 @@ def test_get_modified_remote_data_includes_cached(client, requests_mock, mocker)
     assert cached_alert_id in result.modified_incident_ids
     # Should also include the ones from API response
     assert len(result.modified_incident_ids) >= 3  # 1 cached + 2 from API
+
+
+def test_http_request_applies_retry_defaults(client, mocker):
+    """The Client should inject retry defaults into every _http_request call."""
+    super_request = mocker.patch.object(SekoiaXDR.BaseClient, "_http_request", return_value={})
+
+    client.get_alert(alert_uuid="ALERT-ID")
+
+    _, kwargs = super_request.call_args
+    assert kwargs["retries"] == SekoiaXDR.API_RETRIES
+    assert kwargs["status_list_to_retry"] == SekoiaXDR.API_STATUS_LIST_TO_RETRY
+    assert kwargs["backoff_factor"] == SekoiaXDR.API_BACKOFF_FACTOR
+
+
+def test_http_request_preserves_explicit_retry_args(client, mocker):
+    """Explicit retry arguments passed by a caller must take precedence over defaults."""
+    super_request = mocker.patch.object(SekoiaXDR.BaseClient, "_http_request", return_value="ok")
+
+    client._http_request(method="GET", url_suffix="/v1/auth/validate", retries=0)
+
+    _, kwargs = super_request.call_args
+    assert kwargs["retries"] == 0
+    assert kwargs["status_list_to_retry"] == SekoiaXDR.API_STATUS_LIST_TO_RETRY
+    assert kwargs["backoff_factor"] == SekoiaXDR.API_BACKOFF_FACTOR
