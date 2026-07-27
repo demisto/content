@@ -5299,8 +5299,6 @@ def fetch_detections_by_product_type(
         last_run=current_fetch_info, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
 
-    # With look_back, last_run stores a grown limit (base + already-seen ids) so overlapping
-    # re-queries still return new incidents past the duplicates. Used for the API call and dedup.
     fetch_limit = current_fetch_info.get("limit") or base_fetch_limit
 
     # Build the base product/type filter clauses.
