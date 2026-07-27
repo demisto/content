@@ -1,0 +1,483 @@
+id: Panorays Finding - Triage and Response
+version: -1
+name: Panorays Finding - Triage and Response
+description: |-
+  Triages a Panorays "Self Company" finding incident end-to-end without depending on any specific external ITSM tool.
+
+  Flow:
+  1. Checks for an existing open incident on the same Panorays Finding ID and closes duplicates.
+  2. Branches on finding severity.
+     - Low / Informational: auto-closed, no action required.
+     - Medium: a Cortex XSOAR task is created for an analyst to review.
+     - Critical / High: a notification is sent (via whatever mail/chat integration implementing the generic
+       send-notification command is enabled) and a remediation task with an SLA is created natively in Cortex XSOAR.
+  3. Optionally routes Critical/High findings to an external ticketing system, controlled entirely by the
+     CreateExternalTicket input - if left false (default), remediation is tracked with native Cortex XSOAR tasks only.
+  4. Reminds the analyst to update the finding status back in Panorays once resolved (a future
+     panorays-finding-update command can automate this step).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0be978ad-7b37-4b50-89f5-9d4e66c44568
+    type: start
+    task:
+      id: 0be978ad-7b37-4b50-89f5-9d4e66c44568
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+
+  "1":
+    id: "1"
+    taskid: b9d1f172-1cce-4d1e-841f-b1ca35a0eb28
+    type: regular
+    task:
+      id: b9d1f172-1cce-4d1e-841f-b1ca35a0eb28
+      version: -1
+      name: Search for existing open incidents on this Finding ID
+      description: Looks for another open "Panorays Finding" incident already tracking this same finding.
+      script: Builtin|||getIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      query:
+        simple: type:"Panorays Finding" and status:1 and panoraysfindingid:${incident.panoraysfindingid} and -id:${incident.id}
+      size:
+        simple: "1"
+    continueonerror: true
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+
+  "2":
+    id: "2"
+    taskid: 82c18da9-78e5-4d8b-9106-ced25bf4ee49
+    type: condition
+    task:
+      id: 82c18da9-78e5-4d8b-9106-ced25bf4ee49
+      version: -1
+      name: Is this a duplicate finding?
+      description: Checks whether another open incident is already tracking this same Panorays Finding ID.
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    nexttasks:
+      "yes":
+      - "3"
+      '#default#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+
+  "3":
+    id: "3"
+    taskid: f1835878-2c87-444d-ae81-b523f21b8b90
+    type: regular
+    task:
+      id: f1835878-2c87-444d-ae81-b523f21b8b90
+      version: -1
+      name: Close as duplicate
+      description: Closes this incident as a duplicate of the already-open incident tracking the same finding.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        simple: Duplicate
+      closeNotes:
+        simple: Auto-closed by playbook - duplicate of an already-open incident for Panorays Finding ID ${incident.panoraysfindingid}.
+    nexttasks:
+      '#none#': []
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 560
+        }
+      }
+
+  "4":
+    id: "4"
+    taskid: e34fecdf-e3ce-4852-bcea-3a449b683492
+    type: condition
+    task:
+      id: e34fecdf-e3ce-4852-bcea-3a449b683492
+      version: -1
+      name: Severity triage
+      description: Branches the remediation path based on the Panorays Finding Severity field.
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+    - label: "Critical"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.panoraysfindingseverity
+            iscontext: true
+          right:
+            value:
+              simple: Critical
+          ignorecase: true
+    - label: "High"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.panoraysfindingseverity
+            iscontext: true
+          right:
+            value:
+              simple: High
+          ignorecase: true
+    - label: "Medium"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.panoraysfindingseverity
+            iscontext: true
+          right:
+            value:
+              simple: Medium
+          ignorecase: true
+    nexttasks:
+      "Critical":
+      - "12"
+      "High":
+      - "12"
+      "Medium":
+      - "8"
+      '#default#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+
+  "12":
+    id: "12"
+    taskid: 3a294aed-fb89-4635-a8fc-94701fe3463f
+    type: condition
+    task:
+      id: 3a294aed-fb89-4635-a8fc-94701fe3463f
+      version: -1
+      name: Notification target configured?
+      description: >-
+        Only attempts send-notification if a NotificationTarget was actually provided. Prevents a hard stop
+        when no mail/chat integration implementing the generic send-notification command is enabled - which is
+        the default state for a fresh install.
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.NotificationTarget
+            iscontext: true
+    nexttasks:
+      "yes":
+      - "5"
+      '#default#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 630
+        }
+      }
+
+  "5":
+    id: "5"
+    taskid: 0a6a9842-87e9-4484-92ac-1291d69c4823
+    type: regular
+    task:
+      id: 0a6a9842-87e9-4484-92ac-1291d69c4823
+      version: -1
+      name: Notify security team (Critical/High)
+      description: >-
+        Sends a notification via the generic send-notification command, so this works with whichever mail or
+        chat integration (e.g. Gmail, EWS, MS Teams, Slack) is enabled - no specific product is required. If no
+        such integration is enabled, this task fails gracefully and the playbook continues.
+      script: '|||send-notification'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      to:
+        simple: ${inputs.NotificationTarget}
+      message:
+        simple: >-
+          Critical/High Panorays finding on ${incident.panoraysfindingassetname}: ${incident.panoraysfindingfindingtext}
+          (Finding ID ${incident.panoraysfindingid}, Category ${incident.panoraysfindingcategory}). Incident #${incident.id}.
+    continueonerror: true
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 740
+        }
+      }
+
+  "6":
+    id: "6"
+    taskid: 5ead9626-f7d6-4c44-bffb-a15a05ead466
+    type: regular
+    task:
+      id: 5ead9626-f7d6-4c44-bffb-a15a05ead466
+      version: -1
+      name: 'Manual task: remediate Critical/High finding'
+      description: >-
+        Investigate and remediate this finding. The incident is the system of record - no external ticket is
+        required. Mark this task complete once remediation is underway or finished.
+      type: regular
+      iscommand: false
+      brand: ""
+    sla:
+      minutes: 240
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 910
+        }
+      }
+
+  "7":
+    id: "7"
+    taskid: 63c10ff0-91d7-45e4-8539-281a9fafbdff
+    type: regular
+    task:
+      id: 63c10ff0-91d7-45e4-8539-281a9fafbdff
+      version: -1
+      name: Auto-close (Low/Informational)
+      description: No action required for low/informational severity findings.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+      closeNotes:
+        simple: Auto-closed by playbook - low/informational severity, no remediation required.
+    nexttasks:
+      '#none#': []
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 740
+        }
+      }
+
+  "8":
+    id: "8"
+    taskid: 9e7d5241-d1a2-48dc-9dc7-fbb02399bd32
+    type: regular
+    task:
+      id: 9e7d5241-d1a2-48dc-9dc7-fbb02399bd32
+      version: -1
+      name: 'Manual task: review Medium finding'
+      description: >-
+        Review this medium-severity finding and decide whether it needs remediation, can be risk-accepted, or is
+        a false positive. Mark this task complete once reviewed.
+      type: regular
+      iscommand: false
+      brand: ""
+    sla:
+      minutes: 4320
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+
+  "9":
+    id: "9"
+    taskid: 420f69b1-e059-4213-8b03-e22c2b51bce5
+    type: condition
+    task:
+      id: 420f69b1-e059-4213-8b03-e22c2b51bce5
+      version: -1
+      name: Route to external ticketing system?
+      description: Controlled by the CreateExternalTicket input. Defaults to false - remediation stays native to Cortex XSOAR.
+      type: condition
+      iscommand: false
+      brand: ""
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.CreateExternalTicket
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    nexttasks:
+      "yes":
+      - "10"
+      '#default#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1080
+        }
+      }
+
+  "10":
+    id: "10"
+    taskid: 326d055b-e70b-46c3-9e0f-95945abd1ec5
+    type: regular
+    task:
+      id: 326d055b-e70b-46c3-9e0f-95945abd1ec5
+      version: -1
+      name: 'CUSTOMIZE: create ticket in external ITSM'
+      description: >-
+        Placeholder task. This pack intentionally does not assume a specific ticketing product. If
+        CreateExternalTicket is set to true, replace this task with a command/sub-playbook for your own
+        ITSM (e.g. servicenow-create-ticket, jira-create-issue) before enabling it in production.
+      type: regular
+      iscommand: false
+      brand: ""
+    continueonerror: true
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 1250
+        }
+      }
+
+  "11":
+    id: "11"
+    taskid: 0b93c75d-8e48-4213-bd98-e494864e4dfe
+    type: regular
+    task:
+      id: 0b93c75d-8e48-4213-bd98-e494864e4dfe
+      version: -1
+      name: 'Reminder: update finding status in Panorays'
+      description: >-
+        Once this finding is resolved, update its status back in the Panorays platform so it stays in sync.
+        This is a manual step until a panorays-finding-update command is added to the integration.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#': []
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1250
+        }
+      }
+
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1350,
+        "width": 1150,
+        "x": -150,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: NotificationTarget
+  value:
+    simple: ""
+  required: false
+  description: >-
+    Recipient for Critical/High severity notifications (email address, Slack/Teams channel, or user - whichever
+    matches the notification integration you have enabled). Leave empty to skip notification and rely on the
+    manual remediation task alone.
+  playbookInputQuery:
+- key: CreateExternalTicket
+  value:
+    simple: "false"
+  required: false
+  description: >-
+    Set to "true" to route Critical/High findings to an external ticketing system (after you customize the
+    placeholder task). Defaults to "false", which keeps remediation entirely inside native Cortex XSOAR tasks.
+  playbookInputQuery:
+outputs: []
+fromversion: 6.10.0
+tests:
+- No tests

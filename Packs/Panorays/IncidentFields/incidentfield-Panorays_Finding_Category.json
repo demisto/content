@@ -4,11 +4,10 @@
     "group": 0,
     "id": "incident_panoraysfindingcategory",
     "name": "Panorays Finding Category",
-    "associatedTypes": ["Panorays Finding"],
+    "associatedTypes": [
+        "Panorays Finding"
+    ],
     "associatedToAll": false,
     "type": "shortText",
-    "content": true,
-    "unsearchable": true,
-    "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.0.0"
 }
