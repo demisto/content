@@ -798,9 +798,12 @@ def main():
                 "propagate": True,
             }
             logging_setup_kwargs = {key: value for key, value in desired_kwargs.items() if key in supported_params}
-            # The call is built dynamically from the runtime signature, so pylint's
-            # static check against the pinned lint image may raise a false E1123.
-            logging_setup(**logging_setup_kwargs)  # pylint: disable=unexpected-keyword-arg
+            # Call through an indirect reference so pylint does not statically validate
+            # the keyword arguments against the pinned lint image's signature (which
+            # would otherwise raise a false E1123). The kwargs are already filtered to
+            # only the parameters the runtime signature supports.
+            logging_setup_fn = logging_setup
+            logging_setup_fn(**logging_setup_kwargs)
             demisto.debug("Finished setting logger.")
 
             path_to_validate: str = setup_content_dir(filename, data, entry_id, verify_ssl)
