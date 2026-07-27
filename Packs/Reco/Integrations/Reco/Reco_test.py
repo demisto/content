@@ -628,6 +628,19 @@ def test_change_alert_status(requests_mock, reco_client: RecoClient) -> None:
     assert res == {}
 
 
+def test_change_alert_status_posture_status(requests_mock, reco_client: RecoClient) -> None:
+    """The status enum also covers posture-check statuses like ALERT_STATUS_RISK_MITIGATED."""
+    alert_id = uuid.uuid1()
+    status = "ALERT_STATUS_RISK_MITIGATED"
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/policy-subsystem/alert-inbox/{str(alert_id)}/status/{status}",
+        json={},
+        status_code=200,
+    )
+    res = reco_client.change_alert_status(alert_id=str(alert_id), status=status)
+    assert res == {}
+
+
 def test_get_alert_summary(requests_mock, reco_client: RecoClient) -> None:
     alert_id = uuid.uuid1()
     requests_mock.get(

@@ -367,7 +367,7 @@ Update the status of a Reco alert.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Alert ID. | Required |
-| status | New status. Possible values: `ALERT_STATUS_NEW`, `ALERT_STATUS_IN_PROGRESS`, `ALERT_STATUS_CLOSED`. | Required |
+| status | New status. Possible values: `ALERT_STATUS_NEW`, `ALERT_STATUS_IN_PROGRESS`, `ALERT_STATUS_CLOSED`, `ALERT_STATUS_PREVIEW`, `ALERT_STATUS_TO_REVIEW`, `ALERT_STATUS_PASSED`, `ALERT_STATUS_RISK_ACCEPTED`, `ALERT_STATUS_RISK_MITIGATED`, `ALERT_STATUS_NA`, `ALERT_STATUS_NA_NEW`, `ALERT_STATUS_NA_NO_AD`, `ALERT_STATUS_NOT_APPLICABLE`. | Required |
 
 ### reco-get-user-context-by-email-address
 

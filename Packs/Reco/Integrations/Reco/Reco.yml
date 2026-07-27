@@ -387,7 +387,7 @@ script:
     - description: alert id to get.
       name: alert_id
       required: true
-    - description: status to set the alert to (e.g. "ALERT_STATUS_NEW", "ALERT_STATUS_IN_PROGRESS", "ALERT_STATUS_CLOSED").
+    - description: status to set the alert to.
       name: status
       required: true
       auto: PREDEFINED
@@ -395,6 +395,15 @@ script:
       - ALERT_STATUS_NEW
       - ALERT_STATUS_IN_PROGRESS
       - ALERT_STATUS_CLOSED
+      - ALERT_STATUS_PREVIEW
+      - ALERT_STATUS_TO_REVIEW
+      - ALERT_STATUS_PASSED
+      - ALERT_STATUS_RISK_ACCEPTED
+      - ALERT_STATUS_RISK_MITIGATED
+      - ALERT_STATUS_NA
+      - ALERT_STATUS_NA_NEW
+      - ALERT_STATUS_NA_NO_AD
+      - ALERT_STATUS_NOT_APPLICABLE
     description: update alert status in Reco.
     name: reco-change-alert-status
   - arguments:
