@@ -49,6 +49,8 @@ The permissions required to use this integration depends on which operations you
 
 Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch** entity, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
 
+Mirroring is only available for Elasticsearch Security Alerts and Cases.
+
 ### Fetch
 
 The default fetch behavior. Configure the **Index to fetch incidents from**, **Query String**, and/or **Raw Query** fields to fetch generic Elasticsearch documents as incidents.

@@ -3289,7 +3289,9 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
     """
     last_run = demisto.getLastRun()
     last_fetch_str = last_run.get("case_time") or FETCH_TIME
-    last_fetch_dt = dateparser.parse(last_fetch_str)
+    last_fetch_dt = dateparser.parse(last_fetch_str, settings={"RETURN_AS_TIMEZONE_AWARE": True})
+    if last_fetch_dt and last_fetch_dt.tzinfo is None:
+        last_fetch_dt = last_fetch_dt.replace(tzinfo=UTC)
 
     params: Dict[str, Any] = {"perPage": FETCH_SIZE, "sortField": "updatedAt", "sortOrder": "asc"}
 
@@ -3321,7 +3323,9 @@ def fetch_cases(proxies) -> List[Dict[str, Any]]:
     for case in all_cases:
         updated_at_str = case.get("updated_at") or case.get("created_at", "")
         try:
-            updated_at = dateparser.parse(updated_at_str)
+            updated_at = dateparser.parse(updated_at_str, settings={"RETURN_AS_TIMEZONE_AWARE": True})
+            if updated_at and updated_at.tzinfo is None:
+                updated_at = updated_at.replace(tzinfo=UTC)
         except Exception:
             updated_at = None
 
