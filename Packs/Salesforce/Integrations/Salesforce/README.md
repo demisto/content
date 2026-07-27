@@ -1769,14 +1769,14 @@ Returns organization details from the case number.
 | ID | string | The unique ID of the case. |
 | Name | string | Name of the account. Required. Label is Account Name. Maximum size is 255 characters. If the account has a record type of Person Account, this value is the concatenation of the FirstName, MiddleName, LastName, and Suffix of the associated person contact. You cannot modify this value. |
 
-### salesforce-delete-file
+### salesforce-file-delete
 
 ***
 Soft-deletes a file (ContentDocument), moving it to the Recycle Bin and cascading to its versions. Recoverable for 15 days.
 
 #### Base Command
 
-`salesforce-delete-file`
+`salesforce-file-delete`
 
 #### Input
 
@@ -1795,14 +1795,14 @@ Soft-deletes a file (ContentDocument), moving it to the Recycle Bin and cascadin
 | Salesforce.Remediation.Id | string | The record ID acted on. |
 | Salesforce.Remediation.Status | string | The result status of the remediation action. |
 
-### salesforce-archive-knowledge-article
+### salesforce-knowledge-article-archive
 
 ***
 Archives a Knowledge article (non-destructive). Sets PublishStatus to Archived via the standard archiveKnowledgeArticles action. Reversible to Draft/Online.
 
 #### Base Command
 
-`salesforce-archive-knowledge-article`
+`salesforce-knowledge-article-archive`
 
 #### Input
 
@@ -1821,14 +1821,14 @@ Archives a Knowledge article (non-destructive). Sets PublishStatus to Archived v
 | Salesforce.Remediation.Id | string | The record ID acted on. |
 | Salesforce.Remediation.Status | string | The result status of the remediation action. |
 
-### salesforce-list-file-public-links
+### salesforce-file-public-link-list
 
 ***
-Lists all public links (ContentDistribution records) for a given ContentDocument ID. Use the returned ContentDistribution IDs with salesforce-remove-file-public-links to remove each link.
+Lists all public links (ContentDistribution records) for a given ContentDocument ID. Use the returned ContentDistribution IDs with salesforce-file-public-link-remove to remove each link.
 
 #### Base Command
 
-`salesforce-list-file-public-links`
+`salesforce-file-public-link-list`
 
 #### Input
 
@@ -1840,26 +1840,26 @@ Lists all public links (ContentDistribution records) for a given ContentDocument
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Salesforce.ContentDistribution.Id | string | The ContentDistribution record ID (use with salesforce-remove-file-public-links). |
+| Salesforce.ContentDistribution.Id | string | The ContentDistribution record ID (use with salesforce-file-public-link-remove). |
 | Salesforce.ContentDistribution.ContentDocumentId | string | The parent ContentDocument ID. |
 | Salesforce.ContentDistribution.Name | string | The name of the content distribution. |
 | Salesforce.ContentDistribution.PublicUrl | string | The public distribution URL. |
 
-### salesforce-remove-file-public-links
+### salesforce-file-public-link-remove
 
 ***
 Removes a file public link by deleting a single ContentDistribution record. The external link is severed immediately and irreversibly.
 
 #### Base Command
 
-`salesforce-remove-file-public-links`
+`salesforce-file-public-link-remove`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The Salesforce sObject type. Defaults to ContentDistribution. | Optional |
-| id | The ContentDistribution record ID to delete (severs the public link). Use salesforce-list-file-public-links to obtain distribution IDs for a ContentDocument. | Required |
+| id | The ContentDistribution record ID to delete (severs the public link). Use salesforce-file-public-link-list to obtain distribution IDs for a ContentDocument. | Required |
 | ignore_not_found | If true, a 404/NOT_FOUND response is treated as success. Defaults to true. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -1871,14 +1871,14 @@ Removes a file public link by deleting a single ContentDistribution record. The 
 | Salesforce.Remediation.Id | string | The ContentDistribution record ID acted on. |
 | Salesforce.Remediation.Status | string | The result status of the remediation action. |
 
-### salesforce-draft-knowledge-article
+### salesforce-knowledge-article-draft-create
 
 ***
 Moves a published Knowledge article to Draft using the standard createDraftFromOnlineKnowledgeArticle action. By default (unpublish=true) the online version is removed from public visibility and an editable draft is created.
 
 #### Base Command
 
-`salesforce-draft-knowledge-article`
+`salesforce-knowledge-article-draft-create`
 
 #### Input
 

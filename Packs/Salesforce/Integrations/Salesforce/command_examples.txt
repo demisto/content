@@ -1,5 +1,5 @@
-!salesforce-delete-file id=069dn000007LEQYAA4
-!salesforce-list-file-public-links id=069dn000007LEQYAA4
-!salesforce-remove-file-public-links id=05Tdn000004C1a2EAC
-!salesforce-archive-knowledge-article id=kA0dn0000004CabCAE
-!salesforce-draft-knowledge-article id=kA0dn0000004CabCAE unpublish=true
+!salesforce-file-delete id=069dn000007LEQYAA4
+!salesforce-file-public-link-list id=069dn000007LEQYAA4
+!salesforce-file-public-link-remove id=05Tdn000004C1a2EAC
+!salesforce-knowledge-article-archive id=kA0dn0000004CabCAE
+!salesforce-knowledge-article-draft-create id=kA0dn0000004CabCAE unpublish=true

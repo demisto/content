@@ -514,7 +514,7 @@ function remediationEntry(action, objectType, id, status) {
         ContentsFormat: formats.json,
         ReadableContentsFormat: formats.markdown,
         HumanReadable: tableToMarkdown('Salesforce Remediation - ' + action, outputs),
-        EntryContext: { 'Salesforce.Remediation(val.Id == obj.Id)': outputs }
+        EntryContext: { 'SalesForce.Remediation(val.Id == obj.Id)': outputs }
     };
 }
 
@@ -545,7 +545,9 @@ function listFilePublicLinks(args) {
     if (!id) {
         throw "The 'id' argument is required.";
     }
-    var records = queryObjects(['Id', 'ContentDocumentId', 'Name', 'DistributionPublicUrl'], 'ContentDistribution', "ContentDocumentId='" + id + "'").records || [];
+    // Escape single quotes to avoid breaking out of the SOQL string literal.
+    var safeId = String(id).replace(/'/g, "\\'");
+    var records = queryObjects(['Id', 'ContentDocumentId', 'Name', 'DistributionPublicUrl'], 'ContentDistribution', "ContentDocumentId='" + safeId + "'").records || [];
     var distributions = [];
     for (var i = 0; i < records.length; i++) {
         distributions.push({
@@ -561,7 +563,7 @@ function listFilePublicLinks(args) {
         ContentsFormat: formats.json,
         ReadableContentsFormat: formats.markdown,
         HumanReadable: tableToMarkdown('Salesforce File Public Links (ContentDistribution) for ' + id, distributions),
-        EntryContext: { 'Salesforce.ContentDistribution(val.Id == obj.Id)': distributions }
+        EntryContext: { 'SalesForce.ContentDistribution(val.Id == obj.Id)': distributions }
     };
 }
 
@@ -678,7 +680,7 @@ function draftKnowledgeArticle(args) {
                     ContentsFormat: formats.json,
                     ReadableContentsFormat: formats.markdown,
                     HumanReadable: tableToMarkdown('Salesforce Remediation - Draft Knowledge Article', idemOutputs),
-                    EntryContext: { 'Salesforce.Remediation(val.Id == obj.Id)': idemOutputs }
+                    EntryContext: { 'SalesForce.Remediation(val.Id == obj.Id)': idemOutputs }
                 };
             }
             throw 'Failed to draft Knowledge article ' + id + ': ' + extractActionError(first);
@@ -700,7 +702,7 @@ function draftKnowledgeArticle(args) {
         ContentsFormat: formats.json,
         ReadableContentsFormat: formats.markdown,
         HumanReadable: tableToMarkdown('Salesforce Remediation - Draft Knowledge Article', outputs),
-        EntryContext: { 'Salesforce.Remediation(val.Id == obj.Id)': outputs }
+        EntryContext: { 'SalesForce.Remediation(val.Id == obj.Id)': outputs }
     };
 }
 
@@ -1145,15 +1147,15 @@ switch (command) {
         return closeCase(args.oid, args.caseNumber);
     case 'salesforce-delete-case':
         return deleteCase(args.oid, args.caseNumber);
-    case 'salesforce-delete-file':
+    case 'salesforce-file-delete':
         return deleteFile(args);
-    case 'salesforce-archive-knowledge-article':
+    case 'salesforce-knowledge-article-archive':
         return archiveKnowledgeArticle(args);
-    case 'salesforce-list-file-public-links':
+    case 'salesforce-file-public-link-list':
         return listFilePublicLinks(args);
-    case 'salesforce-remove-file-public-links':
+    case 'salesforce-file-public-link-remove':
         return removeFilePublicLinks(args);
-    case 'salesforce-draft-knowledge-article':
+    case 'salesforce-knowledge-article-draft-create':
         return draftKnowledgeArticle(args);
     case 'salesforce-push-comment':
         return pushComment(args.oid, args.text, args.link);
