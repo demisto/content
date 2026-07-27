@@ -1,0 +1,42 @@
+{
+    "name": "Binalyze AIR Extended",
+    "description": "Integrate with Binalyze AIR to orchestrate incident response and forensic operations directly from Cortex XSOAR.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ceyhun CAMLI",
+    "url": "https://docs.binalyze.com/",
+    "email": "ceyhun@ceyhuncamli.com",
+    "created": "2026-06-08T12:27:51Z",
+    "categories": [
+        "Forensics & Malware Analysis",
+        "Endpoint"
+    ],
+    "tags": [
+        "forensics",
+        "incident-response",
+        "endpoint",
+        "triage",
+        "automation"
+    ],
+    "useCases": [
+        "Incident Response",
+        "Malware Investigation",
+        "Endpoint Forensics",
+        "Threat Hunting"
+    ],
+    "keywords": [
+        "Binalyze",
+        "Binalyze AIR",
+        "DFIR",
+        "forensics",
+        "acquisition",
+        "triage",
+        "YARA",
+        "Sigma",
+        "osquery",
+        "isolation"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ]
+}
