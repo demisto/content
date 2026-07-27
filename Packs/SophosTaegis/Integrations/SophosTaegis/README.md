@@ -135,7 +135,7 @@ Push assignee and/or case status to Taegis. Run from an incident; use the form t
 | --- | --- | --- |
 | id | Investigation ID (optional; defaults to current incident dbotMirrorId). | Optional | 
 | tenant_id | Tenant ID (optional; from incident if not set). | Optional | 
-| assignee_id | Assignee to set in Taegis. Use @customer, @secureworks, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee. | Optional | 
+| assignee_id | Assignee to set in Taegis. Use @customer, @secureworks, @sophos, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee. | Optional | 
 | status | Open status to set in Taegis (ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED). Optional when run from layout button; if omitted, uses current incident status. Possible values are: ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED. | Optional | 
 
 #### Context Output

@@ -3,11 +3,11 @@ Field display script for Taegis XDR Assignee (taegisxdrassignee).
 
 Reads options from the incident field taegisxdrassigneeoptionsdata (JSON with
 options list and label_to_id map), which is set by the TaegisXDRv3 integration
-when incidents are fetched. Falls back to @customer and @secureworks when
+when incidents are fetched. Falls back to @customer, @secureworks, and @sophos when
 the data is not present (e.g. incident created manually or before this feature).
 """
 
-STATIC_OPTIONS = ["@customer", "@secureworks"]
+STATIC_OPTIONS = ["@customer", "@secureworks", "@sophos"]
 FIELD_KEY = "taegisxdrassigneeoptionsdata"
 try:
     _STRING_TYPES = (str, unicode)  # Python 2

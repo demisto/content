@@ -7,12 +7,12 @@ taegisxdrassignee (fallback) to distinguish handoff vs take-from-queue vs custom
 take-ownership.
 
 Assignment behaviors (Taegis Requested Status):
-- Requested = @secureworks -> AWAITING_ACTION (queue for Secureworks).
+- Requested = @secureworks/@sophos -> AWAITING_ACTION (queue for Sophos).
 - Requested = @customer and current != @customer -> AWAITING_ACTION (queue for customer).
-- Current = @customer (by ID or display "customer") and Requested != @secureworks -> ACTIVE
+- Current = @customer (by ID or display "customer") and Requested != @secureworks and Requested != @sophos -> ACTIVE
   (customer taking ownership: user selects a specific user or @customer).
 - Requested = specific user, Current = specific user (UUID in Taegis) -> AWAITING_ACTION (handoff).
-- Otherwise (e.g. current = @secureworks, requested = specific user) -> ACTIVE (take from queue).
+- Otherwise (e.g. current = @secureworks or @sophos + specific user) -> ACTIVE (take from queue).
 """
 
 STATUS_AWAITING_ACTION = "AWAITING_ACTION"
@@ -23,7 +23,7 @@ CURRENT_ASSIGNEE_FIELD = "taegisxdrassignee"
 CURRENT_ASSIGNEE_ID_FIELD = "taegisxdrassigneeid"
 PLACEHOLDER_ASSIGNEE = "Select Assignee"
 
-AWAITING_ACTION_ASSIGNEES = {"@secureworks", "@customer"}
+AWAITING_ACTION_ASSIGNEES = {"@secureworks", "@sophos", "@customer"}
 # Non-empty assignee ID that is not the symbolic queue -> real user in Taegis
 _ID_SPECIFIC_MARKER = "__specific_user__"
 
@@ -86,7 +86,7 @@ def _get_field(incident, field_name):
 def _normalize_assignee_id_raw(assignee_id_str):
     """
     Classify Taegis assignee ID from API / incident field.
-    Returns '@customer', '@secureworks', _ID_SPECIFIC_MARKER, or None (empty - use display fallback).
+    Returns '@customer', '@secureworks', '@sophos', _ID_SPECIFIC_MARKER, or None (empty - use display fallback).
     """
     if assignee_id_str is None or not str(assignee_id_str).strip():
         return None
@@ -96,12 +96,14 @@ def _normalize_assignee_id_raw(assignee_id_str):
         return "@customer"
     if tl == "@secureworks" or tl == "secureworks":
         return "@secureworks"
+    if tl == "@sophos" or tl == "sophos":
+        return "@sophos"
     return _ID_SPECIFIC_MARKER
 
 
 def _resolve_current_assignee_queue(incident):
     """
-    Return '@customer', '@secureworks', or None.
+    Return '@customer', '@secureworks', '@sophos', or None.
     None means current assignee is a specific user (UUID) or unknown - use handoff vs take logic.
     Primary: taegisxdrassigneeid. Fallback: taegisxdrassignee display (e.g. 'customer' without @).
     """
@@ -118,11 +120,13 @@ def _resolve_current_assignee_queue(incident):
         return "@customer"
     if dl in ("secureworks", "@secureworks"):
         return "@secureworks"
+    if dl in ("sophos", "@sophos"):
+        return "@sophos"
     return None
 
 
 def _is_specific_user(assignee):
-    """True if request target is a specific person (dropdown label), not @secureworks or @customer."""
+    """True if request target is a specific person (dropdown label), not @secureworks, @sophos, or @customer."""
     if not assignee or not str(assignee).strip():
         return False
     return str(assignee).lower().strip() not in AWAITING_ACTION_ASSIGNEES
@@ -144,7 +148,7 @@ def main():
     current_queue = _resolve_current_assignee_queue(incident)
     new_normalized = new_assignee.lower().strip()
 
-    if current_queue == "@customer" and new_normalized != "@secureworks":
+    if current_queue == "@customer" and new_normalized not in ("@secureworks", "@sophos"):
         # Customer queue: user picks a named user or @customer (not handing to Sophos) -> ACTIVE
         new_status = STATUS_ACTIVE
     elif new_normalized in AWAITING_ACTION_ASSIGNEES:

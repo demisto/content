@@ -84,7 +84,7 @@ configuration:
   name: fetch_investigations_exclude_assignee_emails
   required: false
   type: 0
-  defaultvalue: 'Sophos, Secureworks, @secureworks'
+  defaultvalue: 'Sophos, Secureworks, @secureworks, @sophos'
   additionalinfo: 'EXCLUSION LIST: Comma-separated assignee emails, display names, or assignee IDs (e.g. user@domain.com, Sophos, auth0|xxx). Investigations assigned to any matching assignee are EXCLUDED (no XSOAR incident). Match is by email, name, or assignee_id. If a team name (e.g. Sophos) does not match, check debug logs for assignee_id and add that ID to this list. Leave empty to fetch all.'
 - display: Incident Mirroring Direction
   name: mirror_direction
@@ -588,7 +588,7 @@ script:
         }
     
         if not _is_valid_assignee_id(variables["input"]["assigneeId"]):
-            raise ValueError("assigneeId MUST be '@secureworks', '@customer', 'auth0|...', or a tenant user UUID")
+            raise ValueError("assigneeId MUST be '@secureworks', '@customer', '@sophos', 'auth0|...', or a tenant user UUID")
         if variables["input"]["priority"] and not 0 < variables["input"]["priority"] < 5:
             raise ValueError("Priority must be between 1-4")
         if variables["input"]["status"] not in INVESTIGATION_STATUSES:
@@ -1575,8 +1575,8 @@ script:
         if fetch_type == "investigations" and len(incidents) > 0:
             try:
                 tenant_users = _fetch_all_tenant_users(client, page_size=100)
-                options = ["@customer", "@secureworks"]
-                label_to_id = {"@customer": "@customer", "@secureworks": "@secureworks"}
+                options = ["@customer", "@secureworks", "@sophos"]
+                label_to_id = {"@customer": "@customer", "@secureworks": "@secureworks", "@sophos": "@sophos"}
                 for u in tenant_users:
                     uid = u.get("id")
                     if not uid:
@@ -2210,11 +2210,11 @@ script:
     
     
     def _is_valid_assignee_id(value: str) -> bool:
-        """True if value is @secureworks, @customer, auth0|..., or a UUID (tenant user id)."""
+        """True if value is @secureworks, @customer, @sophos, auth0|..., or a UUID (tenant user id)."""
         if not value or not isinstance(value, str):
             return False
         s = value.strip()
-        if s in ("@secureworks", "@customer"):
+        if s in ("@secureworks", "@customer", "@sophos"):
             return True
         if s.startswith("auth0|"):
             return True
@@ -2589,7 +2589,7 @@ script:
                 continue
 
             if field == "assigneeId" and not _is_valid_assignee_id(args["assigneeId"]):
-                raise ValueError("assigneeId MUST be '@secureworks', '@customer', 'auth0|...', or a tenant user UUID")
+                raise ValueError("assigneeId MUST be '@secureworks', '@customer', '@sophos', 'auth0|...', or a tenant user UUID")
             if field == "priority" and not 0 < int(args.get("priority", 0)) < 5:
                 raise ValueError("Priority must be between 1-4")
             if field == "status" and args.get("status") not in INVESTIGATION_STATUSES:
@@ -3025,7 +3025,7 @@ script:
             assignee = {}
         # When assignee_id is @customer or @secureworks, always use it for assignee/display (API may still return previous user in assignee object).
         # Otherwise when assignee_id is set but assignee.name is missing, derive name from assignee_id.
-        if assignee_id and str(assignee_id).strip().lower() in ("@customer", "@secureworks"):
+        if assignee_id and str(assignee_id).strip().lower() in ("@customer", "@secureworks", "@sophos"):
             assignee = {"name": str(assignee_id).strip(), "id": assignee_id}
         elif assignee_id and not (assignee.get("name") or assignee.get("displayName")):
             assignee = {"name": str(assignee_id).strip(), "id": assignee_id}
@@ -3052,7 +3052,7 @@ script:
         # the current assignee (avoid showing stale name when assignee was changed in Taegis after XSOAR push).
         try:
             assignee_id_str = str(assignee_id).strip() if assignee_id else ""
-            if assignee_id_str.lower() in ("@customer", "@secureworks"):
+            if assignee_id_str.lower() in ("@customer", "@secureworks", "@sophos"):
                 mirrored_data["taegisxdrassignee"] = assignee_id_str
             else:
                 display_value = ""
@@ -3089,7 +3089,7 @@ script:
                 mirrored_data["taegisxdrassignee"] = display_value or assignee_id_str or ""
         except (ValueError, TypeError, KeyError):
             assignee_id_str_ex = str(assignee_id).strip() if assignee_id else ""
-            if assignee_id_str_ex and assignee_id_str_ex.lower() not in ("@customer", "@secureworks"):
+            if assignee_id_str_ex and assignee_id_str_ex.lower() not in ("@customer", "@secureworks", "@sophos"):
                 try:
                     user_dict = _fetch_tenant_user_by_id(client, assignee_id_str_ex)
                     if user_dict:
@@ -3101,8 +3101,8 @@ script:
             else:
                 mirrored_data["taegisxdrassignee"] = assignee_id_str_ex or (assignee_id or "")
 
-        # Force assignee display to match assignee_id when @customer or @secureworks (handles API returning
-        # "customer"/"secureworks" without @, or mapper/merge overwriting taegisxdrassignee with stale assignee name).
+        # Force assignee display to match assignee_id when @customer, @secureworks, or @sophos (handles API returning
+        # "customer"/"secureworks"/"sophos" without @, or mapper/merge overwriting taegisxdrassignee with stale assignee name).
         aid_final = str(assignee_id).strip() if assignee_id else ""
         if aid_final:
             a_lower = aid_final.lower()
@@ -3114,6 +3114,18 @@ script:
                 mirrored_data["assignee_id"] = "@secureworks"
                 mirrored_data["taegisxdrassignee"] = "@secureworks"
                 mirrored_data["assignee"] = {"name": "@secureworks", "id": "@secureworks"}
+            elif a_lower in ("@sophos", "sophos"):
+                mirrored_data["assignee_id"] = "@sophos"
+                mirrored_data["taegisxdrassignee"] = "@sophos"
+                mirrored_data["assignee"] = {"name": "@sophos", "id": "@sophos"}
+            elif a_lower in ("@sophos", "sophos"):
+                mirrored_data["assignee_id"] = "@sophos"
+                mirrored_data["taegisxdrassignee"] = "@sophos"
+                mirrored_data["assignee"] = {"name": "@sophos", "id": "@sophos"}
+            elif a_lower in ("@sophos", "sophos"):
+                mirrored_data["assignee_id"] = "@sophos"
+                mirrored_data["taegisxdrassignee"] = "@sophos"
+                mirrored_data["assignee"] = {"name": "@sophos", "id": "@sophos"}
 
         # Ensure assignee object matches assignee_id and resolved display name so the incoming mapper
         # does not overwrite taegisxdrassignee with stale assignee.name from the API (e.g. API returns
@@ -3470,7 +3482,7 @@ script:
         if not label_to_id and assignee:
             try:
                 tenant_users = _fetch_all_tenant_users(client, page_size=100)
-                label_to_id = {"@customer": "@customer", "@secureworks": "@secureworks"}
+                label_to_id = {"@customer": "@customer", "@secureworks": "@secureworks", "@sophos": "@sophos"}
                 for u in tenant_users:
                     uid = u.get("id")
                     if uid:
@@ -3487,6 +3499,8 @@ script:
                 return "@customer"
             if s == "secureworks":
                 return "@secureworks"
+            if s == "sophos":
+                return "@sophos"
             return val
         assignee_id = _resolve_assignee(assignee) if assignee else None
         update_args = {"id": investigation_id}
@@ -3785,7 +3799,7 @@ script:
         if not label_to_id:
             try:
                 tenant_users = _fetch_all_tenant_users(client, page_size=100)
-                label_to_id = {"@customer": "@customer", "@secureworks": "@secureworks"}
+                label_to_id = {"@customer": "@customer", "@secureworks": "@secureworks", "@sophos": "@sophos"}
                 for u in tenant_users:
                     uid = u.get("id")
                     if uid:
@@ -3799,12 +3813,14 @@ script:
                 return label_or_id
             if label_to_id and label_or_id in label_to_id:
                 return label_to_id[label_or_id]
-            # Normalize friendly "customer"/"secureworks" (no @) to API form "@customer"/"@secureworks"
+            # Normalize friendly "customer"/"secureworks"/"sophos" (no @) to API form "@customer"/"@secureworks"/"@sophos"
             s = str(label_or_id).strip().lower()
             if s == "customer":
                 return "@customer"
             if s == "secureworks":
                 return "@secureworks"
+            if s == "sophos":
+                return "@sophos"
             return label_or_id
 
         # Helper: fetch current assignee from Taegis so we can avoid overwriting when XSOAR has stale data (e.g. after user changed assignee in Taegis).
@@ -4766,7 +4782,7 @@ script:
     - description: Tenant ID (optional; from incident if not set)
       name: tenant_id
       required: false
-    - description: Assignee to set in Taegis. Use @customer, @secureworks, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee.
+    - description: Assignee to set in Taegis. Use @customer, @secureworks, @sophos, or assignee display name (e.g. Sam Johnson). Optional when run from layout button; if omitted, uses current incident assignee.
       name: assignee_id
       required: false
     - description: Open status to set in Taegis (ACTIVE, AWAITING_ACTION, OPEN, SUSPENDED). Optional when run from layout button; if omitted, uses current incident status.

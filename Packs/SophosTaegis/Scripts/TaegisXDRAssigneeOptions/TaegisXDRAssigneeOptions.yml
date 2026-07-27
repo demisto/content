@@ -8,7 +8,7 @@ subtype: python3
 dockerimage: demisto/python3:3.12.13.10325753
 tags: [field-display]
 enabled: true
-comment: "Field display script: returns Assignee options (@customer, @secureworks + tenant users from taegisxdrassigneeoptionsdata)."
+comment: "Field display script: returns Assignee options (@customer, @secureworks, @sophos + tenant users from taegisxdrassigneeoptionsdata)."
 runas: DBotRole
 runonce: false
 fromversion: 6.0.0

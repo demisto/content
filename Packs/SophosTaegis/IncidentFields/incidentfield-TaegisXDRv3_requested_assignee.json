@@ -21,7 +21,7 @@
   "ownerOnly": false,
   "placeholder": "",
   "template": "",
-  "description": "Select assignee to push to Taegis. Same options as current assignee (tenant users + @customer, @secureworks). Selecting an assignee auto-sets Taegis Requested Status (ACTIVE vs AWAITING_ACTION). Use with \"Update Assignee & Status in Taegis XDR\" button.",
+  "description": "Select assignee to push to Taegis. Same options as current assignee (tenant users + @customer, @secureworks, @sophos). Selecting an assignee auto-sets Taegis Requested Status (ACTIVE vs AWAITING_ACTION). Use with \"Update Assignee & Status in Taegis XDR\" button.",
   "cliName": "taegisrequestedassignee",
   "type": "singleSelect",
   "orgType": "singleSelect",
@@ -35,7 +35,8 @@
   "isReadOnly": false,
   "selectValues": [
     "@customer",
-    "@secureworks"
+    "@secureworks",
+    "@sophos"
   ],
   "autoCompleteTags": null,
   "validationRegex": "",

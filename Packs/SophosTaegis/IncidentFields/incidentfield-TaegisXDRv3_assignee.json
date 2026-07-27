@@ -35,7 +35,8 @@
   "isReadOnly": true,
   "selectValues": [
     "@customer",
-    "@secureworks"
+    "@secureworks",
+    "@sophos"
   ],
   "autoCompleteTags": null,
   "validationRegex": "",
