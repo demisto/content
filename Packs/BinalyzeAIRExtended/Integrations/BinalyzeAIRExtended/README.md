@@ -3,7 +3,6 @@ This integration was integrated and tested with version xx of Binalyze AIR Exten
 
 ## Configure Binalyze AIR Extended in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Binalyze AIR Server URL | The Binalyze AIR Server URL, for example <https://air.example.com>. | True |
@@ -29,17 +28,17 @@ Isolate an endpoint or release endpoint isolation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The endpoint hostname. | Required | 
-| organization_id | The organization ID of the endpoint. | Required | 
-| isolation | The isolation action to perform. Possible values are: enable, disable. | Required | 
+| hostname | The endpoint hostname. | Required |
+| organization_id | The organization ID of the endpoint. | Required |
+| isolation | The isolation action to perform. Possible values are: enable, disable. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Isolate.Result.ID | string | The isolation task ID. | 
-| BinalyzeAIR.Isolate.Result.Name | string | The isolation task name. | 
-| BinalyzeAIR.Isolate.Result.OrganizationID | number | The endpoint organization ID. | 
+| BinalyzeAIR.Isolate.Result.ID | string | The isolation task ID. |
+| BinalyzeAIR.Isolate.Result.Name | string | The isolation task name. |
+| BinalyzeAIR.Isolate.Result.OrganizationID | number | The endpoint organization ID. |
 
 ### binalyze-air-acquire
 
@@ -54,18 +53,18 @@ Start forensic evidence acquisition from an endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The endpoint hostname. | Required | 
-| profile | The acquisition profile name. Possible values are: compromise-assessment, browsing-history, event-logs, memory-ram-pagefile, quick, full. | Required | 
-| case_id | The Binalyze AIR case ID. | Required | 
-| organization_id | The organization ID of the endpoint. | Required | 
+| hostname | The endpoint hostname. | Required |
+| profile | The acquisition profile name. Possible values are: compromise-assessment, browsing-history, event-logs, memory-ram-pagefile, quick, full. | Required |
+| case_id | The Binalyze AIR case ID. | Required |
+| organization_id | The organization ID of the endpoint. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Acquire.Result.ID | string | The acquisition task ID. | 
-| BinalyzeAIR.Acquire.Result.Name | string | The acquisition task name. | 
-| BinalyzeAIR.Acquire.Result.OrganizationID | number | The endpoint organization ID. | 
+| BinalyzeAIR.Acquire.Result.ID | string | The acquisition task ID. |
+| BinalyzeAIR.Acquire.Result.Name | string | The acquisition task name. |
+| BinalyzeAIR.Acquire.Result.OrganizationID | number | The endpoint organization ID. |
 
 ### binalyze-air-create-case
 
@@ -80,18 +79,18 @@ Create a Binalyze AIR case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The case name. | Required | 
-| organization_id | The organization ID. | Required | 
-| owner_user_id | The owner user ID. | Required | 
-| visibility | The case visibility. Possible values are: public-to-organization, private-to-users, Public to Organization, Private to Users. | Required | 
-| assigned_user_ids | A comma-separated list of assigned user IDs. | Optional | 
+| name | The case name. | Required |
+| organization_id | The organization ID. | Required |
+| owner_user_id | The owner user ID. | Required |
+| visibility | The case visibility. Possible values are: public-to-organization, private-to-users, Public to Organization, Private to Users. | Required |
+| assigned_user_ids | A comma-separated list of assigned user IDs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Case.Result.ID | string | The case ID. | 
-| BinalyzeAIR.Case.Result.Name | string | The case name. | 
+| BinalyzeAIR.Case.Result.ID | string | The case ID. |
+| BinalyzeAIR.Case.Result.Name | string | The case name. |
 
 ### binalyze-air-get-case
 
@@ -106,13 +105,13 @@ Get a Binalyze AIR case by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID. | Required | 
+| case_id | The case ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Case | unknown | The case details. | 
+| BinalyzeAIR.Case | unknown | The case details. |
 
 ### binalyze-air-list-cases
 
@@ -127,17 +126,17 @@ List Binalyze AIR cases.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The optional case name filter. | Optional | 
-| organization_id | The optional organization ID filter. | Optional | 
-| organization_ids | A comma-separated list of organization IDs. | Optional | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| name | The optional case name filter. | Optional |
+| organization_id | The optional organization ID filter. | Optional |
+| organization_ids | A comma-separated list of organization IDs. | Optional |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Cases | unknown | The case list response. | 
+| BinalyzeAIR.Cases | unknown | The case list response. |
 
 ### binalyze-air-close-case
 
@@ -152,14 +151,14 @@ Close a Binalyze AIR case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID. | Required | 
-| reason | The closure reason. | Optional | 
+| case_id | The case ID. | Required |
+| reason | The closure reason. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.CloseCase | unknown | The close case response. | 
+| BinalyzeAIR.CloseCase | unknown | The close case response. |
 
 ### binalyze-air-get-case-tasks
 
@@ -174,16 +173,16 @@ Get tasks associated with a Binalyze AIR case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID. | Required | 
-| task_id | The optional task ID filter. | Optional | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| case_id | The case ID. | Required |
+| task_id | The optional task ID filter. | Optional |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.CaseTask | unknown | The case task response. | 
+| BinalyzeAIR.CaseTask | unknown | The case task response. |
 
 ### binalyze-air-get-case-endpoints
 
@@ -198,15 +197,15 @@ Get endpoints associated with a Binalyze AIR case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID. | Required | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| case_id | The case ID. | Required |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.CaseEndpoint | unknown | The case endpoint response. | 
+| BinalyzeAIR.CaseEndpoint | unknown | The case endpoint response. |
 
 ### binalyze-air-get-case-activities
 
@@ -221,15 +220,15 @@ Get activity history associated with a Binalyze AIR case.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID. | Required | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| case_id | The case ID. | Required |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.CaseActivity | unknown | The case activity response. | 
+| BinalyzeAIR.CaseActivity | unknown | The case activity response. |
 
 ### binalyze-air-list-assets
 
@@ -244,20 +243,20 @@ List Binalyze AIR endpoints/assets with optional filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The optional endpoint hostname filter. | Optional | 
-| organization_id | The optional organization ID filter. | Optional | 
-| organization_ids | A comma-separated list of organization IDs. | Optional | 
-| online_status | A comma-separated list of values. | Optional | 
-| isolation_status | A comma-separated list of values. | Optional | 
-| platform | A comma-separated list of values. | Optional | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| hostname | The optional endpoint hostname filter. | Optional |
+| organization_id | The optional organization ID filter. | Optional |
+| organization_ids | A comma-separated list of organization IDs. | Optional |
+| online_status | A comma-separated list of values. | Optional |
+| isolation_status | A comma-separated list of values. | Optional |
+| platform | A comma-separated list of values. | Optional |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Asset | unknown | The asset list response. | 
+| BinalyzeAIR.Asset | unknown | The asset list response. |
 
 ### binalyze-air-get-asset
 
@@ -272,13 +271,13 @@ Get a Binalyze AIR endpoint/asset by asset ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | The asset ID. | Required | 
+| asset_id | The asset ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Asset | unknown | The asset details. | 
+| BinalyzeAIR.Asset | unknown | The asset details. |
 
 ### binalyze-air-get-asset-by-hostname
 
@@ -293,14 +292,14 @@ Find a Binalyze AIR endpoint/asset by hostname and organization ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The endpoint hostname. | Required | 
-| organization_id | The organization ID. | Required | 
+| hostname | The endpoint hostname. | Required |
+| organization_id | The organization ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Asset.Result | unknown | The first matching asset. | 
+| BinalyzeAIR.Asset.Result | unknown | The first matching asset. |
 
 ### binalyze-air-get-asset-tasks
 
@@ -315,15 +314,15 @@ Get tasks associated with an endpoint/asset.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_id | The asset ID. | Required | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| asset_id | The asset ID. | Required |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.AssetTask | unknown | The asset task response. | 
+| BinalyzeAIR.AssetTask | unknown | The asset task response. |
 
 ### binalyze-air-get-task
 
@@ -338,16 +337,16 @@ Get task details and normalized terminal status flags for polling.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The task ID. | Required | 
+| task_id | The task ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Task.Result | unknown | The task details. | 
-| BinalyzeAIR.Task.Status | string | The normalized task status. | 
-| BinalyzeAIR.Task.IsDone | boolean | Whether the task is in a terminal state. | 
-| BinalyzeAIR.Task.IsSuccess | boolean | Whether the task completed successfully. | 
+| BinalyzeAIR.Task.Result | unknown | The task details. |
+| BinalyzeAIR.Task.Status | string | The normalized task status. |
+| BinalyzeAIR.Task.IsDone | boolean | Whether the task is in a terminal state. |
+| BinalyzeAIR.Task.IsSuccess | boolean | Whether the task completed successfully. |
 
 ### binalyze-air-list-tasks
 
@@ -362,19 +361,19 @@ List Binalyze AIR tasks.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The optional case ID filter. | Optional | 
-| organization_id | The optional organization ID filter. | Optional | 
-| organization_ids | A comma-separated list of organization IDs. | Optional | 
-| status | The optional status filter. | Optional | 
-| task_type | The optional task type filter. | Optional | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| case_id | The optional case ID filter. | Optional |
+| organization_id | The optional organization ID filter. | Optional |
+| organization_ids | A comma-separated list of organization IDs. | Optional |
+| status | The optional status filter. | Optional |
+| task_type | The optional task type filter. | Optional |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Task | unknown | The task list response. | 
+| BinalyzeAIR.Task | unknown | The task list response. |
 
 ### binalyze-air-get-task-assignments
 
@@ -389,15 +388,15 @@ Get task assignment details for a Binalyze AIR task.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The task ID. | Required | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| task_id | The task ID. | Required |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.TaskAssignment | unknown | The task assignment response. | 
+| BinalyzeAIR.TaskAssignment | unknown | The task assignment response. |
 
 ### binalyze-air-create-triage-rule
 
@@ -412,17 +411,17 @@ Create a YARA, Sigma, or osquery triage rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | The rule description. | Optional | 
-| rule | The rule content. | Required | 
-| engine | The rule engine. Possible values are: yara, sigma, osquery. | Required | 
-| search_in | The search scope. Possible values are: system, memory, both, event-records. | Optional | 
-| organization_ids | A comma-separated list of organization IDs. | Optional | 
+| description | The rule description. | Optional |
+| rule | The rule content. | Required |
+| engine | The rule engine. Possible values are: yara, sigma, osquery. | Required |
+| search_in | The search scope. Possible values are: system, memory, both, event-records. | Optional |
+| organization_ids | A comma-separated list of organization IDs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.TriageRule | unknown | The created triage rule response. | 
+| BinalyzeAIR.TriageRule | unknown | The created triage rule response. |
 
 ### binalyze-air-update-triage-rule
 
@@ -437,17 +436,17 @@ Update an existing triage rule.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | The triage rule ID. | Required | 
-| description | The rule description. | Optional | 
-| rule | The rule content. | Optional | 
-| search_in | The search scope. Possible values are: system, memory, both, event-records. | Optional | 
-| organization_ids | A comma-separated list of organization IDs. | Optional | 
+| rule_id | The triage rule ID. | Required |
+| description | The rule description. | Optional |
+| rule | The rule content. | Optional |
+| search_in | The search scope. Possible values are: system, memory, both, event-records. | Optional |
+| organization_ids | A comma-separated list of organization IDs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.TriageRule | unknown | The updated triage rule response. | 
+| BinalyzeAIR.TriageRule | unknown | The updated triage rule response. |
 
 ### binalyze-air-validate-triage-rule
 
@@ -462,15 +461,15 @@ Validate a YARA, Sigma, or osquery triage rule before assignment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule | The rule content. | Required | 
-| engine | The rule engine. Possible values are: yara, sigma, osquery. | Required | 
+| rule | The rule content. | Required |
+| engine | The rule engine. Possible values are: yara, sigma, osquery. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.TriageRuleValidation.Result | unknown | The validation result payload. | 
-| BinalyzeAIR.TriageRuleValidation.Success | boolean | Whether validation succeeded. | 
+| BinalyzeAIR.TriageRuleValidation.Result | unknown | The validation result payload. |
+| BinalyzeAIR.TriageRuleValidation.Success | boolean | Whether validation succeeded. |
 
 ### binalyze-air-list-triage-rules
 
@@ -485,19 +484,19 @@ List triage rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| organization_id | The optional organization ID filter. | Optional | 
-| organization_ids | A comma-separated list of organization IDs. | Optional | 
-| engine | The optional rule engine filter. Possible values are: yara, sigma, osquery. | Optional | 
-| search_in | The optional search scope filter. Possible values are: system, memory, both, event-records. | Optional | 
-| description | The optional description filter. | Optional | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| organization_id | The optional organization ID filter. | Optional |
+| organization_ids | A comma-separated list of organization IDs. | Optional |
+| engine | The optional rule engine filter. Possible values are: yara, sigma, osquery. | Optional |
+| search_in | The optional search scope filter. Possible values are: system, memory, both, event-records. | Optional |
+| description | The optional description filter. | Optional |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.TriageRule | unknown | The triage rule list response. | 
+| BinalyzeAIR.TriageRule | unknown | The triage rule list response. |
 
 ### binalyze-air-get-triage-rule
 
@@ -512,13 +511,13 @@ Get a triage rule by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | The triage rule ID. | Required | 
+| rule_id | The triage rule ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.TriageRule | unknown | The triage rule details. | 
+| BinalyzeAIR.TriageRule | unknown | The triage rule details. |
 
 ### binalyze-air-delete-triage-rule
 
@@ -533,13 +532,13 @@ Delete a triage rule by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | The triage rule ID. | Required | 
+| rule_id | The triage rule ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.DeleteTriageRule | unknown | The delete triage rule response. | 
+| BinalyzeAIR.DeleteTriageRule | unknown | The delete triage rule response. |
 
 ### binalyze-air-assign-triage-task
 
@@ -554,31 +553,31 @@ Assign one or more triage rules to endpoints by filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID. | Required | 
-| triage_rule_ids | A comma-separated list of triage rule IDs. | Required | 
-| organization_id | The organization ID. | Required | 
-| task_config_choice | The task configuration mode. Possible values are: use-policy, use-custom-options. Default is use-policy. | Optional | 
-| task_config_cpu_limit | The CPU limit. Minimum 1, maximum 100. Default is 8. | Optional | 
-| hostname | The endpoint hostname filter. | Optional | 
-| mitre_attack | Whether to enable MITRE ATT&amp;CK mapping. Possible values are: True, False. Default is False. | Optional | 
-| included_endpoint_ids | A comma-separated list of included endpoint IDs. | Optional | 
-| excluded_endpoint_ids | A comma-separated list of excluded endpoint IDs. | Optional | 
-| group_id | The optional endpoint group ID. | Optional | 
-| group_full_path | The optional endpoint group full path. | Optional | 
-| isolation_status | A comma-separated list of isolation status values. | Optional | 
-| platform | A comma-separated list of platform values. | Optional | 
-| issue | The optional issue filter. | Optional | 
-| online_status | A comma-separated list of online status values. | Optional | 
-| tags | A comma-separated list of tags. | Optional | 
-| version | The optional agent version filter. | Optional | 
-| policy | The optional policy filter. | Optional | 
-| when | The scheduler value. Default is now. | Optional | 
+| case_id | The case ID. | Required |
+| triage_rule_ids | A comma-separated list of triage rule IDs. | Required |
+| organization_id | The organization ID. | Required |
+| task_config_choice | The task configuration mode. Possible values are: use-policy, use-custom-options. Default is use-policy. | Optional |
+| task_config_cpu_limit | The CPU limit. Minimum 1, maximum 100. Default is 8. | Optional |
+| hostname | The endpoint hostname filter. | Optional |
+| mitre_attack | Whether to enable MITRE ATT&amp;CK mapping. Possible values are: True, False. Default is False. | Optional |
+| included_endpoint_ids | A comma-separated list of included endpoint IDs. | Optional |
+| excluded_endpoint_ids | A comma-separated list of excluded endpoint IDs. | Optional |
+| group_id | The optional endpoint group ID. | Optional |
+| group_full_path | The optional endpoint group full path. | Optional |
+| isolation_status | A comma-separated list of isolation status values. | Optional |
+| platform | A comma-separated list of platform values. | Optional |
+| issue | The optional issue filter. | Optional |
+| online_status | A comma-separated list of online status values. | Optional |
+| tags | A comma-separated list of tags. | Optional |
+| version | The optional agent version filter. | Optional |
+| policy | The optional policy filter. | Optional |
+| when | The scheduler value. Default is now. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.TriageTask | unknown | The assign triage task response. | 
+| BinalyzeAIR.TriageTask | unknown | The assign triage task response. |
 
 ### binalyze-air-list-acquisition-profiles
 
@@ -593,17 +592,17 @@ List acquisition profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The optional profile name filter. | Optional | 
-| organization_id | The optional organization ID filter. | Optional | 
-| organization_ids | A comma-separated list of organization IDs. | Optional | 
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| name | The optional profile name filter. | Optional |
+| organization_id | The optional organization ID filter. | Optional |
+| organization_ids | A comma-separated list of organization IDs. | Optional |
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.AcquisitionProfile | unknown | The acquisition profile list response. | 
+| BinalyzeAIR.AcquisitionProfile | unknown | The acquisition profile list response. |
 
 ### binalyze-air-get-acquisition-profile
 
@@ -618,13 +617,13 @@ Get acquisition profile details by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_id | The acquisition profile ID. | Required | 
+| profile_id | The acquisition profile ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.AcquisitionProfile | unknown | The acquisition profile details. | 
+| BinalyzeAIR.AcquisitionProfile | unknown | The acquisition profile details. |
 
 ### binalyze-air-list-repositories
 
@@ -639,14 +638,14 @@ List Binalyze AIR repositories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | The page number from which to start pagination. Default is 1. | Optional | 
-| limit | The maximum number of results to return. Default is 50. | Optional | 
+| page | The page number from which to start pagination. Default is 1. | Optional |
+| limit | The maximum number of results to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Repository | unknown | The repository list response. | 
+| BinalyzeAIR.Repository | unknown | The repository list response. |
 
 ### binalyze-air-get-repository
 
@@ -661,13 +660,13 @@ Get repository details by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository_id | The repository ID. | Required | 
+| repository_id | The repository ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BinalyzeAIR.Repository | unknown | The repository details. | 
+| BinalyzeAIR.Repository | unknown | The repository details. |
 
 ### binalyze-air-download-file
 
@@ -682,11 +681,11 @@ Download a file from the Binalyze AIR InterACT library into the Cortex XSOAR War
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_name | The file name to download from the InterACT library. | Required | 
+| file_name | The file name to download from the InterACT library. | Required |
 
 #### Context Output
 
-There is no context output for this command.
+There is no context output for this command
 ---
 
 ## Command Examples
