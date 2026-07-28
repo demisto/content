@@ -28,7 +28,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* azure-disk-update
+* azure-compute-disk-update
 * azure-storage-account-update
 * core-get-asset-details
 * setIssueStatus

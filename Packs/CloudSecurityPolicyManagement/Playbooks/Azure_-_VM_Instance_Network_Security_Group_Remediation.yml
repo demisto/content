@@ -39,7 +39,7 @@ tasks:
       version: -1
       name: Retrieve Rules from NSG Associated to Public IP
       description: Gets all security rules in a network security group.
-      script: Azure|||azure-nsg-security-rules-list
+      script: Azure|||azure-vn-security-rules-list
       type: regular
       iscommand: true
       brand: Azure
@@ -188,12 +188,12 @@ tasks:
         simple: existingAllowRule
       value:
         complex:
-          root: Azure.NSGRule
+          root: Azure.VirtualNetworks.SecurityRules
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.direction
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.direction
                 iscontext: true
               right:
                 value:
@@ -201,7 +201,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.access
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.access
                 iscontext: true
               right:
                 value:
@@ -209,7 +209,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -217,7 +217,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -226,7 +226,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -235,7 +235,7 @@ tasks:
           - - operator: notContainsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.properties.destinationAddressPrefix
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
                 iscontext: true
               right:
                 value:
@@ -260,7 +260,7 @@ tasks:
       version: -1
       name: Update existing remediation allow rule
       description: Updates a security rule. If one does not exist, it will be created.
-      script: Azure|||azure-nsg-security-rule-update
+      script: Azure|||azure-vn-security-rule-update
       type: regular
       iscommand: true
       brand: Azure
@@ -341,12 +341,12 @@ tasks:
           left:
             value:
               complex:
-                root: Azure.NSGRule
+                root: Azure.VirtualNetworks.SecurityRules
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.access
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.access
                       iscontext: true
                     right:
                       value:
@@ -354,7 +354,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -362,7 +362,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -371,7 +371,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -380,7 +380,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
                       iscontext: true
                     right:
                       value:
@@ -389,7 +389,7 @@ tasks:
                   - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefixes
                       iscontext: true
                     right:
                       value:
@@ -410,12 +410,12 @@ tasks:
           left:
             value:
               complex:
-                root: Azure.NSGRule
+                root: Azure.VirtualNetworks.SecurityRules
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.access
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.access
                       iscontext: true
                     right:
                       value:
@@ -423,7 +423,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -431,7 +431,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -440,7 +440,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -449,7 +449,7 @@ tasks:
                 - - operator: notContainsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
                       iscontext: true
                     right:
                       value:
@@ -458,7 +458,7 @@ tasks:
                   - operator: notContainsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefixes
                       iscontext: true
                     right:
                       value:
@@ -520,12 +520,12 @@ tasks:
         simple: existingDenyRule
       value:
         complex:
-          root: Azure.NSGRule
+          root: Azure.VirtualNetworks.SecurityRules
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.direction
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.direction
                 iscontext: true
               right:
                 value:
@@ -533,7 +533,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.access
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.access
                 iscontext: true
               right:
                 value:
@@ -541,7 +541,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -549,7 +549,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -558,7 +558,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -567,7 +567,7 @@ tasks:
           - - operator: notContainsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.properties.destinationAddressPrefix
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
                 iscontext: true
               right:
                 value:
@@ -592,7 +592,7 @@ tasks:
       version: -1
       name: Update existing remediation deny rule
       description: Updates a security rule. If one does not exist, it will be created.
-      script: Azure|||azure-nsg-security-rule-update
+      script: Azure|||azure-vn-security-rule-update
       type: regular
       iscommand: true
       brand: Azure
@@ -673,12 +673,12 @@ tasks:
           left:
             value:
               complex:
-                root: Azure.NSGRule
+                root: Azure.VirtualNetworks.SecurityRules
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.access
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.access
                       iscontext: true
                     right:
                       value:
@@ -686,7 +686,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -694,7 +694,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -703,7 +703,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -712,7 +712,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
                       iscontext: true
                     right:
                       value:
@@ -721,7 +721,7 @@ tasks:
                   - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefixes
                       iscontext: true
                     right:
                       value:
@@ -742,12 +742,12 @@ tasks:
           left:
             value:
               complex:
-                root: Azure.NSGRule
+                root: Azure.VirtualNetworks.SecurityRules
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.access
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.access
                       iscontext: true
                     right:
                       value:
@@ -755,7 +755,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -763,7 +763,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -772,7 +772,7 @@ tasks:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.name
+                        simple: Azure.VirtualNetworks.SecurityRules.name
                       iscontext: true
                     right:
                       value:
@@ -781,7 +781,7 @@ tasks:
                 - - operator: notContainsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefix
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
                       iscontext: true
                     right:
                       value:
@@ -790,7 +790,7 @@ tasks:
                   - operator: notContainsGeneral
                     left:
                       value:
-                        simple: Azure.NSGRule.properties.destinationAddressPrefixes
+                        simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefixes
                       iscontext: true
                     right:
                       value:
@@ -840,7 +840,7 @@ tasks:
       version: -1
       name: Add allow rule for port ${inputs.RemotePort} and ${inputs.RemoteProtocol}
       description: Creates a security rule.
-      script: Azure|||azure-nsg-security-rule-create
+      script: Azure|||azure-vn-security-rule-create
       type: regular
       iscommand: true
       brand: Azure
@@ -848,7 +848,7 @@ tasks:
       '#none#':
       - '63'
     scriptarguments:
-      action:
+      access:
         simple: Allow
       destination:
         complex:
@@ -925,7 +925,7 @@ tasks:
       version: -1
       name: Add block rule for port ${inputs.RemotePort}
       description: Creates a security rule.
-      script: Azure|||azure-nsg-security-rule-create
+      script: Azure|||azure-vn-security-rule-create
       type: regular
       iscommand: true
       brand: Azure
@@ -933,7 +933,7 @@ tasks:
       '#none#':
       - '65'
     scriptarguments:
-      action:
+      access:
         simple: Deny
       destination:
         complex:
@@ -1102,7 +1102,7 @@ tasks:
       version: -1
       name: Get Public IP Details
       description: Gets the properties of a given public IP address.
-      script: Azure|||azure-vm-public-ip-details-get
+      script: Azure|||azure-vn-public-ip-address-get
       type: regular
       iscommand: true
       brand: Azure
@@ -1160,12 +1160,12 @@ tasks:
         simple: ExposedPublicIpID
       value:
         complex:
-          root: Azure.Network.IPConfigurations
+          root: Azure.VirtualNetworks.PublicIPAddresses
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.Network.IPConfigurations.properties.ipAddress
+                  simple: Azure.VirtualNetworks.PublicIPAddresses.properties.ipAddress
                 iscontext: true
               right:
                 value:
@@ -1191,7 +1191,7 @@ tasks:
       version: -1
       name: Get Azure NIC Details
       description: Gets the properties of a given network interface.
-      script: Azure|||azure-vm-network-interface-details-get
+      script: Azure|||azure-vn-network-interface-get
       type: regular
       iscommand: true
       brand: Azure
@@ -1337,12 +1337,12 @@ tasks:
         simple: NSGName
       value:
         complex:
-          root: Azure.Network.Interfaces
+          root: Azure.VirtualNetworks.NetworkInterfaces
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.Network.Interfaces.id
+                  simple: Azure.VirtualNetworks.NetworkInterfaces.id
                 iscontext: true
               right:
                 value:
@@ -1389,12 +1389,12 @@ tasks:
         simple: ExposedNICPrivateIPs
       value:
         complex:
-          root: Azure.Network.Interfaces.properties
+          root: Azure.VirtualNetworks.NetworkInterfaces.properties
           filters:
           - - operator: endWith
               left:
                 value:
-                  simple: Azure.Network.Interfaces.properties.networkSecurityGroup.id
+                  simple: Azure.VirtualNetworks.NetworkInterfaces.properties.networkSecurityGroup.id
                 iscontext: true
               right:
                 value:
@@ -1809,12 +1809,12 @@ tasks:
         simple: existingAllowRule
       value:
         complex:
-          root: Azure.NSGRule
+          root: Azure.VirtualNetworks.SecurityRules
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.direction
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.direction
                 iscontext: true
               right:
                 value:
@@ -1822,7 +1822,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.access
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.access
                 iscontext: true
               right:
                 value:
@@ -1830,7 +1830,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -1838,7 +1838,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -1847,16 +1847,25 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
-          - - operator: notContainsGeneral
+          - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.properties.destinationAddressPrefix
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
+                iscontext: true
+              right:
+                value:
+                  simple: ExposedNICPrivateIPs
+                iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefixes
                 iscontext: true
               right:
                 value:
@@ -1893,12 +1902,12 @@ tasks:
         simple: existingDenyRule
       value:
         complex:
-          root: Azure.NSGRule
+          root: Azure.VirtualNetworks.SecurityRules
           filters:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.direction
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.direction
                 iscontext: true
               right:
                 value:
@@ -1906,7 +1915,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: Azure.NSGRule.properties.access
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.access
                 iscontext: true
               right:
                 value:
@@ -1914,7 +1923,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -1922,7 +1931,7 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
@@ -1931,21 +1940,31 @@ tasks:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.name
+                  simple: Azure.VirtualNetworks.SecurityRules.name
                 iscontext: true
               right:
                 value:
                   simple: inputs.RemoteProtocol
                 iscontext: true
-          - - operator: notContainsGeneral
+          - - operator: containsGeneral
               left:
                 value:
-                  simple: Azure.NSGRule.properties.destinationAddressPrefix
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefix
                 iscontext: true
               right:
                 value:
                   simple: ExposedNICPrivateIPs
                 iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: Azure.VirtualNetworks.SecurityRules.properties.destinationAddressPrefixes
+                iscontext: true
+              right:
+                value:
+                  simple: ExposedNICPrivateIPs
+                iscontext: true
+
     separatecontext: false
     continueonerrortype: ''
     view: "{\n  \"position\": {\n    \"x\": 367.5,\n    \"y\": 3285\n  }\n}"
