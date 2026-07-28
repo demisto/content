@@ -963,11 +963,11 @@ def prepare_incidents_from_alerts_data(
         alert["tag_as_list"] = list(tags.keys())
 
         origin = alert.get("reason", {}).get("origin")
-        source = alert.get("source")
-        resource_url = alert.get("resource", {}).get("url")
+        source = alert.get("source") or ""
+        resource_url = (alert.get("resource") or {}).get("url")
         if not resource_url and origin == "searches":
             resource_url = get_resource_url(source, alert.get("resource", {}).get("id"), platform_url)
-        if alert.get("source", "").lower() == "vulnerabilities":
+        if source and source.lower() == "vulnerabilities":
             resource_url = (alert.get("resource") or {}).get("ignite_search_url")
 
         alert["resource"].update({"url": resource_url})
