@@ -2775,7 +2775,7 @@ function NewMailFlowRuleCommand {
     } else {
         @{"$script:INTEGRATION_ENTRY_CONTEXT.MailFlowRules(obj.Guid === val.Guid)" = $parsed_raw_response}
     }
-    $md_columns = $raw_response | Select-Object -Property Name, State, Mode, Priority, IsRuleConfigurationSupported, Comments
+    $md_columns = $raw_response | Select-Object -Property Identity, Name, State, Mode, Priority, IsRuleConfigurationSupported, Comments
     $human_readable = TableToMarkdown $md_columns "Mail flow rule '$($kwargs.name)' was created successfully"
     Write-Output $human_readable, $entry_context, $parsed_raw_response
 }
