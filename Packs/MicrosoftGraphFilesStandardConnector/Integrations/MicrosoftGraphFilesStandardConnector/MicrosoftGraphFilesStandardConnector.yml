@@ -1156,6 +1156,61 @@ script:
     - contextPath: MsGraphFiles.AssignedSensitivityLabel.location
       description: URL returned in the Microsoft Graph Location response header. Microsoft Graph treats assignSensitivityLabel as a long-running operation; poll this URL to track the operation's completion status.
       type: String
+  - arguments:
+    - description: The chat ID hosting the message. Provide this for a chat message. Retrieve chat IDs from the Microsoft Teams client URL or via the Microsoft Graph list chats endpoint. Mutually exclusive with team_id and channel_id.
+      name: chat_id
+    - description: The team ID hosting the channel message. Provide together with channel_id for a channel message. Retrieve team IDs from the Microsoft Teams admin center or via the Microsoft Graph list joinedTeams endpoint.
+      name: team_id
+    - description: The channel ID hosting the message. Provide together with team_id for a channel message. Retrieve channel IDs from the Microsoft Teams client URL or via the Microsoft Graph list channels endpoint.
+      name: channel_id
+    - description: The parent message ID when targeting a channel reply. Only supported for channel messages. Retrieve message IDs via the Microsoft Graph list channel messages endpoint.
+      name: parent_message_id
+    - description: The ID of the message to update. Retrieve message IDs via the Microsoft Graph list messages endpoint for the chat or channel.
+      name: message_id
+      required: true
+    - auto: PREDEFINED
+      description: The action taken on the message. One of NoAction, BlockAccess, BlockAccessExternal.
+      name: dlp_action
+      predefined:
+      - NoAction
+      - BlockAccess
+      - BlockAccessExternal
+    - description: The explanatory text shown to the user in the policy tip.
+      name: policy_tip_general_text
+    - auto: PREDEFINED
+      description: The reviewer actions available on the flagged message. One of None, AllowOverride, AllowOverrideWithoutJustification, AllowOverrideWithJustification. When omitted, Microsoft Graph applies its default behavior.
+      name: verdict_details
+      predefined:
+      - None
+      - AllowOverride
+      - AllowOverrideWithoutJustification
+      - AllowOverrideWithJustification
+    - description: The billing model appended as the model query parameter. Provide when the tenant uses a specific Microsoft Graph metered API payment model.
+      name: payment_model
+    description: Applies a data loss prevention policy violation to a Microsoft Teams message, quarantining a chat message, a channel message, or a channel reply. HTTP error responses from Microsoft Graph are surfaced verbatim as a command error.
+    name: msgraph-teams-message-update-policy-violation
+    outputs:
+    - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.messageId
+      description: The ID of the message the policy violation was applied to.
+      type: String
+    - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.chatId
+      description: The ID of the chat hosting the message, when targeting a chat message.
+      type: String
+    - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.teamId
+      description: The ID of the team hosting the message, when targeting a channel message.
+      type: String
+    - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.channelId
+      description: The ID of the channel hosting the message, when targeting a channel message.
+      type: String
+    - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.parentMessageId
+      description: The ID of the parent message, when targeting a channel reply.
+      type: String
+    - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.dlpAction
+      description: The data loss prevention action that was applied to the message.
+      type: String
+    - contextPath: MsGraphFiles.TeamsMessagePolicyViolation.verdictDetails
+      description: The reviewer actions that were made available on the flagged message.
+      type: String
   dockerimage: demisto/crypto:1.0.0.8931184
   script: ''
   subtype: python3
