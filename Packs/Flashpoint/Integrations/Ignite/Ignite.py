@@ -968,7 +968,7 @@ def prepare_incidents_from_alerts_data(
         if not resource_url and origin == "searches":
             resource_url = get_resource_url(source, alert.get("resource", {}).get("id"), platform_url)
         if alert.get("source", "").lower() == "vulnerabilities":
-            resource_url = alert.get("resource", {}).get("ignite_search_url")
+            resource_url = (alert.get("resource") or {}).get("ignite_search_url")
 
         alert["resource"].update({"url": resource_url})
 
