@@ -574,9 +574,9 @@ def test_create_nginx_server_conf_renders_seconds_for_all_five_params(tmp_path: 
             occurrence of any human-readable unit word or original input token
             survives into the rendered conf.
 
-    Note:   the two-tier design NO LONGER emits proxy_cache_lock_timeout /
-            proxy_cache_lock_age (concurrency is controlled by Tier-2 limit_conn,
-            not by a cache lock), so those directives must be ABSENT.
+    Note:   the two-tier design serializes concurrent cold misses on Tier 1 with
+            proxy_cache_lock, so the lock-tuning directives (proxy_cache_lock_timeout
+            / proxy_cache_lock_age) MUST be present and normalized to "<int>s".
     """
     from NGINXApiModule import create_nginx_server_conf
 
@@ -602,9 +602,10 @@ def test_create_nginx_server_conf_renders_seconds_for_all_five_params(tmp_path: 
     # cache_default_ttl = "300" -> 300s
     assert "proxy_cache_valid any 300s;" in conf
 
-    # The cache-lock tuning directives are no longer part of the two-tier design.
-    assert "proxy_cache_lock_timeout" not in conf
-    assert "proxy_cache_lock_age" not in conf
+    # Tier 1 serializes concurrent cold misses with the cache lock; the lock
+    # tuning directives are bound to `timeout` (3600s) and must be normalized.
+    assert "proxy_cache_lock_timeout 3600s;" in conf
+    assert "proxy_cache_lock_age 3600s;" in conf
 
     # Hardening: none of the original unit words / non-normalized tokens may
     # survive into the rendered conf — those are exactly the failure surfaces
@@ -613,16 +614,22 @@ def test_create_nginx_server_conf_renders_seconds_for_all_five_params(tmp_path: 
         assert forbidden not in conf, f"Rendered conf must not contain non-normalized substring {forbidden!r}: {conf}"
 
 
-def test_create_nginx_server_conf_renders_two_tier_fail_fast(tmp_path: Path, mocker):
+def test_create_nginx_server_conf_renders_two_tier_converging(tmp_path: Path, mocker):
     """
     Given:  a default params dict.
     When:   create_nginx_server_conf renders the nginx server config.
-    Then:   the rendered conf implements the TWO-TIER fail-fast design:
+    Then:   the rendered conf implements the TWO-TIER, convergence-guaranteed design:
               * a per-URI limit_conn zone keyed on $request_uri,
-              * Tier 2 rejects concurrent same-URI cold-miss fetches (limit_conn 1
-                + limit_conn_status 429) and does NOT cache,
-              * Tier 1 turns OFF the inherited cache lock so misses fall through to
-                Tier 2 instead of queueing.
+              * Tier 1 ENABLES the cache lock so concurrent cold misses for the same
+                URI wait for a single build and are then served the FRESH result
+                (the list always converges to fresh, never stuck on stale),
+              * Tier 2 keeps a RELAXED limit_conn ceiling (> 1) purely as a
+                last-resort guard and does NOT cache.
+
+    This is the regression guard for XSUP-73706: the previous fail-fast design
+    (`limit_conn ... 1` + `proxy_cache_lock off`) could serve a large,
+    continuously-polled list STALE indefinitely so newly-added indicators never
+    reached the client (e.g. a firewall pulling the EDL).
     """
     from NGINXApiModule import create_nginx_server_conf
 
@@ -634,15 +641,43 @@ def test_create_nginx_server_conf_renders_two_tier_fail_fast(tmp_path: Path, moc
 
     # Per-URI concurrency zone (keyed on the resource, not the client).
     assert "limit_conn_zone $request_uri zone=concurrent_conn_zone:1m;" in conf
-    # Tier 2 fail-fast: one build per URI, extras rejected with 429, no caching.
-    assert "limit_conn concurrent_conn_zone 1;" in conf
+    # Tier 1 must ENABLE the cache lock so concurrent cold misses converge to fresh.
+    assert "proxy_cache_lock on;" in conf
+    # The old fail-fast markers must be gone: Tier 1 must NOT disable the lock,
+    # and Tier 2 must NOT reject the normal single rebuild (limit_conn 1).
+    assert "proxy_cache_lock off;" not in conf
+    assert "limit_conn concurrent_conn_zone 1;" not in conf
+    # Tier 2 keeps a relaxed ceiling as a last-resort guard, and does not cache.
+    assert "limit_conn concurrent_conn_zone 16;" in conf
     assert "limit_conn_status 429;" in conf
     assert "proxy_cache off;" in conf
-    # Tier 1 must DISABLE the inherited cache lock so cold misses reach Tier 2
-    # (the fail-fast limiter) instead of queueing behind proxy_cache_lock.
-    assert "proxy_cache_lock off;" in conf
-    # The queueing lock must NOT be enabled anywhere as a directive.
-    assert "proxy_cache_lock on;" not in conf
+
+
+def test_create_nginx_server_conf_serves_stale_on_429(tmp_path: Path, mocker):
+    """
+    Given:  a default params dict.
+    When:   create_nginx_server_conf renders the nginx server config.
+    Then:   proxy_cache_use_stale includes http_429 so that if the Tier-2
+            concurrency ceiling ever rejects a cold-miss fetch, the last-known-good
+            cached copy is served instead of surfacing a hard 429 to the client.
+
+    Regression guard for XSUP-73706 (Fix 1).
+    """
+    from NGINXApiModule import create_nginx_server_conf
+
+    mocker.patch.object(demisto, "callingContext", return_value={"context": {}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    create_nginx_server_conf(conf_file, 12345, params={})
+    with open(conf_file) as f:
+        conf = f.read()
+
+    # Normalize whitespace so the multi-line directive can be matched simply.
+    normalized = " ".join(conf.split())
+    assert "proxy_cache_use_stale" in normalized
+    stale_clause = normalized.split("proxy_cache_use_stale", 1)[1].split(";", 1)[0]
+    assert "http_429" in stale_clause
+    # The transient 429 itself must still never be cached.
+    assert "proxy_cache_valid 429 0s;" in conf
 
 
 def test_create_nginx_server_conf_never_caches_transient_statuses(tmp_path: Path, mocker):

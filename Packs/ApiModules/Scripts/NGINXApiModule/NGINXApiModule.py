@@ -501,29 +501,33 @@ server {
     proxy_cache_key $scheme$proxy_host$request_uri$extra_cache_key;
     $proxy_set_range_header
     $extra_headers
-# Cache-vs-fetch policy (TWO-TIER, HIT-safe fail-fast on cold MISS)
+# Cache-vs-fetch policy (TWO-TIER, HIT-safe, convergence-guaranteed on cold MISS)
 # ---------------------------------------------------------------------------
-# We want two behaviors that plain `proxy_cache_lock` cannot give together:
-#   * On a TRUE cold MISS (nothing cached to fall back on), concurrent requests
-#     for the SAME URI must FAIL FAST (429) instead of queueing behind a lock.
+# We want these behaviors together:
 #   * On STALE / UPDATING (a cached copy exists but is expired/being refreshed)
 #     clients must be served the STALE copy and must NEVER be rejected.
+#   * On a cold MISS, a single build must run and its result must become the
+#     served copy; concurrent same-URI requests must WAIT for that build and be
+#     served the FRESH result, so the list always CONVERGES to fresh (never
+#     stuck on stale). This is essential for large, continuously-polled lists
+#     (e.g. an EDL pulled by a firewall) whose build can take minutes.
+#   * The upstream must still be protected from a pathological concurrency burst.
 #
-# `limit_conn` is the only mechanism that REJECTS (proxy_cache_lock only WAITS),
-# but it runs in the preaccess phase - before the cache status is known - so
-# applying it on the public cache location would ALSO count cache HITs and could
-# 429 two simultaneous HITs of the same URI. nginx's `proxy_cache` cannot route
-# "only on miss" to a different location within one server, so we use TWO server
-# blocks:
+# nginx's `proxy_cache` cannot route "only on miss" to a different location
+# within one server, so we use TWO server blocks:
 #   Tier 1 = public server on $port : does the cache read. HIT / STALE / UPDATING
 #            are answered here from the cache (see proxy_cache_use_stale +
 #            proxy_cache_background_update) and, on a MISS, proxy_pass to Tier 2.
-#            HIT/STALE/UPDATING never leave Tier 1, so they are never counted and
-#            never rejected.
+#            `proxy_cache_lock on` here SERIALIZES concurrent cold misses for the
+#            same URI: the first builds, the rest wait and are then served the
+#            fresh result (bounded by proxy_cache_lock_age so a stuck build can
+#            never wedge the URI). HIT/STALE/UPDATING never take the lock.
 #   Tier 2 = internal server on localhost:$fetchport : reached ONLY when Tier 1's
 #            cache must populate a new entry (true MISS / expired-with-no-stale).
-#            It carries `limit_conn ... 1`, so the first fetch for a URI proceeds
-#            and every concurrent same-URI fetch is rejected immediately with 429.
+#            It carries a RELAXED `limit_conn` ceiling (well above 1) purely as a
+#            last-resort guard against a burst; if it ever fires, Tier 1's
+#            `proxy_cache_use_stale http_429` serves the last-known-good copy
+#            instead of surfacing a hard 429 to the client.
 
 # Cache validity by status
 proxy_cache_valid 200 301 302 $cache_refresh_rate;
@@ -551,11 +555,18 @@ proxy_cache_revalidate on;
 # Serve stale content in failure/update scenarios. `updating` is what lets a
 # STALE entry be served immediately to every waiting client while a single
 # background refresh runs - so STALE/UPDATING never reach the Tier-2 limiter.
+# `http_429` is included so that if a cold-MISS fetch is ever rejected by the
+# Tier-2 concurrency guard (limit_conn -> 429) or the Tier-2 cache lock, a
+# previously-cached GOOD copy is served instead of surfacing the transient 429
+# to the client. This prevents a slow, continuously-polled list (e.g. a large
+# EDL fetched by a firewall) from ever receiving a hard failure while a single
+# rebuild is in flight.
 proxy_cache_use_stale
     updating
     error
     timeout
     invalid_header
+    http_429
     http_500
     http_502
     http_503
@@ -579,14 +590,23 @@ proxy_cache_background_update on;
     location / {
         proxy_pass http://localhost:$fetchport/;
 
-        # CRITICAL: the base flask-nginx image ENABLES the cache lock in the
-        # http{} block, and that setting is inherited here. While enabled,
-        # concurrent cold-MISS requests for the same URI WAIT for the first
-        # request to populate the cache (then get served HIT) - they never fall
-        # through to Tier 2, so the fail-fast limit_conn never fires. We MUST turn
-        # the inherited lock OFF here so misses proceed to Tier 2 and the 2nd+
-        # concurrent miss is rejected with 429 instead of queued.
-        proxy_cache_lock off;
+        # Cold-MISS convergence (HIT-safe): keep the cache lock ON here so that
+        # when a cache entry is missing/expired, the FIRST request for a URI
+        # performs the (possibly slow) build via Tier 2 and every concurrent
+        # same-URI request WAITS for it and is then served the FRESH result.
+        # This restores the guarantee that a completed build always becomes the
+        # served copy - critical for large, continuously-polled lists (e.g. an
+        # EDL pulled by a firewall) which would otherwise be served STALE
+        # indefinitely. HIT/STALE/UPDATING are answered from cache and never
+        # take the lock, so cache hits are never delayed. `proxy_cache_lock_age`
+        # bounds the wait: if the in-flight build exceeds it, another request is
+        # allowed to attempt the build so a single stuck build cannot wedge the
+        # URI. Tier 2 still carries a (relaxed) limit_conn ceiling as a
+        # last-resort guard, and a rejection there degrades to serving stale
+        # (see `proxy_cache_use_stale http_429`) rather than a hard failure.
+        proxy_cache_lock on;
+        proxy_cache_lock_timeout $timeout;
+        proxy_cache_lock_age $timeout;
 
         # Surface the cache decision both to the client and (via the access log
         # variable) to our logging: HIT/MISS/BYPASS/EXPIRED/STALE/UPDATING/REVALIDATED.
@@ -622,11 +642,15 @@ proxy_cache_background_update on;
 
 # ---- Tier 2: internal fetch server (cold-MISS path only) -----------------
 # Reached ONLY via Tier 1's cache fetch on a MISS. Because Tier 1 answers
-# HIT/STALE/UPDATING from cache, only requests that actually need the upstream
-# arrive here, so `limit_conn ... 1` counts ONLY cold-miss fetches: the first
-# request for a URI builds the cache entry, and every concurrent same-URI fetch
-# is rejected immediately with 429. Listens on loopback only, so it is never
-# reachable directly by external clients.
+# HIT/STALE/UPDATING from cache AND now serializes concurrent cold misses with
+# `proxy_cache_lock on`, in the normal case only a SINGLE build reaches this
+# tier per URI. `limit_conn` is kept here purely as a last-resort ceiling to
+# protect the upstream from a pathological burst (e.g. many DISTINCT URIs, or a
+# lock timing edge). It is deliberately set well above 1 so it does NOT reject
+# the normal single rebuild; and if it ever does fire, Tier 1's
+# `proxy_cache_use_stale http_429` turns the rejection into a served STALE copy
+# instead of a hard failure. Listens on loopback only, so it is never reachable
+# directly by external clients.
 server {
     listen localhost:$fetchport;
 
@@ -634,7 +658,7 @@ server {
     error_log $error_log_path info;
 
     location / {
-        limit_conn concurrent_conn_zone 1;
+        limit_conn concurrent_conn_zone 16;
         limit_conn_status 429;
 
         # Tier 2 must NOT cache: caching is owned entirely by Tier 1 (the public
