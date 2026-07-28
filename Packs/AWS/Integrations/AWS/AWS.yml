@@ -19782,7 +19782,7 @@ script:
         - "false"
 
   - name: aws-network-firewall-subnet-change-protection-update
-    description: "Modifies the flag, SubnetChangeProtection, which indicates whether it is possible to change the subnets that the firewall is associated with. Required permissions: network-firewall:UpdateSubnetChangeProtection."
+    description: "Modifies the SubnetChangeProtection flag, which indicates whether it is possible to change the subnets associated with the firewall. Required permissions: network-firewall:UpdateSubnetChangeProtection."
     arguments:
     - name: account_id
       description: The AWS account ID.
@@ -19912,7 +19912,7 @@ script:
       type: String
 
   - name: aws-network-firewall-subnets-disassociate
-    description: "Removes the specified subnet associations from the firewall. This removes the firewall endpoints from the subnets and removes any network filtering protections that the endpoints were providing. Required permissions: network-firewall:DisassociateSubnets."
+    description: "Disassociates the specified subnet associations from the firewall. This removes the firewall endpoints from the subnets and revokes any network filtering protections that the endpoints provided. Required permissions: network-firewall:DisassociateSubnets."
     arguments:
     - name: account_id
       description: The AWS account ID.

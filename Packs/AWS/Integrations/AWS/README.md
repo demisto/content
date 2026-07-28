@@ -6795,7 +6795,7 @@ There is no context output for this command.
 ### aws-network-firewall-subnet-change-protection-update
 
 ***
-Modifies the flag, SubnetChangeProtection, which indicates whether it is possible to change the subnets that the firewall is associated with. Required permissions: network-firewall:UpdateSubnetChangeProtection.
+Modifies the SubnetChangeProtection flag, which indicates whether it is possible to change the subnets associated with the firewall. Required permissions: network-firewall:UpdateSubnetChangeProtection.
 
 #### Base Command
 
@@ -6849,7 +6849,7 @@ Associates the specified subnets in the Amazon VPC to the firewall. You can spec
 ### aws-network-firewall-subnets-disassociate
 
 ***
-Removes the specified subnet associations from the firewall. This removes the firewall endpoints from the subnets and removes any network filtering protections that the endpoints were providing. Required permissions: network-firewall:DisassociateSubnets.
+Disassociates the specified subnet associations from the firewall. This removes the firewall endpoints from the subnets and revokes any network filtering protections that the endpoints provided. Required permissions: network-firewall:DisassociateSubnets.
 
 #### Base Command
 
