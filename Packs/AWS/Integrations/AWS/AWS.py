@@ -1542,7 +1542,7 @@ class S3:
 
         if response.get("ResponseMetadata", {}).get("HTTPStatusCode") == HTTPStatus.OK:
             return CommandResults(
-                outputs_prefix="AWS.S3-Buckets",
+                outputs_prefix="AWS.S3.Buckets",
                 outputs_key_field="BucketName",
                 outputs={"BucketName": bucket_name, "PublicAccessBlock": response.get("PublicAccessBlockConfiguration", {})},
                 readable_output=tableToMarkdown(
@@ -1583,7 +1583,7 @@ class S3:
                 "ServerSideEncryptionConfiguration": response.get("ServerSideEncryptionConfiguration", {}),
             }
             return CommandResults(
-                outputs_prefix="AWS.S3-Buckets",
+                outputs_prefix="AWS.S3.Buckets",
                 outputs_key_field="BucketName",
                 outputs=outputs,
                 readable_output=tableToMarkdown(
@@ -1621,7 +1621,7 @@ class S3:
             json_response = json.loads(response.get("Policy", "{}"))
             json_statement = json_response.get("Statement", [])
             return CommandResults(
-                outputs_prefix="AWS.S3-Buckets",
+                outputs_prefix="AWS.S3.Buckets",
                 outputs_key_field="BucketName",
                 outputs={
                     "BucketName": bucket_name,
@@ -1799,7 +1799,7 @@ class S3:
         )
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix="AWS.S3-Buckets.BucketWebsite",
+            outputs_prefix="AWS.S3.Buckets.BucketWebsite",
             outputs=response.get("WebsiteConfiguration", {}),
             raw_response=response.get("WebsiteConfiguration", {}),
         )
@@ -1841,7 +1841,7 @@ class S3:
         )
         return CommandResults(
             readable_output=readable_output,
-            outputs_prefix="AWS.S3-Buckets.BucketAcl",
+            outputs_prefix="AWS.S3.Buckets.BucketAcl",
             outputs=response.get("AccessControlPolicy", {}),
             raw_response=response.get("AccessControlPolicy", {}),
         )

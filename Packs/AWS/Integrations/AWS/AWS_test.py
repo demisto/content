@@ -2027,7 +2027,7 @@ def test_s3_get_bucket_policy_command_success(mocker):
 
     result = S3.get_bucket_policy_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert result.outputs["Policy"] == policy_document
@@ -2227,7 +2227,7 @@ def test_s3_get_bucket_encryption_command_success(mocker):
 
     result = S3.get_bucket_encryption_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert "ServerSideEncryptionConfiguration" in result.outputs
@@ -2392,7 +2392,7 @@ def test_s3_get_public_access_block_command_success(mocker):
 
     result = S3.get_public_access_block_command(mock_client, args)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "AWS.S3-Buckets"
+    assert result.outputs_prefix == "AWS.S3.Buckets"
     assert result.outputs_key_field == "BucketName"
     assert result.outputs["BucketName"] == "test-bucket"
     assert result.outputs["PublicAccessBlock"] == public_access_block_config
