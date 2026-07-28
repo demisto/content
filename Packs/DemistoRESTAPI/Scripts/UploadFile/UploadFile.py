@@ -49,7 +49,7 @@ def upload_file(incident_id: str, entry_id: str, body: str = "", using: str = ""
         demisto.debug(
             f"UploadFile: transient error uploading entry {entry_id} to incident {incident_id} "
             f"(attempt {attempt + 1}/{MAX_RETRIES + 1}). Retrying in {delay} seconds. "
-            f"Error: {entry.get('Contents')}"
+            f"Error: {get_error(entry)}"
         )
         time.sleep(delay)  # pylint: disable=E9003
         response = demisto.executeCommand("core-api-multipart", args)
