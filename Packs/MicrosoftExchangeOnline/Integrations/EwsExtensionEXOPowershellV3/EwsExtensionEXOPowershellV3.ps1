@@ -2628,8 +2628,8 @@ function EnableRuleCommand {
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
-function GetMailFlowRuleParamsFromEntryId([ExchangeOnlinePowershellV3Client]$client, [string]$entry_id) {
-    $file_path = ($client.GetFilePath($entry_id)).path
+function GetMailFlowRuleParamsFromEntryId([string]$entry_id) {
+    $file_path = ($demisto.GetFilePath($entry_id)).path
     if (-not $file_path) {
         throw "Could not resolve the file path for entry ID '$entry_id'."
     }
@@ -2643,9 +2643,6 @@ function GetMailFlowRuleParamsFromEntryId([ExchangeOnlinePowershellV3Client]$cli
         .DESCRIPTION
         Reads a JSON file (referenced by a War Room entry ID) and returns its parameters as a hashtable.
         The JSON is expected to be a map of PowerShell parameter names to values.
-
-        .PARAMETER client
-        The Exchange Online client, used to resolve the entry ID to a file path.
 
         .PARAMETER entry_id
         The War Room entry ID of the JSON file.
@@ -2764,7 +2761,7 @@ function NewMailFlowRuleCommand {
 
     $cmd_params = BuildMailFlowRuleParams $kwargs
     if (-not [string]::IsNullOrEmpty($kwargs.entry_id)) {
-        $params_from_file = GetMailFlowRuleParamsFromEntryId $client $kwargs.entry_id
+        $params_from_file = GetMailFlowRuleParamsFromEntryId $kwargs.entry_id
         $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
     }
 
@@ -2791,7 +2788,7 @@ function SetMailFlowRuleCommand {
     )
     $cmd_params = BuildMailFlowRuleParams $kwargs
     if (-not [string]::IsNullOrEmpty($kwargs.entry_id)) {
-        $params_from_file = GetMailFlowRuleParamsFromEntryId $client $kwargs.entry_id
+        $params_from_file = GetMailFlowRuleParamsFromEntryId $kwargs.entry_id
         $cmd_params = MergeEntryIdParams $cmd_params $params_from_file
     }
 
