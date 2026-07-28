@@ -544,3 +544,27 @@ def test_extract_fields_from_args(similar_text_field):
         "xdralerts.user_name",
     ]
     assert results == expected_results
+
+
+@pytest.mark.parametrize(
+    "version_ge, incident_id, expected_link",
+    [
+        (True, "43076", "[43076](/Details/43076)"),
+        (False, "43076", "[43076](#/Details/43076)"),
+    ],
+)
+def test_create_incident_link(mocker, version_ge, incident_id, expected_link):
+    """
+    Given:
+        - An incident ID.
+        - Case 1: Cortex XSOAR 8.x (version >= 8.4.0) -> path-based URL.
+        - Case 2: Cortex XSOAR 6.x (version < 8.4.0) -> legacy hash-based URL.
+    When:
+        Calling create_incident_link.
+    Then:
+        - Ensure the correct link format is produced for each platform version.
+    """
+    import DBotFindSimilarIncidents
+
+    mocker.patch.object(DBotFindSimilarIncidents, "is_demisto_version_ge", return_value=version_ge)
+    assert DBotFindSimilarIncidents.create_incident_link(incident_id) == expected_link

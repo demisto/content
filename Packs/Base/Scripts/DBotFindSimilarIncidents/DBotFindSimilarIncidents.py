@@ -78,6 +78,20 @@ CONST_PARAMETERS_INDICATORS_SCRIPT = {
 }
 KEYS_ARGS_INDICATORS = ["indicatorsTypes", "maxIncidentsInIndicatorsForWhiteList", "minNumberOfIndicators", "incidentId"]
 
+
+def create_incident_link(incident_id: Any) -> str:
+    """Build a markdown link to an incident details page.
+
+    Uses a path-based URL (``/Details/{id}``) for Cortex XSOAR 8.x and later, and the
+    legacy hash-based URL (``#/Details/{id}``) for Cortex XSOAR 6.x. This ensures the
+    generated hyperlinks navigate directly to the incident on both platforms.
+
+    :param incident_id: The incident ID.
+    :return: A markdown-formatted link to the incident details page.
+    """
+    prefix = "" if is_demisto_version_ge("8.4.0") else "#"
+    return f"[{incident_id}]({prefix}/Details/{incident_id})"
+
 REGEX_DATE_PATTERN = [
     re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
     re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*"),
@@ -586,7 +600,7 @@ def prepare_incidents_for_display(
     :return: Clean Dataframe
     """
     if "id" in similar_incidents.columns.tolist():
-        similar_incidents[COLUMN_ID] = similar_incidents["id"].apply(lambda _id: f"[{_id}](#/Details/{_id})")
+        similar_incidents[COLUMN_ID] = similar_incidents["id"].apply(create_incident_link)
     if COLUMN_TIME in similar_incidents.columns:
         similar_incidents[COLUMN_TIME] = similar_incidents[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if aggregate == "True":
@@ -946,7 +960,7 @@ def prepare_current_incident(
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if "id" in incident_filter.columns.tolist():
-        incident_filter[COLUMN_ID] = incident_filter["id"].apply(lambda _id: f"[{_id}](#/Details/{_id})")
+        incident_filter[COLUMN_ID] = incident_filter["id"].apply(create_incident_link)
     return incident_filter
 
 
