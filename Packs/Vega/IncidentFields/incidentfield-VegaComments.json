@@ -1,0 +1,31 @@
+{
+    "id": "incident_vegacomments",
+    "version": -1,
+    "name": "Vega Comments",
+    "ownerOnly": false,
+    "description": "Analyst comments on this Vega alert or incident.",
+    "cliName": "vegacomments",
+    "type": "html",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Alert",
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
