@@ -123,12 +123,18 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
   additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible. The maximum is 5,000.
@@ -136,6 +142,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Log Type
   name: log_types
   type: 16
@@ -222,12 +231,18 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   section: Collect
   type: 19
+  supportedModules:
+  - agentix
+  - xsiam
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
 display: Palo Alto Networks PAN-OS
 name: Panorama
@@ -8749,8 +8764,22 @@ script:
     - description: The serial number, or IP address for a Panorama instance, to reboot.
       name: target
       required: true
-    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+    - auto: PREDEFINED
+      description: Whether to use polling. When set to "true", the command polls the target device until it becomes available (operational mode "normal") or the timeout is reached.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The interval (in seconds) between polling attempts.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+      defaultValue: '1200'
+    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal. Supports polling to wait until the device becomes available.
     name: pan-os-platform-get-system-status
+    polling: true
     outputs:
     - contextPath: PANOS.SystemStatus.hostid
       type: String
