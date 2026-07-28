@@ -2244,6 +2244,98 @@ There are no context outputs for this command.
 >
 >Mail flow rule 1845290268845146113 has been enabled successfully
 
+### ews-mail-flow-rule-create
+
+***
+Create a transport rule (mail flow rule) in the organization. At least one action (reject_message_reason_text, quarantine, or delete_message) must be provided.
+
+#### Base Command
+
+`ews-mail-flow-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Specifies the unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks ("). | Required |
+| mode | Specifies how the rule operates. Possible values are: Audit, AuditAndNotify, Enforce. | Optional |
+| priority | Specifies a priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value. | Optional |
+| from | A condition that looks for messages from specific senders. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
+| sent_to | A condition that looks for recipients in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
+| subject_contains_words | A condition that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
+| except_if_subject_contains_words | An exception that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
+| reject_message_reason_text | An action that specifies the explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided. | Optional |
+| quarantine | An action that quarantines messages. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided. Possible values are: true, false. | Optional |
+| delete_message | An action that silently drops messages without an NDR. At least one of the actions (reject_message_reason_text, quarantine, or delete_message) must be provided. Possible values are: true, false. | Optional |
+| comments | Optional descriptive text for the rule (for example, what the rule is used for, or how it has changed over time). | Optional |
+| entry_id | War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file. | Optional |
+| extended_output | Determine whether the output will be in verbose format or not. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.MailFlowRule.Size | Number | The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule. |
+| EWS.MailFlowRule.ExpiryDate | Date | The date and time when the mail flow rule is set to expire and no longer apply. |
+| EWS.MailFlowRule.Mode | String | The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled. |
+| EWS.MailFlowRule.Quarantine | Boolean | Specifies whether the rule actions include quarantining messages that match the rule. |
+| EWS.MailFlowRule.Guid | String | The unique identifier (Globally Unique Identifier) for the mail flow rule. |
+| EWS.MailFlowRule.OrganizationId | String | The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments. |
+| EWS.MailFlowRule.DistinguishedName | String | The distinguished name of the mail flow rule in the Exchange directory structure. |
+| EWS.MailFlowRule.IsValid | Boolean | Indicates whether the mail flow rule is valid and functional. |
+| EWS.MailFlowRule.Conditions | Unknown | The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties. |
+| EWS.MailFlowRule.Comments | Unknown | Free-form text field for adding comments or notes about the rule, typically used for documentation. |
+| EWS.MailFlowRule.WhenChanged | Date | The date and time when the mail flow rule was last modified. |
+| EWS.MailFlowRule.Description | String | A brief description of the mail flow rule's purpose or functionality. |
+| EWS.MailFlowRule.Actions | Unknown | The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers. |
+| EWS.MailFlowRule.ImmutableId | Unknown | A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications. |
+| EWS.MailFlowRule.Identity | String | The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically. |
+| EWS.MailFlowRule.Name | String | The user-friendly name of the mail flow rule, typically used for easy identification. |
+| EWS.MailFlowRule.CreatedBy | String | The user or process that created the mail flow rule. |
+| EWS.MailFlowRule.RouteMessageOutboundConnector | Unknown | Specifies whether messages matching the rule should be routed through a specific outbound connector. |
+
+#### Human Readable Output
+
+>### Mail flow rule 'My Rule' was created successfully
+>
+>| Name | State | Mode | Priority | IsRuleConfigurationSupported | Comments |
+>| --- | --- | --- | --- | --- | --- |
+>| My Rule | Enabled | Enforce | 0 | true | Created by playbook |
+
+### ews-mail-flow-rule-update
+
+***
+Modify an existing transport rule (mail flow rule) in the organization.
+
+#### Base Command
+
+`ews-mail-flow-rule-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | Specifies the rule that you want to modify. You can use any value that uniquely identifies the rule. For example: Name, Distinguished name, or GUID. | Required |
+| mode | Specifies how the rule operates. Possible values are: Audit, AuditAndNotify, Enforce. | Optional |
+| priority | Specifies a priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value. | Optional |
+| from | A condition that looks for messages from specific senders. You can use any value that uniquely identifies the sender. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
+| sent_to | A condition that looks for recipients in messages. You can use any value that uniquely identifies the recipient. For example: Name, Alias, Distinguished name, Canonical DN, Email address, or GUID. | Optional |
+| subject_contains_words | A condition that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
+| except_if_subject_contains_words | An exception that looks for words in the Subject field of messages. To specify multiple words or phrases, use the following syntax: Word1,"Phrase with spaces",word2,...wordN. | Optional |
+| reject_message_reason_text | An action that specifies the explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). | Optional |
+| quarantine | An action that quarantines messages. Possible values are: true, false. | Optional |
+| delete_message | An action that silently drops messages without an NDR. Possible values are: true, false. | Optional |
+| comments | Optional descriptive text for the rule (for example, what the rule is used for, or how it has changed over time). | Optional |
+| entry_id | War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Explicit command arguments take precedence over values in the file. | Optional |
+
+#### Context Output
+
+There are no context outputs for this command.
+
+#### Human Readable Output
+>
+>Mail flow rule 1845290268845146113 has been updated successfully
+
 ### ews-mail-forwarding-disable
 
 ***

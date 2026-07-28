@@ -2176,10 +2176,10 @@ script:
     - name: entity_type
       auto: PREDEFINED
       predefined:
-        - Email
-        - SharePointOnline
-        - Teams
-        - DataLossPrevention
+      - Email
+      - SharePointOnline
+      - Teams
+      - DataLossPrevention
       description: The type of entity being exported.
     - name: force_conversion_to_mime
       auto: PREDEFINED
@@ -2947,6 +2947,7 @@ script:
       description: Determine whether the output will be in verbose format or not.
       required: false
       defaultValue: false
+    description: Create a transport rule (mail flow rule) in the organization. At least one action (reject_message_reason_text, quarantine, or delete_message) must be provided.
     outputs:
     - contextPath: EWS.MailFlowRule.Size
       description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
@@ -3002,7 +3003,6 @@ script:
     - contextPath: EWS.MailFlowRule.RouteMessageOutboundConnector
       description: Specifies whether messages matching the rule should be routed through a specific outbound connector.
       type: Unknown
-    description: Create a transport rule (mail flow rule) in the organization. At least one action (reject_message_reason_text, quarantine, or delete_message) must be provided.
   - name: ews-mail-flow-rule-update
     arguments:
     - name: identity
