@@ -953,17 +953,17 @@ script:
         description: The bucket name for which to get the website configuration.
         required: true
     outputs:
-      - contextPath: AWS.S3-Buckets.BucketWebsite.ErrorDocument
+      - contextPath: AWS.S3.Buckets.BucketWebsite.ErrorDocument
         description: The object key name of the website error document to use for 4XX class errors.
         type: Object
-      - contextPath: AWS.S3-Buckets.BucketWebsite.IndexDocument
+      - contextPath: AWS.S3.Buckets.BucketWebsite.IndexDocument
         description: The name of the index document for the website (for example index.html).
         type: Object
-      - contextPath: AWS.S3-Buckets.BucketWebsite.RedirectAllRequestsTo
-        description: Specifies the redirect behavior of all requests to a website endpoint of an Amazon S3 bucket.
+      - contextPath: AWS.S3.Buckets.BucketWebsite.RedirectAllRequestsTo
+        description: The redirect behavior of all requests to a website endpoint of an Amazon S3 bucket.
         type: Object
-      - contextPath: AWS.S3-Buckets.BucketWebsite.RoutingRules
-        description: Rules that define when a redirect is applied and the redirect behavior.
+      - contextPath: AWS.S3.Buckets.BucketWebsite.RoutingRules
+        description: The rules that define when a redirect is applied and the redirect behavior.
         type: Array
 
   - name: aws-s3-bucket-acl-get
@@ -1017,11 +1017,11 @@ script:
         description: Specifies the S3 bucket whose ACL is being requested.
         required: true
     outputs:
-      - contextPath: AWS.S3-Buckets.BucketAcl.Grants
-        description: A list of grants.
+      - contextPath: AWS.S3.Buckets.BucketAcl.Grants
+        description: The list of grants.
         type: Array
-      - contextPath: AWS.S3-Buckets.BucketAcl.Owner
-        description: Container for the bucket owner's display name and ID.
+      - contextPath: AWS.S3.Buckets.BucketAcl.Owner
+        description: The container for the bucket owner's display name and ID.
         type: Object
 
   - name: aws-iam-account-password-policy-get
@@ -7116,19 +7116,19 @@ script:
     - description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
       name: expected_bucket_owner
     outputs:
-    - contextPath: AWS.S3-Buckets.BucketName
-      description: Name of the S3 bucket.
+    - contextPath: AWS.S3.Buckets.BucketName
+      description: The name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicAcls
+    - contextPath: AWS.S3.Buckets.PublicAccessBlock.BlockPublicAcls
       description: Whether Amazon S3 blocks public access control lists (ACLs) for this bucket and objects in this bucket.
       type: boolean
-    - contextPath: AWS.S3-Buckets.PublicAccessBlock.IgnorePublicAcls
+    - contextPath: AWS.S3.Buckets.PublicAccessBlock.IgnorePublicAcls
       description: Whether Amazon S3 ignores public ACLs for this bucket and objects in this bucket.
       type: boolean
-    - contextPath: AWS.S3-Buckets.PublicAccessBlock.BlockPublicPolicy
+    - contextPath: AWS.S3.Buckets.PublicAccessBlock.BlockPublicPolicy
       description: Whether Amazon S3 blocks public bucket policies for this bucket.
       type: boolean
-    - contextPath: AWS.S3-Buckets.PublicAccessBlock.RestrictPublicBuckets
+    - contextPath: AWS.S3.Buckets.PublicAccessBlock.RestrictPublicBuckets
       description: Whether Amazon S3 restricts public bucket policies for this bucket.
       type: boolean
 
@@ -8012,11 +8012,11 @@ script:
       name: bucket
       required: true
     outputs:
-    - contextPath: AWS.S3-Buckets.BucketName
-      description: Name of the S3 bucket.
+    - contextPath: AWS.S3.Buckets.BucketName
+      description: The name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3-Buckets.ServerSideEncryptionConfiguration.Rules
-      description: Container for information about a particular server-side encryption configuration rule.
+    - contextPath: AWS.S3.Buckets.ServerSideEncryptionConfiguration.Rules
+      description: The container for information about a particular server-side encryption configuration rule.
       type: array
 
   - name: aws-s3-bucket-policy-get
@@ -8072,29 +8072,32 @@ script:
     - description: The account ID of the expected bucket owner. If the account ID that you provide does not match the actual owner of the bucket, the request fails.
       name: expected_bucket_owner
     outputs:
-    - contextPath: AWS.S3-Buckets.BucketName
-      description: Name of the S3 bucket.
+    - contextPath: AWS.S3.Buckets.BucketName
+      description: The name of the S3 bucket.
       type: string
-    - contextPath: AWS.S3-Buckets.Policy.Version
+    - contextPath: AWS.S3.Buckets.Policy.Version
       description: The version of the policy.
       type: string
-    - contextPath: AWS.S3-Buckets.Policy.Id
+    - contextPath: AWS.S3.Buckets.Policy.Id
       description: The id of the policy.
       type: string
-    - contextPath: AWS.S3-Buckets.Policy.Statement.Sid
-      description: Identifier of the policy statement.
+    - contextPath: AWS.S3.Buckets.Policy.Statement.Sid
+      description: The identifier of the policy statement.
       type: string
-    - contextPath: AWS.S3-Buckets.Policy.Statement.Effect
-      description: Specifies whether the statement results in an allow or an explicit deny.
+    - contextPath: AWS.S3.Buckets.Policy.Statement.Effect
+      description: The specification of whether the statement results in an allow or an explicit deny.
       type: string
-    - contextPath: AWS.S3-Buckets.Policy.Statement.Principal
-      description: Specify the principal that is allowed or denied access to a resource.
-    - contextPath: AWS.S3-Buckets.Policy.Statement.Action
-      description: Describes the specific action or actions that will be allowed or denied.
-    - contextPath: AWS.S3-Buckets.Policy.Statement.Resource
-      description: Defines the object or objects that the statement applies to.
-    - contextPath: AWS.S3-Buckets.Policy.Statement.Condition
-      description: Specify conditions for when a policy is in effect.
+    - contextPath: AWS.S3.Buckets.Policy.Statement.Principal
+      description: The principal that is allowed or denied access to a resource.
+      type: Unknown
+    - contextPath: AWS.S3.Buckets.Policy.Statement.Action
+      description: The specific action or actions that will be allowed or denied.
+      type: Unknown
+    - contextPath: AWS.S3.Buckets.Policy.Statement.Resource
+      description: The object or objects that the statement applies to.
+      type: Unknown
+    - contextPath: AWS.S3.Buckets.Policy.Statement.Condition
+      description: The conditions for when a policy is in effect.
       type: string
 
   - name: aws-lambda-function-configuration-get
