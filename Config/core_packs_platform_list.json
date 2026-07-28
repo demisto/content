@@ -78,7 +78,8 @@
             "id": "CommonTypes",
             "supportedModules": [
                 "agentix",
-                "xsiam"
+                "xsiam",
+                "xti"
             ]
         },
         {
