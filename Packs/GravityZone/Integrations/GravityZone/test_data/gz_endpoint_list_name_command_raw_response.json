@@ -1,0 +1,27 @@
+[
+    {
+        "id": "6940eb0b646e8e69399ce4a6",
+        "name": "ABC",
+        "parentId": "GROUP_ID",
+        "companyId": "COMPANY_ID",
+        "details": {
+            "label": "",
+            "fqdn": "ABC",
+            "groupId": "GROUP_ID",
+            "isManaged": true,
+            "machineType": 2,
+            "operatingSystemVersion": "Windows 10 Enterprise",
+            "ip": "IP_214",
+            "macs": [
+                "ABC_MAC"
+            ],
+            "ssid": "",
+            "managedWithBest": true,
+            "policy": {
+                "id": "63171c4569cad087a809a316",
+                "name": "POLICY_NAME",
+                "applied": true
+            }
+        }
+    }
+]
