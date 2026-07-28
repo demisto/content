@@ -3285,7 +3285,7 @@ class TestEsKibanaValueListItemImportCommand:
 
 
 class TestBuildFetchExtraParams:
-    """ Tests for build_fetch_extra_params.
+    """Tests for build_fetch_extra_params.
     A blank "Fields to Fetch" parameter must not add an empty "fields": [] entry to the
     fetch request body, otherwise Elasticsearch fails with:
     ParsingException 400 'Unknown key for a START_ARRAY in [fields]'.
