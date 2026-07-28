@@ -5941,6 +5941,7 @@
         "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
         "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "PAN-OS - Block IP and URL - External Dynamic List v2 Test": "uses deprecated integration, un-skip when playbook is updated",
+        "BlockExternalIP - Test": "Instance issues",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
         "O365-SecurityAndCompliance-ContextResults-Test": "Deprecated. There is another implementation for V2",
