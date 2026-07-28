@@ -2742,7 +2742,7 @@ function MergeEntryIdParams([hashtable]$cmd_params, [hashtable]$params_from_file
 function NewMailFlowRuleCommand {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
     # At least one action must be provided (Exchange rejects rules with no action).
@@ -2783,7 +2783,7 @@ function NewMailFlowRuleCommand {
 function SetMailFlowRuleCommand {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [Parameter(Mandatory)]$client,
         [hashtable]$kwargs
     )
     $cmd_params = BuildMailFlowRuleParams $kwargs
