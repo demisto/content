@@ -92,6 +92,7 @@ def create_incident_link(incident_id: Any) -> str:
     prefix = "" if is_demisto_version_ge("8.4.0") else "#"
     return f"[{incident_id}]({prefix}/Details/{incident_id})"
 
+
 REGEX_DATE_PATTERN = [
     re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
     re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*"),
