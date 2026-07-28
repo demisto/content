@@ -11,7 +11,7 @@ import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Any
 from collections.abc import Callable
-from tempfile import gettempdir
+from tempfile import gettempdir, NamedTemporaryFile
 from dateutil import parser
 from datetime import timedelta
 
@@ -122,6 +122,8 @@ class Client(BaseClient):
         enc_key,
         client_secret: Optional[str] = None,
         auth_mode: str = AUTH_MODE_OPROXY,
+        cert: Optional[str] = None,
+        cert_key: Optional[str] = None,
     ):
         self.auth_mode = auth_mode
         headers = get_x_content_info_headers()
@@ -137,7 +139,29 @@ class Client(BaseClient):
         self.client_secret = client_secret
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
+        if cert and cert_key:
+            self._session.cert = self._write_cert_files(cert, cert_key)
         self._set_access_token()
+
+    @staticmethod
+    def _write_cert_files(cert: str, cert_key: str) -> tuple[str, str]:
+        """Write PEM-encoded cert and key to temporary files and return their paths.
+
+        The files are not auto-deleted (delete=False) so that the requests session
+        can reference them by path for the lifetime of the integration execution.
+        """
+        cert_file = NamedTemporaryFile(mode="w", suffix=".pem", delete=False, dir=gettempdir())
+        cert_file.write(cert)
+        cert_file.flush()
+        cert_file.close()
+
+        key_file = NamedTemporaryFile(mode="w", suffix=".pem", delete=False, dir=gettempdir())
+        key_file.write(cert_key)
+        key_file.flush()
+        key_file.close()
+
+        demisto.debug(f"CDL mTLS: wrote cert to {cert_file.name}, key to {key_file.name}")
+        return cert_file.name, key_file.name
 
     def _set_access_token(self):
         """
@@ -1729,6 +1753,9 @@ def main():
         return
 
     token_retrieval_url, registration_id = extract_client_args(registration_id_and_url)
+    credentials_cert = params.get("credentials_cert", {})
+    cert = credentials_cert.get("identifier")
+    cert_key = credentials_cert.get("password")
     client = Client(
         token_retrieval_url,
         registration_id,
@@ -1738,6 +1765,8 @@ def main():
         enc_key,
         client_secret=client_secret,
         auth_mode=auth_mode,
+        cert=cert,
+        cert_key=cert_key,
     )
 
     try:
