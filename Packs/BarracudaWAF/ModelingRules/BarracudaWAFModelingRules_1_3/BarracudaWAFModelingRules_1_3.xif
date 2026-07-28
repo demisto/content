@@ -96,10 +96,10 @@ filter _raw_log ~= "\s(AUDIT)\s"
     xdm.source.port = to_integer(arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){3}\s(\S+)"), "")),
     xdm.event.operation = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){4}\s(\S+)"), ""),
     xdm.source.process.name = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){6}\s(\S+)"), ""),
-    xdm.target.resource.type = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){8}\s(\S+)"), ""),
-    xdm.target.resource.name = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){9}\s(\S+)"), ""),
-    xdm.target.resource_before.value = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){11}\s(\S+)"), ""),
-    xdm.target.resource.value = arraystring(regextract(_raw_log, "AUDIT(?:\s\S+){12}\s(\S+)"), "");
+    xdm.target.resource.type = arraystring(regextract(_raw_log, "AUDIT(?:\s+\S+){8}\s+(\S+)"), ""),
+    xdm.target.resource.name = arraystring(regextract(_raw_log, "AUDIT(?:\s+\S+){9}\s+(\S+)"), ""),
+    xdm.target.resource_before.value = arraystring(regextract(_raw_log, "config(?:\s+\S+){4}\s+(\"[^\"]*\")"), ""),
+    xdm.target.resource.value = arraystring(regextract(_raw_log, "config(?:\s+\S+){4}\s+\"[^\"]*\"\s+(\"[^\"]*\")"), "");
 
 filter _raw_log ~= "\s(NF)\s"
 | alter
